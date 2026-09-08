@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.26.0
+version: 3.27.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -213,8 +213,7 @@ Widgetbook callers.
 | `CatchSurface` | `packages/catch_ui/lib/src/primitives/catch_surface.dart:9` | Canonical low-level surface primitive. Supports base `surface`, `raised`, `primarySoft`, and `transparent` tones; `none`, `card`, `raised`, and `overlay` elevations; semantic `borderRole`/`borderSpec`, gradient background, radius, clip, tap, and focus callbacks. Named modes cover bounded cards (`.card`), quiet tinted inset notes (`.tinted`), and inline icon/title/message notes (`.message`); section-card content chrome belongs to `CatchSection.contained`. Raw border color/width inputs are deprecated migration shims. |
 | `CatchInlineMessageSurface` | `packages/catch_ui/lib/src/components/catch_inline_message_surface.dart` | Shared inline message anatomy with caller-owned icon, title, message, action slots, and optional outer/background/border colors. Error banners supply their state and resolved copy to this surface. |
 | `CatchIndexRow` | `packages/catch_ui/lib/src/components/catch_index_row.dart` | Canonical hairline index row for browse and directory lists. Owns minimum height, divider, leading/trailing slots, selected/disabled semantics, and tap feedback while callers supply domain labels and accents. |
-| `CatchMenu<T>` | `packages/catch_ui/lib/src/components/catch_menu.dart` | Shared menu panel with an overlay surface, line2 border, radius-md corners, viewport-bounded scrolling, readable wrapping labels and supporting copy, optional icons, group separators, danger tone, and typed callbacks. |
-| `CatchMenuAnchor<T>` / `CatchMenuViewport` | `packages/catch_ui/lib/src/components/catch_menu_anchor.dart` | Carries route-neutral floating-navigation obstruction into the navigator-owned overlay. The viewport constrains long menus and puts clearance on the correct side when short menus flip; the anchor keeps the trigger and menu width paired. |
+| `CatchMenu<T>` | `packages/catch_ui/lib/src/components/catch_menu.dart` | Shared menu panel with an overlay surface, line2 border, radius-md corners, viewport-bounded scrolling, readable wrapping labels and supporting copy, optional icons, group separators, danger tone, and typed callbacks. The `.anchored` recipe uses `CatchMenuViewport` to pair trigger width and constrain or flip the panel around shell obstruction. |
 | `CatchMenuItem<T>` | `packages/catch_ui/lib/src/components/catch_menu_item.dart` | Caller-owned menu values, labels, action/choice semantics and selection callbacks. Only choice rows can be selected. |
 | `CatchMenuRow<T>` | `packages/catch_ui/lib/src/components/catch_menu_row.dart` | Direct row renderer used by menu and selection surfaces. Owns action-versus-choice semantics, selected, disabled, danger, icon, supporting copy, checkmark, and typed selection behavior. It uses a 56 px minimum target and supports two-line reflow at large text sizes. |
 | `CatchSelectionMenu<T>` | `packages/catch_ui/lib/src/components/catch_selection_menu.dart` | Anchored, wider-layout picker for mutually exclusive choices. It requires a current value, marks exactly one choice selected, and closes after typed selection. |

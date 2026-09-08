@@ -640,7 +640,13 @@ void main() {
     await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchMenu<HostInboxScope>), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchMenu<HostInboxScope> && widget.builder == null,
+      ),
+      findsOneWidget,
+    );
     expect(find.text('General inquiries'), findsOneWidget);
 
     await tester.tap(find.text('General inquiries'));
@@ -684,7 +690,10 @@ void main() {
       await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
       await pumpFeatureUi(tester);
 
-      final menu = find.byType(CatchMenu<HostInboxScope>);
+      final menu = find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchMenu<HostInboxScope> && widget.builder == null,
+      );
       expect(menu, findsOneWidget);
       final usableBottom =
           tester.view.physicalSize.height / tester.view.devicePixelRatio -

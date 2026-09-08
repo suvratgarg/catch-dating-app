@@ -6696,7 +6696,7 @@
           "MenuAnchor",
           "PopupMenuButton"
         ],
-        "replacement": "CatchMenuAnchor, CatchActionMenu, or CatchSelectionMenu",
+        "replacement": "CatchMenu.anchored, CatchActionMenu, or CatchSelectionMenu",
         "steeringGroup": "button",
         "steeringCode": "catch_no_raw_button_control",
         "probeSeed": "PopupMenuButton<void>(itemBuilder: (_) => const [])"
@@ -6709,7 +6709,8 @@
         "symbol": "CatchMenu",
         "file": "packages/catch_ui/lib/src/components/catch_menu.dart",
         "constructors": [
-          "CatchMenu"
+          "CatchMenu",
+          "CatchMenu.anchored"
         ]
       },
       "design": {
@@ -6747,6 +6748,24 @@
             "type": "number",
             "required": false,
             "dartType": "double?"
+          },
+          {
+            "name": "builder",
+            "type": "callback",
+            "required": false,
+            "dartType": "CatchMenuBuilder"
+          },
+          {
+            "name": "controller",
+            "type": "object",
+            "required": false,
+            "dartType": "MenuController?"
+          },
+          {
+            "name": "alignmentOffset",
+            "type": "object",
+            "required": false,
+            "dartType": "Offset"
           }
         ],
         "states": [
@@ -6761,7 +6780,8 @@
           "sectioned",
           "scrolling",
           "compact-selection-sheet",
-          "anchored-selection"
+          "anchored-selection",
+          "anchored-trigger"
         ],
         "slots": [],
         "tokens": [
@@ -6781,7 +6801,6 @@
           "CatchMenuItemRole",
           "CatchActionMenuItem",
           "CatchSelectionMenuItem",
-          "CatchMenuAnchor",
           "CatchMenuRow",
           "CatchActionMenu",
           "CatchSelectionMenu",
@@ -6791,30 +6810,12 @@
           "CatchSurface",
           "CatchIconAction",
           "CatchTextStyles.body",
-          "CatchTextStyles.mono"
+          "CatchTextStyles.mono",
+          "CatchMenuBuilder",
+          "CatchMenuViewport"
         ],
         "goldens": [],
         "members": [
-          {
-            "id": "catch.menu.anchor",
-            "symbol": "CatchMenuAnchor",
-            "file": "packages/catch_ui/lib/src/components/catch_menu_anchor.dart",
-            "summary": "Canonical low-level anchored menu owner; applies the shell-aware viewport boundary before rendering typed CatchMenu rows.",
-            "states": [
-              "closed",
-              "open",
-              "flipped-above",
-              "scrolling",
-              "shell-obstructed"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.menu",
-              "parentConceptId": "catch.menu",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.menu"
-            }
-          },
           {
             "id": "catch.menu.row",
             "symbol": "CatchMenuRow",
@@ -6975,6 +6976,21 @@
             "light",
             "dark"
           ]
+        },
+        "constructorProps": {
+          "CatchMenu": [
+            "items",
+            "onSelected",
+            "width"
+          ],
+          "CatchMenu.anchored": [
+            "items",
+            "builder",
+            "controller",
+            "onSelected",
+            "width",
+            "alignmentOffset"
+          ]
         }
       },
       "handoff": {
@@ -6986,7 +7002,8 @@
           "Use CatchActionMenu only for short command lists. Keep sort, filter, and other selected choices out of overflow.",
           "Use CatchAdaptiveSelectionControl when the current choice should remain visible or mutually-exclusive choices are too numerous, long, or dynamic for an inline CatchOptionGroup; use CatchAdaptiveSelectionMenu with a custom trigger when needed.",
           "Informational status belongs on the owning page, not as a disabled menu row. Disabled commands must explain why they are unavailable.",
-          "Use explicit section boundaries instead of drawing a divider after every row."
+          "Use explicit section boundaries instead of drawing a divider after every row.",
+          "CatchMenu.anchored pairs the trigger and panel, carries shell obstruction into the overlay, flips above low triggers and constrains long menus. Direct top/bottom anchored previews and geometry tests cover the same closed/open, flipped and scrolling states as the former anchor wrapper."
         ]
       },
       "governance": {

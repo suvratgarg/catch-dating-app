@@ -6972,6 +6972,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:anchored-menu-recipe",
+      "patternFamilyId": "anchored-menu-recipe",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchMenu",
+      "members": [
+        {
+          "name": "CatchMenuAnchor",
+          "action": "absorb",
+          "target": "CatchMenu.anchored"
+        }
+      ],
+      "rationale": "Move the existing anchored overlay implementation and viewport value object into the canonical Menu owner. Preserve its shell obstruction, menu/trigger width, flipping, scroll bounds and callbacks; allocate the anchor key only for the anchored recipe. Existing panel assertions distinguish the passive panel from the anchor by its builder contract. The removed file has no alias or second renderer.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

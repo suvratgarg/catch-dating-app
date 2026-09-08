@@ -3362,7 +3362,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMenuAnchor',
+            name: 'CatchMenu',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Bottom anchored menu',

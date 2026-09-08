@@ -282,27 +282,28 @@ class _EventRehearsalScenarioPicker extends StatelessWidget {
   final ValueChanged<EventRehearsalScenario> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<EventRehearsalScenario>(
-    items: [
-      for (final scenario in EventRehearsalScenario.values)
-        CatchMenuItem<EventRehearsalScenario>(
-          value: scenario,
-          label: eventRehearsalScenarioTitle(context.l10n, scenario),
-          sublabel: eventRehearsalScenarioBody(context.l10n, scenario),
-          selected: scenario == selected,
-          role: CatchMenuItemRole.choice,
+  Widget build(BuildContext context) =>
+      CatchMenu<EventRehearsalScenario>.anchored(
+        items: [
+          for (final scenario in EventRehearsalScenario.values)
+            CatchMenuItem<EventRehearsalScenario>(
+              value: scenario,
+              label: eventRehearsalScenarioTitle(context.l10n, scenario),
+              sublabel: eventRehearsalScenarioBody(context.l10n, scenario),
+              selected: scenario == selected,
+              role: CatchMenuItemRole.choice,
+            ),
+        ],
+        onSelected: (scenario, _) => onSelected(scenario),
+        builder: (context, controller, _) => CatchFieldLanes.single(
+          child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostEventRehearsalScenario,
+            valueText: eventRehearsalScenarioTitle(context.l10n, selected),
+            onTap: controller.isOpen ? controller.close : controller.open,
+          ),
         ),
-    ],
-    onSelected: (scenario, _) => onSelected(scenario),
-    builder: (context, controller, _) => CatchFieldLanes.single(
-      child: CatchField.nav(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostEventRehearsalScenario,
-        valueText: eventRehearsalScenarioTitle(context.l10n, selected),
-        onTap: controller.isOpen ? controller.close : controller.open,
-      ),
-    ),
-  );
+      );
 }
 
 class _EventRehearsalActorCountPicker extends StatelessWidget {
@@ -315,7 +316,7 @@ class _EventRehearsalActorCountPicker extends StatelessWidget {
   final ValueChanged<int> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<int>(
+  Widget build(BuildContext context) => CatchMenu<int>.anchored(
     items: [
       for (final count in const [8, 12, 14, 15, 16, 18, 24, 32, 50])
         CatchMenuItem<int>(

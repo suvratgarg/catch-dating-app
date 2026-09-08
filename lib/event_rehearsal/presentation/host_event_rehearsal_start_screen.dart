@@ -76,7 +76,7 @@ class _HostEventRehearsalStartScreenState
                     body: context.l10n.hostEventRehearsalExpiry,
                     icon: CatchIcons.eventAvailable,
                   ),
-                  CatchMenuAnchor<EventRehearsalScenario>(
+                  CatchMenu<EventRehearsalScenario>.anchored(
                     items: [
                       for (final scenario in EventRehearsalScenario.values)
                         CatchMenuItem<EventRehearsalScenario>(
@@ -117,7 +117,7 @@ class _HostEventRehearsalStartScreenState
                       ),
                     ),
                   ),
-                  CatchMenuAnchor<int>(
+                  CatchMenu<int>.anchored(
                     items: [
                       for (final count in const [
                         8,

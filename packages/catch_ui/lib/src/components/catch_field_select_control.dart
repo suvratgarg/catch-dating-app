@@ -9,7 +9,7 @@ import 'package:catch_ui/src/components/catch_field_trailing.dart';
 import 'package:catch_ui/src/components/catch_field_value_content.dart';
 import 'package:catch_ui/src/components/catch_field_value_content_mode.dart';
 import 'package:catch_ui/src/components/catch_field_value_content_status.dart';
-import 'package:catch_ui/src/components/catch_menu_anchor.dart';
+import 'package:catch_ui/src/components/catch_menu.dart';
 import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_control_surface.dart';
@@ -152,7 +152,7 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
         final canOpen =
             widget.enabled && onChanged != null && values.isNotEmpty;
 
-        return CatchMenuAnchor<Object?>(
+        return CatchMenu<Object?>.anchored(
           controller: widget.menuController,
           items: [
             for (final item in values)

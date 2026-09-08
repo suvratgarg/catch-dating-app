@@ -5,7 +5,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Top anchored menu',
-  type: CatchMenuAnchor,
+  type: CatchMenu,
   path: '[Core primitives]/Menus',
 )
 Widget catchMenuAnchorTop(BuildContext context) =>
@@ -13,7 +13,7 @@ Widget catchMenuAnchorTop(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Bottom anchored menu',
-  type: CatchMenuAnchor,
+  type: CatchMenu,
   path: '[Core primitives]/Menus',
 )
 Widget catchMenuAnchorBottom(BuildContext context) =>
@@ -28,8 +28,8 @@ class WidgetbookMenuAnchorCanvas extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WidgetbookCatalogFrame(
-      title: 'CatchMenuAnchor',
-      catalogId: 'catch.menu.anchor',
+      title: 'CatchMenu.anchored',
+      catalogId: 'catch.menu',
       children: [
         SizedBox(
           height: 720,
@@ -44,7 +44,7 @@ class WidgetbookMenuAnchorCanvas extends StatelessWidget {
                 child: SizedBox(
                   width: 320,
                   child: WidgetbookOpenMenuScope(
-                    builder: (context, controller) => CatchMenuAnchor<int>(
+                    builder: (context, controller) => CatchMenu<int>.anchored(
                       controller: controller,
                       items: [
                         for (var index = 0; index < 20; index++)

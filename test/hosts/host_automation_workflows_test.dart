@@ -251,7 +251,9 @@ Future<void> _choose(WidgetTester tester, String field, String value) async {
   await pumpFeatureUi(tester);
   await tester.tap(
     find.descendant(
-      of: find.byType(CatchMenu<Object?>),
+      of: find.byWidgetPredicate(
+        (widget) => widget is CatchMenu<Object?> && widget.builder == null,
+      ),
       matching: find.text(value),
     ),
   );

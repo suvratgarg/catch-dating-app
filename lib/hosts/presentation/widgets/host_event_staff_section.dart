@@ -277,7 +277,7 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
                 ? context.l10n.hostsEventStaffPhoneRequired
                 : null,
           ),
-          CatchMenuAnchor<HostEventStaffGrantWindow>(
+          CatchMenu<HostEventStaffGrantWindow>.anchored(
             items: [
               for (final window in HostEventStaffGrantWindow.values)
                 CatchMenuItem<HostEventStaffGrantWindow>(

@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_menu_anchor.dart';
+import 'package:catch_ui/src/components/catch_menu.dart';
 import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/components/catch_selection_menu_item.dart';
 import 'package:catch_ui/src/foundations/catch_transitions.dart';
@@ -45,7 +45,7 @@ class _CatchSelectionMenuState<T> extends State<CatchSelectionMenu<T>> {
       preferredWidth: widget.width,
       viewportWidth: MediaQuery.sizeOf(context).width,
     );
-    return CatchMenuAnchor<T>(
+    return CatchMenu<T>.anchored(
       controller: _controller,
       width: menuWidth,
       alignmentOffset: const Offset(0, CatchSpacing.s1),

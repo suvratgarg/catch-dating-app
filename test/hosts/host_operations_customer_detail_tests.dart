@@ -161,7 +161,10 @@ void _registerHostOperationsCustomerDetailTests() {
 
     await tester.tap(find.text('Sort: Last seen'));
     await pumpFeatureUi(tester);
-    final sortMenu = find.byType(CatchMenu<HostCustomerSort>);
+    final sortMenu = find.byWidgetPredicate(
+      (widget) =>
+          widget is CatchMenu<HostCustomerSort> && widget.builder == null,
+    );
     expect(sortMenu, findsOneWidget);
     await tester.tap(
       find.descendant(of: sortMenu, matching: find.text('Name')),

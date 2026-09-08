@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:83bcd3c4c0bc484327767c0075b50e616522894c194a4f74fdc52cd76cf7b22e",
-  "resolvedDigest": "sha256:45e804fe4de13b9c341c43c141983d99549890c32e42e522f3baa00e3bcd28c4",
+  "resolvedDigest": "sha256:96f49fdd617d5b708230128ceb01843a4eca09d03d844eb0e292a56a9ad42b2f",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5240,7 +5240,8 @@
               "symbol": "CatchMenu",
               "file": "packages/catch_ui/lib/src/components/catch_menu.dart",
               "constructors": [
-                "CatchMenu"
+                "CatchMenu",
+                "CatchMenu.anchored"
               ]
             }
           },

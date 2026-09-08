@@ -5454,8 +5454,17 @@ Widget catchMenuContractStates(BuildContext context) {
       'scrolling',
       'compact-selection-sheet',
       'anchored-selection',
+      'anchored-trigger',
     ],
     children: [
+      _StateCard(
+        label: 'anchored-trigger',
+        child: CatchMenu<String>.anchored(
+          items: const [CatchMenuItem(value: 'share', label: 'Share')],
+          builder: (context, controller, child) =>
+              CatchButton.text(label: 'Open menu', onPressed: controller.open),
+        ),
+      ),
       _StateCard(
         label: 'panel rows',
         child: CatchMenu<String>(

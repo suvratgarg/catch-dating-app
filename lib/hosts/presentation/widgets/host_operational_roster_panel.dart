@@ -1706,7 +1706,7 @@ class _HostRuntimeClaimActions extends StatelessWidget {
             variant: CatchButtonVariant.secondary,
             size: CatchButtonSize.sm,
           )
-        : CatchMenuAnchor<String>(
+        : CatchMenu<String>.anchored(
             items: [
               for (final attendeeId in candidateIds)
                 CatchMenuItem<String>(
@@ -2065,7 +2065,7 @@ class _RosterMappingField extends StatelessWidget {
               .where((sample) => sample.isNotEmpty)
               .take(2)
               .toList(growable: false);
-    return CatchMenuAnchor<int>(
+    return CatchMenu<int>.anchored(
       items: [
         for (final option in options)
           CatchMenuItem<int>(

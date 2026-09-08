@@ -652,7 +652,7 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
     return SliverToBoxAdapter(
       child: Padding(
         padding: CatchInsets.pageHorizontal,
-        child: CatchMenuAnchor<HostInboxScope>(
+        child: CatchMenu<HostInboxScope>.anchored(
           controller: _menuController,
           alignmentOffset: const Offset(0, CatchSpacing.s1),
           items: [

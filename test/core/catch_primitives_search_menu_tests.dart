@@ -231,37 +231,36 @@ void _registerCatchPrimitivesSearchMenuTests() {
     expect(selected, 'delete');
   });
 
-  testWidgets(
-    'CatchMenuAnchor keeps long menus above floating shell navigation',
-    (tester) async {
-      tester.view.devicePixelRatio = 1;
-      tester.view.physicalSize = const Size(400, 800);
-      addTearDown(tester.view.resetDevicePixelRatio);
-      addTearDown(tester.view.resetPhysicalSize);
+  testWidgets('CatchMenu keeps long menus above floating shell navigation', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(400, 800);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: CatchTabViewportScope(
-            index: 0,
-            bottomBarPlacement: CatchTabViewportScopePlacement.floating,
-            bottomOverlayInset: 100,
-            child: Scaffold(
-              body: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 40),
-                  child: SizedBox(
-                    width: 320,
-                    child: CatchMenuAnchor<int>(
-                      items: [
-                        for (var index = 0; index < 20; index++)
-                          CatchMenuItem(value: index, label: 'Option $index'),
-                      ],
-                      builder: (context, controller, child) => ElevatedButton(
-                        onPressed: controller.open,
-                        child: const Text('Open menu'),
-                      ),
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: CatchTabViewportScope(
+          index: 0,
+          bottomBarPlacement: CatchTabViewportScopePlacement.floating,
+          bottomOverlayInset: 100,
+          child: Scaffold(
+            body: Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 40),
+                child: SizedBox(
+                  width: 320,
+                  child: CatchMenu<int>.anchored(
+                    items: [
+                      for (var index = 0; index < 20; index++)
+                        CatchMenuItem(value: index, label: 'Option $index'),
+                    ],
+                    builder: (context, controller, child) => ElevatedButton(
+                      onPressed: controller.open,
+                      child: const Text('Open menu'),
                     ),
                   ),
                 ),
@@ -269,28 +268,30 @@ void _registerCatchPrimitivesSearchMenuTests() {
             ),
           ),
         ),
-      );
+      ),
+    );
 
-      await tester.tap(find.text('Open menu'));
-      await pumpFeatureUi(tester);
+    await tester.tap(find.text('Open menu'));
+    await pumpFeatureUi(tester);
 
-      final menu = find.byType(CatchMenu<int>);
-      expect(menu, findsOneWidget);
-      expect(tester.getRect(menu).bottom, lessThanOrEqualTo(700));
-      final scrollable = find.descendant(
-        of: menu,
-        matching: find.byType(Scrollable),
-      );
-      expect(scrollable, findsOneWidget);
-      expect(
-        tester.state<ScrollableState>(scrollable).position.maxScrollExtent,
-        greaterThan(0),
-      );
-    },
-  );
+    final menu = find.byWidgetPredicate(
+      (widget) => widget is CatchMenu<int> && widget.builder == null,
+    );
+    expect(menu, findsOneWidget);
+    expect(tester.getRect(menu).bottom, lessThanOrEqualTo(700));
+    final scrollable = find.descendant(
+      of: menu,
+      matching: find.byType(Scrollable),
+    );
+    expect(scrollable, findsOneWidget);
+    expect(
+      tester.state<ScrollableState>(scrollable).position.maxScrollExtent,
+      greaterThan(0),
+    );
+  });
 
   testWidgets(
-    'CatchMenuAnchor constrains a long lower menu to anchor-relative space',
+    'CatchMenu constrains a long lower menu to anchor-relative space',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(400, 800);
@@ -311,7 +312,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
                   padding: const EdgeInsets.only(bottom: 120),
                   child: SizedBox(
                     width: 320,
-                    child: CatchMenuAnchor<int>(
+                    child: CatchMenu<int>.anchored(
                       items: [
                         for (var index = 0; index < 20; index++)
                           CatchMenuItem(value: index, label: 'Option $index'),
@@ -332,7 +333,9 @@ void _registerCatchPrimitivesSearchMenuTests() {
       await tester.tap(find.text('Open lower long menu'));
       await pumpFeatureUi(tester);
 
-      final menu = find.byType(CatchMenu<int>);
+      final menu = find.byWidgetPredicate(
+        (widget) => widget is CatchMenu<int> && widget.builder == null,
+      );
       expect(menu, findsOneWidget);
       final menuRect = tester.getRect(menu);
       expect(menuRect.top, greaterThanOrEqualTo(CatchLayout.menuViewportInset));
@@ -348,7 +351,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
     },
   );
 
-  testWidgets('CatchMenuAnchor flips short menus flush above their trigger', (
+  testWidgets('CatchMenu flips short menus flush above their trigger', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -370,7 +373,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
                 padding: const EdgeInsets.only(bottom: 120),
                 child: SizedBox(
                   width: 240,
-                  child: CatchMenuAnchor<int>(
+                  child: CatchMenu<int>.anchored(
                     items: const [
                       CatchMenuItem(value: 1, label: 'First option'),
                       CatchMenuItem(value: 2, label: 'Second option'),
@@ -397,7 +400,11 @@ void _registerCatchPrimitivesSearchMenuTests() {
     await tester.tap(trigger);
     await pumpFeatureUi(tester);
 
-    final menuRect = tester.getRect(find.byType(CatchMenu<int>));
+    final menuRect = tester.getRect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchMenu<int> && widget.builder == null,
+      ),
+    );
     expect(menuRect.bottom, closeTo(triggerTop, 1));
     expect(menuRect.bottom, lessThanOrEqualTo(700));
   });
@@ -460,7 +467,12 @@ void _registerCatchPrimitivesSearchMenuTests() {
     await tester.tap(find.byTooltip('More actions'));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchMenu<String>), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchMenu<String> && widget.builder == null,
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Open active club'), findsOneWidget);
     expect(find.byIcon(CatchIcons.check), findsNothing);
 
@@ -468,7 +480,12 @@ void _registerCatchPrimitivesSearchMenuTests() {
     await pumpFeatureUi(tester);
 
     expect(selected, 'remove');
-    expect(find.byType(CatchMenu<String>), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchMenu<String> && widget.builder == null,
+      ),
+      findsNothing,
+    );
   });
 
   testWidgets(
@@ -634,6 +651,11 @@ void _registerCatchPrimitivesSearchMenuTests() {
     await pumpFeatureUi(tester);
     expect(find.byType(CatchSelectionMenu<String>), findsOneWidget);
     expect(find.byType(CatchSelectionSheet<String>), findsNothing);
-    expect(find.byType(CatchMenu<String>), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchMenu<String> && widget.builder == null,
+      ),
+      findsOneWidget,
+    );
   });
 }

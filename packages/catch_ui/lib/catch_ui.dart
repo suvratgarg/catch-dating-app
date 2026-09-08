@@ -103,7 +103,6 @@ export 'src/components/catch_journey_step.dart';
 export 'src/components/catch_journey_step_node.dart';
 export 'src/components/catch_journey_steps.dart';
 export 'src/components/catch_menu.dart';
-export 'src/components/catch_menu_anchor.dart';
 export 'src/components/catch_menu_item.dart';
 export 'src/components/catch_menu_row.dart';
 export 'src/components/catch_meta_entry.dart';

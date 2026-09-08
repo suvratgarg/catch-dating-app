@@ -1645,6 +1645,34 @@
           "rationale": "The old Action wrapper already delegated to this renderer. Merge them under the deterministic IconAction role."
         }
       ]
+    },
+    {
+      "id": "anchored-menu-recipe",
+      "title": "Canonical anchored menu recipe",
+      "intent": "Put panel and trigger anchoring under one Menu API while preserving overlay placement and shell-clearance behavior.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.menu",
+      "qualityReference": "CatchMenu",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve anchor width, boundary calculation, flip placement, scrolling, rows and trigger behavior."
+      ],
+      "members": [
+        {
+          "symbol": "CatchMenu",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns both the menu panel and its anchored presentation recipe."
+        },
+        {
+          "symbol": "CatchMenuAnchor",
+          "disposition": "unify",
+          "target": "CatchMenu.anchored",
+          "preview": "not-applicable",
+          "rationale": "Anchoring composes the same panel and is a named Menu presentation recipe, not an independent UI concept."
+        }
+      ]
     }
   ]
 }

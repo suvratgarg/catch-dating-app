@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:ca41af6c531b991b71ad944e90766dbceaac6e86c772029cf4c2f55ee51fb224",
+  "resolvedDigest": "sha256:529d2322c87e81d90227176aa1336ffd6e67033be2397075652b80b68e5c4ace",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1968,7 +1968,8 @@
               "symbol": "CatchMenu",
               "file": "packages/catch_ui/lib/src/components/catch_menu.dart",
               "constructors": [
-                "CatchMenu"
+                "CatchMenu",
+                "CatchMenu.anchored"
               ]
             }
           },

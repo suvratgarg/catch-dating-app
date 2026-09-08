@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_action_menu_item.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
-import 'package:catch_ui/src/components/catch_menu_anchor.dart';
+import 'package:catch_ui/src/components/catch_menu.dart';
 import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +53,7 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
       viewportWidth: MediaQuery.sizeOf(context).width,
     );
 
-    return CatchMenuAnchor<T>(
+    return CatchMenu<T>.anchored(
       controller: _controller,
       width: menuWidth,
       alignmentOffset: Offset(

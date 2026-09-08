@@ -130,7 +130,7 @@ class _EventRehearsalActorPicker extends StatelessWidget {
   final ValueChanged<String> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<String>(
+  Widget build(BuildContext context) => CatchMenu<String>.anchored(
     items: [
       for (final actor in actors)
         CatchMenuItem<String>(
@@ -172,30 +172,31 @@ class _EventRehearsalBehaviorPicker extends StatelessWidget {
   final ValueChanged<EventRehearsalBehavior> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<EventRehearsalBehavior>(
-    items: [
-      for (final behavior in EventRehearsalBehavior.values)
-        CatchMenuItem<EventRehearsalBehavior>(
-          value: behavior,
-          label: eventRehearsalBehaviorLabel(context.l10n, behavior),
-          selected: behavior == selected,
-          role: CatchMenuItemRole.choice,
+  Widget build(BuildContext context) =>
+      CatchMenu<EventRehearsalBehavior>.anchored(
+        items: [
+          for (final behavior in EventRehearsalBehavior.values)
+            CatchMenuItem<EventRehearsalBehavior>(
+              value: behavior,
+              label: eventRehearsalBehaviorLabel(context.l10n, behavior),
+              selected: behavior == selected,
+              role: CatchMenuItemRole.choice,
+            ),
+        ],
+        onSelected: (behavior, _) => onSelected(behavior),
+        builder: (context, controller, _) => CatchFieldLanes.single(
+          child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostEventRehearsalChooseIssue,
+            valueText: eventRehearsalBehaviorLabel(context.l10n, selected),
+            onTap: !enabled
+                ? null
+                : controller.isOpen
+                ? controller.close
+                : controller.open,
+          ),
         ),
-    ],
-    onSelected: (behavior, _) => onSelected(behavior),
-    builder: (context, controller, _) => CatchFieldLanes.single(
-      child: CatchField.nav(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostEventRehearsalChooseIssue,
-        valueText: eventRehearsalBehaviorLabel(context.l10n, selected),
-        onTap: !enabled
-            ? null
-            : controller.isOpen
-            ? controller.close
-            : controller.open,
-      ),
-    ),
-  );
+      );
 }
 
 class _EventRehearsalApplyIssueField extends StatelessWidget {
@@ -230,7 +231,7 @@ class _EventRehearsalFaultPicker extends StatelessWidget {
   final ValueChanged<EventRehearsalFault> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<EventRehearsalFault>(
+  Widget build(BuildContext context) => CatchMenu<EventRehearsalFault>.anchored(
     items: [
       for (final fault in EventRehearsalFault.values)
         CatchMenuItem<EventRehearsalFault>(

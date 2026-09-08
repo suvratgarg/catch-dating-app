@@ -303,7 +303,12 @@ void _registerInputSelectionTests() {
 
     // Select renders through the shared CatchMenu panel, not raw Material
     // menu items; the selected option carries the shared check affordance.
-    expect(find.byType(CatchMenu<Object?>), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchMenu<Object?> && widget.builder == null,
+      ),
+      findsOneWidget,
+    );
     expect(find.byType(MenuItemButton), findsNothing);
     expect(find.byIcon(CatchIcons.check), findsOneWidget);
 
@@ -314,6 +319,11 @@ void _registerInputSelectionTests() {
     await pumpFeatureUi(tester);
 
     expect(selected, other);
-    expect(find.byType(CatchMenu<Object?>), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is CatchMenu<Object?> && widget.builder == null,
+      ),
+      findsNothing,
+    );
   });
 }
