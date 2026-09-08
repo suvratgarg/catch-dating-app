@@ -7118,6 +7118,28 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:quantitative-bar-indicators",
+      "patternFamilyId": "quantitative-bar-indicators",
+      "decision": "consolidate-renderer-and-repair",
+      "canonicalSymbol": "CatchBarSeriesIndicator",
+      "members": [
+        {
+          "name": "CatchMiniBarChart",
+          "action": "rename-and-compose",
+          "target": "CatchBarSeriesIndicator"
+        },
+        {
+          "name": "CatchAnalyticsBar",
+          "action": "rename-and-generalize",
+          "target": "CatchBarIndicator"
+        }
+      ],
+      "rationale": "Complete source and rendered comparison found duplicate fractional-fill logic and a zero-width series painter. The seeded paint-size probe measured [0, 0, 0] widths before repair. One BarIndicator now owns ratio bounds, width allocation and typed rounded/square rendering; BarSeriesIndicator owns the series frame, maximum and semantics. Page/loading comparisons establish distinct indicator use cases. The reviewed visual delta restores the previously invisible series; standalone bars retain their output.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

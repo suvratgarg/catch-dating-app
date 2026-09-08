@@ -356,7 +356,7 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
                     if (point != points.first)
                       const SizedBox(width: CatchSpacing.micro6),
                     Expanded(
-                      child: CatchAnalyticsBar(
+                      child: CatchBarIndicator(
                         value: point.metrics['caughtYou'] ?? 0,
                         maxValue: maxCaughtYou,
                       ),

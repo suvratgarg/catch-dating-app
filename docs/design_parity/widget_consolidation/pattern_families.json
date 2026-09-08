@@ -1882,6 +1882,48 @@
           "rationale": "The WheelPicker use case names the actual transaction so a generic Picker qualifier cannot hide a competing selection sheet."
         }
       ]
+    },
+    {
+      "id": "quantitative-bar-indicators",
+      "title": "One quantitative bar renderer",
+      "intent": "Use one bounded fractional bar for standalone observations and compact series, with names that distinguish quantitative display from loading or selected-page feedback.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.mini_bar_chart",
+      "qualityReference": "CatchBarSeriesIndicator",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "Series observations now paint their allocated width. Previously the childless ColoredBox chose zero width under loose constraints, leaving populated series blank.",
+        "Standalone rounded bars, series square corners, scale calculations, empty stubs, custom colors, spacing and frame geometry are preserved."
+      ],
+      "members": [
+        {
+          "symbol": "CatchBarSeriesIndicator",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Displays several known numerical observations against one scale. LoadingIndicator communicates indeterminate work, while PageIndicator identifies one active position in a finite set; neither renders measured magnitudes. The series delegates every column to its Bar member, so it cannot keep a competing fill calculation or zero-width painter."
+        },
+        {
+          "symbol": "CatchBarIndicator",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The parent series owns the shared maximum, frame, gaps and accessible description. This member paints one observation at a bounded fractional height. Rounded and square variants preserve the established standalone and series shapes while using the same ratio and width calculation."
+        },
+        {
+          "symbol": "CatchMiniBarChart",
+          "disposition": "unify",
+          "target": "CatchBarSeriesIndicator",
+          "preview": "not-applicable",
+          "rationale": "The series becomes a composition of the shared bar renderer instead of copying its ratio and rectangle tree."
+        },
+        {
+          "symbol": "CatchAnalyticsBar",
+          "disposition": "unify",
+          "target": "CatchBarIndicator",
+          "preview": "not-applicable",
+          "rationale": "The component renders any quantitative observation; Analytics is not a different renderer or feature contract."
+        }
+      ]
     }
   ]
 }

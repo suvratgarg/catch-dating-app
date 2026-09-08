@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "ab9c3c31d61e64448715bbb8a1bf0d782e7cd6c80f15eb31adeba6525654e8fb",
+  "sourceDigest": "4770480d4b445335fa951f0df1ace0cae79449f1fce3538bb801918c32fbf1c7",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "ab9c3c31d61e64448715bbb8a1bf0d782e7cd6c80f15eb31adeba6525654e8fb",
-    "contractDigest": "ab9c3c31d61e64448715bbb8a1bf0d782e7cd6c80f15eb31adeba6525654e8fb"
+    "digest": "4770480d4b445335fa951f0df1ace0cae79449f1fce3538bb801918c32fbf1c7",
+    "contractDigest": "4770480d4b445335fa951f0df1ace0cae79449f1fce3538bb801918c32fbf1c7"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "69cc063b18ee61fc9f200ef46b6113ff94c3c39d8efeb586b37c170479bb5478",
+    "handoffRequestDigest": "83f9e1ba999902cdb6ce16d24902c7102990bcfba3ddeeda7ccb17aa06e6d40e",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -283,8 +283,8 @@
       {
         "key": "catch.mini_bar_chart",
         "symbols": [
-          "CatchAnalyticsBar",
-          "CatchMiniBarChart"
+          "CatchBarIndicator",
+          "CatchBarSeriesIndicator"
         ]
       },
       {
@@ -1126,9 +1126,9 @@
       "contractId": "catch.mini_bar_chart",
       "conceptRole": "concept",
       "conceptId": "catch.mini_bar_chart",
-      "dartSymbol": "CatchMiniBarChart",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_mini_bar_chart.dart",
-      "figmaName": "Catch/MiniBarChart",
+      "dartSymbol": "CatchBarSeriesIndicator",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_bar_series_indicator.dart",
+      "figmaName": "Catch/BarSeriesIndicator",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},
@@ -1150,9 +1150,9 @@
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "MiniBarChart",
+      "claudeHandoffName": "BarSeriesIndicator",
       "claudeAllowed": true,
-      "contractDigest": "01fbad8509acded95be7b65172852745d3f925ad7a3f6801f7f111467938e1c0"
+      "contractDigest": "90fc6fe4f4ff8f072253da99437faec7d776dfbf22ed669174efff6977d81662"
     },
     {
       "contractId": "catch.metric_strip",

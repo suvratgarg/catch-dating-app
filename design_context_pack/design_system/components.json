@@ -5669,21 +5669,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchMiniBarChart",
+      "name": "CatchBarSeriesIndicator",
       "status": "active",
       "kind": "primitive",
-      "summary": "Compact mini bar chart for dense metric panels and data-coverage summaries.",
+      "summary": "Compact quantitative bar series with one shared scale, explicit empty-value treatment and a shared single-bar renderer.",
       "dart": {
-        "symbol": "CatchMiniBarChart",
-        "file": "packages/catch_ui/lib/src/components/catch_mini_bar_chart.dart",
+        "symbol": "CatchBarSeriesIndicator",
+        "file": "packages/catch_ui/lib/src/components/catch_bar_series_indicator.dart",
         "constructors": [
-          "CatchMiniBarChart"
+          "CatchBarSeriesIndicator"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/MiniBarChart",
+          "componentName": "Catch/BarSeriesIndicator",
           "componentUrl": null
         },
         "codeConnect": {
@@ -5692,7 +5692,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "MiniBarChart",
+          "handoffName": "BarSeriesIndicator",
           "allowed": true
         }
       },
@@ -5752,7 +5752,9 @@
         "dartRoles": [
           "CatchSurface",
           "CatchInsets.contentDense",
-          "CatchRadius.xs"
+          "CatchRadius.xs",
+          "CatchBarIndicator",
+          "CatchBarIndicatorVariant"
         ],
         "goldens": [],
         "accessibility": {
@@ -5771,9 +5773,9 @@
         "members": [
           {
             "id": "catch.mini_bar_chart.bar",
-            "symbol": "CatchAnalyticsBar",
-            "file": "packages/catch_ui/lib/src/components/catch_analytics_bar.dart",
-            "summary": "Single bottom-anchored fractional bar for composed analytics panels.",
+            "symbol": "CatchBarIndicator",
+            "file": "packages/catch_ui/lib/src/components/catch_bar_indicator.dart",
+            "summary": "Bottom-aligned quantitative bar with rounded standalone or square series treatment, shared ratio bounds and nonzero width.",
             "states": [
               "zero-stub",
               "fractional",
@@ -5785,6 +5787,15 @@
               "parentConceptId": "catch.mini_bar_chart",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.mini_bar_chart"
+            },
+            "level": "L3",
+            "roleNoun": "Indicator",
+            "naming": {
+              "useCase": "Bar",
+              "comparedWith": [
+                "catch.mini_bar_chart"
+              ],
+              "reason": "The parent series owns the shared maximum, frame, gaps and accessible description. This member paints one observation at a bounded fractional height. Rounded and square variants preserve the established standalone and series shapes while using the same ratio and width calculation."
             }
           }
         ]
@@ -5793,7 +5804,8 @@
         "allowedChildren": [],
         "notes": [
           "Use only for compact trend or coverage summaries; larger analytical charts need a dedicated data visualization surface.",
-          "Always provide a semantic label when the chart communicates non-decorative data."
+          "Always provide a semantic label when the chart communicates non-decorative data.",
+          "Every series column uses the square CatchBarIndicator variant through its Variant axis. The fractional renderer explicitly fills its allocated width; a paint-size regression test rejects invisible zero-width bars. Negative/zero, tiny, full and over-maximum values, empty arrays, automatic maxima and custom colors have reference goldens."
         ]
       },
       "governance": {
@@ -5810,7 +5822,17 @@
         "conceptId": "catch.mini_bar_chart"
       },
       "surfaces": {
-        "flutter": "CatchMiniBarChart"
+        "flutter": "CatchBarSeriesIndicator"
+      },
+      "level": "L3",
+      "roleNoun": "Indicator",
+      "naming": {
+        "useCase": "BarSeries",
+        "comparedWith": [
+          "catch.loading_indicator",
+          "catch.page_dots"
+        ],
+        "reason": "Displays several known numerical observations against one scale. LoadingIndicator communicates indeterminate work, while PageIndicator identifies one active position in a finite set; neither renders measured magnitudes. The series delegates every column to its Bar member, so it cannot keep a competing fill calculation or zero-width painter."
       }
     },
     {

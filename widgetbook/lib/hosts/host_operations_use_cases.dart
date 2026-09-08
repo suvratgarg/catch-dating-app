@@ -2210,16 +2210,16 @@ Widget _hostAnalyticsExactCatalog(BuildContext context, String focus) {
 Widget _hostAnalyticsPreviewFor(String focus) {
   final report = HostOperationsFixtures.analyticsReport;
   return switch (focus) {
-    'CatchAnalyticsBar' => const SizedBox(
+    'CatchBarIndicator' => const SizedBox(
       height: WidgetbookPreviewLayout.smallPreviewExtent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Expanded(child: CatchAnalyticsBar(value: 18, maxValue: 42)),
+          Expanded(child: CatchBarIndicator(value: 18, maxValue: 42)),
           gapW8,
-          Expanded(child: CatchAnalyticsBar(value: 32, maxValue: 42)),
+          Expanded(child: CatchBarIndicator(value: 32, maxValue: 42)),
           gapW8,
-          Expanded(child: CatchAnalyticsBar(value: 42, maxValue: 42)),
+          Expanded(child: CatchBarIndicator(value: 42, maxValue: 42)),
         ],
       ),
     ),
@@ -5653,11 +5653,11 @@ Widget hostStrictHostActionRowCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: CatchAnalyticsBar,
+  type: CatchBarIndicator,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictCatchAnalyticsBarCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'CatchAnalyticsBar');
+Widget hostStrictCatchBarIndicatorCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'CatchBarIndicator');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

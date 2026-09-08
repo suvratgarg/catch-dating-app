@@ -140,12 +140,12 @@ Widget userAnalyticsTrendPanelStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Bar states',
-  type: CatchAnalyticsBar,
+  type: CatchBarIndicator,
   path: '[P1 product surfaces]/User analytics',
 )
 Widget userAnalyticsBarStates(BuildContext context) {
   return const _UserAnalyticsCatalog(
-    title: 'CatchAnalyticsBar',
+    title: 'CatchBarIndicator',
     contractId: 'component.profile.user_analytics.bar',
     children: [
       _StateCard(
@@ -155,13 +155,13 @@ Widget userAnalyticsBarStates(BuildContext context) {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Expanded(child: CatchAnalyticsBar(value: 0, maxValue: 12)),
+              Expanded(child: CatchBarIndicator(value: 0, maxValue: 12)),
               SizedBox(width: CatchSpacing.micro6),
-              Expanded(child: CatchAnalyticsBar(value: 3, maxValue: 12)),
+              Expanded(child: CatchBarIndicator(value: 3, maxValue: 12)),
               SizedBox(width: CatchSpacing.micro6),
-              Expanded(child: CatchAnalyticsBar(value: 8, maxValue: 12)),
+              Expanded(child: CatchBarIndicator(value: 8, maxValue: 12)),
               SizedBox(width: CatchSpacing.micro6),
-              Expanded(child: CatchAnalyticsBar(value: 12, maxValue: 12)),
+              Expanded(child: CatchBarIndicator(value: 12, maxValue: 12)),
             ],
           ),
         ),

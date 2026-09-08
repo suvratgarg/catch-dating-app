@@ -4673,14 +4673,14 @@ Widget catchSurfaceContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchMiniBarChart,
+  type: CatchBarSeriesIndicator,
   path: '[Core primitives]/Data display',
 )
 Widget catchMiniBarChartContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchMiniBarChart',
+    title: 'CatchBarSeriesIndicator',
     contractId: 'catch.mini_bar_chart',
     states: const [
       'default',
@@ -4692,19 +4692,19 @@ Widget catchMiniBarChartContractStates(BuildContext context) {
     children: [
       const _StateCard(
         label: 'default',
-        child: CatchMiniBarChart(values: [2, 6, 3, 8, 5, 9, 7]),
+        child: CatchBarSeriesIndicator(values: [2, 6, 3, 8, 5, 9, 7]),
       ),
       const _StateCard(
         label: 'empty',
-        child: CatchMiniBarChart(values: []),
+        child: CatchBarSeriesIndicator(values: []),
       ),
       const _StateCard(
         label: 'zero-values',
-        child: CatchMiniBarChart(values: [0, 0, 0, 0], maxValue: 10),
+        child: CatchBarSeriesIndicator(values: [0, 0, 0, 0], maxValue: 10),
       ),
       _StateCard(
         label: 'color-override',
-        child: CatchMiniBarChart(
+        child: CatchBarSeriesIndicator(
           values: const [1, 3, 6, 4, 8],
           filledColor: t.primary,
           emptyColor: t.primarySoft,
@@ -4714,7 +4714,7 @@ Widget catchMiniBarChartContractStates(BuildContext context) {
       ),
       const _StateCard(
         label: 'semantic-label',
-        child: CatchMiniBarChart(
+        child: CatchBarSeriesIndicator(
           values: [4, 5, 7, 8, 6],
           semanticLabel: 'Weekly attendance trend',
         ),

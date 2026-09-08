@@ -1,9 +1,10 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_bar_indicator.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-class CatchMiniBarChart extends StatelessWidget {
-  const CatchMiniBarChart({
+class CatchBarSeriesIndicator extends StatelessWidget {
+  const CatchBarSeriesIndicator({
     super.key,
     required this.values,
     this.maxValue,
@@ -52,21 +53,14 @@ class CatchMiniBarChart extends StatelessWidget {
                   for (final (index, value) in values.indexed) ...[
                     if (index > 0) SizedBox(width: spacing),
                     Expanded(
-                      child: Align(
-                        alignment: Alignment.bottomCenter,
-                        child: FractionallySizedBox(
-                          heightFactor: _barRatio(
-                            value: value,
-                            maxValue: effectiveMax,
-                            minFilledHeightFactor: minFilledHeightFactor,
-                            emptyHeightFactor: emptyHeightFactor,
-                          ),
-                          child: ColoredBox(
-                            color: value <= 0
-                                ? emptyColor ?? t.line2
-                                : filledColor ?? t.ink,
-                          ),
-                        ),
+                      child: CatchBarIndicator(
+                        value: value,
+                        maxValue: effectiveMax,
+                        variant: CatchBarIndicatorVariant.square,
+                        minFilledHeightFactor: minFilledHeightFactor,
+                        emptyHeightFactor: emptyHeightFactor,
+                        filledColor: filledColor ?? t.ink,
+                        emptyColor: emptyColor ?? t.line2,
                       ),
                     ),
                   ],
@@ -82,13 +76,3 @@ class CatchMiniBarChart extends StatelessWidget {
 }
 
 num _maxNum(num max, num value) => value > max ? value : max;
-
-double _barRatio({
-  required num value,
-  required num maxValue,
-  required double minFilledHeightFactor,
-  required double emptyHeightFactor,
-}) {
-  if (maxValue <= 0) return emptyHeightFactor;
-  return (value / maxValue).clamp(minFilledHeightFactor, 1).toDouble();
-}

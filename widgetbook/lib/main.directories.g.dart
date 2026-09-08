@@ -2403,6 +2403,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Data display',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchBarSeriesIndicator',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchMiniBarChartContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchDivider',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2432,17 +2443,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchMetricStripCellContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchMiniBarChart',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchMiniBarChartContractStates,
               ),
             ],
           ),
@@ -9430,23 +9430,23 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Strict coverage',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'CatchAnalyticsBar',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictCatchAnalyticsBarCatalogStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'CatchAnalyticsDataQualityList',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder: _widgetbook_workspace_hosts_host_operations_use_cases
                         .hostStrictCatchAnalyticsDataQualityListCatalogStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchBarIndicator',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Exact catalog',
+                    builder:
+                        _widgetbook_workspace_hosts_host_operations_use_cases
+                            .hostStrictCatchBarIndicatorCatalogStates,
                   ),
                 ],
               ),
@@ -10838,7 +10838,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'User analytics',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAnalyticsBar',
+            name: 'CatchBarIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Bar states',
