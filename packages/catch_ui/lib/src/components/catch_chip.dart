@@ -1,12 +1,13 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_chip_data.dart';
 import 'package:catch_ui/src/components/catch_chip_emphasis.dart';
+import 'package:catch_ui/src/components/catch_chip_mode.dart';
 import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
-enum _CatchChipVariant { tag, selectable, activity, removable }
+enum _CatchChipVariant { tag, selectable, choice, activity, removable }
 
 /// Canonical compact-label primitive for facts, choices, activities, and
 /// removable values.
@@ -17,6 +18,7 @@ enum _CatchChipVariant { tag, selectable, activity, removable }
 /// - [CatchChip.selectable] is a parent-owned independent binary choice or one
 ///   member of a multi-select set. Scalar scope, lifecycle, and mode rows use
 ///   `CatchOptionGroup` or `CatchSelectionMenu.control` instead.
+/// - [CatchChip.choice] is a checked member of a form or disclosure input.
 /// - [CatchChip.activity] renders caller-resolved text, glyph, and pigments.
 /// - [CatchChip.removable] exposes one removal action across the whole chip.
 class CatchChip extends StatefulWidget {
@@ -60,6 +62,28 @@ class CatchChip extends StatefulWidget {
          contractValue: contractValue,
          contractExemption: contractExemption,
          enabled: enabled,
+         accent: accent,
+         semanticsLabel: semanticsLabel,
+       );
+
+  /// One checked choice in a caller-owned single or multiple selection input.
+  /// A null action disables the choice without losing its checked semantics.
+  const CatchChip.choice({
+    Key? key,
+    required String label,
+    required bool selected,
+    required CatchChipMode mode,
+    required VoidCallback? onPressed,
+    Color? accent,
+    String? semanticsLabel,
+  }) : this._(
+         key: key,
+         variant: _CatchChipVariant.choice,
+         label: label,
+         selected: selected,
+         mode: mode,
+         onTap: onPressed,
+         enabled: onPressed != null,
          accent: accent,
          semanticsLabel: semanticsLabel,
        );
@@ -116,6 +140,7 @@ class CatchChip extends StatefulWidget {
     this._inkColor,
     this._data,
     this._emphasis = CatchChipEmphasis.soft,
+    this._mode,
     this._onChanged,
     this._onTap,
     this._onRemove,
@@ -126,6 +151,7 @@ class CatchChip extends StatefulWidget {
   });
 
   final _CatchChipVariant _variant;
+  final CatchChipMode? _mode;
   final String? _label;
   final Widget? leading;
   final bool _selected;
@@ -148,10 +174,12 @@ class CatchChip extends StatefulWidget {
   String? get label => _label;
 
   /// Parent-owned selection state. This is meaningful only for
-  /// [CatchChip.selectable].
+  /// [CatchChip.selectable] and [CatchChip.choice].
   bool get selected => _selected;
 
   bool get enabled => _enabled;
+  CatchChipMode? get mode => _mode;
+  VoidCallback? get onPressed => _enabled ? _onTap : null;
   Color? get accent => _accent;
   Color? get tintColor => _tintColor;
   Color? get inkColor => _inkColor;
@@ -175,7 +203,9 @@ class _CatchChipState extends State<CatchChip> {
   bool _hovered = false;
 
   bool get _hasControlRole => switch (widget._variant) {
-    _CatchChipVariant.selectable || _CatchChipVariant.removable => true,
+    _CatchChipVariant.selectable ||
+    _CatchChipVariant.choice ||
+    _CatchChipVariant.removable => true,
     _CatchChipVariant.activity => widget._onTap != null,
     _CatchChipVariant.tag => false,
   };
@@ -188,7 +218,7 @@ class _CatchChipState extends State<CatchChip> {
       _CatchChipVariant.selectable => () => widget._onChanged!(
         !widget._selected,
       ),
-      _CatchChipVariant.activity => widget._onTap,
+      _CatchChipVariant.activity || _CatchChipVariant.choice => widget._onTap,
       _CatchChipVariant.removable => widget._onRemove,
       _CatchChipVariant.tag => null,
     };
@@ -258,6 +288,7 @@ class _CatchChipState extends State<CatchChip> {
         );
         break;
       case _CatchChipVariant.selectable:
+      case _CatchChipVariant.choice:
         final accent = widget._accent ?? t.primary;
         background = widget._selected ? accent : t.surface;
         foreground = widget._selected ? _inkForFill(t, accent) : t.ink;
@@ -265,7 +296,15 @@ class _CatchChipState extends State<CatchChip> {
         shadow = widget._selected
             ? CatchElevation.segmentedSelected(t)
             : CatchElevation.none;
-        leading = widget.leading;
+        leading =
+            widget._variant == _CatchChipVariant.choice &&
+                widget._mode == CatchChipMode.multiple &&
+                widget._selected
+            ? Icon(
+                CatchIcons.checkRounded,
+                size: CatchFieldTokens.chipSelectedGlyphExtent,
+              )
+            : widget.leading;
         textStyle = CatchTextStyles.labelL(context, color: foreground);
         padding = const EdgeInsets.symmetric(
           horizontal: CatchSpacing.s4,
@@ -302,7 +341,9 @@ class _CatchChipState extends State<CatchChip> {
         : CatchSpacing.s2;
     final semanticBorder = _focused
         ? CatchBorder.resolve(t, CatchBorderRole.focus)
-        : widget._variant == _CatchChipVariant.selectable && widget._selected
+        : (widget._variant == _CatchChipVariant.selectable ||
+                  widget._variant == _CatchChipVariant.choice) &&
+              widget._selected
         ? CatchBorder.resolve(
             t,
             CatchBorderRole.selected,
@@ -392,6 +433,12 @@ class _CatchChipState extends State<CatchChip> {
       button: _hasControlRole ? true : null,
       selected: widget._variant == _CatchChipVariant.selectable
           ? widget._selected
+          : null,
+      checked: widget._variant == _CatchChipVariant.choice
+          ? widget._selected
+          : null,
+      inMutuallyExclusiveGroup: widget._variant == _CatchChipVariant.choice
+          ? widget._mode == CatchChipMode.single
           : null,
       enabled: _hasControlRole ? widget._enabled : null,
       label: widget._semanticsLabel ?? defaultSemanticsLabel,

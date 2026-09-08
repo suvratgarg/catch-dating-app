@@ -110,7 +110,7 @@ def classify_async_handling(body: str) -> dict:
 def structural_hash(body: str) -> str:
     used = sorted(w for w in {
         'CatchField', 'CatchSection', 'CatchSectionList', 'CatchSurface',
-        'CatchButton', 'CatchChip', 'CatchChipField', 'CatchSkeleton',
+        'CatchButton', 'CatchChip', 'CatchChoiceInput', 'CatchSkeleton',
         'CatchTopBar', 'CatchCoverStory', 'CatchSearchField', 'CatchEmptyState',
         'CatchErrorState', 'CatchSliverErrorState',
         'CatchRangeSlider', 'CatchPersonRow', 'CatchPolaroid', 'CatchToggleInput',

@@ -67,10 +67,12 @@ bool _chipSelected(WidgetTester tester, Finder chip) {
           of: chip,
           matching: find.byWidgetPredicate(
             (widget) =>
-                widget is Semantics && widget.properties.selected != null,
+                widget is Semantics &&
+                (widget.properties.selected != null ||
+                    widget.properties.checked != null),
           ),
         )
         .first,
   );
-  return semantics.properties.selected!;
+  return semantics.properties.checked ?? semantics.properties.selected!;
 }

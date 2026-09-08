@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6131ab690ee227a9626bb3aa9c5cce744b79baecad1c677fbc2059db0e7cb31d",
-  "resolvedDigest": "sha256:676e0c57e7fa4b0c44f51a37d4a0a5fb0b9ea454f7b630a2911130778dcc0e88",
+  "resolvedDigest": "sha256:bb7dbe9105309fbceacd940545cf1eee90df5b3276d44cd05b6bc742b7ea1e89",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -1158,6 +1158,7 @@
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
+                "CatchChip.choice",
                 "CatchChip.activity",
                 "CatchChip.removable"
               ]
@@ -2431,6 +2432,7 @@
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
+                "CatchChip.choice",
                 "CatchChip.activity",
                 "CatchChip.removable"
               ]

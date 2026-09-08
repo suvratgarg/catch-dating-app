@@ -26,7 +26,8 @@ Future<void> _openCatchField(WidgetTester tester, String title) async {
 
 Future<void> _tapCreateEventChip(WidgetTester tester, String label) async {
   final finder = find.byWidgetPredicate(
-    (widget) => widget is CatchFieldChoiceChip && widget.label == label,
+    (widget) =>
+        widget is CatchChip && widget.mode != null && widget.label == label,
     description: 'selectable chip labeled $label',
   );
   await Scrollable.ensureVisible(tester.element(finder), alignment: 0.25);

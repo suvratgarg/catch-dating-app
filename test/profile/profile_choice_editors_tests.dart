@@ -327,7 +327,7 @@ void _registerProfileChoiceEditorsTests() {
         await tester.tap(tile);
         await _pumpProfileSheet(tester);
 
-        final firstChip = tester.widget<CatchFieldChoiceChip>(
+        final firstChip = tester.widget<CatchChip>(
           _catchChip(field.firstLabel),
         );
         expect(firstChip.selected, isFalse, reason: field.tileLabel);
@@ -350,7 +350,7 @@ void _registerProfileChoiceEditorsTests() {
     await tester.tap(drinkingTile);
     await _pumpProfileSheet(tester);
 
-    final neverChip = tester.widget<CatchFieldChoiceChip>(
+    final neverChip = tester.widget<CatchChip>(
       _catchChip(DrinkingHabit.never.label),
     );
     expect(neverChip.selected, isFalse);
@@ -449,9 +449,7 @@ void _registerProfileChoiceEditorsTests() {
     expect(repository.updatedFields, isNull);
     expect(
       tester
-          .widget<CatchFieldChoiceChip>(
-            _catchChip(EducationLevel.values.first.label),
-          )
+          .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
           .selected,
       isTrue,
     );
@@ -489,9 +487,7 @@ void _registerProfileChoiceEditorsTests() {
     expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
     expect(
       tester
-          .widget<CatchFieldChoiceChip>(
-            _catchChip(EducationLevel.highSchool.label),
-          )
+          .widget<CatchChip>(_catchChip(EducationLevel.highSchool.label))
           .selected,
       isTrue,
     );
@@ -503,9 +499,7 @@ void _registerProfileChoiceEditorsTests() {
     expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
     expect(
       tester
-          .widget<CatchFieldChoiceChip>(
-            _catchChip(EducationLevel.highSchool.label),
-          )
+          .widget<CatchChip>(_catchChip(EducationLevel.highSchool.label))
           .selected,
       isFalse,
     );
@@ -541,9 +535,7 @@ void _registerProfileChoiceEditorsTests() {
     await tester.tap(_catchChip(Language.english.label));
     await _pumpProfileSheet(tester);
     expect(
-      tester
-          .widget<CatchFieldChoiceChip>(_catchChip(Language.english.label))
-          .selected,
+      tester.widget<CatchChip>(_catchChip(Language.english.label)).selected,
       isFalse,
     );
 
@@ -577,9 +569,7 @@ void _registerProfileChoiceEditorsTests() {
     expect(find.text('Add looking for'), findsWidgets);
     expect(
       tester
-          .widget<CatchFieldChoiceChip>(
-            _catchChip(RelationshipGoal.relationship.label),
-          )
+          .widget<CatchChip>(_catchChip(RelationshipGoal.relationship.label))
           .selected,
       isFalse,
     );
@@ -600,11 +590,11 @@ void _registerProfileChoiceEditorsTests() {
     await _pumpProfileSheet(tester);
 
     expect(_catchChip(Language.english.label), findsOneWidget);
-    final selectedLanguageChip = tester.widget<CatchFieldChoiceChip>(
+    final selectedLanguageChip = tester.widget<CatchChip>(
       _catchChip(Language.english.label),
     );
     expect(selectedLanguageChip.selected, isTrue);
-    expect(selectedLanguageChip.multi, isTrue);
+    expect(selectedLanguageChip.mode, CatchChipMode.multiple);
     expect(
       find.descendant(
         of: _catchChip(Language.english.label),
@@ -618,9 +608,7 @@ void _registerProfileChoiceEditorsTests() {
 
     expect(_catchChip(Language.english.label), findsOneWidget);
     expect(
-      tester
-          .widget<CatchFieldChoiceChip>(_catchChip(Language.english.label))
-          .selected,
+      tester.widget<CatchChip>(_catchChip(Language.english.label)).selected,
       isFalse,
     );
     expect(repository.updatedFields, isNull);
@@ -660,9 +648,7 @@ void _registerProfileChoiceEditorsTests() {
     );
     expect(
       tester
-          .widget<CatchFieldChoiceChip>(
-            _catchChip(EducationLevel.values.first.label),
-          )
+          .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
           .enabled,
       isFalse,
     );
@@ -699,9 +685,7 @@ void _registerProfileChoiceEditorsTests() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
       expect(
         tester
-            .widget<CatchFieldChoiceChip>(
-              _catchChip(EducationLevel.values.first.label),
-            )
+            .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
             .selected,
         isTrue,
       );
@@ -726,9 +710,7 @@ void _registerProfileChoiceEditorsTests() {
 
       expect(
         tester
-            .widget<CatchFieldChoiceChip>(
-              _catchChip(EducationLevel.values.first.label),
-            )
+            .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
             .selected,
         isTrue,
       );
@@ -743,7 +725,7 @@ void _registerProfileChoiceEditorsTests() {
 
       expect(
         tester
-            .widget<CatchFieldChoiceChip>(_catchChip(DrinkingHabit.never.label))
+            .widget<CatchChip>(_catchChip(DrinkingHabit.never.label))
             .selected,
         isFalse,
       );

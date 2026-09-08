@@ -1250,25 +1250,24 @@ Widget profileInlineMultiChoiceEntryEditorStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical single-choice chip states',
-  type: CatchFieldChoiceChip,
+  type: CatchChip,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileSingleChipValueStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldChoiceChip',
-    contractId: 'catch.field.choice_chip.single',
+    title: 'CatchChip',
+    contractId: 'catch.chip.choice.single',
     children: [
       _StateCard(
         label: 'selected',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldChoiceChip(
+            child: CatchChip.choice(
               label: RelationshipGoal.relationship.label,
               selected: true,
-              multi: false,
-              enabled: true,
               onPressed: () {},
+              mode: CatchChipMode.single,
             ),
           ),
         ),
@@ -1278,12 +1277,11 @@ Widget profileSingleChipValueStates(BuildContext context) {
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldChoiceChip(
+            child: CatchChip.choice(
               label: RelationshipGoal.friendship.label,
               selected: false,
-              multi: false,
-              enabled: true,
               onPressed: () {},
+              mode: CatchChipMode.single,
             ),
           ),
         ),
@@ -1293,12 +1291,11 @@ Widget profileSingleChipValueStates(BuildContext context) {
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldChoiceChip(
+            child: CatchChip.choice(
               label: RelationshipGoal.relationship.label,
               selected: true,
-              multi: false,
-              enabled: false,
-              onPressed: () {},
+              onPressed: null,
+              mode: CatchChipMode.single,
             ),
           ),
         ),
@@ -1309,13 +1306,13 @@ Widget profileSingleChipValueStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical wrapping choice control states',
-  type: CatchFieldChoiceControl,
+  type: CatchChoiceInput,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileMultiChipValueStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldChoiceControl',
-    contractId: 'catch.field.choice_control.multi',
+    title: 'CatchChoiceInput',
+    contractId: 'catch.chip.field.multi',
     children: [
       _StateCard(
         label: 'selected and unselected wrap',
@@ -1323,7 +1320,7 @@ Widget profileMultiChipValueStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: CatchFieldChoiceControl<Language>(
+            child: CatchChoiceInput<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
@@ -1331,11 +1328,10 @@ Widget profileMultiChipValueStates(BuildContext context) {
                 Language.tamil,
                 Language.gujarati,
               ],
-              itemLabel: (value) => value.label,
               selected: const {Language.english, Language.hindi},
-              multi: true,
-              enabled: true,
-              onSelectionChanged: (_) {},
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              onChanged: (_) {},
             ),
           ),
         ),
@@ -1346,7 +1342,7 @@ Widget profileMultiChipValueStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: CatchFieldChoiceControl<Language>(
+            child: CatchChoiceInput<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
@@ -1354,11 +1350,10 @@ Widget profileMultiChipValueStates(BuildContext context) {
                 Language.tamil,
                 Language.gujarati,
               ],
-              itemLabel: (value) => value.label,
               selected: const {Language.english, Language.hindi},
-              multi: true,
-              enabled: false,
-              onSelectionChanged: (_) {},
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              onChanged: null,
             ),
           ),
         ),
@@ -1411,13 +1406,13 @@ Widget profileChipPlaceholderStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical choice option states',
-  type: CatchFieldChoiceControl,
+  type: CatchChoiceInput,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileChipOptionsStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldChoiceControl options',
-    contractId: 'catch.field.choice_control.options',
+    title: 'CatchChoiceInput options',
+    contractId: 'catch.chip.field.options',
     children: [
       _StateCard(
         label: 'enabled selected',
@@ -1425,17 +1420,16 @@ Widget profileChipOptionsStates(BuildContext context) {
           height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: CatchFieldChoiceControl<Language>(
+            child: CatchChoiceInput<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
                 Language.marathi,
               ],
-              itemLabel: (value) => value.label,
               selected: const {Language.english},
-              multi: true,
-              enabled: true,
-              onSelectionChanged: (_) {},
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              onChanged: (_) {},
             ),
           ),
         ),
@@ -1446,17 +1440,16 @@ Widget profileChipOptionsStates(BuildContext context) {
           height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: CatchFieldChoiceControl<Language>(
+            child: CatchChoiceInput<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
                 Language.marathi,
               ],
-              itemLabel: (value) => value.label,
               selected: const {Language.english, Language.hindi},
-              multi: true,
-              enabled: false,
-              onSelectionChanged: (_) {},
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              onChanged: null,
             ),
           ),
         ),

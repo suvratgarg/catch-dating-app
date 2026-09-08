@@ -930,17 +930,17 @@ Widget catchOptionGroupCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchChipField,
+  type: CatchChoiceInput,
   path: '[Core catalog]/Selection',
 )
-Widget catchChipFieldCatalogStates(BuildContext context) {
+Widget catchChoiceInputFormCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchChipField',
-    catalogId: 'core.widgets.catch_chip_field',
+    title: 'CatchChoiceInput',
+    catalogId: 'core.widgets.catch_choice_input_form',
     children: const [
       _StateCard(
         label: 'multi-select / single-select',
-        child: _ChipFieldDemo(),
+        child: _ChoiceInputFormDemo(),
       ),
     ],
   );
@@ -4425,14 +4425,14 @@ class _OptionGroupDemoState extends State<_OptionGroupDemo> {
   }
 }
 
-class _ChipFieldDemo extends StatefulWidget {
-  const _ChipFieldDemo();
+class _ChoiceInputFormDemo extends StatefulWidget {
+  const _ChoiceInputFormDemo();
 
   @override
-  State<_ChipFieldDemo> createState() => _ChipFieldDemoState();
+  State<_ChoiceInputFormDemo> createState() => _ChoiceInputFormDemoState();
 }
 
-class _ChipFieldDemoState extends State<_ChipFieldDemo> {
+class _ChoiceInputFormDemoState extends State<_ChoiceInputFormDemo> {
   var _multi = <_Choice>{_choices.first};
   var _single = <_Choice>{_choices[1]};
 
@@ -4441,26 +4441,26 @@ class _ChipFieldDemoState extends State<_ChipFieldDemo> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchChipField<_Choice>(
+        CatchChoiceInput<_Choice>.form(
           copy: catchFormFieldLabelCopy(context.l10n),
-          itemLabel: (value) => value.label,
           label: 'Activities',
           values: _choices,
           selected: _multi,
-          multiSelect: true,
           onChanged: (next) => setState(() => _multi = next),
+          mode: CatchChipMode.multiple,
+          itemLabelBuilder: (value) => value.label,
         ),
         gapH16,
-        CatchChipField<_Choice>(
+        CatchChoiceInput<_Choice>.form(
           copy: catchFormFieldLabelCopy(context.l10n),
-          itemLabel: (value) => value.label,
           label: 'One vibe',
           values: _choices,
           selected: _single,
-          multiSelect: false,
           isOptional: true,
-          allowEmptySingleSelection: true,
           onChanged: (next) => setState(() => _single = next),
+          mode: CatchChipMode.single,
+          itemLabelBuilder: (value) => value.label,
+          allowEmptySelection: true,
         ),
       ],
     );

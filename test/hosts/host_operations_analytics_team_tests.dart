@@ -518,10 +518,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(organizerTypeEditor);
     await pumpFeatureUi(tester);
 
-    final communityChoice = find.widgetWithText(
-      CatchFieldChoiceChip,
-      'Community',
-    );
+    final communityChoice = find.widgetWithText(CatchChip, 'Community');
     expect(communityChoice, findsOneWidget);
     await tester.tap(communityChoice);
     await pumpFeatureUi(tester);

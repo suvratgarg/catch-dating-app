@@ -22,6 +22,13 @@ test("known-bad missing binding is detected", () => {
   assert.equal(results[0].contract, null);
 });
 
+test("form choice recipe cannot hide a missing contract binding", () => {
+  const results = scanCatchFieldCalls({source:     "CatchChoiceInput<String>.form(values: values, onChanged: onChanged);"});
+  assert.equal(results.length, 1);
+  assert.equal(results[0].symbol, "choiceInputForm");
+  assert.equal(results[0].contract, null);
+});
+
 test("records top-level generated bindings without accepting nested arguments", () => {
   const results = scanCatchFieldCalls({
     source: `
@@ -73,7 +80,7 @@ test("inventory includes bound and unbound product callsites", () => {
         onChanged: null,
       );
       final unbound = CatchField.input(title: 'Name');
-      final chips = CatchChipField<String>(
+      final chips = CatchChoiceInput<String>.form(
         label: 'Kinds',
         contract: kindsContract,
       );
@@ -119,6 +126,7 @@ test("inventory includes bound and unbound product callsites", () => {
   const inventory = buildFormContractInventory({repoRoot: root});
 
   assert.equal(inventory.summary.editableCallsites, 9);
+  assert.equal(inventory.summary.bySymbol.choiceInputForm, 1);
   assert.equal(inventory.summary.boundCallsites, 7);
   assert.equal(inventory.summary.unboundCallsites, 2);
 });

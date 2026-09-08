@@ -171,7 +171,7 @@ void main() {
     expect(englishLabel.style?.color, CatchTokens.editorialLight.primaryInk);
     final fieldRect = tester.getRect(find.byType(CatchField));
     final controlRect = tester.getRect(
-      find.byWidgetPredicate((widget) => widget is CatchFieldChoiceControl),
+      find.byWidgetPredicate((widget) => widget is CatchChoiceInput),
     );
     expect(
       controlRect.right,

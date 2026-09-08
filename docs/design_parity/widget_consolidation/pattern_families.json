@@ -303,7 +303,7 @@
           "selectedOption": "Enforce 44px outside the documented 40px app-bar navigation exception.",
           "options": [
             "Enforce 44px outside the documented 40px app-bar navigation exception.",
-            "Allow 36\u201340px wherever the visual circle is compact."
+            "Allow 36–40px wherever the visual circle is compact."
           ]
         },
         {
@@ -2286,6 +2286,55 @@
           "disposition": "canonical",
           "preview": "required",
           "rationale": "Root helper/error/counter output and live error semantics remain outside the drawer and distinct from executable actions."
+        }
+      ]
+    },
+    {
+      "id": "checked-choice-input",
+      "title": "Checked chips and wrapping choice inputs",
+      "intent": "Share selection, rendering and accessibility across disclosure and Form recipes.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.chip",
+      "qualityReference": "CatchChip",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Use the existing disclosure checkmark extent (12 px) for form choices too; form selected chips become 2 px narrower. Preserve 8 px wrap gaps, colors, padding, text, focus, motion and minimum targets.",
+        "Form choices expose checked state and single-choice exclusivity, matching disclosure choices. The optional-label flag is presentation only; clearability is an explicit selection policy."
+      ],
+      "members": [
+        {
+          "symbol": "CatchChip",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One pill renderer with passive, independent selectable, checked choice, activity and removal recipes."
+        },
+        {
+          "symbol": "CatchFieldChoiceChip",
+          "disposition": "unify",
+          "target": "CatchChip",
+          "preview": "not-applicable",
+          "rationale": "State-free semantic wrapper becomes the choice recipe; the canonical renderer owns its single checked semantic node."
+        },
+        {
+          "symbol": "CatchChoiceInput",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One wrapping selection algorithm serves disclosure content and the form validation recipe; labels, keys and typed values remain caller-owned."
+        },
+        {
+          "symbol": "CatchFieldChoiceControl",
+          "disposition": "unify",
+          "target": "CatchChoiceInput",
+          "preview": "not-applicable",
+          "rationale": "Replace boolean cardinality with the chip Mode axis and nullable callbacks for disabled input. Preserve after-commit notification ordering and the owning field close protocol."
+        },
+        {
+          "symbol": "CatchChipField",
+          "disposition": "unify",
+          "target": "CatchChoiceInput",
+          "preview": "not-applicable",
+          "rationale": "The distinct Flutter Form protocol is retained as form; its duplicate Wrap, checkmark and selection algorithm are removed."
         }
       ]
     }

@@ -283,37 +283,34 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH24,
-            CatchChipField<LaunchAccessRole>(
+            CatchChoiceInput<LaunchAccessRole>.form(
               copy: catchFormFieldLabelCopy(context.l10n),
-              itemLabel: (value) => value.label,
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelJoiningAs,
               contract: CatchContractConstraints.accessApplicationDocumentRole,
-              contractValue: (value) => value.name,
               values: LaunchAccessRole.values,
               selected: {draft.role},
-              multiSelect: false,
               onChanged: (next) {
                 LaunchAccessController.submitMutation.reset(ref);
                 ref
                     .read(launchAccessControllerProvider.notifier)
                     .setRole(next.firstOrNull ?? LaunchAccessRole.member);
               },
+              mode: CatchChipMode.single,
+              itemLabelBuilder: (value) => value.label,
+              contractValueBuilder: (value) => value.name,
             ),
             gapH24,
-            CatchChipField<LaunchAccessEventType>(
+            CatchChoiceInput<LaunchAccessEventType>.form(
               copy: catchFormFieldLabelCopy(context.l10n),
-              itemLabel: (value) => value.label,
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelEventsYouWouldShow,
               contract:
                   CatchContractConstraints.accessApplicationDocumentEventTypes,
-              contractValue: (value) => value.name,
               values: LaunchAccessEventType.values,
               selected: draft.eventTypes,
-              multiSelect: true,
               validator: (_) => draft.eventTypes.isEmpty
                   ? context.l10n.launchAccessValidationChooseEventType
                   : null,
@@ -323,20 +320,20 @@ class _LaunchAccessApplicationFormState
                     .read(launchAccessControllerProvider.notifier)
                     .setEventTypes(next);
               },
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              contractValueBuilder: (value) => value.name,
             ),
             gapH24,
-            CatchChipField<LaunchAccessAvailabilityWindow>(
+            CatchChoiceInput<LaunchAccessAvailabilityWindow>.form(
               copy: catchFormFieldLabelCopy(context.l10n),
-              itemLabel: (value) => value.label,
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelBestTimes,
               contract: CatchContractConstraints
                   .accessApplicationDocumentAvailabilityWindows,
-              contractValue: (value) => value.name,
               values: LaunchAccessAvailabilityWindow.values,
               selected: draft.availabilityWindows,
-              multiSelect: true,
               validator: (_) => draft.availabilityWindows.isEmpty
                   ? context.l10n.launchAccessValidationChooseTime
                   : null,
@@ -346,6 +343,9 @@ class _LaunchAccessApplicationFormState
                     .read(launchAccessControllerProvider.notifier)
                     .setAvailabilityWindows(next);
               },
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              contractValueBuilder: (value) => value.name,
             ),
             gapH24,
             CatchField.toggle(

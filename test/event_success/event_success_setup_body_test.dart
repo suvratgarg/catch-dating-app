@@ -319,8 +319,8 @@ void _invokeChoiceInField(
 
 void _invokeChoiceWidget(WidgetTester tester, Finder finder) {
   final widget = tester.widgetList<Widget>(finder).last;
-  if (widget case final CatchFieldChoiceChip chip) {
-    chip.onPressed();
+  if (widget case final CatchChip chip) {
+    chip.onPressed!();
   } else if (widget case final CatchOptionCard card) {
     card.onTap!();
   }
@@ -362,7 +362,8 @@ Finder _section(String title) {
 Finder _choice(String label, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        (widget is CatchFieldChoiceChip &&
+        (widget is CatchChip &&
+            widget.mode != null &&
             widget.label == label &&
             (selected == null || widget.selected == selected)) ||
         (widget is CatchOptionCard &&

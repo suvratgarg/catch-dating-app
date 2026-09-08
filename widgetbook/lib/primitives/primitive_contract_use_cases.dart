@@ -1969,8 +1969,36 @@ Widget catchChipContractStates(BuildContext context) {
       'activity-solid',
       'activity-tappable',
       'truncated',
+      'choice-single',
+      'choice-multiple',
+      'choice-disabled',
     ],
     children: [
+      _StateCard(
+        label: 'checked choices · single / multiple / disabled',
+        child: _InlineWrap(
+          children: [
+            CatchChip.choice(
+              label: 'Single',
+              selected: true,
+              mode: CatchChipMode.single,
+              onPressed: _noop,
+            ),
+            CatchChip.choice(
+              label: 'Multiple',
+              selected: true,
+              mode: CatchChipMode.multiple,
+              onPressed: _noop,
+            ),
+            const CatchChip.choice(
+              label: 'Disabled',
+              selected: false,
+              mode: CatchChipMode.multiple,
+              onPressed: null,
+            ),
+          ],
+        ),
+      ),
       _StateCard(
         label: 'tag',
         description: 'Passive metadata: neutral, tinted, and icon-leading.',
@@ -3090,67 +3118,87 @@ Widget catchFieldDisclosureDrawerContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchFieldChoiceChip,
+  type: CatchChoiceInput,
   path: '[Core primitives]/Inputs',
 )
-Widget catchFieldChoiceChipContractStates(BuildContext context) {
+Widget catchChoiceInputContractStates(BuildContext context) {
+  const values = ['English', 'Hindi', 'Tamil', 'Marathi'];
   return _ContractScreen(
-    title: 'CatchFieldChoiceChip',
-    contractId: 'catch.field.choice_chip',
+    title: 'CatchChoiceInput',
+    contractId: 'catch.chip.field',
     states: const [
+      'single-select',
+      'multi-select',
       'selected',
-      'unselected',
       'disabled',
-      'pressed',
-      'keyboard-focused',
+      'semantic-keys',
+      'allow-empty-selection',
+      'retain-final-selection',
+      'wrapped',
+      'form-validation',
+      'label-free',
     ],
     children: [
       _StateCard(
-        label: 'selected / unselected / disabled',
-        child: _InlineWrap(
-          children: [
-            CatchFieldChoiceChip(
-              label: 'English',
-              selected: true,
-              multi: true,
-              enabled: true,
-              onPressed: _noop,
-            ),
-            CatchFieldChoiceChip(
-              label: 'Hindi',
-              selected: false,
-              multi: true,
-              enabled: true,
-              onPressed: _noop,
-            ),
-            CatchFieldChoiceChip(
-              label: 'Tamil',
-              selected: false,
-              multi: true,
-              enabled: false,
-              onPressed: _noop,
-            ),
-          ],
+        label: 'single · retains selection',
+        child: CatchChoiceInput<String>(
+          values: values,
+          itemLabelBuilder: (value) => value,
+          selected: const {'English'},
+          mode: CatchChipMode.single,
+          onChanged: (_) {},
         ),
       ),
       _StateCard(
-        label: 'pressed · press and hold',
-        child: CatchFieldChoiceChip(
-          label: 'Race prep',
-          selected: false,
-          multi: true,
-          enabled: true,
-          onPressed: _noop,
+        label: 'multiple · may clear',
+        child: CatchChoiceInput<String>(
+          values: values,
+          itemLabelBuilder: (value) => value,
+          selected: const {'English', 'Hindi'},
+          mode: CatchChipMode.multiple,
+          allowEmptySelection: true,
+          chipKeyBuilder: (value) => ValueKey('preview-choice-$value'),
+          onChanged: (_) {},
         ),
       ),
       _StateCard(
-        label: 'keyboard-focused · use Tab',
-        child: CatchFieldChoiceChip(
-          label: 'Social miles',
-          selected: true,
-          multi: true,
-          enabled: true,
-          onPressed: _noop,
+        label: 'disabled',
+        child: CatchChoiceInput<String>(
+          values: values,
+          itemLabelBuilder: (value) => value,
+          selected: const {'Hindi'},
+          mode: CatchChipMode.multiple,
+          onChanged: null,
+        ),
+      ),
+      _StateCard(
+        label: 'form · validation',
+        child: Form(
+          autovalidateMode: AutovalidateMode.always,
+          child: CatchChoiceInput<String>.form(
+            label: 'Languages',
+            copy: catchFormFieldLabelCopy(context.l10n),
+            values: values,
+            itemLabelBuilder: (value) => value,
+            selected: const {},
+            mode: CatchChipMode.multiple,
+            validator: (value) => value == null || value.isEmpty
+                ? 'Choose at least one language'
+                : null,
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'form · label supplied by surrounding content',
+        child: CatchChoiceInput<String>.form(
+          label: null,
+          copy: catchFormFieldLabelCopy(context.l10n),
+          values: values,
+          itemLabelBuilder: (value) => value,
+          selected: const {'English'},
+          mode: CatchChipMode.single,
+          onChanged: (_) {},
         ),
       ),
     ],

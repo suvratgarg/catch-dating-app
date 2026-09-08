@@ -71,18 +71,27 @@ void main() {
       (tester) async {
         await _pumpCreateEventFlow(tester);
         await _openCreateEventFlow(tester);
-        expect(find.byType(CatchFieldChoiceChip), findsNothing);
+        expect(
+          find.byWidgetPredicate(
+            (widget) => widget is CatchChip && widget.mode != null,
+          ),
+          findsNothing,
+        );
         await _openCatchField(tester, 'Activity type');
-        final walking = tester.widget<CatchFieldChoiceChip>(
+        final walking = tester.widget<CatchChip>(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchFieldChoiceChip && widget.label == 'Walking',
+                widget is CatchChip &&
+                widget.mode != null &&
+                widget.label == 'Walking',
           ),
         );
-        final socialRun = tester.widget<CatchFieldChoiceChip>(
+        final socialRun = tester.widget<CatchChip>(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchFieldChoiceChip && widget.label == 'Social run',
+                widget is CatchChip &&
+                widget.mode != null &&
+                widget.label == 'Social run',
           ),
         );
         final context = tester.element(find.text('Activity type'));
@@ -98,14 +107,18 @@ void main() {
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchFieldChoiceChip && widget.label == 'Walking',
+                widget is CatchChip &&
+                widget.mode != null &&
+                widget.label == 'Walking',
           ),
           findsNothing,
         );
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchFieldChoiceChip && widget.label == 'Moderate',
+                widget is CatchChip &&
+                widget.mode != null &&
+                widget.label == 'Moderate',
           ),
           findsOneWidget,
         );
@@ -195,7 +208,12 @@ void main() {
         await _openCreateEventFlow(tester);
 
         expect(find.byType(CatchSection), findsWidgets);
-        expect(find.byType(CatchFieldChoiceChip), findsNothing);
+        expect(
+          find.byWidgetPredicate(
+            (widget) => widget is CatchChip && widget.mode != null,
+          ),
+          findsNothing,
+        );
         await _fillBasicsStep(tester);
         expect(
           find.byWidgetPredicate(
@@ -419,7 +437,8 @@ void main() {
       await _openCatchField(tester, 'Format structure');
       final pairedRotationsChip = find.byWidgetPredicate(
         (widget) =>
-            widget is CatchFieldChoiceChip &&
+            widget is CatchChip &&
+            widget.mode != null &&
             widget.label == EventInteractionModel.pairedRotations.label,
         description: 'paired-rotations CatchField choice',
         skipOffstage: false,

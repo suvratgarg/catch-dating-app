@@ -465,7 +465,7 @@ void main() {
 
       expect(
         tester
-            .widget<CatchFieldChoiceChip>(
+            .widget<CatchChip>(
               _catchFieldChoiceIn(
                 OnboardingFormKeys.gender,
                 Gender.woman.label,
@@ -476,7 +476,7 @@ void main() {
       );
       expect(
         tester
-            .widget<CatchFieldChoiceChip>(
+            .widget<CatchChip>(
               _catchFieldChoiceIn(
                 OnboardingFormKeys.interestedIn,
                 Gender.man.label,
@@ -1152,7 +1152,7 @@ void main() {
         OnboardingFormKeys.runningDistances,
         PreferredDistance.tenK.label,
       );
-      tester.widget<CatchFieldChoiceChip>(tenK).onPressed();
+      tester.widget<CatchChip>(tenK).onPressed!();
       await pumpOnboardingUi(tester);
 
       final reasonsField = find.byKey(OnboardingFormKeys.runningReasons);
@@ -1165,7 +1165,7 @@ void main() {
         OnboardingFormKeys.runningReasons,
         RunReason.mindfulness.label,
       );
-      tester.widget<CatchFieldChoiceChip>(mindfulness).onPressed();
+      tester.widget<CatchChip>(mindfulness).onPressed!();
       await pumpOnboardingUi(tester);
 
       final timesField = find.byKey(OnboardingFormKeys.runningTimes);
@@ -1178,7 +1178,7 @@ void main() {
         OnboardingFormKeys.runningTimes,
         PreferredRunTime.evening.label,
       );
-      tester.widget<CatchFieldChoiceChip>(evening).onPressed();
+      tester.widget<CatchChip>(evening).onPressed!();
       await pumpOnboardingUi(tester);
 
       await tester.tap(
@@ -1302,7 +1302,8 @@ Finder _catchFieldChoiceIn(Key fieldKey, String label) {
   return find.descendant(
     of: find.byKey(fieldKey),
     matching: find.byWidgetPredicate(
-      (widget) => widget is CatchFieldChoiceChip && widget.label == label,
+      (widget) =>
+          widget is CatchChip && widget.mode != null && widget.label == label,
     ),
   );
 }

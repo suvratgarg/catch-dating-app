@@ -25002,7 +25002,7 @@
               "submit_application",
               "accessibility"
             ],
-            "migration": "Keep the form on shared CatchField and CatchChipField primitives; do not reintroduce a client-only launch gate or local snapshot authority."
+            "migration": "Keep the form on shared CatchField and CatchChoiceInput.form primitives; do not reintroduce a client-only launch gate or local snapshot authority."
           }
         ]
       },

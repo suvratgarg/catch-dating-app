@@ -9,7 +9,7 @@ const DEFAULT_OUTPUT =
   "build/reports/flutter_form_contract_inventory.json";
 const EDITABLE_SYMBOLS = new Set([
   "choices",
-  "chipField",
+  "choiceInputForm",
   "control",
   "input",
   "inputActions",
@@ -85,8 +85,8 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
       symbol: (match) => match[1],
     },
     {
-      expression: /CatchChipField(?:<[^>]+>)?\s*\(/g,
-      symbol: () => "chipField",
+      expression: /CatchChoiceInput(?:<[^>]+>)?\.form\s*\(/g,
+      symbol: () => "choiceInputForm",
     },
     {
       expression: /CatchOptionGroup(?:<[^>]+>)?\s*\(/g,

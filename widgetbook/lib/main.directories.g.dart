@@ -1756,12 +1756,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Selection',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchChipField',
+            name: 'CatchChoiceInput',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchChipFieldCatalogStates,
+                    .catchChoiceInputFormCatalogStates,
               ),
             ],
           ),
@@ -2811,6 +2811,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Inputs',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchChoiceInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchChoiceInputContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchCodeCaretIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2884,17 +2895,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchFieldActionBarContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldChoiceChip',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldChoiceChipContractStates,
               ),
             ],
           ),
@@ -10308,17 +10308,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Inline Editors',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'CatchField',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Canonical collapsed choice states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileChipPlaceholderStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchFieldChoiceChip',
+                name: 'CatchChip',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical single-choice chip states',
@@ -10328,7 +10318,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CatchFieldChoiceControl',
+                name: 'CatchChoiceInput',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical choice option states',
@@ -10339,6 +10329,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Canonical wrapping choice control states',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .profileMultiChipValueStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchField',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Canonical collapsed choice states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileChipPlaceholderStates,
                   ),
                 ],
               ),

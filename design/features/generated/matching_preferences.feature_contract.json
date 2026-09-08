@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
-  "resolvedDigest": "sha256:5461242f186992c98905d37c38ab08dc68c3e06e7d811d8d0cfc21d44861a3e1",
+  "resolvedDigest": "sha256:c05eedf087ee7c10f8ce0801349eea930d46ec6ea09d569985a70929b965af2c",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -829,6 +829,7 @@
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
+                "CatchChip.choice",
                 "CatchChip.activity",
                 "CatchChip.removable"
               ]

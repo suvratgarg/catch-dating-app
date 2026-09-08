@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:c2acfb2b74d04b35c8f3f79eb831f82a356883efe1d60f1121a851ba7950c671",
+  "resolvedDigest": "sha256:02c41526a7fff5c138a0b5aefb21982019c278b8c964a453e04f67b7ad103ddd",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4699,6 +4699,7 @@
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
+                "CatchChip.choice",
                 "CatchChip.activity",
                 "CatchChip.removable"
               ]

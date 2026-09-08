@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:8cc9991f88e7e5d478694a02947b3d75a095ecd24b35fb58685f0d2415add04a",
+  "resolvedDigest": "sha256:2c13b6b6b79dc8602a93555e421c08a096f430f2d5651ee7d52a05304328a9a7",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6130,6 +6130,7 @@
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
+                "CatchChip.choice",
                 "CatchChip.activity",
                 "CatchChip.removable"
               ]

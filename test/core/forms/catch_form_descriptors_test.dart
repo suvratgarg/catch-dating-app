@@ -75,7 +75,14 @@ void main() {
     pendingSave.complete(true);
     await tester.pump();
     await _pumpFieldMotion(tester);
-    expect(find.byType(CatchFieldChoiceChip).hitTestable(), findsNothing);
+    expect(
+      find
+          .byWidgetPredicate(
+            (widget) => widget is CatchChip && widget.mode != null,
+          )
+          .hitTestable(),
+      findsNothing,
+    );
 
     await tester.tap(find.text('Custom'));
     await _pumpFieldMotion(tester);

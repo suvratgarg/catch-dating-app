@@ -12,7 +12,7 @@
   "legacySymbols": [
     "CatchFormFieldLabel",
     "CatchSelectChip",
-    "CatchChipField",
+    "CatchChoiceInput.form",
     "CatchNumberStepper",
     "HostPickerTile",
     "MapPinTile"
@@ -265,7 +265,7 @@
         {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "LaunchAccessApplicationForm"}
       ],
       "anchors": [
-        {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchChipField", "expected": 3},
+        {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchChoiceInput.form", "expected": 3},
         {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchField.select", "expected": 1},
         {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchField.toggle", "expected": 1},
         {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchField.input", "expected": 4}

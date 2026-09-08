@@ -527,7 +527,10 @@ void main() {
       find.byKey(CreateEventFormKeys.distance, skipOffstage: false),
     );
     expect(
-      find.byType(CatchFieldChoiceChip, skipOffstage: false),
+      find.byWidgetPredicate(
+        (widget) => widget is CatchChip && widget.mode != null,
+        skipOffstage: false,
+      ),
       findsWidgets,
     );
     expect(
@@ -545,7 +548,8 @@ void main() {
     await pumpFeatureUi(tester);
     final fastPace = find.byWidgetPredicate(
       (widget) =>
-          widget is CatchFieldChoiceChip &&
+          widget is CatchChip &&
+          widget.mode != null &&
           widget.label == PaceLevel.fast.label,
     );
     await _scrollToFinder(tester, fastPace);

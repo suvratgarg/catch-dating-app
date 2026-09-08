@@ -25,13 +25,11 @@ void main() {
           Form(
             key: form,
             child: StatefulBuilder(
-              builder: (context, setState) => CatchChipField<int>(
+              builder: (context, setState) => CatchChoiceInput<int>.form(
                 label: 'Places',
                 copy: _copy('facultatif'),
-                itemLabel: (value) => '$value places',
                 values: const [1, 2],
                 selected: selected,
-                multiSelect: true,
                 isOptional: true,
                 chipKeyBuilder: (value) => ValueKey(value),
                 onChanged: (next) => setState(() => selected = next),
@@ -39,6 +37,9 @@ void main() {
                   validated = value;
                   return null;
                 },
+                mode: CatchChipMode.multiple,
+                itemLabelBuilder: (value) => '$value places',
+                allowEmptySelection: true,
               ),
             ),
           ),
@@ -67,22 +68,23 @@ void main() {
         StatefulBuilder(
           builder: (context, setState) {
             rebuild = setState;
-            return CatchChipField<int>(
+            return CatchChoiceInput<int>.form(
               label: 'Places',
               copy: _copy(french ? 'facultatif' : 'optional'),
-              itemLabel: (value) => french ? 'Choix $value' : 'Choice $value',
               contract: const CatchContractFieldConstraints(
                 path: 'test.choice',
                 valueTypes: ['string'],
                 enumValues: ['value_1', 'value_2'],
               ),
-              contractValue: (value) => 'value_$value',
               values: const [1, 2, 3],
               selected: selected,
-              multiSelect: false,
               isOptional: true,
-              allowEmptySingleSelection: true,
               onChanged: (next) => setState(() => selected = next),
+              mode: CatchChipMode.single,
+              itemLabelBuilder: (value) =>
+                  french ? 'Choix $value' : 'Choice $value',
+              contractValueBuilder: (value) => 'value_$value',
+              allowEmptySelection: true,
             );
           },
         ),

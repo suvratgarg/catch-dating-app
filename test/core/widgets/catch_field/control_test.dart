@@ -742,8 +742,8 @@ void main() {
           ),
         ),
       );
-      final lockedChoice = tester.widget<CatchFieldChoiceChip>(
-        find.widgetWithText(CatchFieldChoiceChip, 'Run'),
+      final lockedChoice = tester.widget<CatchChip>(
+        find.widgetWithText(CatchChip, 'Run'),
       );
       expect(lockedChoice.enabled, isFalse);
       expect(reports, 1);

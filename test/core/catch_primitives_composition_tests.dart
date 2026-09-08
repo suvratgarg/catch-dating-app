@@ -394,7 +394,7 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(tapped, isTrue);
   });
 
-  testWidgets('CatchChipField single select keeps a selected chip selected', (
+  testWidgets('CatchChoiceInput single select keeps a selected chip selected', (
     tester,
   ) async {
     Set<CityOption> selected = {cityOptionByName('indore')!};
@@ -402,14 +402,14 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchChipField<CityOption>(
+          builder: (context, setState) => CatchChoiceInput<CityOption>.form(
             copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-            itemLabel: (value) => value.label,
             label: 'City',
             values: defaultCityOptions,
             selected: selected,
-            multiSelect: false,
             onChanged: (next) => setState(() => selected = next),
+            mode: CatchChipMode.single,
+            itemLabelBuilder: (value) => value.label,
           ),
         ),
       ),
@@ -422,23 +422,23 @@ void _registerCatchPrimitivesCompositionTests() {
   });
 
   testWidgets(
-    'CatchChipField optional single select clears a selected chip when enabled',
+    'CatchChoiceInput optional single select clears a selected chip when enabled',
     (tester) async {
       Set<CityOption> selected = {cityOptionByName('indore')!};
 
       await tester.pumpWidget(
         _wrap(
           StatefulBuilder(
-            builder: (context, setState) => CatchChipField<CityOption>(
+            builder: (context, setState) => CatchChoiceInput<CityOption>.form(
               copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-              itemLabel: (value) => value.label,
               label: 'City',
               values: defaultCityOptions,
               selected: selected,
-              multiSelect: false,
               isOptional: true,
-              allowEmptySingleSelection: true,
               onChanged: (next) => setState(() => selected = next),
+              mode: CatchChipMode.single,
+              itemLabelBuilder: (value) => value.label,
+              allowEmptySelection: true,
             ),
           ),
         ),
@@ -452,18 +452,18 @@ void _registerCatchPrimitivesCompositionTests() {
   );
 
   testWidgets(
-    'CatchChipField single select keeps chips inactive when selected is empty',
+    'CatchChoiceInput single select keeps chips inactive when selected is empty',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          CatchChipField<CityOption>(
+          CatchChoiceInput<CityOption>.form(
             copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-            itemLabel: (value) => value.label,
             label: 'City',
             values: defaultCityOptions,
             selected: const {},
-            multiSelect: false,
             onChanged: (_) {},
+            mode: CatchChipMode.single,
+            itemLabelBuilder: (value) => value.label,
           ),
         ),
       );
@@ -476,61 +476,62 @@ void _registerCatchPrimitivesCompositionTests() {
     },
   );
 
-  testWidgets('CatchChipField multi select marks selected chips with a check', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        CatchChipField<CityOption>(
-          copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-          itemLabel: (value) => value.label,
-          label: 'Cities',
-          values: defaultCityOptions.take(2).toList(),
-          selected: {cityOptionByName('mumbai')!},
-          multiSelect: true,
-          onChanged: (_) {},
+  testWidgets(
+    'CatchChoiceInput multi select marks selected chips with a check',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          CatchChoiceInput<CityOption>.form(
+            copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+            label: 'Cities',
+            values: defaultCityOptions.take(2).toList(),
+            selected: {cityOptionByName('mumbai')!},
+            onChanged: (_) {},
+            mode: CatchChipMode.multiple,
+            itemLabelBuilder: (value) => value.label,
+          ),
         ),
-      ),
-    );
+      );
 
-    final selectedChip = find.widgetWithText(CatchChip, cityLabel('mumbai'));
-    final unselectedChip = find.widgetWithText(CatchChip, cityLabel('delhi'));
+      final selectedChip = find.widgetWithText(CatchChip, cityLabel('mumbai'));
+      final unselectedChip = find.widgetWithText(CatchChip, cityLabel('delhi'));
 
-    expect(_chipSelected(tester, selectedChip), isTrue);
-    expect(
-      find.descendant(
-        of: selectedChip,
-        matching: find.byIcon(CatchIcons.checkRounded),
-      ),
-      findsOneWidget,
-    );
-    expect(_chipSelected(tester, unselectedChip), isFalse);
-    expect(
-      find.descendant(
-        of: unselectedChip,
-        matching: find.byIcon(CatchIcons.checkRounded),
-      ),
-      findsNothing,
-    );
-    expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
-  });
+      expect(_chipSelected(tester, selectedChip), isTrue);
+      expect(
+        find.descendant(
+          of: selectedChip,
+          matching: find.byIcon(CatchIcons.checkRounded),
+        ),
+        findsOneWidget,
+      );
+      expect(_chipSelected(tester, unselectedChip), isFalse);
+      expect(
+        find.descendant(
+          of: unselectedChip,
+          matching: find.byIcon(CatchIcons.checkRounded),
+        ),
+        findsNothing,
+      );
+      expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
+    },
+  );
 
   testWidgets(
-    'CatchChipField required multi select keeps the last chip selected',
+    'CatchChoiceInput required multi select keeps the last chip selected',
     (tester) async {
       Set<CityOption> selected = {cityOptionByName('mumbai')!};
 
       await tester.pumpWidget(
         _wrap(
           StatefulBuilder(
-            builder: (context, setState) => CatchChipField<CityOption>(
+            builder: (context, setState) => CatchChoiceInput<CityOption>.form(
               copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-              itemLabel: (value) => value.label,
               label: 'Cities',
               values: defaultCityOptions.take(2).toList(),
               selected: selected,
-              multiSelect: true,
               onChanged: (next) => setState(() => selected = next),
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
             ),
           ),
         ),

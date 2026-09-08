@@ -28,13 +28,12 @@ void main() {
       semanticLabel: 'Go',
       onChanged: activate == null ? null : (_) => activate(),
     ),
-    'field choice': (activate) => CatchFieldChoiceChip(
+    'field choice': (activate) => CatchChip.choice(
       key: _controlKey,
       label: 'Go',
       selected: false,
-      multi: false,
-      enabled: activate != null,
-      onPressed: () => activate?.call(),
+      onPressed: activate,
+      mode: CatchChipMode.single,
     ),
     'field repeat': (activate) => CatchStepperRepeatButton(
       key: _controlKey,

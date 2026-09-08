@@ -27,14 +27,13 @@ void main() {
                           autoClose: autoClose,
                           onChanged: (value) => events.add(value),
                         )
-                      : CatchFieldChoiceControl<String>(
+                      : CatchChoiceInput<String>(
                           values: const ['Morning', 'Evening'],
-                          itemLabel: (value) => value,
                           selected: const {'Morning'},
-                          multi: false,
                           autoClose: autoClose,
-                          onSelectionChanged: (values) =>
-                              events.add(values.single),
+                          mode: CatchChipMode.single,
+                          itemLabelBuilder: (value) => value,
+                          onChanged: (values) => events.add(values.single),
                         ),
                 ),
               ),
@@ -62,13 +61,13 @@ void main() {
               notifications++;
               return true;
             },
-            child: CatchFieldChoiceControl<String>(
+            child: CatchChoiceInput<String>(
               values: const ['Morning', 'Evening'],
-              itemLabel: (value) => value,
               selected: const {'Morning'},
-              multi: true,
               autoClose: true,
-              onSelectionChanged: (values) => selection = values,
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value,
+              onChanged: (values) => selection = values,
             ),
           ),
         ),

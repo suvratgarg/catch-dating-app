@@ -417,9 +417,7 @@ void _registerProfileEditingPromptsTests() {
     await tester.tap(_catchChip(Language.hindi.label));
     await _pumpProfileSheet(tester);
     expect(
-      tester
-          .widget<CatchFieldChoiceChip>(_catchChip(Language.hindi.label))
-          .selected,
+      tester.widget<CatchChip>(_catchChip(Language.hindi.label)).selected,
       isTrue,
     );
 
@@ -427,9 +425,7 @@ void _registerProfileEditingPromptsTests() {
     await _pumpProfileSheet(tester);
 
     expect(
-      tester
-          .widget<CatchFieldChoiceChip>(_catchChip(Language.hindi.label))
-          .selected,
+      tester.widget<CatchChip>(_catchChip(Language.hindi.label)).selected,
       isTrue,
     );
   });

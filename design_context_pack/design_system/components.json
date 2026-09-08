@@ -1098,6 +1098,7 @@
         "constructors": [
           "CatchChip.tag",
           "CatchChip.selectable",
+          "CatchChip.choice",
           "CatchChip.activity",
           "CatchChip.removable"
         ]
@@ -1125,7 +1126,7 @@
             "type": "string",
             "required": false,
             "dartType": "String?",
-            "notes": "Required by tag, selectable, and removable; optional override for activity."
+            "notes": "Required by tag, selectable, choice, and removable; optional override for activity."
           },
           {
             "name": "data",
@@ -1209,6 +1210,24 @@
             "type": "string",
             "required": false,
             "dartType": "String?"
+          },
+          {
+            "name": "mode",
+            "type": "enum",
+            "dartType": "CatchChipMode?",
+            "required": false,
+            "values": [
+              "single",
+              "multiple"
+            ],
+            "notes": "Required by choice; checked semantics include exclusivity only for single choice."
+          },
+          {
+            "name": "onPressed",
+            "type": "callback",
+            "dartType": "VoidCallback?",
+            "required": false,
+            "notes": "Required nullable action for choice; null disables both pointer and semantic activation."
           }
         ],
         "states": [
@@ -1223,7 +1242,10 @@
           "activity-soft",
           "activity-solid",
           "activity-tappable",
-          "truncated"
+          "truncated",
+          "choice-single",
+          "choice-multiple",
+          "choice-disabled"
         ],
         "slots": [
           {
@@ -1262,15 +1284,20 @@
         "members": [
           {
             "id": "catch.chip.field",
-            "symbol": "CatchChipField",
-            "file": "packages/catch_ui/lib/src/components/catch_chip_field.dart",
-            "summary": "Form-field wrapper for single- and multi-select chip groups with caller-resolved item labels and optional-field copy.",
+            "symbol": "CatchChoiceInput",
+            "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
+            "summary": "Single renderer and selection policy for wrapping checked choices. The form recipe adds schema filtering, localized labels and Flutter Form validation; disclosure callers retain save and close ownership.",
             "states": [
               "single-select",
               "multi-select",
               "selected",
               "disabled",
-              "semantic-keys"
+              "semantic-keys",
+              "allow-empty-selection",
+              "retain-final-selection",
+              "wrapped",
+              "form-validation",
+              "label-free"
             ],
             "governance": {
               "conceptRole": "member",
@@ -1278,6 +1305,16 @@
               "parentConceptId": "catch.chip",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.chip"
+            },
+            "level": "L3",
+            "roleNoun": "Input",
+            "naming": {
+              "useCase": "Choice",
+              "comparedWith": [
+                "catch.chip",
+                "catch.code_input"
+              ],
+              "reason": "Selects existing typed values through checked chips; code input accepts typed text. This chip-family member owns group selection and an optional form recipe, while CatchField owns disclosure and saving."
             }
           }
         ],
@@ -1298,7 +1335,7 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Choose tag, selectable, activity, or removable by semantic intent; do not add boolean/callback combinations to an unrestricted constructor.",
+          "Choose tag, selectable, choice, activity, or removable by semantic intent; choices share one renderer and retain checked versus independent selected semantics.",
           "Selected choices use a solid fill, inverse ink, subtle selected shadow, and press-only scale. Selection state is always parent-owned.",
           "Use badges for compact status metadata, compact controls for floating actions, identity switchers for current-context menus, and progress cues for sequence state.",
           "Use OptionCard when each choice needs explanatory copy.",
@@ -1322,6 +1359,11 @@
         "flutter": "CatchChip",
         "website": "ChoiceChip",
         "webui": "ToggleButtonControl"
+      },
+      "level": "L3",
+      "roleNoun": "Chip",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -3766,26 +3808,6 @@
             }
           },
           {
-            "id": "catch.field.choice_control",
-            "symbol": "CatchFieldChoiceControl",
-            "summary": "Field-owned wrapping single- or multi-choice control with staged selection and canonical commit actions.",
-            "states": [
-              "single",
-              "multi",
-              "allow-empty-selection",
-              "retain-final-selection",
-              "wrapped"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_choice_control.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
             "id": "catch.field.option_card_control",
             "symbol": "CatchFieldOptionCardControl",
             "summary": "Field-owned vertical single-select control that composes one complete CatchOptionCard title-and-description target per explanatory option.",
@@ -3795,26 +3817,6 @@
               "disabled"
             ],
             "file": "packages/catch_ui/lib/src/components/catch_field_option_card_control.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
-            "id": "catch.field.choice_chip",
-            "symbol": "CatchFieldChoiceChip",
-            "summary": "Field-semantic adapter over CatchChip.selectable for both accent and ordinary choices. Uses natural-height wrapping labelL typography and shared selected/check/hover/press/focus chrome, platform targets, checked semantics, single-choice exclusivity, and Enter/Space activation.",
-            "states": [
-              "selected",
-              "unselected",
-              "disabled",
-              "pressed",
-              "keyboard-focused"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_choice_chip.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
