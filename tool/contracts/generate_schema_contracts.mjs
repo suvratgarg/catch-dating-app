@@ -367,16 +367,19 @@ const schemaSpecs = [
     name: "GetEventWhatsappPreferenceCallablePayload",
     source: "callables/get_event_whatsapp_preference_payload.schema.json",
     typeOutput: "functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/getEventWhatsappPreferenceCallablePayload.ts"],
   },
   {
     name: "SetEventWhatsappPreferenceCallablePayload",
     source: "callables/set_event_whatsapp_preference_payload.schema.json",
     typeOutput: "functions/src/shared/generated/setEventWhatsappPreferenceCallablePayload.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/setEventWhatsappPreferenceCallablePayload.ts"],
   },
   {
     name: "EventWhatsappPreferenceCallableResponse",
     source: "callable_responses/event_whatsapp_preference_response.schema.json",
     typeOutput: "functions/src/shared/generated/eventWhatsappPreferenceCallableResponse.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/eventWhatsappPreferenceCallableResponse.ts"],
   },
   {
     name: "EventWhatsappPolicyDocument",

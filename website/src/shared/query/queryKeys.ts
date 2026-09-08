@@ -9,10 +9,10 @@ export const websiteQueryKeys = {
     requests: () => [...websiteQueryKeys.claims.all(), "requests"] as const,
   },
   eventMessaging: {
-    rcsOptions: (instance: string, identity: string) =>
-      [...websiteQueryKeys.all, "event-messaging", "rcs-options", instance, identity] as const,
-    rcsPreference: (instance: string, identity: string) =>
-      [...websiteQueryKeys.all, "event-messaging", "rcs-preference", instance, identity] as const,
+    senderOptions: (channel: "rcs" | "whatsapp", instance: string, identity: string) =>
+      [...websiteQueryKeys.all, "event-messaging", channel === "rcs" ? "rcs-options" : "whatsapp-options", instance, identity] as const,
+    senderPreference: (channel: "rcs" | "whatsapp", instance: string, identity: string) =>
+      [...websiteQueryKeys.all, "event-messaging", channel === "rcs" ? "rcs-preference" : "whatsapp-preference", instance, identity] as const,
     messageWithdrawal: (instance: string, channel: "sms" | "whatsapp" | "rcs") =>
       [...websiteQueryKeys.all, "event-messaging", "withdrawal", channel, instance] as const,
     smsPreference: (instance: string, identity: string) =>

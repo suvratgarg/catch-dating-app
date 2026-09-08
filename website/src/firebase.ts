@@ -1,3 +1,8 @@
+import type {GetEventWhatsappPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload";
+import type {SetEventWhatsappPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventWhatsappPreferenceCallablePayload";
+import type {EventWhatsappPreferenceCallableResponse} from "../../functions/src/shared/generated/eventWhatsappPreferenceCallableResponse";
+import type {ListEventWhatsappPreferencesCallablePayload} from "../../functions/src/shared/generated/listEventWhatsappPreferencesInput";
+import type {ListEventWhatsappPreferencesCallableResponse} from "../../functions/src/shared/generated/listEventWhatsappPreferencesOutput";
 import type {GetEventRcsPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventRcsPreferenceInput";
 import type {SetEventRcsPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventRcsPreferenceInput";
 import type {EventRcsPreferenceCallableResponse} from "../../functions/src/shared/generated/eventRcsPreferenceOutput";
@@ -1056,4 +1061,19 @@ export async function getEventRcsPreference(payload: GetEventRcsPreferenceCallab
 export async function setEventRcsPreference(payload: SetEventRcsPreferenceCallablePayload): Promise<EventRcsPreferenceCallableResponse> {
   return invokeWebsiteCallable("setEventRcsPreference", payload,
     eventRuntimeFirebaseConfigured, "Event RCS preferences");
+}
+
+export async function listEventWhatsappPreferences(payload: ListEventWhatsappPreferencesCallablePayload): Promise<ListEventWhatsappPreferencesCallableResponse> {
+  return invokeWebsiteCallable("listEventWhatsappPreferences", payload,
+    eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
+}
+
+export async function getEventWhatsappPreference(payload: GetEventWhatsappPreferenceCallablePayload): Promise<EventWhatsappPreferenceCallableResponse> {
+  return invokeWebsiteCallable("getEventWhatsappPreference", payload,
+    eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
+}
+
+export async function setEventWhatsappPreference(payload: SetEventWhatsappPreferenceCallablePayload): Promise<EventWhatsappPreferenceCallableResponse> {
+  return invokeWebsiteCallable("setEventWhatsappPreference", payload,
+    eventRuntimeFirebaseConfigured, "Event WhatsApp preferences");
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: web_surface_architecture
-version: 0.22.0
-updated: 2026-09-08
+version: 0.23.0
+updated: 2026-09-09
 owner: web_platform
 status: active
 ---
@@ -1109,16 +1109,22 @@ Server revision and time keep stale reads from replacing a confirmed choice.
 Sender provisioning, Consumer app preferences, inbound opt-out and activation
 remain separate work. Rehearsal never mounts this live preference controller.
 
-Verified RCS preferences use the same public registration and guest runtime
-entry points with independent consent. The RCS controller discovers the saved
-event sender, displays its identity and the server's consent text, and binds
-writes to the exact reviewed hash and revision. Earlier senders are disclosed
-one at a time for withdrawal only. Discovery stays stable during the page
-session; full preference reads refresh while visible and pause during unresolved
-writes. Sender navigation is disabled until the exact request is confirmed or
-definitively rejected. Closed response validation and auth/event/sender scope
-fences prevent stale or foreign responses from entering private query state.
-These controls do not activate a sender or grant another channel permission.
+Verified RCS and WhatsApp preferences use the same public registration and guest
+runtime entry points with independent consent. Their shared sender preference
+controller handles discovery, auth epochs, navigation, query lifecycle and exact
+retry; typed channel ports own callable parsing and consent evidence. RCS binds
+its reviewed hash and revision. WhatsApp displays the organizer name and business
+number and binds both the sender hash and current STOP-record hash, including
+changes that do not advance the permission revision. Query identities include the
+channel so concurrent cards cannot share private state or pending requests.
+Earlier senders are disclosed one at a time for withdrawal only. Discovery stays
+stable during the page session; full preference reads refresh while visible and
+pause during unresolved writes. Sender navigation is disabled until the exact
+request is confirmed or definitively rejected. Closed response validation and
+auth/event/sender scope fences prevent stale or foreign responses from entering
+private query state. The shared presentation card accepts channel-owned copy and
+availability explanations. These controls do not activate a sender, grant another
+channel permission or mount in rehearsal.
 
 ### No-Download Event Runtime And Invite Landing
 

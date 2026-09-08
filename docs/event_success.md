@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.74.0
-updated: 2026-09-08
+version: 1.75.0
+updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
 ---
@@ -1435,8 +1435,24 @@ selected sender and review its name, displayed sender number, consent text and
 phone suffix before an explicit grant. `setEventWhatsappPreference` binds both
 the displayed sender hash and current STOP-record hash. Sender discovery makes
 no writes and cannot enroll the guest or supply organizer marketing permission.
-The guest opt-in control is the next client step; provider provisioning and live
-activation remain separate work.
+`EventWhatsappPreferencesPanel` now composes that review after verified public
+registration and on the guest venue/live page. It displays the organizer name,
+business number, verified phone suffix and server consent copy. Earlier senders
+appear on demand for withdrawal only. An enabled preference keeps its withdrawal
+action when the sender is unavailable. No offer appears before verified roster
+admission or in rehearsal.
+
+WhatsApp and RCS share the sender-navigation, auth-epoch and exact-retry controller
+and the presentation card. Each has a separate typed port, closed response parser,
+query identity and consent request. WhatsApp stale-click checks compare both sender
+binding and STOP hashes even when the permission revision is unchanged; RCS keeps
+its reviewed hash. A malformed or unknown write outcome freezes navigation and
+new choices until the exact request is retried or definitively rejected. Auth or
+event/attendee changes discard private presentation state and fence delayed reads
+and saves. Discovery remains stable during the page session; selected preference
+reads refresh while visible and pause during unresolved saves. Neither channel
+can authorize the other or grant marketing permission. Provider provisioning and
+live activation remain separate work.
 
 ### RCS authenticated callback boundary
 

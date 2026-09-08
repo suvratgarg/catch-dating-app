@@ -1,3 +1,4 @@
+import {EventWhatsappPreferencesPanel} from "../eventMessaging/EventWhatsappPreferencesPanel";
 import {EventRcsPreferencesPanel} from "../eventMessaging/EventRcsPreferencesPanel";
 import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel";
 import {useEffect, useState} from "react";
@@ -249,6 +250,8 @@ export function EventRuntimePage() {
               <EventSmsPreferencePanel eventId={event.eventId}
                 attendeeId={controller.bootstrap.participant.eventAttendeeId} />
               <EventRcsPreferencesPanel eventId={event.eventId}
+                attendeeId={controller.bootstrap.participant.eventAttendeeId} />
+              <EventWhatsappPreferencesPanel eventId={event.eventId}
                 attendeeId={controller.bootstrap.participant.eventAttendeeId} />
             </> : null}
           <FormStatus status={controller.status} />
@@ -738,6 +741,8 @@ function LiveEventRuntime({
           <EventSmsPreferencePanel eventId={event.eventId}
             attendeeId={controller.bootstrap.participant.eventAttendeeId} />
           <EventRcsPreferencesPanel eventId={event.eventId}
+            attendeeId={controller.bootstrap.participant.eventAttendeeId} />
+          <EventWhatsappPreferencesPanel eventId={event.eventId}
             attendeeId={controller.bootstrap.participant.eventAttendeeId} />
         </> : null}
       <EventRuntimePrivacy>{eventRuntimeCopy.privacyNote}</EventRuntimePrivacy>

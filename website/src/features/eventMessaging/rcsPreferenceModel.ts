@@ -1,3 +1,4 @@
+import {record, keys, integer, string, id, senderPreferenceOptions} from "./senderPreferenceParsing";
 import type {EventRcsPreferenceCallableResponse as Response} from "../../shared/contracts/generated/eventRcsPreferenceOutput";
 import type {ListEventRcsPreferencesCallableResponse as Options} from "../../shared/contracts/generated/listEventRcsPreferencesOutput";
 
@@ -7,18 +8,6 @@ export type RcsPreferenceState = {kind: "hidden" | "loading" | "error"} | {
   kind: "ready"; view: RcsPreferenceView; pending: boolean; uncertain: boolean;
   notice: string; earlier: boolean;
 };
-const record = (v: unknown): v is Record<string, unknown> =>
-  typeof v === "object" && v !== null && !Array.isArray(v);
-const keys = (v: Record<string, unknown>, expected: string) =>
-  Object.keys(v).sort().join(",") === expected;
-const integer = (v: unknown, min = 0): v is number =>
-  typeof v === "number" && Number.isSafeInteger(v) && v >= min;
-const string = (v: unknown, max: number): v is string =>
-  typeof v === "string" && v.length > 0 && v.length <= max;
-const id = (v: unknown): v is string =>
-  typeof v === "string" && /^[A-Za-z0-9][A-Za-z0-9._:-]{0,159}$/.test(v);
-const cursor = (v: unknown): v is string =>
-  typeof v === "string" && /^rcs-permission:[a-f0-9]{64}$/.test(v);
 const preferences = {notSet: true, enabled: true, disabled: true, expired: true} satisfies Record<RcsPreferenceView["preference"], true>;
 const availability = {ready: true, senderUnavailable: true, subscriptionUnavailable: true,
   eventClosed: true, notAdmitted: true, verifyPhone: true} satisfies Record<RcsPreferenceView["availability"], true>;
@@ -62,25 +51,7 @@ export function rcsPreferenceResponse(value: unknown, scope: RcsPreferenceScope,
 
 export function rcsPreferenceOptions(value: unknown,
   scope: Omit<RcsPreferenceScope, "senderId">, after: string | null): Options {
-  if (!record(value) || !keys(value, "attendeeId,configuredSenderId,eventId,nextCursor,previousSenderIds,serverTime") ||
-      !id(value.eventId) || value.eventId !== scope.eventId || !id(value.attendeeId) ||
-      value.attendeeId !== scope.attendeeId || !integer(value.serverTime) ||
-      value.configuredSenderId !== null && !id(value.configuredSenderId) ||
-      !Array.isArray(value.previousSenderIds) || value.previousSenderIds.length > 50 ||
-      !value.previousSenderIds.every(id) ||
-      new Set(value.previousSenderIds).size !== value.previousSenderIds.length ||
-      value.configuredSenderId !== null && value.previousSenderIds.includes(value.configuredSenderId) ||
-      value.nextCursor !== null && (!cursor(value.nextCursor) ||
-        after !== null && value.nextCursor <= after)) throw invalid();
-  return {eventId: value.eventId, attendeeId: value.attendeeId, serverTime: value.serverTime,
-    configuredSenderId: value.configuredSenderId,
-    previousSenderIds: [...value.previousSenderIds], nextCursor: value.nextCursor};
+  return senderPreferenceOptions(value, scope, after, "rcs");
 }
 
-export function newerRcsPreference(previous: Response | undefined, next: Response): Response {
-  if (!previous) return next;
-  const old = previous.view; const fresh = next.view;
-  if ((old.revision ?? 0) > (fresh.revision ?? 0) ||
-      old.revision === fresh.revision && old.serverTime > fresh.serverTime) return previous;
-  return next;
-}
+export {newerSenderPreference as newerRcsPreference} from "./senderPreferencePort";

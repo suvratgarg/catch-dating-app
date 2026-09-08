@@ -1,3 +1,4 @@
+import {EventWhatsappPreferencesPanel} from "../eventMessaging/EventWhatsappPreferencesPanel";
 import {EventRcsPreferencesPanel} from "../eventMessaging/EventRcsPreferencesPanel";
 import {type FormEvent, useEffect, useId, useRef, useState} from "react";
 import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel";
@@ -181,6 +182,7 @@ export function PublicEventRegistration({
         <>
           <EventSmsPreferencePanel {...registeredScope} />
           <EventRcsPreferencesPanel {...registeredScope} />
+          <EventWhatsappPreferencesPanel {...registeredScope} />
         </> : null}
       <EventRegistrationPrivacy>{copy.privacy}</EventRegistrationPrivacy>
     </EventRegistrationForm>

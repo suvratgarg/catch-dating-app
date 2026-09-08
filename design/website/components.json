@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
-  "version": 95,
-  "updated": "2026-09-08",
+  "version": 96,
+  "updated": "2026-09-09",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -3433,6 +3433,94 @@
         "exportName": "Offer"
       },
       "notes": "Verified, sender-specific RCS preference review. Earlier senders are disclosed separately for withdrawal. Exact reviewed consent and uncertain request identity are preserved."
+    },
+    {
+      "id": "event_whatsapp_preferences_panel",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "event_detail_canonical",
+        "event_invite"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventWhatsappPreferencesPanel.tsx",
+      "exportName": "EventWhatsappPreferencesPanel",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "offer",
+          "enabled",
+          "earlier",
+          "unavailable",
+          "uncertain",
+          "loading",
+          "error"
+        ]
+      },
+      "notes": "Verified WhatsApp sender review with the organizer name and business number. Explicit grants bind the displayed sender and current STOP record; earlier senders permit withdrawal only."
+    },
+    {
+      "id": "event_whatsapp_preferences_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "event_detail_canonical",
+        "event_invite"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventWhatsappPreferencesPanel.tsx",
+      "exportName": "EventWhatsappPreferencesCard",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "states": [
+          "offer",
+          "enabled",
+          "earlier",
+          "unavailable",
+          "uncertain",
+          "loading",
+          "error"
+        ],
+        "story": "website/src/stories/EventWhatsappPreferences.stories.tsx",
+        "exportName": "Offer"
+      },
+      "notes": "Verified WhatsApp sender review with the organizer name and business number. Explicit grants bind the displayed sender and current STOP record; earlier senders permit withdrawal only."
+    },
+    {
+      "id": "event_sender_preferences_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "event_detail_canonical",
+        "event_invite"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventSenderPreferencesCard.tsx",
+      "exportName": "EventSenderPreferencesCard",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "states": [
+          "offer",
+          "enabled",
+          "earlier",
+          "unavailable",
+          "uncertain",
+          "loading",
+          "error"
+        ],
+        "story": "website/src/stories/EventWhatsappPreferences.stories.tsx",
+        "exportName": "SharedPreference"
+      },
+      "notes": "Shared sender preference presentation with channel-owned copy and availability. Controllers retain channel-specific authority and grant evidence."
     }
   ]
 }
