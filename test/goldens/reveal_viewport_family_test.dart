@@ -14,24 +14,30 @@ void main() {
           tester,
           'reveal_viewport_family.${direction.name}',
           size: const Size(440, 500),
-          builder: (context) => Padding(
-            padding: const EdgeInsets.all(20),
-            child: Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                for (final progress in [0.0, 0.5, 1.0])
-                  for (final recipe in ['content', 'stationary', 'flight'])
-                    SizedBox(
-                      width: 124,
-                      height: 140,
-                      child: _pose(
-                        context,
-                        recipe,
-                        _SnapshotAnimation(progress, direction),
-                      ),
-                    ),
-              ],
+          // Pin explicit animation poses even though ordinary goldens disable motion.
+          builder: (context) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: false),
+            child: Builder(
+              builder: (context) => Padding(
+                padding: const EdgeInsets.all(20),
+                child: Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    for (final progress in [0.0, 0.5, 1.0])
+                      for (final recipe in ['content', 'stationary', 'flight'])
+                        SizedBox(
+                          width: 124,
+                          height: 140,
+                          child: _pose(
+                            context,
+                            recipe,
+                            _SnapshotAnimation(progress, direction),
+                          ),
+                        ),
+                  ],
+                ),
+              ),
             ),
           ),
         );
