@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.85.0
+version: 1.86.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -115,8 +115,8 @@ The existing legacy `disconnected` actor status is still readable; its prior
 attendance cannot be recovered, and reconnect alone cannot manufacture arrival.
 An explicit arrival action restores that physical fact. Host and guest callable
 projections carry connection state separately, with native attention counts and
-the guest connection notice retaining that distinction. Late-join rehearsal
-commands now use the transaction adapter described below; other assistance
+the guest connection notice retaining that distinction. Late-join and practical-help rehearsal
+commands now use the transaction adapters described below; other assistance
 families still require rehearsal integration.
 
 Scheduled rehearsal behaviors now resolve their guests against the configured
@@ -258,6 +258,28 @@ script before submission. Configure, pause and resume use the same account,
 generation and exact-request retry protections as manual commands. Tests cover
 every schema-declared command, policy and delivery variant, including uncertain
 configuration retries and immutable caller inputs.
+
+Practical help also has a rehearsal lifecycle. Anonymous `askForHelp` actions
+and practical-help message replies create an actor- and clock-bound request in
+`eventRehearsalCases`, in the parent guest transaction. The existing assistance
+control accepts a reviewed `resolveAssistance` command. Live and rehearsal use
+the same handling decision: resolved/declined settle the request under the
+acting manager, while transfer keeps it open and requires a current organizer
+manager. Replayed replies cannot reopen settled requests. Settling one request
+preserves other open requests and never changes attendance. Requests survive
+ordinary event completion and can still be handled, within the existing session
+action limit; reset and expiry delete their rehearsal-only records.
+
+Host bootstrap includes a clock-bound request view, bounded by the 500-action
+session limit, and explicit untracked actor flags from older data. It checks
+current manager access and assignment authority. Guest bootstrap retains only
+the existing help flag, with no Host request or assignment details. Native
+open/closed request types carry rehearsal identity, share the live assignment,
+resolution and decision values, and cannot form a live event command. The
+rehearsal editor accepts only a case from its reviewed bootstrap and preserves
+an uncertain command for exact retry. These data and controller bindings still
+need the claimed Host UI/coach integration. Restricted safety cases retain their
+separate owner; this practical-help path does not create or settle them.
 
 This integrates backend fact assembly, storage, guest effects, automatic
 reevaluation, the guest web reply flow and the native typed command/data and
@@ -443,7 +465,7 @@ message delivery, consent or the restricted safety queue. Check-in, a new guest
 episode, event cancellation and the event end time do not settle an unanswered
 help request. A retried guest reply cannot reopen a settled case. Case records
 and receipts remain server-only. Host Today integration, the actionable runtime
-sheet, rehearsal simulation, audited legacy repair and terminal retention remain
+sheet, audited legacy repair and terminal retention remain
 subsequent work; these callables have not been deployed by this source change.
 
 ### Saved assistance settings

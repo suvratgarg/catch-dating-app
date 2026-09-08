@@ -7,6 +7,8 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -75,6 +77,15 @@ void main() {
       ),
       RehearsalPauseAutomation(actorId: 'actor-01'),
       RehearsalResumeAutomation(actorId: 'actor-01'),
+      RehearsalResolveAssistance(
+        snapshot:
+            EventRehearsalBootstrap.fromCallableData(
+                  practiceBootstrap(helpRequests: practiceHelpRequests()),
+                ).helpRequests!.cases.single
+                as RehearsalOpenHelpCase,
+        actorUid: 'host-1',
+        decision: const AssistanceCaseDecision.resolve(),
+      ),
     ].map((command) => command.kind);
     final sourceKinds = ((definitions['command'] as Map)['oneOf'] as List).map(
       (variant) =>

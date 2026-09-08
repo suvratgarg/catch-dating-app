@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.86.0
+version: 1.87.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -85,6 +85,17 @@ Native configure/pause/resume commands use the existing assistance payload and
 receipt checks. Configuration freezes the reviewed plan and script, including
 through an uncertain exact retry; no schema or live provider change is required
 for these native bindings.
+
+`eventRehearsalCases` is a callable-only collection with correlated open and
+settled handling, reusing the live practical-request handling definitions.
+Case identity includes the rehearsal clock, synthetic actor and originating
+guest action or message response. Creation and resolution share existing parent
+rehearsal transactions and action receipts. The Host-only bounded request view
+preserves the current clock, reviewed source hash and assignment authority;
+old untracked help flags remain explicit. Guest projections omit these records.
+Native readers reject foreign clocks/actors and inconsistent resolution state;
+only a reviewed open rehearsal case can form its typed handling command.
+Rehearsal reset and expiry remove these cases, independently of live cases.
 
 ### Event Assistance Transaction Boundary
 

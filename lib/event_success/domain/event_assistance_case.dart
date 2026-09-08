@@ -10,6 +10,25 @@ enum AssistanceCaseAssignmentAuthority { current, revoked }
 
 sealed class AssistanceCaseAssignment {
   const AssistanceCaseAssignment();
+  factory AssistanceCaseAssignment.fromJson(Object? value) {
+    final map = assistanceObject(value);
+    switch (map['kind']) {
+      case 'unassigned':
+        assistanceObject(map, {'kind'});
+        return const AssistanceCaseUnassigned();
+      case 'assigned':
+        assistanceObject(map, {'kind', 'uid', 'authority'});
+        return AssistanceCaseAssigned._(
+          assistanceId(map['uid']),
+          assistanceEnum(
+            AssistanceCaseAssignmentAuthority.values,
+            map['authority'],
+          ),
+        );
+      default:
+        throw const FormatException('Invalid help request assignment.');
+    }
+  }
 }
 
 final class AssistanceCaseUnassigned extends AssistanceCaseAssignment {
@@ -24,6 +43,15 @@ final class AssistanceCaseAssigned extends AssistanceCaseAssignment {
 
 final class AssistanceCaseResolution {
   const AssistanceCaseResolution._(this.outcome, this.actorUid, this.at);
+  factory AssistanceCaseResolution.fromJson(Object? value) {
+    final map = assistanceObject(value, {'outcome', 'actorUid', 'at'});
+    return AssistanceCaseResolution._(
+      assistanceEnum(AssistanceCaseResolutionOutcome.values, map['outcome']),
+      assistanceId(map['actorUid']),
+      assistanceInteger(map['at']),
+    );
+  }
+
   final AssistanceCaseResolutionOutcome outcome;
   final String actorUid;
   final int at;
@@ -122,23 +150,7 @@ sealed class AssistanceHostCase {
       attendeeId: assistanceId(map['attendeeId']),
     );
     final revision = assistanceInteger(map['revision']);
-    final AssistanceCaseAssignment assigned;
-    switch (assignment['kind']) {
-      case 'unassigned':
-        assistanceObject(assignment, {'kind'});
-        assigned = const AssistanceCaseUnassigned();
-      case 'assigned':
-        assistanceObject(assignment, {'kind', 'uid', 'authority'});
-        assigned = AssistanceCaseAssigned._(
-          assistanceId(assignment['uid']),
-          assistanceEnum(
-            AssistanceCaseAssignmentAuthority.values,
-            assignment['authority'],
-          ),
-        );
-      default:
-        throw const FormatException('Invalid help request assignment.');
-    }
+    final assigned = AssistanceCaseAssignment.fromJson(assignment);
     if (status == AssistanceCaseStatus.open) {
       if (!canChange || map['resolution'] != null) {
         throw const FormatException('Inconsistent open help request.');
@@ -154,19 +166,7 @@ sealed class AssistanceHostCase {
         assignment: assigned,
       );
     }
-    final rawResolution = assistanceObject(map['resolution'], {
-      'outcome',
-      'actorUid',
-      'at',
-    });
-    final resolution = AssistanceCaseResolution._(
-      assistanceEnum(
-        AssistanceCaseResolutionOutcome.values,
-        rawResolution['outcome'],
-      ),
-      assistanceId(rawResolution['actorUid']),
-      assistanceInteger(rawResolution['at']),
-    );
+    final resolution = AssistanceCaseResolution.fromJson(map['resolution']);
     if (canChange ||
         revision == 0 ||
         resolution.at < receivedAt ||

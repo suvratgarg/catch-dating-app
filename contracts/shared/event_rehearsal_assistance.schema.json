@@ -359,6 +359,31 @@
               "$ref": "event_common.schema.json#/definitions/documentId"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resolveAssistance"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "payload": {
+              "$ref": "event_assistance_common.schema.json#/definitions/ResolveAssistanceCommand/properties/payload"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
         }
       ],
       "type": "object"
@@ -750,6 +775,246 @@
               "type": "null"
             }
           ]
+        }
+      }
+    },
+    "helpCase": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "sessionId",
+            "actorId",
+            "clockId",
+            "source",
+            "category",
+            "receivedAt",
+            "status",
+            "handling"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "pattern": "^practice-case:[a-f0-9]{64}$",
+              "x-catch-ownership": "server-only"
+            },
+            "sessionId": {
+              "$ref": "event_common.schema.json#/definitions/documentId",
+              "x-catch-ownership": "server-only"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId",
+              "x-catch-ownership": "server-only"
+            },
+            "clockId": {
+              "type": "string",
+              "pattern": "^clock:[a-f0-9]{64}$",
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "actionId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "guestAction"
+                    },
+                    "actionId": {
+                      "$ref": "event_common.schema.json#/definitions/documentId",
+                      "x-catch-ownership": "server-only"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "messageId",
+                    "responseId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "messageResponse"
+                    },
+                    "messageId": {
+                      "type": "string",
+                      "pattern": "^outbox:[a-f0-9]{64}$"
+                    },
+                    "responseId": {
+                      "$ref": "event_common.schema.json#/definitions/documentId",
+                      "x-catch-ownership": "server-only"
+                    }
+                  }
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "category": {
+              "enum": [
+                "eventLogistics",
+                "accessibility",
+                "other"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "receivedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "x-catch-ownership": "server-only"
+            },
+            "status": {
+              "const": "open",
+              "x-catch-ownership": "server-only"
+            },
+            "handling": {
+              "$ref": "event_assistance_cases.schema.json#/definitions/OpenHandling",
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "sessionId",
+            "actorId",
+            "clockId",
+            "source",
+            "category",
+            "receivedAt",
+            "status",
+            "handling"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "pattern": "^practice-case:[a-f0-9]{64}$",
+              "x-catch-ownership": "server-only"
+            },
+            "sessionId": {
+              "$ref": "event_common.schema.json#/definitions/documentId",
+              "x-catch-ownership": "server-only"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId",
+              "x-catch-ownership": "server-only"
+            },
+            "clockId": {
+              "type": "string",
+              "pattern": "^clock:[a-f0-9]{64}$",
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "actionId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "guestAction"
+                    },
+                    "actionId": {
+                      "$ref": "event_common.schema.json#/definitions/documentId",
+                      "x-catch-ownership": "server-only"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "messageId",
+                    "responseId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "messageResponse"
+                    },
+                    "messageId": {
+                      "type": "string",
+                      "pattern": "^outbox:[a-f0-9]{64}$"
+                    },
+                    "responseId": {
+                      "$ref": "event_common.schema.json#/definitions/documentId",
+                      "x-catch-ownership": "server-only"
+                    }
+                  }
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "category": {
+              "enum": [
+                "eventLogistics",
+                "accessibility",
+                "other"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "receivedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "x-catch-ownership": "server-only"
+            },
+            "status": {
+              "const": "resolved",
+              "x-catch-ownership": "server-only"
+            },
+            "handling": {
+              "$ref": "event_assistance_cases.schema.json#/definitions/ResolvedHandling",
+              "x-catch-ownership": "server-only"
+            }
+          }
+        }
+      ]
+    },
+    "helpRequests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "coverage",
+        "cases",
+        "untrackedActorIds"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "coverage": {
+          "const": "boundedSession"
+        },
+        "cases": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "$ref": "event_assistance_cases.schema.json#/definitions/View"
+          }
+        },
+        "untrackedActorIds": {
+          "type": "array",
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "event_common.schema.json#/definitions/documentId"
+          }
         }
       }
     }

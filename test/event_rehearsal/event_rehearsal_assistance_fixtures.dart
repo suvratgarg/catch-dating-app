@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
@@ -5,6 +7,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_late_join
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
+import 'package:crypto/crypto.dart';
 
 final practiceMessageId = 'outbox:${'a' * 64}';
 
@@ -104,6 +107,7 @@ Map<String, Object?> practiceBootstrap({
   int actionCount = 1,
   List<Map<String, Object?>>? actors,
   List<Map<String, Object?>>? actions,
+  Map<String, Object?>? helpRequests,
 }) => {
   'session': {
     'id': sessionId,
@@ -139,6 +143,7 @@ Map<String, Object?> practiceBootstrap({
   'actions': actions ?? <Map<String, Object?>>[],
   'guestUrl': 'https://catchdates.com/rehearse/public-1',
   'canUseInternalFaults': false,
+  'helpRequests': ?helpRequests,
 };
 EventRehearsalBootstrap practiceSnapshot() =>
     EventRehearsalBootstrap.fromCallableData(practiceBootstrap());
@@ -173,4 +178,27 @@ Map<String, Object?> practiceAutomation({
   ],
   'nextOutcomeIndex': consumed,
   'evaluation': evaluation,
+};
+
+Map<String, Object?> practiceHelpCase({bool settled = false}) => {
+  'caseId': 'practice-case:${'a' * 64}',
+  'revision': settled ? 1 : 0,
+  'sourceHash': 'b' * 64,
+  'availability': 'current',
+  'attendeeId': 'actor-01',
+  'category': 'eventLogistics',
+  'receivedAt': 500,
+  'status': settled ? 'resolved' : 'open',
+  'canChange': !settled,
+  'resolution': settled
+      ? {'outcome': 'resolved', 'actorUid': 'host-1', 'at': 1000}
+      : null,
+  'assignment': {'kind': 'unassigned'},
+};
+Map<String, Object?> practiceHelpRequests({bool settled = false}) => {
+  'clockId':
+      'clock:${sha256.convert(utf8.encode(jsonEncode(['session-1', 0, 1])))}',
+  'coverage': 'boundedSession',
+  'cases': [practiceHelpCase(settled: settled)],
+  'untrackedActorIds': <String>[],
 };

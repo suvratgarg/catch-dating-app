@@ -320,6 +320,20 @@ export interface ControlEventRehearsalCallablePayload {
     | {
         kind: "resumeAutomation";
         actorId: string;
+      }
+    | {
+        kind: "resolveAssistance";
+        actorId: string;
+        payload: {
+          caseId: string;
+          outcome: "resolved" | "declined" | "transferred";
+          /**
+           * Current organizer manager UID receiving a transferred request; otherwise the authenticated resolving manager UID.
+           */
+          owner: string;
+          expectedRevision: number;
+        };
+        expectedSourceHash: string;
       };
   expectedSetupRevision?: number;
 }

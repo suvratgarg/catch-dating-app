@@ -18,6 +18,9 @@ import {configurePracticeAutomation, evaluatePracticeAutomation,
   pausePracticeAutomation, unavailablePracticeAutomation,
   PracticeAutomationResult} from "./assistanceAutomation";
 
+import {preparePracticeHelp, resolvePracticeHelp, PracticeCaseAuthority} from
+  "./assistanceCases";
+
 export type PracticeCommand = NonNullable<
   ControlEventRehearsalCallablePayload["assistance"]>;
 
@@ -91,12 +94,22 @@ export async function applyPracticeAutomations(db: Firestore, tx: Transaction,
 
 /** Called before any writes in the existing Host rehearsal transaction. */
 export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
-  session: Session, actor: Actor, command: PracticeCommand): Promise<Actor> {
+  session: Session, actor: Actor, command: PracticeCommand,
+  authority?: PracticeCaseAuthority): Promise<Actor> {
   if (command.actorId !== actor.actorId ||
       (!(["running", "paused"].includes(session.status)) &&
-        !(command.kind === "receipt" && session.status === "complete"))) {
+        !(["receipt", "resolveAssistance"].includes(command.kind) &&
+          session.status === "complete"))) {
     throw new HttpsError("failed-precondition",
       "Practice command is unavailable.");
+  }
+  if (command.kind === "resolveAssistance") {
+    if (!authority) {
+      throw new HttpsError("permission-denied",
+        "Current Host authority is required.");
+    }
+    return resolvePracticeHelp(db, tx, session, actor, command.payload,
+      command.expectedSourceHash, authority);
   }
   if (command.kind === "pauseAutomation") {
     return pausePracticeAutomation(session, actor);
@@ -184,13 +197,24 @@ export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
     throw new HttpsError("failed-precondition",
       "Unsupported practice response.");
   }
+  if (effect.kind === "requestHelp" && effect.category === "comfortSafety") {
+    throw new HttpsError("failed-precondition",
+      "Restricted help needs its separate rehearsal workflow.");
+  }
   const changedActor = {...actor, assistance: {...practiceState(actor),
     intention: effect.kind === "joinIntent" ? effect.intention :
-      practiceState(actor).intention},
-  helpRequested: actor.helpRequested || effect.kind === "requestHelp"};
+      practiceState(actor).intention}};
+  const help = effect.kind === "requestHelp" &&
+    effect.category !== "comfortSafety" ?
+    await preparePracticeHelp(db, tx, session, changedActor,
+      {kind: "messageResponse", messageId: message.record.messageId,
+        responseId: result.result.response.responseId}, effect.category) :
+    null;
   const messages = history.map((m) => m === message ?
     {...message, record: result.record} : m);
-  const next = evaluatePracticeAutomation(session, changedActor, messages);
+  const next = evaluatePracticeAutomation(session,
+    help?.actor ?? changedActor, messages);
   persistMessages(db, tx, session, next.actor, history, next.messages);
+  help?.commit();
   return next.actor;
 }

@@ -1462,6 +1462,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventRehearsalCases/{caseId} {
+      allow read, write: if false;
+    }
+
     match /eventRehearsalMessages/{messageDocumentId} {
       allow read, write: if false;
     }

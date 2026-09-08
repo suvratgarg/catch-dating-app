@@ -2555,6 +2555,29 @@
       "migrationNotes": [
         "At most one message is created per counted rehearsal action. Reset and expiry delete the bounded synthetic message history. No live outbox document or provider binding is written."
       ]
+    },
+    {
+      "id": "eventRehearsalCases",
+      "path": "eventRehearsalCases/{caseId}",
+      "rulesMatch": "/eventRehearsalCases/{caseId}",
+      "typescriptInterface": "EventRehearsalCaseDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps all dress rehearsal collections callable-only"
+      ],
+      "owner": "event rehearsal callables",
+      "read": "server only; synthetic actor-scoped callable projections",
+      "write": "server only; practical help requests and handling share the parent rehearsal action transaction",
+      "exportedFunctions": [
+        "controlEventRehearsal",
+        "submitEventRehearsalGuestAction",
+        "resetEventRehearsal",
+        "expireEventRehearsals"
+      ],
+      "migrationNotes": [
+        "One case at most per counted guest action. Reset and expiry remove synthetic requests; old untracked help flags remain explicit. No live case or notification is written."
+      ]
     }
   ]
 }

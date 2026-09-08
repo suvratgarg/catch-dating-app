@@ -573,6 +573,82 @@
           }
         }
       ]
+    },
+    "OpenHandling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "assigneeUid",
+        "updatedAt",
+        "resolution"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "assigneeUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "resolution": {
+          "type": "null"
+        }
+      }
+    },
+    "ResolvedHandling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "assigneeUid",
+        "updatedAt",
+        "resolution"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "assigneeUid": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "updatedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "resolution": {
+          "$ref": "event_assistance_cases.schema.json#/definitions/Resolution"
+        }
+      }
     }
   }
 }

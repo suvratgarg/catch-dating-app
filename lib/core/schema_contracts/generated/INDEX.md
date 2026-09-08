@@ -237,6 +237,7 @@ Do not edit it by hand.
 | EventLivePositionDocument | `firestore/event_live_positions.schema.json` | `functions/src/shared/generated/eventLivePositionDocument.ts` |
 | EventSuccessLateArrivalDocument | `firestore/event_success_late_arrivals.schema.json` | `functions/src/shared/generated/eventSuccessLateArrivalDocument.ts` |
 | EventRehearsalDocument | `firestore/event_rehearsals.schema.json` | `functions/src/shared/generated/eventRehearsalDocument.ts` |
+| EventRehearsalCaseDocument | `firestore/event_rehearsal_cases.schema.json` | `functions/src/shared/generated/eventRehearsalCaseDocument.ts` |
 | EventRehearsalMessageDocument | `firestore/event_rehearsal_messages.schema.json` | `functions/src/shared/generated/eventRehearsalMessageDocument.ts` |
 | EventRehearsalActorDocument | `firestore/event_rehearsal_actors.schema.json` | `functions/src/shared/generated/eventRehearsalActorDocument.ts` |
 | EventRehearsalActionDocument | `firestore/event_rehearsal_actions.schema.json` | `functions/src/shared/generated/eventRehearsalActionDocument.ts` |
@@ -890,6 +891,7 @@ Do not edit it by hand.
 | `schemaEventLivePositionDocumentSchema` | EventLivePositionDocument | `firestore/event_live_positions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_live_position_document.g.dart` |
 | `schemaEventSuccessLateArrivalDocumentSchema` | EventSuccessLateArrivalDocument | `firestore/event_success_late_arrivals.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_late_arrival_document.g.dart` |
 | `schemaEventRehearsalDocumentSchema` | EventRehearsalDocument | `firestore/event_rehearsals.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_document.g.dart` |
+| `schemaEventRehearsalCaseDocumentSchema` | EventRehearsalCaseDocument | `firestore/event_rehearsal_cases.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_case_document.g.dart` |
 | `schemaEventRehearsalMessageDocumentSchema` | EventRehearsalMessageDocument | `firestore/event_rehearsal_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_message_document.g.dart` |
 | `schemaEventRehearsalActorDocumentSchema` | EventRehearsalActorDocument | `firestore/event_rehearsal_actors.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_actor_document.g.dart` |
 | `schemaEventRehearsalActionDocumentSchema` | EventRehearsalActionDocument | `firestore/event_rehearsal_actions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_action_document.g.dart` |

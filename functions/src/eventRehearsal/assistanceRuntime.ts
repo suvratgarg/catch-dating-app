@@ -29,7 +29,8 @@ export const rehearsalMessages = "eventRehearsalMessages";
 export const practiceState = (actor: Actor): NonNullable<Actor["assistance"]> =>
   actor.assistance ?? {intention: {kind: "unknown"}, latestMessageId: null};
 
-export function practiceContext(session: Session, actor: Actor) {
+export function practiceContext(session: Session,
+  actor: Pick<Actor, "sessionId">) {
   return {mode: "rehearsal" as const, rehearsalId: actor.sessionId,
     virtualEventId: "practice:" + hash(actor.sessionId),
     clockId: "clock:" + hash([actor.sessionId,

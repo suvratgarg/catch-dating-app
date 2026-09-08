@@ -6,9 +6,11 @@ import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_editor.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_provider.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -74,6 +76,7 @@ void main() {
     int index, {
     int runtimeRevision = 5,
     List<Map<String, Object?>>? actors,
+    Map<String, Object?>? helpRequests,
   }) {
     final write = repository.writes[index];
     write.result.complete(
@@ -82,6 +85,7 @@ void main() {
           runtimeRevision: runtimeRevision,
           actions: [practiceReceipt(write.change)],
           actors: actors,
+          helpRequests: helpRequests,
         ),
       ),
     );
@@ -126,6 +130,45 @@ void main() {
     await pending;
     expect(form(current).phase, RehearsalAssistancePhase.applied);
   });
+
+  test(
+    'help resolution keeps its reviewed case through an uncertain retry',
+    () async {
+      await signIn('host-1');
+      await completeRead(
+        0,
+        data: practiceBootstrap(helpRequests: practiceHelpRequests()),
+      );
+      final current = container.read(query).requireValue;
+      final actions = editor(current);
+      final request =
+          current.snapshot.helpRequests!.cases.single as RehearsalOpenHelpCase;
+      actions.selectHelpResolution(
+        request,
+        const AssistanceCaseDecision.resolve(),
+      );
+      final change = form(current).change!;
+      final pending = actions.submit();
+      final failure = expectLater(pending, throwsA(isA<NetworkException>()));
+      repository.writes.single.result.completeError(
+        const NetworkException('unavailable', 'Offline'),
+      );
+      await failure;
+      actions.selectHelpResolution(
+        request,
+        const AssistanceCaseDecision.decline(),
+      );
+      expect(form(current).change, same(change));
+      final retry = actions.submit();
+      expect(repository.writes.last.change, same(change));
+      confirm(1, helpRequests: practiceHelpRequests(settled: true));
+      expect(
+        (await retry).helpRequests!.cases.single,
+        isA<RehearsalClosedHelpCase>(),
+      );
+      expect(form(current).phase, RehearsalAssistancePhase.applied);
+    },
+  );
 
   test('automation retries keep the exact reviewed plan and script', () async {
     final current = await review();

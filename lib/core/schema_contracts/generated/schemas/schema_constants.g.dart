@@ -233,6 +233,7 @@ export 'event_rcs_withdrawal_grant_document.g.dart';
 export 'event_rehearsal_action_document.g.dart';
 export 'event_rehearsal_actor_document.g.dart';
 export 'event_rehearsal_bootstrap_callable_response.g.dart';
+export 'event_rehearsal_case_document.g.dart';
 export 'event_rehearsal_document.g.dart';
 export 'event_rehearsal_guest_bootstrap_callable_response.g.dart';
 export 'event_rehearsal_guest_view_document.g.dart';

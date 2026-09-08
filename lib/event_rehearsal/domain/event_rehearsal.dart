@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
@@ -444,18 +445,28 @@ class EventRehearsalBootstrap {
     required this.actions,
     required this.guestUrl,
     required this.canUseInternalFaults,
+    this.helpRequests,
   });
 
   factory EventRehearsalBootstrap.fromCallableData(Object? data) {
     final map = _requiredMap(data, 'event rehearsal bootstrap');
+    final session = EventRehearsalSession.fromMap(
+      _requiredMap(map['session'], 'session'),
+    );
+    final actors = _mapList(
+      map['actors'],
+      'actors',
+    ).map(EventRehearsalActor.fromMap).toList(growable: false);
     return EventRehearsalBootstrap(
-      session: EventRehearsalSession.fromMap(
-        _requiredMap(map['session'], 'session'),
-      ),
-      actors: _mapList(
-        map['actors'],
-        'actors',
-      ).map(EventRehearsalActor.fromMap).toList(growable: false),
+      session: session,
+      actors: actors,
+      helpRequests: map['helpRequests'] == null
+          ? null
+          : RehearsalHelpRequests.fromJson(
+              map['helpRequests'],
+              session: session,
+              actors: actors,
+            ),
       actions: _mapList(
         map['actions'],
         'actions',
@@ -470,6 +481,7 @@ class EventRehearsalBootstrap {
   final List<EventRehearsalActionRecord> actions;
   final String guestUrl;
   final bool canUseInternalFaults;
+  final RehearsalHelpRequests? helpRequests;
 
   int get presentCount => actors
       .where(

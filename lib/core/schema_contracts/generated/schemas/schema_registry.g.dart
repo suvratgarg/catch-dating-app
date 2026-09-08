@@ -1142,6 +1142,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventRehearsalDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventRehearsalCaseDocument',
+    source: 'firestore/event_rehearsal_cases.schema.json',
+    schema: schemaEventRehearsalCaseDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventRehearsalMessageDocument',
     source: 'firestore/event_rehearsal_messages.schema.json',
     schema: schemaEventRehearsalMessageDocumentSchema,
@@ -3484,6 +3489,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'EventLivePositionDocument': schemaEventLivePositionDocumentSchema,
   'EventSuccessLateArrivalDocument': schemaEventSuccessLateArrivalDocumentSchema,
   'EventRehearsalDocument': schemaEventRehearsalDocumentSchema,
+  'EventRehearsalCaseDocument': schemaEventRehearsalCaseDocumentSchema,
   'EventRehearsalMessageDocument': schemaEventRehearsalMessageDocumentSchema,
   'EventRehearsalActorDocument': schemaEventRehearsalActorDocumentSchema,
   'EventRehearsalActionDocument': schemaEventRehearsalActionDocumentSchema,
@@ -4135,6 +4141,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/event_live_positions.schema.json': schemaEventLivePositionDocumentSchema,
   'firestore/event_success_late_arrivals.schema.json': schemaEventSuccessLateArrivalDocumentSchema,
   'firestore/event_rehearsals.schema.json': schemaEventRehearsalDocumentSchema,
+  'firestore/event_rehearsal_cases.schema.json': schemaEventRehearsalCaseDocumentSchema,
   'firestore/event_rehearsal_messages.schema.json': schemaEventRehearsalMessageDocumentSchema,
   'firestore/event_rehearsal_actors.schema.json': schemaEventRehearsalActorDocumentSchema,
   'firestore/event_rehearsal_actions.schema.json': schemaEventRehearsalActionDocumentSchema,

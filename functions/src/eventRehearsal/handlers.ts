@@ -111,6 +111,9 @@ import {practiceMessageDocumentId, practiceMessageView, practiceDeliveryView,
   readPracticeMessage,
   rehearsalMessages, PracticeMessage} from "./assistanceRuntime";
 
+import {preparePracticeHelp, practiceHelpProjection, rehearsalCases} from
+  "./assistanceCases";
+
 const sessions = "eventRehearsals";
 const actors = "eventRehearsalActors";
 const actions = "eventRehearsalActions";
@@ -296,7 +299,7 @@ export async function controlEventRehearsalHandler(
         "Rehearsal roster is too large."
       );
     }
-    await requireCurrentHostAuthority(db, tx, session, uid);
+    const organizer = await requireCurrentHostAuthority(db, tx, session, uid);
     if (data.action === "assistance") {
       const command = data.assistance!;
       const target = actorSnaps.docs.find((doc) =>
@@ -312,7 +315,7 @@ export async function controlEventRehearsalHandler(
           "Practice actor scope changed.");
       }
       const next = await applyPracticeHostCommand(db, tx, session, actor,
-        command);
+        command, {actorUid: uid, organizer});
       const now = admin.firestore.Timestamp.now();
       tx.set(target.ref, {...next, updatedAt: now});
       tx.update(sessionRef, {runtimeRevision: session.runtimeRevision + 1,
@@ -795,6 +798,9 @@ export async function submitEventRehearsalGuestActionHandler(
         "Practice actor scope changed.");
     }
     const nextSession = {...session, runtimeRevision: nextRevision};
+    const help = data.action === "askForHelp" ?
+      await preparePracticeHelp(db, tx, nextSession, actor,
+        {kind: "guestAction", actionId: actionRef.id}, "other") : null;
     const nextActor = data.action === "respondToAssistance" ?
       await applyPracticeGuestReply(db, tx, nextSession, actor, {
         messageId: data.messageId!, intentRevision: data.intentRevision!,
@@ -802,7 +808,9 @@ export async function submitEventRehearsalGuestActionHandler(
         actionId: "practice:" + operationContentHash([
           resolved.id, slotId, data.clientActionId])}) :
       (await applyPracticeAutomations(db, tx, nextSession,
-        [applyRehearsalGuestAction(actor, data.action, now)]))[0];
+        [help?.actor ??
+          applyRehearsalGuestAction(actor, data.action, now)]))[0];
+    help?.commit();
     tx.set(actorRef, {...nextActor, lastActionAt: now, updatedAt: now});
     tx.update(sessionRef, {
       runtimeRevision: nextRevision,
@@ -1155,7 +1163,7 @@ function sampleSetup(): RehearsalSetup {
 
 async function requireCurrentHostAuthority(db: Firestore,
   tx: FirebaseFirestore.Transaction, session: EventRehearsalDocument,
-  uid: string): Promise<void> {
+  uid: string): Promise<OrganizerDocument> {
   const snapshot = await tx.get(db.collection("organizers")
     .doc(session.organizerId));
   const organizer = requireDoc<OrganizerDocument>(snapshot,
@@ -1163,6 +1171,7 @@ async function requireCurrentHostAuthority(db: Firestore,
   if (!isOrganizerManager(organizer, uid)) {
     throw new HttpsError("permission-denied", "Host authority changed.");
   }
+  return organizer;
 }
 
 async function requireHostSession(
@@ -1223,8 +1232,11 @@ async function hostProjection(
     await db.getAll(...messageRefs) : [];
   const messageValues = new Map(messageSnaps.map((snap) => [snap.id,
     snap.data()]));
+  const helpRequests = await practiceHelpProjection(db, sessionId, session,
+    actorValues, requireAuth(request));
   const movementSimulation = rehearsalMovementProjection(session);
   return {
+    helpRequests,
     session: {
       id: sessionId,
       organizerId: session.organizerId,
@@ -1575,6 +1587,7 @@ async function deleteSessionChildren(
     deleteBySession(db, actions, sessionId),
     deleteBySession(db, guestViews, sessionId),
     deleteBySession(db, rehearsalMessages, sessionId),
+    deleteBySession(db, rehearsalCases, sessionId),
   ]);
 }
 

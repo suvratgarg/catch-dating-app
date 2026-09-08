@@ -579,4 +579,93 @@ export interface EventRehearsalBootstrapCallableResponse {
   }[];
   guestUrl: string;
   canUseInternalFaults: boolean;
+  helpRequests?: {
+    clockId: string;
+    coverage: "boundedSession";
+    /**
+     * @maxItems 500
+     */
+    cases: (
+      | {
+          caseId: string;
+          revision: number;
+          sourceHash: string;
+          availability: "current";
+          attendeeId: string;
+          category: "eventLogistics" | "accessibility" | "other";
+          receivedAt: number;
+          status: "open";
+          resolution: null;
+          canChange: true;
+          assignment:
+            | {
+                kind: "unassigned";
+              }
+            | {
+                kind: "assigned";
+                uid: string;
+                authority: "current" | "revoked";
+              };
+        }
+      | {
+          caseId: string;
+          revision: number;
+          sourceHash: string;
+          availability: "current";
+          attendeeId: string;
+          category: "eventLogistics" | "accessibility" | "other";
+          receivedAt: number;
+          status: "resolved";
+          resolution: {
+            outcome: "resolved" | "declined";
+            actorUid: string;
+            at: number;
+          };
+          canChange: false;
+          assignment:
+            | {
+                kind: "unassigned";
+              }
+            | {
+                kind: "assigned";
+                uid: string;
+                authority: "current" | "revoked";
+              };
+        }
+      | {
+          caseId: string;
+          revision: number;
+          sourceHash: string;
+          availability: "sourceChanged";
+          attendeeId: null;
+          category: "eventLogistics" | "accessibility" | "other";
+          receivedAt: number;
+          status: "open" | "resolved";
+          resolution: null;
+          canChange: false;
+          assignment: {
+            kind: "unavailable";
+          };
+        }
+      | {
+          caseId: string;
+          revision: null;
+          sourceHash: string;
+          availability: "legacy";
+          attendeeId: null;
+          category: "eventLogistics" | "accessibility" | "other";
+          receivedAt: number;
+          status: "open" | "resolved";
+          resolution: null;
+          canChange: false;
+          assignment: {
+            kind: "unavailable";
+          };
+        }
+    )[];
+    /**
+     * @maxItems 50
+     */
+    untrackedActorIds: string[];
+  };
 }

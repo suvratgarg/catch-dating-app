@@ -3,6 +3,8 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistan
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_outcome.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
 export 'event_rehearsal_delivery_outcome.dart';
@@ -68,6 +70,41 @@ final class RehearsalResumeAutomation extends RehearsalAssistanceCommand {
   Map<String, Object?> toJson() => {'kind': kind, 'actorId': actorId};
 }
 
+final class RehearsalResolveAssistance extends RehearsalAssistanceCommand {
+  RehearsalResolveAssistance({
+    required this.snapshot,
+    required this.actorUid,
+    required this.decision,
+  }) : super(snapshot.actorId) {
+    assistanceId(actorUid);
+    assistanceInteger(snapshot.revision + 1);
+  }
+  final RehearsalOpenHelpCase snapshot;
+  final String actorUid;
+  final AssistanceCaseDecision decision;
+  @override
+  String get kind => 'resolveAssistance';
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': kind,
+    'actorId': actorId,
+    'expectedSourceHash': snapshot.sourceHash,
+    'payload': {
+      'caseId': snapshot.caseId,
+      'expectedRevision': snapshot.revision,
+      'outcome': switch (decision) {
+        AssistanceCaseResolve() => 'resolved',
+        AssistanceCaseDecline() => 'declined',
+        AssistanceCaseTransfer() => 'transferred',
+      },
+      'owner': switch (decision) {
+        AssistanceCaseTransfer(:final managerUid) => managerUid,
+        AssistanceCaseResolve() || AssistanceCaseDecline() => actorUid,
+      },
+    },
+  };
+}
+
 final class RehearsalDispatchMessage extends RehearsalAssistanceCommand {
   RehearsalDispatchMessage({
     required String actorId,
@@ -127,11 +164,22 @@ final class RehearsalAssistanceChange {
               EventRehearsalStatus.running,
               EventRehearsalStatus.paused,
             ].contains(session.status) ||
-            command is RehearsalRecordReceipt &&
+            (command is RehearsalRecordReceipt ||
+                    command is RehearsalResolveAssistance) &&
                 session.status == EventRehearsalStatus.complete)) {
       throw const FormatException(
         'Refresh this practice review before continuing.',
       );
+    }
+    if (command case RehearsalResolveAssistance(snapshot: final request)) {
+      if (request.sessionId != session.id ||
+          request.setupRevision != session.setupRevision ||
+          !(snapshot.helpRequests?.cases.any((c) => identical(c, request)) ??
+              false)) {
+        throw const FormatException(
+          'Review the current practice help request.',
+        );
+      }
     }
   }
   final EventRehearsalSession session;

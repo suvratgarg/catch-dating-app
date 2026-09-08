@@ -1623,6 +1623,11 @@ export const eventRehearsalActorDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "callable-owned"
+    },
+    "untrackedHelpRequested": {
+      "type": "boolean",
+      "description": "Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.",
+      "x-catch-ownership": "server-only"
     }
   }
 } as const;

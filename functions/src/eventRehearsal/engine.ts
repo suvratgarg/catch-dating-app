@@ -143,6 +143,7 @@ export function buildRehearsalActors(
       optedOut: false,
       keepApartActorIds: [],
       helpRequested: false,
+      untrackedHelpRequested: false,
       promptCompleted: false,
       layoutUnitId: `table-${Math.floor(index / 4) + 1}`,
       confirmedLayoutUnitId: null,

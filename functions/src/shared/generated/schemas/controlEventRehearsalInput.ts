@@ -1348,6 +1348,68 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "maxLength": 180
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resolveAssistance"
+            },
+            "actorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "caseId",
+                "outcome",
+                "owner",
+                "expectedRevision"
+              ],
+              "properties": {
+                "caseId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "outcome": {
+                  "type": "string",
+                  "enum": [
+                    "resolved",
+                    "declined",
+                    "transferred"
+                  ]
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+                  "description": "Current organizer manager UID receiving a transferred request; otherwise the authenticated resolving manager UID."
+                },
+                "expectedRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
         }
       ],
       "type": "object"

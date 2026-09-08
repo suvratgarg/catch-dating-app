@@ -37,6 +37,9 @@
     },
     "canUseInternalFaults": {
       "type": "boolean"
+    },
+    "helpRequests": {
+      "$ref": "../shared/event_rehearsal_assistance.schema.json#/definitions/helpRequests"
     }
   },
   "definitions": {

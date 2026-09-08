@@ -1215,6 +1215,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventRehearsalDocument.ts",
   },
   {
+    name: "EventRehearsalCaseDocument",
+    source: "firestore/event_rehearsal_cases.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalCaseDocument.ts",
+  },
+  {
     name: "EventRehearsalMessageDocument",
     source: "firestore/event_rehearsal_messages.schema.json",
     typeOutput:

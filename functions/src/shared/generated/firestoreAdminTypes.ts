@@ -8132,6 +8132,13 @@ export interface EventRehearsalDocument {
 }
 
 /**
+ * Synthetic practical help requests, retained until rehearsal reset or expiry. No live guest or safety case is written.
+ */
+export interface EventRehearsalCaseDocument {
+  [k: string]: unknown;
+}
+
+/**
  * Synthetic message evidence isolated from the live outbox; deleted with its rehearsal session.
  */
 export interface EventRehearsalMessageDocument {
@@ -8626,6 +8633,10 @@ export interface EventRehearsalActorDocument {
           };
     } | null;
   };
+  /**
+   * Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.
+   */
+  untrackedHelpRequested?: boolean;
 }
 
 /**

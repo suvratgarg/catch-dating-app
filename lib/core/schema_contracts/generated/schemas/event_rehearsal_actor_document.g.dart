@@ -1626,5 +1626,10 @@ const schemaEventRehearsalActorDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'untrackedHelpRequested': <String, Object?>{
+      'type': 'boolean',
+      'description': 'Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.',
+      'x-catch-ownership': 'server-only',
+    },
   },
 };

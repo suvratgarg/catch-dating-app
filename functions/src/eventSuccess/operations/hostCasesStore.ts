@@ -27,6 +27,7 @@ import {validateEventAssistanceCaseReceiptDocument} from
 import {assertCommandContext, assertCommandRole} from "./commands";
 import {guestCollections} from "./guestRecords";
 import {invalidSource} from "./groupProgressSource";
+import {resolvePracticalCaseHandling} from "./practicalCaseHandling";
 import {HostCase, hostCaseBindingHash, parseHostCase, projectHostCase} from
   "./hostCaseRecords";
 
@@ -130,23 +131,11 @@ export class EventAssistanceCasesStore {
       }
       if (payload.expectedRevision !== request.handling.revision ||
           input.expectedSourceHash !== view.sourceHash) throw conflict();
-      if (payload.outcome === "transferred") {
-        if (!isOrganizerManager(organizer, payload.owner)) {
-          throw new HttpsError("failed-precondition",
-            "Choose a current organizer manager for this handoff.");
-        }
-      } else if (payload.owner !== actorUid) {
-        throw new HttpsError("permission-denied",
-          "Record this resolution under your own host identity.");
-      }
-      const handling = {revision: request.handling.revision + 1,
-        assigneeUid: payload.outcome === "transferred" ? payload.owner :
-          request.handling.assigneeUid,
-        updatedAt: now, resolution: payload.outcome === "transferred" ? null :
-          {outcome: payload.outcome, actorUid, at: now}};
-      const updated: HostCase = parseHostCase({...request, handling,
-        status: handling.resolution ? "resolved" : "open"}, request.caseId,
-      context, now);
+      const changed = resolvePracticalCaseHandling(request, payload, actorUid,
+        now, (uid) => isOrganizerManager(organizer, uid));
+      const handling = changed.handling;
+      const updated: HostCase = parseHostCase({...request, ...changed},
+        request.caseId, context, now);
       const savedReceipt = {receiptId, context, caseId: request.caseId,
         caseBindingHash: bindingHash, requestHash, revision: handling.revision,
         actorUid, outcome: payload.outcome, createdAt: now};

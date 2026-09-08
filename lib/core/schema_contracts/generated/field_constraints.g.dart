@@ -29220,6 +29220,11 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['expected', 'present', 'late', 'noShow', 'departed', 'returned', 'disconnected', 'walkIn', 'ambiguousClaim'],
   );
 
+  static const eventRehearsalActorDocumentUntrackedHelpRequested = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.untrackedHelpRequested',
+    valueTypes: <String>['boolean'],
+  );
+
   static const eventRehearsalActorDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
     path: 'eventRehearsalActorDocument.updatedAt._nanoseconds',
     required: true,
@@ -30015,6 +30020,94 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCases = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.cases',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 500,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsAssignmentKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.assignment.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsAvailability = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.availability',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsCanChange = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.canChange',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsCaseId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.caseId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsCategory = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.category',
+    required: true,
+    enumValues: <String>['eventLogistics', 'accessibility', 'other'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsReceivedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.receivedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.status',
+    required: true,
+    enumValues: <String>['open', 'resolved'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsCoverage = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.coverage',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsUntrackedActorIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.untrackedActorIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsUntrackedActorIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.untrackedActorIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionActionCount = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.actionCount',
     required: true,
@@ -30471,6 +30564,130 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalCaseDocumentActorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.actorId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalCaseDocumentCaseId = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.caseId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^practice-case:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalCaseDocumentCategory = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.category',
+    required: true,
+    enumValues: <String>['eventLogistics', 'accessibility', 'other'],
+  );
+
+  static const eventRehearsalCaseDocumentClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalCaseDocumentHandlingAssigneeUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.handling.assigneeUid',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalCaseDocumentHandlingResolutionActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.handling.resolution.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalCaseDocumentHandlingResolutionAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.handling.resolution.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalCaseDocumentHandlingResolutionOutcome = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.handling.resolution.outcome',
+    required: true,
+    enumValues: <String>['resolved', 'declined'],
+  );
+
+  static const eventRehearsalCaseDocumentHandlingRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.handling.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalCaseDocumentHandlingUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.handling.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalCaseDocumentReceivedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.receivedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalCaseDocumentSessionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.sessionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalCaseDocumentSourceActionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.source.actionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalCaseDocumentSourceKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.source.kind',
+    required: true,
+  );
+
+  static const eventRehearsalCaseDocumentSourceMessageId = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.source.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalCaseDocumentSourceResponseId = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.source.responseId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalCaseDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalCaseDocument.status',
+    required: true,
   );
 
   static const eventRehearsalDocumentActionCount = CatchContractFieldConstraints(
@@ -86791,6 +87008,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActorDocument.promptCompleted': eventRehearsalActorDocumentPromptCompleted,
     'eventRehearsalActorDocument.sessionId': eventRehearsalActorDocumentSessionId,
     'eventRehearsalActorDocument.status': eventRehearsalActorDocumentStatus,
+    'eventRehearsalActorDocument.untrackedHelpRequested': eventRehearsalActorDocumentUntrackedHelpRequested,
     'eventRehearsalActorDocument.updatedAt._nanoseconds': eventRehearsalActorDocumentUpdatedAtNanoseconds,
     'eventRehearsalActorDocument.updatedAt._seconds': eventRehearsalActorDocumentUpdatedAtSeconds,
     'eventRehearsalBootstrapCallableResponse.actions': eventRehearsalBootstrapCallableResponseActions,
@@ -86901,6 +87119,19 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.actors.items.status': eventRehearsalBootstrapCallableResponseActorsItemsStatus,
     'eventRehearsalBootstrapCallableResponse.canUseInternalFaults': eventRehearsalBootstrapCallableResponseCanUseInternalFaults,
     'eventRehearsalBootstrapCallableResponse.guestUrl': eventRehearsalBootstrapCallableResponseGuestUrl,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.cases': eventRehearsalBootstrapCallableResponseHelpRequestsCases,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.assignment.kind': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsAssignmentKind,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.availability': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsAvailability,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.canChange': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsCanChange,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.caseId': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsCaseId,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.category': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsCategory,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.receivedAt': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsReceivedAt,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.sourceHash': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.status': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsStatus,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.clockId': eventRehearsalBootstrapCallableResponseHelpRequestsClockId,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.coverage': eventRehearsalBootstrapCallableResponseHelpRequestsCoverage,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.untrackedActorIds': eventRehearsalBootstrapCallableResponseHelpRequestsUntrackedActorIds,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.untrackedActorIds.items': eventRehearsalBootstrapCallableResponseHelpRequestsUntrackedActorIdsItems,
     'eventRehearsalBootstrapCallableResponse.session.actionCount': eventRehearsalBootstrapCallableResponseSessionActionCount,
     'eventRehearsalBootstrapCallableResponse.session.activeStepIndex': eventRehearsalBootstrapCallableResponseSessionActiveStepIndex,
     'eventRehearsalBootstrapCallableResponse.session.actorCount': eventRehearsalBootstrapCallableResponseSessionActorCount,
@@ -86963,6 +87194,23 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.status': eventRehearsalBootstrapCallableResponseSessionStatus,
     'eventRehearsalBootstrapCallableResponse.session.virtualNowMillis': eventRehearsalBootstrapCallableResponseSessionVirtualNowMillis,
     'eventRehearsalBootstrapCallableResponse.session.virtualStartedAtMillis': eventRehearsalBootstrapCallableResponseSessionVirtualStartedAtMillis,
+    'eventRehearsalCaseDocument.actorId': eventRehearsalCaseDocumentActorId,
+    'eventRehearsalCaseDocument.caseId': eventRehearsalCaseDocumentCaseId,
+    'eventRehearsalCaseDocument.category': eventRehearsalCaseDocumentCategory,
+    'eventRehearsalCaseDocument.clockId': eventRehearsalCaseDocumentClockId,
+    'eventRehearsalCaseDocument.handling.assigneeUid': eventRehearsalCaseDocumentHandlingAssigneeUid,
+    'eventRehearsalCaseDocument.handling.resolution.actorUid': eventRehearsalCaseDocumentHandlingResolutionActorUid,
+    'eventRehearsalCaseDocument.handling.resolution.at': eventRehearsalCaseDocumentHandlingResolutionAt,
+    'eventRehearsalCaseDocument.handling.resolution.outcome': eventRehearsalCaseDocumentHandlingResolutionOutcome,
+    'eventRehearsalCaseDocument.handling.revision': eventRehearsalCaseDocumentHandlingRevision,
+    'eventRehearsalCaseDocument.handling.updatedAt': eventRehearsalCaseDocumentHandlingUpdatedAt,
+    'eventRehearsalCaseDocument.receivedAt': eventRehearsalCaseDocumentReceivedAt,
+    'eventRehearsalCaseDocument.sessionId': eventRehearsalCaseDocumentSessionId,
+    'eventRehearsalCaseDocument.source.actionId': eventRehearsalCaseDocumentSourceActionId,
+    'eventRehearsalCaseDocument.source.kind': eventRehearsalCaseDocumentSourceKind,
+    'eventRehearsalCaseDocument.source.messageId': eventRehearsalCaseDocumentSourceMessageId,
+    'eventRehearsalCaseDocument.source.responseId': eventRehearsalCaseDocumentSourceResponseId,
+    'eventRehearsalCaseDocument.status': eventRehearsalCaseDocumentStatus,
     'eventRehearsalDocument.actionCount': eventRehearsalDocumentActionCount,
     'eventRehearsalDocument.activeStepIndex': eventRehearsalDocumentActiveStepIndex,
     'eventRehearsalDocument.actorCount': eventRehearsalDocumentActorCount,

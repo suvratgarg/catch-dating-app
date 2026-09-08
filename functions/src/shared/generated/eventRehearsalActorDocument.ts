@@ -395,4 +395,8 @@ export interface EventRehearsalActorDocument {
           };
     } | null;
   };
+  /**
+   * Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.
+   */
+  untrackedHelpRequested?: boolean;
 }

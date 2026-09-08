@@ -1351,6 +1351,68 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'actorId',
+            'payload',
+            'expectedSourceHash',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'resolveAssistance',
+            },
+            'actorId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'payload': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'caseId',
+                'outcome',
+                'owner',
+                'expectedRevision',
+              ],
+              'properties': <String, Object?>{
+                'caseId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'outcome': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'resolved',
+                    'declined',
+                    'transferred',
+                  ],
+                },
+                'owner': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  'description': 'Current organizer manager UID receiving a transferred request; otherwise the authenticated resolving manager UID.',
+                },
+                'expectedRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+              },
+            },
+            'expectedSourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+        },
       ],
       'type': 'object',
     },

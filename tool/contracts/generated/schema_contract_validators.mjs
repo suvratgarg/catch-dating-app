@@ -228,6 +228,7 @@ import {
   eventLivePositionDocumentSchema,
   eventSuccessLateArrivalDocumentSchema,
   eventRehearsalDocumentSchema,
+  eventRehearsalCaseDocumentSchema,
   eventRehearsalMessageDocumentSchema,
   eventRehearsalActorDocumentSchema,
   eventRehearsalActionDocumentSchema,
@@ -900,6 +901,7 @@ export const validateEventSuccessPresenceDocument = ajv.compile(eventSuccessPres
 export const validateEventLivePositionDocument = ajv.compile(eventLivePositionDocumentSchema);
 export const validateEventSuccessLateArrivalDocument = ajv.compile(eventSuccessLateArrivalDocumentSchema);
 export const validateEventRehearsalDocument = ajv.compile(eventRehearsalDocumentSchema);
+export const validateEventRehearsalCaseDocument = ajv.compile(eventRehearsalCaseDocumentSchema);
 export const validateEventRehearsalMessageDocument = ajv.compile(eventRehearsalMessageDocumentSchema);
 export const validateEventRehearsalActorDocument = ajv.compile(eventRehearsalActorDocumentSchema);
 export const validateEventRehearsalActionDocument = ajv.compile(eventRehearsalActionDocumentSchema);

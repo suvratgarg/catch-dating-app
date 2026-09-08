@@ -1,11 +1,12 @@
 import 'dart:math';
-
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_provider.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -147,6 +148,17 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
       outcomes: outcomes,
     );
   });
+
+  void selectHelpResolution(
+    RehearsalOpenHelpCase request,
+    AssistanceCaseDecision decision,
+  ) => _select(
+    () => RehearsalResolveAssistance(
+      snapshot: request,
+      actorUid: review.account.uid,
+      decision: decision,
+    ),
+  );
 
   void _select(RehearsalAssistanceCommand? Function() resolve) {
     final form = _form;

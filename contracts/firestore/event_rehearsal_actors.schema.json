@@ -133,6 +133,11 @@
     "assistanceAutomation": {
       "$ref": "../shared/event_rehearsal_assistance.schema.json#/definitions/automation",
       "x-catch-ownership": "callable-owned"
+    },
+    "untrackedHelpRequested": {
+      "type": "boolean",
+      "description": "Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.",
+      "x-catch-ownership": "server-only"
     }
   }
 }
