@@ -283,32 +283,35 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                                 .l10n
                                 .hostsEventDetailsStepVisiblecopySelectAPace
                           : null,
-                      builder: (field) => CatchField<PaceLevel>.choices(
-                        copy: catchFieldCopy(context.l10n),
-                        title: context.l10n.hostsEventDetailsStepLabelPaceLevel,
-                        contract: CatchContractConstraints
-                            .createEventCallablePayloadPace,
-                        contractValue: (value) => value.name,
-                        body: widget.selectedPace?.label,
-                        values: PaceLevel.values,
-                        itemLabel: (pace) => pace.label,
-                        itemAccent: (_) => activity.accent,
-                        selected: widget.selectedPace == null
-                            ? const <PaceLevel>{}
-                            : <PaceLevel>{widget.selectedPace!},
-                        onSelectionChanged: (selection) {
-                          final next = selection.isEmpty
-                              ? null
-                              : selection.single;
-                          widget.onPaceChanged(next);
-                          field.didChange(next);
-                        },
-                        allowEmptySelection: true,
-                        open: _accordion.isExpanded(_paceField),
-                        onOpenChanged: (open) => _setOpen(_paceField, open),
-                        icon: CatchIcons.speedOutlined,
-                        iconColor: activity.accent,
-                        error: field.errorText,
+                      builder: (field) => CatchFieldLanes.single(
+                        child: CatchField<PaceLevel>.choices(
+                          copy: catchFieldCopy(context.l10n),
+                          title:
+                              context.l10n.hostsEventDetailsStepLabelPaceLevel,
+                          contract: CatchContractConstraints
+                              .createEventCallablePayloadPace,
+                          contractValue: (value) => value.name,
+                          body: widget.selectedPace?.label,
+                          values: PaceLevel.values,
+                          itemLabel: (pace) => pace.label,
+                          itemAccent: (_) => activity.accent,
+                          selected: widget.selectedPace == null
+                              ? const <PaceLevel>{}
+                              : <PaceLevel>{widget.selectedPace!},
+                          onSelectionChanged: (selection) {
+                            final next = selection.isEmpty
+                                ? null
+                                : selection.single;
+                            widget.onPaceChanged(next);
+                            field.didChange(next);
+                          },
+                          allowEmptySelection: true,
+                          open: _accordion.isExpanded(_paceField),
+                          onOpenChanged: (open) => _setOpen(_paceField, open),
+                          icon: CatchIcons.speedOutlined,
+                          iconColor: activity.accent,
+                          error: field.errorText,
+                        ),
                       ),
                     ),
                   ],

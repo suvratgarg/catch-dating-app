@@ -25,7 +25,6 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -1412,25 +1411,27 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               currencyCode: state.currencyCode,
             );
             if (priceInMinorUnits == 0) return const SizedBox.shrink();
-            return CatchField<EventCancellationPolicyId>.optionCards(
-              copy: catchFieldCopy(context.l10n),
-              title: context
-                  .l10n
-                  .hostsEditHostedEventScreenLabelCancellationPolicy,
-              contract: CatchContractConstraints
-                  .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId,
-              contractValue: (value) => value.name,
-              values: EventCancellationPolicyId.values
-                  .where((value) => value.isApplicable)
-                  .toList(growable: false),
-              itemTitle: (policyId) => policyFor(policyId).title,
-              itemDescription: (policyId) =>
-                  policyFor(policyId).attendeeSummary,
-              selected: state.cancellationPolicyId.isApplicable
-                  ? state.cancellationPolicyId
-                  : EventCancellationPolicyId.standard,
-              onChanged: onCancellationPolicyChanged,
-              icon: CatchIcons.ruleOutlined,
+            return CatchFieldLanes.single(
+              child: CatchField<EventCancellationPolicyId>.optionCards(
+                copy: catchFieldCopy(context.l10n),
+                title: context
+                    .l10n
+                    .hostsEditHostedEventScreenLabelCancellationPolicy,
+                contract: CatchContractConstraints
+                    .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId,
+                contractValue: (value) => value.name,
+                values: EventCancellationPolicyId.values
+                    .where((value) => value.isApplicable)
+                    .toList(growable: false),
+                itemTitle: (policyId) => policyFor(policyId).title,
+                itemDescription: (policyId) =>
+                    policyFor(policyId).attendeeSummary,
+                selected: state.cancellationPolicyId.isApplicable
+                    ? state.cancellationPolicyId
+                    : EventCancellationPolicyId.standard,
+                onChanged: onCancellationPolicyChanged,
+                icon: CatchIcons.ruleOutlined,
+              ),
             );
           },
         ),

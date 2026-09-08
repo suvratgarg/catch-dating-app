@@ -2146,7 +2146,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   }
 
   bool get _isCatchFieldImplementationPath {
-    return path.endsWith('/lib/core/widgets/catch_field.dart');
+    return path.endsWith(
+      '/packages/catch_ui/lib/src/components/catch_field.dart',
+    );
   }
 
   bool get _isCatchSectionImplementationPath {

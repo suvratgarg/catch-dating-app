@@ -116,42 +116,46 @@ class _ProfileInlineHeightEditorState
         : widget.isAddAffordance
         ? null
         : widget.value;
-    return CatchField.stepper(
-      copy: catchFieldCopy(context.l10n),
-      icon: widget.icon,
-      title: widget.label,
-      contract: widget.contract,
-      body: body,
-      addable: widget.isAddAffordance,
-      tone: widget.isAddAffordance
-          ? CatchFieldTone.primary
-          : CatchFieldTone.normal,
-      open: widget.isExpanded,
-      onOpenChanged: (expanded) {
-        if (isSaving || expanded == widget.isExpanded) return;
-        widget.onTap();
-      },
-      isLoading: isSaving,
-      status: isSaving ? CatchFieldStatus.saving : _status,
-      error: _errorMessage(),
-      value: _heightCm,
-      min: minimumHeightCm,
-      max: maximumHeightCm,
-      formatter: (value) => context.l10n
-          .userProfileInlineEditorHeightBodyHeightcmCm(heightCm: value.toInt()),
-      decreaseSemanticLabel:
-          context.l10n.userProfileInlineEditorHeightTooltipDecreaseHeight,
-      increaseSemanticLabel:
-          context.l10n.userProfileInlineEditorHeightTooltipIncreaseHeight,
-      onChanged: (value) {
-        _savedStatusTimer?.cancel();
-        setState(() {
-          _heightCm = value.toInt();
-          _status = CatchFieldStatus.idle;
-        });
-      },
-      onCancel: _cancel,
-      onSubmit: _submit,
+    return CatchFieldLanes.single(
+      child: CatchField.stepper(
+        copy: catchFieldCopy(context.l10n),
+        icon: widget.icon,
+        title: widget.label,
+        contract: widget.contract,
+        body: body,
+        addable: widget.isAddAffordance,
+        tone: widget.isAddAffordance
+            ? CatchFieldTone.primary
+            : CatchFieldTone.normal,
+        open: widget.isExpanded,
+        onOpenChanged: (expanded) {
+          if (isSaving || expanded == widget.isExpanded) return;
+          widget.onTap();
+        },
+        isLoading: isSaving,
+        status: isSaving ? CatchFieldStatus.saving : _status,
+        error: _errorMessage(),
+        value: _heightCm,
+        min: minimumHeightCm,
+        max: maximumHeightCm,
+        formatter: (value) =>
+            context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
+              heightCm: value.toInt(),
+            ),
+        decreaseSemanticLabel:
+            context.l10n.userProfileInlineEditorHeightTooltipDecreaseHeight,
+        increaseSemanticLabel:
+            context.l10n.userProfileInlineEditorHeightTooltipIncreaseHeight,
+        onChanged: (value) {
+          _savedStatusTimer?.cancel();
+          setState(() {
+            _heightCm = value.toInt();
+            _status = CatchFieldStatus.idle;
+          });
+        },
+        onCancel: _cancel,
+        onSubmit: _submit,
+      ),
     );
   }
 

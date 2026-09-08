@@ -6,7 +6,6 @@ import 'package:catch_dating_app/event_success/data/event_success_repository.dar
 import 'package:catch_dating_app/event_success/domain/event_success_defaults.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_layout.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show
         EventSuccessController,

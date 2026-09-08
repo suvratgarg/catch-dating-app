@@ -16,7 +16,6 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_check_in_qr_payload.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/events/events.dart'
     show attendeeProfilesProvider;
 import 'package:catch_dating_app/events/shared/attendance_sheet_view_model.dart';

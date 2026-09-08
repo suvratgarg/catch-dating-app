@@ -135,53 +135,59 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                   FormField<Set<Gender>>(
                     initialValue: state.selectedGender,
                     validator: state.validateGender,
-                    builder: (field) => CatchField<Gender>.choices(
-                      copy: catchFieldCopy(context.l10n),
-                      key: OnboardingFormKeys.gender,
-                      title: context.l10n.onboardingGenderInterestPageLabelIAmA,
-                      contract: CatchContractConstraints
-                          .onboardingDraftDocumentGender,
-                      contractValue: (gender) => gender.name,
-                      body: _orderedGenderLabels(state.selectedGender),
-                      values: Gender.values,
-                      itemLabel: (gender) => gender.label,
-                      selected: state.selectedGender,
-                      onSelectionChanged: state.requestControlsEnabled
-                          ? (selection) {
-                              callbacks.onGenderChanged(selection);
-                              field.didChange(selection);
-                            }
-                          : null,
-                      enabled: state.requestControlsEnabled,
-                      initiallyOpen: true,
-                      error: field.errorText,
+                    builder: (field) => CatchFieldLanes.single(
+                      child: CatchField<Gender>.choices(
+                        copy: catchFieldCopy(context.l10n),
+                        key: OnboardingFormKeys.gender,
+                        title:
+                            context.l10n.onboardingGenderInterestPageLabelIAmA,
+                        contract: CatchContractConstraints
+                            .onboardingDraftDocumentGender,
+                        contractValue: (gender) => gender.name,
+                        body: _orderedGenderLabels(state.selectedGender),
+                        values: Gender.values,
+                        itemLabel: (gender) => gender.label,
+                        selected: state.selectedGender,
+                        onSelectionChanged: state.requestControlsEnabled
+                            ? (selection) {
+                                callbacks.onGenderChanged(selection);
+                                field.didChange(selection);
+                              }
+                            : null,
+                        enabled: state.requestControlsEnabled,
+                        initiallyOpen: true,
+                        error: field.errorText,
+                      ),
                     ),
                   ),
                   FormField<Set<Gender>>(
                     initialValue: state.interestedIn,
                     validator: state.validateInterestedIn,
-                    builder: (field) => CatchField<Gender>.choices(
-                      copy: catchFieldCopy(context.l10n),
-                      key: OnboardingFormKeys.interestedIn,
-                      title:
-                          context.l10n.onboardingGenderInterestPageLabelShowMe,
-                      contract: CatchContractConstraints
-                          .onboardingDraftDocumentInterestedInGenders,
-                      contractValue: (gender) => gender.name,
-                      body: _orderedGenderLabels(state.interestedIn),
-                      values: Gender.values,
-                      itemLabel: (gender) => gender.label,
-                      selected: state.interestedIn,
-                      onSelectionChanged: state.requestControlsEnabled
-                          ? (selection) {
-                              callbacks.onInterestedInChanged(selection);
-                              field.didChange(selection);
-                            }
-                          : null,
-                      multi: true,
-                      enabled: state.requestControlsEnabled,
-                      initiallyOpen: true,
-                      error: field.errorText,
+                    builder: (field) => CatchFieldLanes.single(
+                      child: CatchField<Gender>.choices(
+                        copy: catchFieldCopy(context.l10n),
+                        key: OnboardingFormKeys.interestedIn,
+                        title: context
+                            .l10n
+                            .onboardingGenderInterestPageLabelShowMe,
+                        contract: CatchContractConstraints
+                            .onboardingDraftDocumentInterestedInGenders,
+                        contractValue: (gender) => gender.name,
+                        body: _orderedGenderLabels(state.interestedIn),
+                        values: Gender.values,
+                        itemLabel: (gender) => gender.label,
+                        selected: state.interestedIn,
+                        onSelectionChanged: state.requestControlsEnabled
+                            ? (selection) {
+                                callbacks.onInterestedInChanged(selection);
+                                field.didChange(selection);
+                              }
+                            : null,
+                        multi: true,
+                        enabled: state.requestControlsEnabled,
+                        initiallyOpen: true,
+                        error: field.errorText,
+                      ),
                     ),
                   ),
                 ],

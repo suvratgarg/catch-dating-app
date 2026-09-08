@@ -134,33 +134,35 @@ class ClubBasicsStep extends StatelessWidget {
                             .l10n
                             .hostsClubBasicsStepVisiblecopyPleaseSelectACity
                       : null,
-                  builder: (field) => CatchField<CityOption>.choices(
-                    copy: catchFieldCopy(context.l10n),
-                    title: context.l10n.hostsClubBasicsStepTitleCity,
-                    contract: CatchContractConstraints
-                        .createClubCallablePayloadLocation,
-                    contractValue: (city) => city.effectiveMarketId,
-                    body: selectedCity?.label,
-                    icon: CatchIcons.locationCityOutlined,
-                    values: defaultCityOptions
-                        .where((city) => city.hostCreatable)
-                        .toList(growable: false),
-                    itemLabel: (city) => city.label,
-                    selected: selectedCity == null
-                        ? const <CityOption>{}
-                        : {selectedCity!},
-                    enabled: detailsEnabled,
-                    error: field.errorText,
-                    onSelectionChanged: detailsEnabled
-                        ? (selection) {
-                            final next = selection.isEmpty
-                                ? null
-                                : selection.single;
-                            field.didChange(next);
-                            field.validate();
-                            onCityChanged(next);
-                          }
-                        : null,
+                  builder: (field) => CatchFieldLanes.single(
+                    child: CatchField<CityOption>.choices(
+                      copy: catchFieldCopy(context.l10n),
+                      title: context.l10n.hostsClubBasicsStepTitleCity,
+                      contract: CatchContractConstraints
+                          .createClubCallablePayloadLocation,
+                      contractValue: (city) => city.effectiveMarketId,
+                      body: selectedCity?.label,
+                      icon: CatchIcons.locationCityOutlined,
+                      values: defaultCityOptions
+                          .where((city) => city.hostCreatable)
+                          .toList(growable: false),
+                      itemLabel: (city) => city.label,
+                      selected: selectedCity == null
+                          ? const <CityOption>{}
+                          : {selectedCity!},
+                      enabled: detailsEnabled,
+                      error: field.errorText,
+                      onSelectionChanged: detailsEnabled
+                          ? (selection) {
+                              final next = selection.isEmpty
+                                  ? null
+                                  : selection.single;
+                              field.didChange(next);
+                              field.validate();
+                              onCityChanged(next);
+                            }
+                          : null,
+                    ),
                   ),
                 ),
                 CatchField.input(

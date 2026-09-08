@@ -30,7 +30,6 @@ import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inlin
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_tokens/catch_tokens.dart'
     show CatchFieldTokens, CatchInsets, CatchLayout, CatchMotion, CatchTokens;
 import 'package:catch_ui/catch_ui.dart';

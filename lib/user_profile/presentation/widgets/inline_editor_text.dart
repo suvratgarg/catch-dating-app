@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/schema_contracts/generated/callable_reques
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/inline_editor_save.dart';
-import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_tokens/catch_tokens.dart'
     show CatchFieldTokens, CatchTokens;
 import 'package:catch_ui/catch_ui.dart';

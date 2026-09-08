@@ -97,7 +97,7 @@ test("extracts every current facade and semantic slot", () => {
   ]);
 });
 
-test("known-bad removed public facade changes generated inventory", () => {
+test("known-bad deleted facade changes generated inventory", () => {
   const deleted = source.replace(
     "const CatchField.add(",
     "const CatchField._add(",

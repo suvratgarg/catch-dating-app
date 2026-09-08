@@ -351,43 +351,45 @@ class EventSuccessModuleRows extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (questionnaire)
-          CatchField<_QuestionnaireMode>.optionCards(
-            copy: catchFieldCopy(context.l10n),
-            key: ValueKey('eventSuccessModule-${module.id}'),
-            title: context
-                .l10n
-                .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
-            contract: CatchContractConstraints
-                .mobileFormStateEventSuccessQuestionnaireMode,
-            contractValue: (value) => value.name,
-            values: _QuestionnaireMode.values,
-            itemTitle: (mode) => switch (mode) {
-              _QuestionnaireMode.off =>
-                context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
-              _QuestionnaireMode.cluesOnly =>
-                context.l10n.eventSuccessEventSuccessSetupBodyLabelCluesOnly,
-              _QuestionnaireMode.cluesAndPairing =>
-                context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
-            },
-            itemDescription: (mode) => switch (mode) {
-              _QuestionnaireMode.off =>
-                context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyTextOptionalPromptsAreOff,
-              _QuestionnaireMode.cluesOnly =>
-                context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyTextAnswersCreateRevealClues,
-              _QuestionnaireMode.cluesAndPairing =>
-                context
-                    .l10n
-                    .eventSuccessEventSuccessSetupBodyTextAnswersCreateCluesAndSoftlyGuidePairings,
-            },
-            selected: _questionnaireMode(_draft),
-            enabled: _editable,
-            onChanged: _editable ? _onQuestionnaireModeChanged : null,
+          CatchFieldLanes.single(
+            child: CatchField<_QuestionnaireMode>.optionCards(
+              copy: catchFieldCopy(context.l10n),
+              key: ValueKey('eventSuccessModule-${module.id}'),
+              title: context
+                  .l10n
+                  .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
+              contract: CatchContractConstraints
+                  .mobileFormStateEventSuccessQuestionnaireMode,
+              contractValue: (value) => value.name,
+              values: _QuestionnaireMode.values,
+              itemTitle: (mode) => switch (mode) {
+                _QuestionnaireMode.off =>
+                  context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
+                _QuestionnaireMode.cluesOnly =>
+                  context.l10n.eventSuccessEventSuccessSetupBodyLabelCluesOnly,
+                _QuestionnaireMode.cluesAndPairing =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
+              },
+              itemDescription: (mode) => switch (mode) {
+                _QuestionnaireMode.off =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyTextOptionalPromptsAreOff,
+                _QuestionnaireMode.cluesOnly =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyTextAnswersCreateRevealClues,
+                _QuestionnaireMode.cluesAndPairing =>
+                  context
+                      .l10n
+                      .eventSuccessEventSuccessSetupBodyTextAnswersCreateCluesAndSoftlyGuidePairings,
+              },
+              selected: _questionnaireMode(_draft),
+              enabled: _editable,
+              onChanged: _editable ? _onQuestionnaireModeChanged : null,
+            ),
           )
         else
           CatchFieldLanes.single(

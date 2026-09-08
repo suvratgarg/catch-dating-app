@@ -1870,41 +1870,45 @@ class _QuestionEditFields extends StatelessWidget {
           ),
         ),
       ),
-      CatchField<HostFormQuestionKind>.select(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostFormQuestionType,
-        contract: CatchContractConstraints
-            .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKind,
-        contractValue: (value) => value.name,
-        values: HostFormQuestionKind.values,
-        value: question.kind,
-        itemLabel: (value) => hostFormQuestionKindLabel(context, value),
-        onChanged: (value) =>
-            notifier.updateQuestion(sectionIndex, questionIndex, kind: value),
+      CatchFieldLanes.single(
+        child: CatchField<HostFormQuestionKind>.select(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostFormQuestionType,
+          contract: CatchContractConstraints
+              .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKind,
+          contractValue: (value) => value.name,
+          values: HostFormQuestionKind.values,
+          value: question.kind,
+          itemLabel: (value) => hostFormQuestionKindLabel(context, value),
+          onChanged: (value) =>
+              notifier.updateQuestion(sectionIndex, questionIndex, kind: value),
+        ),
       ),
       if (sections.length > 1)
-        CatchField<int>.select(
-          copy: catchFieldCopy(context.l10n),
-          key: ValueKey(
-            'question-section-${question.questionId}-$sectionIndex',
+        CatchFieldLanes.single(
+          child: CatchField<int>.select(
+            copy: catchFieldCopy(context.l10n),
+            key: ValueKey(
+              'question-section-${question.questionId}-$sectionIndex',
+            ),
+            title: context.l10n.hostFormMoveToSection,
+            contractExemption:
+                'Moves an existing question between sections without changing '
+                'a schema-backed field value.',
+            values: List<int>.generate(sections.length, (index) => index),
+            value: sectionIndex,
+            itemLabel: (index) => sections[index].title,
+            onChanged: (targetSectionIndex) {
+              if (targetSectionIndex == null ||
+                  targetSectionIndex == sectionIndex) {
+                return;
+              }
+              notifier.moveQuestionToSection(
+                questionId: question.questionId,
+                targetSectionIndex: targetSectionIndex,
+              );
+            },
           ),
-          title: context.l10n.hostFormMoveToSection,
-          contractExemption:
-              'Moves an existing question between sections without changing '
-              'a schema-backed field value.',
-          values: List<int>.generate(sections.length, (index) => index),
-          value: sectionIndex,
-          itemLabel: (index) => sections[index].title,
-          onChanged: (targetSectionIndex) {
-            if (targetSectionIndex == null ||
-                targetSectionIndex == sectionIndex) {
-              return;
-            }
-            notifier.moveQuestionToSection(
-              questionId: question.questionId,
-              targetSectionIndex: targetSectionIndex,
-            );
-          },
         ),
       CatchFieldLanes.single(
         child: CatchField.input(
@@ -1940,49 +1944,55 @@ class _QuestionEditFields extends StatelessWidget {
       ),
     ];
     final advancedFields = <Widget>[
-      CatchField<HostFormPrivacyClass>.select(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostFormPrivacyLabel,
-        contract: CatchContractConstraints
-            .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrivacyClass,
-        contractValue: (value) => value.name,
-        values: HostFormPrivacyClass.values,
-        value: question.privacyClass,
-        itemLabel: (value) => _privacyLabel(context, value),
-        onChanged: (value) => notifier.updateQuestion(
-          sectionIndex,
-          questionIndex,
-          privacyClass: value,
+      CatchFieldLanes.single(
+        child: CatchField<HostFormPrivacyClass>.select(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostFormPrivacyLabel,
+          contract: CatchContractConstraints
+              .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrivacyClass,
+          contractValue: (value) => value.name,
+          values: HostFormPrivacyClass.values,
+          value: question.privacyClass,
+          itemLabel: (value) => _privacyLabel(context, value),
+          onChanged: (value) => notifier.updateQuestion(
+            sectionIndex,
+            questionIndex,
+            privacyClass: value,
+          ),
         ),
       ),
-      CatchField<HostFormPrefillPolicy>.select(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostFormPrefillLabel,
-        contract: CatchContractConstraints
-            .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrefillPolicy,
-        contractValue: (value) => value.name,
-        values: HostFormPrefillPolicy.values,
-        value: question.prefillPolicy,
-        itemLabel: (value) => _prefillLabel(context, value),
-        onChanged: (value) => notifier.updateQuestion(
-          sectionIndex,
-          questionIndex,
-          prefillPolicy: value,
+      CatchFieldLanes.single(
+        child: CatchField<HostFormPrefillPolicy>.select(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostFormPrefillLabel,
+          contract: CatchContractConstraints
+              .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrefillPolicy,
+          contractValue: (value) => value.name,
+          values: HostFormPrefillPolicy.values,
+          value: question.prefillPolicy,
+          itemLabel: (value) => _prefillLabel(context, value),
+          onChanged: (value) => notifier.updateQuestion(
+            sectionIndex,
+            questionIndex,
+            prefillPolicy: value,
+          ),
         ),
       ),
-      CatchField<HostFormPresentation>.select(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostFormPresentationLabel,
-        contract: CatchContractConstraints
-            .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation,
-        contractValue: (value) => value.name,
-        values: HostFormPresentation.values,
-        value: question.hostPresentation,
-        itemLabel: (value) => _presentationLabel(context, value),
-        onChanged: (value) => notifier.updateQuestion(
-          sectionIndex,
-          questionIndex,
-          hostPresentation: value,
+      CatchFieldLanes.single(
+        child: CatchField<HostFormPresentation>.select(
+          copy: catchFieldCopy(context.l10n),
+          title: context.l10n.hostFormPresentationLabel,
+          contract: CatchContractConstraints
+              .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation,
+          contractValue: (value) => value.name,
+          values: HostFormPresentation.values,
+          value: question.hostPresentation,
+          itemLabel: (value) => _presentationLabel(context, value),
+          onChanged: (value) => notifier.updateQuestion(
+            sectionIndex,
+            questionIndex,
+            hostPresentation: value,
+          ),
         ),
       ),
       for (final optionEntry in question.options.indexed)
@@ -2117,21 +2127,23 @@ class _QuestionValidationFormSchemaFields extends StatelessWidget {
           value: validation.maxLength,
           onChanged: (value) => update(validation.copyWith(maxLength: value)),
         ),
-        CatchField<HostFormPatternPreset>.select(
-          copy: catchFieldCopy(context.l10n),
-          title: context.l10n.hostFormPatternLabel,
-          contract: CatchContractConstraints
-              .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationPatternPreset,
-          contractValue: (value) => value.name,
-          values: HostFormPatternPreset.values,
-          value: validation.patternPreset,
-          hintText: context.l10n.hostFormPatternNone,
-          itemLabel: (value) => _patternLabel(context, value),
-          onChanged: (value) {
-            if (value != null) {
-              update(validation.copyWith(patternPreset: value));
-            }
-          },
+        CatchFieldLanes.single(
+          child: CatchField<HostFormPatternPreset>.select(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostFormPatternLabel,
+            contract: CatchContractConstraints
+                .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationPatternPreset,
+            contractValue: (value) => value.name,
+            values: HostFormPatternPreset.values,
+            value: validation.patternPreset,
+            hintText: context.l10n.hostFormPatternNone,
+            itemLabel: (value) => _patternLabel(context, value),
+            onChanged: (value) {
+              if (value != null) {
+                update(validation.copyWith(patternPreset: value));
+              }
+            },
+          ),
         ),
         if (validation.patternPreset != null)
           CatchFieldLanes.single(

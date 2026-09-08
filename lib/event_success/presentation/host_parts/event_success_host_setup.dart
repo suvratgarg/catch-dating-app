@@ -326,31 +326,34 @@ class TargetAttendeeControl extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.stepper(
-      copy: catchFieldCopy(context.l10n),
-      title: context.l10n.eventSuccessEventSuccessHostSetupTextTargetAttendees,
-      contract:
-          CatchContractConstraints.eventSuccessPlanDocumentTargetAttendeeCount,
-      body: context.l10n
-          .eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax(
-            recommendedMin: recommendedMin,
-            recommendedMax: recommendedMax,
-          ),
-      value: value,
-      min: 1,
-      max: 1000,
-      formatter: (number) =>
-          context.l10n.eventSuccessEventSuccessHostSetupVisiblecopyToint(
-            toInt: number.toInt(),
-          ),
-      enabled: enabled,
-      decreaseSemanticLabel: context
-          .l10n
-          .eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees,
-      increaseSemanticLabel: context
-          .l10n
-          .eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees,
-      onChanged: enabled ? (number) => onChanged(number.toInt()) : null,
+    return CatchFieldLanes.single(
+      child: CatchField.stepper(
+        copy: catchFieldCopy(context.l10n),
+        title:
+            context.l10n.eventSuccessEventSuccessHostSetupTextTargetAttendees,
+        contract: CatchContractConstraints
+            .eventSuccessPlanDocumentTargetAttendeeCount,
+        body: context.l10n
+            .eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax(
+              recommendedMin: recommendedMin,
+              recommendedMax: recommendedMax,
+            ),
+        value: value,
+        min: 1,
+        max: 1000,
+        formatter: (number) =>
+            context.l10n.eventSuccessEventSuccessHostSetupVisiblecopyToint(
+              toInt: number.toInt(),
+            ),
+        enabled: enabled,
+        decreaseSemanticLabel: context
+            .l10n
+            .eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees,
+        increaseSemanticLabel: context
+            .l10n
+            .eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees,
+        onChanged: enabled ? (number) => onChanged(number.toInt()) : null,
+      ),
     );
   }
 }

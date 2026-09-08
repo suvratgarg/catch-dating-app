@@ -447,25 +447,27 @@ class EventPolicyStep extends StatelessWidget {
                     if (externalBookingMode || priceInMinorUnits == 0) {
                       return const SizedBox.shrink();
                     }
-                    return CatchField<EventCancellationPolicyId>.optionCards(
-                      copy: catchFieldCopy(context.l10n),
-                      title: context
-                          .l10n
-                          .hostsEventPolicyStepLabelCancellationPolicy,
-                      contract: CatchContractConstraints
-                          .createEventCallablePayloadEventPolicyCancellationPolicyId,
-                      contractValue: (value) => value.name,
-                      values: EventCancellationPolicyId.values
-                          .where((value) => value.isApplicable)
-                          .toList(growable: false),
-                      itemTitle: (policyId) => policyFor(policyId).title,
-                      itemDescription: (policyId) =>
-                          policyFor(policyId).attendeeSummary,
-                      selected: cancellationPolicyId.isApplicable
-                          ? cancellationPolicyId
-                          : EventCancellationPolicyId.standard,
-                      onChanged: onCancellationPolicyChanged,
-                      icon: CatchIcons.ruleOutlined,
+                    return CatchFieldLanes.single(
+                      child: CatchField<EventCancellationPolicyId>.optionCards(
+                        copy: catchFieldCopy(context.l10n),
+                        title: context
+                            .l10n
+                            .hostsEventPolicyStepLabelCancellationPolicy,
+                        contract: CatchContractConstraints
+                            .createEventCallablePayloadEventPolicyCancellationPolicyId,
+                        contractValue: (value) => value.name,
+                        values: EventCancellationPolicyId.values
+                            .where((value) => value.isApplicable)
+                            .toList(growable: false),
+                        itemTitle: (policyId) => policyFor(policyId).title,
+                        itemDescription: (policyId) =>
+                            policyFor(policyId).attendeeSummary,
+                        selected: cancellationPolicyId.isApplicable
+                            ? cancellationPolicyId
+                            : EventCancellationPolicyId.standard,
+                        onChanged: onCancellationPolicyChanged,
+                        icon: CatchIcons.ruleOutlined,
+                      ),
                     );
                   },
                 ),
