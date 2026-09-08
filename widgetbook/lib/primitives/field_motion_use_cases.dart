@@ -354,7 +354,9 @@ class _StatusSnapshot extends StatelessWidget {
             CatchFieldStatus.idle => const SizedBox.square(
               dimension: CatchIcon.md,
             ),
-            CatchFieldStatus.saving => CatchFieldSpinner(color: t.ink3),
+            CatchFieldStatus.saving => CatchLoadingIndicator.inline(
+              color: t.ink3,
+            ),
             CatchFieldStatus.saved => Icon(
               CatchIcons.checkCircleFilled,
               color: t.success,

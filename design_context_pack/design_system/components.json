@@ -3321,6 +3321,16 @@
               "parentConceptId": "catch.field",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L3",
+            "roleNoun": "Indicator",
+            "naming": {
+              "useCase": "FieldStatus",
+              "comparedWith": [
+                "catch.field",
+                "catch.loading_indicator"
+              ],
+              "reason": "This field anatomy owns the idle, saving and saved display transition, localized semantics and reduced-motion swaps. The parent Field owns the transaction itself. LoadingIndicator only renders indeterminate activity; it cannot replace success acknowledgment, dismissal or status semantics."
             }
           },
           {
@@ -3427,23 +3437,6 @@
               "open"
             ],
             "file": "packages/catch_ui/lib/src/components/catch_field_disclosure_drawer.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
-            "id": "catch.field.spinner",
-            "symbol": "CatchFieldSpinner",
-            "summary": "Fixed 800 ms Phosphor spinner shared by mutually exclusive 16 px trailing-status and 13 px visible commit-saving placements.",
-            "states": [
-              "field",
-              "commit"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_spinner.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
@@ -5093,13 +5086,14 @@
       "name": "CatchLoadingIndicator",
       "status": "active",
       "kind": "primitive",
-      "summary": "Indeterminate progress feedback with circular and static inline-dot recipes for unknown or compact work.",
+      "summary": "Indeterminate activity feedback with circular, static dots and fixed-cadence inline glyph recipes.",
       "dart": {
         "symbol": "CatchLoadingIndicator",
         "file": "packages/catch_ui/lib/src/primitives/catch_loading_indicator.dart",
         "constructors": [
           "CatchLoadingIndicator",
-          "CatchLoadingIndicator.dots"
+          "CatchLoadingIndicator.dots",
+          "CatchLoadingIndicator.inline"
         ]
       },
       "design": {
@@ -5131,6 +5125,12 @@
             "type": "color",
             "required": false,
             "dartType": "Color?"
+          },
+          {
+            "name": "size",
+            "type": "number",
+            "required": false,
+            "dartType": "double"
           }
         ],
         "states": [
@@ -5138,14 +5138,17 @@
           "small",
           "tinted",
           "dots-primary",
-          "dots-light"
+          "dots-light",
+          "inline-status",
+          "inline-commit"
         ],
         "slots": [],
         "tokens": [],
         "dartRoles": [
           "CircularProgressIndicator",
           "Center",
-          "CatchLoadingIndicatorVariant"
+          "CatchLoadingIndicatorVariant",
+          "RotationTransition"
         ],
         "goldens": [],
         "accessibility": {
@@ -5167,7 +5170,8 @@
         "notes": [
           "Use for tiny inline operations, platform or plugin waits, and unknown one-off work.",
           "Use catch.skeleton when the eventual content layout is known.",
-          "The dots recipe keeps button loading feedback motion-independent and preserves its compact three-dot dimensions. The button owns disabling its action while busy."
+          "The dots recipe keeps button loading feedback motion-independent and preserves its compact three-dot dimensions. The button owns disabling its action while busy.",
+          "The inline recipe preserves the field handoff glyph, 800 ms rotation and 16 px status / 13 px commit sizes. Callers retain operation state, disabling, localized announcements and reduced-motion transitions. Circular and dots do not allocate the inline rotation controller."
         ]
       },
       "governance": {
@@ -5191,9 +5195,10 @@
       "naming": {
         "useCase": "Loading",
         "comparedWith": [
-          "catch.page_dots"
+          "catch.page_dots",
+          "catch.field.status_indicator"
         ],
-        "reason": "Indeterminate activity feedback uses a circular progress recipe or static inline dots. Page indicators display a selected index within a finite set; loading has no selected page or known total."
+        "reason": "Indeterminate activity feedback uses circular, static dots or an inline fixed-cadence glyph. The former field spinner has the same loading responsibility and is an inline recipe. Page indicators show a selected index within a finite set; loading has no selected page or known total. FieldStatusIndicator retains transaction transitions and announcements around this passive rendering."
       }
     },
     {

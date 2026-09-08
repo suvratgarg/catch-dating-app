@@ -7299,6 +7299,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:loading-indicator-recipes",
+      "patternFamilyId": "loading-indicator-recipes",
+      "decision": "absorb-inline-loading-recipe",
+      "canonicalSymbol": "CatchLoadingIndicator",
+      "members": [
+        {
+          "name": "CatchFieldSpinner",
+          "action": "absorb",
+          "target": "CatchLoadingIndicator.inline"
+        }
+      ],
+      "rationale": "Both components render indeterminate activity. Preserve the compact Phosphor animation through an inline named recipe alongside circular and static dots. Allocate and dispose rotation only for inline, including keyed recipe changes. The field still owns saving/saved state, disabled actions and localized announcements; skeleton loading remains its separate content-layout contract. Delete the old class/export/member and migrate every inventoried caller and direct preview.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

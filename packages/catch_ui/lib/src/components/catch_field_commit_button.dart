@@ -1,9 +1,9 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
-import 'package:catch_ui/src/components/catch_field_spinner.dart';
 import 'package:catch_ui/src/components/catch_field_surface.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 /// Exact Cancel/Done action used by a disclosed `CatchField` editor.
@@ -84,7 +84,7 @@ class _CatchFieldCommitButtonState extends State<CatchFieldCommitButton> {
           ? ExcludeSemantics(
               child: SizedBox.square(
                 dimension: CatchFieldTokens.actionSpinnerExtent,
-                child: CatchFieldSpinner(
+                child: CatchLoadingIndicator.inline(
                   size: CatchFieldTokens.actionSpinnerExtent,
                   color: foreground,
                 ),

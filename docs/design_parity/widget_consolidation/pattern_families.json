@@ -2150,6 +2150,34 @@
           "rationale": "Absorb the exact Stack and CustomPainter as focusTarget, preserving its keys, ring gap, radius and hit bounds. The separate public wrapper has no independent interaction or lifecycle."
         }
       ]
+    },
+    {
+      "id": "loading-indicator-recipes",
+      "title": "Indeterminate activity feedback recipes",
+      "intent": "Use one loading indicator for unknown-progress activity; express rendering differences through named construction.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.loading_indicator",
+      "qualityReference": "CatchLoadingIndicator",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve circular progress, static button dots and the inline Phosphor glyph, its 800 ms rotation and existing 16 px status / 13 px commit placements."
+      ],
+      "members": [
+        {
+          "symbol": "CatchLoadingIndicator",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Each recipe communicates unknown-progress activity. The inline glyph has distinct compact dimensions and cadence, but no independent public responsibility."
+        },
+        {
+          "symbol": "CatchFieldSpinner",
+          "disposition": "unify",
+          "target": "CatchLoadingIndicator",
+          "preview": "not-applicable",
+          "rationale": "Absorb the exact rotation and icon as inline; field status and commit controls keep save transitions, localization and input policy."
+        }
+      ]
     }
   ]
 }

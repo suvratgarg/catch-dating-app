@@ -171,7 +171,14 @@ void _registerProfileChoiceEditorsTests() {
     expect(repository.updatedFields, {'height': 173});
     expect(find.byTooltip('Increase height'), findsOneWidget);
     expect(_loadingCatchButtonCount(tester), 1);
-    expect(find.byType(CatchFieldSpinner), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchLoadingIndicator &&
+            widget.variant == CatchLoadingIndicatorVariant.inline,
+      ),
+      findsOneWidget,
+    );
 
     repository.updateCompleter!.complete();
     await _pumpProfileSheet(tester);
@@ -643,7 +650,14 @@ void _registerProfileChoiceEditorsTests() {
       'education': EducationLevel.values.first.name,
     });
     expect(_loadingCatchButtonCount(tester), 1);
-    expect(find.byType(CatchFieldSpinner), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchLoadingIndicator &&
+            widget.variant == CatchLoadingIndicatorVariant.inline,
+      ),
+      findsOneWidget,
+    );
     expect(
       tester
           .widget<CatchFieldChoiceChip>(

@@ -30,7 +30,15 @@ void main() {
         findsNothing,
       );
       expect(
-        tester.getCenter(find.byType(CatchFieldSpinner)).dy,
+        tester
+            .getCenter(
+              find.byWidgetPredicate(
+                (widget) =>
+                    widget is CatchLoadingIndicator &&
+                    widget.variant == CatchLoadingIndicatorVariant.inline,
+              ),
+            )
+            .dy,
         closeTo(tester.getCenter(find.text('Christian')).dy, 0.1),
       );
 
@@ -74,18 +82,33 @@ void main() {
 
     await pumpField(isLoading: true);
     expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
-    expect(find.byType(CatchFieldSpinner), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchLoadingIndicator &&
+            widget.variant == CatchLoadingIndicatorVariant.inline,
+      ),
+      findsOneWidget,
+    );
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('catch-field-done')),
-        matching: find.byType(CatchFieldSpinner),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.inline,
+        ),
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: find.byType(CatchFieldTrailing),
-        matching: find.byType(CatchFieldSpinner),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.inline,
+        ),
       ),
       findsNothing,
     );
@@ -128,18 +151,33 @@ void main() {
 
     // The legacy aggregate status input coalesces into the same visible owner.
     await pumpField(status: CatchFieldStatus.saving);
-    expect(find.byType(CatchFieldSpinner), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchLoadingIndicator &&
+            widget.variant == CatchLoadingIndicatorVariant.inline,
+      ),
+      findsOneWidget,
+    );
     expect(
       find.descendant(
         of: find.byKey(const ValueKey('catch-field-done')),
-        matching: find.byType(CatchFieldSpinner),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.inline,
+        ),
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
         of: find.byType(CatchFieldTrailing),
-        matching: find.byType(CatchFieldSpinner),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.inline,
+        ),
       ),
       findsNothing,
     );
@@ -148,11 +186,22 @@ void main() {
     // place where saving progress can be communicated.
     await tester.pumpWidget(const SizedBox.shrink());
     await pumpField(open: false, isLoading: true);
-    expect(find.byType(CatchFieldSpinner), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchLoadingIndicator &&
+            widget.variant == CatchLoadingIndicatorVariant.inline,
+      ),
+      findsOneWidget,
+    );
     expect(
       find.descendant(
         of: find.byType(CatchFieldTrailing),
-        matching: find.byType(CatchFieldSpinner),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.inline,
+        ),
       ),
       findsOneWidget,
     );

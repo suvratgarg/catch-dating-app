@@ -73,7 +73,6 @@ export 'src/components/catch_field_repeat_button.dart';
 export 'src/components/catch_field_row.dart';
 export 'src/components/catch_field_select_control.dart';
 export 'src/components/catch_field_size.dart';
-export 'src/components/catch_field_spinner.dart';
 export 'src/components/catch_field_status.dart';
 export 'src/components/catch_field_status_indicator.dart';
 export 'src/components/catch_field_stepper.dart';

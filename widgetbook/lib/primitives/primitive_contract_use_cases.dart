@@ -791,7 +791,15 @@ Widget catchLoadingIndicatorContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchLoadingIndicator',
     contractId: 'catch.loading_indicator',
-    states: const ['default', 'small', 'tinted', 'dots-primary', 'dots-light'],
+    states: const [
+      'default',
+      'small',
+      'tinted',
+      'dots-primary',
+      'dots-light',
+      'inline-status',
+      'inline-commit',
+    ],
     children: [
       const _StateCard(
         label: 'default',
@@ -823,6 +831,17 @@ Widget catchLoadingIndicatorContractStates(BuildContext context) {
       const _StateCard(
         label: 'dots-light',
         child: CatchLoadingIndicator.dots(color: CatchTokens.editorialWhite),
+      ),
+      _StateCard(
+        label: 'inline-status',
+        child: CatchLoadingIndicator.inline(color: t.ink3),
+      ),
+      _StateCard(
+        label: 'inline-commit',
+        child: CatchLoadingIndicator.inline(
+          size: CatchFieldTokens.actionSpinnerExtent,
+          color: t.ink,
+        ),
       ),
     ],
   );
@@ -3035,33 +3054,6 @@ Widget catchFieldDisclosureDrawerContractStates(BuildContext context) {
     children: [
       _StateCard(label: 'closed', child: drawer(open: false)),
       _StateCard(label: 'open', child: drawer(open: true)),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchFieldSpinner,
-  path: '[Core primitives]/Inputs',
-)
-Widget catchFieldSpinnerContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return _ContractScreen(
-    title: 'CatchFieldSpinner',
-    contractId: 'catch.field.spinner',
-    states: const ['field', 'commit'],
-    children: [
-      _StateCard(
-        label: 'field',
-        child: CatchFieldSpinner(color: t.ink3),
-      ),
-      _StateCard(
-        label: 'commit',
-        child: CatchFieldSpinner(
-          size: CatchFieldTokens.actionSpinnerExtent,
-          color: t.ink,
-        ),
-      ),
     ],
   );
 }

@@ -1,8 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
-import 'package:catch_ui/src/components/catch_field_spinner.dart';
 import 'package:catch_ui/src/components/catch_field_status.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
+import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 /// Animated saving/saved feedback for the `CatchField` trailing lane.
@@ -83,7 +83,7 @@ class _CatchFieldStatusIndicatorState extends State<CatchFieldStatusIndicator> {
             opacity: _appeared ? 1 : 0,
             child: SizedBox.square(
               dimension: CatchFieldTokens.spinnerExtent,
-              child: CatchFieldSpinner(color: t.ink3),
+              child: CatchLoadingIndicator.inline(color: t.ink3),
             ),
           ),
         ),
