@@ -75,8 +75,9 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
   void didUpdateWidget(CatchFieldSelectControl oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value == widget.value &&
-        listEquals(oldWidget.values, widget.values))
+        listEquals(oldWidget.values, widget.values)) {
       return;
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final field = _fieldKey.currentState;
@@ -123,8 +124,12 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             final field = _fieldKey.currentState;
-            if (field != null && field.value != value) {
-              field.didChange(value);
+            if (field == null) return;
+            // A caller update may already have replaced the selection during
+            // this frame. Normalize the live value, not the builder snapshot.
+            final currentValue = _normalizedValue(field.value);
+            if (field.value != currentValue) {
+              field.didChange(currentValue);
             }
           });
         }

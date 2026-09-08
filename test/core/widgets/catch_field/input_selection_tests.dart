@@ -198,6 +198,58 @@ void _registerInputSelectionTests() {
     expect(find.text('Please select a city'), findsOneWidget);
   });
 
+  for (final removesPrevious in [false, true]) {
+    testWidgets('CatchField.select keeps replacement value when old choice is '
+        '${removesPrevious ? 'removed' : 'retained'}', (tester) async {
+      final formKey = GlobalKey<FormState>();
+      var selected = 'First';
+      var values = ['First', 'Second'];
+      var changes = 0;
+      Object? validated;
+      late StateSetter update;
+
+      await tester.pumpWidget(
+        _wrap(
+          Form(
+            key: formKey,
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                update = setState;
+                return CatchField.select<String>(
+                  copy: catchFieldCopy(AppLocalizationsEn()),
+                  title: 'Selection',
+                  values: values,
+                  itemLabel: (value) => value,
+                  value: selected,
+                  onChanged: (_) => changes++,
+                  validator: (value) {
+                    validated = value;
+                    return value == null ? 'Choose a value' : null;
+                  },
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      final fieldState = tester.state(find.byType(CatchField));
+      expect(find.text('First'), findsOneWidget);
+      update(() {
+        selected = 'Second';
+        if (removesPrevious) values = ['Second'];
+      });
+      await tester.pumpAndSettle();
+
+      expect(tester.state(find.byType(CatchField)), same(fieldState));
+      expect(find.text('Second'), findsOneWidget);
+      expect(find.text('First'), findsNothing);
+      expect(formKey.currentState!.validate(), isTrue);
+      expect(validated, 'Second');
+      expect(changes, 0);
+    });
+  }
+
   test('CatchField guards ambiguous form configuration', () {
     final controller = TextEditingController();
     addTearDown(controller.dispose);
