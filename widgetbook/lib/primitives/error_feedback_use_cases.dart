@@ -12,7 +12,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 Widget localizedErrorBannerStates(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Localized error banner',
-      catalogId: 'catch.error_banner.localized',
+      catalogId: 'catch.banner.localized',
       children: [
         CatchLocalizedErrorBanner(
           const NetworkException('timeout', 'Request timed out.'),

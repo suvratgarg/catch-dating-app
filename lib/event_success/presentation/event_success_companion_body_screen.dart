@@ -169,8 +169,8 @@ class _EventSuccessCompanionScreenState
         lateArrivalResolution.targetRoundIndex >
             plan.publishedRotationRoundIndex) {
       addMomentContent(
-        CatchSurface.message(
-          messageIcon: CatchIcons.scheduleRounded,
+        CatchBanner(
+          icon: CatchIcons.scheduleRounded,
           title: context
               .l10n
               .eventSuccessEventSuccessCompanionBodyScreenTitleLateArrival,

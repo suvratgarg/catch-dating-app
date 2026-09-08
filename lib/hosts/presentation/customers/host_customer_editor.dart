@@ -73,7 +73,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                       ),
                       if (_contactMethodError != null) ...[
                         gapH12,
-                        CatchErrorBanner(message: _contactMethodError!),
+                        CatchBanner.error(message: _contactMethodError!),
                       ],
                     ],
                   ),

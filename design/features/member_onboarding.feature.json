@@ -74,7 +74,7 @@
         ],
         "componentContracts": [
           "catch.button",
-          "catch.error_banner",
+          "catch.banner",
           "catch.field",
           "catch.range_slider",
           "catch.section"

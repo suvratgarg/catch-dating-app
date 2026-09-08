@@ -1375,18 +1375,51 @@ Widget catchEmptyStateIconContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchErrorBanner,
+  type: CatchBanner,
   path: '[Core primitives]/Feedback',
 )
-Widget catchErrorBannerContractStates(BuildContext context) {
+Widget catchBannerContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchErrorBanner',
-    contractId: 'catch.error_banner',
-    states: const ['inline', 'from-error', 'with-retry'],
+    title: 'CatchBanner',
+    contractId: 'catch.banner',
+    states: const [
+      'primary',
+      'success',
+      'warning',
+      'danger',
+      'neutral',
+      'with-title',
+      'with-action',
+      'inline',
+      'from-error',
+      'with-retry',
+    ],
     children: [
+      for (final tone in CatchBannerTone.values)
+        _StateCard(
+          label: tone.name,
+          child: CatchBanner(
+            message: 'Your event details are up to date.',
+            tone: tone,
+          ),
+        ),
+      const _StateCard(
+        label: 'with-title',
+        child: CatchBanner(
+          title: 'Host tip',
+          message: 'Keep the first message short and specific.',
+        ),
+      ),
+      _StateCard(
+        label: 'with-action',
+        child: CatchBanner(
+          message: 'Review your booking.',
+          actions: [CatchTextButton(label: 'View', onPressed: _noop)],
+        ),
+      ),
       const _StateCard(
         label: 'inline',
-        child: CatchErrorBanner(message: 'Card details could not be saved.'),
+        child: CatchBanner.error(message: 'Card details could not be saved.'),
       ),
       _StateCard(
         label: 'from-error',
@@ -4473,7 +4506,6 @@ Widget catchSurfaceContractStates(BuildContext context) {
       'elevated',
       'card',
       'tinted',
-      'message',
     ],
     children: [
       _StateCard(
@@ -4557,27 +4589,6 @@ Widget catchSurfaceContractStates(BuildContext context) {
             'Only attendees can see this matching detail.',
             style: CatchTextStyles.supporting(context),
           ),
-        ),
-      ),
-      _StateCard(
-        label: 'message',
-        child: Column(
-          children: const [
-            CatchSurface.message(
-              title: 'Host tip',
-              message: 'Keep the first message short and specific.',
-            ),
-            SizedBox(height: CatchSpacing.s3),
-            CatchSurface.message(
-              message: 'This event is nearly full.',
-              messageTone: CatchSurfaceMessageTone.warning,
-            ),
-            SizedBox(height: CatchSpacing.s3),
-            CatchSurface.message(
-              message: 'Payment details are encrypted.',
-              messageTone: CatchSurfaceMessageTone.success,
-            ),
-          ],
         ),
       ),
     ],

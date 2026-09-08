@@ -1805,20 +1805,22 @@ Widget catchInlineErrorStateCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchErrorBanner,
+  name: 'Error recipes',
+  type: CatchBanner,
   path: '[Core catalog]/Feedback',
 )
-Widget catchErrorBannerCatalogStates(BuildContext context) {
+Widget catchBannerErrorRecipes(BuildContext context) {
   return WidgetbookCatalogFrame(
     title: 'Mutation error banner',
-    catalogId: 'core.widgets.catch_error_banner',
+    catalogId: 'core.widgets.catch_banner',
     children: [
       _StateCard(
         label: 'persistent inline error',
         child: Column(
           children: [
-            const CatchErrorBanner(message: 'Card details could not be saved.'),
+            const CatchBanner.error(
+              message: 'Card details could not be saved.',
+            ),
             CatchLocalizedErrorBanner(
               Exception('Booking failed. Try once more.'),
               onRetry: _noop,
@@ -1871,33 +1873,29 @@ Widget catchMutationErrorBannerCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchInlineMessageSurface,
+  type: CatchBanner,
   path: '[Core catalog]/Feedback',
 )
-Widget catchInlineMessageSurfaceCatalogStates(BuildContext context) {
-  final t = CatchTokens.of(context);
+Widget catchBannerCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchInlineMessageSurface',
-    catalogId: 'core.widgets.catch_inline_message_surface',
+    title: 'CatchBanner',
+    catalogId: 'core.widgets.catch_banner',
     children: [
       _StateCard(
         label: 'message / title / action',
         child: Column(
           children: [
-            CatchInlineMessageSurface(
+            CatchBanner(
               title: 'Booking pending',
               message: 'We will confirm your spot after payment settles.',
               icon: CatchIcons.infoOutlineRounded,
-              iconColor: t.primary,
-              backgroundColor: t.surface,
-              borderColor: t.line,
               actions: [CatchTextButton(label: 'View', onPressed: _noop)],
             ),
             gapH12,
-            CatchInlineMessageSurface(
+            CatchBanner(
               message: 'Host approval is required for this event.',
               icon: CatchIcons.lockOutlineRounded,
-              iconColor: t.ink2,
+              tone: CatchBannerTone.neutral,
             ),
           ],
         ),

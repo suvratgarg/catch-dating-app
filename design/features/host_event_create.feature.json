@@ -32,7 +32,7 @@
         ],
         "componentContracts": [
           "catch.button",
-          "catch.error_banner",
+          "catch.banner",
           "catch.error_state",
           "catch.field",
           "catch.form_dialog",

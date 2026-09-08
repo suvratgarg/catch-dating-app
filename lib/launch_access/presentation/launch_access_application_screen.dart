@@ -450,7 +450,7 @@ class _LaunchAccessApplicationFormState
             ),
             if (mutation.hasError) ...[
               gapH16,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: mutationErrorMessage(mutation, l10n: context.l10n),
               ),
             ],

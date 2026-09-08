@@ -599,28 +599,25 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(panelSurface.elevation, CatchSurfaceElevation.card);
   });
 
-  testWidgets('CatchSurface.message renders inline title and tone content', (
+  testWidgets('CatchBanner renders inline title and tone content', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchSurface.message(
+        const CatchBanner(
           title: 'Host tip',
           message: 'Keep the first message short and specific.',
-          messageTone: CatchSurfaceMessageTone.warning,
+          tone: CatchBannerTone.warning,
         ),
       ),
     );
 
-    final messageSurfaceFinder = find.byWidgetPredicate(
-      (widget) =>
-          widget is CatchSurface && widget.role == CatchSurfaceRole.message,
-    );
+    final messageSurfaceFinder = find.byType(CatchBanner);
     final renderedSurfaceFinder = find.byWidgetPredicate(
       (widget) =>
           widget is CatchSurface && widget.role == CatchSurfaceRole.base,
     );
-    final messageSurface = tester.widget<CatchSurface>(messageSurfaceFinder);
+    final messageSurface = tester.widget<CatchBanner>(messageSurfaceFinder);
     final renderedSurface = tester.widget<CatchSurface>(renderedSurfaceFinder);
     expect(find.text('Host tip'), findsOneWidget);
     expect(
@@ -629,7 +626,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
     expect(messageSurfaceFinder, findsOneWidget);
     expect(renderedSurfaceFinder, findsOneWidget);
-    expect(messageSurface.role, CatchSurfaceRole.message);
+    expect(messageSurface.variant, CatchBannerVariant.message);
     expect(renderedSurface.role, CatchSurfaceRole.base);
     expect(renderedSurface.radius, CatchRadius.md);
   });

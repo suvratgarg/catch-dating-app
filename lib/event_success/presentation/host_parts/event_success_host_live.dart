@@ -153,8 +153,8 @@ class LiveTab extends StatelessWidget {
       final body = EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          CatchSurface.message(
-            messageIcon: isPreEvent
+          CatchBanner(
+            icon: isPreEvent
                 ? CatchIcons.cloudUploadOutlined
                 : CatchIcons.lockClockRounded,
             title: isPreEvent
@@ -206,8 +206,8 @@ class LiveTab extends StatelessWidget {
       final body = EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          CatchSurface.message(
-            messageIcon: CatchIcons.ruleFolderOutlined,
+          CatchBanner(
+            icon: CatchIcons.ruleFolderOutlined,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected,
@@ -427,19 +427,19 @@ class LiveTab extends StatelessWidget {
                 : EventSuccessSpatialLayoutState.ready(spatialLayout!)
           : spatialLayoutState;
       final roomBody = switch (effectiveSpatialLayoutState.status) {
-        EventSuccessSpatialLayoutStatus.notApplicable => CatchSurface.message(
-          messageIcon: CatchIcons.gridViewRounded,
+        EventSuccessSpatialLayoutStatus.notApplicable => CatchBanner(
+          icon: CatchIcons.gridViewRounded,
           title: context.l10n.eventSuccessRoomWorkspaceWholeGroupTitle,
           message: context.l10n.eventSuccessRoomWorkspaceWholeGroupBody,
         ),
-        EventSuccessSpatialLayoutStatus.unconfigured => CatchSurface.message(
-          messageIcon: CatchIcons.gridViewRounded,
-          messageTone: CatchSurfaceMessageTone.warning,
+        EventSuccessSpatialLayoutStatus.unconfigured => CatchBanner(
+          icon: CatchIcons.gridViewRounded,
+          tone: CatchBannerTone.warning,
           title: context.l10n.eventSuccessRoomWorkspaceUnconfiguredTitle,
           message: context.l10n.eventSuccessRoomWorkspaceUnconfiguredBody,
         ),
-        EventSuccessSpatialLayoutStatus.loading => CatchSurface.message(
-          messageIcon: CatchIcons.syncRounded,
+        EventSuccessSpatialLayoutStatus.loading => CatchBanner(
+          icon: CatchIcons.syncRounded,
           title: context.l10n.eventSuccessRoomWorkspaceLoadingTitle,
           message: context.l10n.eventSuccessRoomWorkspaceLoadingBody,
         ),
@@ -481,8 +481,8 @@ class LiveTab extends StatelessWidget {
             ),
             if (spatialAssignments.isEmpty) ...[
               gapH16,
-              CatchSurface.message(
-                messageIcon: CatchIcons.groupsOutlined,
+              CatchBanner(
+                icon: CatchIcons.groupsOutlined,
                 title: context.l10n.eventSuccessRoomWorkspaceWaitingTitle,
                 message: context.l10n.eventSuccessRoomWorkspaceWaitingBody,
               ),
@@ -1529,10 +1529,10 @@ class _EventSuccessExclusionAlertCardState
             top: CatchSpacing.s3,
             bottom: CatchSpacing.s2,
           ),
-          child: CatchSurface.message(
+          child: CatchBanner(
             key: const ValueKey('event_success.exclusion_alert'),
-            messageIcon: CatchIcons.personSearchOutlined,
-            messageTone: CatchSurfaceMessageTone.warning,
+            icon: CatchIcons.personSearchOutlined,
+            tone: CatchBannerTone.warning,
             title: context.l10n.eventSuccessControlRoomExclusionAlertTitle,
             message: context.l10n.eventSuccessControlRoomExclusionAlertBody(
               count: alertCount,

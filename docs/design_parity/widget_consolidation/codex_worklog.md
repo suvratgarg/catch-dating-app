@@ -70,6 +70,33 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Persistent inline feedback
+
+Owner-delegated source and rendered review: `inline-feedback-canonical-banner`
+in `pattern_families.json` and `decisions.json`. `CatchBanner` owns one shared
+renderer for semantic messages and the named error/retry recipes. `CatchNotice`
+retains its distinct transient delivery, dismissal, opening, and person contract.
+
+- [x] Capture all five message tones and both error recipes before edits at
+  light/dark and text scales 1.0/2.0. Both subsequent comparisons pass against
+  the four unchanged baseline images.
+- [x] Remove `CatchErrorBanner`, `CatchInlineMessageSurface`, and
+  `CatchSurface.message`; migrate all production callers and error-copy adapters
+  without aliases. Keep surface paint at L2 and message composition at L3.
+- [x] Preserve localized retry copy, retry eligibility, action behavior, and
+  error geometry. Forward message duration to the reduced-motion-aware surface.
+- [x] Rename the registry identity to `catch.banner`; refresh feature contracts,
+  Widgetbook, source scanners, and generated design context.
+- [x] Four behavior tests, two focused primitive/mutation tests, and seven
+  authentication tests pass. Four Widgetbook cases at both scales pass twice
+  consecutively after their reviewed gallery updates. Fifty-one Node tests pass.
+- [x] Whole-corpus triage remains 1,058 registered cases with zero unclassified;
+  golden coverage is 320/320 surfaces through 335 IDs, with no live waivers.
+- [ ] Complete the workspace analyzer and full derived CI gates with Phase 4.
+  Analyzer/plugin execution remains CI-only on this machine.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
 ## Phase 4 — Code-entry canonicalization
 
 Owner-delegated source review: `code-entry-canonical-input` in

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_recap.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:f471eb216b3ee2157fc8c2561324ad012069334b5c8be1b384d5428b13e6ba6c",
-  "resolvedDigest": "sha256:1d1a774855cf0447611f41ba2437ee7c105477273daec1e0ac5a8a9295e53a5b",
+  "resolvedDigest": "sha256:4634033f1d2490b412da955329a77fbbf55703db84c34d6a8aa8d539d29e1fba",
   "feature": {
     "id": "feature.event_recap",
     "name": "Event Recap",
@@ -937,8 +937,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

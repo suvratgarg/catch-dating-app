@@ -127,8 +127,8 @@ class _SetupTabState extends State<SetupTab> {
       embedded: widget.embedded,
       children: [
         if (unsavedFrozen) ...[
-          CatchSurface.message(
-            messageIcon: CatchIcons.lockClockRounded,
+          CatchBanner(
+            icon: CatchIcons.lockClockRounded,
             title: eventHasStarted
                 ? context
                       .l10n
@@ -146,8 +146,8 @@ class _SetupTabState extends State<SetupTab> {
           ),
           gapH16,
         ] else if (!widget.planIsPersisted) ...[
-          CatchSurface.message(
-            messageIcon: CatchIcons.cloudUploadOutlined,
+          CatchBanner(
+            icon: CatchIcons.cloudUploadOutlined,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet,
@@ -158,9 +158,9 @@ class _SetupTabState extends State<SetupTab> {
           gapH16,
         ],
         if (setupFrozen && widget.planIsPersisted) ...[
-          CatchSurface.message(
-            messageIcon: CatchIcons.lockClockRounded,
-            messageTone: CatchSurfaceMessageTone.warning,
+          CatchBanner(
+            icon: CatchIcons.lockClockRounded,
+            tone: CatchBannerTone.warning,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupTitleSettingsAreLocked,
@@ -182,15 +182,15 @@ class _SetupTabState extends State<SetupTab> {
           gapH16,
         ],
         if (_remotePlanChanged) ...[
-          CatchSurface.message(
+          CatchBanner(
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupTitleSettingsAreLocked,
             message: context
                 .l10n
                 .eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs,
-            messageIcon: CatchIcons.errorOutlineRounded,
-            messageTone: CatchSurfaceMessageTone.warning,
+            icon: CatchIcons.errorOutlineRounded,
+            tone: CatchBannerTone.warning,
           ),
           gapH16,
         ],
@@ -402,6 +402,6 @@ class NoticeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSurface.message(title: title, message: body, messageIcon: icon);
+    return CatchBanner(title: title, message: body, icon: icon);
   }
 }

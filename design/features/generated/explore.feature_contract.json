@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:a76d3f1e8b9fa531b3ed2145d8fd657abeacb3dcccca213967049a1b646e8f88",
-  "resolvedDigest": "sha256:e775a09257f2474ee18e6a9c72c743c7cd4d5bfcb7ba62619d0b874d554a2484",
+  "resolvedDigest": "sha256:af7223f74aebd8d59381cbdfb33fc15db7bbb0eb0d731ce9c65b077cded17b27",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1846,8 +1846,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

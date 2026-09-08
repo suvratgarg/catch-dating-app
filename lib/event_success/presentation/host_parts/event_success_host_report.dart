@@ -127,8 +127,8 @@ class ReportTab extends StatelessWidget {
       embedded: embedded,
       children: [
         ...errorStates.expand((error) => [error, gapH16]),
-        CatchSurface.message(
-          messageIcon: CatchIcons.assignmentTurnedInOutlined,
+        CatchBanner(
+          icon: CatchIcons.assignmentTurnedInOutlined,
           title: context.l10n
               .eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse(
                 feedbackCount: feedbackCount,

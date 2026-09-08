@@ -6424,6 +6424,42 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:inline-feedback-canonical-banner",
+      "patternFamilyId": "inline-feedback-canonical-banner",
+      "decision": "unify-canonical-contract",
+      "canonicalSymbol": "CatchBanner",
+      "members": [
+        {
+          "name": "CatchBanner",
+          "action": "keep"
+        },
+        {
+          "name": "CatchErrorBanner",
+          "action": "absorb",
+          "target": "CatchBanner.error / CatchBanner.errorWithRetry"
+        },
+        {
+          "name": "CatchInlineMessageSurface",
+          "action": "absorb",
+          "target": "CatchBanner"
+        },
+        {
+          "name": "CatchSurface",
+          "action": "keep",
+          "detail": "Remove its duplicated message constructor; retain low-level paint."
+        },
+        {
+          "name": "CatchNotice",
+          "action": "keep",
+          "detail": "Transient delivery, dismissal/open behavior and person payload remain distinct."
+        }
+      ],
+      "rationale": "Rendered review pins five semantic message tones and compact error/retry recipes before edits. CatchSurface.message and CatchInlineMessageSurface independently built the same icon/title/message row; CatchErrorBanner only supplied its error recipe. One CatchBanner now owns that renderer with semantic tone and named error constructors. All production callers and app copy adapters migrate without a forwarding alias; the existing catch.error_banner registry identity is renamed catch.banner, and feature references move in the same slice. Error mapping stays app-owned. The message duration parameter now reaches the reduced-motion-aware surface instead of being dropped.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered family review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

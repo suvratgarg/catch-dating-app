@@ -619,12 +619,12 @@ void _registerCatchPrimitivesErrorAsyncTests() {
       ),
     );
 
-    expect(find.byType(CatchErrorBanner), findsNothing);
+    expect(find.byType(CatchBanner), findsNothing);
 
     await tester.tap(find.text('Save'));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchErrorBanner), findsOneWidget);
+    expect(find.byType(CatchBanner), findsOneWidget);
     expect(
       find.text('The request timed out. Please try again.'),
       findsOneWidget,

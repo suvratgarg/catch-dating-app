@@ -48,10 +48,10 @@ class _HostEventRehearsalStartScreenState
             CatchResponsiveSectionItem(
               child: CatchSection.plain(
                 padding: EdgeInsets.zero,
-                child: CatchSurface.message(
+                child: CatchBanner(
                   title: context.l10n.hostEventRehearsalTitle,
                   message: context.l10n.hostEventRehearsalPracticeBanner,
-                  messageIcon: CatchIcons.scienceOutlined,
+                  icon: CatchIcons.scienceOutlined,
                 ),
               ),
             ),

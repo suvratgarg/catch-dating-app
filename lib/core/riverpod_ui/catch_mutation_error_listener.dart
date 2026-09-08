@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// as a transient snackbar.
 ///
 /// For inline errors that should persist until the user takes action, use
-/// [CatchErrorBanner] instead.
+/// [CatchBanner] instead.
 class CatchMutationErrorListener extends ConsumerWidget {
   const CatchMutationErrorListener({
     super.key,

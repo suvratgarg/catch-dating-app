@@ -144,7 +144,7 @@ export function scanSourceForSectionHeaders({
       !isPrimitiveImplementation(relativePath) &&
       /\bCatchSurface(?:\.card|\.message|\.tinted)?\s*\(/u.test(info.source) &&
       /\bCatchSectionHeader\s*\(/u.test(info.source) &&
-      /\b(?:CatchButton|CatchField|CatchErrorState|CatchErrorBanner|Text)\s*(?:\.|\()/u.test(
+      /\b(?:CatchButton|CatchField|CatchErrorState|CatchBanner|Text)\s*(?:\.|\()/u.test(
         info.source,
       )
     ) {

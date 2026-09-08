@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:4fdc792050fdf521693ce53e99c56d3fc6a1c09bc9565e6abef8edb5a4ff79a2",
-  "resolvedDigest": "sha256:d6325d1113f664aa51edf4c2def47bd51da69f6497fa490cb7121991008b2cfc",
+  "resolvedDigest": "sha256:dd6f834f43878be855c4f57078c9096d17eece7d47774597b03cd70795422808",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -955,8 +955,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

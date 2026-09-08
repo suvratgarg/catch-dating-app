@@ -88,17 +88,17 @@
   "components": [
     {
       "id": "catch.badge",
-        "enforcement": {
-          "code": "catch_no_raw_material_control",
-          "vehicle": "plugin",
-          "replaces": [
-            "Badge"
-          ],
-          "replacement": "CatchBadge",
-          "steeringGroup": "control",
-          "steeringCode": "catch_no_raw_material_control",
-          "probeSeed": "Badge(label: const Text('1'))"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_material_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "Badge"
+        ],
+        "replacement": "CatchBadge",
+        "steeringGroup": "control",
+        "steeringCode": "catch_no_raw_material_control",
+        "probeSeed": "Badge(label: const Text('1'))"
+      },
       "name": "CatchBadge",
       "status": "active",
       "kind": "primitive",
@@ -131,20 +131,26 @@
                 "name": "Label",
                 "type": "TEXT",
                 "defaultValue": "Badge",
-                "sourceProps": ["label"]
+                "sourceProps": [
+                  "label"
+                ]
               },
               {
                 "name": "Show Icon",
                 "type": "BOOLEAN",
                 "defaultValue": false,
-                "sourceProps": ["icon"],
+                "sourceProps": [
+                  "icon"
+                ],
                 "notes": "Optional code slots use a separate Figma visibility control and instance-swap control."
               },
               {
                 "name": "Icon",
                 "type": "INSTANCE_SWAP",
                 "defaultValue": null,
-                "sourceProps": ["icon"]
+                "sourceProps": [
+                  "icon"
+                ]
               },
               {
                 "name": "Tone",
@@ -159,14 +165,22 @@
                   "Gold",
                   "Affinity"
                 ],
-                "sourceProps": ["tone"]
+                "sourceProps": [
+                  "tone"
+                ]
               },
               {
                 "name": "Size",
                 "type": "VARIANT",
                 "defaultValue": "Sm",
-                "variantOptions": ["Sm", "Md", "Action"],
-                "sourceProps": ["size"]
+                "variantOptions": [
+                  "Sm",
+                  "Md",
+                  "Action"
+                ],
+                "sourceProps": [
+                  "size"
+                ]
               }
             ]
           }
@@ -375,10 +389,10 @@
     },
     {
       "id": "catch.ui_label",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchSectionLabel",
       "status": "active",
       "kind": "primitive",
@@ -497,25 +511,25 @@
     },
     {
       "id": "catch.button",
-        "enforcement": {
-          "code": "catch_no_raw_button_control",
-          "codes": [
-            "catch_no_allow_debt"
-          ],
-          "vehicle": "plugin",
-          "replaces": [
-            "CupertinoButton",
-            "ElevatedButton",
-            "FilledButton",
-            "FloatingActionButton",
-            "OutlinedButton",
-            "TextButton"
-          ],
-          "replacement": "CatchButton or CatchTextButton",
-          "steeringGroup": "button",
-          "steeringCode": "catch_no_raw_button_control",
-          "probeSeed": "ElevatedButton(onPressed: null, child: const Text('x'))"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_button_control",
+        "codes": [
+          "catch_no_allow_debt"
+        ],
+        "vehicle": "plugin",
+        "replaces": [
+          "CupertinoButton",
+          "ElevatedButton",
+          "FilledButton",
+          "FloatingActionButton",
+          "OutlinedButton",
+          "TextButton"
+        ],
+        "replacement": "CatchButton or CatchTextButton",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "probeSeed": "ElevatedButton(onPressed: null, child: const Text('x'))"
+      },
       "name": "CatchButton",
       "status": "active",
       "kind": "primitive",
@@ -797,22 +811,22 @@
     },
     {
       "id": "catch.chip",
-        "enforcement": {
-          "code": "catch_no_raw_material_control",
-          "vehicle": "plugin",
-          "replaces": [
-            "ActionChip",
-            "Chip",
-            "ChoiceChip",
-            "FilterChip",
-            "InputChip",
-            "RawChip"
-          ],
-          "replacement": "CatchChip",
-          "steeringGroup": "control",
-          "steeringCode": "catch_no_raw_material_control",
-          "probeSeed": "Chip(label: const Text('x'))"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_material_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "ActionChip",
+          "Chip",
+          "ChoiceChip",
+          "FilterChip",
+          "InputChip",
+          "RawChip"
+        ],
+        "replacement": "CatchChip",
+        "steeringGroup": "control",
+        "steeringCode": "catch_no_raw_material_control",
+        "probeSeed": "Chip(label: const Text('x'))"
+      },
       "name": "CatchChip",
       "status": "active",
       "kind": "primitive",
@@ -1051,10 +1065,10 @@
     },
     {
       "id": "catch.empty_state",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchEmptyState",
       "status": "active",
       "kind": "composite",
@@ -1315,14 +1329,14 @@
     },
     {
       "id": "catch.error_state",
-        "enforcement": {
-          "code": "catch_no_raw_error_surface",
-          "vehicle": "plugin",
-          "states": [
-            "error"
-          ],
-          "probeSeed": "Center(child: Text('Unable to load'))"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_error_surface",
+        "vehicle": "plugin",
+        "states": [
+          "error"
+        ],
+        "probeSeed": "Center(child: Text('Unable to load'))"
+      },
       "name": "CatchErrorState",
       "status": "active",
       "kind": "composite",
@@ -1712,21 +1726,22 @@
       }
     },
     {
-      "id": "catch.error_banner",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
-      "name": "CatchErrorBanner",
+      "id": "catch.banner",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchBanner",
       "status": "active",
       "kind": "composite",
-      "summary": "Persistent inline error-feedback banner family for mutation and async failures inside existing page content.",
+      "summary": "Persistent inline feedback with one icon, text, and action layout; semantic tones and compact error/retry recipes share the same renderer.",
       "dart": {
-        "symbol": "CatchErrorBanner",
-        "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
+        "symbol": "CatchBanner",
+        "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
         "constructors": [
-          "CatchErrorBanner",
-          "CatchErrorBanner.withRetry"
+          "CatchBanner",
+          "CatchBanner.error",
+          "CatchBanner.errorWithRetry"
         ]
       },
       "design": {
@@ -1741,7 +1756,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "ErrorBanner",
+          "handoffName": "Banner",
           "allowed": true
         }
       },
@@ -1754,6 +1769,43 @@
             "dartType": "String"
           },
           {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchBannerTone",
+            "default": "primary",
+            "values": [
+              "primary",
+              "success",
+              "warning",
+              "danger",
+              "neutral"
+            ]
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchBannerVariant",
+            "default": "message",
+            "values": [
+              "message",
+              "error"
+            ]
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData"
+          },
+          {
             "name": "retryLabel",
             "type": "string",
             "required": false,
@@ -1764,21 +1816,23 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?"
-          },
-          {
-            "name": "errorContext",
-            "type": "object",
-            "required": false,
-            "default": "AppErrorContext.generic",
-            "dartType": "AppErrorContext"
           }
         ],
         "states": [
+          "primary",
+          "success",
+          "warning",
+          "danger",
+          "neutral",
+          "with-title",
+          "with-action",
           "inline",
           "from-error",
           "with-retry"
         ],
-        "slots": [],
+        "slots": [
+          "actions"
+        ],
         "tokens": [
           "space.s0",
           "space.s2",
@@ -1788,22 +1842,26 @@
           "theme.light.color.danger"
         ],
         "dartRoles": [
-          "CatchInlineMessageSurface",
           "CatchTextButton",
           "CatchIcons.errorOutlineRounded",
           "CatchTextStyles.supporting",
           "AppErrorContext",
           "MutationState",
           "Mutation",
-          "showCatchErrorSnackBar"
+          "showCatchErrorSnackBar",
+          "CatchBannerTone",
+          "CatchBannerVariant",
+          "CatchSurface"
         ],
-        "goldens": [],
+        "goldens": [
+          "banner_family"
+        ],
         "members": [
           {
-            "id": "catch.error_banner.mutation",
+            "id": "catch.banner.mutation",
             "symbol": "CatchMutationErrorBanner",
             "file": "lib/core/riverpod_ui/catch_mutation_error_banner.dart",
-            "summary": "Persistent inline mutation-error adapter that renders CatchErrorBanner when a MutationState has an error.",
+            "summary": "Persistent inline mutation-error adapter that renders CatchBanner.error when a MutationState has an error.",
             "states": [
               "hidden",
               "visible",
@@ -1811,14 +1869,14 @@
             ],
             "governance": {
               "conceptRole": "member",
-              "conceptId": "catch.error_banner",
-              "parentConceptId": "catch.error_banner",
+              "conceptId": "catch.banner",
+              "parentConceptId": "catch.banner",
               "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.error_banner"
+              "decisionRef": "contract-family:catch.banner"
             }
           },
           {
-            "id": "catch.error_banner.localized",
+            "id": "catch.banner.localized",
             "symbol": "CatchLocalizedErrorBanner",
             "file": "lib/core/riverpod_ui/catch_localized_error_banner.dart",
             "summary": "App-localized error mapping and retry eligibility, rendered by the provider-free banner with caller-resolved copy.",
@@ -1830,14 +1888,14 @@
             ],
             "governance": {
               "conceptRole": "member",
-              "conceptId": "catch.error_banner",
-              "parentConceptId": "catch.error_banner",
+              "conceptId": "catch.banner",
+              "parentConceptId": "catch.banner",
               "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.error_banner"
+              "decisionRef": "contract-family:catch.banner"
             }
           },
           {
-            "id": "catch.error_banner.mutation_listener",
+            "id": "catch.banner.mutation_listener",
             "symbol": "CatchMutationErrorListener",
             "file": "lib/core/riverpod_ui/catch_mutation_error_listener.dart",
             "summary": "Transient snackbar boundary for one mutation's pending-to-error transition.",
@@ -1848,14 +1906,14 @@
             ],
             "governance": {
               "conceptRole": "member",
-              "conceptId": "catch.error_banner",
-              "parentConceptId": "catch.error_banner",
+              "conceptId": "catch.banner",
+              "parentConceptId": "catch.banner",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.error_banner"
+              "decisionRef": "contract-family:catch.banner"
             }
           },
           {
-            "id": "catch.error_banner.mutation_listeners",
+            "id": "catch.banner.mutation_listeners",
             "symbol": "CatchMutationErrorListeners",
             "file": "lib/core/riverpod_ui/catch_mutation_error_listeners.dart",
             "summary": "Transient snackbar boundary for several mutations that should share one error-feedback policy.",
@@ -1866,10 +1924,10 @@
             ],
             "governance": {
               "conceptRole": "member",
-              "conceptId": "catch.error_banner",
-              "parentConceptId": "catch.error_banner",
+              "conceptId": "catch.banner",
+              "parentConceptId": "catch.banner",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.error_banner"
+              "decisionRef": "contract-family:catch.banner"
             }
           }
         ],
@@ -1893,14 +1951,16 @@
           "catch.surface"
         ],
         "notes": [
-          "Use for persistent inline failures inside already-rendered content.",
+          "Use CatchBanner for persistent messages inside already-rendered content; semantic tone selects the existing message pigment.",
+          "Use CatchBanner.error and CatchBanner.errorWithRetry for compact inline failures. Callers own copy, error mapping and retry eligibility.",
+          "CatchNotice owns transient, dismissible or openable notification delivery; its lifecycle and person/action contract are distinct from persistent page feedback.",
           "Use CatchErrorState for data-load branches that replace content.",
           "Use the mutation listener members for transient snackbar policy, not for visual layout."
         ]
       },
       "governance": {
         "role": "composition",
-        "canonicalFamily": "catch.error_banner",
+        "canonicalFamily": "catch.banner",
         "publicApi": true,
         "stateOwnership": "display-state-only",
         "asyncOwnership": "display-state-only",
@@ -1909,22 +1969,28 @@
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.error_banner"
+        "conceptId": "catch.banner",
+        "decisionRef": "pattern-family:inline-feedback-canonical-banner"
       },
       "surfaces": {
-        "flutter": "CatchErrorBanner"
+        "flutter": "CatchBanner"
+      },
+      "level": "L3",
+      "roleNoun": "Banner",
+      "naming": {
+        "useCase": ""
       }
     },
     {
       "id": "catch.notice",
-        "enforcement": {
-          "code": "catch_use_canonical_feedback",
-          "codes": [
-            "catch_notice_host_is_app_owned",
-            "catch_notification_delivery_is_service_owned"
-          ],
-          "vehicle": "plugin"
-        },
+      "enforcement": {
+        "code": "catch_use_canonical_feedback",
+        "codes": [
+          "catch_notice_host_is_app_owned",
+          "catch_notification_delivery_is_service_owned"
+        ],
+        "vehicle": "plugin"
+      },
       "name": "CatchNotice",
       "status": "active",
       "kind": "composite",
@@ -2218,32 +2284,32 @@
     },
     {
       "id": "catch.field",
-        "enforcement": {
-          "code": "catch_use_named_catch_field_constructor",
-          "codes": [
-            "catch_field_requires_section_context",
-            "catch_field_geometry_is_section_owned",
-            "catch_field_divider_is_section_owned",
-            "catch_no_tokens_prop_drilling"
+      "enforcement": {
+        "code": "catch_use_named_catch_field_constructor",
+        "codes": [
+          "catch_field_requires_section_context",
+          "catch_field_geometry_is_section_owned",
+          "catch_field_divider_is_section_owned",
+          "catch_no_tokens_prop_drilling"
+        ],
+        "vehicle": "plugin",
+        "replaces": [
+          "TextField",
+          "TextFormField"
+        ],
+        "replacement": "CatchField.input",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "placement": {
+          "allowedParents": [
+            "CatchSection",
+            "CatchFieldLanes",
+            "CatchSectionList"
           ],
-          "vehicle": "plugin",
-          "replaces": [
-            "TextField",
-            "TextFormField"
-          ],
-          "replacement": "CatchField.input",
-          "steeringGroup": "button",
-          "steeringCode": "catch_no_raw_button_control",
-          "placement": {
-            "allowedParents": [
-              "CatchSection",
-              "CatchFieldLanes",
-              "CatchSectionList"
-            ],
-            "slot": "children"
-          },
-          "probeSeed": "TextField()"
+          "slot": "children"
         },
+        "probeSeed": "TextField()"
+      },
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
@@ -2261,7 +2327,22 @@
                 "name": "Type",
                 "type": "VARIANT",
                 "defaultValue": "Read",
-                "variantOptions": ["Read", "Content", "Nav", "Sortable", "Action", "Toggle", "Input", "Input Actions", "Control", "Choices", "Option Cards", "Stepper", "Add", "Select"],
+                "variantOptions": [
+                  "Read",
+                  "Content",
+                  "Nav",
+                  "Sortable",
+                  "Action",
+                  "Toggle",
+                  "Input",
+                  "Input Actions",
+                  "Control",
+                  "Choices",
+                  "Option Cards",
+                  "Stepper",
+                  "Add",
+                  "Select"
+                ],
                 "sourceProps": [],
                 "notes": "Maps one-to-one to the 14 named CatchField constructors."
               },
@@ -2269,61 +2350,92 @@
                 "name": "Title",
                 "type": "TEXT",
                 "defaultValue": "Event name",
-                "sourceProps": ["title"]
+                "sourceProps": [
+                  "title"
+                ]
               },
               {
                 "name": "Value",
                 "type": "TEXT",
                 "defaultValue": "Sunday Social",
-                "sourceProps": ["body", "valueText", "placeholder", "emptyValueText", "inputHint"]
+                "sourceProps": [
+                  "body",
+                  "valueText",
+                  "placeholder",
+                  "emptyValueText",
+                  "inputHint"
+                ]
               },
               {
                 "name": "Show Icon",
                 "type": "BOOLEAN",
                 "defaultValue": false,
-                "sourceProps": ["icon", "leading"]
+                "sourceProps": [
+                  "icon",
+                  "leading"
+                ]
               },
               {
                 "name": "Leading Icon",
                 "type": "INSTANCE_SWAP",
                 "defaultValue": null,
-                "sourceProps": ["icon", "leading"]
+                "sourceProps": [
+                  "icon",
+                  "leading"
+                ]
               },
               {
                 "name": "Show Optional",
                 "type": "BOOLEAN",
                 "defaultValue": false,
-                "sourceProps": ["isOptional"]
+                "sourceProps": [
+                  "isOptional"
+                ]
               },
               {
                 "name": "Optional Label",
                 "type": "TEXT",
                 "defaultValue": " \u00b7 Optional",
-                "sourceProps": ["isOptional"]
+                "sourceProps": [
+                  "isOptional"
+                ]
               },
               {
                 "name": "Show Supporting",
                 "type": "BOOLEAN",
                 "defaultValue": false,
-                "sourceProps": ["supporting", "helperText", "error", "errorText"]
+                "sourceProps": [
+                  "supporting",
+                  "helperText",
+                  "error",
+                  "errorText"
+                ]
               },
               {
                 "name": "Supporting Text",
                 "type": "TEXT",
                 "defaultValue": "Supporting text",
-                "sourceProps": ["helperText", "error", "errorText"]
+                "sourceProps": [
+                  "helperText",
+                  "error",
+                  "errorText"
+                ]
               },
               {
                 "name": "Show Counter",
                 "type": "BOOLEAN",
                 "defaultValue": false,
-                "sourceProps": ["maxLength"]
+                "sourceProps": [
+                  "maxLength"
+                ]
               },
               {
                 "name": "Counter",
                 "type": "TEXT",
                 "defaultValue": "0 / 100",
-                "sourceProps": ["maxLength"]
+                "sourceProps": [
+                  "maxLength"
+                ]
               }
             ]
           }
@@ -4478,11 +4590,11 @@
     },
     {
       "id": "catch.skeleton",
-        "enforcement": {
-          "code": "catch_no_brittle_pump_timing",
-          "vehicle": "plugin",
-          "probeSeed": "tester.pumpAndSettle()"
-        },
+      "enforcement": {
+        "code": "catch_no_brittle_pump_timing",
+        "vehicle": "plugin",
+        "probeSeed": "tester.pumpAndSettle()"
+      },
       "name": "CatchSkeleton",
       "status": "active",
       "kind": "pattern",
@@ -4784,11 +4896,11 @@
     },
     {
       "id": "catch.loading_indicator",
-        "enforcement": {
-          "code": "catch_no_raw_motion",
-          "vehicle": "plugin",
-          "probeSeed": "Duration(milliseconds: 175)"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_motion",
+        "vehicle": "plugin",
+        "probeSeed": "Duration(milliseconds: 175)"
+      },
       "name": "CatchLoadingIndicator",
       "status": "active",
       "kind": "primitive",
@@ -4883,24 +4995,24 @@
     },
     {
       "id": "catch.async_value",
-        "enforcement": {
-          "code": "catch_async_requires_state_surface",
-          "codes": [
-            "catch_async_requires_retry",
-            "catch_error_state_requires_action",
-            "catch_mutation_pending_requires_error",
-            "catch_no_async_flush_hack",
-            "catch_no_raw_error_surface"
-          ],
-          "vehicle": "plugin",
-          "states": [
-            "loading",
-            "error",
-            "empty",
-            "data"
-          ],
-          "probeSeed": "asyncValue.requireValue"
-        },
+      "enforcement": {
+        "code": "catch_async_requires_state_surface",
+        "codes": [
+          "catch_async_requires_retry",
+          "catch_error_state_requires_action",
+          "catch_mutation_pending_requires_error",
+          "catch_no_async_flush_hack",
+          "catch_no_raw_error_surface"
+        ],
+        "vehicle": "plugin",
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "data"
+        ],
+        "probeSeed": "asyncValue.requireValue"
+      },
       "name": "CatchAsyncValueView",
       "status": "active",
       "kind": "pattern",
@@ -5081,10 +5193,10 @@
     },
     {
       "id": "catch.startup_loading_screen",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchStartupLoadingScreen",
       "status": "active",
       "kind": "composite",
@@ -5174,19 +5286,19 @@
     },
     {
       "id": "catch.typography",
-        "enforcement": {
-          "code": "catch_text_requires_style",
-          "codes": [
-            "catch_no_raw_color",
-            "catch_no_raw_text_style",
-            "catch_no_raw_font_drift",
-            "catch_no_direct_font_builder",
-            "catch_no_raw_letter_spacing",
-            "catch_no_low_level_typography_role"
-          ],
-          "vehicle": "plugin",
-          "probeSeed": "Text('unstyled')"
-        },
+      "enforcement": {
+        "code": "catch_text_requires_style",
+        "codes": [
+          "catch_no_raw_color",
+          "catch_no_raw_text_style",
+          "catch_no_raw_font_drift",
+          "catch_no_direct_font_builder",
+          "catch_no_raw_letter_spacing",
+          "catch_no_low_level_typography_role"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "Text('unstyled')"
+      },
       "name": "CatchKicker",
       "status": "active",
       "kind": "primitive",
@@ -5486,10 +5598,10 @@
     },
     {
       "id": "catch.metric_strip",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchMetricStrip",
       "status": "active",
       "kind": "primitive",
@@ -6302,19 +6414,19 @@
     },
     {
       "id": "catch.menu",
-        "enforcement": {
-          "code": "catch_no_raw_button_control",
-          "vehicle": "plugin",
-          "replaces": [
-            "DropdownButton",
-            "MenuAnchor",
-            "PopupMenuButton"
-          ],
-          "replacement": "CatchMenuAnchor, CatchActionMenu, or CatchSelectionMenu",
-          "steeringGroup": "button",
-          "steeringCode": "catch_no_raw_button_control",
-          "probeSeed": "PopupMenuButton<void>(itemBuilder: (_) => const [])"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_button_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "DropdownButton",
+          "MenuAnchor",
+          "PopupMenuButton"
+        ],
+        "replacement": "CatchMenuAnchor, CatchActionMenu, or CatchSelectionMenu",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "probeSeed": "PopupMenuButton<void>(itemBuilder: (_) => const [])"
+      },
       "name": "CatchMenu",
       "status": "active",
       "kind": "composite",
@@ -6595,10 +6707,10 @@
     },
     {
       "id": "catch.icon_tile",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchIconTile",
       "status": "active",
       "kind": "primitive",
@@ -6734,16 +6846,16 @@
     },
     {
       "id": "catch.control_shell",
-        "enforcement": {
-          "code": "catch_no_raw_radius",
-          "codes": [
-            "catch_no_raw_alpha",
-            "catch_no_raw_shadow",
-            "catch_no_raw_stroke_width"
-          ],
-          "vehicle": "plugin",
-          "probeSeed": "BorderRadius.circular(12)"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_radius",
+        "codes": [
+          "catch_no_raw_alpha",
+          "catch_no_raw_shadow",
+          "catch_no_raw_stroke_width"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "BorderRadius.circular(12)"
+      },
       "name": "CatchControlShell",
       "status": "active",
       "kind": "primitive",
@@ -6930,10 +7042,10 @@
     },
     {
       "id": "catch.number_stepper",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchNumberStepper",
       "status": "active",
       "kind": "primitive",
@@ -7088,10 +7200,10 @@
     },
     {
       "id": "catch.option_card",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchOptionCard",
       "status": "active",
       "kind": "primitive",
@@ -7214,33 +7326,32 @@
     },
     {
       "id": "catch.surface",
-        "enforcement": {
-          "code": "catch_no_raw_surface_shell",
-          "codes": [
-            "catch_no_nested_rounded_rectangles",
-            "catch_no_raw_stroke_width"
-          ],
-          "vehicle": "plugin",
-          "replaces": [
-            "Card"
-          ],
-          "replacement": "CatchSurface or CatchSectionCard",
-          "steeringGroup": "control",
-          "steeringCode": "catch_no_raw_material_control",
-          "probeSeed": "Card(child: const SizedBox())"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_surface_shell",
+        "codes": [
+          "catch_no_nested_rounded_rectangles",
+          "catch_no_raw_stroke_width"
+        ],
+        "vehicle": "plugin",
+        "replaces": [
+          "Card"
+        ],
+        "replacement": "CatchSurface or CatchSectionCard",
+        "steeringGroup": "control",
+        "steeringCode": "catch_no_raw_material_control",
+        "probeSeed": "Card(child: const SizedBox())"
+      },
       "name": "CatchSurface",
       "status": "active",
       "kind": "primitive",
-      "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted notes, inline messages, and tappable tiles.",
+      "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted panels, and tappable tiles.",
       "dart": {
         "symbol": "CatchSurface",
         "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
         "constructors": [
           "CatchSurface",
           "CatchSurface.card",
-          "CatchSurface.tinted",
-          "CatchSurface.message"
+          "CatchSurface.tinted"
         ]
       },
       "design": {
@@ -7348,29 +7459,8 @@
             "values": [
               "base",
               "card",
-              "tinted",
-              "message"
+              "tinted"
             ]
-          },
-          {
-            "name": "messageTone",
-            "type": "enum",
-            "required": false,
-            "default": "primary",
-            "dartType": "CatchSurfaceMessageTone",
-            "values": [
-              "primary",
-              "success",
-              "warning",
-              "danger",
-              "neutral"
-            ]
-          },
-          {
-            "name": "title",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
           }
         ],
         "states": [
@@ -7383,8 +7473,7 @@
           "focused",
           "elevated",
           "card",
-          "tinted",
-          "message"
+          "tinted"
         ],
         "slots": [
           {
@@ -7414,35 +7503,10 @@
           "CatchElevation.overlay",
           "CatchMotion.fast",
           "CatchSurface.card",
-          "CatchSurface.tinted",
-          "CatchSurface.message",
-          "CatchSurfaceMessageTone",
-          "CatchTextStyles.labelL",
-          "CatchInlineMessageSurface"
+          "CatchSurface.tinted"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.surface.inline_message_surface",
-            "symbol": "CatchInlineMessageSurface",
-            "summary": "Shared internal/public row grammar behind message surfaces and inline feedback banners.",
-            "states": [
-              "neutral",
-              "success",
-              "warning",
-              "danger",
-              "with-action"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_inline_message_surface.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.surface",
-              "parentConceptId": "catch.surface",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.surface"
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -7465,10 +7529,9 @@
           "catch.option_card"
         ],
         "notes": [
-          "CatchSurface is the only low-level surface primitive. Use CatchSurface.card, CatchSurface.tinted, and CatchSurface.message for surface chrome; use CatchSection.contained for section-card content chrome.",
+          "CatchSurface owns low-level paint and interaction. Use CatchSurface.card or CatchSurface.tinted for surface chrome and CatchSection.contained for section-card content chrome.",
           "Choose borderRole for ordinary semantic lines and borderSpec only for a role with a justified color override; raw borderColor and borderWidth are deprecated migration shims.",
-          "Do not hand-roll Container/DecoratedBox cards in feature UI; request a Surface mode if this contract is missing a state.",
-          "InlineMessageSurface is a member of catch.surface message grammar and should not become a separate surface family."
+          "Use CatchBanner for icon/title/message composition. Surface paint must not own a second feedback renderer."
         ]
       },
       "governance": {
@@ -7482,10 +7545,16 @@
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.surface"
+        "conceptId": "catch.surface",
+        "decisionRef": "pattern-family:inline-feedback-canonical-banner"
       },
       "surfaces": {
         "flutter": "CatchSurface"
+      },
+      "level": "L2",
+      "roleNoun": "Surface",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -7966,10 +8035,10 @@
     },
     {
       "id": "catch.privacy_badge",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchPrivacyBadge",
       "status": "active",
       "kind": "primitive",
@@ -8082,10 +8151,10 @@
     },
     {
       "id": "catch.journey_steps",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchJourneySteps",
       "status": "active",
       "kind": "composite",
@@ -8962,15 +9031,15 @@
     },
     {
       "id": "catch.section_stack",
-        "enforcement": {
-          "code": "catch_section_list_requires_empty_policy",
-          "vehicle": "api",
-          "states": [
-            "empty",
-            "data"
-          ],
-          "probeSeed": "CatchSectionList(children: const <Widget>[])"
-        },
+      "enforcement": {
+        "code": "catch_section_list_requires_empty_policy",
+        "vehicle": "api",
+        "states": [
+          "empty",
+          "data"
+        ],
+        "probeSeed": "CatchSectionList(children: const <Widget>[])"
+      },
       "name": "CatchSectionStack",
       "status": "active",
       "kind": "pattern",
@@ -9164,10 +9233,10 @@
     },
     {
       "id": "catch.roster_tiles",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchRosterTiles",
       "status": "active",
       "kind": "composite",
@@ -9283,10 +9352,10 @@
     },
     {
       "id": "catch.roster_row",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchRosterRow",
       "status": "active",
       "kind": "composite",
@@ -9447,10 +9516,10 @@
     },
     {
       "id": "catch.roster_table",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchRosterTable",
       "status": "active",
       "kind": "composite",
@@ -9590,10 +9659,10 @@
     },
     {
       "id": "catch.activity_art",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchActivityArt",
       "status": "active",
       "kind": "primitive",
@@ -9749,14 +9818,14 @@
     },
     {
       "id": "catch.network_image",
-        "enforcement": {
-          "code": "catch_no_raw_network_image",
-          "codes": [
-            "catch_no_raw_asset_path"
-          ],
-          "vehicle": "plugin",
-          "probeSeed": "Image.network('https://example.test/image.png')"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_network_image",
+        "codes": [
+          "catch_no_raw_asset_path"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "Image.network('https://example.test/image.png')"
+      },
       "name": "CatchNetworkImage",
       "status": "active",
       "kind": "primitive",
@@ -9916,10 +9985,10 @@
     },
     {
       "id": "catch.distance_ring",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchDistanceRing",
       "status": "active",
       "kind": "primitive",
@@ -10357,10 +10426,10 @@
     },
     {
       "id": "catch.option_group",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchOptionGroup",
       "status": "active",
       "kind": "composite",
@@ -10571,10 +10640,10 @@
     },
     {
       "id": "catch.tab_rail",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchTabRail",
       "status": "active",
       "kind": "composite",
@@ -10739,10 +10808,10 @@
     },
     {
       "id": "catch.search_field",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchSearchField",
       "status": "active",
       "kind": "primitive",
@@ -10912,18 +10981,18 @@
     },
     {
       "id": "catch.range_slider",
-        "enforcement": {
-          "code": "catch_no_raw_button_control",
-          "vehicle": "plugin",
-          "replaces": [
-            "RangeSlider",
-            "Slider"
-          ],
-          "replacement": "CatchRangeSlider",
-          "steeringGroup": "button",
-          "steeringCode": "catch_no_raw_button_control",
-          "probeSeed": "Slider(value: 0.5, onChanged: (_) {})"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_button_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "RangeSlider",
+          "Slider"
+        ],
+        "replacement": "CatchRangeSlider",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "probeSeed": "Slider(value: 0.5, onChanged: (_) {})"
+      },
       "name": "CatchRangeSlider",
       "status": "active",
       "kind": "primitive",
@@ -11065,19 +11134,19 @@
     },
     {
       "id": "catch.toggle",
-        "enforcement": {
-          "code": "catch_no_raw_button_control",
-          "vehicle": "plugin",
-          "replaces": [
-            "Radio",
-            "SegmentedButton",
-            "Switch"
-          ],
-          "replacement": "CatchToggle or CatchOptionGroup",
-          "steeringGroup": "button",
-          "steeringCode": "catch_no_raw_button_control",
-          "probeSeed": "Switch(value: false, onChanged: (_) {})"
-        },
+      "enforcement": {
+        "code": "catch_no_raw_button_control",
+        "vehicle": "plugin",
+        "replaces": [
+          "Radio",
+          "SegmentedButton",
+          "Switch"
+        ],
+        "replacement": "CatchToggle or CatchOptionGroup",
+        "steeringGroup": "button",
+        "steeringCode": "catch_no_raw_button_control",
+        "probeSeed": "Switch(value: false, onChanged: (_) {})"
+      },
       "name": "CatchToggle",
       "status": "active",
       "kind": "primitive",
@@ -11191,10 +11260,10 @@
     },
     {
       "id": "catch.status_bar",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchStatusBar",
       "status": "active",
       "kind": "pattern",
@@ -11309,10 +11378,10 @@
     },
     {
       "id": "catch.step_header",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchStepHeader",
       "status": "active",
       "kind": "composite",
@@ -11727,10 +11796,10 @@
     },
     {
       "id": "catch.bottom_dock",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchBottomDock",
       "status": "active",
       "kind": "composite",
@@ -11848,10 +11917,10 @@
     },
     {
       "id": "catch.confirm_dialog",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchConfirmDialog",
       "status": "active",
       "kind": "composite",
@@ -11966,10 +12035,10 @@
     },
     {
       "id": "catch.form_dialog",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchFormDialog",
       "status": "active",
       "kind": "composite",
@@ -12102,10 +12171,10 @@
     },
     {
       "id": "catch.count_pill",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchCountPill",
       "status": "active",
       "kind": "primitive",
@@ -12245,10 +12314,10 @@
     },
     {
       "id": "catch.page_dots",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchPageDots",
       "status": "active",
       "kind": "primitive",
@@ -12378,10 +12447,10 @@
     },
     {
       "id": "catch.club_dock",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "ClubDetailDock",
       "status": "active",
       "kind": "composite",
@@ -12556,10 +12625,10 @@
     },
     {
       "id": "catch.cover_story",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchCoverStory",
       "status": "active",
       "kind": "composite",
@@ -12743,10 +12812,10 @@
     },
     {
       "id": "catch.person_avatar",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchPersonAvatar",
       "status": "active",
       "kind": "primitive",
@@ -12905,7 +12974,9 @@
             "symbol": "CatchAvatarColors",
             "file": "packages/catch_ui/lib/src/components/catch_avatar_colors.dart",
             "summary": "Presentation-only accent, deep and soft colors supplied by callers to avatar fallbacks and veils.",
-            "states": ["caller-resolved"],
+            "states": [
+              "caller-resolved"
+            ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.person_avatar",
@@ -13198,11 +13269,11 @@
     },
     {
       "id": "catch.row_press_surface",
-        "enforcement": {
-          "code": "catch_no_positional_widget_finder",
-          "vehicle": "plugin",
-          "probeSeed": "find.text('x').first"
-        },
+      "enforcement": {
+        "code": "catch_no_positional_widget_finder",
+        "vehicle": "plugin",
+        "probeSeed": "find.text('x').first"
+      },
       "name": "CatchRowPressSurface",
       "status": "active",
       "kind": "primitive",
@@ -13309,10 +13380,10 @@
     },
     {
       "id": "catch.person_row",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchPersonRow",
       "status": "active",
       "kind": "composite",
@@ -13928,10 +13999,10 @@
     },
     {
       "id": "catch.graded_image",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchGradedImage",
       "status": "active",
       "kind": "primitive",
@@ -14041,10 +14112,10 @@
     },
     {
       "id": "catch.detail_media",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchDetailHeroBackdrop",
       "status": "active",
       "kind": "composite",
@@ -14190,10 +14261,10 @@
     },
     {
       "id": "catch.activity_map_pin",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchActivityMapPin",
       "status": "active",
       "kind": "primitive",
@@ -14334,14 +14405,14 @@
     },
     {
       "id": "catch.event_detail_sections",
-        "enforcement": {
-          "code": "catch_event_detail_prefers_photo_thumbnail",
-          "codes": [
-            "catch_no_widget_returning_method"
-          ],
-          "vehicle": "plugin",
-          "probeSeed": "EventActivityArtwork(activityType: 'sport')"
-        },
+      "enforcement": {
+        "code": "catch_event_detail_prefers_photo_thumbnail",
+        "codes": [
+          "catch_no_widget_returning_method"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "EventActivityArtwork(activityType: 'sport')"
+      },
       "name": "EventDetailSections",
       "status": "active",
       "kind": "screen-contract",
@@ -14788,10 +14859,10 @@
     },
     {
       "id": "catch.notification_row",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "NotificationRow",
       "status": "active",
       "kind": "composite",
@@ -14946,14 +15017,14 @@
     },
     {
       "id": "catch.chat_composer",
-        "enforcement": {
-          "code": "catch_no_presentation_platform_import",
-          "codes": [
-            "catch_no_presentation_repository_reach"
-          ],
-          "vehicle": "plugin",
-          "probeSeed": "ref.watch(exampleRepositoryProvider)"
-        },
+      "enforcement": {
+        "code": "catch_no_presentation_platform_import",
+        "codes": [
+          "catch_no_presentation_repository_reach"
+        ],
+        "vehicle": "plugin",
+        "probeSeed": "ref.watch(exampleRepositoryProvider)"
+      },
       "name": "ChatInputBar",
       "status": "active",
       "kind": "composite",
@@ -15120,10 +15191,10 @@
     },
     {
       "id": "catch.bottom_action",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchBottomAction",
       "status": "active",
       "kind": "composite",
@@ -15365,10 +15436,10 @@
     },
     {
       "id": "catch.host_row",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchHostRow",
       "status": "active",
       "kind": "composite",
@@ -15526,10 +15597,10 @@
     },
     {
       "id": "catch.map_preview",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchMapPreview",
       "status": "active",
       "kind": "composite",
@@ -15661,10 +15732,10 @@
     },
     {
       "id": "catch.meta_row",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchMetaRow",
       "status": "active",
       "kind": "primitive",
@@ -15778,10 +15849,10 @@
     },
     {
       "id": "catch.index_row",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchIndexRow",
       "status": "active",
       "kind": "primitive",
@@ -15919,10 +15990,10 @@
     },
     {
       "id": "catch.organizer_poster",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchOrganizerPoster",
       "status": "active",
       "kind": "composite",
@@ -16155,10 +16226,10 @@
     },
     {
       "id": "catch.person_polaroid",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchPersonPolaroid",
       "status": "active",
       "kind": "composite",
@@ -16311,10 +16382,10 @@
     },
     {
       "id": "catch.club_cover",
-        "verification": {
-          "vehicle": "widgetbook-contract",
-          "reason": "Canonical states are exercised through the generated Widgetbook contract."
-        },
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
       "name": "CatchClubCover",
       "status": "active",
       "kind": "primitive",

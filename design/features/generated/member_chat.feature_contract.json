@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:29134dd066b5ed235fe7aff133f5b85282a068017daa584fd195baa697922e40",
-  "resolvedDigest": "sha256:e357895366870892158c56b6d2019bf622f1afec278d803ff70686c589b3f04d",
+  "resolvedDigest": "sha256:04ab1dc2d77385e96c77eeb0f377efbc52ab7238888d386c5de0be460bf8c548",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -1712,8 +1712,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -4004,8 +4003,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

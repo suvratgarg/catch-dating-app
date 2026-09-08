@@ -23,7 +23,7 @@ class CatchLocalizedErrorBanner extends StatelessWidget {
       l10n: context.l10n,
       context: errorContext,
     );
-    return CatchErrorBanner.withRetry(
+    return CatchBanner.errorWithRetry(
       message: descriptor.message,
       retryLabel: context.l10n.coreCatchErrorBannerLabelTryAgain,
       onRetry: descriptor.retryable ? onRetry : null,

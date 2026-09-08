@@ -727,6 +727,55 @@
           "rationale": "The explicit code-caret use case distinguishes insertion position from progress/loading indicators."
         }
       ]
+    },
+    {
+      "id": "inline-feedback-canonical-banner",
+      "title": "Canonical persistent inline feedback",
+      "intent": "One icon, text and action renderer for persistent messages; error and retry are named recipes, and low-level surface paint does not own message composition.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.banner",
+      "qualityReference": "CatchBanner",
+      "decisionSource": "owner-delegated:2026-09-08 Phase 4 source and rendered family review",
+      "acceptedVisualDelta": [
+        "Preserve all five production message tones and both error recipes at light/dark and text scales 1.0/2.0, pinned before edits by banner_family goldens.",
+        "Messages now honor their existing duration parameter through CatchSurface, including reduced-motion zero duration; no production caller supplies a nondefault duration.",
+        "Widgetbook moves message states under the Banner contract and replaces the obsolete raw-style-only demo with the canonical semantic recipes. Surface previews retain only low-level paint and interaction."
+      ],
+      "members": [
+        {
+          "symbol": "CatchBanner",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One L3 renderer combines semantic messages, inline error styling and caller-owned retry; named constructors express the real error recipe."
+        },
+        {
+          "symbol": "CatchErrorBanner",
+          "disposition": "unify",
+          "target": "CatchBanner",
+          "preview": "not-applicable",
+          "rationale": "All production callers migrate to error or errorWithRetry; preserve copy, null callback behavior and original error appearance without a forwarding alias."
+        },
+        {
+          "symbol": "CatchInlineMessageSurface",
+          "disposition": "unify",
+          "target": "CatchBanner",
+          "preview": "not-applicable",
+          "rationale": "Its reusable icon/text/action layout becomes the sole banner renderer; arbitrary demo styling is replaced by semantic tone recipes."
+        },
+        {
+          "symbol": "CatchSurface",
+          "disposition": "repair",
+          "preview": "required",
+          "rationale": "Keep L2 surface paint, card and tinted modes. Move the duplicated message constructor and its production callers into CatchBanner."
+        },
+        {
+          "symbol": "CatchNotice",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Keep transient notification delivery distinct: live announcements, dismissal/open callbacks, person payload and delivery-host lifecycle are not persistent page feedback."
+        }
+      ]
     }
   ]
 }

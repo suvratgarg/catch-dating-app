@@ -1204,7 +1204,7 @@ class _HostProviderSetupView extends StatelessWidget {
   Widget build(BuildContext context) {
     final entry = setup.catalogFor(provider);
     if (entry == null) {
-      return CatchErrorBanner(
+      return CatchBanner.error(
         message: context.l10n.hostsOperationalRosterProviderUnavailable,
       );
     }
@@ -1314,7 +1314,7 @@ class _HostProviderSetupView extends StatelessWidget {
         if (entry.importSupport ==
             HostProviderImportSupport.sampleRequired) ...[
           gapH8,
-          CatchErrorBanner(
+          CatchBanner.error(
             message: context.l10n.hostsOperationalRosterAdapterSampleRequired,
           ),
         ],
@@ -1493,7 +1493,7 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (choices.truncated) ...[
-                      CatchErrorBanner(
+                      CatchBanner.error(
                         message: context
                             .l10n
                             .hostsOperationalRosterProviderEventsTruncated,
@@ -1554,7 +1554,7 @@ class _HostRosterHandoffSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (!instructions.hasAvailableChannel) ...[
-            CatchErrorBanner(
+            CatchBanner.error(
               message: context.l10n.hostsOperationalRosterForwardProviderSetup,
             ),
             gapH12,
@@ -1870,26 +1870,26 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
             if (widget.table.adapter.support ==
                 HostRosterAdapterSupport.sampleRequired) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message:
                     context.l10n.hostsOperationalRosterAdapterSampleRequired,
               ),
             ],
             if (widget.table.adapter.providerMismatch) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: context.l10n.hostsOperationalRosterProviderMismatch,
               ),
             ],
             if (widget.table.usedLegacyEncoding) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: context.l10n.hostsOperationalRosterLegacyEncoding,
               ),
             ],
             if (widget.table.worksheetCount > 1) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: context.l10n.hostsOperationalRosterMultipleWorksheets(
                   count: widget.table.worksheetCount,
                 ),
@@ -1986,7 +1986,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
             ),
             if (mapped.truncatedCount > 0) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: context.l10n.hostsOperationalRosterLimit(
                   count: mapped.truncatedCount,
                 ),
@@ -1994,7 +1994,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
             ],
             for (final issue in mapped.issues) ...[
               gapH8,
-              CatchErrorBanner(message: _rowIssueCopy(context, issue)),
+              CatchBanner.error(message: _rowIssueCopy(context, issue)),
             ],
             if (mapped.rows.isNotEmpty) ...[
               gapH12,

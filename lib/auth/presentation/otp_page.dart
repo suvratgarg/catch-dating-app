@@ -246,7 +246,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             ],
             if (sendMutation.hasError) ...[
               gapH12,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: appErrorMessage(
                   (sendMutation as MutationError).error,
                   l10n: l10n,
@@ -322,7 +322,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ),
         if (verifyMutation.hasError) ...[
           gapH16,
-          CatchErrorBanner(
+          CatchBanner.error(
             message: appErrorMessage(
               (verifyMutation as MutationError).error,
               l10n: context.l10n,
@@ -332,7 +332,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ],
         if (sendMutation.hasError) ...[
           gapH16,
-          CatchErrorBanner(
+          CatchBanner.error(
             message: appErrorMessage(
               (sendMutation as MutationError).error,
               l10n: context.l10n,

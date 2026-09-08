@@ -10,6 +10,60 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('message actions and reduced motion share the banner boundary', (
+    tester,
+  ) async {
+    var actions = 0;
+    Widget frame({required bool reducedMotion}) => MaterialApp(
+      theme: CatchTheme.light,
+      home: MediaQuery(
+        data: MediaQueryData(disableAnimations: reducedMotion),
+        child: Scaffold(
+          body: CatchBanner(
+            message: 'Booking updated.',
+            duration: const Duration(milliseconds: 800),
+            actions: [
+              CatchTextButton(label: 'View', onPressed: () => actions++),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpWidget(frame(reducedMotion: false));
+    final surface = find.descendant(
+      of: find.byType(CatchBanner),
+      matching: find.byType(AnimatedContainer),
+    );
+    expect(
+      tester.widget<AnimatedContainer>(surface).duration,
+      const Duration(milliseconds: 800),
+    );
+    await tester.tap(find.text('View'));
+    expect(actions, 1);
+    await tester.pumpWidget(frame(reducedMotion: true));
+    expect(tester.widget<AnimatedContainer>(surface).duration, Duration.zero);
+  });
+
+  testWidgets('absent retry action never exposes an inert retry button', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CatchTheme.light,
+        home: const Scaffold(
+          body: CatchBanner.errorWithRetry(
+            message: 'Could not save.',
+            retryLabel: 'Retry',
+            onRetry: null,
+          ),
+        ),
+      ),
+    );
+    expect(find.text('Could not save.'), findsOneWidget);
+    expect(find.text('Retry'), findsNothing);
+  });
+
   testWidgets('shared error banner uses caller copy without app localization', (
     tester,
   ) async {
@@ -18,7 +72,7 @@ void main() {
       MaterialApp(
         theme: CatchTheme.light,
         home: Scaffold(
-          body: CatchErrorBanner.withRetry(
+          body: CatchBanner.errorWithRetry(
             message: 'Enregistrement impossible.',
             retryLabel: 'Réessayer',
             onRetry: () => retries++,

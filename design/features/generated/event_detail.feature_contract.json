@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:99537347f52975826c18ba813ca9c4e51de4e1d2d3980b51d41a7abab4350fa7",
-  "resolvedDigest": "sha256:bd037f5c63932c7489b8c80e85c35e9f867782072b2079cf4219731ae9800fc0",
+  "resolvedDigest": "sha256:c846d00a23ca20e74e3661b429e9b09e671a4ad6de9a9743fb10bd0f41105f8b",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -3216,8 +3216,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           }

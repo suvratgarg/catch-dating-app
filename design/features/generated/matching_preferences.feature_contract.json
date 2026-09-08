@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
-  "resolvedDigest": "sha256:ecadd54e0394bf131b093c8f7f200546a86dd246dbc80acd1b13a25a3738e4ab",
+  "resolvedDigest": "sha256:f66daf03972a070add60fa3322c21a0c635abeada92d4783d0d96354448d7dc2",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -863,8 +863,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

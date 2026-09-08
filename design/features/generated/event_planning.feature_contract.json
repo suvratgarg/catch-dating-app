@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ced80bb2dc64948a90e2ef412e0d4b1ef61cc13358bd1fa52e688eb8ba843e27",
-  "resolvedDigest": "sha256:b7cba4b1c6191b3dd1dc36fa941c4fc4695c73d9272f6dc43c08ad8406870f7d",
+  "resolvedDigest": "sha256:9443df0f83168ca5a019aede8202214cc5c9d2e6e663f6dd6bd648ddd7304abe",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -922,8 +922,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -1681,8 +1680,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

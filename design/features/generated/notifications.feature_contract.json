@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/notifications.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:43fa1d1178e44c2e412709dcedb75d10acd8849cc32bf88952ddeb32ce956ec9",
-  "resolvedDigest": "sha256:0ea3ee04afb38b7d56381a91966176047899c3cef684c73c88098310bcf28c46",
+  "resolvedDigest": "sha256:8c1c02f963487f420d30c71c0892cb9a72f6ad19b7074162f49bba6c6dc18784",
   "feature": {
     "id": "feature.notifications",
     "name": "Notifications",
@@ -1104,8 +1104,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

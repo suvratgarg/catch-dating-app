@@ -194,7 +194,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
               ),
               if (state.hasSaveError)
                 CatchSection.plain(
-                  child: CatchErrorBanner(message: state.saveErrorMessage!),
+                  child: CatchBanner.error(message: state.saveErrorMessage!),
                 ),
             ],
           ),

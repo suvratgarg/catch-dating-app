@@ -1603,7 +1603,7 @@ function buildCandidates() {
         "CatchSliverErrorState",
         "CatchFrameworkErrorView",
         "CatchErrorScaffold",
-        "CatchErrorBanner",
+        "CatchBanner",
         "CatchMutationErrorBanner",
       ],
     },
@@ -1616,7 +1616,7 @@ function buildCandidates() {
       tags: ["feedback", "callout"],
       names: [
         "CatchNotice",
-        "CatchInlineMessageSurface",
+        "CatchBanner",
         "NoticeCard",
         "EditHostedEventScopeNotice",
         "PaymentConfirmationHeadsUp",

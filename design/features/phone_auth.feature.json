@@ -36,7 +36,7 @@
             "symbol": "AuthController"
           }
         ],
-        "componentContracts": ["catch.button", "catch.error_banner", "catch.field", "catch.surface"],
+        "componentContracts": ["catch.button", "catch.banner", "catch.field", "catch.surface"],
         "dataContracts": []
       },
       "dimensions": {

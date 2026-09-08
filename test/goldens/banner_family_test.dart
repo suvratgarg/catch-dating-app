@@ -19,17 +19,17 @@ void main() {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              for (final tone in CatchSurfaceMessageTone.values) ...[
-                CatchSurface.message(
+              for (final tone in CatchBannerTone.values) ...[
+                CatchBanner(
                   title: 'Host notice',
                   message: 'Booking updated.',
-                  messageTone: tone,
+                  tone: tone,
                 ),
                 const SizedBox(height: 16),
               ],
-              const CatchErrorBanner(message: 'Could not save.'),
+              const CatchBanner.error(message: 'Could not save.'),
               const SizedBox(height: 16),
-              CatchErrorBanner.withRetry(
+              CatchBanner.errorWithRetry(
                 message: 'Could not save.',
                 retryLabel: 'Retry',
                 onRetry: () {},

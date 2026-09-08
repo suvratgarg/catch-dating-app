@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 
 /// Persistent inline error banner for a Riverpod mutation.
 ///
-/// This keeps the repeated `if (mutation.hasError) CatchErrorBanner(...)`
+/// This keeps the repeated `if (mutation.hasError) CatchBanner.error(...)`
 /// pattern in one place while preserving the distinction between persistent
 /// inline mutation errors and transient snackbar errors.
 class CatchMutationErrorBanner extends StatelessWidget {

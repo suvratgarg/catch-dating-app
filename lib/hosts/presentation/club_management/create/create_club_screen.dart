@@ -807,7 +807,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (screenState.mutationError != null)
-                            CatchErrorBanner(
+                            CatchBanner.error(
                               message: screenState.mutationError!,
                             ),
                           if (screenState.draftRestore.hasError)

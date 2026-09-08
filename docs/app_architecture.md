@@ -1438,7 +1438,7 @@ delivery channels:
   supports the same primary retry and optional secondary-action contract.
 - `CatchErrorBackAction` is the canonical route-exit action when retry would
   be dishonest or impossible.
-- `CatchErrorBanner` is the persistent inline mutation/form error channel.
+- `CatchBanner.error` is the persistent inline mutation/form error channel.
 - `CatchMutationErrorBanner` is the persistent Riverpod mutation adapter.
 - `CatchMutationErrorListener` and `CatchMutationErrorListeners` are transient
   snackbar boundaries for one or many mutations.
@@ -2282,6 +2282,9 @@ or implementation technique cannot justify a second shared implementation.
   typography/layout; Image owns loading or image treatment. Prefer an existing
   specific role: a Field still owns labeling/validation around an Input, an
   Avatar still presents identity, and a HeaderTitle still owns heading semantics.
+  Banner owns persistent inline feedback, with error/retry as named recipes.
+  Notice owns transient notification delivery with dismissal/open behavior;
+  sharing an icon and message does not make those delivery contracts identical.
 - **Files.** Snake case of the primary public class; suffix vocabulary
   `_screen`, `_controller`, `_view_model`, `_state`, `_repository`,
   `_service`, `_providers`, or a role-noun widget suffix. One primary public

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:25ddd8d57d68715820a0b043442864970f3c6f336a01abd891a811e7109f6927",
+  "resolvedDigest": "sha256:7ebe17e38620e8aee49a568faa1b1e8c73a59e07fc4dde5e9d16ba0fee5ce4e7",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6267,8 +6267,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

@@ -175,7 +175,7 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
               ),
             if (state.hasCompleteError)
               CatchSection.plain(
-                child: CatchErrorBanner(message: state.completeErrorMessage!),
+                child: CatchBanner.error(message: state.completeErrorMessage!),
               ),
           ],
         ),

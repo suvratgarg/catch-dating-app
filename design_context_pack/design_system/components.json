@@ -1726,21 +1726,22 @@
       }
     },
     {
-      "id": "catch.error_banner",
+      "id": "catch.banner",
       "verification": {
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchErrorBanner",
+      "name": "CatchBanner",
       "status": "active",
       "kind": "composite",
-      "summary": "Persistent inline error-feedback banner family for mutation and async failures inside existing page content.",
+      "summary": "Persistent inline feedback with one icon, text, and action layout; semantic tones and compact error/retry recipes share the same renderer.",
       "dart": {
-        "symbol": "CatchErrorBanner",
-        "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
+        "symbol": "CatchBanner",
+        "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
         "constructors": [
-          "CatchErrorBanner",
-          "CatchErrorBanner.withRetry"
+          "CatchBanner",
+          "CatchBanner.error",
+          "CatchBanner.errorWithRetry"
         ]
       },
       "design": {
@@ -1755,7 +1756,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "ErrorBanner",
+          "handoffName": "Banner",
           "allowed": true
         }
       },
@@ -1768,6 +1769,43 @@
             "dartType": "String"
           },
           {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchBannerTone",
+            "default": "primary",
+            "values": [
+              "primary",
+              "success",
+              "warning",
+              "danger",
+              "neutral"
+            ]
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchBannerVariant",
+            "default": "message",
+            "values": [
+              "message",
+              "error"
+            ]
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData"
+          },
+          {
             "name": "retryLabel",
             "type": "string",
             "required": false,
@@ -1778,21 +1816,23 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?"
-          },
-          {
-            "name": "errorContext",
-            "type": "object",
-            "required": false,
-            "default": "AppErrorContext.generic",
-            "dartType": "AppErrorContext"
           }
         ],
         "states": [
+          "primary",
+          "success",
+          "warning",
+          "danger",
+          "neutral",
+          "with-title",
+          "with-action",
           "inline",
           "from-error",
           "with-retry"
         ],
-        "slots": [],
+        "slots": [
+          "actions"
+        ],
         "tokens": [
           "space.s0",
           "space.s2",
@@ -1802,22 +1842,26 @@
           "theme.light.color.danger"
         ],
         "dartRoles": [
-          "CatchInlineMessageSurface",
           "CatchTextButton",
           "CatchIcons.errorOutlineRounded",
           "CatchTextStyles.supporting",
           "AppErrorContext",
           "MutationState",
           "Mutation",
-          "showCatchErrorSnackBar"
+          "showCatchErrorSnackBar",
+          "CatchBannerTone",
+          "CatchBannerVariant",
+          "CatchSurface"
         ],
-        "goldens": [],
+        "goldens": [
+          "banner_family"
+        ],
         "members": [
           {
-            "id": "catch.error_banner.mutation",
+            "id": "catch.banner.mutation",
             "symbol": "CatchMutationErrorBanner",
             "file": "lib/core/riverpod_ui/catch_mutation_error_banner.dart",
-            "summary": "Persistent inline mutation-error adapter that renders CatchErrorBanner when a MutationState has an error.",
+            "summary": "Persistent inline mutation-error adapter that renders CatchBanner.error when a MutationState has an error.",
             "states": [
               "hidden",
               "visible",
@@ -1825,14 +1869,14 @@
             ],
             "governance": {
               "conceptRole": "member",
-              "conceptId": "catch.error_banner",
-              "parentConceptId": "catch.error_banner",
+              "conceptId": "catch.banner",
+              "parentConceptId": "catch.banner",
               "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.error_banner"
+              "decisionRef": "contract-family:catch.banner"
             }
           },
           {
-            "id": "catch.error_banner.localized",
+            "id": "catch.banner.localized",
             "symbol": "CatchLocalizedErrorBanner",
             "file": "lib/core/riverpod_ui/catch_localized_error_banner.dart",
             "summary": "App-localized error mapping and retry eligibility, rendered by the provider-free banner with caller-resolved copy.",
@@ -1844,14 +1888,14 @@
             ],
             "governance": {
               "conceptRole": "member",
-              "conceptId": "catch.error_banner",
-              "parentConceptId": "catch.error_banner",
+              "conceptId": "catch.banner",
+              "parentConceptId": "catch.banner",
               "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.error_banner"
+              "decisionRef": "contract-family:catch.banner"
             }
           },
           {
-            "id": "catch.error_banner.mutation_listener",
+            "id": "catch.banner.mutation_listener",
             "symbol": "CatchMutationErrorListener",
             "file": "lib/core/riverpod_ui/catch_mutation_error_listener.dart",
             "summary": "Transient snackbar boundary for one mutation's pending-to-error transition.",
@@ -1862,14 +1906,14 @@
             ],
             "governance": {
               "conceptRole": "member",
-              "conceptId": "catch.error_banner",
-              "parentConceptId": "catch.error_banner",
+              "conceptId": "catch.banner",
+              "parentConceptId": "catch.banner",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.error_banner"
+              "decisionRef": "contract-family:catch.banner"
             }
           },
           {
-            "id": "catch.error_banner.mutation_listeners",
+            "id": "catch.banner.mutation_listeners",
             "symbol": "CatchMutationErrorListeners",
             "file": "lib/core/riverpod_ui/catch_mutation_error_listeners.dart",
             "summary": "Transient snackbar boundary for several mutations that should share one error-feedback policy.",
@@ -1880,10 +1924,10 @@
             ],
             "governance": {
               "conceptRole": "member",
-              "conceptId": "catch.error_banner",
-              "parentConceptId": "catch.error_banner",
+              "conceptId": "catch.banner",
+              "parentConceptId": "catch.banner",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.error_banner"
+              "decisionRef": "contract-family:catch.banner"
             }
           }
         ],
@@ -1907,14 +1951,16 @@
           "catch.surface"
         ],
         "notes": [
-          "Use for persistent inline failures inside already-rendered content.",
+          "Use CatchBanner for persistent messages inside already-rendered content; semantic tone selects the existing message pigment.",
+          "Use CatchBanner.error and CatchBanner.errorWithRetry for compact inline failures. Callers own copy, error mapping and retry eligibility.",
+          "CatchNotice owns transient, dismissible or openable notification delivery; its lifecycle and person/action contract are distinct from persistent page feedback.",
           "Use CatchErrorState for data-load branches that replace content.",
           "Use the mutation listener members for transient snackbar policy, not for visual layout."
         ]
       },
       "governance": {
         "role": "composition",
-        "canonicalFamily": "catch.error_banner",
+        "canonicalFamily": "catch.banner",
         "publicApi": true,
         "stateOwnership": "display-state-only",
         "asyncOwnership": "display-state-only",
@@ -1923,10 +1969,16 @@
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.error_banner"
+        "conceptId": "catch.banner",
+        "decisionRef": "pattern-family:inline-feedback-canonical-banner"
       },
       "surfaces": {
-        "flutter": "CatchErrorBanner"
+        "flutter": "CatchBanner"
+      },
+      "level": "L3",
+      "roleNoun": "Banner",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -7292,15 +7344,14 @@
       "name": "CatchSurface",
       "status": "active",
       "kind": "primitive",
-      "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted notes, inline messages, and tappable tiles.",
+      "summary": "Canonical low-level surface primitive for base surfaces, bounded cards, tinted panels, and tappable tiles.",
       "dart": {
         "symbol": "CatchSurface",
         "file": "packages/catch_ui/lib/src/primitives/catch_surface.dart",
         "constructors": [
           "CatchSurface",
           "CatchSurface.card",
-          "CatchSurface.tinted",
-          "CatchSurface.message"
+          "CatchSurface.tinted"
         ]
       },
       "design": {
@@ -7408,29 +7459,8 @@
             "values": [
               "base",
               "card",
-              "tinted",
-              "message"
+              "tinted"
             ]
-          },
-          {
-            "name": "messageTone",
-            "type": "enum",
-            "required": false,
-            "default": "primary",
-            "dartType": "CatchSurfaceMessageTone",
-            "values": [
-              "primary",
-              "success",
-              "warning",
-              "danger",
-              "neutral"
-            ]
-          },
-          {
-            "name": "title",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
           }
         ],
         "states": [
@@ -7443,8 +7473,7 @@
           "focused",
           "elevated",
           "card",
-          "tinted",
-          "message"
+          "tinted"
         ],
         "slots": [
           {
@@ -7474,35 +7503,10 @@
           "CatchElevation.overlay",
           "CatchMotion.fast",
           "CatchSurface.card",
-          "CatchSurface.tinted",
-          "CatchSurface.message",
-          "CatchSurfaceMessageTone",
-          "CatchTextStyles.labelL",
-          "CatchInlineMessageSurface"
+          "CatchSurface.tinted"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.surface.inline_message_surface",
-            "symbol": "CatchInlineMessageSurface",
-            "summary": "Shared internal/public row grammar behind message surfaces and inline feedback banners.",
-            "states": [
-              "neutral",
-              "success",
-              "warning",
-              "danger",
-              "with-action"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_inline_message_surface.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.surface",
-              "parentConceptId": "catch.surface",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.surface"
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -7525,10 +7529,9 @@
           "catch.option_card"
         ],
         "notes": [
-          "CatchSurface is the only low-level surface primitive. Use CatchSurface.card, CatchSurface.tinted, and CatchSurface.message for surface chrome; use CatchSection.contained for section-card content chrome.",
+          "CatchSurface owns low-level paint and interaction. Use CatchSurface.card or CatchSurface.tinted for surface chrome and CatchSection.contained for section-card content chrome.",
           "Choose borderRole for ordinary semantic lines and borderSpec only for a role with a justified color override; raw borderColor and borderWidth are deprecated migration shims.",
-          "Do not hand-roll Container/DecoratedBox cards in feature UI; request a Surface mode if this contract is missing a state.",
-          "InlineMessageSurface is a member of catch.surface message grammar and should not become a separate surface family."
+          "Use CatchBanner for icon/title/message composition. Surface paint must not own a second feedback renderer."
         ]
       },
       "governance": {
@@ -7542,10 +7545,16 @@
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.surface"
+        "conceptId": "catch.surface",
+        "decisionRef": "pattern-family:inline-feedback-canonical-banner"
       },
       "surfaces": {
         "flutter": "CatchSurface"
+      },
+      "level": "L2",
+      "roleNoun": "Surface",
+      "naming": {
+        "useCase": ""
       }
     },
     {

@@ -169,19 +169,19 @@ class HostCustomerMemorySection extends StatelessWidget {
         if (customer.notesCoverage ==
             HostCustomerHistoryCoverage.unavailable) ...[
           gapH12,
-          CatchSurface.message(
+          CatchBanner(
             title: context.l10n.hostCustomersNotesUnavailableTitle,
             message: context.l10n.hostCustomersNotesUnavailableBody,
-            messageIcon: CatchIcons.infoOutlineRounded,
-            messageTone: CatchSurfaceMessageTone.warning,
+            icon: CatchIcons.infoOutlineRounded,
+            tone: CatchBannerTone.warning,
           ),
         ] else if (customer.notesTruncated) ...[
           gapH12,
-          CatchSurface.message(
+          CatchBanner(
             title: context.l10n.hostCustomersNotes,
             message: context.l10n.hostCustomersNotesTruncated,
-            messageIcon: CatchIcons.infoOutlineRounded,
-            messageTone: CatchSurfaceMessageTone.warning,
+            icon: CatchIcons.infoOutlineRounded,
+            tone: CatchBannerTone.warning,
           ),
         ],
       ],

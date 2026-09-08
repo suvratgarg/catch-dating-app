@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6131ab690ee227a9626bb3aa9c5cce744b79baecad1c677fbc2059db0e7cb31d",
-  "resolvedDigest": "sha256:b65d89de62553f8bb25e0e6a2cfd8590d889cf43d6f2d224e63b8b50fd635457",
+  "resolvedDigest": "sha256:ef6e01748a791750d9db4c345a2bcb5d57a533f3468913e74dfc98a192fc321b",
   "feature": {
     "id": "feature.organizer_detail",
     "name": "Organizer Detail",
@@ -1194,8 +1194,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -2465,8 +2464,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

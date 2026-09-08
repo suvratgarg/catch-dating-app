@@ -163,7 +163,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               ),
               if (mutation.hasError) ...[
                 gapH12,
-                CatchErrorBanner(
+                CatchBanner.error(
                   message: appErrorMessage(
                     (mutation as MutationError).error,
                     l10n: context.l10n,
@@ -273,7 +273,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           ),
           if (mutation.hasError) ...[
             gapH16,
-            CatchErrorBanner(
+            CatchBanner.error(
               message: appErrorMessage(
                 (mutation as MutationError).error,
                 l10n: context.l10n,

@@ -458,7 +458,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
           ),
           if (errorMessage != null) ...[
             gapH12,
-            CatchErrorBanner(message: errorMessage),
+            CatchBanner.error(message: errorMessage),
           ],
         ],
       ),

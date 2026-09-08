@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:db7242f01a2914e0679378e3f114da51e59b0cf36be0193583f06029bd58a991",
+  "resolvedDigest": "sha256:abe1d172589decd756f258bac345450155321f653c71b8ebebc58d3244ad7765",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4858,8 +4858,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

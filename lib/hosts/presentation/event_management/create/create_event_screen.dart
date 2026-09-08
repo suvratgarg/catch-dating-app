@@ -1573,7 +1573,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ),
             notice: wizardState.mutationError == null
                 ? null
-                : CatchErrorBanner(message: wizardState.mutationError!),
+                : CatchBanner.error(message: wizardState.mutationError!),
             isLastStep: wizardState.isLastStep || _isReviewing,
             isLoading: wizardState.isLoading,
             primaryEnabled: wizardState.primaryEnabled,

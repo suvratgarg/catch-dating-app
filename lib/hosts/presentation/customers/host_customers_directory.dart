@@ -360,11 +360,11 @@ class HostCustomersDirectory extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (state.sourceCoverage != HostCustomerDirectoryCoverage.exact) ...[
-          CatchSurface.message(
+          CatchBanner(
             title: context.l10n.hostsHostAudienceCoveragePartial,
             message: context.l10n.hostsHostAudienceCoveragePartialBody,
-            messageIcon: CatchIcons.infoOutlineRounded,
-            messageTone: CatchSurfaceMessageTone.warning,
+            icon: CatchIcons.infoOutlineRounded,
+            tone: CatchBannerTone.warning,
           ),
           gapH8,
           Align(

@@ -240,7 +240,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface; Widgetbook and deterministic route captures cover send pending/error."
+              "notes": "AuthController.sendOtpMutation drives the Send code loading state and CatchBanner.error failure surface; Widgetbook and deterministic route captures cover send pending/error."
             },
             {
               "id": "verify_otp_mutation",
@@ -6009,7 +6009,7 @@
               "id": "update_club_error",
               "kind": "mutation",
               "status": "captured",
-              "notes": "HostClubEditController.updateClubMutation failures keep the expanded editor open and render CatchErrorBanner with AppErrorContext.club copy. Captures cover generic and offline save failures.",
+              "notes": "HostClubEditController.updateClubMutation failures keep the expanded editor open and render CatchBanner.error with AppErrorContext.club copy. Captures cover generic and offline save failures.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -6089,7 +6089,7 @@
               "tests": [
                 "test/hosts/host_team_management_controller_test.dart"
               ],
-              "notes": "HostTeamManagementController mutations drive add/remove/transfer pending and error feedback in the embedded team section and inline add-host sheet. The section renders a persistent CatchErrorBanner for mutation failures, HostTeamAddHostSheet renders inline add errors, and HostTeamHostActionDialog supplies typed remove/transfer confirmation copy; captures cover pending, generic error, and offline states.",
+              "notes": "HostTeamManagementController mutations drive add/remove/transfer pending and error feedback in the embedded team section and inline add-host sheet. The section renders a persistent CatchBanner.error for mutation failures, HostTeamAddHostSheet renders inline add errors, and HostTeamHostActionDialog supplies typed remove/transfer confirmation copy; captures cover pending, generic error, and offline states.",
               "previewIds": [
                 "HostClubsScreen/Route states",
                 "hostTeamAddHostSheetStates",
@@ -7226,7 +7226,7 @@
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
-              "notes": "submitMutation.hasError renders CatchErrorBanner with AppErrorContext.event mapped copy. Captures now cover generic submit failure and offline submit failure; backend-validation variants remain follow-up if design requires distinct copy.",
+              "notes": "submitMutation.hasError renders CatchBanner.error with AppErrorContext.event mapped copy. Captures now cover generic submit failure and offline submit failure; backend-validation variants remain follow-up if design requires distinct copy.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
@@ -9937,7 +9937,7 @@
                 "create_club_save_draft_pending",
                 "create_club_save_draft_error"
               ],
-              "notes": "CreateClubDraftController.saveDraftMutation now has deterministic pending and error captures that exercise footer loading and CatchErrorBanner feedback; draft restore/save success feedback uses the shared Catch snackbar helper."
+              "notes": "CreateClubDraftController.saveDraftMutation now has deterministic pending and error captures that exercise footer loading and CatchBanner.error feedback; draft restore/save success feedback uses the shared Catch snackbar helper."
             },
             {
               "id": "submit_pending",
@@ -9958,7 +9958,7 @@
               "captureIds": [
                 "create_club_submit_error"
               ],
-              "notes": "Submit mutation errors now have a deterministic capture with inline CatchErrorBanner feedback anchored above the footer."
+              "notes": "Submit mutation errors now have a deterministic capture with inline CatchBanner.error feedback anchored above the footer."
             },
             {
               "id": "success_pop",

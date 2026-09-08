@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_public.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:712743d9c1ca230cfdb52a2366c0bccb239167eee7224eb1d1cc9f394fd79e89",
-  "resolvedDigest": "sha256:c014d6788eabb92e8ac2718900a3156fb55e8f47cfa40d858d50f9f652f16aad",
+  "resolvedDigest": "sha256:05753d8d2e974b3f4270e40440d42ac7c1b69ad7447017b09aefb542af268307",
   "feature": {
     "id": "feature.profile_public",
     "name": "Public Profile",
@@ -954,8 +954,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

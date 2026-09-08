@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:e0667776ebb054bbc7621ed1cb625773b15fc86481eceec43a9f4b2bba243ac6",
-  "resolvedDigest": "sha256:337ddad7023c11458061287a25eb3f5f07d4fc2d79b178f275614e37cb796f4d",
+  "sourceDigest": "sha256:9ffa56a7f7bfd90119696ac218f30449f8e8272f77daa46470d588e0c08d5cd4",
+  "resolvedDigest": "sha256:cb7d2faf6266118c7a43e852b9ffbd081061500f51dfac5594eded36b15a01fa",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -88,7 +88,7 @@
         ],
         "componentContracts": [
           "catch.button",
-          "catch.error_banner",
+          "catch.banner",
           "catch.error_state",
           "catch.field",
           "catch.form_dialog",
@@ -4471,14 +4471,15 @@
             }
           },
           {
-            "id": "catch.error_banner",
+            "id": "catch.banner",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchErrorBanner",
-              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
+              "symbol": "CatchBanner",
+              "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
               "constructors": [
-                "CatchErrorBanner",
-                "CatchErrorBanner.withRetry"
+                "CatchBanner",
+                "CatchBanner.error",
+                "CatchBanner.errorWithRetry"
               ]
             }
           },
@@ -4570,8 +4571,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

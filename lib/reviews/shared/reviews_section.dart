@@ -503,7 +503,7 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
             .setOwnerResponse(reviewId: widget.review.id, message: message);
       });
     } catch (_) {
-      // Inline CatchErrorBanner owns user-facing error display.
+      // Inline CatchBanner owns user-facing error display.
     }
   }
 
@@ -549,7 +549,7 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
           ),
           if (mutation.hasError) ...[
             gapH12,
-            CatchErrorBanner(
+            CatchBanner.error(
               message: mutationErrorMessage(mutation, l10n: context.l10n),
             ),
           ],

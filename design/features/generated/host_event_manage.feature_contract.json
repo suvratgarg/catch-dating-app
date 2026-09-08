@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
-  "sourceDigest": "sha256:e6a5b6845b3b92aa13537889825bdd345d2a0bc2a41803adea7d91fc6036fc8c",
-  "resolvedDigest": "sha256:97ca6dd62fadffbf1be0c88ee22a83a10869690c0aa8061a2703e1fcba72e361",
+  "sourceDigest": "sha256:85190d4d1062580e79d5b7541673bf5b53adfc37d66ca09a28597c0c04966d34",
+  "resolvedDigest": "sha256:edc4cf452fa3f6d9e22c0db85e7e4f7e76853b36138c1e092a39a9a4c5aff810",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -3531,8 +3531,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -3588,7 +3587,7 @@
         ],
         "componentContracts": [
           "catch.button",
-          "catch.error_banner",
+          "catch.banner",
           "catch.error_state",
           "catch.field",
           "catch.map_preview",
@@ -5308,14 +5307,15 @@
             }
           },
           {
-            "id": "catch.error_banner",
+            "id": "catch.banner",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchErrorBanner",
-              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
+              "symbol": "CatchBanner",
+              "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
               "constructors": [
-                "CatchErrorBanner",
-                "CatchErrorBanner.withRetry"
+                "CatchBanner",
+                "CatchBanner.error",
+                "CatchBanner.errorWithRetry"
               ]
             }
           },
@@ -5396,8 +5396,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

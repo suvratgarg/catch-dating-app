@@ -55,7 +55,7 @@
         ],
         "componentContracts": [
           "catch.button",
-          "catch.error_banner",
+          "catch.banner",
           "catch.field",
           "catch.option_card",
           "catch.option_group",

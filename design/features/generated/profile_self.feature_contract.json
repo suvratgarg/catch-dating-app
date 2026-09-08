@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:bfed475ac25dc07e694db31463094024ab59429fa05a43ed9eb224c6860c82ae",
-  "resolvedDigest": "sha256:c5a844268934f9995340a34155477f9ffafcc2373c8bfd735ea46a5499a5e5f3",
+  "resolvedDigest": "sha256:52c0cfb4bd633094e69ff4e9fc6485d47a0f76670eedceaba125a4b0a1c580f3",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1244,8 +1244,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

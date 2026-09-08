@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
-  "resolvedDigest": "sha256:0f987ed3e20f4dec57570ff301771809e2631b616d4be550ae0ee163625de745",
+  "resolvedDigest": "sha256:0c45561c7100157c87fab1114b10fae9117b4aabe2114e03fb4765e5ce89f811",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1172,8 +1172,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

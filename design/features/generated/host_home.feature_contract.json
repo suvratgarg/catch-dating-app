@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:f3a0a5746988319943b6345676de0a1e5a4523dcb7d39b3eaf6de23481779b46",
+  "resolvedDigest": "sha256:7483a03c3b7c825ec141c27a849c15b754bab8d072a918f5466eaeaa752bd9c9",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -2022,8 +2022,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },

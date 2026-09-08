@@ -10279,7 +10279,7 @@
           "id": "update_club_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "_HostInlineClubSaveState catches update failures and renders CatchErrorBanner with AppErrorContext.club copy.",
+          "source": "_HostInlineClubSaveState catches update failures and renders CatchBanner.error with AppErrorContext.club copy.",
           "nextAction": "Covered by host_clubs_inline_edit_error and host_clubs_inline_edit_offline through HostClubEditController.updateClubMutation.",
           "previewIds": [
             "HostClubsScreen/Route states"
@@ -12545,12 +12545,12 @@
         {
           "id": "host_create_save_draft_error",
           "status": "captured",
-          "notes": "Deterministic capture renders save-draft error state through the shared CatchErrorBanner."
+          "notes": "Deterministic capture renders save-draft error state through the shared CatchBanner.error."
         },
         {
           "id": "host_create_save_draft_offline",
           "status": "captured",
-          "notes": "Deterministic capture renders save-draft offline feedback through the shared CatchErrorBanner."
+          "notes": "Deterministic capture renders save-draft offline feedback through the shared CatchBanner.error."
         },
         {
           "id": "host_create_submit_pending",
@@ -12560,12 +12560,12 @@
         {
           "id": "host_create_submit_error",
           "status": "captured",
-          "notes": "Deterministic capture renders submit error state through the shared CatchErrorBanner."
+          "notes": "Deterministic capture renders submit error state through the shared CatchBanner.error."
         },
         {
           "id": "host_create_submit_offline",
           "status": "captured",
-          "notes": "Deterministic capture renders offline submit failure copy through the shared CatchErrorBanner."
+          "notes": "Deterministic capture renders offline submit failure copy through the shared CatchBanner.error."
         },
         {
           "id": "host_create_photo_upload_offline",
@@ -12914,11 +12914,11 @@
           "id": "submit_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "submitMutation.hasError renders CatchErrorBanner with AppErrorContext.event mapped copy.",
+          "source": "submitMutation.hasError renders CatchBanner.error with AppErrorContext.event mapped copy.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
-          "nextAction": "submitMutation.hasError renders CatchErrorBanner with AppErrorContext.event mapped copy. Captures now cover generic submit failure and offline submit failure; backend-validation variants remain follow-up if design requires distinct copy.",
+          "nextAction": "submitMutation.hasError renders CatchBanner.error with AppErrorContext.event mapped copy. Captures now cover generic submit failure and offline submit failure; backend-validation variants remain follow-up if design requires distinct copy.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
           ],
@@ -14192,7 +14192,7 @@
           "id": "attendance_mutation_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "The participants panel surfaces the first attendance/action mutation failure through CatchErrorBanner.",
+          "source": "The participants panel surfaces the first attendance/action mutation failure through CatchBanner.error.",
           "nextAction": "Captured by host_manage_attendance_mutation_error; remaining Host Manage coverage is Event Success live/report substates, deeper offline variants, and reference-specific variants.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -18417,7 +18417,7 @@
           "id": "send_code_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface.",
+          "source": "AuthController.sendOtpMutation drives the Send code loading state and CatchBanner.error failure surface.",
           "previewIds": [
             "AuthScreen/Screen states",
             "PhonePage/Phone entry states"
@@ -18606,7 +18606,7 @@
               "send_code_mutation",
               "verify_otp_mutation"
             ],
-            "migration": "Keep CatchErrorBanner surfaces, but expose stable error fixtures for phone, OTP verify, and resend failures."
+            "migration": "Keep CatchBanner.error surfaces, but expose stable error fixtures for phone, OTP verify, and resend failures."
           }
         ]
       },
@@ -21415,7 +21415,7 @@
         {
           "id": "create_club_save_draft_error",
           "status": "captured",
-          "notes": "Deterministic capture renders save-draft mutation error feedback through CatchErrorBanner."
+          "notes": "Deterministic capture renders save-draft mutation error feedback through CatchBanner.error."
         },
         {
           "id": "create_club_submit_pending",
@@ -21425,7 +21425,7 @@
         {
           "id": "create_club_submit_error",
           "status": "captured",
-          "notes": "Deterministic capture renders submit mutation error feedback through CatchErrorBanner."
+          "notes": "Deterministic capture renders submit mutation error feedback through CatchBanner.error."
         },
         {
           "id": "create_club_submit_offline",
@@ -21561,7 +21561,7 @@
           "id": "save_draft_pending_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "CreateClubDraftController.saveDraftMutation freezes route, wizard, media, fields/defaults, and footer actions while pending; CatchErrorBanner owns failure copy and the shared Catch snackbar owns success feedback.",
+          "source": "CreateClubDraftController.saveDraftMutation freezes route, wizard, media, fields/defaults, and footer actions while pending; CatchBanner.error owns failure copy and the shared Catch snackbar owns success feedback.",
           "previewIds": [
             "HostCreateClubScreen/Route and wizard states"
           ],
@@ -21596,7 +21596,7 @@
           "id": "submit_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "Submit mutation errors render inline CatchErrorBanner copy.",
+          "source": "Submit mutation errors render inline CatchBanner.error copy.",
           "previewIds": [
             "HostCreateClubScreen/Route and wizard states"
           ],
@@ -22270,7 +22270,7 @@
           "id": "submit_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "HostEventEditScreenState exposes updateHostedEventMutation errors before EditHostedEventScreen renders CatchErrorBanner.fromError under the scope notice.",
+          "source": "HostEventEditScreenState exposes updateHostedEventMutation errors before EditHostedEventScreen renders CatchLocalizedErrorBanner under the scope notice.",
           "previewIds": [
             "EditHostedEventRouteScreen/Route and section states"
           ],

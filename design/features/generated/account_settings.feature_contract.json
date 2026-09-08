@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
-  "resolvedDigest": "sha256:b65f125907a47d6c572eb6316796d0738da7bab7637a12b7f4ed90cdcb30fcce",
+  "resolvedDigest": "sha256:a693745696e966d8ea022455c6d08fcdace24902af017d638eaf98531baea476",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2125,8 +2125,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
