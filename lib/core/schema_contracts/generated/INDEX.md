@@ -12,6 +12,7 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventRcsCallbackReceiptDocument | `firestore/event_assistance_rcs_callback_receipts.schema.json` | `functions/src/shared/generated/eventRcsCallbackReceiptDocument.ts` |
 | EventRcsBudgetDocument | `firestore/event_assistance_rcs_budgets.schema.json` | `functions/src/shared/generated/eventRcsBudgetDocument.ts` |
 | EventRcsDispatchDocument | `firestore/event_assistance_rcs_dispatches.schema.json` | `functions/src/shared/generated/eventRcsDispatchDocument.ts` |
 | EventRcsCapabilityObservation | `shared/event_assistance_rcs_capability.schema.json` | `functions/src/shared/generated/eventRcsCapabilityObservation.ts` |
@@ -659,6 +660,7 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventRcsCallbackReceiptDocumentSchema` | EventRcsCallbackReceiptDocument | `firestore/event_assistance_rcs_callback_receipts.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_callback_receipt_document.g.dart` |
 | `schemaEventRcsBudgetDocumentSchema` | EventRcsBudgetDocument | `firestore/event_assistance_rcs_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_budget_document.g.dart` |
 | `schemaEventRcsDispatchDocumentSchema` | EventRcsDispatchDocument | `firestore/event_assistance_rcs_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_dispatch_document.g.dart` |
 | `schemaEventRcsCapabilityObservationSchema` | EventRcsCapabilityObservation | `shared/event_assistance_rcs_capability.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_capability_observation.g.dart` |

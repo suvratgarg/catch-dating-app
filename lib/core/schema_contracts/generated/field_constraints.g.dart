@@ -26977,6 +26977,74 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventRcsCallbackReceiptDocumentCallbackHash = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.callbackHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsCallbackReceiptDocumentCallbackId = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.callbackId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-event:[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsCallbackReceiptDocumentOutcomeAttemptId = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.outcome.attemptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^attempt:[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsCallbackReceiptDocumentOutcomeDisposition = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.outcome.disposition',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['applied', 'duplicateOrOlder', 'conflictingEvidence'],
+  );
+
+  static const eventRcsCallbackReceiptDocumentOutcomeKind = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.outcome.kind',
+    required: true,
+  );
+
+  static const eventRcsCallbackReceiptDocumentOutcomeMessageId = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.outcome.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsCallbackReceiptDocumentOutcomeReason = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.outcome.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['unavailable', 'scopeMismatch', 'staleIntent', 'invalidChoice', 'expired', 'alreadyResponded', 'noLongerNeeded', 'factsStale', 'guestStateChanged'],
+  );
+
+  static const eventRcsCallbackReceiptDocumentOutcomeResult = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.outcome.result',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['accepted', 'replayed'],
+  );
+
+  static const eventRcsCallbackReceiptDocumentProcessedAt = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.processedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsCallbackReceiptDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventRcsCallbackReceiptDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventRcsCapabilityObservationAgentId = CatchContractFieldConstraints(
     path: 'eventRcsCapabilityObservation.agentId',
     maxLength: 512,
@@ -27203,6 +27271,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^attempt:[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentAttemptScopeHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.attemptScopeHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRcsDispatchDocumentAttendeeId = CatchContractFieldConstraints(
@@ -27434,6 +27509,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const eventRcsDispatchDocumentIntentHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.intentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventRcsDispatchDocumentMaxCostMicros = CatchContractFieldConstraints(
     path: 'eventRcsDispatchDocument.maxCostMicros',
     required: true,
@@ -27509,6 +27591,90 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['asia', 'europe', 'us'],
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingChoices = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.choices',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 10,
+    uniqueItems: true,
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingChoicesItemsChoiceId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.choices.items.choiceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingChoicesItemsIndex = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.choices.items.index',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9,
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingEpisodeId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingExpiresAt = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingGuestId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.guestId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingGuestRevision = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentReplyBindingSubjectUid = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.replyBinding.subjectUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const eventRcsDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
@@ -83707,6 +83873,16 @@ abstract final class CatchContractConstraints {
     'eventRcsBudgetDocument.startsAt': eventRcsBudgetDocumentStartsAt,
     'eventRcsBudgetDocument.status': eventRcsBudgetDocumentStatus,
     'eventRcsBudgetDocument.updatedAt': eventRcsBudgetDocumentUpdatedAt,
+    'eventRcsCallbackReceiptDocument.callbackHash': eventRcsCallbackReceiptDocumentCallbackHash,
+    'eventRcsCallbackReceiptDocument.callbackId': eventRcsCallbackReceiptDocumentCallbackId,
+    'eventRcsCallbackReceiptDocument.outcome.attemptId': eventRcsCallbackReceiptDocumentOutcomeAttemptId,
+    'eventRcsCallbackReceiptDocument.outcome.disposition': eventRcsCallbackReceiptDocumentOutcomeDisposition,
+    'eventRcsCallbackReceiptDocument.outcome.kind': eventRcsCallbackReceiptDocumentOutcomeKind,
+    'eventRcsCallbackReceiptDocument.outcome.messageId': eventRcsCallbackReceiptDocumentOutcomeMessageId,
+    'eventRcsCallbackReceiptDocument.outcome.reason': eventRcsCallbackReceiptDocumentOutcomeReason,
+    'eventRcsCallbackReceiptDocument.outcome.result': eventRcsCallbackReceiptDocumentOutcomeResult,
+    'eventRcsCallbackReceiptDocument.processedAt': eventRcsCallbackReceiptDocumentProcessedAt,
+    'eventRcsCallbackReceiptDocument.schemaVersion': eventRcsCallbackReceiptDocumentSchemaVersion,
     'eventRcsCapabilityObservation.agentId': eventRcsCapabilityObservationAgentId,
     'eventRcsCapabilityObservation.checkedAt': eventRcsCapabilityObservationCheckedAt,
     'eventRcsCapabilityObservation.configHash': eventRcsCapabilityObservationConfigHash,
@@ -83737,6 +83913,7 @@ abstract final class CatchContractConstraints {
     'eventRcsConsentReceiptDocument.sourceGeneration': eventRcsConsentReceiptDocumentSourceGeneration,
     'eventRcsDispatchDocument.agentId': eventRcsDispatchDocumentAgentId,
     'eventRcsDispatchDocument.attemptId': eventRcsDispatchDocumentAttemptId,
+    'eventRcsDispatchDocument.attemptScopeHash': eventRcsDispatchDocumentAttemptScopeHash,
     'eventRcsDispatchDocument.attendeeId': eventRcsDispatchDocumentAttendeeId,
     'eventRcsDispatchDocument.authorityHash': eventRcsDispatchDocumentAuthorityHash,
     'eventRcsDispatchDocument.bindingRevision': eventRcsDispatchDocumentBindingRevision,
@@ -83766,6 +83943,7 @@ abstract final class CatchContractConstraints {
     'eventRcsDispatchDocument.expiresAt': eventRcsDispatchDocumentExpiresAt,
     'eventRcsDispatchDocument.grantId': eventRcsDispatchDocumentGrantId,
     'eventRcsDispatchDocument.guestGrantHash': eventRcsDispatchDocumentGuestGrantHash,
+    'eventRcsDispatchDocument.intentHash': eventRcsDispatchDocumentIntentHash,
     'eventRcsDispatchDocument.maxCostMicros': eventRcsDispatchDocumentMaxCostMicros,
     'eventRcsDispatchDocument.messageId': eventRcsDispatchDocumentMessageId,
     'eventRcsDispatchDocument.payloadHash': eventRcsDispatchDocumentPayloadHash,
@@ -83776,6 +83954,16 @@ abstract final class CatchContractConstraints {
     'eventRcsDispatchDocument.quoteRevision': eventRcsDispatchDocumentQuoteRevision,
     'eventRcsDispatchDocument.recipientEndpointId': eventRcsDispatchDocumentRecipientEndpointId,
     'eventRcsDispatchDocument.region': eventRcsDispatchDocumentRegion,
+    'eventRcsDispatchDocument.replyBinding.attendeeGeneration': eventRcsDispatchDocumentReplyBindingAttendeeGeneration,
+    'eventRcsDispatchDocument.replyBinding.choices': eventRcsDispatchDocumentReplyBindingChoices,
+    'eventRcsDispatchDocument.replyBinding.choices.items.choiceId': eventRcsDispatchDocumentReplyBindingChoicesItemsChoiceId,
+    'eventRcsDispatchDocument.replyBinding.choices.items.index': eventRcsDispatchDocumentReplyBindingChoicesItemsIndex,
+    'eventRcsDispatchDocument.replyBinding.episodeId': eventRcsDispatchDocumentReplyBindingEpisodeId,
+    'eventRcsDispatchDocument.replyBinding.expiresAt': eventRcsDispatchDocumentReplyBindingExpiresAt,
+    'eventRcsDispatchDocument.replyBinding.guestId': eventRcsDispatchDocumentReplyBindingGuestId,
+    'eventRcsDispatchDocument.replyBinding.guestRevision': eventRcsDispatchDocumentReplyBindingGuestRevision,
+    'eventRcsDispatchDocument.replyBinding.sourceGeneration': eventRcsDispatchDocumentReplyBindingSourceGeneration,
+    'eventRcsDispatchDocument.replyBinding.subjectUid': eventRcsDispatchDocumentReplyBindingSubjectUid,
     'eventRcsDispatchDocument.schemaVersion': eventRcsDispatchDocumentSchemaVersion,
     'eventRcsDispatchDocument.senderId': eventRcsDispatchDocumentSenderId,
     'eventRcsPermissionDocument.attendeeGeneration': eventRcsPermissionDocumentAttendeeGeneration,

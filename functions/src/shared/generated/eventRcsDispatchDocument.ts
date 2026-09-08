@@ -55,4 +55,23 @@ export interface EventRcsDispatchDocument {
     chargedAfterMicros: number;
   }[];
   attendeeId: string;
+  intentHash: string;
+  attemptScopeHash: string;
+  replyBinding: null | {
+    guestId: string;
+    episodeId: string;
+    guestRevision: number;
+    attendeeGeneration: string;
+    sourceGeneration: string;
+    subjectUid: string;
+    expiresAt: number;
+    /**
+     * @minItems 1
+     * @maxItems 10
+     */
+    choices: {
+      index: number;
+      choiceId: string;
+    }[];
+  };
 }

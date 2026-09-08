@@ -86,6 +86,8 @@ export {getEventAssistanceSetting, setEventAssistanceSetting} from
   "./eventSuccess/operations/policySettingsHandlers";
 export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture} from
   "./eventSuccess/operations/groupProgressHandlers";
+export {onEventAssistanceRcsCallbackCreated} from
+  "./eventSuccess/operations/rcsWebhookProcessing";
 export {onEventAssistanceWhatsappEventCreated} from
   "./eventSuccess/operations/whatsappWebhookProcessing";
 export {eventAssistanceSmsDeliveryWebhook} from

@@ -11,7 +11,8 @@ import {validateEventRcsDispatchDocument} from
 import {validateEventRcsCapabilityObservation} from
   "../../shared/generated/validators/eventRcsCapabilityObservation";
 import {operationContentHash} from "../../operations/durableActions";
-import {requireDocumentId} from "./guestRecords";
+import {guestIdentity, requireDocumentId} from "./guestRecords";
+import type {LiveAttempt} from "./messageOutbox";
 import {rbmTime, rbmUuid} from "./googleRbmProtocol";
 import {rcsMessageId} from "./rcsProtocol";
 import {rcsPermissionId} from "./rcsConsent";
@@ -21,6 +22,11 @@ export type {RcsBudget, RcsDispatch, RcsCapability};
 export const RCS_BUDGETS = "eventAssistanceRcsBudgets";
 export const RCS_DISPATCHES = "eventAssistanceRcsDispatches";
 export const RCS_CAPABILITY_MAX_AGE = 60_000;
+
+/** Receipt updates may change only state, never the original attempt scope. */
+export function rcsAttemptScopeHash(attempt: LiveAttempt): string {
+  return operationContentHash({...attempt, state: null});
+}
 
 /** UTC billing day, independent of the event venue and provider region. */
 export function rcsBudgetScopes(context: RcsDispatch["context"], now: number):
@@ -82,6 +88,13 @@ export function parseRcsDispatch(value: unknown): RcsDispatch {
     throw new Error("Invalid RCS dispatch evidence");
   }
   parseRcsCapability(value.capability);
+  const reply = value.replyBinding;
+  if (reply && (reply.guestId !== guestIdentity(value.context,
+    value.attendeeId) || reply.expiresAt <= value.createdAt ||
+    reply.choices.some((choice, i) => i > 0 &&
+      choice.index <= reply.choices[i - 1].index) ||
+    new Set(reply.choices.map((c) => c.choiceId)).size !==
+      reply.choices.length)) throw new Error("Invalid RCS reply binding");
   const scopes = rcsBudgetScopes(value.context, value.createdAt);
   if (value.budgetDebits.some((debit, i) =>
     debit.budgetId !== rcsBudgetId(value.senderId, scopes[i]) ||

@@ -35,6 +35,9 @@ const schemaEventRcsDispatchDocumentSchema = <String, Object?>{
     'maxCostMicros',
     'budgetDebits',
     'attendeeId',
+    'intentHash',
+    'attemptScopeHash',
+    'replyBinding',
   ],
   'properties': <String, Object?>{
     'schemaVersion': <String, Object?>{
@@ -291,6 +294,100 @@ const schemaEventRcsDispatchDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 160,
       'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+    },
+    'intentHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
+    },
+    'attemptScopeHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
+    },
+    'replyBinding': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'null',
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'guestId',
+            'episodeId',
+            'guestRevision',
+            'attendeeGeneration',
+            'sourceGeneration',
+            'subjectUid',
+            'expiresAt',
+            'choices',
+          ],
+          'properties': <String, Object?>{
+            'guestId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'episodeId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'guestRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'attendeeGeneration': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            'sourceGeneration': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            'subjectUid': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'expiresAt': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'choices': <String, Object?>{
+              'type': 'array',
+              'minItems': 1,
+              'maxItems': 10,
+              'uniqueItems': true,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'index',
+                  'choiceId',
+                ],
+                'properties': <String, Object?>{
+                  'index': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 9,
+                  },
+                  'choiceId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 160,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
     },
   },
   'title': 'EventRcsDispatchDocument',

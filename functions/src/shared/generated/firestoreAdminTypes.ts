@@ -537,6 +537,49 @@ export interface EventPolicyDemandPricingRuleDocument {
   demandStep: number;
 }
 
+export interface EventRcsCallbackReceiptDocument {
+  schemaVersion: 1;
+  callbackId: string;
+  callbackHash: string;
+  processedAt: number;
+  outcome:
+    | {
+        kind: "delivery";
+        messageId: string;
+        attemptId: string;
+        disposition: "applied" | "duplicateOrOlder" | "conflictingEvidence";
+      }
+    | {
+        kind: "reply";
+        messageId: string;
+        attemptId: string;
+        result: "accepted" | "replayed";
+      }
+    | {
+        kind: "ignored";
+        reason:
+          | "subscription"
+          | "unstructured"
+          | "guestPage"
+          | "unknownSuggestion"
+          | "unconfirmedRevocation"
+          | "unrelatedMessage";
+      }
+    | {
+        kind: "rejected";
+        reason:
+          | "unavailable"
+          | "scopeMismatch"
+          | "staleIntent"
+          | "invalidChoice"
+          | "expired"
+          | "alreadyResponded"
+          | "noLongerNeeded"
+          | "factsStale"
+          | "guestStateChanged";
+      };
+}
+
 export interface EventRcsBudgetDocument {
   schemaVersion: 1;
   budgetId: string;
@@ -619,6 +662,25 @@ export interface EventRcsDispatchDocument {
     chargedAfterMicros: number;
   }[];
   attendeeId: string;
+  intentHash: string;
+  attemptScopeHash: string;
+  replyBinding: null | {
+    guestId: string;
+    episodeId: string;
+    guestRevision: number;
+    attendeeGeneration: string;
+    sourceGeneration: string;
+    subjectUid: string;
+    expiresAt: number;
+    /**
+     * @minItems 1
+     * @maxItems 10
+     */
+    choices: {
+      index: number;
+      choiceId: string;
+    }[];
+  };
 }
 
 export interface EventRcsWithdrawalGrantDocument {

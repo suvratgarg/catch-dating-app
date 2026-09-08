@@ -2520,6 +2520,18 @@
       "migrationNotes": [
         "Immutable claim evidence binds the exact payload, expiry, provider message ID, permission, capability observation and two budget debits. Acceptance or expiry alone does not prove non-delivery."
       ]
+    },
+    {
+      "id": "eventAssistanceRcsCallbackReceipts",
+      "path": "eventAssistanceRcsCallbackReceipts/{callbackId}",
+      "rulesMatch": "/eventAssistanceRcsCallbackReceipts/{callbackId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-service RCS callback consumer",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Immutable processing outcome commits with its delivery or guest action effect, bound to the authenticated inbox evidence."
+      ]
     }
   ]
 }

@@ -5,6 +5,7 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual schemas or catalogs.
 
+export {eventRcsCallbackReceiptDocumentSchema} from "./schemas/eventRcsCallbackReceiptDocument";
 export {eventRcsBudgetDocumentSchema} from "./schemas/eventRcsBudgetDocument";
 export {eventRcsDispatchDocumentSchema} from "./schemas/eventRcsDispatchDocument";
 export {eventRcsCapabilityObservationSchema} from "./schemas/eventRcsCapabilityObservation";

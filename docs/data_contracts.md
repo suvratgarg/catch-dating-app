@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.73.0
+version: 1.74.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -121,13 +121,15 @@ in that record. Capability is an in-memory, at-most-60-second observation tied
 to the exact sender and consent; its snapshot is retained in dispatch evidence.
 It grants no spending or message permission. The shared channel selector can
 use RCS when explicitly supplied its worker; deployed factory/OAuth wiring,
-callback consumers and approved provisioning remain required for live use.
+authenticated ingress activation and approved provisioning remain required
+for live use.
 
 ### Event Assistance RCS Callback Evidence
 
 `contracts/shared/event_assistance_rcs_callbacks.schema.json` owns the closed
 delivery, expiry, suggestion, subscription and unstructured-message observation
-union. The two Firestore schemas reference its callback and identity records;
+union. Firestore schemas reference its callback, identity and consumer receipt
+records;
 generated TypeScript validators and Dart metadata share those exact shapes.
 Authenticated ingress owns both server-only collections, with all direct client
 reads and writes denied:
@@ -146,7 +148,22 @@ acceptance grants no delivery, guest or permission effect. Evidence excludes raw
 phone numbers, message text, file URLs, locations, signatures and tokens. Missing
 provider time remains null. No automatic retention deletion is configured until
 pending-consumer and retry requirements have an implemented lifecycle. See
-`docs/event_success.md` for the remaining consumer and activation work.
+`docs/event_success.md` for consumer behavior and remaining activation work.
+
+`eventAssistanceRcsCallbackReceipts/{callbackId}` is a third private collection.
+Its closed outcome (delivery, reply, ignored or rejected) binds the complete
+immutable callback hash and processing time. The inbox conflict identity, outbox
+transition, typed guest action and receipt share one transaction; failed commits
+leave no partial effect and exact retries return the saved outcome. Missing or
+conflicted inbox evidence cannot create a consumer receipt or domain effect.
+
+Dispatch records now include immutable intent and attempt-scope hashes plus a
+nullable native reply binding. It freezes only rendered choice indices/IDs, the
+guest revision, episode, attendee/event source generations, subject UID and reply
+expiry. Reply expiry is independent of provider queue TTL. An authenticated tap
+can prove delivery after queue expiry, but its domain action still requires the
+current guest identity, instructions and event window. Original replies remain
+usable after outbound opt-out without restoring any message permission.
 
 `event_assistance_rcs_subscriptions.schema.json` adds the server-only
 `eventAssistanceRcsSubscriptions/{subscriptionId}` projection, keyed by agent

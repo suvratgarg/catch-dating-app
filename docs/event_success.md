@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.67.0
+version: 1.68.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1607,8 +1607,8 @@ same [Google message contract](https://developers.google.com/business-communicat
 as the injected provider adapter. Rehearsal and stale/mismatched grants cannot
 produce live RCS material. Permission reads, bounded capability observations, transactional budget/dispatch
 claims and the shared composer connection are implemented below. Audited sender
-and budget provisioning, the deployed worker factory and callback consumers
-remain required before live messaging.
+and budget provisioning, the deployed worker factory and authenticated ingress
+activation remain required before live messaging.
 
 ### RCS dispatch and shared channel selection
 
@@ -1653,12 +1653,55 @@ submission evidence for the shared selector. Concurrent workers contend on the
 same attempt and cannot duplicate a provider submission or debit.
 
 The production `LiveMessageDispatcher` factory still constructs SMS/WhatsApp
-workers only. RCS OAuth loading, factory/configuration wiring, callback consumers
-for delivery/revocation/replies, guest-page controls, approved provisioning and
+workers only. RCS OAuth loading, factory/configuration wiring, authenticated
+ingress activation, guest-page controls, approved provisioning and
 live activation remain required. Tests use an injected provider transport and
 include direct RCS-to-SMS/WhatsApp fallback, independent consent, STOP between
 lookup and claim, stale source/credentials/capability, atomic rollback, queued
 expiry, opt-out from an actual claim and real Firestore dispatch contention.
+
+### RCS delivery and native reply consumption
+
+`RcsCallbackConsumer` reads the private signature-verified inbox and its conflict
+identity in the same transaction as the effect and immutable processing receipt.
+The exported `onEventAssistanceRcsCallbackCreated` trigger retries failed commits;
+exact retries return the existing outcome. No HTTP payload or trigger body can
+provide domain authority. Conflicted evidence remains quarantined; a later
+conflict cannot retroactively undo an already committed action.
+
+Delivery events resolve one dispatch by its deterministic provider message ID,
+then verify agent, hashed endpoint, intent, immutable attempt scope and receipt
+clock bounds. Sender readiness and the current recipient phone do not erase
+historical delivery evidence. READ/DELIVERED reuse the shared monotonic merge;
+contradictory non-delivery retains positive delivery and marks the conflict.
+Only Google's signed
+[`TTL_EXPIRATION_REVOKED`](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/ServerEvent.EventType)
+confirms expiry revocation. Failed revocation, queue time alone and DELETE ACKs
+cannot authorize fallback. A confirmed revocation still leaves consent, current
+instructions, budget and retry backoff to the shared selector.
+
+At dispatch, native choices snapshot the guest revision, episode, subject UID,
+source generations and only the original indices actually rendered. Replies
+resolve that binding using the signed
+[suggestion postback](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/SuggestionResponse),
+not its display text. ACTION/page taps and unstructured text cannot invoke guest
+commands. Legacy unspecified suggestion type is accepted only for an exact offered
+reply postback. A verified tap proves delivery even if the send response was lost;
+expired or now-unneeded answers still record that delivery evidence but cannot
+change current guest state. Reply lifetime is distinct from queue expiry.
+
+The shared `applyGuestChoice` path records joining intention, typed practical or
+restricted help, or acknowledgment. It never checks in a guest or assigns a seat.
+Current identity, source generations, instructions, event window and guest revision
+fence stale decisions. Opt-out and paused senders do not discard a valid inbound
+answer or restore outbound permission. The action, message state and consumer
+receipt commit together. Tests cover lost-send-response races, monotonic and
+conflicting receipts, old/foreign buttons, identity changes, failed commits,
+independent fallback consent and real Firestore contention.
+
+The trigger is source-wired; signed HTTP ingress configuration, OAuth/worker
+factory integration, approved senders/budgets and live provider testing are still
+required before RCS is available to users.
 
 ### RCS provider transport boundary
 
@@ -1689,15 +1732,15 @@ and [sending guide](https://developers.google.com/business-communications/rcs-bu
 DELETE success reports `revocationRequested`, never confirmed non-delivery.
 Neither it nor a DELETE 404 may authorize fallback; delivery can race with the
 [revocation request](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/phones.agentMessages/delete).
-The future outbox consumer must reconcile authenticated receipts and revalidate
-current route authority before deciding on SMS. Errors contain no provider body,
+The outbox consumer below reconciles authenticated receipts; the shared selector
+revalidates current route authority before deciding on SMS. Errors contain no provider body,
 phone, token or guest link. Tests inject transport; this adds no default network
 client, credential loader, Firebase export or activated sender. Canonical RCS
 sender configuration, rendering, callback persistence and conversation
 subscription observations are now present. Event-scoped RCS preference APIs
 and the shared permission check are implemented, together with message-link
-withdrawal APIs and transactional issuance preparation. Callback domain consumers,
-guest-page controls, deployed worker-factory/OAuth integration and provider
+withdrawal APIs and transactional issuance preparation. Guest-page controls, authenticated ingress activation, deployed worker-factory/OAuth
+integration and provider
 activation remain required before live use.
 
 ## Format Mapping And Wiring

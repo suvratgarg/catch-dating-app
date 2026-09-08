@@ -16,6 +16,11 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
 {
+  "name": "EventRcsCallbackReceiptDocument",
+  "source": "firestore/event_assistance_rcs_callback_receipts.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsCallbackReceiptDocument.ts"
+},
+{
   "name": "EventRcsBudgetDocument",
   "source": "firestore/event_assistance_rcs_budgets.schema.json",
   "typeOutput": "functions/src/shared/generated/eventRcsBudgetDocument.ts"

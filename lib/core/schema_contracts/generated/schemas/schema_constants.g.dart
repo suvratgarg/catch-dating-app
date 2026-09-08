@@ -220,6 +220,7 @@ export 'event_origin.g.dart';
 export 'event_participation_document.g.dart';
 export 'event_private_access_document.g.dart';
 export 'event_rcs_budget_document.g.dart';
+export 'event_rcs_callback_receipt_document.g.dart';
 export 'event_rcs_capability_observation.g.dart';
 export 'event_rcs_consent_receipt_document.g.dart';
 export 'event_rcs_dispatch_document.g.dart';

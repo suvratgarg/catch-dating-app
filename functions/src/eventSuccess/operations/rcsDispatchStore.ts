@@ -15,7 +15,8 @@ import {RcsConfig, PreparedRcsContent, RenderedRcs, parseRcsConfig,
   prepareEventRcs, renderEventRcs, rcsPhoneHash} from "./rcsProtocol";
 import {prepareRcsWithdrawal} from "./rcsWithdrawalRecords";
 import {RcsBudget, RcsCapability, RCS_BUDGETS, RCS_DISPATCHES, rcsBudgetId,
-  rcsBudgetScopes, parseRcsBudget, parseRcsCapability, parseRcsDispatch} from
+  rcsBudgetScopes, parseRcsBudget, parseRcsCapability, parseRcsDispatch,
+  rcsAttemptScopeHash} from
   "./rcsDispatchRecords";
 
 type Intent = MessageRecord["intent"];
@@ -124,6 +125,16 @@ export class RcsDispatchStore {
       const ref = this.db.collection(RCS_DISPATCHES).doc(attempt.attemptId);
       if ((await tx.get(ref)).exists) return {kind: "withheld"};
       const {permission, config, grant, budgets} = material;
+      const guestSnap = await tx.get(this.db.collection(guestCollections.guests)
+        .doc(grant.guestId));
+      if (!guestSnap.exists) return {kind: "withheld"};
+      const guest = parseGuest(guestSnap.data());
+      if (guest.guestId !== grant.guestId ||
+          guest.episodeId !== grant.episodeId ||
+          guest.sourceGeneration !== permission.sourceGeneration ||
+          guest.attendeeGeneration !== permission.attendeeGeneration) {
+        return {kind: "withheld"};
+      }
       const withdrawal = await prepareRcsWithdrawal(this.db, tx, permission,
         grant, now);
       const rendered = renderEventRcs({config, grant, keys: this.keys, now,
@@ -148,6 +159,19 @@ export class RcsDispatchStore {
         guestGrantHash: operationContentHash(grant),
         payloadHash: rendered.payloadHash,
         authorityHash: rendered.authorityHash,
+        intentHash: operationContentHash(record.intent),
+        attemptScopeHash: rcsAttemptScopeHash(attempt),
+        replyBinding: material.prepared.choices.length === 0 ? null : {
+          guestId: guest.guestId, episodeId: guest.episodeId,
+          guestRevision: guest.revision,
+          attendeeGeneration: guest.attendeeGeneration,
+          sourceGeneration: guest.sourceGeneration,
+          subjectUid: permission.subjectUid,
+          expiresAt: Math.min(record.intent.expiresAt, grant.expiresAt,
+            permission.expiresAt, material.deliveryExpiresAt),
+          choices: material.prepared.choices.map(({index}) => ({index,
+            choiceId: record.intent.choices[index].choiceId})),
+        },
         providerMessageId: rendered.providerMessageId,
         expiresAt: rendered.expiresAt, createdAt: now,
         quoteRevision: config.quote.revision, currency: config.quote.currency,
