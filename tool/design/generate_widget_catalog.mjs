@@ -4,18 +4,11 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {collectProductionWidgetClassificationDeclarations} from "./generate_widget_classification.mjs";
+import {componentLevels as levels, roleNouns, sharedWidgetLevel} from "./component_naming.mjs";
 
 export const catalogStart = "<!-- BEGIN GENERATED WIDGET INVENTORY -->";
 export const catalogEnd = "<!-- END GENERATED WIDGET INVENTORY -->";
 const catalogPath = "docs/widget_catalog.md";
-const levels = ["L0", "L1", "L2", "L3", "L4", "L4a", "L5", "L6"];
-const sharedHomes = new Map([
-  ["packages/catch_ui/lib/src/foundations/", "L1"],
-  ["packages/catch_ui/lib/src/primitives/", "L2"],
-  ["packages/catch_ui/lib/src/components/", "L3"],
-  ["packages/catch_ui/lib/src/patterns/", "L4"],
-  ["lib/core/riverpod_ui/", "L4a"],
-]);
 
 /** Preserve every public production Widget; registry metadata never filters it. */
 export function buildCatalogRows({declarations, components}) {
@@ -38,11 +31,11 @@ export function buildCatalogRows({declarations, components}) {
       if (record && record.file !== entry.file) {
         throw new Error(`${entry.name}: registry path ${record.file} differs from source ${entry.file}`);
       }
-      const homeLevel = [...sharedHomes].find(([home]) => entry.file.startsWith(home))?.[1];
+      const homeLevel = sharedWidgetLevel(entry.file);
       if (homeLevel && !record) {
         throw new Error(`${identity}: shared Widget has no component-registry identity`);
       }
-      if (record && (!levels.includes(record.level) || !record.roleNoun)) {
+      if (record && (!levels.includes(record.level) || !roleNouns.includes(record.roleNoun))) {
         throw new Error(`${identity}: registry level and roleNoun are required`);
       }
       if (homeLevel && record.level !== homeLevel) {

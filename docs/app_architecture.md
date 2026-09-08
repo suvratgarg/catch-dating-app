@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.26.0
-updated: 2026-09-06
+version: 1.27.0
+updated: 2026-09-08
 owner: app_architecture
 status: active
 ---
@@ -75,9 +75,11 @@ section under 120 lines.
 
 ### Naming grammar (summary — the Naming Grammar section below is binding)
 
-- `Catch<RoleNoun>[<Variant>]` is reserved for L0–L4a; public feature widgets
+- `Catch[<UseCase>]<RoleNoun>` is reserved for L0–L4a; public feature widgets
   are `<Feature><RoleNoun>`; `_Private` widgets only in L5.
-- Role nouns come from the closed lexicon; extending it is a registry review.
+- Use the same name for the same responsibility. A qualified use case must
+  record its concrete distinction from the nearest existing contract in the
+  registry; a new ID or implementation technique does not establish one.
 - Variant axes are enums `<Component><Axis>` with axis vocabulary
   `Variant|Size|Tone|Emphasis|Status|Placement|Mode`; a third boolean
   constructor parameter forces an enum.
@@ -2208,7 +2210,35 @@ concept under different names.
 
 Ratified 2026-09-04; this section is the durable owner (the blueprint spec's
 Appendix A is its ratification record). Phase 4 of the blueprint program makes
-role nouns registry data; until then this list is the closed vocabulary.
+role nouns registry data. Reviewed on 2026-09-08 to make canonicalization and
+the implementing engineer's source-review responsibility explicit.
+
+Names deliberately bring implementations of the same responsibility into
+comparison. Review their production callers, supported states, interaction and
+accessibility contracts, and matching Widgetbook renders. Select one canonical
+implementation and incorporate useful missing behavior. Prefer named
+constructors or typed variants when the contract remains the same. Preserve a
+separate API when its input/output, behavior, or anatomy has a concrete purpose;
+share the renderer where that purpose allows it. Neither the oldest name nor
+the most callers determines the winner.
+
+For shared public Widgets the spelling is `Catch[<UseCase>]<RoleNoun>`: the base
+role is unqualified (`CatchMenu`), and the responsibility precedes the role
+(`CatchSelectionMenu`). This resolves the earlier summary's ambiguous variant
+ordering. Each shared Widget records `level`, `roleNoun`, and `naming.useCase`
+in the existing component registry. An empty use case selects the base role.
+Qualified entries record `naming.comparedWith` (existing contracts with the
+same role, or the owning parent concept) and `naming.reason` (the reviewed
+distinction). Members declare their own role; a menu row is a Row, not a Menu.
+The name is derived from role and use case independently of the contract ID,
+so registering a second ID does not escape a canonical-name collision.
+
+The checks enforce those reviewed identities and reference relationships.
+They cannot infer semantic equivalence from arbitrary code: changing the role
+or use case requires the same source comparison, recorded in the registry and
+reviewed with the code. `Custom`, `New`, `Modern`, `Legacy`, `Old`, and version
+qualifiers such as `V2` do not describe a new responsibility. A feature prefix
+or implementation technique cannot justify a second shared implementation.
 
 - **Prefixes.** `Catch` is reserved for design-system symbols (L0–L4a).
   Public feature widgets are `<Feature><RoleNoun>`. Private widget classes
@@ -2219,11 +2249,19 @@ role nouns registry data; until then this list is the closed vocabulary.
   Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
-  Overlay, Viewport.
+  Overlay, Viewport, Menu, Surface, Input, Text, Image.
+- **Role selection.** Classify the public responsibility, not a child it
+  happens to render. Menu owns commands/choices; Surface owns token-backed
+  paint and containment; Input owns editing mechanics; Text owns display-only
+  typography/layout; Image owns loading or image treatment. Prefer an existing
+  specific role: a Field still owns labeling/validation around an Input, an
+  Avatar still presents identity, and a HeaderTitle still owns heading semantics.
 - **Files.** Snake case of the primary public class; suffix vocabulary
   `_screen`, `_controller`, `_view_model`, `_state`, `_repository`,
   `_service`, `_providers`, or a role-noun widget suffix. One primary public
-  widget per shared-library file, its parts private in-file.
+  widget per shared-library file. Additional public anatomy in that file must
+  be registered members of its primary Widget's concept; private Widget classes
+  remain confined to L5. Non-Widget implementation helpers may be private.
 - **Variants.** Axes are enums named `<Component><Axis>` with axis vocabulary
   `Variant`, `Size`, `Tone`, `Emphasis`, `Status`, `Placement`, `Mode`. At
   most two booleans per public component constructor; a third forces an enum.

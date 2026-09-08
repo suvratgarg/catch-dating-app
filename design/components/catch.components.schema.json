@@ -112,6 +112,45 @@
     }
   },
   "$defs": {
+    "componentLevel": {
+      "enum": ["L0", "L1", "L2", "L3", "L4", "L4a", "L5", "L6"]
+    },
+    "roleNoun": {
+      "enum": [
+        "Button", "IconAction", "Field", "FieldLanes", "Section", "SectionList",
+        "Tile", "Row", "RowList", "Chip", "Badge", "Banner", "Sheet", "Dialog",
+        "Notice", "EmptyState", "ErrorState", "Skeleton", "Indicator", "TopBar",
+        "Header", "HeaderTitle", "Scaffold", "PageBody", "ScrollView", "TabBar",
+        "TabScaffold", "Poster", "Polaroid", "Ticket", "Gap", "Inset", "Divider",
+        "Avatar", "Photo", "Cover", "Stepper", "StepFlow", "Accordion", "Drawer",
+        "Overlay", "Viewport", "Menu", "Surface", "Input", "Text", "Image"
+      ]
+    },
+    "widgetNaming": {
+      "type": "object",
+      "required": ["useCase"],
+      "additionalProperties": false,
+      "properties": {
+        "useCase": {
+          "type": "string",
+          "pattern": "^(?:[A-Z][a-z0-9]*)*$",
+          "description": "Reviewed responsibility before the role noun; empty for the base role. The name is derived, never an independent escape from concept identity."
+        },
+        "comparedWith": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^catch\\.[a-z0-9_.-]+$"}
+        },
+        "reason": {
+          "type": "string",
+          "pattern": "\\S",
+          "description": "Concrete behavioral, input/output, or anatomy distinction established by source and use-case review. A different implementation or registry id is not a distinction."
+        }
+      },
+      "if": {"properties": {"useCase": {"minLength": 1}}},
+      "then": {"required": ["comparedWith", "reason"]}
+    },
     "component": {
       "type": "object",
       "oneOf": [

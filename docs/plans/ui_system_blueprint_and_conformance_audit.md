@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.6.0
-updated: 2026-09-06
+version: 1.7.0
+updated: 2026-09-08
 owner: app_architecture
 status: active
 ---
@@ -449,11 +449,22 @@ which is the single biggest "docs fight code" tax removed.
 
 Ratify the grammar in the Appendix, record each shared component's ladder
 level and role noun in the registry, extend `design:lexicon:check` +
-`check_widget_classification` to enforce: `Catch<RoleNoun>` classes only in
+`check_widget_classification` to enforce: `Catch[<UseCase>]<RoleNoun>` classes only in
 `catch_ui` (role nouns from the closed lexicon), `<Feature><RoleNoun>` for
 public feature widgets, file suffix vocabulary, variant enums as
 `<Component><Axis>`. The 7 unprefixed core files are renamed or re-homed
 during Phase 3 extraction (compiler-verified rename).
+
+The 2026-09-08 owner clarification makes the intended collision behavior
+explicit: compare implementations of the same public responsibility and choose
+one canonical contract. Meaningful variations use named constructors, typed
+variants, or a use-case name with a concrete comparison against an existing
+contract. A different registry ID or implementation technique is insufficient.
+The durable Naming Grammar in `docs/app_architecture.md` owns the spelling,
+comparison metadata, and role-selection boundaries. Menu, Surface, Input, Text,
+and Image join the closed vocabulary for their existing responsibilities.
+Public anatomy remains a registered member of its primary concept; this does
+not permit private shared Widgets or multiple unrelated primaries in one file.
 
 ### D6. Handwritten source gets the test-size ratchet treatment
 
@@ -661,7 +672,7 @@ manifest assertion, replacing the scanners it obsoletes).
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains
-`level` and `roleNoun` fields with schema validation; lexicon/classification
+`level`, `roleNoun`, and reviewed use-case naming metadata with schema validation; lexicon/classification
 checks extended to the grammar (D5); `design:widgets:*` gates simplified to
 registry+Widgetbook; one-time grammar conformance sweep over `catch_ui`
 public API (renames are compiler-verified; staged `dart fix` data allowed
@@ -670,7 +681,10 @@ within the slice).
 DoD: `docs/widget_catalog.md` inventory sections carry a generated-file
 header and the drift check fails on hand edits; grammar check green with a
 seeded known-bad probe; new-widget gate no longer requires markdown table
-edits.
+edits. Naming probes cover a renamed competing primary with a different
+registry ID, an unreviewed qualifier, and legitimate members/complementary
+operations. Source review establishes semantic identity; passing a spelling
+check alone is not evidence that duplicate implementations were consolidated.
 
 ### Phase 5 — Budgets, splits, and estate shrink
 
