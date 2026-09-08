@@ -96,6 +96,10 @@ class CatchCountBadge extends StatelessWidget {
     }
 
     return Stack(
+      // A count must not loosen the constraints that its child receives.
+      // Otherwise full-width controls shrink while the marker stays at the
+      // original far edge; zero and nonzero counts would change the control.
+      fit: StackFit.passthrough,
       clipBehavior: Clip.none,
       children: [
         child,

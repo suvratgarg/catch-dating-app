@@ -355,6 +355,7 @@ Widget catchCountBadgeContractStates(BuildContext context) {
       'overflow-count',
       'standalone',
       'spoken-count',
+      'tight-constraints',
     ],
     children: [
       _StateCard(
@@ -402,6 +403,19 @@ Widget catchCountBadgeContractStates(BuildContext context) {
       const _StateCard(
         label: 'standalone',
         child: CatchCountBadge.label(count: 12),
+      ),
+      const _StateCard(
+        label: 'tight-constraints',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.fullWidthButtonWidth,
+          child: CatchCountBadge(
+            count: 12,
+            child: CatchSurface(
+              padding: CatchInsets.content,
+              child: Text('Messages'),
+            ),
+          ),
+        ),
       ),
     ],
   );

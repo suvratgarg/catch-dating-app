@@ -1548,6 +1548,28 @@
           "rationale": "A content row is reusable button anatomy without becoming another button implementation."
         }
       ]
+    },
+    {
+      "id": "count-badge-child-constraints",
+      "title": "Count badges preserve their control bounds",
+      "intent": "Adding a badge preserves the child constraints and keeps the marker attached to the painted control.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.badge.count_badge",
+      "qualityReference": "CatchCountBadge",
+      "decisionSource": "owner-delegated:2026-09-08 source, failing geometry test and rendered review",
+      "acceptedVisualDelta": [
+        "Fix the tight-width case: a nonzero count no longer shrinks a full-width child while anchoring the marker to the former far edge. Loose-width controls retain their existing layout."
+      ],
+      "members": [
+        {
+          "symbol": "CatchCountBadge",
+          "disposition": "repair",
+          "target": "CatchCountBadge",
+          "preview": "required",
+          "rationale": "Forward incoming constraints through the overlay Stack; zero and nonzero counts must not change the child constraints."
+        }
+      ]
     }
   ]
 }

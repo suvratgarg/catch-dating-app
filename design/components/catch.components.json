@@ -304,14 +304,15 @@
           {
             "id": "catch.badge.count_badge",
             "symbol": "CatchCountBadge",
-            "summary": "Anchored or standalone integer marker with zero hiding, 99+ clamping and optional caller-resolved spoken copy.",
+            "summary": "Anchored or standalone integer marker with zero hiding, 99+ clamping and optional caller-resolved spoken copy. Forward the child constraints unchanged so adding a count cannot shrink its painted control or detach the marker.",
             "states": [
               "hidden",
               "count",
               "99-boundary",
               "overflow-count",
               "standalone",
-              "spoken-count"
+              "spoken-count",
+              "tight-constraints"
             ],
             "file": "packages/catch_ui/lib/src/components/catch_count_badge.dart",
             "governance": {

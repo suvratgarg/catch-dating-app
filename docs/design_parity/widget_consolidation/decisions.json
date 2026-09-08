@@ -6917,6 +6917,22 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:count-badge-child-constraints",
+      "patternFamilyId": "count-badge-child-constraints",
+      "decision": "repair-canonical",
+      "canonicalSymbol": "CatchCountBadge",
+      "members": [
+        {
+          "name": "CatchCountBadge",
+          "action": "repair"
+        }
+      ],
+      "rationale": "The full button-family capture exposed a detached marker when a parent imposes a tight width: count zero preserves the full-width child, but the default loose Stack shrinks a nonzero-count child and leaves the marker at the far edge. The seeded geometry test measures 80 px instead of the required 320 px before the fix. Forward parent constraints through the overlay so the painted child and badge share the same boundary, without adding intrinsic layout passes. Loose-width behavior, count formatting and pointer passthrough remain unchanged. This corrects the shared badge owner before the floating-button migration.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }
