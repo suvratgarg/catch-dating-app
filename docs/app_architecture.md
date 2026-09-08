@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.31.2
+version: 1.32.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -54,8 +54,8 @@ section under 120 lines.
 | L0 | tokens | scale values, semantic roles | `packages/catch_tokens` | unchanged | Flutter SDK only |
 | L1 | foundations | theme wiring, typography, icons, motion | `packages/catch_ui/lib/src/foundations` | unchanged | L0 |
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `packages/catch_ui/lib/src/primitives` | unchanged | L0–L1 |
-| L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` plus remaining `lib/core/widgets/**`, `lib/core/forms/**` | `packages/catch_ui` | L0–L2 |
-| L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` plus remaining `lib/core/widgets/**` | `packages/catch_ui` | L0–L3 |
+| L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` | `packages/catch_ui` | L0–L2 |
+| L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` | `packages/catch_ui` | L0–L3 |
 | L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
 | L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
@@ -69,7 +69,11 @@ and loading semantics. The separate `shimmer` package is removed in the same
 migration. Engine imports remain internal to `catch_ui`. `AppTheme` remains
 an app adapter that adds the activity-domain palette to `CatchTheme`; it does
 not define another theme.
-Shared field constraints and input-bound policies live in `catch_ui`.
+The field API, form editors, constraints and input-bound policies live in
+`catch_ui`. Typed choices use named constructors such as
+`CatchField<T>.choices`; record configuration preserves const construction and
+one keyed widget identity. The one-file D6 budget exception belongs only to
+its constructor facade; state and renderers retain the ordinary size limit.
 App-generated schema constants supply their concrete paths and values; callers
 retain localized validation copy and save orchestration.
 `CatchLocalizedErrorState`, scaffold, sliver and inline adapters map app errors
@@ -4153,7 +4157,7 @@ class CalendarEventSummary {
 Reference files:
 
 - `packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart`
-- `lib/core/forms/catch_form_row_list.dart` and the four `catch_form_*_row_editor.dart` owners
+- `packages/catch_ui/lib/src/patterns/catch_form_row_list.dart` and the four `catch_form_*_row_editor.dart` owners
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab.dart`
 - `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`

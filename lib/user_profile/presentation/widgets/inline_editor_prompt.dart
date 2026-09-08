@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -362,7 +361,7 @@ class _ProfileInlinePromptEntryEditorState
       key: ValueKey('profile-prompt-card-${widget.promptIndex}'),
       hasError: _validationError != null || saveError != null,
       children: [
-        CatchField.choices<String>(
+        CatchField<String>.choices(
           copy: catchFieldCopy(context.l10n),
           key: ValueKey('profile-prompt-question-${widget.promptIndex}'),
           icon: widget.icon,

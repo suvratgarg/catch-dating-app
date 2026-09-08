@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -273,7 +272,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Languages',
           values: const ['English', 'Hindi', 'Marathi'],
@@ -297,7 +296,7 @@ void main() {
       _wrap(
         SizedBox(
           width: 360,
-          child: CatchField.choices<String>(
+          child: CatchField<String>.choices(
             copy: catchFieldCopy(AppLocalizationsEn()),
             icon: CatchIcons.translateRounded,
             title: 'Languages',
@@ -383,7 +382,7 @@ void main() {
           child: CatchSection.fieldRows(
             title: 'About you',
             children: [
-              CatchField.choices<String>(
+              CatchField<String>.choices(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 icon: CatchIcons.translateRounded,
                 title: 'Languages',

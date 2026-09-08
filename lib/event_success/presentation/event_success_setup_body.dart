@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
@@ -194,7 +193,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               maxLines: 4,
               textInputAction: TextInputAction.newline,
             ),
-            CatchField.optionCards<EventSuccessConversationGraphConsentMode>(
+            CatchField<EventSuccessConversationGraphConsentMode>.optionCards(
               copy: catchFieldCopy(context.l10n),
               key: const ValueKey('eventSuccessConversationGraphConsentMode'),
               title: context
@@ -352,7 +351,7 @@ class EventSuccessModuleRows extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (questionnaire)
-          CatchField.optionCards<_QuestionnaireMode>(
+          CatchField<_QuestionnaireMode>.optionCards(
             copy: catchFieldCopy(context.l10n),
             key: ValueKey('eventSuccessModule-${module.id}'),
             title: context
@@ -420,7 +419,7 @@ class EventSuccessModuleRows extends StatelessWidget {
             _draft.isModuleSelected(module.id))
           CatchSection.containedFieldRows(
             key: const ValueKey('eventSuccessRotationConfig'),
-            child: CatchField.choices<int?>(
+            child: CatchField<int?>.choices(
               copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n
@@ -454,7 +453,7 @@ class EventSuccessModuleRows extends StatelessWidget {
             _draft.isModuleSelected(module.id))
           CatchSection.containedFieldRows(
             key: const ValueKey('eventSuccessRevealConfig'),
-            child: CatchField.choices<int>(
+            child: CatchField<int>.choices(
               copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n

@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -150,7 +149,7 @@ class _EventRehearsalSetupSectionState
                 selected: _actorCount,
                 onSelected: (count) => setState(() => _actorCount = count),
               ),
-              CatchField.choices<EventRehearsalModule>(
+              CatchField<EventRehearsalModule>.choices(
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostEventRehearsalModules,
                 contract: CatchContractConstraints

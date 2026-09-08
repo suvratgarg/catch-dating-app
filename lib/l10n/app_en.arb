@@ -903,28 +903,28 @@
   },
   "coreCatchFieldTooltipField": "field",
   "@coreCatchFieldTooltipField": {
-    "description": "Product copy used by lib/core/widgets/catch_field.dart (tooltip).",
+    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
   "coreCatchFieldLabelCancel": "Cancel",
   "@coreCatchFieldLabelCancel": {
-    "description": "Product copy used by lib/core/widgets/catch_field.dart (label).",
+    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
   "coreCatchFieldLabelDone": "Done",
   "@coreCatchFieldLabelDone": {
-    "description": "Product copy used by lib/core/widgets/catch_field.dart (label).",
+    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
   },
   "coreCatchFieldLabelSaving": "Saving…",
   "@coreCatchFieldLabelSaving": {
-    "description": "Product copy used by lib/core/widgets/catch_field.dart (saving label).",
+    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (saving label).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
@@ -8003,7 +8003,7 @@
   },
   "coreCatchFieldTooltipClearValue1": "Clear {value1}",
   "@coreCatchFieldTooltipClearValue1": {
-    "description": "Product copy used by lib/core/widgets/catch_field.dart (tooltip).",
+    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).",
     "placeholders": {
       "value1": {}
     },
@@ -15569,7 +15569,7 @@
   },
   "coreCatchFieldVisiblecopySelect": "Select",
   "@coreCatchFieldVisiblecopySelect": {
-    "description": "Product copy used by lib/core/widgets/catch_field.dart (visibleCopy).",
+    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).",
     "x-audience": "shared",
     "x-owner": "product",
     "x-surface": "core.widgets.catch_field"
@@ -20161,7 +20161,7 @@
   },
   "coreCatchFieldVisiblecopySelectTolowercase": "Select {toLowerCase}",
   "@coreCatchFieldVisiblecopySelectTolowercase": {
-    "description": "Product copy used by lib/core/widgets/catch_field.dart (visibleCopy).",
+    "description": "Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).",
     "placeholders": {
       "toLowerCase": {}
     },
@@ -20171,7 +20171,7 @@
   },
   "coreCatchFieldVisiblecopyAddFieldLabel": "Add {fieldLabel}",
   "@coreCatchFieldVisiblecopyAddFieldLabel": {
-    "description": "Canonical empty editable-row copy used by lib/core/widgets/catch_field.dart (visibleCopy).",
+    "description": "Canonical empty editable-row copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).",
     "placeholders": {
       "fieldLabel": {}
     },

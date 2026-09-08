@@ -17,11 +17,11 @@
     },
     {
       "path": "test/hosts/host_create_event_screen_test.dart",
-      "maxLines": 1486
+      "maxLines": 1485
     },
     {
       "path": "test/onboarding/onboarding_widgets_test.dart",
-      "maxLines": 1435
+      "maxLines": 1434
     }
   ]
 }

@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/payments/domain/host_payment_account.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -571,7 +570,7 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                 ),
                 gapH16,
                 CatchFieldLanes.single(
-                  child: CatchField.select<RazorpayHostBusinessType>(
+                  child: CatchField<RazorpayHostBusinessType>.select(
                     copy: catchFieldCopy(context.l10n),
                     title: l10n.hostsHostPaymentAccountCardTitleBusinessType,
                     contract: CatchContractConstraints

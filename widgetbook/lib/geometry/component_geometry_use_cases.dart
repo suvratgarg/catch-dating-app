@@ -2,7 +2,6 @@ import 'package:catch_dating_app/core/presentation/app_shell.dart'
     show AppShellSideNavigation;
 import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_sheet.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_event_entry_state.dart';
@@ -457,7 +456,7 @@ Widget _mixedContainedSection(
     title: 'Event settings',
     headerPlacement: CatchSectionHeaderPlacement.inside,
     children: [
-      CatchField.choices<String>(
+      CatchField<String>.choices(
         copy: catchFieldCopy(context.l10n),
         title: 'Host',
         icon: CatchIcons.hosted,
@@ -488,7 +487,7 @@ Widget _mixedDividedSection(
   required ValueChanged<Set<String>> onSelectionChanged,
 }) {
   final fullWidthBand = treatment == _MixedDividedTreatment.fullWidthBand;
-  final timingField = CatchField.choices<String>(
+  final timingField = CatchField<String>.choices(
     copy: catchFieldCopy(context.l10n),
     title: 'Reminder timing',
     icon: CatchIcons.clock,
@@ -1162,7 +1161,7 @@ Widget _responsiveEventSettingsSection(BuildContext context) {
     headerPlacement: CatchSectionHeaderPlacement.inside,
     children: [
       StatefulBuilder(
-        builder: (context, setState) => CatchField.choices<String>(
+        builder: (context, setState) => CatchField<String>.choices(
           copy: catchFieldCopy(context.l10n),
           title: 'Host',
           icon: CatchIcons.hosted,
@@ -1306,7 +1305,7 @@ Widget _canonicalInteractionSection(
   required ValueChanged<Set<String>> onSelectionChanged,
 }) {
   final fields = [
-    CatchField.choices<String>(
+    CatchField<String>.choices(
       copy: catchFieldCopy(context.l10n),
       title: 'Host',
       icon: CatchIcons.hosted,

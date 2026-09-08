@@ -223,7 +223,7 @@ scan_raw_text_inputs() {
     "${common_globs[@]}" \
     '(^|[^A-Za-z])(TextField|TextFormField)\(' \
     lib/core lib/*/presentation \
-    --glob '!lib/core/widgets/catch_field.dart' \
+    --glob '!packages/catch_ui/lib/src/components/catch_field.dart' \
     --glob '!lib/core/widgets/catch_field_*.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_search_field.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_otp_code_field.dart' || true)"

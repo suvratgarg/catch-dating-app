@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:a76d3f1e8b9fa531b3ed2145d8fd657abeacb3dcccca213967049a1b646e8f88",
-  "resolvedDigest": "sha256:954c08f0e7a20d442feb3ab4fc2f5699303bfd01a09461bc989f7eb6977c983a",
+  "resolvedDigest": "sha256:e775a09257f2474ee18e6a9c72c743c7cd4d5bfcb7ba62619d0b874d554a2484",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1794,11 +1794,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

@@ -6,7 +6,7 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const activityChoicePattern =
-  /\bCatchField\.choices<(ActivityKind|PaceLevel|EventInteractionModel)>\s*\(/gu;
+  /\bCatchField\s*<\s*(ActivityKind|PaceLevel|EventInteractionModel)\s*>\s*\.choices\s*\(/gu;
 const accordionPattern = /\bCatchAccordionController\s*\(/gu;
 const eventDisclosurePaths = [
   "lib/hosts/presentation/event_management/",

@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.19
+version: 1.10.0
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -478,6 +478,16 @@ use-case monoliths (9,885-line `primitive_contract_use_cases.dart`,
 Phase 5 (repository by subdomain, screens by pane/workspace, `catch_tokens`
 by tier during Phase 2/3, use-case files by component family onto the
 Phase 1 shared harness).
+
+The `CatchField` constructor facade is one explicit file-size exception:
+`packages/catch_ui/lib/src/components/catch_field.dart` may contain at most
+1,150 lines. Its named const/factory constructors preserve supported mode
+arguments and one keyed widget identity; configuration records, pure property
+resolution, state and rendering remain in separate files within the ordinary
+800-line cap. The exception does not allow private Widget config subclasses or
+Widget-returning helper methods. Phase 5's source-size gate must encode this
+exact path and cap, seed an over-cap probe, and retain decrease-only protection.
+No other file inherits this exception.
 
 ### D7. Migration Protocol v2 (binding for every slice in this program and
 after it)
@@ -1115,19 +1125,20 @@ renderer is deleted and both resulting files stay within D6.
 its facade's immutable configuration plus explicit state handles; controllers,
 focus, dismissal and save orchestration stay with the field. Native rendering
 uses the existing `CatchTextInput` primitive, extended with editing and obscuring
-enum axes and platform input options. The text-entry member and its facade
-remain app-side until their constructor/configuration migration is complete;
-no shared package imports the app to reach this intermediate component.
+enum axes and platform input options. The text-entry member and its facade now live together in `catch_ui`, with
+non-Widget configuration records and named constructors. The library has no app
+imports.
 
 The typed form list and its four editors now have separate owning libraries.
 Each editor retains its State, controllers, validation and save behavior;
 descriptors retain typed construction and patch factories. The former combined
 file no longer declares a Widget or State, and every resulting file is below
-800 lines. These form owners remain app-side until the field facade moves.
+800 lines. These form owners now live in `catch_ui/src/patterns` alongside the field
+facade migration; persistence and localized copy remain caller-owned.
 
 The final form review body and step navigator have individual source owners
 and explicit registry membership. Their field rows, status labels, callbacks
-and scrolling are unchanged. They also remain app-side until the field move.
+and scrolling are unchanged. Both now live in `catch_ui/src/patterns` with their original app files deleted.
 
 The seven typed form descriptors now live in the shared pattern package. A
 generic visitor preserves each choice type without rendering; the form list
@@ -1135,6 +1146,15 @@ owns the same row constructors, schema assertions and stable editor keys in
 its build method. All seven former `buildRow` declarations and the old app
 descriptor file are deleted. A direct preview mounts all six descriptor modes
 through the production form list under both text-commit policies.
+
+The final field facade uses one `CatchField<T>` widget and private configuration
+records. Its four former static Widget helpers are real factory constructors;
+all generic callers use `CatchField<T>.choices`, `.optionCards`, or `.select`.
+The named const constructors preserve their defaults, and keyed mode changes
+retain State. All field parts, the typed form list and editors, and the form
+review/navigator now reside in the shared package. The old app-side field/form
+files are deleted. D6's owner-approved one-file exception ships with this move;
+all other moved field and form files remain within 800 lines.
 
 ### Phase 4 — One registry, binding grammar
 

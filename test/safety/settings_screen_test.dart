@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';

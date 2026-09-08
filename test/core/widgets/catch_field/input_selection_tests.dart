@@ -11,7 +11,7 @@ void _registerInputSelectionTests() {
       _wrap(
         Form(
           key: formKey,
-          child: CatchField.select<CityOption>(
+          child: CatchField<CityOption>.select(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             contractExemption: 'Fixture selection is not persisted.',
@@ -81,7 +81,7 @@ void _registerInputSelectionTests() {
         _wrap(
           SizedBox(
             width: 320,
-            child: CatchField.select<CityOption>(
+            child: CatchField<CityOption>.select(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'City',
               values: defaultCityOptions,
@@ -116,7 +116,7 @@ void _registerInputSelectionTests() {
       _wrap(
         SizedBox(
           width: 320,
-          child: CatchField.select<CityOption>(
+          child: CatchField<CityOption>.select(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             values: defaultCityOptions,
@@ -163,7 +163,7 @@ void _registerInputSelectionTests() {
               updateState = setState;
               return SizedBox(
                 width: 320,
-                child: CatchField.select<CityOption>(
+                child: CatchField<CityOption>.select(
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'City',
                   values: values,
@@ -215,7 +215,7 @@ void _registerInputSelectionTests() {
             child: StatefulBuilder(
               builder: (context, setState) {
                 update = setState;
-                return CatchField.select<String>(
+                return CatchField<String>.select(
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Selection',
                   values: values,
@@ -265,7 +265,7 @@ void _registerInputSelectionTests() {
     );
 
     expect(
-      () => CatchField.select<String>(
+      () => CatchField<String>.select(
         copy: catchFieldCopy(AppLocalizationsEn()),
         title: 'Activity',
         values: const ['Run', 'Run'],
@@ -284,7 +284,7 @@ void _registerInputSelectionTests() {
       _wrap(
         SizedBox(
           width: 240,
-          child: CatchField.select<CityOption>(
+          child: CatchField<CityOption>.select(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             values: defaultCityOptions,

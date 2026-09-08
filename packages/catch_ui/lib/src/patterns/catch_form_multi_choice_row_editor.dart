@@ -1,6 +1,5 @@
-import 'package:catch_dating_app/core/forms/catch_form_save_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/patterns/catch_form_row_list.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -99,7 +98,7 @@ class _CatchFormMultiChoiceRowEditorState<P, T>
     final descriptor = widget.descriptor;
     final error = _saveState.error;
     final addable = _selected.isEmpty && descriptor.isAddAffordanceWhenEmpty;
-    return CatchField.choices<T>(
+    return CatchField<T>.choices(
       copy: widget.scope.fieldCopy,
       icon: descriptor.icon,
       title: descriptor.label,

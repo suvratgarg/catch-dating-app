@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_success.feature.json",
   "generatedFor": "2026-08-11",
   "sourceDigest": "sha256:d5988cbdde4cb4237cef54f756e1b3d685fa80ac2cd7ec4ef96c88388357fc1e",
-  "resolvedDigest": "sha256:08ce3e3a089c82366d21ec0be2e6c068935571c81bebdf152aaae3786490b6e8",
+  "resolvedDigest": "sha256:17d35a931f8e32b33e8d58f43385266cd39a8b8b88ea7b8050b563e37e26fa44",
   "feature": {
     "id": "feature.event_success",
     "name": "Event Success",
@@ -2281,11 +2281,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

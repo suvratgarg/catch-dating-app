@@ -1,19 +1,14 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/forms/catch_form_multi_choice_row_editor.dart';
-import 'package:catch_dating_app/core/forms/catch_form_range_row_editor.dart';
-import 'package:catch_dating_app/core/forms/catch_form_row_list.dart';
-import 'package:catch_dating_app/core/forms/catch_form_single_choice_row_editor.dart';
-import 'package:catch_dating_app/core/forms/catch_form_text_row_editor.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/design_fixtures/profile_surface_fixtures.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
@@ -37,6 +32,7 @@ import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_s
 import 'package:catch_dating_app/user_profile/presentation/self_profile_screen_state_provider.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_insights_tab.dart'
     show ProfileInsightsTabSliverBody;
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
@@ -1389,7 +1385,7 @@ Widget profileChipPlaceholderStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Column(
             children: [
-              CatchField.choices<Language>(
+              CatchField<Language>.choices(
                 copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 values: const [Language.english, Language.hindi],
@@ -1398,7 +1394,7 @@ Widget profileChipPlaceholderStates(BuildContext context) {
                 multi: true,
                 onSelectionChanged: (_) {},
               ),
-              CatchField.choices<Language>(
+              CatchField<Language>.choices(
                 copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 values: const [Language.english, Language.hindi],
@@ -1572,7 +1568,8 @@ Widget _catchFormDescriptorPreview(BuildContext context) {
       _StateCard(
         label:
             'read, explicit-confirm text, choice, multi-choice, and range rows',
-        child: _SectionFrame(
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.phoneChromeWidth,
           height: WidgetbookPreviewLayout.profileSheetPreviewHeight,
           child: CatchFormRowList<_WidgetbookFormPatch>(
             fieldCopy: catchFieldCopy(context.l10n),

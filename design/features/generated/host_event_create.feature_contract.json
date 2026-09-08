@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:e0667776ebb054bbc7621ed1cb625773b15fc86481eceec43a9f4b2bba243ac6",
-  "resolvedDigest": "sha256:9ec7583aa1cf8af6456de6c6894da69d208d99de214c8eb12e1e471f9de5def4",
+  "resolvedDigest": "sha256:337ddad7023c11458061287a25eb3f5f07d4fc2d79b178f275614e37cb796f4d",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4498,11 +4498,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

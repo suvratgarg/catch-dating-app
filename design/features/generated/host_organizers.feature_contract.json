@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:8ecd6b0f7904ac29371c76809b4e81dea7e5b705211ad050690b68c50fc4d88b",
+  "resolvedDigest": "sha256:40f2c2db2313b3d2d18610464c58e055862f457c71e3106b57d4393e6e53cd58",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5195,11 +5195,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

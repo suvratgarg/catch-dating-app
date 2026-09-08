@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "034c0d3c3cb8190b3dc9c502f3b1835ab20038db4cda70f29de6def589a2bc90",
+  "sourceDigest": "9d73b972778f9724e3f97d06007e65d767c3e971b52bd627f7cea3de0ad749dc",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -61,7 +61,7 @@
       "conceptId": "catch.field",
       "parentConceptId": null,
       "dartSymbol": "CatchField",
-      "dartFile": "lib/core/widgets/catch_field.dart",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_field.dart",
       "claudeHandoffName": "Field",
       "figmaComponentName": "Catch/Field",
       "supportedStates": [

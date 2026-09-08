@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -95,7 +94,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Distances',
           body: '5K and beyond',
@@ -118,7 +117,7 @@ void main() {
     const accent = Color(0xFF8C5BFF);
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Format',
           helperText: 'Pick the format guests will see.',
@@ -147,7 +146,7 @@ void main() {
       await tester.pumpWidget(
         _wrap(
           StatefulBuilder(
-            builder: (context, setState) => CatchField.optionCards<String>(
+            builder: (context, setState) => CatchField<String>.optionCards(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Admission format',
               values: const ['open', 'invite'],
@@ -418,7 +417,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'City',
           values: const ['Indore', 'Mumbai'],
@@ -703,7 +702,7 @@ void main() {
           StatefulBuilder(
             builder: (context, setState) {
               update = setState;
-              return CatchField.choices<String>(
+              return CatchField<String>.choices(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Activities',
                 values: const ['Run', 'Walk'],
@@ -730,7 +729,7 @@ void main() {
 
       await tester.pumpWidget(
         _wrap(
-          CatchField.choices<String>(
+          CatchField<String>.choices(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Locked activities',
             values: const ['Run', 'Walk'],

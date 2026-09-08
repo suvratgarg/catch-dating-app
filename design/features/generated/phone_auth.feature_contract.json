@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/phone_auth.feature.json",
   "generatedFor": "2026-08-30",
   "sourceDigest": "sha256:8c99c2419256b4e8cf232e233bd1bcc6e3607e5a6078fac001d391a47f3bc653",
-  "resolvedDigest": "sha256:a7a455253a2e693b397db5d7d29e068687b8045ea871d1318b93c3dbc8d02cac",
+  "resolvedDigest": "sha256:42fdf44cb472876b687be19ca34e40c70d3a86b6726eb27c42892882071161f1",
   "feature": {
     "id": "feature.phone_auth",
     "name": "Phone Authentication",
@@ -823,11 +823,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

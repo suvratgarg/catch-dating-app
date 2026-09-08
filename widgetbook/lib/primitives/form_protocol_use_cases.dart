@@ -1,6 +1,4 @@
-import 'package:catch_dating_app/core/forms/catch_form_row_list.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -171,3 +169,11 @@ class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
     errorText: (_, error) => error.toString(),
   );
 }
+
+@widgetbook.UseCase(
+  name: 'Required, optional and complete steps',
+  type: CatchFormStepOverview,
+  path: '[Core patterns]/Form review',
+)
+Widget formStepOverviewStates(BuildContext context) =>
+    formStepSpecificationStates(context);

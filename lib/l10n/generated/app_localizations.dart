@@ -802,25 +802,25 @@ abstract class AppLocalizations {
   /// **'Try again'**
   String get coreCatchErrorBannerLabelTryAgain;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (tooltip).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'field'**
   String get coreCatchFieldTooltipField;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (label).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
   String get coreCatchFieldLabelCancel;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (label).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (label).
   ///
   /// In en, this message translates to:
   /// **'Done'**
   String get coreCatchFieldLabelDone;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (saving label).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (saving label).
   ///
   /// In en, this message translates to:
   /// **'Saving…'**
@@ -6947,7 +6947,7 @@ abstract class AppLocalizations {
   /// **'Block {name}?'**
   String coreBlockUserDialogTitleBlockName({required Object name});
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (tooltip).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (tooltip).
   ///
   /// In en, this message translates to:
   /// **'Clear {value1}'**
@@ -13428,7 +13428,7 @@ abstract class AppLocalizations {
     required Object countdownLabel,
   });
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (visibleCopy).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Select'**
@@ -17367,7 +17367,7 @@ abstract class AppLocalizations {
   /// **'Check the highlighted details and try again.'**
   String get coreAppErrorMessageVisiblecopyCheckTheHighlightedDetails;
 
-  /// Product copy used by lib/core/widgets/catch_field.dart (visibleCopy).
+  /// Product copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Select {toLowerCase}'**
@@ -17375,7 +17375,7 @@ abstract class AppLocalizations {
     required Object toLowerCase,
   });
 
-  /// Canonical empty editable-row copy used by lib/core/widgets/catch_field.dart (visibleCopy).
+  /// Canonical empty editable-row copy used by lib/core/presentation/catch_ui_copy.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add {fieldLabel}'**

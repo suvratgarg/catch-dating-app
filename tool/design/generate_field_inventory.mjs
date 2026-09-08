@@ -6,7 +6,7 @@ import {fileURLToPath} from "node:url";
 
 import {fromRepo} from "../lib/repo_paths.mjs";
 
-const DEFAULT_SOURCE = "lib/core/widgets/catch_field.dart";
+const DEFAULT_SOURCE = "packages/catch_ui/lib/src/components/catch_field.dart";
 const DEFAULT_SECTION_SOURCE = "packages/catch_ui/lib/src/components/catch_section.dart";
 const DEFAULT_STATUS_SOURCE = "packages/catch_ui/lib/src/components/catch_field_status.dart";
 const DEFAULT_CONTRACTS = "design/components/catch.components.json";
@@ -136,14 +136,14 @@ export function extractCatchFieldFacades(source, {useWhen = facadeUseWhen} = {})
   const declarations = [
     ...extractDeclarations(
       source,
-      /\bconst\s+factory\s+CatchField\.([A-Za-z][A-Za-z0-9_]*)\s*\(/gu,
-      "factory",
+      /\bconst\s+CatchField\.([A-Za-z][A-Za-z0-9_]*)\s*\(/gu,
+      "constructor",
       "CatchField",
     ),
     ...extractDeclarations(
       source,
-      /\bstatic\s+CatchField\s+([A-Za-z][A-Za-z0-9_]*)(?:<[^>{}()]+>)?\s*\(/gu,
-      "static-facade",
+      /\bfactory\s+CatchField\.([A-Za-z][A-Za-z0-9_]*)\s*\(/gu,
+      "factory",
       "CatchField",
     ),
   ].sort((left, right) => left.offset - right.offset);

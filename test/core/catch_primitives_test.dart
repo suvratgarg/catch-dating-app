@@ -15,8 +15,6 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';

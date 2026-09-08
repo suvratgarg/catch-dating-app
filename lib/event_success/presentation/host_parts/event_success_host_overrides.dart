@@ -589,7 +589,7 @@ class GroupOverrideMemberEditor extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: CatchField.select<String>(
+          child: CatchField<String>.select(
             copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
@@ -1166,7 +1166,7 @@ class RotationOverridePairEditor extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: CatchField.select<String>(
+          child: CatchField<String>.select(
             copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
@@ -1189,7 +1189,7 @@ class RotationOverridePairEditor extends StatelessWidget {
         ),
         gapW8,
         Expanded(
-          child: CatchField.select<String>(
+          child: CatchField<String>.select(
             copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n

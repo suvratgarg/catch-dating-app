@@ -189,7 +189,7 @@ class _HostSavedAudienceEditorFormState
                                 ? context.l10n.hostSavedAudienceNameRequired
                                 : null,
                           ),
-                          CatchField.select<HostSavedAudienceMembershipMode>(
+                          CatchField<HostSavedAudienceMembershipMode>.select(
                             copy: catchFieldCopy(context.l10n),
                             key: const ValueKey('host-saved-audience-mode'),
                             title: context.l10n.hostAudienceMembershipMode,
@@ -216,7 +216,7 @@ class _HostSavedAudienceEditorFormState
                             },
                           ),
                           if (!_static)
-                            CatchField.select<HostSavedAudienceJoin>(
+                            CatchField<HostSavedAudienceJoin>.select(
                               copy: catchFieldCopy(context.l10n),
                               key: const ValueKey('host-saved-audience-join'),
                               title: context.l10n.hostSavedAudienceMatch,
@@ -584,7 +584,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               onPressed: enabled ? onRemove : null,
             ),
       children: [
-        CatchField.select<_AudienceRuleKind>(
+        CatchField<_AudienceRuleKind>.select(
           copy: catchFieldCopy(context.l10n),
           key: ValueKey('host-saved-audience-rule-type-$number'),
           title: context.l10n.hostSavedAudienceRuleType,
@@ -621,7 +621,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
             ),
           ],
           _AudienceRuleKind.computedSegment => [
-            CatchField.select<HostAudienceSegment>(
+            CatchField<HostAudienceSegment>.select(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceSegment,
               contract: CatchContractConstraints
@@ -640,7 +640,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
             ),
           ],
           _AudienceRuleKind.manualTag => [
-            CatchField.select<HostCustomerManualTag>(
+            CatchField<HostCustomerManualTag>.select(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceTag,
               contract: CatchContractConstraints
@@ -661,7 +661,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
             ),
           ],
           _AudienceRuleKind.attendanceCount => [
-            CatchField.select<HostSavedAudienceAttendanceOperator>(
+            CatchField<HostSavedAudienceAttendanceOperator>.select(
               copy: catchFieldCopy(context.l10n),
               title: context.l10n.hostSavedAudienceAttendanceComparison,
               contract: CatchContractConstraints

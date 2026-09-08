@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -107,7 +106,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                     first: true,
                     title: 'HOW PEOPLE MIX',
                     children: [
-                      CatchField.choices<EventSuccessMixPrototypeMode>(
+                      CatchField<EventSuccessMixPrototypeMode>.choices(
                         copy: catchFieldCopy(context.l10n),
                         title: 'Group flow',
                         body: _recommendationFor(_mode),
@@ -123,7 +122,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                         CatchSection.containedFieldRows(
                           children: [
                             if (_mode != EventSuccessMixPrototypeMode.pairs)
-                              CatchField.choices<int>(
+                              CatchField<int>.choices(
                                 copy: catchFieldCopy(context.l10n),
                                 title: _unitSizeTitle(_mode),
                                 values: const [4, 6, 8, 10],
@@ -133,7 +132,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                                   setState(() => _unitSize = selection.single);
                                 },
                               ),
-                            CatchField.choices<String>(
+                            CatchField<String>.choices(
                               copy: catchFieldCopy(context.l10n),
                               title: 'Group count',
                               body: 'Let Catch estimate it from attendance.',
@@ -145,7 +144,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                               },
                             ),
                             if (rotating)
-                              CatchField.choices<int?>(
+                              CatchField<int?>.choices(
                                 copy: catchFieldCopy(context.l10n),
                                 title: 'Rotate every',
                                 values: const [null, 10, 15, 20, 30],
@@ -213,7 +212,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                         onChanged: (value) =>
                             setState(() => _liveReveal = value),
                       ),
-                      CatchField.choices<_MatchCluePrototypeMode>(
+                      CatchField<_MatchCluePrototypeMode>.choices(
                         copy: catchFieldCopy(context.l10n),
                         title: 'Match clue questions',
                         body: _matchClueDescription(_matchClues),

@@ -1,7 +1,7 @@
 # CatchField / CatchSection System Review & Hardening Spec (for Codex)
 
 Status: living review · phases A-F implemented 2026-08-28
-Scope: `lib/core/widgets/catch_field.dart`, `lib/core/widgets/catch_section_layout.dart`, `lib/core/forms/` (new, Phase D), `test/core/`, `widgetbook/`, `docs/design_language.md`, `docs/widget_catalog.md`
+Scope: `packages/catch_ui/lib/src/components/catch_field.dart`, `lib/core/widgets/catch_section_layout.dart`, `lib/core/forms/` (new, Phase D), `test/core/`, `widgetbook/`, `docs/design_language.md`, `docs/widget_catalog.md`
 Companions: [`host_club_edit_and_live_guide_spec.md`](host_club_edit_and_live_guide_spec.md) ("edit spec"), [`host_club_insights_spec.md`](host_club_insights_spec.md) ("insights spec") — coordination points in §11, including ONE superseded line in the edit spec (§8.2 here).
 Origin: 2026-07-17 owner + Claude system review. Every number below was
 measured against the working tree on that date; §1 includes the census
@@ -252,7 +252,7 @@ Census commands (re-run to refresh):
 for c in read content nav action toggle input control expanding actions \
   inputActions add select choices stepper; do
   printf 'CatchField.%s: ' "$c"
-  rg "CatchField\.$c" lib --type dart -g '!lib/core/widgets/catch_field.dart' | wc -l
+  rg "CatchField\.$c" lib --type dart -g '!packages/catch_ui/lib/src/components/catch_field.dart' | wc -l
 done
 rg -l 'CatchField' lib --type dart -g '!lib/core/widgets/*' \
   | awk -F/ '{print $2}' | sort | uniq -c | sort -rn

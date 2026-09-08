@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:bfed475ac25dc07e694db31463094024ab59429fa05a43ed9eb224c6860c82ae",
-  "resolvedDigest": "sha256:f4412839fe0875deca36cc71c669659b00b31fa42678cefb2b24d3f704dfdef6",
+  "resolvedDigest": "sha256:c5a844268934f9995340a34155477f9ffafcc2373c8bfd735ea46a5499a5e5f3",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1165,11 +1165,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

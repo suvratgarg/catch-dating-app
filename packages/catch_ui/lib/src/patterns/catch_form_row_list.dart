@@ -1,9 +1,7 @@
-import 'package:catch_dating_app/core/forms/catch_form_multi_choice_row_editor.dart';
-import 'package:catch_dating_app/core/forms/catch_form_range_row_editor.dart';
-import 'package:catch_dating_app/core/forms/catch_form_single_choice_row_editor.dart';
-import 'package:catch_dating_app/core/forms/catch_form_text_row_editor.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'dart:async';
+
 import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Maps typed form descriptors to canonical CatchField rows inside one
@@ -165,4 +163,21 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
       textCommitMode: widget.textCommitMode,
     );
   }
+}
+
+/// Internal save feedback owned and disposed by the form list's row editors.
+@internal
+class CatchFormSaveState {
+  Object? error;
+  bool saving = false;
+  CatchFieldStatus status = CatchFieldStatus.idle;
+  Timer? savedTimer;
+
+  void reset() {
+    savedTimer?.cancel();
+    error = null;
+    status = CatchFieldStatus.idle;
+  }
+
+  void dispose() => savedTimer?.cancel();
 }

@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -64,7 +63,7 @@ void main() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchField.choices<String>(
+        CatchField<String>.choices(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Activity',
           contract: contract,
@@ -118,7 +117,7 @@ void main() {
       _wrap(
         SizedBox(
           width: 280,
-          child: CatchField.choices<String>(
+          child: CatchField<String>.choices(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Languages',
             body: 'English',
@@ -231,7 +230,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchField.choices<String>(
+          builder: (context, setState) => CatchField<String>.choices(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             values: const ['Indore', 'Mumbai'],
@@ -283,7 +282,7 @@ void main() {
                   maxLines: 4,
                   isOptional: true,
                 ),
-                CatchField.choices<String>(
+                CatchField<String>.choices(
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   key: choiceKey,
                   title: 'Workout',
@@ -972,7 +971,7 @@ void main() {
         _wrap(
           SizedBox(
             width: 280,
-            child: CatchField.select<CityOption>(
+            child: CatchField<CityOption>.select(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Preferred city',
               values: defaultCityOptions,
@@ -1025,7 +1024,7 @@ void main() {
           textDirection: TextDirection.rtl,
           child: SizedBox(
             width: 280,
-            child: CatchField.select<CityOption>(
+            child: CatchField<CityOption>.select(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'City',
               values: defaultCityOptions,

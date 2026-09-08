@@ -49,7 +49,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_sheet_share.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/cross_paths/domain/cross_paths_suggestion.dart';
@@ -168,6 +167,7 @@ import 'package:catch_dating_app/hosts/presentation/host_event_manage_controller
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_operations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_profile_controller.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart'
     as host_inbox;
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_broadcast_controller.dart';

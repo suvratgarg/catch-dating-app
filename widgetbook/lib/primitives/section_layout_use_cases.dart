@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -31,7 +30,7 @@ Widget fieldInteractionPlaneLayoutStates(
               padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
               child: CatchSection.fieldRows(
                 children: [
-                  CatchField.choices<String>(
+                  CatchField<String>.choices(
                     copy: catchFieldCopy(context.l10n),
                     title: 'Reminder',
                     values: const ['Before', 'After'],

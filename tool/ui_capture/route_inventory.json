@@ -1215,7 +1215,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:1",
       "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 391,
+      "line": 390,
       "ordinal": 1,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:_locationState.startingPoint,initialCenter:_locationState.initialCenter(deviceLocation),initialLabel:_locationState.initialLabel(meetingPoint:_meetingPointController.text),loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
@@ -1224,7 +1224,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/create/create_event_screen.dart:2",
       "sourcePath": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
-      "line": 441,
+      "line": 440,
       "ordinal": 2,
       "presentationExpression": "(_)=>LocationPickerScreen(countryIsoCode:countryIsoCodeForCityName(widget.club.location),initialLocation:current==null?null:LocationCoordinate(current.latitude,current.longitude),initialCenter:(current==null?_locationState.startingPoint:LocationCoordinate(current.latitude,current.longitude))??deviceLocation,initialLabel:current?.name,loadMapTiles:widget.loadMapTiles)",
       "presentationTarget": "LocationPickerScreen",
@@ -1233,7 +1233,7 @@
     {
       "siteId": "material-page:lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart:1",
       "sourcePath": "lib/hosts/presentation/event_management/widgets/route_event_plan_editor.dart",
-      "line": 312,
+      "line": 311,
       "ordinal": 1,
       "presentationExpression": "(_)=>RoutePathBuilderScreen(initialCenter:widget.initialCenter,initialPath:plan.path,enableNetworkTiles:widget.loadMapTiles)",
       "presentationTarget": "RoutePathBuilderScreen",
@@ -1251,7 +1251,7 @@
     {
       "siteId": "material-page:lib/image_uploads/shared/profile_photo_editor_screen.dart:1",
       "sourcePath": "lib/image_uploads/shared/profile_photo_editor_screen.dart",
-      "line": 60,
+      "line": 59,
       "ordinal": 1,
       "presentationExpression": "(_)=>ProfilePhotoEditorScreen(index:index,photo:photo,initialImageBytes:initialImageBytes,canDelete:canDelete)",
       "presentationTarget": "ProfilePhotoEditorScreen",

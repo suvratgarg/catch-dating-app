@@ -91,7 +91,7 @@ class _CatchFieldState extends State<CatchField>
           );
     final Widget field;
     switch (widget._config) {
-      case _SelectConfig():
+      case _SelectConfig _:
         field = CatchFieldSelectControl(
           copy: widget.copy,
           title: _title,
@@ -114,9 +114,9 @@ class _CatchFieldState extends State<CatchField>
               ? CatchFieldValueContentStatus.active
               : CatchFieldValueContentStatus.idle,
         );
-      case _EditConfig() when _usesUnderlineChrome:
+      case _EditConfig _ when _usesUnderlineChrome:
         field = textEntry!;
-      case _EditConfig() || _RowConfig() || _ToggleConfig() || _ControlConfig():
+      case _EditConfig _ || _RowConfig _ || _ToggleConfig _ || _ControlConfig _:
         final t = CatchTokens.of(context);
         final Widget configuredRow;
         if (widget.add) {
@@ -746,6 +746,8 @@ class _CatchFieldState extends State<CatchField>
                         ),
                 ),
               );
+      default:
+        throw StateError('Unsupported CatchField configuration.');
     }
     final listeningField =
         NotificationListener<CatchFieldChoicePickedNotification>(

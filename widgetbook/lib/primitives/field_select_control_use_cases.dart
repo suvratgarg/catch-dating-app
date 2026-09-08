@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,7 @@ Widget fieldSelectControlStates(BuildContext context) {
     title: 'Field selection menus',
     catalogId: 'catch.field.select_control',
     children: [
-      CatchField.select<String>(
+      CatchField<String>.select(
         copy: copy,
         title: 'Choose a location',
         contractExemption: 'Catalog-only field selection fixture.',
@@ -30,7 +29,7 @@ Widget fieldSelectControlStates(BuildContext context) {
         itemLabel: (value) => value,
         onChanged: (_) {},
       ),
-      CatchField.select<String>(
+      CatchField<String>.select(
         copy: copy,
         title: 'Meeting area',
         contractExemption: 'Catalog-only field selection fixture.',
@@ -40,7 +39,7 @@ Widget fieldSelectControlStates(BuildContext context) {
         prefixIcon: Icon(CatchIcons.pin),
         onChanged: (_) {},
       ),
-      CatchField.select<String>(
+      CatchField<String>.select(
         copy: copy,
         title: 'Location without a visible label',
         contractExemption: 'Catalog-only field selection fixture.',
@@ -51,7 +50,7 @@ Widget fieldSelectControlStates(BuildContext context) {
         size: CatchFieldSize.compact,
         onChanged: (_) {},
       ),
-      CatchField.select<String>(
+      CatchField<String>.select(
         copy: copy,
         title: 'Unavailable selection',
         contractExemption: 'Catalog-only field selection fixture.',
@@ -62,7 +61,7 @@ Widget fieldSelectControlStates(BuildContext context) {
       ),
       Form(
         key: formKey,
-        child: CatchField.select<String>(
+        child: CatchField<String>.select(
           copy: copy,
           title: 'Required location',
           contractExemption: 'Catalog-only field selection fixture.',

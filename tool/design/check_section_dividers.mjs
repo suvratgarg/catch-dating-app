@@ -10,7 +10,7 @@ const rawHairlineBoxPattern =
   /ColoredBox\s*\([\s\S]{0,220}CatchStroke\.hairline/gu;
 const sectionCallPattern = /\bCatchSection\.divided\s*\(/gu;
 const customFieldLeadingPattern =
-  /\bCatchField\.(?:read|content|nav|action)\s*\(/gu;
+  /\bCatchField(?:<[^>]+>)?\.(?:read|content|nav|action)\s*\(/gu;
 const thinSectionWrapperPattern =
   /\bclass\s+([A-Za-z_]\w*)\s+extends\s+StatelessWidget\s*\{/gu;
 const allowedRawDividerFiles = new Set([
@@ -157,7 +157,7 @@ function classifyFeatureRowDividerOwnership({
     return null;
   }
   if (!className.endsWith("Rows")) return null;
-  if (!/\bCatchField\.(?:content|input|nav|read)\s*\(/u.test(expression)) {
+  if (!/\bCatchField(?:<[^>]+>)?\.(?:content|input|nav|read)\s*\(/u.test(expression)) {
     return null;
   }
   if (

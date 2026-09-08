@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
@@ -226,7 +225,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 enabled: _campaign == null,
               ),
               gapH12,
-              CatchField.select<_HostCampaignMessageClass>(
+              CatchField<_HostCampaignMessageClass>.select(
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostAudienceMessageType,
                 contract: CatchContractConstraints
@@ -298,7 +297,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 style: CatchTextStyles.fieldRowTitle(context),
               ),
               gapH8,
-              CatchField.select<HostSavedAudience>(
+              CatchField<HostSavedAudience>.select(
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostSavedAudienceFieldLabel,
                 contract: CatchContractConstraints
@@ -311,7 +310,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 onChanged: (value) => setState(() => _selectedAudience = value),
               ),
               gapH12,
-              CatchField.select<HostWhatsappTemplate>(
+              CatchField<HostWhatsappTemplate>.select(
                 copy: catchFieldCopy(context.l10n),
                 title: context.l10n.hostsHostAudienceTemplate,
                 contract: CatchContractConstraints
@@ -331,7 +330,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
               ),
               if (_templateUsesInvite(template)) ...[
                 gapH12,
-                CatchField.select<Event>(
+                CatchField<Event>.select(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsHostAudienceLinkedEvent,
                   contract: CatchContractConstraints
@@ -353,7 +352,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 ),
                 if (_selectedEvent case final event?) ...[
                   gapH12,
-                  CatchField.select<_HostInviteDestination>(
+                  CatchField<_HostInviteDestination>.select(
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsHostAudienceInviteDestination,
                     contract: CatchContractConstraints

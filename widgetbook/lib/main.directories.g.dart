@@ -1942,6 +1942,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFormStepOverview',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Required, optional and complete steps',
+                builder:
+                    _widgetbook_workspace_primitives_form_protocol_use_cases
+                        .formStepOverviewStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFormStepSpec',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1958,6 +1969,28 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Form rows',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFormMultiChoiceRowEditor<dynamic, dynamic>',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed rows and commit modes',
+                builder:
+                    _widgetbook_workspace_primitives_form_descriptor_use_cases
+                        .formMultiChoiceRowEditorStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormRangeRowEditor',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed rows and commit modes',
+                builder:
+                    _widgetbook_workspace_primitives_form_descriptor_use_cases
+                        .formRangeRowEditorStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFormRowDescriptor',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1969,6 +2002,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFormRowList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed rows and commit modes',
+                builder:
+                    _widgetbook_workspace_primitives_form_descriptor_use_cases
+                        .formRowListStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFormRowScope',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1976,6 +2020,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_form_protocol_use_cases
                         .formRowScopeStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormSingleChoiceRowEditor<dynamic, dynamic>',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed rows and commit modes',
+                builder:
+                    _widgetbook_workspace_primitives_form_descriptor_use_cases
+                        .formSingleChoiceRowEditorStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormTextRowEditor',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed rows and commit modes',
+                builder:
+                    _widgetbook_workspace_primitives_form_descriptor_use_cases
+                        .formTextRowEditorStates,
               ),
             ],
           ),

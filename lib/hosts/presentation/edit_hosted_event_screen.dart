@@ -16,7 +16,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.d
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
@@ -26,6 +25,7 @@ import 'package:catch_dating_app/events/domain/event_formatters.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/events/events.dart'
     show LocationPickerResult, LocationPickerScreen;
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
@@ -689,7 +689,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 return null;
                               },
                             ),
-                            CatchField.choices<PaceLevel>(
+                            CatchField<PaceLevel>.choices(
                               copy: catchFieldCopy(context.l10n),
                               title: context
                                   .l10n
@@ -1234,7 +1234,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             l10n: context.l10n,
           ),
         ),
-        CatchField.optionCards<EventAdmissionPreset>(
+        CatchField<EventAdmissionPreset>.optionCards(
           copy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
           contract: CatchContractConstraints
@@ -1412,7 +1412,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
               currencyCode: state.currencyCode,
             );
             if (priceInMinorUnits == 0) return const SizedBox.shrink();
-            return CatchField.optionCards<EventCancellationPolicyId>(
+            return CatchField<EventCancellationPolicyId>.optionCards(
               copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n

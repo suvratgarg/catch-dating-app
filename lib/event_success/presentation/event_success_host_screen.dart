@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';

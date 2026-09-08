@@ -13,7 +13,6 @@ import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_activity_cards.dart';
 import 'package:catch_dating_app/core/widgets/catch_event_thumbnail.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/core/widgets/event_visual_atoms.dart';
@@ -2414,7 +2413,7 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'choices-helper-accent',
         description:
             'Choice guidance uses the support lane and product-owned option color is forwarded to the canonical selectable chip.',
-        child: CatchField.choices<String>(
+        child: CatchField<String>.choices(
           copy: copy,
           title: 'Run format',
           helperText: 'Pick the format guests will see.',
@@ -2431,7 +2430,7 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'option-cards-explanatory',
         description:
             'Policies with per-option guidance use one full-width title-and-description target per choice instead of chips plus detached selected copy.',
-        child: CatchField.optionCards<String>(
+        child: CatchField<String>.optionCards(
           copy: copy,
           title: 'Admission format',
           values: const ['open', 'request'],
@@ -2569,7 +2568,7 @@ Widget catchFieldContractStates(BuildContext context) {
               icon: CatchIcons.workOutline,
               isOptional: true,
             ),
-            CatchField.choices<String>(
+            CatchField<String>.choices(
               copy: copy,
               title: 'Workout',
               values: const ['Never', 'Often'],
@@ -2708,7 +2707,7 @@ Widget catchFieldContractStates(BuildContext context) {
         label: 'select',
         description:
             'The menu trigger shares the same caption reserve and value-line-centered caret geometry.',
-        child: CatchField.select<String>(
+        child: CatchField<String>.select(
           copy: copy,
           title: 'Activity',
           values: const ['Run', 'Dinner', 'Pickleball'],
@@ -2720,7 +2719,7 @@ Widget catchFieldContractStates(BuildContext context) {
       ),
       fieldState(
         label: 'select-disabled',
-        child: CatchField.select<String>(
+        child: CatchField<String>.select(
           copy: copy,
           title: 'Activity',
           values: const ['Run', 'Dinner', 'Pickleball'],
@@ -3841,7 +3840,7 @@ Widget catchSectionContractStates(BuildContext context) {
         child: _FieldWidth(
           child: CatchSection.containedFieldRows(
             children: [
-              CatchField.choices<String>(
+              CatchField<String>.choices(
                 copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 body: 'English · Hindi · Marathi',
@@ -10541,7 +10540,7 @@ class _ChoiceFieldDemoState extends State<_ChoiceFieldDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchField.choices<String>(
+    return CatchField<String>.choices(
       copy: catchFieldCopy(context.l10n),
       title: 'Languages',
       body: widget.body,
@@ -10673,7 +10672,7 @@ class _SelectErrorFieldDemoState extends State<_SelectErrorFieldDemo> {
 
     return Form(
       key: _formKey,
-      child: CatchField.select<String>(
+      child: CatchField<String>.select(
         copy: catchFieldCopy(context.l10n),
         title: 'Activity',
         values: const ['Run', 'Dinner', 'Pickleball'],

@@ -4,7 +4,6 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -86,7 +85,7 @@ class ClubBasicsStep extends StatelessWidget {
             ),
             CatchSection.fieldRows(
               children: [
-                CatchField.choices<OrganizerType>(
+                CatchField<OrganizerType>.choices(
                   copy: catchFieldCopy(context.l10n),
                   title: context.l10n.hostsOrganizerTypeLabel,
                   contract: CatchContractConstraints
@@ -135,7 +134,7 @@ class ClubBasicsStep extends StatelessWidget {
                             .l10n
                             .hostsClubBasicsStepVisiblecopyPleaseSelectACity
                       : null,
-                  builder: (field) => CatchField.choices<CityOption>(
+                  builder: (field) => CatchField<CityOption>.choices(
                     copy: catchFieldCopy(context.l10n),
                     title: context.l10n.hostsClubBasicsStepTitleCity,
                     contract: CatchContractConstraints

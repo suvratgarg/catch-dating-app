@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
-  "resolvedDigest": "sha256:1c9034b3365ea83c07bb44101031fe1f23d5411801ac03069c83483f30d33e39",
+  "resolvedDigest": "sha256:0f987ed3e20f4dec57570ff301771809e2631b616d4be550ae0ee163625de745",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1144,11 +1144,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

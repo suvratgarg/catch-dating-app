@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
-  "resolvedDigest": "sha256:bd463b323edc405a9bd3b093b0796d0aceac1302c0e3f1d378258fc0d0cd804d",
+  "resolvedDigest": "sha256:b65f125907a47d6c572eb6316796d0738da7bab7637a12b7f4ed90cdcb30fcce",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2085,11 +2085,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

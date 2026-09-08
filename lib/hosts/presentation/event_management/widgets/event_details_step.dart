@@ -2,7 +2,6 @@ import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
@@ -154,7 +153,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       return null;
                     },
                   ),
-                  CatchField.choices<ActivityKind>(
+                  CatchField<ActivityKind>.choices(
                     copy: catchFieldCopy(context.l10n),
                     key: CreateEventFormKeys.activityType,
                     title: context.l10n.hostsEventDetailsStepLabelActivityType,
@@ -210,7 +209,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                         return null;
                       },
                     ),
-                    CatchField.choices<EventInteractionModel>(
+                    CatchField<EventInteractionModel>.choices(
                       copy: catchFieldCopy(context.l10n),
                       key: CreateEventFormKeys.customInteractionModel,
                       title: context
@@ -284,7 +283,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                                 .l10n
                                 .hostsEventDetailsStepVisiblecopySelectAPace
                           : null,
-                      builder: (field) => CatchField.choices<PaceLevel>(
+                      builder: (field) => CatchField<PaceLevel>.choices(
                         copy: catchFieldCopy(context.l10n),
                         title: context.l10n.hostsEventDetailsStepLabelPaceLevel,
                         contract: CatchContractConstraints

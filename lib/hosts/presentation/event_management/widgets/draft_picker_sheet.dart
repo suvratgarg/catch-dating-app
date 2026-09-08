@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_loading_skeletons.dart';

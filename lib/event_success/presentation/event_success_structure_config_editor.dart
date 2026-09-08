@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -40,7 +39,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
     return CatchSection.fieldRows(
       title: sectionTitle,
       children: [
-        CatchField.optionCards<EventSuccessUnitKind>(
+        CatchField<EventSuccessUnitKind>.optionCards(
           copy: catchFieldCopy(context.l10n),
           title: context
               .l10n
@@ -85,7 +84,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 : null,
           ),
         if (supportsUnitCount)
-          CatchField.optionCards<bool>(
+          CatchField<bool>.optionCards(
             copy: catchFieldCopy(context.l10n),
             title: value.unitKind.countLabel,
             contract: CatchContractConstraints
@@ -144,7 +143,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 : null,
           ),
         if (value.unitKind != EventSuccessUnitKind.wholeGroup) ...[
-          CatchField.choices<EventSuccessActivityAssignmentAttribute>(
+          CatchField<EventSuccessActivityAssignmentAttribute>.choices(
             copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
@@ -171,7 +170,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                   )
                 : null,
           ),
-          CatchField.choices<EventSuccessActivityAssignmentAttribute>(
+          CatchField<EventSuccessActivityAssignmentAttribute>.choices(
             copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n
@@ -200,7 +199,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           ),
         ],
         if (value.rotates) ...[
-          CatchField.choices<EventSuccessRotationRepeatStrategy>(
+          CatchField<EventSuccessRotationRepeatStrategy>.choices(
             copy: catchFieldCopy(context.l10n),
             title: context
                 .l10n

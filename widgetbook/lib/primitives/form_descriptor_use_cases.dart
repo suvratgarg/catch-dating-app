@@ -1,6 +1,4 @@
-import 'package:catch_dating_app/core/forms/catch_form_row_list.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +18,45 @@ Widget formDescriptorStates(BuildContext context) => WidgetbookCatalogFrame(
       _FormDescriptorFields(mode: mode),
   ],
 );
+
+@widgetbook.UseCase(
+  name: 'Typed rows and commit modes',
+  type: CatchFormRowList,
+  path: '[Core patterns]/Form rows',
+)
+Widget formRowListStates(BuildContext context) => formDescriptorStates(context);
+
+@widgetbook.UseCase(
+  name: 'Typed rows and commit modes',
+  type: CatchFormTextRowEditor,
+  path: '[Core patterns]/Form rows',
+)
+Widget formTextRowEditorStates(BuildContext context) =>
+    formDescriptorStates(context);
+
+@widgetbook.UseCase(
+  name: 'Typed rows and commit modes',
+  type: CatchFormSingleChoiceRowEditor,
+  path: '[Core patterns]/Form rows',
+)
+Widget formSingleChoiceRowEditorStates(BuildContext context) =>
+    formDescriptorStates(context);
+
+@widgetbook.UseCase(
+  name: 'Typed rows and commit modes',
+  type: CatchFormMultiChoiceRowEditor,
+  path: '[Core patterns]/Form rows',
+)
+Widget formMultiChoiceRowEditorStates(BuildContext context) =>
+    formDescriptorStates(context);
+
+@widgetbook.UseCase(
+  name: 'Typed rows and commit modes',
+  type: CatchFormRangeRowEditor,
+  path: '[Core patterns]/Form rows',
+)
+Widget formRangeRowEditorStates(BuildContext context) =>
+    formDescriptorStates(context);
 
 class _FormDescriptorFields extends StatefulWidget {
   const _FormDescriptorFields({required this.mode});

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:e6a5b6845b3b92aa13537889825bdd345d2a0bc2a41803adea7d91fc6036fc8c",
-  "resolvedDigest": "sha256:ee65ba5eeb422ff2e6db6e6c7a150ce0f197aec5d2eedc06ca3db7b89e732e74",
+  "resolvedDigest": "sha256:97ca6dd62fadffbf1be0c88ee22a83a10869690c0aa8061a2703e1fcba72e361",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -3479,11 +3479,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",
@@ -5334,11 +5335,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

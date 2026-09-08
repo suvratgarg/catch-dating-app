@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:b257beb3ad1265a61e5f4b0130f99d4e502cd3ff15aef7aad09b14b944dfbdef",
+  "resolvedDigest": "sha256:45b028daf9cdc7992fea2782cda6d740323305baddf60a3d717d28b8ae7f3fdd",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1474,11 +1474,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_form_keys.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/create/create_event_policy_state.dart';
@@ -174,7 +173,7 @@ class EventPolicyStep extends StatelessWidget {
                     },
                   ),
                 if (!externalBookingMode)
-                  CatchField.optionCards<EventAdmissionPreset>(
+                  CatchField<EventAdmissionPreset>.optionCards(
                     copy: catchFieldCopy(context.l10n),
                     title:
                         context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
@@ -448,7 +447,7 @@ class EventPolicyStep extends StatelessWidget {
                     if (externalBookingMode || priceInMinorUnits == 0) {
                       return const SizedBox.shrink();
                     }
-                    return CatchField.optionCards<EventCancellationPolicyId>(
+                    return CatchField<EventCancellationPolicyId>.optionCards(
                       copy: catchFieldCopy(context.l10n),
                       title: context
                           .l10n

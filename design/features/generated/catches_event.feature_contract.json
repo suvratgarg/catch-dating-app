@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_event.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a8c781d10f212a6e6a93cc33a6d8355ff7f94bf2195e98d1c5da67444edd5c9a",
-  "resolvedDigest": "sha256:ea056c59432a6b2fdff3117cc19c6dbac035832ac2b33986232324c4f983f0e4",
+  "resolvedDigest": "sha256:da0e60f03fd4038fbc2e8058ef20ce0e7c64eee1d8c583212dc2c628f92a4a02",
   "feature": {
     "id": "feature.catches_event",
     "name": "Catches Event Deck",
@@ -1213,11 +1213,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

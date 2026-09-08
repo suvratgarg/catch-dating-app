@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/domain/launch_access_application.dart';
@@ -260,7 +259,7 @@ class _LaunchAccessApplicationFormState
               style: CatchTextStyles.bodyLead(context, color: t.ink2),
             ),
             gapH24,
-            CatchField.select<CityOption>(
+            CatchField<CityOption>.select(
               copy: catchFieldCopy(context.l10n),
               title: context
                   .l10n

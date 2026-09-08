@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -68,7 +67,7 @@ void main() {
                   required: true,
                 ),
               ),
-              CatchField.select<String>(
+              CatchField<String>.select(
                 copy: _copy('Custom'),
                 title: 'Language',
                 values: const ['one'],

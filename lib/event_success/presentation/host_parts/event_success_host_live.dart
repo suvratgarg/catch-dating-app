@@ -858,7 +858,7 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
               first: true,
               children: [
                 for (final indexed in attendees.indexed)
-                  CatchField.choices<_EventSuccessAccountabilitySelection>(
+                  CatchField<_EventSuccessAccountabilitySelection>.choices(
                     copy: catchFieldCopy(context.l10n),
                     key: ValueKey(
                       'event_success.accountability.${indexed.$2.id}',

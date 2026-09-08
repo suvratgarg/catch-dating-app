@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';

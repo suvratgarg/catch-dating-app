@@ -175,7 +175,7 @@ class _HostAutomationRuleEditorState
                           controller: _name,
                           enabled: !_busy,
                         ),
-                        CatchField.select<HostFormAutomationTrigger>(
+                        CatchField<HostFormAutomationTrigger>.select(
                           copy: catchFieldCopy(context.l10n),
                           title: l.hostAutomationTrigger,
                           contract: CatchContractConstraints
@@ -214,7 +214,7 @@ class _HostAutomationRuleEditorState
                           },
                         ),
                         if (_trigger != HostFormAutomationTrigger.eventAttended)
-                          CatchField.select<String>(
+                          CatchField<String>.select(
                             copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationForm,
                             contractExemption:
@@ -246,7 +246,7 @@ class _HostAutomationRuleEditorState
                             title: l.hostAutomationNoForm,
                           ),
                         if (_trigger == HostFormAutomationTrigger.eventAttended)
-                          CatchField.select<String>(
+                          CatchField<String>.select(
                             copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationEvent,
                             contractExemption:
@@ -294,7 +294,7 @@ class _HostAutomationRuleEditorState
                             title: l.hostAutomationQuestion,
                             body: l.hostAutomationQuestionHelp,
                           ),
-                          CatchField.select<HostAudienceQuestionOption>(
+                          CatchField<HostAudienceQuestionOption>.select(
                             copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationQuestion,
                             contractExemption:
@@ -313,7 +313,7 @@ class _HostAutomationRuleEditorState
                                     },
                             ),
                           ),
-                          CatchField.select<HostAudienceAnswerOption>(
+                          CatchField<HostAudienceAnswerOption>.select(
                             copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationAnswer,
                             contractExemption:
@@ -344,7 +344,7 @@ class _HostAutomationRuleEditorState
                         key: ValueKey(action.id),
                         title: l.hostAudienceAutomationThen,
                         children: [
-                          CatchField.select<HostFormAutomationActionKind>(
+                          CatchField<HostFormAutomationActionKind>.select(
                             copy: catchFieldCopy(context.l10n),
                             title: l.hostAutomationAction,
                             contract: CatchContractConstraints
@@ -362,7 +362,7 @@ class _HostAutomationRuleEditorState
                           ),
                           if (action.kind ==
                               HostFormAutomationActionKind.addOrganizerTag)
-                            CatchField.select<String>(
+                            CatchField<String>.select(
                               copy: catchFieldCopy(context.l10n),
                               title: l.hostAutomationTag,
                               contract: CatchContractConstraints
@@ -383,7 +383,7 @@ class _HostAutomationRuleEditorState
                             ),
                           if (action.kind ==
                               HostFormAutomationActionKind.proposeEventAttendee)
-                            CatchField.select<String>(
+                            CatchField<String>.select(
                               copy: catchFieldCopy(context.l10n),
                               title: l.hostAutomationEvent,
                               contract: CatchContractConstraints
@@ -460,7 +460,7 @@ class _HostAutomationRuleEditorState
                               onRetry: () => ref.invalidate(messagesProvider),
                               builder: (context, page) => CatchFieldLanes.divided(
                                 children: [
-                                  CatchField.select<HostCampaignSendSummary>(
+                                  CatchField<HostCampaignSendSummary>.select(
                                     copy: catchFieldCopy(context.l10n),
                                     title: l.hostAutomationDraft,
                                     contract: CatchContractConstraints

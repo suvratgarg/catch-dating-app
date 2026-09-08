@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import "package:catch_ui/catch_ui.dart";
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
@@ -37,7 +38,6 @@ import 'package:catch_dating_app/swipes/shared/profile_surface/profile_view_mapp
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
-import "package:catch_ui/catch_ui.dart";
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;

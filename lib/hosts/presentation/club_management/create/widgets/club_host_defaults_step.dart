@@ -4,7 +4,6 @@ import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy_defaults.dart';
 import 'package:catch_dating_app/hosts/presentation/event_management/widgets/event_age_range_field.dart';
@@ -253,7 +252,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
       ),
       children: [
         if (widget.activityKind case final activityKind?)
-          CatchField.choices<ActivityKind>(
+          CatchField<ActivityKind>.choices(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsClubHostDefaultsStepTextDefaultActivity,
             contract: CatchContractConstraints
@@ -272,7 +271,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             iconColor: ActivityPalette.resolve(context, activityKind).accent,
           ),
         if (!widget.advancedOnly)
-          CatchField.optionCards<EventAdmissionDefaultPreset>(
+          CatchField<EventAdmissionDefaultPreset>.optionCards(
             copy: catchFieldCopy(context.l10n),
             title: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
             contract: CatchContractConstraints
@@ -522,7 +521,7 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
               (current) => current.copyWith(minAge: minAge, maxAge: maxAge),
             ),
           ),
-          CatchField.optionCards<EventCancellationPolicyId>(
+          CatchField<EventCancellationPolicyId>.optionCards(
             copy: catchFieldCopy(context.l10n),
             title:
                 context.l10n.hostsClubHostDefaultsStepLabelCancellationPolicy,

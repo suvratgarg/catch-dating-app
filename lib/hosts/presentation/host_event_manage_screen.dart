@@ -14,7 +14,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart'
     show EventAdmissionFormat;
 import 'package:catch_dating_app/event_success/event_success.dart'

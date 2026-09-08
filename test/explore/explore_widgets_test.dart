@@ -27,7 +27,6 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/external_event.dart';

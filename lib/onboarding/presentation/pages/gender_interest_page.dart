@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
@@ -136,7 +135,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                   FormField<Set<Gender>>(
                     initialValue: state.selectedGender,
                     validator: state.validateGender,
-                    builder: (field) => CatchField.choices<Gender>(
+                    builder: (field) => CatchField<Gender>.choices(
                       copy: catchFieldCopy(context.l10n),
                       key: OnboardingFormKeys.gender,
                       title: context.l10n.onboardingGenderInterestPageLabelIAmA,
@@ -161,7 +160,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                   FormField<Set<Gender>>(
                     initialValue: state.interestedIn,
                     validator: state.validateInterestedIn,
-                    builder: (field) => CatchField.choices<Gender>(
+                    builder: (field) => CatchField<Gender>.choices(
                       copy: catchFieldCopy(context.l10n),
                       key: OnboardingFormKeys.interestedIn,
                       title:

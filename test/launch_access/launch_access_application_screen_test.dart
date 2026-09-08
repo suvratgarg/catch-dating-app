@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/launch_access/data/launch_access_repository.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_application_screen.dart';
 import 'package:catch_dating_app/launch_access/presentation/launch_access_controller.dart';

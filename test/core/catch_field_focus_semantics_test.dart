@@ -2,7 +2,6 @@ import 'dart:ui' show SemanticsAction;
 
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -453,7 +452,7 @@ void main() {
         MaterialApp(
           theme: AppTheme.dark,
           home: Scaffold(
-            body: CatchField.choices<String>(
+            body: CatchField<String>.choices(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Languages',
               values: const ['English', 'Hindi'],
@@ -481,7 +480,7 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CatchField.select<String>(
+          body: CatchField<String>.select(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             values: const ['Indore', 'Mumbai'],

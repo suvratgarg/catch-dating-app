@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -65,7 +64,7 @@ class _ProductionInteractionTransitionPageState
                     title: 'Event settings',
                     headerPlacement: CatchSectionHeaderPlacement.inside,
                     children: [
-                      CatchField.choices<String>(
+                      CatchField<String>.choices(
                         copy: catchFieldCopy(context.l10n),
                         title: 'Host',
                         icon: CatchIcons.hosted,
@@ -106,7 +105,7 @@ class _ProductionInteractionTransitionPageState
                     title: 'Notifications',
                     first: true,
                     children: [
-                      CatchField.choices<String>(
+                      CatchField<String>.choices(
                         copy: catchFieldCopy(context.l10n),
                         title: 'Reminder timing',
                         icon: CatchIcons.clock,

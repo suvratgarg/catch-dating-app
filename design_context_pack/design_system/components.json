@@ -11,7 +11,7 @@
   "interactionContracts": {
     "field_row": {
       "owner": "CatchField",
-      "source": "lib/core/widgets/catch_field.dart",
+      "source": "packages/catch_ui/lib/src/components/catch_field.dart",
       "modes": [
         "read",
         "content",
@@ -3184,7 +3184,7 @@
           {
             "id": "catch.field.text_entry",
             "symbol": "CatchFieldTextEntry",
-            "file": "lib/core/widgets/catch_field_text_entry.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_text_entry.dart",
             "summary": "Field-owned native text entry and validation renderer. The facade supplies immutable configuration and retains controllers, focus, dismissal and save orchestration; rendering uses the shared CatchTextInput primitive.",
             "states": [
               "underline",
@@ -3199,6 +3199,101 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_row_list",
+            "symbol": "CatchFormRowList",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_list.dart",
+            "summary": "Typed descriptor rendering, accordion state and per-field patch-save orchestration.",
+            "states": [
+              "ready",
+              "editing",
+              "saving",
+              "error"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_text_row_editor",
+            "symbol": "CatchFormTextRowEditor",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_text_row_editor.dart",
+            "summary": "Text drafts and validation with explicit confirmation or on-blur saves.",
+            "states": [
+              "ready",
+              "editing",
+              "saving",
+              "error"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_single_choice_row_editor",
+            "symbol": "CatchFormSingleChoiceRowEditor",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_single_choice_row_editor.dart",
+            "summary": "Typed single-selection drafts with explicit confirmation.",
+            "states": [
+              "ready",
+              "editing",
+              "saving",
+              "error"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_multi_choice_row_editor",
+            "symbol": "CatchFormMultiChoiceRowEditor",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_multi_choice_row_editor.dart",
+            "summary": "Typed multi-selection drafts with explicit confirmation.",
+            "states": [
+              "ready",
+              "editing",
+              "saving",
+              "error"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_range_row_editor",
+            "symbol": "CatchFormRangeRowEditor",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_range_row_editor.dart",
+            "summary": "Bounded range drafts and explicit save feedback.",
+            "states": [
+              "ready",
+              "editing",
+              "saving",
+              "error"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
               "decisionRef": "contract-family:catch.field"
             }
           },
@@ -3691,11 +3786,12 @@
       },
       "dart": {
         "symbol": "CatchField",
-        "file": "lib/core/widgets/catch_field.dart",
+        "file": "packages/catch_ui/lib/src/components/catch_field.dart",
         "constructors": [
           "CatchField.read",
           "CatchField.content",
           "CatchField.nav",
+          "CatchField.sortable",
           "CatchField.action",
           "CatchField.toggle",
           "CatchField.input",
@@ -8413,7 +8509,7 @@
           {
             "id": "catch.screen_body.form_step_overview",
             "symbol": "CatchFormStepOverview",
-            "file": "lib/core/widgets/catch_form_step_overview.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_overview.dart",
             "summary": "Resumable form navigator with caller-resolved status labels and caller-owned step selection.",
             "states": [
               "complete",
@@ -8431,7 +8527,7 @@
           {
             "id": "catch.screen_body.form_review_body",
             "symbol": "CatchFormReviewBody",
-            "file": "lib/core/widgets/catch_form_review_body.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_review_body.dart",
             "summary": "Final form review body with optional summary rows and the canonical step navigator; the caller retains submission and navigation.",
             "states": [
               "with-summary",

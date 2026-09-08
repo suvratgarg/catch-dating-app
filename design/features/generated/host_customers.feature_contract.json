@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
   "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:4b557353cd533e99afb19d5ac0f97c346864257b159aaff346e2312c15ed2abf",
+  "resolvedDigest": "sha256:25ddd8d57d68715820a0b043442864970f3c6f336a01abd891a811e7109f6927",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -6160,11 +6160,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

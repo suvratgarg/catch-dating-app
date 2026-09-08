@@ -498,7 +498,7 @@ extension _CatchFieldBehavior on _CatchFieldState {
   bool get _isEdit => widget._config is _EditConfig;
   bool get _isToggle => widget._config is _ToggleConfig;
   bool get _isNavigation => switch (widget._config) {
-    _ControlConfig() => true,
+    _ControlConfig _ => true,
     final _RowConfig config => config.navigation,
     _ => false,
   };

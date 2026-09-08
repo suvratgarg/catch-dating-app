@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/events/data/event_live_position_service.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';

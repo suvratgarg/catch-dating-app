@@ -11,7 +11,7 @@ import {
   facadeUseWhen,
 } from "./generate_field_inventory.mjs";
 
-const source = fs.readFileSync("lib/core/widgets/catch_field.dart", "utf8");
+const source = fs.readFileSync("packages/catch_ui/lib/src/components/catch_field.dart", "utf8");
 const sectionSource = fs.readFileSync(
   "packages/catch_ui/lib/src/components/catch_section.dart",
   "utf8",
@@ -97,10 +97,10 @@ test("extracts every current facade and semantic slot", () => {
   ]);
 });
 
-test("known-bad deleted facade changes generated inventory", () => {
+test("known-bad removed public facade changes generated inventory", () => {
   const deleted = source.replace(
-    /\n  const factory CatchField\.add\([\s\S]*?\) = _RowConfig\.add;\n/u,
-    "\n",
+    "const CatchField.add(",
+    "const CatchField._add(",
   );
   const modes = extractCatchFieldFacades(deleted).map((entry) => entry.mode);
   assert.ok(!modes.includes("add"));
@@ -109,8 +109,8 @@ test("known-bad deleted facade changes generated inventory", () => {
 
 test("known-bad added slot parameter changes generated inventory", () => {
   const changed = source.replace(
-    "const factory CatchField.read({",
-    "const factory CatchField.read({\n    Widget? feedback,",
+    "const CatchField.read({",
+    "const CatchField.read({\n    Widget? feedback,",
   );
   const read = extractCatchFieldFacades(changed).find((entry) => entry.mode === "read");
   assert.ok(read.parameters.some((parameter) => parameter.name === "feedback"));

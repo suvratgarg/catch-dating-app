@@ -10920,7 +10920,7 @@
               "Field"
             ],
             "flutter": {
-              "file": "lib/core/forms/catch_form_row_list.dart",
+              "file": "packages/catch_ui/lib/src/patterns/catch_form_row_list.dart",
               "symbol": "CatchFormRowList"
             },
             "currentOwner": "HostClubEditTab",

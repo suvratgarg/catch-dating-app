@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6ac75dbeefe9632bac57a55502c1787d27578d3401ed5de7b5f1a88a6b577a56",
-  "resolvedDigest": "sha256:577bd15c1190994c1a628659d1dbf8146a51fa872545a0b22943c22a8a0457ac",
+  "resolvedDigest": "sha256:84fb514d51b253febdc0ef93df1ac8fe2c3fca0a7ec0d6afde3ecdaa8a54cad5",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -2317,11 +2317,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

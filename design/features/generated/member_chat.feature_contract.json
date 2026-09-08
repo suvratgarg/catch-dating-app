@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:29134dd066b5ed235fe7aff133f5b85282a068017daa584fd195baa697922e40",
-  "resolvedDigest": "sha256:a70dd60e81d635927a518c72162b008d0bffed898647afee566e58f099a54d0e",
+  "resolvedDigest": "sha256:e357895366870892158c56b6d2019bf622f1afec278d803ff70686c589b3f04d",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -1671,11 +1671,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",
@@ -3962,11 +3963,12 @@
             "kind": "composite",
             "dart": {
               "symbol": "CatchField",
-              "file": "lib/core/widgets/catch_field.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
                 "CatchField.content",
                 "CatchField.nav",
+                "CatchField.sortable",
                 "CatchField.action",
                 "CatchField.toggle",
                 "CatchField.input",

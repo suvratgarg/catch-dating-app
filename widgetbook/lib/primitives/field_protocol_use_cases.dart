@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -76,7 +75,7 @@ class _AccordionFieldsState extends State<_AccordionFields> {
     builder: (context, _) => CatchSection.fieldRows(
       children: [
         for (final title in ['Timing', 'Channel'])
-          CatchField.choices<String>(
+          CatchField<String>.choices(
             copy: catchFieldCopy(context.l10n),
             title: title,
             values: const ['Default', 'Custom'],
@@ -97,7 +96,7 @@ class _AccordionFieldsState extends State<_AccordionFields> {
   );
 }
 
-Widget _openField(BuildContext context) => CatchField.choices<String>(
+Widget _openField(BuildContext context) => CatchField<String>.choices(
   copy: catchFieldCopy(context.l10n),
   title: 'Reminder',
   values: const ['Before', 'After'],
@@ -288,7 +287,7 @@ class _ObstructedDisclosureState extends State<_ObstructedDisclosure> {
               const SizedBox(height: 380),
               CatchSection.fieldRows(
                 children: [
-                  CatchField.choices<String>(
+                  CatchField<String>.choices(
                     copy: catchFieldCopy(context.l10n),
                     title: 'Reminder',
                     values: const ['Before', 'After'],

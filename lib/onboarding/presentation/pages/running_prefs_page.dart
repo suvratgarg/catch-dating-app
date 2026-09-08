@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
@@ -273,7 +272,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                     ],
                   ),
                 ),
-                CatchField.choices<PreferredDistance>(
+                CatchField<PreferredDistance>.choices(
                   copy: catchFieldCopy(context.l10n),
                   key: OnboardingFormKeys.runningDistances,
                   title: context
@@ -298,7 +297,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   initiallyOpen: true,
                   isOptional: true,
                 ),
-                CatchField.choices<RunReason>(
+                CatchField<RunReason>.choices(
                   copy: catchFieldCopy(context.l10n),
                   key: OnboardingFormKeys.runningReasons,
                   title: state.reasonLabel,
@@ -321,7 +320,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   initiallyOpen: true,
                   isOptional: true,
                 ),
-                CatchField.choices<PreferredRunTime>(
+                CatchField<PreferredRunTime>.choices(
                   copy: catchFieldCopy(context.l10n),
                   key: OnboardingFormKeys.runningTimes,
                   title: state.runTimesLabel,
