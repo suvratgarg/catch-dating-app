@@ -8292,6 +8292,43 @@
             }
           },
           {
+            "id": "catch.screen_body.form_step_overview",
+            "symbol": "CatchFormStepOverview",
+            "file": "lib/core/widgets/catch_form_step_overview.dart",
+            "summary": "Resumable form navigator with caller-resolved status labels and caller-owned step selection.",
+            "states": [
+              "complete",
+              "needs-information",
+              "optional"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
+            "id": "catch.screen_body.form_review_body",
+            "symbol": "CatchFormReviewBody",
+            "file": "lib/core/widgets/catch_form_review_body.dart",
+            "summary": "Final form review body with optional summary rows and the canonical step navigator; the caller retains submission and navigation.",
+            "states": [
+              "with-summary",
+              "without-summary",
+              "incomplete",
+              "ready"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            }
+          },
+          {
             "id": "catch.screen_body.form_step_body",
             "symbol": "CatchFormStepBody",
             "file": "packages/catch_ui/lib/src/patterns/catch_form_step_body.dart",

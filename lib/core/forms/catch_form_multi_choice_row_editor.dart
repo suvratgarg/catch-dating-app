@@ -1,10 +1,9 @@
+import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
+import 'package:catch_dating_app/core/forms/catch_form_save_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-import 'catch_form_descriptors.dart';
-import 'catch_form_save_state.dart';
 
 class CatchFormMultiChoiceRowEditor<P, T> extends StatefulWidget {
   const CatchFormMultiChoiceRowEditor({

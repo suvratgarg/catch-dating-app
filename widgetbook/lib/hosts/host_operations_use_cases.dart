@@ -19,7 +19,7 @@ import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/core/widgets/catch_form_step_overview.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_review_body.dart';
 import 'package:catch_dating_app/core/widgets/ordered_photo_picker.dart';
 import 'package:catch_dating_app/design_fixtures/host_operations_fixtures.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';

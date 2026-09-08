@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.17
+version: 1.9.18
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1124,6 +1124,10 @@ Each editor retains its State, controllers, validation and save behavior;
 descriptors retain typed construction and patch factories. The former combined
 file no longer declares a Widget or State, and every resulting file is below
 800 lines. These form owners remain app-side until the field facade moves.
+
+The final form review body and step navigator have individual source owners
+and explicit registry membership. Their field rows, status labels, callbacks
+and scrolling are unchanged. They also remain app-side until the field move.
 
 ### Phase 4 — One registry, binding grammar
 

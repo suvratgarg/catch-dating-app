@@ -1,7 +1,6 @@
+import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
-
-import 'catch_form_descriptors.dart';
 
 /// Maps typed form descriptors to canonical CatchField rows inside one
 /// CatchSection, with one accordion and one per-field patch save delegate.

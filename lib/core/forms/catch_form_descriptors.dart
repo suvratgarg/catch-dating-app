@@ -1,12 +1,11 @@
+import 'package:catch_dating_app/core/forms/catch_form_multi_choice_row_editor.dart';
+import 'package:catch_dating_app/core/forms/catch_form_range_row_editor.dart';
+import 'package:catch_dating_app/core/forms/catch_form_single_choice_row_editor.dart';
+import 'package:catch_dating_app/core/forms/catch_form_text_row_editor.dart';
 import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import 'catch_form_multi_choice_row_editor.dart';
-import 'catch_form_range_row_editor.dart';
-import 'catch_form_single_choice_row_editor.dart';
-import 'catch_form_text_row_editor.dart';
 
 /// P is the patch type committed by the owning surface.
 sealed class CatchFormRowDescriptor<P> {

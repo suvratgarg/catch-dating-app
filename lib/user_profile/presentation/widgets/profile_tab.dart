@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/forms/catch_form_row_list.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
