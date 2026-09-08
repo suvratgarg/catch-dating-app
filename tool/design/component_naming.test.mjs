@@ -7,7 +7,7 @@ import {
   componentNamingEntries,
   roleNouns,
   sharedWidgetNamingProblems,
-} from "./component_naming.mjs";
+} from "./lib/component_naming.mjs";
 
 const home = "packages/catch_ui/lib/src/components/";
 function component(symbol, roleNoun, extra = {}) {

@@ -4,7 +4,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {collectProductionWidgetClassificationDeclarations} from "./generate_widget_classification.mjs";
-import {componentLevels as levels, roleNouns, sharedWidgetLevel} from "./component_naming.mjs";
+import {componentLevels as levels, roleNouns, sharedWidgetLevel} from "./lib/component_naming.mjs";
 
 export const catalogStart = "<!-- BEGIN GENERATED WIDGET INVENTORY -->";
 export const catalogEnd = "<!-- END GENERATED WIDGET INVENTORY -->";

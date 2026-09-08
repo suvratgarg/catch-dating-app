@@ -57,45 +57,6 @@ export function requireResolvedMergeBase(result) {
   );
 }
 
-export function collectCatalogWidgetSymbols(source) {
-  const lines = source.split(/\r?\n/u);
-  const symbols = new Set();
-
-  for (let index = 0; index < lines.length - 1; index += 1) {
-    const header = markdownTableCells(lines[index]);
-    const separator = markdownTableCells(lines[index + 1]);
-    if (
-      header?.[0]?.trim() !== "Widget" ||
-      separator == null ||
-      !separator.every((cell) => /^:?-{3,}:?$/u.test(cell.trim()))
-    ) {
-      continue;
-    }
-
-    for (let rowIndex = index + 2; rowIndex < lines.length; rowIndex += 1) {
-      const row = markdownTableCells(lines[rowIndex]);
-      if (row == null) break;
-      const firstCell = row[0].trim();
-      const codeSpans = [...firstCell.matchAll(/`([^`]+)`/gu)];
-      const remainder = firstCell
-        .replaceAll(/`[^`]+`/gu, "")
-        .replaceAll("/", "")
-        .trim();
-      if (codeSpans.length === 0 || remainder !== "") continue;
-
-      for (const span of codeSpans) {
-        const declaration = span[1].trim();
-        const name = declaration.match(
-          /^([A-Za-z_][A-Za-z0-9_]*)(?:<.*>)?$/u,
-        )?.[1];
-        if (name) symbols.add(name);
-      }
-    }
-  }
-
-  return symbols;
-}
-
 export function collectClassDeclarations(source, lineStarts = buildLineStarts(source)) {
   const code = maskNonCode(source);
   const rows = [];
@@ -608,12 +569,6 @@ function delimiterDepthAt(code, offset, open, close) {
     else if (code[index] === close) depth = Math.max(0, depth - 1);
   }
   return depth;
-}
-
-function markdownTableCells(line) {
-  const trimmed = line.trim();
-  if (!trimmed.startsWith("|") || !trimmed.endsWith("|")) return null;
-  return trimmed.slice(1, -1).split("|");
 }
 
 function maskNonCode(source) {

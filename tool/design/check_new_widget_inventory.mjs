@@ -6,7 +6,6 @@ import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
 import {newWidgetPolicyIssues} from "./component_concepts.mjs";
 import {
   buildLineStarts,
-  collectCatalogWidgetSymbols,
   collectClassDeclarations,
   collectClassRanges,
   collectWidgetClasses,
@@ -28,9 +27,10 @@ if (args.includes("--help") || args.includes("-h")) {
 
 Compares production Dart sources against the merge base with origin/main by
 default. Blocks new or moved private widget classes and Widget-returning helpers,
-checks Widgetbook plus docs/widget_catalog.md for every new or moved public
-widget, and requires core widgets to use the Catch* namespace and a component
-contract. The scan fails closed when its base ref is unavailable.
+checks Widgetbook for every new or moved public widget, and requires shared
+widgets to use the Catch* namespace and an exact source identity in the component
+registry. The widget catalog is generated output, not an independent input.
+The scan fails closed when its base ref is unavailable.
 `);
   process.exit(0);
 }
@@ -57,10 +57,7 @@ const currentSnapshot = scanSnapshot({
   readFile: (file) => fs.readFileSync(fromRepo(file), "utf8"),
 });
 const widgetbookNames = readWidgetbookNames();
-const catalogWidgetSymbols = collectCatalogWidgetSymbols(
-  fs.readFileSync(fromRepo("docs/widget_catalog.md"), "utf8"),
-);
-const componentSymbols = readComponentSymbols();
+const componentIdentities = readComponentIdentities();
 
 const newWidgetClassCandidates = currentSnapshot.widgetClasses.filter(
   (entry) => !baseSnapshot.widgetClassKeys.has(widgetClassKey(entry)),
@@ -108,9 +105,9 @@ const report = {
   current: "working tree",
   sourceOfTruth: {
     widgetbook: "widgetbook/lib/main.directories.g.dart",
-    catalog: "docs/widget_catalog.md",
+    registry: "design/components/catch.components.json",
     policy:
-      "New or moved public widget classes need Widgetbook and widget catalog coverage; core widgets also require a canonical Catch* name and component contract. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public cataloged widgets.",
+      "New or moved public widget classes need Widgetbook coverage; shared widgets also require a canonical Catch* name and exact source identity in the component registry. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public covered widgets. The catalog inventory is generated separately.",
   },
   summary,
   movedWidgets,
@@ -200,18 +197,15 @@ function dartLibraryFor(file, source) {
 
 function classifyWidget(entry) {
   const widgetbookCovered = widgetbookNames.has(entry.name);
-  const catalogMentioned = catalogWidgetSymbols.has(entry.name);
-  const componentContracted = componentSymbols.has(entry.name);
+  const componentContracted = componentIdentities.has(`${entry.file}::${entry.name}`);
   const issues = newWidgetPolicyIssues(entry, {
     widgetbookCovered,
-    catalogMentioned,
     componentContracted,
   });
 
   return {
     ...entry,
     widgetbookCovered,
-    catalogMentioned,
     componentContracted,
     status: issues.length === 0 ? "covered" : "unresolved",
     issues,
@@ -225,30 +219,24 @@ function classifyWidgetHelper(entry) {
     status: "unresolved",
     issues: ["widget-returning-helper"],
     recommendedAction:
-      "Inline into the owning build method when purely local, merge into an existing primitive when duplicated, or extract a public Widgetbook/cataloged widget when reusable.",
+      "Inline into the owning build method when purely local, merge into an existing primitive when duplicated, or extract a public Widgetbook-covered widget when reusable.",
   };
 }
 
 function recommendationForWidget(entry, issues) {
   if (issues.includes("private-widget-class")) {
-    return "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook and catalog coverage.";
-  }
-  if (issues.includes("missing-widgetbook") && issues.includes("missing-widget-catalog")) {
-    return "Either add Widgetbook plus docs/widget_catalog.md coverage, or merge/delete the redundant public widget.";
+    return "Inline/delete the private widget, merge it into an existing public primitive, or promote it to a public widget with Widgetbook coverage and a shared-component registry identity where required.";
   }
   if (issues.includes("missing-widgetbook")) {
     return "Add an exact-name Widgetbook component or merge/delete the redundant public widget.";
-  }
-  if (issues.includes("missing-widget-catalog")) {
-    return "Add docs/widget_catalog.md inventory guidance or merge/delete the redundant public widget.";
   }
   if (issues.includes("noncanonical-core-widget-name")) {
     return "Rename the core widget to the canonical Catch* namespace or merge it into the existing concept owner.";
   }
   if (issues.includes("missing-component-contract")) {
-    return "Register the core widget as a canonical concept or governed member in design/components/catch.components.json.";
+    return "Register the shared widget's exact symbol and source file as a canonical concept or governed member in design/components/catch.components.json.";
   }
-  return "Covered by Widgetbook and docs/widget_catalog.md.";
+  return "Covered by Widgetbook and the applicable shared-component registry contract.";
 }
 
 function summarize({
@@ -384,15 +372,17 @@ function readWidgetbookNames() {
   return names;
 }
 
-function readComponentSymbols() {
+function readComponentIdentities() {
   const components = JSON.parse(
     fs.readFileSync(fromRepo("design/components/catch.components.json"), "utf8"),
   ).components ?? [];
   const names = new Set();
   for (const component of components) {
-    if (component.dart?.symbol) names.add(component.dart.symbol);
+    if (component.dart?.symbol && component.dart?.file) {
+      names.add(`${component.dart.file}::${component.dart.symbol}`);
+    }
     for (const member of component.contract?.members ?? []) {
-      if (member.symbol) names.add(member.symbol);
+      if (member.symbol) names.add(`${member.file ?? component.dart?.file}::${member.symbol}`);
     }
   }
   return names;

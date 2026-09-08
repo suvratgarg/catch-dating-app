@@ -3,7 +3,7 @@ import path from "node:path";
 
 // Schema and executable checks share one closed vocabulary.
 const schema = JSON.parse(fs.readFileSync(new URL(
-  "../../design/components/catch.components.schema.json", import.meta.url), "utf8"));
+  "../../../design/components/catch.components.schema.json", import.meta.url), "utf8"));
 export const roleNouns = Object.freeze(schema.$defs.roleNoun.enum);
 export const componentLevels = Object.freeze(schema.$defs.componentLevel.enum);
 const sharedHomes = new Map([

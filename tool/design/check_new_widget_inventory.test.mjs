@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import {spawnSync} from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import {fileURLToPath} from "node:url";
 
 import {
   buildLineStarts,
-  collectCatalogWidgetSymbols,
   collectClassDeclarations,
   collectClassRanges,
   collectWidgetClasses,
@@ -21,25 +22,64 @@ import {
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
-test("prose-only catalog mentions do not satisfy exact widget inventory coverage", () => {
-  const symbols = collectCatalogWidgetSymbols(`
-CatchProseOnly is discussed here but has no inventory row.
+test("new-widget gate uses exact registry and Widgetbook identities without reading markdown", (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-new-widget-policy-"));
+  t.after(() => fs.rmSync(root, {recursive: true, force: true}));
+  for (const file of [
+    "tool/lib/repo_paths.mjs",
+    "tool/design/check_new_widget_inventory.mjs",
+    "tool/design/component_concepts.mjs",
+    "tool/design/lib/new_widget_inventory_declarations.mjs",
+    "tool/design/lib/production_widget_roots.mjs",
+  ]) {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.copyFileSync(path.join(repoRoot, file), path.join(root, file));
+  }
+  const git = (args) => {
+    const result = spawnSync("git", args, {cwd: root, encoding: "utf8"});
+    assert.equal(result.status, 0, result.stderr);
+  };
+  git(["init", "--quiet"]);
+  git(["-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
+    "-c", "commit.gpgsign=false", "commit", "--quiet", "--allow-empty", "-m", "Fixture base"]);
+  const write = (file, text) => {
+    fs.mkdirSync(path.dirname(path.join(root, file)), {recursive: true});
+    fs.writeFileSync(path.join(root, file), text);
+  };
+  const sourceFile = "lib/core/widgets/catch_button.dart";
+  write(sourceFile, "class CatchButton extends StatelessWidget { Widget build(BuildContext context) => const SizedBox(); }\n");
+  const widgetbookFile = "widgetbook/lib/main.directories.g.dart";
+  const registryFile = "design/components/catch.components.json";
+  write(widgetbookFile, "WidgetbookComponent(name: 'CatchButton', useCases: [])");
+  const registry = {components: [{dart: {symbol: "CatchButton", file: sourceFile}}]};
+  write(registryFile, JSON.stringify(registry));
+  const run = () => spawnSync(process.execPath,
+    ["tool/design/check_new_widget_inventory.mjs", "--base", "HEAD", "--check", "--json", "--no-write"],
+    {cwd: root, encoding: "utf8"});
 
-| Family | Use | Do not use |
-|---|---|---|
-| \`CatchWrongTable\` | Example | Example |
+  const covered = run();
+  assert.equal(covered.status, 0, covered.stderr);
+  const report = JSON.parse(covered.stdout);
+  assert.equal(report.summary.coveredNewWidgets, 1);
+  assert.equal(report.sourceOfTruth.registry, registryFile);
+  assert.equal("catalog" in report.sourceOfTruth, false);
+  assert.equal("catalogMentioned" in report.addedWidgets[0], false);
+  assert.equal(fs.existsSync(path.join(root, "docs")), false);
 
-| Widget | File | Purpose |
-|---|---|---|
-| \`CatchGroupedOne\` / \`CatchGroupedTwo<P>\` | lib/example.dart | Owners |
-| See \`CatchMalformedCell\` | lib/example.dart | Not an exact first cell |
-`);
+  registry.components[0].dart.file = "lib/core/widgets/old_button.dart";
+  write(registryFile, JSON.stringify(registry));
+  // Even a matching prose row cannot make a stale registry path valid.
+  write("docs/widget_catalog.md", "| Widget | File | Purpose |\n|---|---|---|\n| `CatchButton` | lib/core/widgets/catch_button.dart | A button |\n");
+  const stale = run();
+  assert.equal(stale.status, 1);
+  assert.deepEqual(JSON.parse(stale.stdout).addedWidgets[0].issues, ["missing-component-contract"]);
 
-  assert.equal(symbols.has("CatchProseOnly"), false);
-  assert.equal(symbols.has("CatchWrongTable"), false);
-  assert.equal(symbols.has("CatchMalformedCell"), false);
-  assert.equal(symbols.has("CatchGroupedOne"), true);
-  assert.equal(symbols.has("CatchGroupedTwo"), true);
+  registry.components[0].dart.file = sourceFile;
+  write(registryFile, JSON.stringify(registry));
+  write(widgetbookFile, "WidgetbookComponent(name: 'CatchOtherButton', useCases: [])");
+  const missingPreview = run();
+  assert.equal(missingPreview.status, 1);
+  assert.deepEqual(JSON.parse(missingPreview.stdout).addedWidgets[0].issues, ["missing-widgetbook"]);
 });
 
 test("discovers direct and transitive widget subclasses without matching prose", () => {

@@ -25,14 +25,14 @@ export function collisionKeyFor({conceptRole, conceptId, symbol}) {
 
 export function newWidgetPolicyIssues(
   entry,
-  {widgetbookCovered, catalogMentioned, componentContracted},
+  {widgetbookCovered, componentContracted},
 ) {
   if (entry.visibility === "private") return ["private-widget-class"];
 
   const issues = [];
   if (!widgetbookCovered) issues.push("missing-widgetbook");
-  if (!catalogMentioned) issues.push("missing-widget-catalog");
-  if (entry.file.startsWith("lib/core/widgets/")) {
+  if (["lib/core/widgets/", "lib/core/riverpod_ui/", "packages/catch_ui/lib/"]
+    .some((home) => entry.file.startsWith(home))) {
     if (!/^Catch[A-Z0-9]/u.test(entry.name)) {
       issues.push("noncanonical-core-widget-name");
     }
