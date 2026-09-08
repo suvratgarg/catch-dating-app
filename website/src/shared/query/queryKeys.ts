@@ -9,7 +9,7 @@ export const websiteQueryKeys = {
     requests: () => [...websiteQueryKeys.claims.all(), "requests"] as const,
   },
   eventMessaging: {
-    messageWithdrawal: (instance: string, channel: "sms" | "whatsapp") =>
+    messageWithdrawal: (instance: string, channel: "sms" | "whatsapp" | "rcs") =>
       [...websiteQueryKeys.all, "event-messaging", "withdrawal", channel, instance] as const,
     smsPreference: (instance: string, identity: string) =>
       [...websiteQueryKeys.all, "event-messaging", "sms-preference", instance, identity] as const,

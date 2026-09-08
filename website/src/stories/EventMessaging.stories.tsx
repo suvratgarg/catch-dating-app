@@ -1,6 +1,6 @@
 import {EventMessageWithdrawalCard} from "../features/eventMessaging/EventMessageWithdrawalPanel";
 import {EventAssistanceView} from "../features/eventAssistance/EventAssistancePage";
-import {eventMessagingCopy, eventWhatsappMessagingCopy} from "../content/eventMessaging";
+import {eventMessageWithdrawalCopy} from "../content/eventMessaging";
 import {useState} from "react";
 import type {Meta, StoryObj} from "@storybook/react-vite";
 import {EventSmsPreferenceCard} from "../features/eventMessaging/EventSmsPreferencePanel";
@@ -59,11 +59,11 @@ export const MessageWithdrawalError: Story = {render: () => <WithdrawalPreview k
 export const MessageWithdrawalLoading: Story = {render: () => <WithdrawalPreview kind="loading" />};
 
 function WithdrawalPreview({preference = "enabled", uncertain = false, kind = "ready", channel = "sms"}: {
-  channel?: "sms" | "whatsapp";
+  channel?: "sms" | "whatsapp" | "rcs";
   preference?: "enabled" | "disabled"; uncertain?: boolean; kind?: "ready" | "error" | "loading";
 }) {
   const [saved, setSaved] = useState(false);
-  const copy = channel === "sms" ? eventMessagingCopy : eventWhatsappMessagingCopy;
+  const copy = eventMessageWithdrawalCopy[channel];
   const card = <EventMessageWithdrawalCard channel={channel} state={kind !== "ready" ? {kind} : {kind,
     view: {preference: saved ? "disabled" : preference, revision: 1, serverTime: 1000, expiresAt: 100_000},
     pending: false, uncertain: uncertain && !saved, notice: uncertain && !saved ? copy.uncertain : ""}}
@@ -89,4 +89,20 @@ export const WhatsappMessageWithdrawalSaved: Story = {
 };
 export const WhatsappMessageWithdrawalUncertain: Story = {
   render: () => <WithdrawalPreview channel="whatsapp" uncertain />,
+};
+
+
+export const RcsMessageWithdrawal: Story = {
+  parameters: {catchComponent: {id: "event_message_withdrawal_card",
+    routeIds: ["event_assistance"], states: ["rcs", "closed-instructions"]}},
+  render: () => <WithdrawalPreview channel="rcs" />,
+};
+export const RcsMessageWithdrawalSaved: Story = {
+  render: () => <WithdrawalPreview channel="rcs" preference="disabled" />,
+};
+export const RcsMessageWithdrawalUncertain: Story = {
+  render: () => <WithdrawalPreview channel="rcs" uncertain />,
+};
+export const RcsMessageWithdrawalError: Story = {
+  render: () => <WithdrawalPreview channel="rcs" kind="error" />,
 };

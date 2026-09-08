@@ -1,7 +1,7 @@
 import {useMemo} from "react";
 import type {GetEventAssistanceSmsWithdrawalCallablePayload as Credential} from "../../shared/contracts/generated/getEventAssistanceSmsWithdrawalCallablePayload";
 import {Button, EventRuntimeModule, FormStatus} from "../../shared/ui/primitives";
-import {eventMessagingCopy, eventWhatsappMessagingCopy} from "../../content/eventMessaging";
+import {eventMessageWithdrawalCopy} from "../../content/eventMessaging";
 import {useEventMessageWithdrawalController, type MessageWithdrawalState, type MessageWithdrawalChannel} from "./useEventMessageWithdrawalController";
 
 export function EventMessageWithdrawalPanel({credential, channel = "sms"}: {credential: Credential | null; channel?: MessageWithdrawalChannel}) {
@@ -16,7 +16,7 @@ export function EventMessageWithdrawalCard({state, withdraw, refresh, channel = 
   channel?: MessageWithdrawalChannel;
   state: MessageWithdrawalState; withdraw: () => void; refresh: () => void;
 }) {
-  const copy = channel === "sms" ? eventMessagingCopy : eventWhatsappMessagingCopy;
+  const copy = eventMessageWithdrawalCopy[channel];
   if (state.kind === "hidden") return null;
   return <EventRuntimeModule title={copy.title}>
     {state.kind === "loading" ? <p role="status">{copy.loading}</p> : null}

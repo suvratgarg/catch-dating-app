@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.78.0
+version: 1.79.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -131,7 +131,12 @@ receipts fence old requests. Withdrawal works after instructions expire without
 restoring read/reply access, and does not depend on current event/roster/sender
 records. Retain its referenced guest grant through the independent withdrawal
 lifetime. The RCS dispatch store now stages this binding with the outbox claim
-and two approved budget charges. Guest-page UI and activation remain open.
+and two approved budget charges. The guest update page now reads and withdraws
+RCS independently from SMS and WhatsApp, even when instructions are unavailable.
+Its shared controller validates the closed response before caching, scopes each
+channel and credential separately, and preserves an uncertain request for exact
+retry. Bearer controls cannot opt in. Verified guest opt-in controls and live
+activation remain open.
 
 The RCS canonical contract also owns `Budget`, `CapabilityObservation` and
 `Dispatch`. Private `eventAssistanceRcsBudgets` binds each approved event or UTC

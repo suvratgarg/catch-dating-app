@@ -39,3 +39,27 @@ export const eventWhatsappMessagingCopy = {
   savedOn: "Event WhatsApp updates are now on.",
   savedOff: "Event WhatsApp updates are now off.",
 } as const;
+
+export const eventRcsMessagingCopy = {
+  ...eventMessagingCopy,
+  title: "Event RCS updates",
+  loading: "Loading your RCS preference…",
+  loadFailed: "Your RCS preference could not be loaded.",
+  withdrawalScope: "Turn off RCS updates for this event in your phone’s Messages app. SMS and WhatsApp preferences are separate.",
+  withdrawalSaved: "RCS updates for this event are off.",
+  withdrawalChanged: "Your RCS preference changed elsewhere. Tap again if you want to turn updates off.",
+  turnOn: "Turn on event RCS updates",
+  turnOff: "Turn off RCS updates",
+  enabled: "Event RCS updates are on.",
+  disabled: "Event RCS updates are off.",
+  expired: "RCS updates for this event have ended.",
+  unavailable: "RCS updates are currently unavailable.",
+  savedOn: "Event RCS updates are now on.",
+  savedOff: "Event RCS updates are now off.",
+} as const;
+
+export const eventMessageWithdrawalCopy = {
+  sms: eventMessagingCopy,
+  whatsapp: eventWhatsappMessagingCopy,
+  rcs: eventRcsMessagingCopy,
+} as const;

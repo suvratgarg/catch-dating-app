@@ -14,6 +14,7 @@ export function EventAssistancePage({credential}: {credential: Credential | null
     textPreferences={<>
       <EventMessageWithdrawalPanel credential={credential} channel="sms" />
       <EventMessageWithdrawalPanel credential={credential} channel="whatsapp" />
+      <EventMessageWithdrawalPanel credential={credential} channel="rcs" />
     </>} />;
 }
 

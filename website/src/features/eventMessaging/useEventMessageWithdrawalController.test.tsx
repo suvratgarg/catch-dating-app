@@ -2,15 +2,15 @@ import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {act, cleanup, fireEvent, render, renderHook, screen, waitFor} from "@testing-library/react";
 import type {PropsWithChildren} from "react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
-const api = vi.hoisted(() => ({get: vi.fn(), withdraw: vi.fn(), waGet: vi.fn(), waWithdraw: vi.fn(), guestGet: vi.fn()}));
+const api = vi.hoisted(() => ({get: vi.fn(), withdraw: vi.fn(), waGet: vi.fn(), waWithdraw: vi.fn(), rcsGet: vi.fn(), rcsWithdraw: vi.fn(), guestGet: vi.fn()}));
 vi.mock("../../firebase", () => ({getEventAssistanceSmsWithdrawal: api.get,
   withdrawEventAssistanceSms: api.withdraw, getEventWhatsappWithdrawal: api.waGet,
-  withdrawEventWhatsapp: api.waWithdraw, getEventAssistanceGuestView: api.guestGet,
+  withdrawEventWhatsapp: api.waWithdraw, getEventRcsWithdrawal: api.rcsGet, withdrawEventRcs: api.rcsWithdraw, getEventAssistanceGuestView: api.guestGet,
   submitEventAssistanceGuestChoice: vi.fn()}));
 import {useEventMessageWithdrawalController} from "./useEventMessageWithdrawalController";
 import {EventMessageWithdrawalPanel, EventMessageWithdrawalCard} from "./EventMessageWithdrawalPanel";
 import type {EventAssistanceSmsWithdrawalCallableResponse as Response} from "../../shared/contracts/generated/eventAssistanceSmsWithdrawalCallableResponse";
-import {eventMessagingCopy as copy, eventWhatsappMessagingCopy as waCopy} from "../../content/eventMessaging";
+import {eventMessagingCopy as copy, eventWhatsappMessagingCopy as waCopy, eventRcsMessagingCopy as rcsCopy} from "../../content/eventMessaging";
 const credential = {linkId: "a".repeat(32), secret: "b".repeat(43)};
 const enabled: Response = {outcome: "read", view: {serverTime: 1000, expiresAt: 100_000,
   revision: 1, preference: "enabled"}};
@@ -34,6 +34,7 @@ function deferred() {
 beforeEach(() => {
   vi.clearAllMocks(); api.get.mockResolvedValue(enabled); api.withdraw.mockResolvedValue(disabled);
   api.waGet.mockResolvedValue(enabled); api.waWithdraw.mockResolvedValue(disabled);
+  api.rcsGet.mockResolvedValue(enabled); api.rcsWithdraw.mockResolvedValue(disabled);
   api.guestGet.mockResolvedValue({status: "unavailable", reason: "eventClosed", serverTime: 1000});
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
@@ -178,4 +179,71 @@ it("changing the channel discards an old pending response for the same link", as
   await screen.findByText(waCopy.withdrawalSaved);
   expect(api.waWithdraw).toHaveBeenCalledOnce();
   expect(api.withdraw).toHaveBeenCalledOnce();
+});
+
+
+it("RCS withdrawal has its own cache, exact retries and no SMS or WhatsApp writes", async () => {
+  api.rcsWithdraw.mockRejectedValueOnce(new Error("Lost response"));
+  const h = setup();
+  const result = renderHook(() => useEventMessageWithdrawalController(credential, "rcs"), h);
+  await waitFor(() => expect(result.result.current.state.kind).toBe("ready"));
+  act(() => { result.result.current.withdraw(); result.result.current.withdraw(); });
+  await waitFor(() => expect(result.result.current.state).toMatchObject({uncertain: true}));
+  expect(api.rcsWithdraw).toHaveBeenCalledOnce();
+  act(() => result.result.current.withdraw());
+  await waitFor(() => expect(result.result.current.state).toMatchObject({uncertain: false,
+    view: {preference: "disabled"}}));
+  expect(api.rcsWithdraw).toHaveBeenCalledTimes(2);
+  expect(api.rcsWithdraw.mock.calls[1][0]).toEqual(api.rcsWithdraw.mock.calls[0][0]);
+  for (const other of [api.get, api.waGet, api.withdraw, api.waWithdraw]) expect(other).not.toHaveBeenCalled();
+  const cache = h.client.getQueryCache().getAll();
+  expect(cache.every((entry) => entry.queryKey.includes("rcs"))).toBe(true);
+  const state = JSON.stringify([cache.map((entry) => entry.state),
+    h.client.getMutationCache().getAll().map((entry) => entry.state)]);
+  expect(state).not.toContain(credential.linkId);
+  expect(state).not.toContain(credential.secret);
+  result.unmount();
+});
+
+it("switching away from a pending RCS withdrawal cannot overwrite another channel", async () => {
+  const old = deferred(); api.rcsWithdraw.mockReturnValueOnce(old.promise);
+  const h = setup();
+  const page = render(<EventMessageWithdrawalPanel channel="rcs" credential={credential} />, h);
+  fireEvent.click(await screen.findByRole("button", {name: rcsCopy.turnOff}));
+  await waitFor(() => expect(api.rcsWithdraw).toHaveBeenCalledOnce());
+  page.rerender(<EventMessageWithdrawalPanel channel="sms" credential={credential} />);
+  await screen.findByRole("button", {name: copy.turnOff});
+  await act(async () => old.resolve(disabled));
+  expect(screen.queryByText(rcsCopy.withdrawalSaved)).toBeNull();
+  expect(screen.queryByText(copy.withdrawalSaved)).toBeNull();
+  fireEvent.click(screen.getByRole("button", {name: copy.turnOff}));
+  await screen.findByText(copy.withdrawalSaved);
+  expect(api.withdraw).toHaveBeenCalledOnce();
+});
+
+it("a malformed RCS read cannot expose private data or offer a withdrawal action", async () => {
+  api.rcsGet.mockResolvedValue({...enabled, view: {...enabled.view, phone: "private-recipient"}});
+  const h = setup();
+  const result = renderHook(() => useEventMessageWithdrawalController(credential, "rcs"), h);
+  await waitFor(() => expect(result.result.current.state.kind).toBe("error"));
+  act(() => result.result.current.withdraw());
+  expect(api.rcsWithdraw).not.toHaveBeenCalled();
+  expect(JSON.stringify(h.client.getQueryCache().getAll().map((q) => q.state)))
+    .not.toContain("private-recipient");
+  result.unmount();
+});
+
+it("a malformed RCS write stays uncertain and retries the original decision", async () => {
+  api.rcsWithdraw.mockResolvedValueOnce({...disabled, view: {...disabled.view, revision: 0}});
+  const h = setup();
+  const result = renderHook(() => useEventMessageWithdrawalController(credential, "rcs"), h);
+  await waitFor(() => expect(result.result.current.state.kind).toBe("ready"));
+  act(() => result.result.current.withdraw());
+  await waitFor(() => expect(result.result.current.state).toMatchObject({uncertain: true,
+    view: {preference: "enabled"}}));
+  act(() => result.result.current.withdraw());
+  await waitFor(() => expect(result.result.current.state).toMatchObject({uncertain: false,
+    view: {preference: "disabled"}}));
+  expect(api.rcsWithdraw.mock.calls[1][0]).toEqual(api.rcsWithdraw.mock.calls[0][0]);
+  result.unmount();
 });

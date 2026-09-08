@@ -1,3 +1,6 @@
+import type {GetEventRcsWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventRcsWithdrawalInput";
+import type {WithdrawEventRcsCallablePayload} from "../../functions/src/shared/generated/withdrawEventRcsInput";
+import type {EventRcsWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventRcsWithdrawalOutput";
 import type {GetEventWhatsappWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload";
 import type {WithdrawEventWhatsappCallablePayload} from "../../functions/src/shared/generated/withdrawEventWhatsappCallablePayload";
 import type {EventWhatsappWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventWhatsappWithdrawalCallableResponse";
@@ -1020,4 +1023,17 @@ export async function withdrawEventWhatsapp(
 ): Promise<EventWhatsappWithdrawalCallableResponse> {
   return invokeWebsiteCallable("withdrawEventWhatsapp", payload,
     eventRuntimeFirebaseConfigured, "Event WhatsApp withdrawal");
+}
+
+export async function getEventRcsWithdrawal(
+  payload: GetEventRcsWithdrawalCallablePayload
+): Promise<EventRcsWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("getEventRcsWithdrawal", payload,
+    eventRuntimeFirebaseConfigured, "Event RCS withdrawal");
+}
+export async function withdrawEventRcs(
+  payload: WithdrawEventRcsCallablePayload
+): Promise<EventRcsWithdrawalCallableResponse> {
+  return invokeWebsiteCallable("withdrawEventRcs", payload,
+    eventRuntimeFirebaseConfigured, "Event RCS withdrawal");
 }

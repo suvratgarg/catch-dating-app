@@ -1,16 +1,29 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {useEffect, useRef, useState} from "react";
-import {getEventAssistanceSmsWithdrawal, withdrawEventAssistanceSms, getEventWhatsappWithdrawal, withdrawEventWhatsapp} from "../../firebase";
+import {getEventAssistanceSmsWithdrawal, withdrawEventAssistanceSms, getEventWhatsappWithdrawal, withdrawEventWhatsapp, getEventRcsWithdrawal, withdrawEventRcs} from "../../firebase";
 import type {GetEventAssistanceSmsWithdrawalCallablePayload as Credential} from "../../shared/contracts/generated/getEventAssistanceSmsWithdrawalCallablePayload";
 import type {WithdrawEventAssistanceSmsCallablePayload as Submission} from "../../shared/contracts/generated/withdrawEventAssistanceSmsCallablePayload";
 import type {EventAssistanceSmsWithdrawalCallableResponse as SmsResponse} from "../../shared/contracts/generated/eventAssistanceSmsWithdrawalCallableResponse";
-import {eventMessagingCopy, eventWhatsappMessagingCopy} from "../../content/eventMessaging";
+import {eventMessageWithdrawalCopy} from "../../content/eventMessaging";
 import {websiteQueryKeys} from "../../shared/query/queryKeys";
-
 import type {EventWhatsappWithdrawalCallableResponse as WhatsappResponse} from "../../shared/contracts/generated/eventWhatsappWithdrawalCallableResponse";
 
-export type MessageWithdrawalChannel = "sms" | "whatsapp";
-type Response = SmsResponse | WhatsappResponse;
+import type {EventRcsWithdrawalCallableResponse as RcsResponse} from "../../shared/contracts/generated/eventRcsWithdrawalOutput";
+import {messageWithdrawalResponse} from "./messageWithdrawalModel";
+
+export type MessageWithdrawalChannel = keyof typeof eventMessageWithdrawalCopy;
+type Response = SmsResponse | WhatsappResponse | RcsResponse;
+
+const readers = {
+  sms: getEventAssistanceSmsWithdrawal,
+  whatsapp: getEventWhatsappWithdrawal,
+  rcs: getEventRcsWithdrawal,
+} satisfies Record<MessageWithdrawalChannel, (input: Credential) => Promise<Response>>;
+const writers = {
+  sms: withdrawEventAssistanceSms,
+  whatsapp: withdrawEventWhatsapp,
+  rcs: withdrawEventRcs,
+} satisfies Record<MessageWithdrawalChannel, (input: Submission) => Promise<Response>>;
 
 export type MessageWithdrawalState = {kind: "hidden" | "loading" | "error"} |
   {kind: "ready"; view: Response["view"]; pending: boolean; uncertain: boolean; notice: string};
@@ -25,9 +38,9 @@ function newer(previous: Response | undefined, next: Response): Response {
 
 /** The parent remounts this controller when the bearer credential changes. */
 export function useEventMessageWithdrawalController(credential: Credential | null, channel: MessageWithdrawalChannel = "sms") {
-  const copy = channel === "sms" ? eventMessagingCopy : eventWhatsappMessagingCopy;
-  const readPreference = channel === "sms" ? getEventAssistanceSmsWithdrawal : getEventWhatsappWithdrawal;
-  const withdrawPreference = channel === "sms" ? withdrawEventAssistanceSms : withdrawEventWhatsapp;
+  const copy = eventMessageWithdrawalCopy[channel];
+  const readPreference = readers[channel];
+  const withdrawPreference = writers[channel];
   const client = useQueryClient();
   const [instance] = useState(() => crypto.randomUUID());
   const queryKey = websiteQueryKeys.eventMessaging.messageWithdrawal(instance, channel);
@@ -45,7 +58,7 @@ export function useEventMessageWithdrawalController(credential: Credential | nul
     queryKey, enabled: credential !== null && !sending && !unavailable,
     queryFn: async ({signal}) => {
       if (!credential) throw new Error("Missing event withdrawal credential");
-      const response = await readPreference(credential);
+      const response = messageWithdrawalResponse(await readPreference(credential), "read");
       signal.throwIfAborted();
       return newer(client.getQueryData<Response>(queryKey), response);
     },
@@ -61,7 +74,7 @@ export function useEventMessageWithdrawalController(credential: Credential | nul
       if (!input) throw new Error("Missing event withdrawal request");
       await client.cancelQueries({queryKey});
       if (!mounted.current) throw new Error("Withdrawal page was closed");
-      return withdrawPreference(input);
+      return messageWithdrawalResponse(await withdrawPreference(input), "mutation");
     },
     onSuccess: (response) => {
       if (!mounted.current) return;

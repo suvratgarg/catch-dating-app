@@ -3283,7 +3283,7 @@
         "website/src/styles/event-runtime.css"
       ],
       "storybook": {
-        "status": "planned",
+        "status": "ready",
         "states": [
           "offer",
           "enabled",
@@ -3318,10 +3318,11 @@
           "error",
           "loading",
           "closed-instructions",
-          "whatsapp"
+          "whatsapp",
+          "rcs"
         ]
       },
-      "notes": "Shared SMS/WhatsApp message-link withdrawal with independent channel authority. Retains revocation after instruction expiry; no recipient identity, auth session or consent grant action is exposed."
+      "notes": "Shared SMS/WhatsApp/RCS message-link withdrawal with independent channel authority. Retains revocation after instruction expiry; no recipient identity, auth session or consent grant action is exposed."
     },
     {
       "id": "event_message_withdrawal_card",
@@ -3336,7 +3337,7 @@
         "website/src/styles/event-runtime.css"
       ],
       "storybook": {
-        "status": "planned",
+        "status": "ready",
         "states": [
           "enabled",
           "disabled",
@@ -3344,12 +3345,13 @@
           "error",
           "loading",
           "closed-instructions",
-          "whatsapp"
+          "whatsapp",
+          "rcs"
         ],
         "story": "website/src/stories/EventMessaging.stories.tsx",
         "exportName": "MessageWithdrawal"
       },
-      "notes": "Shared SMS/WhatsApp message-link withdrawal with independent channel authority. Retains revocation after instruction expiry; no recipient identity, auth session or consent grant action is exposed."
+      "notes": "Shared SMS/WhatsApp/RCS message-link withdrawal with independent channel authority. Retains revocation after instruction expiry; no recipient identity, auth session or consent grant action is exposed."
     },
     {
       "id": "event_runtime_section_stack",
@@ -3364,7 +3366,7 @@
         "website/src/styles/event-runtime.css"
       ],
       "storybook": {
-        "status": "planned",
+        "status": "ready",
         "story": "website/src/stories/EventMessaging.stories.tsx",
         "exportName": "EventSectionStack",
         "states": [

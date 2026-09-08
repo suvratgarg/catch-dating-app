@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.70.0
+version: 1.71.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1389,7 +1389,8 @@ now supplies the canonical Google RBM sender configuration and rendering
 boundary described below; generated outputs come from the current generator.
 The RCS backend now includes consent and withdrawal APIs, capability/readiness
 checks, shared outbox dispatch, OAuth loading, authenticated HTTP ingress, and
-delivery/native-reply consumers. Remaining work includes guest-page controls,
+delivery/native-reply consumers. Remaining work includes verified guest opt-in
+controls,
 audited sender/budget onboarding, retention and financial reconciliation,
 provider registration, deployment, activation and end-to-end verification. On 2026-09-08 the user resumed independent RCS work while the
 Host UI handoff is pending. Neither the parked prototype nor the restored
@@ -1586,8 +1587,29 @@ replays or stale reviews from reversing newer consent. A fresh reviewed request
 can withdraw a subsequent grant for the same identity. No event, attendance,
 SMS/WhatsApp consent, conversation subscription or provider delivery state is
 changed. Tests include real Firestore concurrent issuance, duplicate withdrawals
-and a withdrawal racing renewed consent. The guest-page control and live
-deployment remain integration work.
+and a withdrawal racing renewed consent. Live deployment and verified provider
+acceptance remain integration work.
+
+The existing `/event-update/:linkId/` guest update page now includes an independent
+RCS withdrawal control beside SMS and WhatsApp. Each channel reads its own
+issued grant; unissued or revoked grants hide that control. Instruction expiry,
+event closure and sender pause do not remove a still-valid withdrawal grant.
+The page names RCS and explains that it operates in the phone's Messages app,
+with SMS and WhatsApp preferences remaining independent. It offers no opt-in
+from the bearer link and displays confirmation only after a valid server result.
+
+The shared controller uses exhaustive channel-to-API and copy mappings. Its
+query and mutation boundaries validate the closed generated response shapes,
+safe revisions, timestamps and operation outcomes before caching. Unknown fields
+and malformed responses never become preference state. A lost or invalid write
+response retains the exact request ID and reviewed revision for an explicit
+retry. A replay finding later consent requires another deliberate choice.
+Credential or channel changes remount the controller and discard old pending
+results; secrets and link IDs stay out of query keys and mutation variables.
+Tests cover this page after event closure, independent channel calls, stale
+responses and uncertainty. Storybook covers RCS enabled, disabled, uncertain
+and failed reads using fixtures. Verified participant opt-in discovery,
+provisioning, deployment and live provider acceptance remain separate work.
 
 ### RCS sender configuration and message rendering
 
@@ -1798,8 +1820,8 @@ phone, token or guest link. The adapter remains injectable; the production
 worker factory supplies its network client and credential loader. Event-scoped
 RCS preference APIs, message-link withdrawal, sender rendering, transactional
 dispatch, signed callback persistence and consumers are implemented in source.
-Guest-page controls, audited provisioning, deployment and provider activation
-remain required before live use.
+Verified guest opt-in controls, audited provisioning, deployment and provider
+activation remain required before live use.
 
 ## Format Mapping And Wiring
 
