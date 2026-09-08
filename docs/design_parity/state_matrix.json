@@ -6290,7 +6290,7 @@
               "status": "implemented",
               "previewIds": [
                 "HostClubTeamScreen/Route states",
-                "CatchTabRail/Contract states"
+                "CatchPageTabBar/Contract states"
               ]
             },
             {
@@ -6389,7 +6389,7 @@
               ],
               "previewIds": [
                 "HostClubTeamScreen/Route states",
-                "CatchTabRail/Contract states"
+                "CatchPageTabBar/Contract states"
               ]
             },
             {
@@ -6415,7 +6415,7 @@
                 "HostClubTeamScreen/Route states",
                 "HostTeamProfileSection/Profile summary states",
                 "HostTeamHostedClubsSection/Clubs states",
-                "CatchTabRail/Contract states"
+                "CatchPageTabBar/Contract states"
               ]
             },
             {

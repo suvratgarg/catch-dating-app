@@ -591,14 +591,14 @@ class HostMessagingWorkspaceRail extends StatelessWidget
   final ValueChanged<HostMessagingWorkspace>? onChanged;
 
   @override
-  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+  Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
 
   @override
   Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchTabRail.heightFor(context));
+      Size.fromHeight(CatchPageTabBar.heightFor(context));
 
   @override
-  Widget build(BuildContext context) => CatchTabRail<HostMessagingWorkspace>(
+  Widget build(BuildContext context) => CatchPageTabBar<HostMessagingWorkspace>(
     key: const ValueKey<String>('host-messaging-workspace-rail'),
     selected: selected,
     options: [

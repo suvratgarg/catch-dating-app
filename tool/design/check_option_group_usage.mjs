@@ -50,7 +50,7 @@ export function scanSourceForOptionGroupUsage({relativePath, source}) {
       level: "high",
       rule: "OPTION-GROUP-001",
       reason:
-        "Production code should route underline tabs through CatchOptionGroup or CatchTabRail; direct item composition forks divider, indicator, ink, and trailing alignment behavior.",
+        "Production code should route underline tabs through CatchOptionGroup or CatchPageTabBar; direct item composition forks divider, indicator, ink, and trailing alignment behavior.",
       expression: "CatchOptionGroupItem",
     });
   }
@@ -141,7 +141,7 @@ function printHelp() {
   node tool/design/check_option_group_usage.mjs --json
 
 Reports production direct CatchOptionGroupItem usage that should route through
-CatchOptionGroup or CatchTabRail.
+CatchOptionGroup or CatchPageTabBar.
 `);
 }
 

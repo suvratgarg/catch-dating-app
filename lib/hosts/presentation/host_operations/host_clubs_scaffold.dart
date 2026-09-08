@@ -44,7 +44,7 @@ class HostOrganizerStateScaffold extends StatelessWidget {
         rowCrossAxisAlignment: CrossAxisAlignment.start,
         actions: actions,
       ),
-      primaryRail: CatchTabRail<HostClubTab>(
+      primaryRail: CatchPageTabBar<HostClubTab>(
         groupKey: _hostClubTabRailKey,
         selected: selectedTab,
         selectionPosition: selectedTab.index.toDouble(),
@@ -192,7 +192,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
           rowCrossAxisAlignment: CrossAxisAlignment.start,
           actions: [signOutAction],
         ),
-        primaryRail: CatchTabControllerRail<HostClubTab>(
+        primaryRail: CatchPageTabBar<HostClubTab>.controlled(
           controller: _tabController,
           groupKey: _hostClubTabRailKey,
           options: _hostClubTabOptions(context),

@@ -13,15 +13,15 @@ class ProfileTabBar extends StatelessWidget
   final TabController controller;
 
   @override
-  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+  Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
 
   @override
   Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchTabRail.heightFor(context));
+      Size.fromHeight(CatchPageTabBar.heightFor(context));
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabControllerRail<SelfProfileTab>(
+    return CatchPageTabBar<SelfProfileTab>.controlled(
       controller: controller,
       options: [
         CatchOption(

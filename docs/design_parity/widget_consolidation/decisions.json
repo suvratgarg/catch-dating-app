@@ -7370,6 +7370,34 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:page-tab-navigation",
+      "patternFamilyId": "page-tab-navigation",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchPageTabBar",
+      "members": [
+        {
+          "name": "CatchTabRail",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchTabControllerRail",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchTopBarTabBar",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchTopBarTabLabel",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Owner-delegated Phase 4 semantic review supersedes the older separate top-bar/control-adapter decisions. Production uses one option renderer; page placement gets one API and a controlled recipe. Retire the unconsumed alternate renderer and label. Bottom navigation remains a distinct route-destination contract.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

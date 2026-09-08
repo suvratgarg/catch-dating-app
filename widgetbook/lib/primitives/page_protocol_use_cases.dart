@@ -160,7 +160,7 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
             ),
           ],
         );
-    final CatchPrimaryRail rail = CatchTabControllerRail<String>(
+    final CatchPrimaryRail rail = CatchPageTabBar<String>.controlled(
       controller: _tabs,
       options: const [
         CatchOption(value: 'records', label: 'Records'),

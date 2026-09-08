@@ -157,7 +157,7 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
           ),
         ],
       ),
-      primaryRail: CatchTabControllerRail<HostEventsView>(
+      primaryRail: CatchPageTabBar<HostEventsView>.controlled(
         controller: _tabs,
         groupKey: const ValueKey('host-events-tabs'),
         options: [

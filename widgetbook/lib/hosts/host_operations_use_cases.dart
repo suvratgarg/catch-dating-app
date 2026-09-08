@@ -357,7 +357,7 @@ Widget hostSavedAudiencesStates(BuildContext context) {
       ],
       child: CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const CatchTabRail<String>(
+        primaryRail: const CatchPageTabBar<String>(
           selected: 'audiences',
           options: [
             CatchOption(value: 'people', label: 'People'),

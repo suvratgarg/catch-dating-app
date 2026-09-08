@@ -607,7 +607,7 @@ class HostFormWorkspaceHeader extends StatelessWidget {
           ],
         ),
         gapH24,
-        CatchTabRail<HostFormWorkspaceView>(
+        CatchPageTabBar<HostFormWorkspaceView>(
           groupKey: const ValueKey('host-form-builder-tabs'),
           selected: selected,
           options: [

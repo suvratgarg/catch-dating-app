@@ -6943,10 +6943,10 @@ Widget catchOptionGroupItemContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchTabRail,
+  type: CatchPageTabBar,
   path: '[Core primitives]/Selection',
 )
-Widget catchTabRailContractStates(BuildContext context) {
+Widget catchPageTabBarContractStates(BuildContext context) {
   const hostOptions = [
     CatchOption(value: 'organizer', label: 'Organizer'),
     CatchOption(value: 'edit', label: 'Edit'),
@@ -6959,19 +6959,22 @@ Widget catchTabRailContractStates(BuildContext context) {
   ];
 
   return _ContractScreen(
-    title: 'CatchTabRail',
+    title: 'CatchPageTabBar',
     contractId: 'catch.tab_rail',
     states: const [
       'two-option',
       'four-option',
       'selected-middle',
       'operational',
+      'controlled-first',
+      'controlled-second',
+      'swipe-interpolated',
     ],
     children: [
       _StateCard(
         label: 'two-option',
         child: _FieldWidth(
-          child: CatchTabRail<String>(
+          child: CatchPageTabBar<String>(
             selected: 'edit',
             onChanged: _ignoreString,
             options: settingsOptions,
@@ -6981,7 +6984,7 @@ Widget catchTabRailContractStates(BuildContext context) {
       _StateCard(
         label: 'four-option',
         child: _FieldWidth(
-          child: CatchTabRail<String>(
+          child: CatchPageTabBar<String>(
             selected: 'organizer',
             onChanged: _ignoreString,
             options: hostOptions,
@@ -6991,7 +6994,7 @@ Widget catchTabRailContractStates(BuildContext context) {
       _StateCard(
         label: 'selected-middle',
         child: _FieldWidth(
-          child: CatchTabRail<String>(
+          child: CatchPageTabBar<String>(
             selected: 'insights',
             onChanged: _ignoreString,
             options: hostOptions,
@@ -7001,7 +7004,7 @@ Widget catchTabRailContractStates(BuildContext context) {
       _StateCard(
         label: 'operational',
         child: _FieldWidth(
-          child: CatchTabRail<String>(
+          child: CatchPageTabBar<String>(
             selected: 'room',
             onChanged: _ignoreString,
             variant: CatchOptionGroupVariant.operational,
@@ -7025,6 +7028,17 @@ Widget catchTabRailContractStates(BuildContext context) {
           ),
         ),
       ),
+      for (final (label, index, offset) in [
+        ('controlled-first', 0, 0.0),
+        ('controlled-second', 1, 0.0),
+        ('swipe-interpolated', 0, 0.5),
+      ])
+        _StateCard(
+          label: label,
+          child: _FieldWidth(
+            child: _PageTabBarControllerDemo(index: index, offset: offset),
+          ),
+        ),
     ],
   );
 }
@@ -8280,10 +8294,10 @@ Widget catchSliverContentWidthContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Controller-backed rail',
-  type: CatchTabControllerRail,
+  type: CatchPageTabBar,
   path: '[Core primitives]/Navigation',
 )
-Widget catchTabControllerRailContractStates(BuildContext context) {
+Widget catchPageTabBarControllerStates(BuildContext context) {
   return const _RootScreenContractUseCase();
 }
 
@@ -10898,7 +10912,7 @@ class _RootScreenPrimaryRailContractDemoState
         subtitle: 'Independent page scroll state',
       ),
       semanticsLabel: 'Root primary-rail contract preview',
-      primaryRail: CatchTabControllerRail<String>(
+      primaryRail: CatchPageTabBar<String>.controlled(
         controller: _controller,
         options: const [
           CatchOption(value: 'edit', label: 'Edit'),
@@ -10985,4 +10999,36 @@ class _SurfaceSpec extends StatelessWidget {
       ),
     );
   }
+}
+
+class _PageTabBarControllerDemo extends StatefulWidget {
+  const _PageTabBarControllerDemo({required this.index, required this.offset});
+  final int index;
+  final double offset;
+  @override
+  State<_PageTabBarControllerDemo> createState() =>
+      _PageTabBarControllerDemoState();
+}
+
+class _PageTabBarControllerDemoState extends State<_PageTabBarControllerDemo>
+    with SingleTickerProviderStateMixin {
+  late final TabController _controller = TabController(
+    length: 2,
+    initialIndex: widget.index,
+    vsync: this,
+  )..offset = widget.offset;
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CatchPageTabBar<String>.controlled(
+    controller: _controller,
+    options: const [
+      CatchOption(value: 'edit', label: 'Edit'),
+      CatchOption(value: 'preview', label: 'Preview'),
+    ],
+  );
 }

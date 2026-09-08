@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.18.0
+version: 1.19.0
 updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -430,7 +430,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchActionMenu`. Do not pass a body-style `CatchButton` directly into
   any top-bar `actions` slot.
 - Screen hierarchy follows one control per level. Shell destinations express
-  product-level navigation; pinned `CatchTabRail` / `CatchRootScreenScaffold.withPrimaryRail`
+  product-level navigation; pinned `CatchPageTabBar` / `CatchRootScreenScaffold.withPrimaryRail`
   tabs switch peer views within one destination. A small fixed set of terse,
   mutually-exclusive filters uses `CatchOptionGroup`; longer, numerous, or
   dynamic mutually-exclusive filters use `CatchSelectionMenu.control` so
@@ -459,7 +459,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   8 pt title-to-rail handoff, a minimum 44 pt iOS / 48 dp Android rail that
   grows with text scale, and the same 16 pt body start.
   `CatchInsets.pageBody`, `CatchInsets.primaryRailTitleBlock`, and
-  `CatchTabRail.minimumHeight` / `heightFor` own those values. Full bleed removes only the
+  `CatchPageTabBar.minimumHeight` / `heightFor` own those values. Full bleed removes only the
   outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep
   Consumer Chats and Host Inbox on the same 20 pt horizontal rhythm.
 - Every full-screen composition terminates in

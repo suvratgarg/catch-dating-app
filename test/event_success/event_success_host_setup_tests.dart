@@ -104,7 +104,7 @@ void _registerEventSuccessHostSetupTests() {
 
     expect(find.text('Setup'), findsWidgets);
     expect(find.byType(CatchOptionGroup<EventSuccessHostTab>), findsOneWidget);
-    expect(find.byType(CatchTabRail<EventSuccessHostTab>), findsOneWidget);
+    expect(find.byType(CatchPageTabBar<EventSuccessHostTab>), findsOneWidget);
     expect(find.text('Target attendees'), findsOneWidget);
     expect(find.text('How the room is grouped'), findsNothing);
     expect(find.text('Your goal for the event'), findsOneWidget);

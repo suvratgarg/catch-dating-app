@@ -8465,25 +8465,6 @@
             }
           },
           {
-            "id": "catch.top_bar.tab_bar",
-            "symbol": "CatchTopBarTabBar",
-            "summary": "PreferredSize tab segment used as CatchTopBar bottom chrome.",
-            "states": [
-              "material",
-              "cupertino",
-              "selected",
-              "overflow-label"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.top_bar",
-              "parentConceptId": "catch.top_bar",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.top_bar"
-            },
-            "file": "packages/catch_ui/lib/src/components/catch_top_bar_tab_bar.dart"
-          },
-          {
             "id": "catch.top_bar.action_group",
             "symbol": "CatchTopBarActionRow",
             "file": "packages/catch_ui/lib/src/components/catch_top_bar_action_row.dart",
@@ -8524,27 +8505,6 @@
               "conceptId": "catch.top_bar",
               "parentConceptId": "catch.top_bar",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.top_bar"
-            }
-          },
-          {
-            "id": "catch.top_bar.tab_label",
-            "symbol": "CatchTopBarTabLabel",
-            "file": "packages/catch_ui/lib/src/components/catch_top_bar_tab_label.dart",
-            "summary": "Selected and resting adaptive-tab label with Material Tab text, child or icon precedence and caller-widget fallback.",
-            "states": [
-              "selected",
-              "resting",
-              "text",
-              "child",
-              "icon",
-              "long-label"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.top_bar",
-              "parentConceptId": "catch.top_bar",
-              "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.top_bar"
             }
           }
@@ -11265,21 +11225,22 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchTabRail",
+      "name": "CatchPageTabBar",
       "status": "active",
       "kind": "composite",
-      "summary": "Platform-minimum, text-scaled preferred-size adapter over CatchOptionGroup with matching rendered and reserved geometry for underline or operational chrome.",
+      "summary": "Scaled page-tab placement over the canonical inline selection renderer; value and controller recipes share geometry, targets and selection semantics.",
       "dart": {
-        "symbol": "CatchTabRail",
-        "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
+        "symbol": "CatchPageTabBar",
+        "file": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
         "constructors": [
-          "CatchTabRail"
+          "CatchPageTabBar",
+          "CatchPageTabBar.controlled"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/TabRail",
+          "componentName": "Catch/PageTabBar",
           "componentUrl": null
         },
         "codeConnect": {
@@ -11288,7 +11249,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "TabRail",
+          "handoffName": "PageTabBar",
           "allowed": true
         }
       },
@@ -11298,7 +11259,8 @@
             "name": "selected",
             "type": "object",
             "required": true,
-            "dartType": "T"
+            "dartType": "T",
+            "notes": "Required for the value constructor; controlled derives the committed value from controller.index."
           },
           {
             "name": "onChanged",
@@ -11337,13 +11299,23 @@
             "default": false,
             "dartType": "bool",
             "notes": "Forwards the canonical option-group scrolling policy; overflow can still scroll when false."
+          },
+          {
+            "name": "controller",
+            "type": "object",
+            "required": false,
+            "dartType": "TabController?",
+            "notes": "Required by controlled. Caller-owned and never disposed by the component; options length must match and be nonzero."
           }
         ],
         "states": [
           "two-option",
           "four-option",
           "selected-middle",
-          "operational"
+          "operational",
+          "controlled-first",
+          "controlled-second",
+          "swipe-interpolated"
         ],
         "slots": [],
         "tokens": [
@@ -11359,31 +11331,12 @@
           "CatchOption",
           "CatchLayout.tabRailHeight",
           "CatchScaledPreferredSize",
-          "CatchTabRail.minimumHeight",
-          "CatchTabRail.minimumHeightFor",
-          "CatchTabRail.heightFor"
+          "CatchPageTabBar.minimumHeight",
+          "CatchPageTabBar.minimumHeightFor",
+          "CatchPageTabBar.heightFor"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.tab_rail.controller_rail",
-            "symbol": "CatchTabControllerRail",
-            "file": "packages/catch_ui/lib/src/components/catch_tab_controller_rail.dart",
-            "summary": "Binds a route-owned TabController to the canonical CatchTabRail, including pager interpolation.",
-            "states": [
-              "first-selected",
-              "second-selected",
-              "swipe-interpolated"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.option_group",
-              "parentConceptId": "catch.option_group",
-              "qualifier": "adapter",
-              "decisionRef": "concept-boundary:option-group-tab-rail"
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -11404,7 +11357,8 @@
         ],
         "notes": [
           "Use for app-bar bottom tabs. Use CatchOptionGroup directly for inline scope controls that are not PreferredSizeWidget app-bar bottoms.",
-          "preferredSize reports the variant-specific unscaled minimum; preferredSizeFor(context) and rendering share heightFor(context, variant). Operational chrome includes its existing 8-point inner vertical inset. Root adapters must forward these values: root validation rejects inconsistent minimum or scaled declarations."
+          "preferredSize reports the variant-specific unscaled minimum; preferredSizeFor(context) and rendering share heightFor(context, variant). Operational chrome includes its existing 8-point inner vertical inset. Root adapters must forward these values: root validation rejects inconsistent minimum or scaled declarations.",
+          "Use controlled for a caller-owned TabController. It preserves tap-to-page binding, continuous drag interpolation and committed selected semantics; changing controllers retains the same renderer and releases the old animation listener. The unused CatchTopBarTabBar and its label are retired."
         ]
       },
       "governance": {
@@ -11424,7 +11378,17 @@
         "decisionRef": "concept-boundary:option-group-tab-rail"
       },
       "surfaces": {
-        "flutter": "CatchTabRail"
+        "flutter": "CatchPageTabBar"
+      },
+      "level": "L3",
+      "roleNoun": "TabBar",
+      "naming": {
+        "useCase": "Page",
+        "comparedWith": [
+          "catch.tab_bar",
+          "catch.option_group"
+        ],
+        "reason": "Page peers occupy a text-scaled PreferredSize/root primary-rail slot and can track a pager. CatchTabBar owns product-level bottom destinations, drag contact, badges and safe-area chrome. The inline option parent supplies selection rendering without this placement protocol."
       }
     },
     {
@@ -12437,6 +12401,12 @@
       },
       "surfaces": {
         "flutter": "CatchTabBar"
+      },
+      "level": "L3",
+      "roleNoun": "TabBar",
+      "naming": {
+        "useCase": "",
+        "reason": "Canonical product-level destination navigation with committed route selection, drag contact preview, badges and platform-adaptive bottom chrome. Page peers use the distinct scaled page-tab placement contract."
       }
     },
     {

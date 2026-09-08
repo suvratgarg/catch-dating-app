@@ -3,12 +3,12 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_option_group_variant.dart';
+import 'package:catch_ui/src/components/catch_page_tab_bar.dart';
 import 'package:catch_ui/src/components/catch_primary_rail.dart';
 import 'package:catch_ui/src/components/catch_screen_header.dart';
 import 'package:catch_ui/src/components/catch_screen_top_bar.dart';
 import 'package:catch_ui/src/components/catch_status_strip.dart';
 import 'package:catch_ui/src/components/catch_status_strip_scope.dart';
-import 'package:catch_ui/src/components/catch_tab_rail.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_top_edge.dart';
@@ -156,7 +156,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
                         height: switch (primaryRail) {
                           final CatchScaledPreferredSize scaled =>
                             scaled.preferredSizeFor(context).height,
-                          _ => CatchTabRail.heightFor(context),
+                          _ => CatchPageTabBar.heightFor(context),
                         },
                         child: primaryRail,
                       ),
@@ -206,11 +206,11 @@ class CatchRootScreenScrollView extends StatelessWidget {
     // Canonical variants own their insets as well as their target floor.
     // Feature adapters must forward the same unscaled minimum, never restate
     // the old 44-point constant or substitute local geometry.
-    final variant = primaryRail is CatchTabRail
-        ? (primaryRail as CatchTabRail).variant
+    final variant = primaryRail is CatchPageTabBar
+        ? (primaryRail as CatchPageTabBar).variant
         : CatchOptionGroupVariant.label;
-    final expectedMinimum = CatchTabRail.minimumHeightFor(variant);
-    final expectedScaled = CatchTabRail.heightFor(context, variant: variant);
+    final expectedMinimum = CatchPageTabBar.minimumHeightFor(variant);
+    final expectedScaled = CatchPageTabBar.heightFor(context, variant: variant);
     final declaredScaled = switch (primaryRail) {
       final CatchScaledPreferredSize scaled =>
         scaled.preferredSizeFor(context).height,
@@ -231,8 +231,8 @@ class CatchRootScreenScrollView extends StatelessWidget {
         '(expected $expectedScaled).',
       ),
       ErrorHint(
-        'Use CatchTabRail or CatchTabControllerRail, or make the feature '
-        'adapter report CatchTabRail.minimumHeight. The root scaffold owns the '
+        'Use CatchPageTabBar, or make the feature '
+        'adapter report CatchPageTabBar.minimumHeight. The root scaffold owns the '
         'pinned extent; screens must not define local rail geometry.',
       ),
     ]);

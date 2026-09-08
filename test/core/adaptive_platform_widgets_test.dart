@@ -269,7 +269,7 @@ void main() {
     expect(result, isTrue);
   });
 
-  testWidgets('top bar tabs use a Cupertino segmented control on iOS', (
+  testWidgets('page tabs use the canonical selection renderer on iOS', (
     tester,
   ) async {
     await _withIosPlatform(() async {
@@ -278,20 +278,17 @@ void main() {
 
       await tester.pumpWidget(
         _wrap(
-          CatchTopBarTabBar(
+          CatchPageTabBar<int>.controlled(
             controller: controller,
-            tabs: const [
-              Tab(text: 'Dashboard'),
-              Tab(text: 'Activity'),
+            options: const [
+              CatchOption(value: 0, label: 'Dashboard'),
+              CatchOption(value: 1, label: 'Activity'),
             ],
           ),
         ),
       );
 
-      expect(
-        find.byType(CupertinoSlidingSegmentedControl<int>),
-        findsOneWidget,
-      );
+      expect(find.byType(CatchOptionGroup<int>), findsOneWidget);
       expect(find.byType(TabBar), findsNothing);
 
       await tester.tap(find.text('Activity'));

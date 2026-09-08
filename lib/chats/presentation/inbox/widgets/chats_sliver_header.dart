@@ -118,7 +118,7 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
       children: [
         topBar,
         if (widget.hostFilter != null)
-          CatchTabRail<HostInboxFilter>(
+          CatchPageTabBar<HostInboxFilter>(
             options: [
               CatchOption(
                 value: HostInboxFilter.all,

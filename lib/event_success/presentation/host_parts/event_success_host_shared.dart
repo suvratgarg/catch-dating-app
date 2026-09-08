@@ -14,7 +14,7 @@ class EventSuccessLiveWorkspacePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabRail<EventSuccessLiveWorkspace>(
+    return CatchPageTabBar<EventSuccessLiveWorkspace>(
       options: [
         CatchOption(
           value: EventSuccessLiveWorkspace.now,
@@ -52,7 +52,7 @@ class EventSuccessTabPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabRail<EventSuccessHostTab>(
+    return CatchPageTabBar<EventSuccessHostTab>(
       options: [
         for (final tab in EventSuccessHostTab.values)
           CatchOption(value: tab, label: tab.label(context.l10n)),

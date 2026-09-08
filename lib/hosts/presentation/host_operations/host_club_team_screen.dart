@@ -153,7 +153,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           ),
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
-          bottom: CatchTabControllerRail<HostTeamMode>(
+          bottom: CatchPageTabBar<HostTeamMode>.controlled(
             controller: _tabController,
             options: [
               CatchOption(

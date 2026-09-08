@@ -49,11 +49,11 @@ class ExploreFilterRail extends StatelessWidget
   final bool showJoinedOnly;
 
   @override
-  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+  Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
 
   @override
   Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchTabRail.heightFor(context));
+      Size.fromHeight(CatchPageTabBar.heightFor(context));
 
   static List<CatchOption<ExploreTimeFilter>> _timeOptions(
     ExploreDateStripState state,
@@ -70,7 +70,7 @@ class ExploreFilterRail extends StatelessWidget
     final effectiveDateStripState =
         dateStripState ??
         ExploreDateStripState.from(viewModel: null, l10n: context.l10n);
-    return CatchTabRail<ExploreTimeFilter>(
+    return CatchPageTabBar<ExploreTimeFilter>(
       selected: filters.timeFilter,
       onChanged: onTimeFilterSelected,
       options: _timeOptions(effectiveDateStripState),

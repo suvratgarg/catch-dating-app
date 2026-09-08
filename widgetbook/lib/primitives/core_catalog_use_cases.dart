@@ -1005,29 +1005,32 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchTopBarTabBar,
+  name: 'App-bar placement',
+  type: CatchPageTabBar,
   path: '[Core catalog]/Navigation',
 )
-Widget catchTopBarTabBarCatalogStates(BuildContext context) {
+Widget catchPageTabBarAppBarStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBarTabBar',
-    catalogId: 'core.widgets.catch_top_bar_tab_bar',
+    title: 'CatchPageTabBar',
+    catalogId: 'catch.tab_rail',
     children: [
       _StateCard(
         label: 'inside CatchTopBar',
         child: DefaultTabController(
           length: 3,
-          child: CatchTopBar(
-            title: 'Explore',
-            leadingType: CatchTopBarLeading.none,
-            surface: true,
-            bottom: const CatchTopBarTabBar(
-              tabs: [
-                Tab(text: 'Tonight'),
-                Tab(text: 'Week'),
-                Tab(text: 'Saved'),
-              ],
+          child: Builder(
+            builder: (context) => CatchTopBar(
+              title: 'Explore',
+              leadingType: CatchTopBarLeading.none,
+              surface: true,
+              bottom: CatchPageTabBar<int>.controlled(
+                controller: DefaultTabController.of(context),
+                options: const [
+                  CatchOption(value: 0, label: 'Tonight'),
+                  CatchOption(value: 1, label: 'Week'),
+                  CatchOption(value: 2, label: 'Saved'),
+                ],
+              ),
             ),
           ),
         ),

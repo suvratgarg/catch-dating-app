@@ -23,7 +23,7 @@ Widget scaledHeaderReservationStates(BuildContext context) =>
             size: const Size(360, 300),
             child: Builder(
               builder: (context) {
-                final rail = CatchTabRail<String>(
+                final rail = CatchPageTabBar<String>(
                   selected: 'people',
                   options: const [
                     CatchOption(value: 'people', label: 'People'),

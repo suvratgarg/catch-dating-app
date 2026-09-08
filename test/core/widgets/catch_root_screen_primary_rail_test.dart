@@ -131,7 +131,7 @@ void main() {
     final bodyRect = tester.getRect(
       find.byKey(const ValueKey('root-page-frame')),
     );
-    expect(railRect.height, CatchTabRail.heightFor(tester.element(rail)));
+    expect(railRect.height, CatchPageTabBar.heightFor(tester.element(rail)));
     expect(railRect.height, greaterThan(CatchLayout.tabRailHeight));
     expect(
       bodyRect.top - railRect.bottom,
@@ -266,7 +266,7 @@ void main() {
         error.toString(),
         contains(
           'CatchRootScreenScaffold requires a '
-          '${CatchTabRail.minimumHeight}-point primary rail.',
+          '${CatchPageTabBar.minimumHeight}-point primary rail.',
         ),
       );
       expect(error.toString(), contains('declared a preferred height of 52.0'));
@@ -336,7 +336,7 @@ Widget _wrap({
     home: CatchRootScreenScaffold.withPrimaryRail(
       header: const CatchRootScreenHeader.title(title: 'Workspace'),
       primaryRail: useCanonicalRail
-          ? const CatchTabRail<int>(
+          ? const CatchPageTabBar<int>(
               key: ValueKey('root-page-rail'),
               selected: 0,
               options: [CatchOption(value: 0, label: 'People')],
@@ -374,7 +374,7 @@ class _TestPrimaryRail extends StatelessWidget implements CatchPrimaryRail {
 
   @override
   Size get preferredSize =>
-      Size.fromHeight(height ?? CatchTabRail.minimumHeight);
+      Size.fromHeight(height ?? CatchPageTabBar.minimumHeight);
 
   @override
   Widget build(BuildContext context) => SizedBox(height: preferredSize.height);

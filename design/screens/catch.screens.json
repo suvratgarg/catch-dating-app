@@ -10585,7 +10585,7 @@
           "nextAction": "Compare tab rail placement against the canonical Host team reference once exported.",
           "previewIds": [
             "HostClubTeamScreen/Route states",
-            "CatchTabRail/Contract states"
+            "CatchPageTabBar/Contract states"
           ]
         },
         {
@@ -10693,7 +10693,7 @@
           ],
           "previewIds": [
             "HostClubTeamScreen/Route states",
-            "CatchTabRail/Contract states"
+            "CatchPageTabBar/Contract states"
           ]
         },
         {
@@ -10720,7 +10720,7 @@
             "HostClubTeamScreen/Route states",
             "HostTeamProfileSection/Profile summary states",
             "HostTeamHostedClubsSection/Clubs states",
-            "CatchTabRail/Contract states"
+            "CatchPageTabBar/Contract states"
           ]
         },
         {
@@ -10852,14 +10852,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CatchTabRail"
+              "CatchPageTabBar"
             ],
             "flutter": {
               "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
-              "symbol": "CatchTabRail"
+              "symbol": "CatchPageTabBar"
             },
             "currentOwner": "HostClubsScaffold",
-            "targetOwner": "shared CatchTabRail",
+            "targetOwner": "shared CatchPageTabBar",
             "dependencies": [
               "catch.tab_rail"
             ],
@@ -10870,7 +10870,7 @@
               "long_labels",
               "text_scale"
             ],
-            "migration": "Keep Edit as the default route tab and selection as screen state. Loaded and route-level loading, auth, error, and empty branches retain the same pinned Edit, Insights, and Preview rail through CatchRootScreenScaffold.withPrimaryRail and the shared CatchTabRail primitive.",
+            "migration": "Keep Edit as the default route tab and selection as screen state. Loaded and route-level loading, auth, error, and empty branches retain the same pinned Edit, Insights, and Preview rail through CatchRootScreenScaffold.withPrimaryRail and the shared CatchPageTabBar primitive.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -11214,9 +11214,9 @@
             ],
             "flutter": {
               "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
-              "symbol": "CatchTabRail"
+              "symbol": "CatchPageTabBar"
             },
-            "currentOwner": "HostClubTeamScreen + CatchTabRail",
+            "currentOwner": "HostClubTeamScreen + CatchPageTabBar",
             "targetOwner": "route-owned top bar with shared tab rail",
             "dependencies": [
               "catch.top_bar",
@@ -11227,10 +11227,10 @@
               "sign_out_action",
               "text_scale_2"
             ],
-            "migration": "Host team tab rail uses shared CatchTabRail, and the pushed route uses explicit CatchTopBar back navigation enforced by screen_top_bar_contracts.json. Remaining work is deciding whether tab/action state belongs in HostTeamWorkspaceState or stays route-local until broader account-action policy is settled.",
+            "migration": "Host team tab rail uses shared CatchPageTabBar, and the pushed route uses explicit CatchTopBar back navigation enforced by screen_top_bar_contracts.json. Remaining work is deciding whether tab/action state belongs in HostTeamWorkspaceState or stays route-local until broader account-action policy is settled.",
             "previewIds": [
               "HostClubTeamScreen/Route states",
-              "CatchTabRail/Contract states"
+              "CatchPageTabBar/Contract states"
             ]
           },
           {

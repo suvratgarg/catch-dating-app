@@ -102,7 +102,7 @@ void main() {
           home: const CatchScreenScaffold.workspace(
             appBar: CatchTopBar(
               title: 'Customers',
-              bottom: CatchTabRail<int>(
+              bottom: CatchPageTabBar<int>(
                 selected: 0,
                 options: [
                   CatchOption(value: 0, label: 'Overview'),
@@ -115,10 +115,10 @@ void main() {
         ),
       );
       expect(tester.takeException(), isNull);
-      final rail = find.byType(CatchTabRail<int>);
+      final rail = find.byType(CatchPageTabBar<int>);
       expect(
         tester.getSize(rail).height,
-        CatchTabRail.heightFor(tester.element(rail)),
+        CatchPageTabBar.heightFor(tester.element(rail)),
       );
       expect(
         tester.getRect(rail).bottom,

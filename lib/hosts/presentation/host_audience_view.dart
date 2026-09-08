@@ -83,11 +83,11 @@ class HostAudienceTabRail extends StatelessWidget
   final ValueChanged<HostAudienceView> onChanged;
 
   @override
-  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+  Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
 
   @override
   Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchTabRail.heightFor(context));
+      Size.fromHeight(CatchPageTabBar.heightFor(context));
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class HostAudienceTabRail extends StatelessWidget
         AlwaysStoppedAnimation<double>(selectionPosition!);
     return AnimatedBuilder(
       animation: animation,
-      builder: (context, _) => CatchTabRail<HostAudienceView>(
+      builder: (context, _) => CatchPageTabBar<HostAudienceView>(
         groupKey: const ValueKey<String>('host-audience-view-tabs'),
         selected: selected,
         selectionPosition: animation.value + animationOffset,

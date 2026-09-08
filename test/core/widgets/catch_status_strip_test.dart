@@ -70,7 +70,7 @@ void main() {
               expect(rehearsal.top, rail.bottom);
               expect(
                 rail.height,
-                CatchTabRail.heightFor(tester.element(find.byKey(_rail))),
+                CatchPageTabBar.heightFor(tester.element(find.byKey(_rail))),
               );
             }
             expect(tester.takeException(), isNull);
@@ -393,7 +393,7 @@ Widget _app({
                               title: 'Organizer',
                             ),
                             controller: controller,
-                            primaryRail: CatchTabControllerRail<int>(
+                            primaryRail: CatchPageTabBar<int>.controlled(
                               key: _rail,
                               controller: tabs,
                               options: const [

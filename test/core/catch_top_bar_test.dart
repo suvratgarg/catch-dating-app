@@ -724,10 +724,11 @@ void main() {
             appBar: CatchTopBar(
               title: 'Profile',
               showBackButton: false,
-              bottom: const CatchTopBarTabBar(
-                tabs: [
-                  Tab(text: 'Profile'),
-                  Tab(text: 'Preview'),
+              bottom: const CatchPageTabBar<int>(
+                selected: 0,
+                options: [
+                  CatchOption(value: 0, label: 'Profile'),
+                  CatchOption(value: 1, label: 'Preview'),
                 ],
               ),
               actions: [

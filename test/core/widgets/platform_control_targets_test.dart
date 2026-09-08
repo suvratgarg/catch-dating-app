@@ -231,7 +231,7 @@ void main() {
             tester,
             SizedBox(
               width: 300,
-              child: CatchTabRail<int>(
+              child: CatchPageTabBar<int>(
                 variant: variant,
                 selected: 1,
                 options: const [
@@ -243,8 +243,8 @@ void main() {
             ),
             scale: scale,
           );
-          final rail = find.byType(CatchTabRail<int>);
-          final widget = tester.widget<CatchTabRail<int>>(rail);
+          final rail = find.byType(CatchPageTabBar<int>);
+          final widget = tester.widget<CatchPageTabBar<int>>(rail);
           expect(
             tester.getSize(rail).height,
             widget.preferredSizeFor(tester.element(rail)).height,

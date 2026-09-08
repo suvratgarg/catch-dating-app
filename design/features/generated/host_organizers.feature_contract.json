@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:83bcd3c4c0bc484327767c0075b50e616522894c194a4f74fdc52cd76cf7b22e",
-  "resolvedDigest": "sha256:96f49fdd617d5b708230128ceb01843a4eca09d03d844eb0e292a56a9ad42b2f",
+  "resolvedDigest": "sha256:14900c135d3c26246b7371adbf530355929168d7cd8c73723c1548b4c3e56305",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -4097,7 +4097,7 @@
             "captureIds": [],
             "previewIds": [
               "HostClubTeamScreen/Route states",
-              "CatchTabRail/Contract states"
+              "CatchPageTabBar/Contract states"
             ],
             "tests": []
           },
@@ -4704,7 +4704,7 @@
             ],
             "previewIds": [
               "HostClubTeamScreen/Route states",
-              "CatchTabRail/Contract states"
+              "CatchPageTabBar/Contract states"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -4864,7 +4864,7 @@
               "HostClubTeamScreen/Route states",
               "HostTeamProfileSection/Profile summary states",
               "HostTeamHostedClubsSection/Clubs states",
-              "CatchTabRail/Contract states"
+              "CatchPageTabBar/Contract states"
             ],
             "tests": []
           },
@@ -5323,10 +5323,11 @@
             "id": "catch.tab_rail",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchTabRail",
-              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
+              "symbol": "CatchPageTabBar",
+              "file": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
               "constructors": [
-                "CatchTabRail"
+                "CatchPageTabBar",
+                "CatchPageTabBar.controlled"
               ]
             }
           },
@@ -5354,7 +5355,7 @@
           }
         ],
         "previews": [
-          "CatchTabRail/Contract states",
+          "CatchPageTabBar/Contract states",
           "HostClubEventDefaultsScreen/Owner loaded",
           "HostClubInsightsPane/Insights scorecard states",
           "HostClubLiveGuideScreen/Owner loaded",

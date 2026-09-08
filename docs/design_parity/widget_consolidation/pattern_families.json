@@ -2379,6 +2379,55 @@
           "rationale": "Replace duplicated group selection and notification code with described; the enclosing field still controls saving, close delay and disclosure."
         }
       ]
+    },
+    {
+      "id": "page-tab-navigation",
+      "title": "One renderer for page tabs",
+      "intent": "Page-tab value selection and pager binding share one scaled placement API.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.tab_rail",
+      "qualityReference": "CatchPageTabBar",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "No production visual change: preserve the option renderer, underline interpolation, scaled target geometry, operational shell and nearest horizontal reveal.",
+        "The unused top-bar tab preview now demonstrates canonical page tabs; its alternate Material/Cupertino renderer and label preview are removed. Neither had a production caller."
+      ],
+      "members": [
+        {
+          "symbol": "CatchPageTabBar",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "PreferredSize page-peer placement is distinct from product bottom navigation and inline option selection; controlled shares the value renderer and keeps route state caller-owned."
+        },
+        {
+          "symbol": "CatchTabRail",
+          "disposition": "unify",
+          "target": "CatchPageTabBar",
+          "preview": "not-applicable",
+          "rationale": "Name the page navigation responsibility with the closed TabBar role; preserve its production renderer."
+        },
+        {
+          "symbol": "CatchTabControllerRail",
+          "disposition": "unify",
+          "target": "CatchPageTabBar",
+          "preview": "not-applicable",
+          "rationale": "Controller binding is a named recipe of the same placement and rendering contract."
+        },
+        {
+          "symbol": "CatchTopBarTabBar",
+          "disposition": "unify",
+          "target": "CatchPageTabBar",
+          "preview": "not-applicable",
+          "rationale": "Zero production callers; same page-tab job with a second renderer. Keep the app-bar example using the canonical scrolling and scaled geometry."
+        },
+        {
+          "symbol": "CatchTopBarTabLabel",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "Only anatomy of the retired duplicate; canonical options own complete labels, disabled reasons and scaled target semantics."
+        }
+      ]
     }
   ]
 }

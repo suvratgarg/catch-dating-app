@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "3bd3441fa33c4a58e9775e092ed312bc7b03b2ceaf39dd59aed3df41b0baddd0",
+  "sourceDigest": "916878c2b13d4a751845d8c173716d1cf225fc83abc8961d0f855249ecbb43c9",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "3bd3441fa33c4a58e9775e092ed312bc7b03b2ceaf39dd59aed3df41b0baddd0",
-    "contractDigest": "3bd3441fa33c4a58e9775e092ed312bc7b03b2ceaf39dd59aed3df41b0baddd0"
+    "digest": "916878c2b13d4a751845d8c173716d1cf225fc83abc8961d0f855249ecbb43c9",
+    "contractDigest": "916878c2b13d4a751845d8c173716d1cf225fc83abc8961d0f855249ecbb43c9"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "5ff90f3f31e0bad95be9c8dfb9beab3136f18e75ad4ceb6f005a398fca1b28e5",
+    "handoffRequestDigest": "b9d2fb72350daab7dd6244aab4d67103d6e302d73649faca3ba75c98f45785ad",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 77,
-    "publicClassCount": 259,
+    "publicClassCount": 256,
     "conceptCount": 69,
-    "memberCount": 172,
-    "membersPerConcept": 2.49,
+    "memberCount": 169,
+    "membersPerConcept": 2.45,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 69,
-      "member": 172,
+      "member": 169,
       "screen": 15
     },
     "collisionCount": 37,
@@ -313,8 +313,7 @@
           "CatchOption",
           "CatchOptionGroup",
           "CatchOptionGroupItem",
-          "CatchTabControllerRail",
-          "CatchTabRail"
+          "CatchPageTabBar"
         ]
       },
       {
@@ -469,9 +468,7 @@
           "CatchSliverHeader",
           "CatchTopBar",
           "CatchTopBarActionRow",
-          "CatchTopBarPrimaryButton",
-          "CatchTopBarTabBar",
-          "CatchTopBarTabLabel"
+          "CatchTopBarPrimaryButton"
         ]
       },
       {
@@ -1500,7 +1497,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "cad890b8123c0ad36c6fc23e4314ec47430606e2b1f38183d5a439605d77076e"
+      "contractDigest": "e8403b6e67c7a0656d986766f66eb4fb6c5477f2ad6309cae4446c65d084ad24"
     },
     {
       "contractId": "catch.privacy_badge",
@@ -1890,9 +1887,9 @@
       "contractId": "catch.tab_rail",
       "conceptRole": "member",
       "conceptId": "catch.option_group",
-      "dartSymbol": "CatchTabRail",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
-      "figmaName": "Catch/TabRail",
+      "dartSymbol": "CatchPageTabBar",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
+      "figmaName": "Catch/PageTabBar",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},
@@ -1908,15 +1905,15 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 3,
-      "figmaExpectedPropertyDigest": "16722a6554205114f042dfa5aaddc1be1be8060a31f26f63a538749c51810f0d",
+      "figmaExpectedPropertyDigest": "d39eaced7d8c62165e0d6dacf529d112811b46c2d2fc16b84272f23555a03cb2",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "TabRail",
+      "claudeHandoffName": "PageTabBar",
       "claudeAllowed": true,
-      "contractDigest": "adff2123a965961229a3ae4891262a0987a3228ea4bf784b6a5a02e9460a40d0"
+      "contractDigest": "b193fc4be5ef638b55c209b77053c2dc104ac7e3569871733a4773a8ead64770"
     },
     {
       "contractId": "catch.search_field",

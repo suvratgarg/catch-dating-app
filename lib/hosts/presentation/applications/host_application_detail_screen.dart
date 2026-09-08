@@ -146,7 +146,7 @@ class _HostApplicationDetailScreenState
                   style: CatchTextStyles.supporting(context),
                 ),
                 gapH24,
-                CatchTabRail<bool>(
+                CatchPageTabBar<bool>(
                   options: [
                     CatchOption(
                       value: false,

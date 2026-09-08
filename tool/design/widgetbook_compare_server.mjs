@@ -1942,7 +1942,7 @@ function buildCandidates() {
       recommended: "catch.tab_control",
       tags: ["tabs", "selection"],
       names: [
-        "CatchTopBarTabBar",
+        "CatchPageTabBar",
         "HostSettingsTabRail",
         "HostClubTabRail",
         "EventSuccessTabPicker",
