@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import type {EventAssistanceGuestViewCallableResponse as GuestView} from
@@ -50,7 +51,7 @@ export class GuestAssistanceStore {
   ): Promise<Guest> {
     const guestId = guestIdentity(context, attendeeId);
     requireDocumentId(operationId);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const reference = this.db.collection(guestCollections.guests)
         .doc(guestId);
       const snapshot = await tx.get(reference);
@@ -88,7 +89,7 @@ export class GuestAssistanceStore {
   async publishMessage(
     value: unknown, expectedThreadRevision: number | null
   ): Promise<Thread> {
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const prepared = await prepareGuestMessagePublication(this.db, tx,
         value, expectedThreadRevision, () => this.now());
       prepared.commit();
@@ -103,7 +104,7 @@ export class GuestAssistanceStore {
     requireDocumentId(threadId);
     requireDocumentId(operationId);
     const linkId = operationContentHash([threadId, operationId]).slice(0, 32);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const reference = this.db.collection(guestCollections.grants).doc(linkId);
       const [threadSnap, grantSnap] = await Promise.all([
         tx.get(this.db.collection(guestCollections.threads).doc(threadId)),
@@ -164,7 +165,7 @@ export class GuestAssistanceStore {
 
   async revokeLink(linkId: string): Promise<void> {
     assertLinkId(linkId);
-    await this.db.runTransaction(async (tx) => {
+    await transact(this.db, async (tx) => {
       const reference = this.db.collection(guestCollections.grants).doc(linkId);
       const grant = parseGrant((await tx.get(reference)).data());
       if (grant.revokedAt === null) {
@@ -174,12 +175,12 @@ export class GuestAssistanceStore {
   }
 
   async getView(linkId: string, secret: string): Promise<GuestView> {
-    return this.db.runTransaction(async (tx) =>
+    return transact(this.db, async (tx) =>
       this.project(await this.resolve(tx, linkId, secret), this.now()));
   }
 
   async submit(input: Submission): Promise<SubmitResult> {
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const resolved = await this.resolve(tx, input.linkId, input.secret);
       const {message, guest, grant} = resolved;
       const now = this.now();

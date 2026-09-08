@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import type {Firestore} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {operationContentHash} from "../../operations/durableActions";
@@ -25,7 +26,7 @@ export class LiveAssistanceEnrollmentStore {
     binding: RuntimeBinding): Promise<EnrollmentResult> {
     const frozen = structuredClone({context, attendeeId, binding});
     const guestId = guestIdentity(frozen.context, frozen.attendeeId);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const now = this.clock();
       const authority = await readRuntimeConfigAuthority(this.db, tx,
         frozen.context, frozen.binding, now);

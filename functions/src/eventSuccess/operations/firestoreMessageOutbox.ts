@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import type {
   DocumentReference, Firestore, Transaction,
 } from "firebase-admin/firestore";
@@ -46,7 +47,7 @@ export class FirestoreMessageOutbox {
   async enqueue(value: unknown): Promise<MessageRecord> {
     const intent = structuredClone(parseMessageIntent(value));
     const reference = this.reference(assistanceMessageId(intent));
-    return this.db.runTransaction(async (transaction) => {
+    return transact(this.db, async (transaction) => {
       const snapshot = await transaction.get(reference);
       if (snapshot.exists) {
         const existing = parseMessageRecord(snapshot.data());
@@ -75,7 +76,7 @@ export class FirestoreMessageOutbox {
   async reserve(messageId: string): Promise<{
     record: MessageRecord; decision: DeliveryDecision;
   }> {
-    return this.db.runTransaction(async (transaction) => {
+    return transact(this.db, async (transaction) => {
       const record = await this.read(transaction, messageId);
       const facts = await this.readFacts(transaction, record.intent,
         this.now(record.updatedAt));
@@ -110,7 +111,7 @@ export class FirestoreMessageOutbox {
     messageId: string, attemptId: string,
     prepareResource?: PrepareDispatchResource<T>
   ): Promise<PermitResult<T>> {
-    return this.db.runTransaction(async (transaction) => {
+    return transact(this.db, async (transaction) => {
       const record = await this.read(transaction, messageId);
       const facts = await this.readFacts(transaction, record.intent,
         this.now(record.updatedAt));
@@ -149,7 +150,7 @@ export class FirestoreMessageOutbox {
   /** Only for a worker that proves permit expiry prevented all provider I/O. */
   async recordExpiredBeforeSend(permit: LiveDispatchPermit):
     Promise<MessageRecord> {
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const record = await this.read(tx, permit.messageId);
       const attempt = record.attempts.find((a) =>
         a.attemptId === permit.attempt.attemptId);
@@ -179,7 +180,7 @@ export class FirestoreMessageOutbox {
   async recordReceipt(
     messageId: string, receipt: VerifiedDeliveryReceipt
   ) {
-    return this.db.runTransaction(async (transaction) => {
+    return transact(this.db, async (transaction) => {
       const record = await this.read(transaction, messageId);
       const now = this.now(record.updatedAt);
       if (receipt.receivedAt > now) throw new Error("Future provider receipt");
@@ -210,7 +211,7 @@ export class FirestoreMessageOutbox {
     if (lifecycle !== "cancelled" && lifecycle !== "superseded") {
       throw new Error("Invalid message closure");
     }
-    return this.db.runTransaction(async (transaction) => {
+    return transact(this.db, async (transaction) => {
       const record = await this.read(transaction, messageId);
       if (record.lifecycle === lifecycle) return record;
       if (record.lifecycle !== "active" ||

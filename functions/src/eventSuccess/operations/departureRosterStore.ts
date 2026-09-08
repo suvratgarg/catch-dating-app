@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore} from "firebase-admin/firestore";
 import type {EventAssistanceDepartureRosterCallableResponse as Response} from
@@ -21,7 +22,7 @@ export class EventDepartureRosterStore {
       throw new HttpsError("invalid-argument",
         "Invalid departure roster scope.");
     }
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       // Authorize before looking up any selected guest.
       const access = await requireGroupPermission(this.db, tx, input.context,
         input.groupId, actorUid, "readProgress", this.clock);

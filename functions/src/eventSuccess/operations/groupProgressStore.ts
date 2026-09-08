@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
@@ -43,7 +44,7 @@ export class EventGroupProgressStore {
     if (!validateGetEventAssistanceGroupProgressCallablePayload(input)) {
       throw new HttpsError("invalid-argument", "Invalid group progress scope.");
     }
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, input.context, input.groupId);
       return response("read", state);
     });
@@ -62,7 +63,7 @@ export class EventGroupProgressStore {
     const hash = operationContentHash([actorUid, input]);
     const receiptId = "progress-action:" + operationContentHash([
       context, command.payload.groupId, command.operationId]);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, context,
         command.payload.groupId, "confirmDeparture");
       const receiptRef = this.db.collection(PROGRESS_RECEIPTS).doc(receiptId);

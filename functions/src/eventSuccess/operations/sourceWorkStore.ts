@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {randomUUID} from "node:crypto";
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
@@ -47,7 +48,7 @@ export class AssistanceSourceWorkStore {
 
   async enqueue(input: SourceWorkInput) {
     const frozen = structuredClone(input);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const proposed = newSourceWorkRecords(frozen, this.clock());
       const runRef = this.db.collection(operationCollections.runs)
         .doc(proposed.run.runId);
@@ -66,7 +67,7 @@ export class AssistanceSourceWorkStore {
   }
 
   get(workItemId: string) {
-    return this.db.runTransaction((tx) => this.read(tx, workItemId));
+    return transact(this.db, (tx) => this.read(tx, workItemId));
   }
 
   async hasTargets(scope: SourceWork["scope"], occurredAt = this.clock()) {
@@ -232,7 +233,7 @@ export class AssistanceSourceWorkStore {
 
   private async checkpoint(previous: Records, payload: SourceWork,
     lease: OperationLease) {
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const current = await this.read(tx, previous.item.workItemId);
       if (current.item.revision !== previous.item.revision ||
           operationContentHash(current) !== operationContentHash(previous)) {

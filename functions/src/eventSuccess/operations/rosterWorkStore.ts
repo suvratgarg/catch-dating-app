@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {randomUUID} from "node:crypto";
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
@@ -41,7 +42,7 @@ export class AssistanceRosterWorkStore {
   /** Binds a source delivery to the current saved manager configuration. */
   async enqueueCurrent(input: Omit<RosterWorkInput, "runtimeBinding">) {
     const frozen = structuredClone(input);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const now = this.clock();
       const id = runtimeConfigId(frozen.scope.context);
       if (frozen.source.collection === "eventAssistanceRuntimeConfigs" &&
@@ -78,7 +79,7 @@ export class AssistanceRosterWorkStore {
   }
 
   get(workItemId: string) {
-    return this.db.runTransaction((tx) => this.read(tx, workItemId));
+    return transact(this.db, (tx) => this.read(tx, workItemId));
   }
 
   async listDue(limit: number) {
@@ -124,7 +125,7 @@ export class AssistanceRosterWorkStore {
       return {...payload, checkpoint: {...payload.checkpoint,
         phase: "expired" as const, dueAt: null, stopReason: null}};
     }
-    const authority = await this.db.runTransaction((tx) =>
+    const authority = await transact(this.db, (tx) =>
       readRuntimeConfigAuthority(this.db, tx, payload.scope.context,
         payload.runtimeBinding, this.clock()));
     if (authority.kind !== "ready") return stopped(payload, authority.reason);
@@ -182,7 +183,7 @@ export class AssistanceRosterWorkStore {
 
   private async checkpoint(previous: Records, payload: RosterWork,
     lease: OperationLease) {
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const current = await this.read(tx, previous.item.workItemId);
       if (current.item.revision !== previous.item.revision ||
           operationContentHash(current) !== operationContentHash(previous)) {

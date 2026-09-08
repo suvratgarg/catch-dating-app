@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
 import {OperationLeaseProof, operationActionId, operationContentHash} from
@@ -43,7 +44,7 @@ export class LiveAssistanceWorkStore {
   async start(input: Pick<LiveWork,
     "scope" | "options" | "expiresAt" | "maxEvaluations" | "runtimeBinding">) {
     const frozen = structuredClone(input);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const now = this.clock();
       const payload = parseLiveWork({schemaVersion: 1, kind: "liveLateJoin",
         ...frozen, checkpoint: {dueAt: Math.min(now, frozen.expiresAt),
@@ -94,7 +95,7 @@ export class LiveAssistanceWorkStore {
   }
 
   async get(workItemId: string) {
-    return this.db.runTransaction((tx) => this.read(tx, workItemId));
+    return transact(this.db, (tx) => this.read(tx, workItemId));
   }
 
   /** Bounded discovery. Execution re-reads and fences every returned id. */
@@ -161,7 +162,7 @@ export class LiveAssistanceWorkStore {
       action.kind === "wake" ? "wake:" + operationContentHash(action.signalId) :
         "rebind:" + operationContentHash(action.binding);
     const inputHash = operationContentHash([workItemId, key]);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const records = await this.read(tx, workItemId);
       const {run, item, payload} = records;
       const actionId = operationActionId(run.runId, workItemId, key);

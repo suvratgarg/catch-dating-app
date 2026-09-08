@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import {FieldPath} from "firebase-admin/firestore";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
@@ -88,7 +89,7 @@ export class EventAssistanceCasesStore {
     const receiptId = "case-action:" + operationContentHash([
       context, payload.caseId, command.operationId]);
     const requestHash = operationContentHash([actorUid, input]);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const {organizer, event} = await this.access(tx, actorUid, context);
       assertCommandRole(command, ["eventLead"]);
       const caseRef = this.db.collection(guestCollections.cases)

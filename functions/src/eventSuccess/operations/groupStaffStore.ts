@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Firestore, Timestamp, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
@@ -30,14 +31,14 @@ export class EventGroupStaffStore {
     private readonly clock: () => number = Date.now) {}
 
   async authorizeManager(actorUid: string, scope: StaffScope): Promise<void> {
-    await this.db.runTransaction(async (tx) => {
+    await transact(this.db, async (tx) => {
       await this.source(tx, actorUid, scope);
     });
   }
 
   async get(actorUid: string, target: StaffIdentity,
     scope: StaffScope): Promise<Response> {
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, target, scope);
       return response("read", state);
     });
@@ -53,7 +54,7 @@ export class EventGroupStaffStore {
     const requestHash = operationContentHash([actorUid, target.uid, input]);
     const receiptId = "staff-action:" + operationContentHash([
       scope, target.uid, input.requestId]);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, target, scope);
       const receiptRef = this.db.collection(STAFF_RECEIPTS).doc(receiptId);
       const receipt = (await tx.get(receiptRef)).data();

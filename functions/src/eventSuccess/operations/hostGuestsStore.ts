@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {DocumentSnapshot, Firestore} from
   "firebase-admin/firestore";
@@ -38,7 +39,7 @@ export class EventAssistanceHostGuestsStore {
         "Invalid assistance guest scope.");
     }
     const input = structuredClone(value);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       // Check manager access before reading another organizer's roster/work.
       const organizer = (await tx.get(this.db.collection("organizers")
         .doc(input.context.organizerId))).data();

@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
@@ -36,7 +37,7 @@ export class EventAssistanceSettingsStore {
       throw new HttpsError("invalid-argument",
         "Invalid assistance setting scope.");
     }
-    return this.db.runTransaction(async (tx) =>
+    return transact(this.db, async (tx) =>
       response("read", await this.read(tx, actorUid, input)));
   }
 
@@ -50,7 +51,7 @@ export class EventAssistanceSettingsStore {
     const requestHash = operationContentHash([actorUid, input]);
     const receiptId = "setting-action:" + operationContentHash([
       input.context, input.groupId, input.workflowKind, input.requestId]);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, input);
       const receiptRef = this.db.collection(SETTING_RECEIPTS).doc(receiptId);
       const receipt = (await tx.get(receiptRef)).data();

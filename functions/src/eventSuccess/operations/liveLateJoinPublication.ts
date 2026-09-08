@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {guestCollections, parseThread, requireDocumentId,
@@ -89,7 +90,7 @@ export class LiveLateJoinPublisher {
 
   async publish(scope: LateJoinPublicationScope,
     options: LateJoinPublicationOptions) {
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const result = await prepareLiveLateJoinPublication(this.db, tx,
         scope, options, this.clock);
       if (result.kind !== "prepared") return result;

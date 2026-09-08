@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {createHash} from "node:crypto";
 import {getFirestore, Firestore, Transaction} from "firebase-admin/firestore";
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
@@ -51,7 +52,7 @@ export class EventWhatsappWebhookProcessor {
     if (!/^omwe_[a-f0-9]{48}$/.test(eventId) || eventId.length !== 53) {
       return {kind: "rejected", reason: "unavailable"};
     }
-    const initial = await this.db.runTransaction((tx) =>
+    const initial = await transact(this.db, (tx) =>
       this.read(tx, eventId));
     if (!initial) return {kind: "rejected", reason: "unavailable"};
     if (!isEventAssistanceWhatsappEvent(initial.event)) {
@@ -81,7 +82,7 @@ export class EventWhatsappWebhookProcessor {
     }
     // A failed checkpoint commit retries the idempotent consumer. A terminal
     // winner cannot be overwritten by an older concurrent waiting result.
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const current = await this.read(tx, eventId);
       if (!current || current.sourceHash !== initial.sourceHash) {
         return {kind: "rejected", reason: "unavailable"} as const;

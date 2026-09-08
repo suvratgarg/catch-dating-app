@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {createHash} from "node:crypto";
 import type {Firestore} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -98,7 +99,7 @@ export class WhatsappReplyStore {
     if (!/^omwe_[a-f0-9]{48}$/.test(eventId) || eventId.length !== 53) {
       return {kind: "rejected", reason: "unavailable"};
     }
-    return this.db.runTransaction(async (tx): Promise<WhatsappReplyResult> => {
+    return transact(this.db, async (tx): Promise<WhatsappReplyResult> => {
       const queued = (await tx.get(this.db
         .collection("organizerMessagingWebhookEvents").doc(eventId))).data();
       if (!queued) return {kind: "rejected", reason: "unavailable"};

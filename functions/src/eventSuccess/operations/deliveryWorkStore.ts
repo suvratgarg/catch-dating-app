@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {randomUUID} from "node:crypto";
 import {FieldPath, Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
@@ -40,7 +41,7 @@ export class AssistanceDeliveryWorkStore {
   }
 
   get(workItemId: string) {
-    return this.db.runTransaction((tx) => this.read(tx, workItemId));
+    return transact(this.db, (tx) => this.read(tx, workItemId));
   }
 
   /** Receipts wake saved work; a raw outbox row cannot enroll itself. */
@@ -126,7 +127,7 @@ export class AssistanceDeliveryWorkStore {
   }
 
   private snapshot(workItemId: string, wake?: Wake) {
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const records = await this.read(tx, workItemId);
       if (wake && await this.replayedWake(tx, records, wake)) {
         return {kind: "replayed" as const, records};
@@ -173,7 +174,7 @@ export class AssistanceDeliveryWorkStore {
 
   private async checkpoint(previous: Records,
     execution: DeliveryExecution | null, lease: OperationLease, wake?: Wake) {
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const current = await this.read(tx, previous.item.workItemId);
       if (operationContentHash(current) !== operationContentHash(previous)) {
         throw new Error("Delivery work checkpoint changed");

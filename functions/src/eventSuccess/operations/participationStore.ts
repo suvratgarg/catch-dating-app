@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
@@ -43,7 +44,7 @@ export class EventParticipationStore {
     if (!validateGetEventAssistanceParticipationCallablePayload(input)) {
       throw new HttpsError("invalid-argument", "Invalid participation scope.");
     }
-    return this.db.runTransaction(async (tx) =>
+    return transact(this.db, async (tx) =>
       response("read", await this.read(tx, actorUid, input)));
   }
 
@@ -65,7 +66,7 @@ export class EventParticipationStore {
     const requestHash = operationContentHash([actorUid, input]);
     const receiptId = "participation-action:" + operationContentHash([
       scope, command.operationId]);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const state = await this.read(tx, actorUid, scope);
       assertCommandRole(command, [state.role]);
       const receiptRef = this.db.collection(PARTICIPATION_RECEIPTS)

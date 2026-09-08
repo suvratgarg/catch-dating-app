@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.75.0
+version: 1.76.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -47,6 +47,19 @@ Read this before changing:
 
 Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
+
+### Event Assistance Transaction Boundary
+
+Event Assistance routes read/write SDK transactions through
+`runAssistanceTransaction`. Explicit read-only snapshots keep the SDK read-only
+path and cannot acquire write authority.
+The adapter normalizes only the exact closed-transaction read failure into the
+SDK's existing bounded ABORTED retry path. It does not wrap commit failures or
+retry provider sends, and it preserves other domain and transport errors. Request
+receipts still own recovery when a commit outcome is uncertain. The source check
+in `transactionCallback.test.ts` rejects direct production read/write SDK
+transaction calls outside this adapter; test fixtures remain independent. This applies consistently
+to settings, group handovers, guest actions, outbox claims and callback consumers.
 
 ### Event Assistance Practical Requests
 

@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {FirestoreMessageOutbox, PrepareDispatchResource} from
@@ -58,7 +59,7 @@ export class RcsDispatchStore {
    */
   async capabilityTarget(linkId: string, expected: RcsConfig, now: number) {
     this.requireLink(linkId);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const [senderSnap, grantSnap] = await tx.getAll(
         this.db.collection(rcsConsentCollections.senders).doc(this.senderId),
         this.db.collection(guestCollections.grants).doc(linkId));

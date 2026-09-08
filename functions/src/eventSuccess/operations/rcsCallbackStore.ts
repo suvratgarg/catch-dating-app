@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
 import {VerifiedRcsCallback} from "./rcsWebhookProtocol";
@@ -33,7 +34,7 @@ export class RcsCallbackStore {
     }
     const evidence = structuredClone(callback.evidence);
     const callbackId = rcsCallbackId(evidence);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const now = rcsCallbackClock(this.clock());
       const candidate = parseRcsCallback(
         {schemaVersion: 1, callbackId, evidence, storedAt: now},

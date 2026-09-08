@@ -1,3 +1,4 @@
+import {runAssistanceTransaction as transact} from "./transactionCallback";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import {operationContentHash} from "../../operations/durableActions";
@@ -42,7 +43,7 @@ export class RcsCallbackConsumer {
   async consume(callbackId: string): Promise<Outcome |
     {kind: "missing" | "conflicted"}> {
     requireRcsCallbackId(callbackId);
-    return this.db.runTransaction(async (tx) => {
+    return transact(this.db, async (tx) => {
       const read = await this.inbox.readForConsumption(tx, callbackId);
       if (read.kind !== "ready") return read;
       const callback = read.record;
