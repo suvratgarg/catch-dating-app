@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  eventAssistanceRcsCallbackDocumentSchema,
+  eventAssistanceRcsCallbackIdentityDocumentSchema,
   listEventAssistanceCasesCallablePayloadSchema,
   resolveEventAssistanceCaseCallablePayloadSchema,
   eventAssistanceCasesCallableResponseSchema,
@@ -653,6 +655,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventAssistanceRcsCallbackDocument = ajv.compile(eventAssistanceRcsCallbackDocumentSchema);
+export const validateEventAssistanceRcsCallbackIdentityDocument = ajv.compile(eventAssistanceRcsCallbackIdentityDocumentSchema);
 export const validateListEventAssistanceCasesCallablePayload = ajv.compile(listEventAssistanceCasesCallablePayloadSchema);
 export const validateResolveEventAssistanceCaseCallablePayload = ajv.compile(resolveEventAssistanceCaseCallablePayloadSchema);
 export const validateEventAssistanceCasesCallableResponse = ajv.compile(eventAssistanceCasesCallableResponseSchema);

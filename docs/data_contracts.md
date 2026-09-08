@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.68.0
+version: 1.69.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -76,6 +76,31 @@ This is an operational configuration contract, not a registered Firestore
 collection or provisioning endpoint. It grants no recipient, spending or
 dispatch authority. See `docs/event_success.md` for rendering and integration
 boundaries.
+
+### Event Assistance RCS Callback Evidence
+
+`contracts/shared/event_assistance_rcs_callbacks.schema.json` owns the closed
+delivery, expiry, suggestion, subscription and unstructured-message observation
+union. The two Firestore schemas reference its callback and identity records;
+generated TypeScript validators and Dart metadata share those exact shapes.
+Authenticated ingress owns both server-only collections, with all direct client
+reads and writes denied:
+
+- `eventAssistanceRcsCallbacks/{callbackId}` stores immutable normalized evidence.
+  The ID hashes the scoped receipt key and signed payload hash, so conflicting
+  payloads retain separate records without storing the raw provider payload.
+- `eventAssistanceRcsCallbackIdentities/{receiptKey}` binds the first callback and
+  storage time to the agent, endpoint, event family and provider event identity.
+  Its nullable conflict time prevents later consumers from using contradictory
+  evidence as an ordinary delivery or guest response.
+
+The inbox writes both records transactionally and preserves first-receipt times
+on exact duplicates. Consumers must read the identity in their effect transaction;
+acceptance grants no delivery, guest or permission effect. Evidence excludes raw
+phone numbers, message text, file URLs, locations, signatures and tokens. Missing
+provider time remains null. No automatic retention deletion is configured until
+pending-consumer and retry requirements have an implemented lifecycle. See
+`docs/event_success.md` for the remaining consumer and activation work.
 
 ### Host Today Attention Contract
 

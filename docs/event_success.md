@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.62.0
+version: 1.63.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1378,8 +1378,8 @@ at commit `bed3e804249ee553d95be4ab2cb1014268cf599e`. Its reviewed replacement
 now supplies the canonical Google RBM sender configuration and rendering
 boundary described below; generated outputs come from the current generator.
 The remaining RCS backlog includes provider
-send/expiry/revocation integration, authenticated delivery and native-reply
-ingress, independent consent and withdrawal, audited sender/budget onboarding,
+send/expiry/revocation integration, delivery and native-reply consumers,
+independent consent and withdrawal, audited sender/budget onboarding,
 capability/readiness checks, shared outbox/worker wiring, and end-to-end
 verification. On 2026-09-08 the user resumed independent RCS work while the
 Host UI handoff is pending. Neither the parked prototype nor the restored
@@ -1400,12 +1400,13 @@ adapters and acceptance; they are not conferred by these type definitions.
 
 ### RCS authenticated callback boundary
 
-The current independent slice supplies a bounded Google RBM callback parser
-and an injected HTTP ingress. Acceptance is verified signature/agent isolation,
+The current independent slice supplies a bounded Google RBM callback parser,
+an injected HTTP ingress and a durable Firestore evidence inbox. Acceptance is verified signature/agent isolation,
 separate delivery/revocation/reply/subscription observations, retry identity,
 private-data minimization and acknowledgement only after durable acceptance.
-Queue persistence, dispatch wiring, permission updates, native-reply domain
-effects, deployment and activation remain subsequent integration work.
+Dispatch wiring, permission updates, delivery and native-reply domain consumers,
+scheduling, retention cleanup, deployment and activation remain subsequent
+integration work.
 
 `rcsWebhookProtocol.ts` authenticates the base64-decoded `message.data` bytes
 with the configured client token's SHA512 HMAC. It requires the signed agent ID
@@ -1416,7 +1417,7 @@ UTF-8; malformed supported variants fail closed. The initial challenge echoes
 a bounded secret only after its client token matches. These boundaries follow
 Google's [webhook verification protocol](https://developers.google.com/business-communications/rcs-business-messaging/guides/integrate/webhooks).
 
-The transient typed observations distinguish delivered/read, confirmed TTL
+The canonical typed observations distinguish delivered/read, confirmed TTL
 revocation and inconclusive revocation, native suggestions, subscription
 requests and unstructured messages. [Google's event definitions](https://developers.google.com/business-communications/rcs-business-messaging/guides/build/events/receive-events)
 and [message definitions](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/UserMessage)
@@ -1441,11 +1442,27 @@ do not open the queue. Verified callbacks are acknowledged after an injected
 queue reports stored, duplicate or durably preserved conflict. Queue/credential
 failure returns an opaque 503; logging receives no private payload or error.
 Only authenticated unsupported traffic may be ignored without persistence.
-This tests the HTTP/queue boundary, not a durable RCS queue: that queue still
-needs canonical records, conflict handling, retention and asynchronous consumers
-before deployment. Local tests do not prove a registered agent or actual callback
-delivery. The Google RBM sender binding and reviewed rendering contract are now
-present in source; callback persistence and its consumers remain separate work.
+
+`rcsCallbackStore.ts` implements the injected queue with canonical records from
+`contracts/shared/event_assistance_rcs_callbacks.schema.json`. It commits each
+immutable signed-payload variant to `eventAssistanceRcsCallbacks` together with
+its provider identity in `eventAssistanceRcsCallbackIdentities`. Exact retries
+preserve the first reception and storage times. A different payload for the same
+agent, endpoint, family and provider event preserves both variants and marks
+the shared identity conflicted. Failed commits leave neither a partial callback
+nor an unmarked conflict; the HTTP handler returns 503 so the provider can retry.
+Both collections deny all direct client reads and writes.
+
+Future consumers must call `readForConsumption` in the same transaction as
+their receipt and domain effect. It revalidates persisted evidence and withholds
+conflicted identities, participating in Firestore contention with concurrent
+conflict writes. A conflict received after an effect committed cannot undo that
+effect; it blocks later consumption. Acceptance itself changes no delivery,
+permission, guest-response or attendance state. No automatic cleanup is enabled:
+retention must preserve identities and evidence needed by pending consumers and
+retries before this boundary can be activated. Emulator tests cover concurrent
+duplicates and a consumer racing a conflict. Local tests do not prove a
+registered agent, deployed worker or actual callback delivery.
 
 ### RCS sender configuration and message rendering
 

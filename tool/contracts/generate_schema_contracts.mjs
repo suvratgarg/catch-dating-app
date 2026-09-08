@@ -15,6 +15,16 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+  {
+    name: "EventAssistanceRcsCallbackDocument",
+    source: "firestore/event_assistance_rcs_callbacks.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceRcsCallbackDocument.ts",
+  },
+  {
+    name: "EventAssistanceRcsCallbackIdentityDocument",
+    source: "firestore/event_assistance_rcs_callback_identities.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceRcsCallbackIdentity.ts",
+  },
   {"name":"ListEventAssistanceCasesCallablePayload","source":"callables/list_event_assistance_cases_payload.schema.json","typeOutput":"functions/src/shared/generated/listEventAssistanceCasesCallablePayload.ts"},
   {"name":"ResolveEventAssistanceCaseCallablePayload","source":"callables/resolve_event_assistance_case_payload.schema.json","typeOutput":"functions/src/shared/generated/resolveEventAssistanceCaseCallablePayload.ts"},
   {"name":"EventAssistanceCasesCallableResponse","source":"callable_responses/event_assistance_cases_response.schema.json","typeOutput":"functions/src/shared/generated/eventAssistanceCasesCallableResponse.ts"},

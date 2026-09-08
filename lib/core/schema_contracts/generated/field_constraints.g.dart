@@ -20136,6 +20136,201 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceRcsCallbackDocumentCallbackId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.callbackId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-event:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceAgentId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.agentId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._@-]*\$',
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceEndpointHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceEventFamily = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.eventFamily',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['message', 'userEvent', 'serverEvent'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationContent = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.content',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['text', 'location', 'file'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationCorrelationAttemptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.correlation.attemptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^attempt:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationCorrelationChoiceIndex = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.correlation.choiceIndex',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9,
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationCorrelationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.correlation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationProviderMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.providerMessageId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^\\s\\u0000-\\u001f\\u007f]+\$',
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationRequested = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.requested',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['subscribe', 'unsubscribe'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationRevocation = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.revocation',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['confirmed', 'unconfirmed'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationSource = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.source',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['event', 'keyword'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['delivered', 'read'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceObservationSuggestionType = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.observation.suggestionType',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['reply', 'action', 'unspecified'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidencePayloadHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceProviderEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.providerEventId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^\\s\\u0000-\\u001f\\u007f]+\$',
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceProviderOccurredAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.providerOccurredAt',
+    maxLength: 40,
+    valueTypes: <String>['string'],
+    format: 'date-time',
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceReceiptKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.receiptKey',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-callback:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRcsCallbackDocumentEvidenceReceivedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.evidence.receivedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRcsCallbackDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceRcsCallbackDocumentStoredAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackDocument.storedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRcsCallbackIdentityDocumentConflictedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackIdentityDocument.conflictedAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRcsCallbackIdentityDocumentFirstStoredAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackIdentityDocument.firstStoredAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceRcsCallbackIdentityDocumentPrimaryCallbackId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackIdentityDocument.primaryCallbackId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-event:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRcsCallbackIdentityDocumentReceiptKey = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackIdentityDocument.receiptKey',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^rcs-callback:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRcsCallbackIdentityDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceRcsCallbackIdentityDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
   static const eventAssistanceRcsConfigActivationApprovalId = CatchContractFieldConstraints(
     path: 'eventAssistanceRcsConfig.activation.approvalId',
     maxLength: 160,
@@ -80989,6 +81184,33 @@ abstract final class CatchContractConstraints {
     'eventAssistanceProgressReceiptDocument.receiptId': eventAssistanceProgressReceiptDocumentReceiptId,
     'eventAssistanceProgressReceiptDocument.requestHash': eventAssistanceProgressReceiptDocumentRequestHash,
     'eventAssistanceProgressReceiptDocument.revision': eventAssistanceProgressReceiptDocumentRevision,
+    'eventAssistanceRcsCallbackDocument.callbackId': eventAssistanceRcsCallbackDocumentCallbackId,
+    'eventAssistanceRcsCallbackDocument.evidence.agentId': eventAssistanceRcsCallbackDocumentEvidenceAgentId,
+    'eventAssistanceRcsCallbackDocument.evidence.endpointHash': eventAssistanceRcsCallbackDocumentEvidenceEndpointHash,
+    'eventAssistanceRcsCallbackDocument.evidence.eventFamily': eventAssistanceRcsCallbackDocumentEvidenceEventFamily,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.content': eventAssistanceRcsCallbackDocumentEvidenceObservationContent,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.correlation.attemptId': eventAssistanceRcsCallbackDocumentEvidenceObservationCorrelationAttemptId,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.correlation.choiceIndex': eventAssistanceRcsCallbackDocumentEvidenceObservationCorrelationChoiceIndex,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.correlation.kind': eventAssistanceRcsCallbackDocumentEvidenceObservationCorrelationKind,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.kind': eventAssistanceRcsCallbackDocumentEvidenceObservationKind,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.providerMessageId': eventAssistanceRcsCallbackDocumentEvidenceObservationProviderMessageId,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.requested': eventAssistanceRcsCallbackDocumentEvidenceObservationRequested,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.revocation': eventAssistanceRcsCallbackDocumentEvidenceObservationRevocation,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.source': eventAssistanceRcsCallbackDocumentEvidenceObservationSource,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.status': eventAssistanceRcsCallbackDocumentEvidenceObservationStatus,
+    'eventAssistanceRcsCallbackDocument.evidence.observation.suggestionType': eventAssistanceRcsCallbackDocumentEvidenceObservationSuggestionType,
+    'eventAssistanceRcsCallbackDocument.evidence.payloadHash': eventAssistanceRcsCallbackDocumentEvidencePayloadHash,
+    'eventAssistanceRcsCallbackDocument.evidence.providerEventId': eventAssistanceRcsCallbackDocumentEvidenceProviderEventId,
+    'eventAssistanceRcsCallbackDocument.evidence.providerOccurredAt': eventAssistanceRcsCallbackDocumentEvidenceProviderOccurredAt,
+    'eventAssistanceRcsCallbackDocument.evidence.receiptKey': eventAssistanceRcsCallbackDocumentEvidenceReceiptKey,
+    'eventAssistanceRcsCallbackDocument.evidence.receivedAt': eventAssistanceRcsCallbackDocumentEvidenceReceivedAt,
+    'eventAssistanceRcsCallbackDocument.schemaVersion': eventAssistanceRcsCallbackDocumentSchemaVersion,
+    'eventAssistanceRcsCallbackDocument.storedAt': eventAssistanceRcsCallbackDocumentStoredAt,
+    'eventAssistanceRcsCallbackIdentityDocument.conflictedAt': eventAssistanceRcsCallbackIdentityDocumentConflictedAt,
+    'eventAssistanceRcsCallbackIdentityDocument.firstStoredAt': eventAssistanceRcsCallbackIdentityDocumentFirstStoredAt,
+    'eventAssistanceRcsCallbackIdentityDocument.primaryCallbackId': eventAssistanceRcsCallbackIdentityDocumentPrimaryCallbackId,
+    'eventAssistanceRcsCallbackIdentityDocument.receiptKey': eventAssistanceRcsCallbackIdentityDocumentReceiptKey,
+    'eventAssistanceRcsCallbackIdentityDocument.schemaVersion': eventAssistanceRcsCallbackIdentityDocumentSchemaVersion,
     'eventAssistanceRcsConfig.activation.approvalId': eventAssistanceRcsConfigActivationApprovalId,
     'eventAssistanceRcsConfig.activation.approvedAt': eventAssistanceRcsConfigActivationApprovedAt,
     'eventAssistanceRcsConfig.activation.validUntil': eventAssistanceRcsConfigActivationValidUntil,

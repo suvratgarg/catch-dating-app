@@ -1,46 +1,27 @@
 import {createHash, createHmac, timingSafeEqual} from "node:crypto";
-import {operationContentHash} from "../../operations/durableActions";
+import {rcsCallbackReceiptKey, rcsProviderTimestamp,
+  RcsCallbackEvidence, RcsObservation} from "./rcsCallbackRecords";
+
+export type {RcsCallbackEvidence, RcsObservation} from "./rcsCallbackRecords";
 
 export const RCS_CALLBACK_MAX_BYTES = 64 * 1024;
 const maxPayloadBytes = 40 * 1024;
 type JsonObject = Record<string, unknown>;
 
-/** Transient provider observations; no persistence or command authority. */
-export type RcsObservation =
-  | {kind: "delivery"; providerMessageId: string;
-      status: "delivered" | "read"}
-  | {kind: "expiration"; providerMessageId: string;
-      revocation: "confirmed" | "unconfirmed"}
-  | {kind: "suggestion"; source: "message" | "event";
-      suggestionType: "reply" | "action" | "unspecified";
-      correlation: {kind: "choice"; attemptId: string; choiceIndex: number} |
-        {kind: "guestPage"; attemptId: string} | {kind: "unrecognized"}}
-  | {kind: "subscription"; requested: "subscribe" | "unsubscribe";
-      source: "event" | "keyword"}
-  | {kind: "unstructuredMessage"; content: "text" | "location" | "file"};
 type SuggestionCorrelation = Extract<RcsObservation,
   {kind: "suggestion"}>["correlation"];
-
-export interface RcsCallbackEvidence {
-  agentId: string;
-  endpointHash: string;
-  providerEventId: string;
-  eventFamily: "message" | "userEvent" | "serverEvent";
-  providerOccurredAt: string | null;
-  receivedAt: number;
-  /** Stable across Pub/Sub retries; a different payload hash is a conflict. */
-  receiptKey: string;
-  payloadHash: string;
-  observation: RcsObservation;
-}
 
 // A successful parse proves this invocation checked the signed bytes. It does
 // not grant attendance, consent, sender, spending or fallback authority.
 export class VerifiedRcsCallback {
-  private constructor(private readonly value: Readonly<RcsCallbackEvidence>) {}
+  readonly #value: Readonly<RcsCallbackEvidence>;
+
+  private constructor(value: Readonly<RcsCallbackEvidence>) {
+    this.#value = value;
+  }
 
   get evidence(): Readonly<RcsCallbackEvidence> {
-    return this.value;
+    return this.#value;
   }
 
   static receive(input: {
@@ -74,10 +55,9 @@ export class VerifiedRcsCallback {
     const evidence: RcsCallbackEvidence = {...value, endpointHash,
       agentId: input.expectedAgentId, receivedAt: input.receivedAt,
       payloadHash: createHash("sha256").update(payload).digest("hex"),
-      receiptKey: "rcs-callback:" + operationContentHash([
-        input.expectedAgentId, endpointHash, value.eventFamily,
-        value.providerEventId,
-      ])};
+      receiptKey: rcsCallbackReceiptKey({agentId: input.expectedAgentId,
+        endpointHash, eventFamily: value.eventFamily,
+        providerEventId: value.providerEventId})};
     Object.freeze(evidence.observation);
     if (evidence.observation.kind === "suggestion") {
       Object.freeze(evidence.observation.correlation);
@@ -148,7 +128,7 @@ function observation(event: JsonObject): ParseResult {
   }
   let occurredAt: string | null = null;
   if (Object.hasOwn(event, "sendTime")) {
-    if (!timestamp(event.sendTime)) return invalid();
+    if (!rcsProviderTimestamp(event.sendTime)) return invalid();
     occurredAt = event.sendTime as string;
   }
   const eventId = identity(event.eventId, 512);
@@ -266,16 +246,4 @@ function parseJson(bytes: Buffer, max: number): JsonObject | null {
   } catch {
     return null;
   }
-}
-
-function timestamp(value: unknown): boolean {
-  if (typeof value !== "string" || value.length > 40) return false;
-  const pattern = new RegExp(
-    "^(\\d{4}-\\d{2}-\\d{2})T([01]\\d|2[0-3]):([0-5]\\d):" +
-    "([0-5]\\d)(?:\\.\\d{1,9})?(Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)$");
-  const m = pattern.exec(value);
-  if (!m || m[0] !== value) return false;
-  const day = Date.parse(m[1] + "T00:00:00Z");
-  return Number.isFinite(day) && new Date(day).toISOString().startsWith(m[1]) &&
-    Number.isFinite(Date.parse(value));
 }

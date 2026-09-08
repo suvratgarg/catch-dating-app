@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventAssistanceRcsCallbackDocument | `firestore/event_assistance_rcs_callbacks.schema.json` | `functions/src/shared/generated/eventAssistanceRcsCallbackDocument.ts` |
+| EventAssistanceRcsCallbackIdentityDocument | `firestore/event_assistance_rcs_callback_identities.schema.json` | `functions/src/shared/generated/eventAssistanceRcsCallbackIdentity.ts` |
 | ListEventAssistanceCasesCallablePayload | `callables/list_event_assistance_cases_payload.schema.json` | `functions/src/shared/generated/listEventAssistanceCasesCallablePayload.ts` |
 | ResolveEventAssistanceCaseCallablePayload | `callables/resolve_event_assistance_case_payload.schema.json` | `functions/src/shared/generated/resolveEventAssistanceCaseCallablePayload.ts` |
 | EventAssistanceCasesCallableResponse | `callable_responses/event_assistance_cases_response.schema.json` | `functions/src/shared/generated/eventAssistanceCasesCallableResponse.ts` |
@@ -643,6 +645,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventAssistanceRcsCallbackDocumentSchema` | EventAssistanceRcsCallbackDocument | `firestore/event_assistance_rcs_callbacks.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_rcs_callback_document.g.dart` |
+| `schemaEventAssistanceRcsCallbackIdentityDocumentSchema` | EventAssistanceRcsCallbackIdentityDocument | `firestore/event_assistance_rcs_callback_identities.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_rcs_callback_identity_document.g.dart` |
 | `schemaListEventAssistanceCasesCallablePayloadSchema` | ListEventAssistanceCasesCallablePayload | `callables/list_event_assistance_cases_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_assistance_cases_callable_payload.g.dart` |
 | `schemaResolveEventAssistanceCaseCallablePayloadSchema` | ResolveEventAssistanceCaseCallablePayload | `callables/resolve_event_assistance_case_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/resolve_event_assistance_case_callable_payload.g.dart` |
 | `schemaEventAssistanceCasesCallableResponseSchema` | EventAssistanceCasesCallableResponse | `callable_responses/event_assistance_cases_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_cases_callable_response.g.dart` |

@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventAssistanceRcsCallbackDocument',
+    source: 'firestore/event_assistance_rcs_callbacks.schema.json',
+    schema: schemaEventAssistanceRcsCallbackDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceRcsCallbackIdentityDocument',
+    source: 'firestore/event_assistance_rcs_callback_identities.schema.json',
+    schema: schemaEventAssistanceRcsCallbackIdentityDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ListEventAssistanceCasesCallablePayload',
     source: 'callables/list_event_assistance_cases_payload.schema.json',
     schema: schemaListEventAssistanceCasesCallablePayloadSchema,
@@ -3149,6 +3159,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventAssistanceRcsCallbackDocument': schemaEventAssistanceRcsCallbackDocumentSchema,
+  'EventAssistanceRcsCallbackIdentityDocument': schemaEventAssistanceRcsCallbackIdentityDocumentSchema,
   'ListEventAssistanceCasesCallablePayload': schemaListEventAssistanceCasesCallablePayloadSchema,
   'ResolveEventAssistanceCaseCallablePayload': schemaResolveEventAssistanceCaseCallablePayloadSchema,
   'EventAssistanceCasesCallableResponse': schemaEventAssistanceCasesCallableResponseSchema,
@@ -3778,6 +3790,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_rcs_callbacks.schema.json': schemaEventAssistanceRcsCallbackDocumentSchema,
+  'firestore/event_assistance_rcs_callback_identities.schema.json': schemaEventAssistanceRcsCallbackIdentityDocumentSchema,
   'callables/list_event_assistance_cases_payload.schema.json': schemaListEventAssistanceCasesCallablePayloadSchema,
   'callables/resolve_event_assistance_case_payload.schema.json': schemaResolveEventAssistanceCaseCallablePayloadSchema,
   'callable_responses/event_assistance_cases_response.schema.json': schemaEventAssistanceCasesCallableResponseSchema,

@@ -831,6 +831,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceRcsCallbacks/{callbackId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsCallbackIdentities/{receiptKey} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceCases/{caseId} {
       allow read, write: if false;
     }

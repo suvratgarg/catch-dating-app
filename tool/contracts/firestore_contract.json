@@ -2094,6 +2094,30 @@
       ]
     },
     {
+      "id": "eventAssistanceRcsCallbacks",
+      "path": "eventAssistanceRcsCallbacks/{callbackId}",
+      "rulesMatch": "/eventAssistanceRcsCallbacks/{callbackId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance authenticated RCS ingress",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Authenticated normalized callback evidence and conflict identities. No direct client access, provider activation or automatic retention deletion."
+      ]
+    },
+    {
+      "id": "eventAssistanceRcsCallbackIdentities",
+      "path": "eventAssistanceRcsCallbackIdentities/{receiptKey}",
+      "rulesMatch": "/eventAssistanceRcsCallbackIdentities/{receiptKey}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance authenticated RCS ingress",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Authenticated normalized callback evidence and conflict identities. No direct client access, provider activation or automatic retention deletion."
+      ]
+    },
+    {
       "id": "eventAssistanceMessages",
       "path": "eventAssistanceMessages/{messageId}",
       "rulesMatch": "/eventAssistanceMessages/{messageId}",

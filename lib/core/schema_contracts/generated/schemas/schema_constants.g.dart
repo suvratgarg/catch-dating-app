@@ -177,6 +177,8 @@ export 'event_assistance_participation_callable_response.g.dart';
 export 'event_assistance_participation_receipt_document.g.dart';
 export 'event_assistance_policy.g.dart';
 export 'event_assistance_progress_receipt_document.g.dart';
+export 'event_assistance_rcs_callback_document.g.dart';
+export 'event_assistance_rcs_callback_identity_document.g.dart';
 export 'event_assistance_rcs_config.g.dart';
 export 'event_assistance_roster_work.g.dart';
 export 'event_assistance_runtime_config_callable_response.g.dart';
