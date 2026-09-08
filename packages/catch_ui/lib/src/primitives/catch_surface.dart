@@ -1,20 +1,18 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-enum CatchSurfaceRole { base, card, tinted }
-
 enum CatchSurfaceTone { surface, raised, primarySoft, transparent }
 
-enum CatchSurfaceElevation { none, card, raised, overlay }
+/// Shadow prominence; the same four token presets are shared by all recipes.
+enum CatchSurfaceEmphasis { flat, subtle, raised, floating }
 
 /// Canonical Catch surface primitive for cards, panels, and tappable tiles.
 class CatchSurface extends StatelessWidget {
   const CatchSurface({
     super.key,
     required this.child,
-    this.role = CatchSurfaceRole.base,
     this.tone = CatchSurfaceTone.surface,
-    this.elevation = CatchSurfaceElevation.none,
+    this.emphasis = CatchSurfaceEmphasis.flat,
     this.padding,
     this.margin,
     this.width,
@@ -50,8 +48,7 @@ class CatchSurface extends StatelessWidget {
     this.onFocusChange,
     this.duration = CatchMotion.fast,
   }) : assert(borderRole == null || borderSpec == null),
-       role = CatchSurfaceRole.card,
-       elevation = CatchSurfaceElevation.card,
+       emphasis = CatchSurfaceEmphasis.subtle,
        radius = CatchRadius.md,
        borderRadius = null,
        borderWidth = 1,
@@ -71,9 +68,8 @@ class CatchSurface extends StatelessWidget {
     this.borderRadius,
     this.backgroundColor,
     this.duration = CatchMotion.fast,
-  }) : role = CatchSurfaceRole.tinted,
-       tone = CatchSurfaceTone.primarySoft,
-       elevation = CatchSurfaceElevation.none,
+  }) : tone = CatchSurfaceTone.primarySoft,
+       emphasis = CatchSurfaceEmphasis.flat,
        width = null,
        height = null,
        borderRole = null,
@@ -87,9 +83,8 @@ class CatchSurface extends StatelessWidget {
        onFocusChange = null;
 
   final Widget child;
-  final CatchSurfaceRole role;
   final CatchSurfaceTone tone;
-  final CatchSurfaceElevation elevation;
+  final CatchSurfaceEmphasis emphasis;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double? width;
@@ -184,11 +179,11 @@ class CatchSurface extends StatelessWidget {
   }
 
   List<BoxShadow> get _shadows {
-    return switch (elevation) {
-      CatchSurfaceElevation.none => CatchElevation.none,
-      CatchSurfaceElevation.card => CatchElevation.card,
-      CatchSurfaceElevation.raised => CatchElevation.raised,
-      CatchSurfaceElevation.overlay => CatchElevation.overlay,
+    return switch (emphasis) {
+      CatchSurfaceEmphasis.flat => CatchElevation.none,
+      CatchSurfaceEmphasis.subtle => CatchElevation.card,
+      CatchSurfaceEmphasis.raised => CatchElevation.raised,
+      CatchSurfaceEmphasis.floating => CatchElevation.overlay,
     };
   }
 }

@@ -7244,6 +7244,27 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:surface-recipe-and-emphasis",
+      "patternFamilyId": "surface-recipe-and-emphasis",
+      "decision": "remove-redundant-axis-and-name-emphasis",
+      "canonicalSymbol": "CatchSurface",
+      "members": [
+        {
+          "name": "CatchSurfaceRole",
+          "action": "delete-unused-rendering-input"
+        },
+        {
+          "name": "CatchSurfaceElevation",
+          "action": "rename-axis",
+          "target": "CatchSurfaceEmphasis"
+        }
+      ],
+      "rationale": "Source review finds no render read of Surface.role; its sole production assignment is redundant with explicit section padding, radius and tone. Retain card/tinted named constructors and remove the unused marker and obsolete lint branches. Shadow prominence uses the approved Emphasis axis with an exact mapping onto the same CatchElevation token lists. Migrate all inventoried package/app/catalog callers and section configuration; retain Material/Flutter elevation arguments unchanged. Existing golden baselines must pass without updates.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

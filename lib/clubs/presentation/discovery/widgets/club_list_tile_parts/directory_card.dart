@@ -26,7 +26,7 @@ class ClubIndexRow extends StatelessWidget {
       child: CatchSurface(
         onTap: onTap,
         borderColor: t.line,
-        elevation: CatchSurfaceElevation.card,
+        emphasis: CatchSurfaceEmphasis.subtle,
         radius: CatchRadius.md,
         padding: CatchInsets.tileContentCompact,
         child: Row(

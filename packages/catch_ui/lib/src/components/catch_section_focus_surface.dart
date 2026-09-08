@@ -12,7 +12,7 @@ class CatchSectionFocusSurface extends StatefulWidget {
     this.backgroundColor,
     this.borderColor,
     this.tone = CatchSurfaceTone.surface,
-    this.elevation = CatchSurfaceElevation.card,
+    this.emphasis = CatchSurfaceEmphasis.subtle,
     this.boxShadow,
     required this.focused,
     required this.hasError,
@@ -33,7 +33,7 @@ class CatchSectionFocusSurface extends StatefulWidget {
   final Color? backgroundColor;
   final Color? borderColor;
   final CatchSurfaceTone tone;
-  final CatchSurfaceElevation elevation;
+  final CatchSurfaceEmphasis emphasis;
   final List<BoxShadow>? boxShadow;
   final bool focused;
   final bool hasError;
@@ -126,11 +126,10 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
       skipTraversal: true,
       onFocusChange: _handleFocusChange,
       child: CatchSurface(
-        role: CatchSurfaceRole.card,
         padding: widget.padding,
         radius: CatchRadius.md,
         tone: widget.tone,
-        elevation: widget.elevation,
+        emphasis: widget.emphasis,
         backgroundColor: widget.backgroundColor,
         borderSpec: border,
         boxShadow: effectiveFocused && !widget.hasError

@@ -24,9 +24,8 @@ void main() {
       expect(find.text('Only you see this privacy note.'), findsOneWidget);
 
       final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-      expect(surface.role, CatchSurfaceRole.tinted);
       expect(surface.tone, CatchSurfaceTone.primarySoft);
-      expect(surface.elevation, CatchSurfaceElevation.none);
+      expect(surface.emphasis, CatchSurfaceEmphasis.flat);
       expect(surface.radius, CatchRadius.sm);
       final container = tester.widget<AnimatedContainer>(
         find.descendant(

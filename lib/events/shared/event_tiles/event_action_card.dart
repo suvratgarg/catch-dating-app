@@ -63,7 +63,7 @@ class EventActionCard extends StatelessWidget {
               ? t.primary.withValues(alpha: CatchOpacity.mutedBorderUrgent)
               : t.line2),
       radius: radius,
-      elevation: CatchSurfaceElevation.card,
+      emphasis: CatchSurfaceEmphasis.subtle,
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,

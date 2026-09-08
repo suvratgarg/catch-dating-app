@@ -4636,14 +4636,14 @@ Widget catchSurfaceContractStates(BuildContext context) {
         label: 'elevated',
         child: const _InlineWrap(
           children: [
-            _SurfaceSpec(label: 'Card', elevation: CatchSurfaceElevation.card),
+            _SurfaceSpec(label: 'Card', emphasis: CatchSurfaceEmphasis.subtle),
             _SurfaceSpec(
               label: 'Raised',
-              elevation: CatchSurfaceElevation.raised,
+              emphasis: CatchSurfaceEmphasis.raised,
             ),
             _SurfaceSpec(
               label: 'Overlay',
-              elevation: CatchSurfaceElevation.overlay,
+              emphasis: CatchSurfaceEmphasis.floating,
             ),
           ],
         ),
@@ -10921,7 +10921,7 @@ class _SurfaceSpec extends StatelessWidget {
   const _SurfaceSpec({
     this.label = 'Preview surface',
     this.tone = CatchSurfaceTone.surface,
-    this.elevation = CatchSurfaceElevation.none,
+    this.emphasis = CatchSurfaceEmphasis.flat,
     this.borderColor,
     this.foregroundColor,
     this.onTap,
@@ -10929,7 +10929,7 @@ class _SurfaceSpec extends StatelessWidget {
 
   final String label;
   final CatchSurfaceTone tone;
-  final CatchSurfaceElevation elevation;
+  final CatchSurfaceEmphasis emphasis;
   final Color? borderColor;
   final Color? foregroundColor;
   final VoidCallback? onTap;
@@ -10941,7 +10941,7 @@ class _SurfaceSpec extends StatelessWidget {
 
     return CatchSurface(
       tone: tone,
-      elevation: elevation,
+      emphasis: emphasis,
       borderColor: borderColor ?? t.line,
       onTap: onTap,
       width: MediaQuery.textScalerOf(context).scale(1) >= 2

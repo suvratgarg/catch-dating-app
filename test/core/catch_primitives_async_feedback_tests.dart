@@ -688,11 +688,10 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
 
     final panelSurface = tester.widget<CatchSurface>(find.byType(CatchSurface));
     expect(find.text('Panel content'), findsOneWidget);
-    expect(panelSurface.role, CatchSurfaceRole.card);
     expect(panelSurface.width, 240);
     expect(panelSurface.padding, CatchInsets.contentRelaxed);
     expect(panelSurface.radius, CatchRadius.md);
-    expect(panelSurface.elevation, CatchSurfaceElevation.card);
+    expect(panelSurface.emphasis, CatchSurfaceEmphasis.subtle);
   });
 
   testWidgets('CatchBanner renders inline title and tone content', (
@@ -709,9 +708,9 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
 
     final messageSurfaceFinder = find.byType(CatchBanner);
-    final renderedSurfaceFinder = find.byWidgetPredicate(
-      (widget) =>
-          widget is CatchSurface && widget.role == CatchSurfaceRole.base,
+    final renderedSurfaceFinder = find.descendant(
+      of: messageSurfaceFinder,
+      matching: find.byType(CatchSurface),
     );
     final messageSurface = tester.widget<CatchBanner>(messageSurfaceFinder);
     final renderedSurface = tester.widget<CatchSurface>(renderedSurfaceFinder);
@@ -723,7 +722,6 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(messageSurfaceFinder, findsOneWidget);
     expect(renderedSurfaceFinder, findsOneWidget);
     expect(messageSurface.variant, CatchBannerVariant.message);
-    expect(renderedSurface.role, CatchSurfaceRole.base);
     expect(renderedSurface.radius, CatchRadius.md);
   });
 

@@ -48,7 +48,7 @@ class CatchNotice extends StatelessWidget {
                 onDismiss?.call();
                 notice.onOpen!();
               },
-        elevation: CatchSurfaceElevation.overlay,
+        emphasis: CatchSurfaceEmphasis.floating,
         borderColor: palette.border,
         backgroundColor: palette.background,
         padding: const EdgeInsets.symmetric(

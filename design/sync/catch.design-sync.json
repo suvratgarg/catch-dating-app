@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "6a4595fa9998bc16766c93ea0a9cccc0c98b4122106d93b233db77f29c114ede",
+  "sourceDigest": "a5f1c480c91432424ed8aa38572253ee49a100ccf46b78d3a1ef3e8e174603e1",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "6a4595fa9998bc16766c93ea0a9cccc0c98b4122106d93b233db77f29c114ede",
-    "contractDigest": "6a4595fa9998bc16766c93ea0a9cccc0c98b4122106d93b233db77f29c114ede"
+    "digest": "a5f1c480c91432424ed8aa38572253ee49a100ccf46b78d3a1ef3e8e174603e1",
+    "contractDigest": "a5f1c480c91432424ed8aa38572253ee49a100ccf46b78d3a1ef3e8e174603e1"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "3794e9f622c666fe1263d5b84921986aaef43391e6f048d26a18c68dd1e61822",
+    "handoffRequestDigest": "4ca5ddd8d8d7722e54862a125b48b8b5a5acc6b72168aa12270048595bef51fe",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -949,7 +949,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 16,
-      "figmaExpectedPropertyDigest": "8bb9a14831bcce20292966051a60c0796d96fb0d7e5060a7ff4cf50e44afedfa",
+      "figmaExpectedPropertyDigest": "7f1c66d51136fa809e672d09a68031d0119739bba9d751c263ca5af801bf296f",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -957,7 +957,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "b9cc7b2be4c7a2577b5ba85f9196603ac359820d1aea4e4f1133bc02ca80adcc"
+      "contractDigest": "b669beef12fc3df5f36113a39055073208cb9ec36ba594ad0d6f65345c4c22d5"
     },
     {
       "contractId": "catch.skeleton",
@@ -1428,8 +1428,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "a90fa1133e40b16d742bd3e31cdcdc7701ec32e11e3d724e18da577dfe3e07b4",
+      "figmaExpectedPropertyCount": 5,
+      "figmaExpectedPropertyDigest": "fd78ec87f72689c87f704a283048d1f1910a6c5a1e7102ef5e63a667679f4e61",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1437,7 +1437,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Surface",
       "claudeAllowed": true,
-      "contractDigest": "1e9fa929a8ec48daa4b8073cfc8562dd3f5122126b130bb92447c56094c9d844"
+      "contractDigest": "484404d662b5a8e22bedb74d5bc51be562da2d68d7dbe2bdc751184cbda53996"
     },
     {
       "contractId": "catch.top_bar",

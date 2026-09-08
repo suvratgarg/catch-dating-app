@@ -48,7 +48,7 @@ typedef _ContainedSectionConfig = ({
   Color? backgroundColor,
   Color? borderColor,
   CatchSurfaceTone tone,
-  CatchSurfaceElevation elevation,
+  CatchSurfaceEmphasis emphasis,
   List<BoxShadow>? boxShadow,
   bool showInternalDividers,
   bool focused,

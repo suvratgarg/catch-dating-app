@@ -58,7 +58,7 @@ class EventLocationMapScreen extends StatelessWidget {
             top: false,
             child: CatchSurface(
               tone: CatchSurfaceTone.raised,
-              elevation: CatchSurfaceElevation.overlay,
+              emphasis: CatchSurfaceEmphasis.floating,
               borderColor: t.line,
               padding: CatchInsets.content,
               child: Column(

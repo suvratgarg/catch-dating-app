@@ -489,8 +489,7 @@ void main() {
       findsOneWidget,
     );
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-    expect(surface.role, CatchSurfaceRole.card);
-    expect(surface.elevation, CatchSurfaceElevation.card);
+    expect(surface.emphasis, CatchSurfaceEmphasis.subtle);
   });
 
   testWidgets(

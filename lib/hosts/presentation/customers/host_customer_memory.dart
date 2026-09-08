@@ -78,7 +78,7 @@ class HostCustomerMemorySection extends StatelessWidget {
                   onPressed: onAddNote,
                 ),
           child: CatchSection.contained(
-            elevation: CatchSurfaceElevation.none,
+            emphasis: CatchSurfaceEmphasis.flat,
             borderColor: CatchTokens.of(context).line,
             tone: CatchSurfaceTone.transparent,
             child: Column(

@@ -495,7 +495,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           CatchSection.contained(
             title: context.l10n.hostsHostClubPublicationTitle,
             tone: CatchSurfaceTone.primarySoft,
-            elevation: CatchSurfaceElevation.none,
+            emphasis: CatchSurfaceEmphasis.flat,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

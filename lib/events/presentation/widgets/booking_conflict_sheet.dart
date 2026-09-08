@@ -51,7 +51,7 @@ class BookingConflictSheet extends StatelessWidget {
       child: CatchSurface(
         backgroundColor: t.surface,
         borderColor: t.line,
-        elevation: CatchSurfaceElevation.overlay,
+        emphasis: CatchSurfaceEmphasis.floating,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(CatchRadius.heroCard),
         ),

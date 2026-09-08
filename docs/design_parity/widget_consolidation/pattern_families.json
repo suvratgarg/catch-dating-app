@@ -2071,6 +2071,27 @@
           "rationale": "This wrapper has one production owner, the avatar, which always clips it through the viewport. Move its exact Stack and filter into the obscured viewport recipe and delete its public class and export."
         }
       ]
+    },
+    {
+      "id": "surface-recipe-and-emphasis",
+      "title": "Surface recipes and shadow prominence",
+      "intent": "Keep one rendering family, named recipe defaults, and independent tone and shadow-emphasis axes.",
+      "priority": "P2",
+      "status": "approved",
+      "targetContract": "catch.surface",
+      "qualityReference": "CatchSurface",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve the four CatchElevation shadow lists, all recipe defaults, paint order, radius, borders, padding, interactions and contained-section focus behavior."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSurface",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The old role field never participates in rendering; card and tinted are already constructor recipes. Delete that redundant field instead of relabelling it as a visual axis. Shadow prominence is the Emphasis axis: flat, subtle, raised and floating map to the existing none, card, raised and overlay token lists."
+        }
+      ]
     }
   ]
 }

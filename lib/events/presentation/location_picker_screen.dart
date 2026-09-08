@@ -472,7 +472,7 @@ class PlaceSearchPanel extends StatelessWidget {
           gapH8,
           CatchSurface(
             padding: EdgeInsets.zero,
-            elevation: CatchSurfaceElevation.overlay,
+            emphasis: CatchSurfaceEmphasis.floating,
             borderColor: t.line,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 260),
@@ -594,7 +594,7 @@ class SelectedPointPanel extends StatelessWidget {
 
     return CatchSurface(
       padding: CatchInsets.content,
-      elevation: CatchSurfaceElevation.overlay,
+      emphasis: CatchSurfaceEmphasis.floating,
       borderColor: t.line,
       radius: CatchRadius.md,
       backgroundColor: t.surface.withValues(

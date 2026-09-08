@@ -218,7 +218,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
     expect(surface.width, 220);
     expect(surface.radius, CatchRadius.md);
-    expect(surface.elevation, CatchSurfaceElevation.overlay);
+    expect(surface.emphasis, CatchSurfaceEmphasis.floating);
     expect(find.text('Owner club'), findsOneWidget);
     expect(find.text('OWNER'), findsOneWidget);
     expect(find.byIcon(CatchIcons.check), findsOneWidget);

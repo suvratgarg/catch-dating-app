@@ -24,7 +24,7 @@ class CatchFormDialog extends StatelessWidget {
       insetPadding: const EdgeInsets.all(CatchLayout.confirmDialogInset),
       backgroundColor: Colors.transparent,
       child: CatchSurface(
-        elevation: CatchSurfaceElevation.overlay,
+        emphasis: CatchSurfaceEmphasis.floating,
         borderWidth: 0,
         padding: CatchInsets.confirmDialogCard,
         width: CatchLayout.confirmDialogMaxWidth,

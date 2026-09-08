@@ -394,7 +394,7 @@ class _CatchButtonState extends State<CatchButton> {
 
       final pill = CatchSurface(
         radius: CatchRadius.pill,
-        elevation: CatchSurfaceElevation.raised,
+        emphasis: CatchSurfaceEmphasis.raised,
         backgroundColor: t.floatingPillFill,
         borderRole: _focused ? CatchBorderRole.focus : CatchBorderRole.control,
         padding: EdgeInsets.only(

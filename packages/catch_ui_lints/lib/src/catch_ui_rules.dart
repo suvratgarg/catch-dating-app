@@ -1743,18 +1743,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       return false;
     }
 
-    if (_namedArgumentSourceContains(node, 'role', 'CatchSurfaceRole.tinted')) {
-      return false;
-    }
-
-    if (_namedArgumentSourceContains(
-      node,
-      'role',
-      'CatchSurfaceRole.message',
-    )) {
-      return false;
-    }
-
     if (_namedArgumentSourceContains(
       node,
       'tone',

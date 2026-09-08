@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.40.0
+version: 3.41.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -210,7 +210,7 @@ Widgetbook callers.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CatchSurface` | `packages/catch_ui/lib/src/primitives/catch_surface.dart:9` | Canonical low-level surface primitive. Supports base `surface`, `raised`, `primarySoft`, and `transparent` tones; `none`, `card`, `raised`, and `overlay` elevations; semantic `borderRole`/`borderSpec`, gradient background, radius, clip, tap, and focus callbacks. Named modes cover bounded cards (`.card`), quiet tinted inset notes (`.tinted`), and inline icon/title/message notes (`.message`); section-card content chrome belongs to `CatchSection.contained`. Raw border color/width inputs are deprecated migration shims. |
+| `CatchSurface` | `packages/catch_ui/lib/src/primitives/catch_surface.dart` | Canonical box paint and optional tap interaction. Named `card` and `tinted` recipes choose padding, corner and tone defaults; `CatchSurfaceEmphasis` selects flat, subtle, raised or floating shadow prominence. No separate role input can claim a recipe without applying its settings. |
 | `CatchInlineMessageSurface` | `packages/catch_ui/lib/src/components/catch_inline_message_surface.dart` | Shared inline message anatomy with caller-owned icon, title, message, action slots, and optional outer/background/border colors. Error banners supply their state and resolved copy to this surface. |
 | `CatchIndexRow` | `packages/catch_ui/lib/src/components/catch_index_row.dart` | Canonical hairline index row for browse and directory lists. Owns minimum height, divider, leading/trailing slots, selected/disabled semantics, and tap feedback while callers supply domain labels and accents. |
 | `CatchMenu<T>` | `packages/catch_ui/lib/src/components/catch_menu.dart` | Shared menu panel with an overlay surface, line2 border, radius-md corners, viewport-bounded scrolling, readable wrapping labels and supporting copy, optional icons, group separators, danger tone, and typed callbacks. The `.anchored` recipe uses `CatchMenuViewport` to pair trigger width and constrain or flip the panel around shell obstruction. |

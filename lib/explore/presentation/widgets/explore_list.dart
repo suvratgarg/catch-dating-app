@@ -210,7 +210,7 @@ class ClubDirectorySkeletonCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchSurface(
       borderColor: t.line,
-      elevation: CatchSurfaceElevation.card,
+      emphasis: CatchSurfaceEmphasis.subtle,
       radius: CatchRadius.md,
       padding: CatchInsets.tileContentCompact,
       child: Row(

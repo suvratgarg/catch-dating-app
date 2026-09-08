@@ -101,7 +101,7 @@ class _CatchMenuState<T> extends State<CatchMenu<T>> {
     final maxHeight = CatchLayout.menuMaxHeightFor(viewportHeight);
 
     return CatchSurface(
-      elevation: CatchSurfaceElevation.overlay,
+      emphasis: CatchSurfaceEmphasis.floating,
       radius: CatchRadius.md,
       borderRole: CatchBorderRole.boundary,
       padding: EdgeInsets.zero,

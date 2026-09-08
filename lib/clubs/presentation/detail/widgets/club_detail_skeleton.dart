@@ -76,7 +76,7 @@ class ClubHeroLoadingSkeleton extends StatelessWidget {
           height: CatchLayout.clubDetailHeroLoadingExtent,
           borderColor: t.line,
           radius: CatchLayout.organizerPosterRadius,
-          elevation: CatchSurfaceElevation.card,
+          emphasis: CatchSurfaceEmphasis.subtle,
           backgroundColor: t.surface,
           padding: CatchInsets.contentDense,
           clipBehavior: Clip.antiAlias,

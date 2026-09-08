@@ -58,7 +58,7 @@ class CatchOrganizerPoster extends StatelessWidget {
           onTap: onTap,
           borderColor: colors.border,
           radius: radius,
-          elevation: CatchSurfaceElevation.card,
+          emphasis: CatchSurfaceEmphasis.subtle,
           backgroundColor: colors.paper,
           padding: EdgeInsets.zero,
           clipBehavior: Clip.antiAlias,

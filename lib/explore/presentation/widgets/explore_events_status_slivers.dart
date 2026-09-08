@@ -23,7 +23,7 @@ class ExploreEventsLoadingSliver extends StatelessWidget {
         child: CatchSurface(
           clipBehavior: Clip.antiAlias,
           borderColor: t.line,
-          elevation: CatchSurfaceElevation.card,
+          emphasis: CatchSurfaceEmphasis.subtle,
           child: CatchSkeleton.card(
             height: CatchLayout.exploreEventsSkeletonHeight,
           ),

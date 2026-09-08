@@ -4390,17 +4390,18 @@
             ]
           },
           {
-            "name": "elevation",
+            "name": "emphasis",
             "type": "enum",
             "required": false,
-            "default": "card",
-            "dartType": "CatchSurfaceElevation",
+            "default": "subtle",
+            "dartType": "CatchSurfaceEmphasis",
             "values": [
-              "none",
-              "card",
+              "flat",
+              "subtle",
               "raised",
-              "overlay"
-            ]
+              "floating"
+            ],
+            "notes": "Selects the shared shadow prominence preset. Named surface recipes supply their own defaults; callers do not provide a separate role marker."
           },
           {
             "name": "boxShadow",
@@ -7775,17 +7776,18 @@
             ]
           },
           {
-            "name": "elevation",
+            "name": "emphasis",
             "type": "enum",
             "required": false,
-            "default": "none",
-            "dartType": "CatchSurfaceElevation",
+            "default": "flat",
+            "dartType": "CatchSurfaceEmphasis",
             "values": [
-              "none",
-              "card",
+              "flat",
+              "subtle",
               "raised",
-              "overlay"
-            ]
+              "floating"
+            ],
+            "notes": "Selects the shared shadow prominence preset. Named surface recipes supply their own defaults; callers do not provide a separate role marker."
           },
           {
             "name": "padding",
@@ -7832,18 +7834,6 @@
             "type": "object",
             "required": false,
             "dartType": "CatchBorderSpec?"
-          },
-          {
-            "name": "role",
-            "type": "enum",
-            "required": false,
-            "default": "base",
-            "dartType": "CatchSurfaceRole",
-            "values": [
-              "base",
-              "card",
-              "tinted"
-            ]
           }
         ],
         "states": [
@@ -12451,7 +12441,7 @@
         ],
         "dartRoles": [
           "CatchDialogAction",
-          "CatchSurfaceElevation.overlay",
+          "CatchSurfaceEmphasis.floating",
           "CatchTextStyles.titleL",
           "CatchTextStyles.supporting"
         ],
@@ -12582,7 +12572,7 @@
         ],
         "dartRoles": [
           "CatchSurface",
-          "CatchSurfaceElevation.overlay",
+          "CatchSurfaceEmphasis.floating",
           "CatchInsets.confirmDialogCard",
           "CatchLayout.confirmDialogInset",
           "CatchLayout.confirmDialogMaxWidth",

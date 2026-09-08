@@ -44,7 +44,7 @@ class CatchPersonPolaroid extends StatelessWidget {
       onTap: onTap,
       borderColor: t.line,
       radius: CatchLayout.personPolaroidRadius,
-      elevation: CatchSurfaceElevation.card,
+      emphasis: CatchSurfaceEmphasis.subtle,
       backgroundColor: t.surface,
       padding: CatchInsets.contentDense,
       clipBehavior: Clip.antiAlias,

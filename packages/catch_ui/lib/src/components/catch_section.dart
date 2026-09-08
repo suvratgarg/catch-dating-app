@@ -101,7 +101,7 @@ class CatchSection extends StatelessWidget {
 
   /// Contained FieldSection variant from the form-field handoff. Unlike the
   /// generic card constructor, this surface clips field rows, owns a 1px
-  /// line/ink focus border, and never adds generic card elevation. Its optional
+  /// line/ink focus border, and never adds generic card shadows. Its optional
   /// title, count, and trailing action form an outside group header by
   /// default, so the outline begins with the first row. Set [headerPlacement]
   /// to [CatchSectionHeaderPlacement.inside] when the label belongs to
@@ -186,7 +186,7 @@ class CatchSection extends StatelessWidget {
     Color? backgroundColor,
     Color? borderColor,
     CatchSurfaceTone tone = CatchSurfaceTone.surface,
-    CatchSurfaceElevation elevation = CatchSurfaceElevation.card,
+    CatchSurfaceEmphasis emphasis = CatchSurfaceEmphasis.subtle,
     List<BoxShadow>? boxShadow,
     bool showInternalDividers = true,
     bool focused = false,
@@ -211,7 +211,7 @@ class CatchSection extends StatelessWidget {
          backgroundColor: backgroundColor,
          borderColor: borderColor,
          tone: tone,
-         elevation: elevation,
+         emphasis: emphasis,
          boxShadow: boxShadow,
          showInternalDividers: showInternalDividers,
          focused: focused,
@@ -304,9 +304,9 @@ class CatchSection extends StatelessWidget {
   Color? get borderColor => _containedConfig?.borderColor;
   CatchSurfaceTone get tone =>
       _containedConfig?.tone ?? CatchSurfaceTone.surface;
-  CatchSurfaceElevation get elevation => _containedFieldRowsConfig != null
-      ? CatchSurfaceElevation.none
-      : _containedConfig?.elevation ?? CatchSurfaceElevation.card;
+  CatchSurfaceEmphasis get emphasis => _containedFieldRowsConfig != null
+      ? CatchSurfaceEmphasis.flat
+      : _containedConfig?.emphasis ?? CatchSurfaceEmphasis.subtle;
   List<BoxShadow>? get boxShadow => _containedConfig?.boxShadow;
   bool get showInternalDividers =>
       _dividedConfig?.showInternalDividers ??
@@ -607,7 +607,7 @@ class CatchSection extends StatelessWidget {
             backgroundColor: backgroundColor,
             borderColor: borderColor,
             tone: tone,
-            elevation: elevation,
+            emphasis: emphasis,
             boxShadow: boxShadow,
             focused: focused,
             hasError: hasError,

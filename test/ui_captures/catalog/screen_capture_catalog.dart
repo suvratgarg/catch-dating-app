@@ -5775,7 +5775,7 @@ class _HostChatReportFailureSnackBarCapture extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(CatchSpacing.s3),
               child: CatchSurface(
-                elevation: CatchSurfaceElevation.overlay,
+                emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
                 borderColor: Colors.transparent,
                 backgroundColor: t.ink,
@@ -6311,7 +6311,7 @@ class _MatchChatFeedbackSnackBarCapture extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(CatchSpacing.s3),
               child: CatchSurface(
-                elevation: CatchSurfaceElevation.overlay,
+                emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
                 borderColor: Colors.transparent,
                 backgroundColor: t.ink,
