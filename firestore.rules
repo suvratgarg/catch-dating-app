@@ -843,6 +843,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceRcsBudgets/{budgetId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
     match /eventAssistanceRcsWithdrawalGrants/{linkId} {
       allow read, write: if false;
     }

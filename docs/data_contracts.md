@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.72.0
+version: 1.73.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -107,7 +107,21 @@ expose only recorded preference and lifetime; revision checks and immutable
 receipts fence old requests. Withdrawal works after instructions expire without
 restoring read/reply access, and does not depend on current event/roster/sender
 records. Retain its referenced guest grant through the independent withdrawal
-lifetime. Guest-page UI, dispatch integration and activation remain open.
+lifetime. The RCS dispatch store now stages this binding with the outbox claim
+and two approved budget charges. Guest-page UI and activation remain open.
+
+The RCS canonical contract also owns `Budget`, `CapabilityObservation` and
+`Dispatch`. Private `eventAssistanceRcsBudgets` binds each approved event or UTC
+sender-day limit to an agent and currency. Both pessimistic charges commit with
+one outbox claim. `eventAssistanceRcsDispatches` stores the corresponding
+before/after budget revisions and charges, original scope, permission and
+capability hashes, deterministic provider message ID, frozen body hash and
+absolute delivery expiry. No phone, bearer secret or message body is persisted
+in that record. Capability is an in-memory, at-most-60-second observation tied
+to the exact sender and consent; its snapshot is retained in dispatch evidence.
+It grants no spending or message permission. The shared channel selector can
+use RCS when explicitly supplied its worker; deployed factory/OAuth wiring,
+callback consumers and approved provisioning remain required for live use.
 
 ### Event Assistance RCS Callback Evidence
 

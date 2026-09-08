@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.66.0
+version: 1.67.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1493,7 +1493,8 @@ withheld. This restriction cannot undo a send that committed before it arrived.
 provenance inside the caller's transaction. Missing, corrupt or cross-recipient
 provenance fails closed. The record's absence is not consent. Event-specific
 preference APIs and their shared permission reader now review this restriction
-as described below. Dispatch integration and retention cleanup remain
+as described below. The RCS dispatch store now rechecks that restriction in
+its claim transaction; callback domain consumption and retention cleanup remain
 implementation work.
 No provider sender or network worker is activated by this projection.
 
@@ -1536,8 +1537,8 @@ sender-readiness, capability or send authority. Renaming the same provider
 agent preserves existing consent; a newly reviewed grant captures the updated
 name. Tests cover stale review hashes, source replacement, rollback, receipt
 tampering, withdrawal, concurrent retries and a STOP racing a grant. Guest-page
-preference UI, dispatch/worker integration and deployment remain open. No live
-sender is activated by these callables.
+preference UI, deployed worker-factory integration and activation remain open.
+No live sender is activated by these callables.
 
 ### RCS message-link withdrawal
 
@@ -1552,7 +1553,8 @@ or provider identity. The preference is not a delivery-readiness assessment.
 attendee source generations, Firebase subject, recipient endpoint and provider
 agent. `prepareRcsWithdrawal` verifies the exact persisted permission, consent
 receipt and guest grant, then stages immutable issuance in its caller transaction
-so a future dispatch can commit them together. Retries preserve the original
+and `RcsDispatchStore` commits them with the outbox claim and budget charges.
+Retries preserve the original
 lifetime. A longer consent window requires a new link; an old distributed bearer
 cannot silently acquire a longer lifetime. This preparation is not a dispatch
 permit and does not replace source, STOP, sender, capability or budget checks.
@@ -1571,8 +1573,8 @@ replays or stale reviews from reversing newer consent. A fresh reviewed request
 can withdraw a subsequent grant for the same identity. No event, attendance,
 SMS/WhatsApp consent, conversation subscription or provider delivery state is
 changed. Tests include real Firestore concurrent issuance, duplicate withdrawals
-and a withdrawal racing renewed consent. The guest-page control, dispatch owner
-and live deployment remain integration work.
+and a withdrawal racing renewed consent. The guest-page control and live
+deployment remain integration work.
 
 ### RCS sender configuration and message rendering
 
@@ -1603,9 +1605,60 @@ One of the eleven suggestion slots is reserved for the page action. When
 open-URL actions are unavailable, the response link remains in the text. RCS content uses the
 same [Google message contract](https://developers.google.com/business-communications/rcs-business-messaging/reference/rest/v1/phones.agentMessages)
 as the injected provider adapter. Rehearsal and stale/mismatched grants cannot
-produce live RCS material. Permission reads, capability freshness, audited
-sender/budget provisioning, a transactional dispatch store and the shared worker
-connection remain required before this source can send messages.
+produce live RCS material. Permission reads, bounded capability observations, transactional budget/dispatch
+claims and the shared composer connection are implemented below. Audited sender
+and budget provisioning, the deployed worker factory and callback consumers
+remain required before live messaging.
+
+### RCS dispatch and shared channel selection
+
+`RcsDispatchStore` and `EventRcsWorker` now participate in `EventMessageWorker`'s
+single immutable intent and attempt history. RCS, SMS and WhatsApp retain their
+independent sender and recipient permissions. An unavailable RCS capability can
+leave a separately permitted SMS or WhatsApp route eligible; it cannot grant
+that other channel's consent. Automatic messages still honor their saved sender
+selection. Rehearsal and unpermitted routes cannot load live RCS credentials.
+
+Capability lookup occurs outside Firestore transactions, after checking the
+current sender, event consent, original guest episode and recipient prefix.
+The in-memory observation binds the exact config and permission hashes, agent,
+endpoint, request ID and open-URL support. It expires within 60 seconds of lookup
+start, bounded further by OAuth, sender, consent and guest-link lifetimes.
+Slow or unsuccessful lookups cannot extend that window. Reservation and claim
+re-read source state, STOP, permission, sender, grant and both budgets; the
+observation must still match and be fresh. Lookup results never grant sends.
+
+Private `eventAssistanceRcsBudgets` contains separately approved event and UTC
+sender-day budgets. Each binds the agent and currency; wrong currency, replaced
+agent, paused authority, clock drift or insufficient remaining funds blocks
+RCS. Both worst-case charges, immutable `eventAssistanceRcsDispatches` evidence,
+message-link withdrawal authority and the outbox claim commit atomically.
+Dispatch evidence records each budget's approval, before/after revisions and
+charges, plus exact permission/capability/payload hashes and provider message ID.
+It contains no OAuth token, guest secret, phone or message body.
+
+The message body and absolute delivery expiry freeze at claim time. Expiry is
+bounded by sender queue duration, intent, grant, approval, quote, recipient
+consent and the current event-service window. A fresh capability observation can
+support the same reserved content, but cannot extend its original authorization.
+Capability loss does not remove the signed page link or renumber native choices.
+
+Before its sole provider call, the worker checks the claimed sender, endpoint,
+intent hash, deterministic provider ID, frozen body hash, credential lifetime
+and short dispatch permit. Acceptance remains pending delivery. Network errors,
+duplicate IDs and uncertain responses retain unknown state and both budget
+charges; neither queue expiry nor DELETE acknowledgement authorizes fallback.
+Only explicit submission rejection or proven no-I/O failure can become failed
+submission evidence for the shared selector. Concurrent workers contend on the
+same attempt and cannot duplicate a provider submission or debit.
+
+The production `LiveMessageDispatcher` factory still constructs SMS/WhatsApp
+workers only. RCS OAuth loading, factory/configuration wiring, callback consumers
+for delivery/revocation/replies, guest-page controls, approved provisioning and
+live activation remain required. Tests use an injected provider transport and
+include direct RCS-to-SMS/WhatsApp fallback, independent consent, STOP between
+lookup and claim, stale source/credentials/capability, atomic rollback, queued
+expiry, opt-out from an actual claim and real Firestore dispatch contention.
 
 ### RCS provider transport boundary
 
@@ -1644,8 +1697,8 @@ sender configuration, rendering, callback persistence and conversation
 subscription observations are now present. Event-scoped RCS preference APIs
 and the shared permission check are implemented, together with message-link
 withdrawal APIs and transactional issuance preparation. Callback domain consumers,
-guest-page controls, dispatch integration and provider activation remain required
-before live use.
+guest-page controls, deployed worker-factory/OAuth integration and provider
+activation remain required before live use.
 
 ## Format Mapping And Wiring
 

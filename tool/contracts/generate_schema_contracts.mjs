@@ -16,6 +16,21 @@ const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
 {
+  "name": "EventRcsBudgetDocument",
+  "source": "firestore/event_assistance_rcs_budgets.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsBudgetDocument.ts"
+},
+{
+  "name": "EventRcsDispatchDocument",
+  "source": "firestore/event_assistance_rcs_dispatches.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsDispatchDocument.ts"
+},
+{
+  "name": "EventRcsCapabilityObservation",
+  "source": "shared/event_assistance_rcs_capability.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsCapabilityObservation.ts"
+},
+{
   "name": "EventRcsWithdrawalGrantDocument",
   "source": "firestore/event_assistance_rcs_withdrawal_grants.schema.json",
   "typeOutput": "functions/src/shared/generated/eventRcsWithdrawalGrantDocument.ts"

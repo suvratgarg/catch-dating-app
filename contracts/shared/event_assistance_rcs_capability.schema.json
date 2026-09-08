@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_assistance_rcs_capability.schema.json",
+  "title": "EventRcsCapabilityObservation",
+  "$ref": "event_assistance_rcs.schema.json#/definitions/CapabilityObservation"
+}

@@ -26836,6 +26836,217 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRcsBudgetDocumentAgentId = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.agentId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._@-]*\$',
+  );
+
+  static const eventRcsBudgetDocumentApprovalId = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsBudgetDocumentBudgetId = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsBudgetDocumentChargedMicros = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.chargedMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsBudgetDocumentCurrency = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventRcsBudgetDocumentEndsAt = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.endsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsBudgetDocumentLimitMicros = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.limitMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsBudgetDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsBudgetDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRcsBudgetDocumentScopeContextEventId = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.scope.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsBudgetDocumentScopeContextMode = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.scope.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsBudgetDocumentScopeContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.scope.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsBudgetDocumentScopeDay = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.scope.day',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^\\d{4}-\\d{2}-\\d{2}\$',
+  );
+
+  static const eventRcsBudgetDocumentScopeKind = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.scope.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsBudgetDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsBudgetDocumentStartsAt = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.startsAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsBudgetDocumentStatus = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.status',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['active', 'paused'],
+  );
+
+  static const eventRcsBudgetDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventRcsBudgetDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsCapabilityObservationAgentId = CatchContractFieldConstraints(
+    path: 'eventRcsCapabilityObservation.agentId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._@-]*\$',
+  );
+
+  static const eventRcsCapabilityObservationCheckedAt = CatchContractFieldConstraints(
+    path: 'eventRcsCapabilityObservation.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsCapabilityObservationConfigHash = CatchContractFieldConstraints(
+    path: 'eventRcsCapabilityObservation.configHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsCapabilityObservationPermissionHash = CatchContractFieldConstraints(
+    path: 'eventRcsCapabilityObservation.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsCapabilityObservationRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventRcsCapabilityObservation.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsCapabilityObservationRequestId = CatchContractFieldConstraints(
+    path: 'eventRcsCapabilityObservation.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\$',
+  );
+
+  static const eventRcsCapabilityObservationSenderId = CatchContractFieldConstraints(
+    path: 'eventRcsCapabilityObservation.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsCapabilityObservationSupportsOpenUrl = CatchContractFieldConstraints(
+    path: 'eventRcsCapabilityObservation.supportsOpenUrl',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRcsCapabilityObservationValidUntil = CatchContractFieldConstraints(
+    path: 'eventRcsCapabilityObservation.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventRcsConsentReceiptDocumentAppliedRevision = CatchContractFieldConstraints(
     path: 'eventRcsConsentReceiptDocument.appliedRevision',
     required: true,
@@ -26976,6 +27187,343 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentAgentId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.agentId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._@-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentAttemptId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.attemptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^attempt:[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentAuthorityHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.authorityHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentBindingRevision = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.bindingRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentBudgetDebits = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.budgetDebits',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 2,
+    maxItems: 2,
+    uniqueItems: true,
+  );
+
+  static const eventRcsDispatchDocumentBudgetDebitsItemsApprovalId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.budgetDebits.items.approvalId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentBudgetDebitsItemsBudgetId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.budgetDebits.items.budgetId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentBudgetDebitsItemsChargedAfterMicros = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.budgetDebits.items.chargedAfterMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentBudgetDebitsItemsChargedBeforeMicros = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.budgetDebits.items.chargedBeforeMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentBudgetDebitsItemsRevisionAfter = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.budgetDebits.items.revisionAfter',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentBudgetDebitsItemsRevisionBefore = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.budgetDebits.items.revisionBefore',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentCapabilityAgentId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.capability.agentId',
+    maxLength: 512,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._@-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentCapabilityCheckedAt = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.capability.checkedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentCapabilityConfigHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.capability.configHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentCapabilityPermissionHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.capability.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentCapabilityRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.capability.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentCapabilityRequestId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.capability.requestId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\$',
+  );
+
+  static const eventRcsDispatchDocumentCapabilitySenderId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.capability.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentCapabilitySupportsOpenUrl = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.capability.supportsOpenUrl',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRcsDispatchDocumentCapabilityValidUntil = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.capability.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentConfigHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.configHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRcsDispatchDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.context.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentCurrency = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.currency',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Z]{3}\$',
+  );
+
+  static const eventRcsDispatchDocumentEndpointHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.endpointHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentExpiresAt = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentGrantId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.grantId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{32}\$',
+  );
+
+  static const eventRcsDispatchDocumentGuestGrantHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.guestGrantHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentMaxCostMicros = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.maxCostMicros',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 1000000000,
+  );
+
+  static const eventRcsDispatchDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentPayloadHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.payloadHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentPermissionHash = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.permissionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRcsDispatchDocumentPermissionId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.permissionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentPermissionRevision = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.permissionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentProviderMessageId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.providerMessageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}\$',
+  );
+
+  static const eventRcsDispatchDocumentQuoteRevision = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.quoteRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRcsDispatchDocumentRecipientEndpointId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.recipientEndpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRcsDispatchDocumentRegion = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.region',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['asia', 'europe', 'us'],
+  );
+
+  static const eventRcsDispatchDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventRcsDispatchDocumentSenderId = CatchContractFieldConstraints(
+    path: 'eventRcsDispatchDocument.senderId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const eventRcsPermissionDocumentAttendeeGeneration = CatchContractFieldConstraints(
@@ -83141,6 +83689,33 @@ abstract final class CatchContractConstraints {
     'eventPrivateAccessDocument.eventId': eventPrivateAccessDocumentEventId,
     'eventPrivateAccessDocument.inviteCode': eventPrivateAccessDocumentInviteCode,
     'eventPrivateAccessDocument.organizerId': eventPrivateAccessDocumentOrganizerId,
+    'eventRcsBudgetDocument.agentId': eventRcsBudgetDocumentAgentId,
+    'eventRcsBudgetDocument.approvalId': eventRcsBudgetDocumentApprovalId,
+    'eventRcsBudgetDocument.budgetId': eventRcsBudgetDocumentBudgetId,
+    'eventRcsBudgetDocument.chargedMicros': eventRcsBudgetDocumentChargedMicros,
+    'eventRcsBudgetDocument.currency': eventRcsBudgetDocumentCurrency,
+    'eventRcsBudgetDocument.endsAt': eventRcsBudgetDocumentEndsAt,
+    'eventRcsBudgetDocument.limitMicros': eventRcsBudgetDocumentLimitMicros,
+    'eventRcsBudgetDocument.revision': eventRcsBudgetDocumentRevision,
+    'eventRcsBudgetDocument.schemaVersion': eventRcsBudgetDocumentSchemaVersion,
+    'eventRcsBudgetDocument.scope.context.eventId': eventRcsBudgetDocumentScopeContextEventId,
+    'eventRcsBudgetDocument.scope.context.mode': eventRcsBudgetDocumentScopeContextMode,
+    'eventRcsBudgetDocument.scope.context.organizerId': eventRcsBudgetDocumentScopeContextOrganizerId,
+    'eventRcsBudgetDocument.scope.day': eventRcsBudgetDocumentScopeDay,
+    'eventRcsBudgetDocument.scope.kind': eventRcsBudgetDocumentScopeKind,
+    'eventRcsBudgetDocument.senderId': eventRcsBudgetDocumentSenderId,
+    'eventRcsBudgetDocument.startsAt': eventRcsBudgetDocumentStartsAt,
+    'eventRcsBudgetDocument.status': eventRcsBudgetDocumentStatus,
+    'eventRcsBudgetDocument.updatedAt': eventRcsBudgetDocumentUpdatedAt,
+    'eventRcsCapabilityObservation.agentId': eventRcsCapabilityObservationAgentId,
+    'eventRcsCapabilityObservation.checkedAt': eventRcsCapabilityObservationCheckedAt,
+    'eventRcsCapabilityObservation.configHash': eventRcsCapabilityObservationConfigHash,
+    'eventRcsCapabilityObservation.permissionHash': eventRcsCapabilityObservationPermissionHash,
+    'eventRcsCapabilityObservation.recipientEndpointId': eventRcsCapabilityObservationRecipientEndpointId,
+    'eventRcsCapabilityObservation.requestId': eventRcsCapabilityObservationRequestId,
+    'eventRcsCapabilityObservation.senderId': eventRcsCapabilityObservationSenderId,
+    'eventRcsCapabilityObservation.supportsOpenUrl': eventRcsCapabilityObservationSupportsOpenUrl,
+    'eventRcsCapabilityObservation.validUntil': eventRcsCapabilityObservationValidUntil,
     'eventRcsConsentReceiptDocument.appliedRevision': eventRcsConsentReceiptDocumentAppliedRevision,
     'eventRcsConsentReceiptDocument.attendeeGeneration': eventRcsConsentReceiptDocumentAttendeeGeneration,
     'eventRcsConsentReceiptDocument.attendeeId': eventRcsConsentReceiptDocumentAttendeeId,
@@ -83160,6 +83735,49 @@ abstract final class CatchContractConstraints {
     'eventRcsConsentReceiptDocument.senderId': eventRcsConsentReceiptDocumentSenderId,
     'eventRcsConsentReceiptDocument.source': eventRcsConsentReceiptDocumentSource,
     'eventRcsConsentReceiptDocument.sourceGeneration': eventRcsConsentReceiptDocumentSourceGeneration,
+    'eventRcsDispatchDocument.agentId': eventRcsDispatchDocumentAgentId,
+    'eventRcsDispatchDocument.attemptId': eventRcsDispatchDocumentAttemptId,
+    'eventRcsDispatchDocument.attendeeId': eventRcsDispatchDocumentAttendeeId,
+    'eventRcsDispatchDocument.authorityHash': eventRcsDispatchDocumentAuthorityHash,
+    'eventRcsDispatchDocument.bindingRevision': eventRcsDispatchDocumentBindingRevision,
+    'eventRcsDispatchDocument.budgetDebits': eventRcsDispatchDocumentBudgetDebits,
+    'eventRcsDispatchDocument.budgetDebits.items.approvalId': eventRcsDispatchDocumentBudgetDebitsItemsApprovalId,
+    'eventRcsDispatchDocument.budgetDebits.items.budgetId': eventRcsDispatchDocumentBudgetDebitsItemsBudgetId,
+    'eventRcsDispatchDocument.budgetDebits.items.chargedAfterMicros': eventRcsDispatchDocumentBudgetDebitsItemsChargedAfterMicros,
+    'eventRcsDispatchDocument.budgetDebits.items.chargedBeforeMicros': eventRcsDispatchDocumentBudgetDebitsItemsChargedBeforeMicros,
+    'eventRcsDispatchDocument.budgetDebits.items.revisionAfter': eventRcsDispatchDocumentBudgetDebitsItemsRevisionAfter,
+    'eventRcsDispatchDocument.budgetDebits.items.revisionBefore': eventRcsDispatchDocumentBudgetDebitsItemsRevisionBefore,
+    'eventRcsDispatchDocument.capability.agentId': eventRcsDispatchDocumentCapabilityAgentId,
+    'eventRcsDispatchDocument.capability.checkedAt': eventRcsDispatchDocumentCapabilityCheckedAt,
+    'eventRcsDispatchDocument.capability.configHash': eventRcsDispatchDocumentCapabilityConfigHash,
+    'eventRcsDispatchDocument.capability.permissionHash': eventRcsDispatchDocumentCapabilityPermissionHash,
+    'eventRcsDispatchDocument.capability.recipientEndpointId': eventRcsDispatchDocumentCapabilityRecipientEndpointId,
+    'eventRcsDispatchDocument.capability.requestId': eventRcsDispatchDocumentCapabilityRequestId,
+    'eventRcsDispatchDocument.capability.senderId': eventRcsDispatchDocumentCapabilitySenderId,
+    'eventRcsDispatchDocument.capability.supportsOpenUrl': eventRcsDispatchDocumentCapabilitySupportsOpenUrl,
+    'eventRcsDispatchDocument.capability.validUntil': eventRcsDispatchDocumentCapabilityValidUntil,
+    'eventRcsDispatchDocument.configHash': eventRcsDispatchDocumentConfigHash,
+    'eventRcsDispatchDocument.context.eventId': eventRcsDispatchDocumentContextEventId,
+    'eventRcsDispatchDocument.context.mode': eventRcsDispatchDocumentContextMode,
+    'eventRcsDispatchDocument.context.organizerId': eventRcsDispatchDocumentContextOrganizerId,
+    'eventRcsDispatchDocument.createdAt': eventRcsDispatchDocumentCreatedAt,
+    'eventRcsDispatchDocument.currency': eventRcsDispatchDocumentCurrency,
+    'eventRcsDispatchDocument.endpointHash': eventRcsDispatchDocumentEndpointHash,
+    'eventRcsDispatchDocument.expiresAt': eventRcsDispatchDocumentExpiresAt,
+    'eventRcsDispatchDocument.grantId': eventRcsDispatchDocumentGrantId,
+    'eventRcsDispatchDocument.guestGrantHash': eventRcsDispatchDocumentGuestGrantHash,
+    'eventRcsDispatchDocument.maxCostMicros': eventRcsDispatchDocumentMaxCostMicros,
+    'eventRcsDispatchDocument.messageId': eventRcsDispatchDocumentMessageId,
+    'eventRcsDispatchDocument.payloadHash': eventRcsDispatchDocumentPayloadHash,
+    'eventRcsDispatchDocument.permissionHash': eventRcsDispatchDocumentPermissionHash,
+    'eventRcsDispatchDocument.permissionId': eventRcsDispatchDocumentPermissionId,
+    'eventRcsDispatchDocument.permissionRevision': eventRcsDispatchDocumentPermissionRevision,
+    'eventRcsDispatchDocument.providerMessageId': eventRcsDispatchDocumentProviderMessageId,
+    'eventRcsDispatchDocument.quoteRevision': eventRcsDispatchDocumentQuoteRevision,
+    'eventRcsDispatchDocument.recipientEndpointId': eventRcsDispatchDocumentRecipientEndpointId,
+    'eventRcsDispatchDocument.region': eventRcsDispatchDocumentRegion,
+    'eventRcsDispatchDocument.schemaVersion': eventRcsDispatchDocumentSchemaVersion,
+    'eventRcsDispatchDocument.senderId': eventRcsDispatchDocumentSenderId,
     'eventRcsPermissionDocument.attendeeGeneration': eventRcsPermissionDocumentAttendeeGeneration,
     'eventRcsPermissionDocument.attendeeId': eventRcsPermissionDocumentAttendeeId,
     'eventRcsPermissionDocument.context.eventId': eventRcsPermissionDocumentContextEventId,

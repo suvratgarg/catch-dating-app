@@ -156,7 +156,8 @@ export function prepareEventRcs(input: RcsContentInput): PreparedRcsContent {
 }
 
 /** Freeze content and expiry at claim time; retain them for transport retry. */
-export function renderEventRcs(input: RcsContentInput & {attemptId: string}):
+export function renderEventRcs(input: RcsContentInput & {attemptId: string;
+  expiresBy?: number}):
   RenderedRcs {
   const prepared = prepareEventRcs(input);
   const {attemptId, now, config} = input;
@@ -169,7 +170,12 @@ export function renderEventRcs(input: RcsContentInput & {attemptId: string}):
       "ce-rcs-web1." + attemptId.slice(8),
     openUrlAction: {url: prepared.responseUrl}}});
   }
+  if (input.expiresBy !== undefined &&
+      (!rbmTime(input.expiresBy) || input.expiresBy <= now)) {
+    throw new Error("Invalid RCS delivery deadline");
+  }
   const expiresAt = Math.min(prepared.validUntil,
+    input.expiresBy ?? prepared.validUntil,
     now + config.maxQueueSeconds * 1000);
   const contentMessage = {text: prepared.text, suggestions};
   const body = rbmSendBody({messageId: providerMessageId, contentMessage,

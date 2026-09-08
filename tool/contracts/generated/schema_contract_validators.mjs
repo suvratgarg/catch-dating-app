@@ -3,6 +3,9 @@
 
 import {createRequire} from "node:module";
 import {
+  eventRcsBudgetDocumentSchema,
+  eventRcsDispatchDocumentSchema,
+  eventRcsCapabilityObservationSchema,
   eventRcsWithdrawalGrantDocumentSchema,
   getEventRcsWithdrawalCallablePayloadSchema,
   withdrawEventRcsCallablePayloadSchema,
@@ -666,6 +669,9 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateEventRcsBudgetDocument = ajv.compile(eventRcsBudgetDocumentSchema);
+export const validateEventRcsDispatchDocument = ajv.compile(eventRcsDispatchDocumentSchema);
+export const validateEventRcsCapabilityObservation = ajv.compile(eventRcsCapabilityObservationSchema);
 export const validateEventRcsWithdrawalGrantDocument = ajv.compile(eventRcsWithdrawalGrantDocumentSchema);
 export const validateGetEventRcsWithdrawalCallablePayload = ajv.compile(getEventRcsWithdrawalCallablePayloadSchema);
 export const validateWithdrawEventRcsCallablePayload = ajv.compile(withdrawEventRcsCallablePayloadSchema);

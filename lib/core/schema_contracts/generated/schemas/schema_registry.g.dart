@@ -17,6 +17,21 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'EventRcsBudgetDocument',
+    source: 'firestore/event_assistance_rcs_budgets.schema.json',
+    schema: schemaEventRcsBudgetDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventRcsDispatchDocument',
+    source: 'firestore/event_assistance_rcs_dispatches.schema.json',
+    schema: schemaEventRcsDispatchDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventRcsCapabilityObservation',
+    source: 'shared/event_assistance_rcs_capability.schema.json',
+    schema: schemaEventRcsCapabilityObservationSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventRcsWithdrawalGrantDocument',
     source: 'firestore/event_assistance_rcs_withdrawal_grants.schema.json',
     schema: schemaEventRcsWithdrawalGrantDocumentSchema,
@@ -3214,6 +3229,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'EventRcsBudgetDocument': schemaEventRcsBudgetDocumentSchema,
+  'EventRcsDispatchDocument': schemaEventRcsDispatchDocumentSchema,
+  'EventRcsCapabilityObservation': schemaEventRcsCapabilityObservationSchema,
   'EventRcsWithdrawalGrantDocument': schemaEventRcsWithdrawalGrantDocumentSchema,
   'GetEventRcsWithdrawalCallablePayload': schemaGetEventRcsWithdrawalCallablePayloadSchema,
   'WithdrawEventRcsCallablePayload': schemaWithdrawEventRcsCallablePayloadSchema,
@@ -3856,6 +3874,9 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'firestore/event_assistance_rcs_budgets.schema.json': schemaEventRcsBudgetDocumentSchema,
+  'firestore/event_assistance_rcs_dispatches.schema.json': schemaEventRcsDispatchDocumentSchema,
+  'shared/event_assistance_rcs_capability.schema.json': schemaEventRcsCapabilityObservationSchema,
   'firestore/event_assistance_rcs_withdrawal_grants.schema.json': schemaEventRcsWithdrawalGrantDocumentSchema,
   'callables/get_event_rcs_withdrawal_payload.schema.json': schemaGetEventRcsWithdrawalCallablePayloadSchema,
   'callables/withdraw_event_rcs_payload.schema.json': schemaWithdrawEventRcsCallablePayloadSchema,

@@ -2496,6 +2496,30 @@
         "getEventRcsWithdrawal",
         "withdrawEventRcs"
       ]
+    },
+    {
+      "id": "eventAssistanceRcsBudgets",
+      "path": "eventAssistanceRcsBudgets/{budgetId}",
+      "rulesMatch": "/eventAssistanceRcsBudgets/{budgetId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-service RCS dispatch",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Explicit approved event and UTC sender-day limits. Agent and currency must match the current sender; both worst-case charges commit once with an outbox claim."
+      ]
+    },
+    {
+      "id": "eventAssistanceRcsDispatches",
+      "path": "eventAssistanceRcsDispatches/{attemptId}",
+      "rulesMatch": "/eventAssistanceRcsDispatches/{attemptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-service RCS dispatch",
+      "read": "server only",
+      "write": "server only",
+      "migrationNotes": [
+        "Immutable claim evidence binds the exact payload, expiry, provider message ID, permission, capability observation and two budget debits. Acceptance or expiry alone does not prove non-delivery."
+      ]
     }
   ]
 }

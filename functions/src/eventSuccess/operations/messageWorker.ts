@@ -9,11 +9,14 @@ import type {EventSmsWorker, SmsWorkerResult} from "./smsWorker";
 import type {EventWhatsappWorker, WhatsappWorkerResult} from
   "./whatsappWorker";
 
+import type {EventRcsWorker, RcsWorkerResult} from "./rcsWorker";
+
 type Workers = {
+  rcs?: Pick<EventRcsWorker, "prepareChannel">;
   sms?: Pick<EventSmsWorker, "prepareChannel">;
   whatsapp?: Pick<EventWhatsappWorker, "prepareChannel">;
 };
-type WorkerResult = SmsWorkerResult | WhatsappWorkerResult;
+type WorkerResult = SmsWorkerResult | WhatsappWorkerResult | RcsWorkerResult;
 type Outcome = Extract<WorkerResult, {kind: "submitted"}>["outcome"];
 type Channel = PreparedMessageChannel<Outcome>;
 export type EventMessageWorkerResult =
@@ -60,7 +63,8 @@ export class EventMessageWorker {
     // bounded routes first keeps secret latency outside short-lived permits.
     await Promise.all(message.intent.permittedRoutes.map(async (routeId) => {
       const worker = routeId === "catchEventSms" ? this.workers.sms :
-        routeId === "organizerEventWhatsapp" ? this.workers.whatsapp : null;
+        routeId === "organizerEventWhatsapp" ? this.workers.whatsapp :
+          routeId === "catchEventRcs" ? this.workers.rcs : null;
       const channel = worker ? await worker.prepareChannel(linkId) :
         {kind: "unavailable" as const, reason: "senderUnavailable" as const};
       if (channel.kind === "ready" && channel.routeId !== routeId) {

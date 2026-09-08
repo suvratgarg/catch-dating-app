@@ -5,6 +5,9 @@
 // Aggregate inventory for tests and tools only.
 // Runtime consumers import individual validators.
 
+export {validateEventRcsBudgetDocument} from "./validators/eventRcsBudgetDocument";
+export {validateEventRcsDispatchDocument} from "./validators/eventRcsDispatchDocument";
+export {validateEventRcsCapabilityObservation} from "./validators/eventRcsCapabilityObservation";
 export {validateEventRcsWithdrawalGrantDocument} from "./validators/eventRcsWithdrawalGrantDocument";
 export {validateGetEventRcsWithdrawalCallablePayload} from "./validators/getEventRcsWithdrawalInput";
 export {validateWithdrawEventRcsCallablePayload} from "./validators/withdrawEventRcsInput";

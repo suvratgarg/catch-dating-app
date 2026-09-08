@@ -27,7 +27,7 @@ export const keys = {currentKeyId: "fixture-key",
 export const appSecret = "fixture-stop-secret";
 export async function harness(realDb?: Firestore, id = "test",
   permittedRoutes: MessageRecord["intent"]["permittedRoutes"] =
-  ["organizerEventWhatsapp"]) {
+  ["organizerEventWhatsapp"], eventEnd = start + 3_600_000) {
   const fake = new ProgressFirestore();
   const db = realDb ?? fake as unknown as Firestore;
   const clock = {now: start};
@@ -48,8 +48,7 @@ export async function harness(realDb?: Firestore, id = "test",
   const policyPath = WHATSAPP_POLICIES + "/" + scope.senderId;
   const attendeePath = "eventAttendees/" + scope.attendeeId;
   const stamp = {_seconds: start / 1000, _nanoseconds: 0};
-  const progress = await seedJoiningProgress(db, context, start,
-    start + 3_600_000);
+  const progress = await seedJoiningProgress(db, context, start, eventEnd);
   await write(attendeePath, {organizerId: context.organizerId,
     eventId: context.eventId, status: "registered", linkedUid: actor.uid,
     phoneE164: actor.phone, createdAt: stamp});
@@ -103,7 +102,8 @@ export async function harness(realDb?: Firestore, id = "test",
     attendeeId: scope.attendeeId,
     episodeId: guest.episodeId,
     workflow: {kind: "lateJoin", occurrenceId: "s1"},
-    createdAt: start, expiresAt: start + 1_800_000,
+    createdAt: start, expiresAt: Math.min(start + 1_800_000,
+      progress.guidance.validUntil),
     permittedRoutes,
     deliveryPolicy: {maxAttempts: 2,
       maxAttemptsPerRoute: 1, minimumRetrySeconds: 1}, kind: "joiningUpdate",

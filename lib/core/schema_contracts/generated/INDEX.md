@@ -12,6 +12,9 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| EventRcsBudgetDocument | `firestore/event_assistance_rcs_budgets.schema.json` | `functions/src/shared/generated/eventRcsBudgetDocument.ts` |
+| EventRcsDispatchDocument | `firestore/event_assistance_rcs_dispatches.schema.json` | `functions/src/shared/generated/eventRcsDispatchDocument.ts` |
+| EventRcsCapabilityObservation | `shared/event_assistance_rcs_capability.schema.json` | `functions/src/shared/generated/eventRcsCapabilityObservation.ts` |
 | EventRcsWithdrawalGrantDocument | `firestore/event_assistance_rcs_withdrawal_grants.schema.json` | `functions/src/shared/generated/eventRcsWithdrawalGrantDocument.ts` |
 | GetEventRcsWithdrawalCallablePayload | `callables/get_event_rcs_withdrawal_payload.schema.json` | `functions/src/shared/generated/getEventRcsWithdrawalInput.ts` |
 | WithdrawEventRcsCallablePayload | `callables/withdraw_event_rcs_payload.schema.json` | `functions/src/shared/generated/withdrawEventRcsInput.ts` |
@@ -656,6 +659,9 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaEventRcsBudgetDocumentSchema` | EventRcsBudgetDocument | `firestore/event_assistance_rcs_budgets.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_budget_document.g.dart` |
+| `schemaEventRcsDispatchDocumentSchema` | EventRcsDispatchDocument | `firestore/event_assistance_rcs_dispatches.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_dispatch_document.g.dart` |
+| `schemaEventRcsCapabilityObservationSchema` | EventRcsCapabilityObservation | `shared/event_assistance_rcs_capability.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_capability_observation.g.dart` |
 | `schemaEventRcsWithdrawalGrantDocumentSchema` | EventRcsWithdrawalGrantDocument | `firestore/event_assistance_rcs_withdrawal_grants.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rcs_withdrawal_grant_document.g.dart` |
 | `schemaGetEventRcsWithdrawalCallablePayloadSchema` | GetEventRcsWithdrawalCallablePayload | `callables/get_event_rcs_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_rcs_withdrawal_callable_payload.g.dart` |
 | `schemaWithdrawEventRcsCallablePayloadSchema` | WithdrawEventRcsCallablePayload | `callables/withdraw_event_rcs_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/withdraw_event_rcs_callable_payload.g.dart` |
