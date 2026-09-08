@@ -427,17 +427,17 @@ class _CompactControlFamily extends StatelessWidget {
               ),
               _MeasuredControl(
                 label: '40',
-                child: CatchIconButton.icon(
+                child: CatchIconAction.icon(
                   icon: CatchIcons.tuneRounded,
-                  size: CatchIconButton.navSize,
-                  onTap: _noop,
+                  size: CatchIconAction.navSize,
+                  onPressed: _noop,
                 ),
               ),
               _MeasuredControl(
                 label: '44',
-                child: CatchIconButton.icon(
+                child: CatchIconAction.icon(
                   icon: CatchIcons.tuneRounded,
-                  onTap: _noop,
+                  onPressed: _noop,
                 ),
               ),
             ],
@@ -450,16 +450,19 @@ class _CompactControlFamily extends StatelessWidget {
             spacing: CatchSpacing.s5,
             runSpacing: CatchSpacing.s4,
             children: [
-              CatchIconButton.icon(icon: CatchIcons.tuneRounded, onTap: _noop),
-              CatchIconButton.icon(
+              CatchIconAction.icon(
                 icon: CatchIcons.tuneRounded,
-                variant: CatchIconButtonVariant.float,
-                onTap: _noop,
+                onPressed: _noop,
               ),
-              CatchIconButton.icon(
+              CatchIconAction.icon(
                 icon: CatchIcons.tuneRounded,
-                variant: CatchIconButtonVariant.plain,
-                onTap: _noop,
+                variant: CatchIconActionVariant.float,
+                onPressed: _noop,
+              ),
+              CatchIconAction.icon(
+                icon: CatchIcons.tuneRounded,
+                variant: CatchIconActionVariant.plain,
+                onPressed: _noop,
               ),
             ],
           ),
@@ -467,12 +470,12 @@ class _CompactControlFamily extends StatelessWidget {
         _PreviewCard(
           title: 'Counted icon action',
           note: 'The canonical icon action owns its typed count badge.',
-          child: CatchIconButton.counted(
+          child: CatchIconAction.counted(
             icon: CatchIcons.tuneRounded,
             count: 3,
-            variant: CatchIconButtonVariant.plain,
+            variant: CatchIconActionVariant.plain,
             tooltip: '3 active filters',
-            onTap: _noop,
+            onPressed: _noop,
           ),
         ),
       ],

@@ -65,14 +65,14 @@ void main() {
     );
     final topBarButtons = find.descendant(
       of: topBar,
-      matching: find.byType(CatchIconButton),
+      matching: find.byType(CatchIconAction),
     );
     expect(topBarButtons, findsNWidgets(3));
     expect(
       tester
-          .widgetList<CatchIconButton>(topBarButtons)
+          .widgetList<CatchIconAction>(topBarButtons)
           .map((button) => button.variant),
-      everyElement(CatchIconButtonVariant.bordered),
+      everyElement(CatchIconActionVariant.bordered),
     );
     expect(
       find.descendant(

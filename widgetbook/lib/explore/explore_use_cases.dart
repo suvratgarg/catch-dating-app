@@ -1395,35 +1395,35 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Counted filter action',
-  type: CatchIconButton,
+  type: CatchIconAction,
   path: '[Explore]/Controls',
 )
 Widget exploreCountedFilterActionStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchIconButton.counted filter action',
+    title: 'CatchIconAction.counted filter action',
     catalogId: 'catch.icon_button',
     children: [
       _StateCard(
         label: 'inactive',
         child: Center(
-          child: CatchIconButton.counted(
+          child: CatchIconAction.counted(
             icon: CatchIcons.tuneRounded,
             count: 0,
-            variant: CatchIconButtonVariant.plain,
+            variant: CatchIconActionVariant.plain,
             tooltip: 'Filters',
-            onTap: _noop,
+            onPressed: _noop,
           ),
         ),
       ),
       _StateCard(
         label: 'active count',
         child: Center(
-          child: CatchIconButton.counted(
+          child: CatchIconAction.counted(
             icon: CatchIcons.tuneRounded,
             count: 3,
-            variant: CatchIconButtonVariant.plain,
+            variant: CatchIconActionVariant.plain,
             tooltip: 'Filters, 3 active',
-            onTap: _noop,
+            onPressed: _noop,
           ),
         ),
       ),

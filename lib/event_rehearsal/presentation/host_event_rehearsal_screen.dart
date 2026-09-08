@@ -134,7 +134,7 @@ class _HostEventRehearsalScreenState
               context.l10n.hostEventRehearsalTitle,
           titleMaxLines: topBarTitleMaxLines,
           leadingType: CatchTopBarLeading.back,
-          leading: CatchIconAction(
+          leading: CatchIconAction.toolbar(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: CatchIcons.arrowBackIosNewRounded,
             onPressed: () =>
@@ -707,8 +707,8 @@ class _RehearsalCoachDock extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchSurface(
-          width: CatchIconButton.navSize,
-          height: CatchIconButton.navSize,
+          width: CatchIconAction.navSize,
+          height: CatchIconAction.navSize,
           radius: CatchRadius.sm,
           backgroundColor: t.danger,
           child: Icon(CatchIcons.scienceOutlined, color: t.primaryInk),

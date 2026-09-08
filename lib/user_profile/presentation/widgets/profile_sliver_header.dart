@@ -46,7 +46,7 @@ class ProfileSettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchIconAction(
+    return CatchIconAction.toolbar(
       icon: CatchIcons.settingsOutlined,
       tooltip: context.l10n.userProfileProfileSliverHeaderTooltipSettings,
       onPressed: () => context.pushNamed(Routes.settingsScreen.name),

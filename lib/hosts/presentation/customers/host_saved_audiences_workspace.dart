@@ -134,7 +134,7 @@ class _HostSavedAudiencesDirectoryState
               first: true,
               title: context.l10n.hostSavedAudiencesManage,
               count: visible.length,
-              trailing: CatchTextButton(
+              trailing: CatchButton.text(
                 key: const ValueKey('host-saved-audience-create'),
                 label: context.l10n.hostSavedAudienceNew,
                 onPressed: onCreate,

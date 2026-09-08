@@ -153,9 +153,9 @@ class _ProfileReactionCommentSheetState
       keyboardSafe: true,
       action: Row(
         children: [
-          CatchTextButton(
+          CatchButton.text(
             label: context.l10n.swipesProfileReactionControlsLabelCancel,
-            tone: CatchTextButtonTone.neutral,
+            tone: CatchButtonTone.neutral,
             onPressed: () => Navigator.of(context).pop(),
           ),
           const Spacer(),
@@ -256,9 +256,9 @@ class ReactionControlButton extends StatelessWidget {
         child: AnimatedOpacity(
           opacity: isEnabled || isPending ? 1 : CatchOpacity.disabledControl,
           duration: const Duration(milliseconds: 120),
-          child: CatchIconButton(
-            onTap: isEnabled ? onPressed : null,
-            background: background,
+          child: CatchIconAction(
+            onPressed: isEnabled ? onPressed : null,
+            backgroundColor: background,
             borderColor: border,
             child: isPending
                 ? SizedBox.square(

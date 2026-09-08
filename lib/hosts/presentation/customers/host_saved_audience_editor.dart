@@ -578,9 +578,9 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
       title: context.l10n.hostSavedAudienceCondition(number: number),
       trailing: !canRemove
           ? null
-          : CatchTextButton(
+          : CatchButton.text(
               label: context.l10n.hostSavedAudienceRemoveRule,
-              tone: CatchTextButtonTone.danger,
+              tone: CatchButtonTone.danger,
               onPressed: enabled ? onRemove : null,
             ),
       children: [

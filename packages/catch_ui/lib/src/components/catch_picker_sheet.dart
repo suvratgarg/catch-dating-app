@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_picker_copy.dart';
-import 'package:catch_ui/src/components/catch_text_button.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:flutter/cupertino.dart';
@@ -42,9 +42,9 @@ class CatchPickerSheet extends StatelessWidget {
                   children: [
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: CatchTextButton(
+                      child: CatchButton.text(
                         label: copy.cancelLabel,
-                        tone: CatchTextButtonTone.neutral,
+                        tone: CatchButtonTone.neutral,
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         padding: const EdgeInsets.symmetric(
@@ -67,7 +67,7 @@ class CatchPickerSheet extends StatelessWidget {
                     ),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: CatchTextButton(
+                      child: CatchButton.text(
                         label: copy.doneLabel,
                         minimumSize: Size.zero,
                         tapTargetSize: MaterialTapTargetSize.shrinkWrap,

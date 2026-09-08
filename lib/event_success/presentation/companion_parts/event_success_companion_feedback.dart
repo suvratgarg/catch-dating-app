@@ -221,8 +221,8 @@ class RatingRow extends StatelessWidget {
           child: Text(label, style: CatchTextStyles.sectionTitle(context)),
         ),
         for (var i = 1; i <= 5; i++)
-          CatchIconAction(
-            size: CatchIconButton.defaultSize,
+          CatchIconAction.toolbar(
+            size: CatchIconAction.defaultSize,
             tooltip: context.l10n
                 .eventSuccessEventSuccessCompanionFeedbackTooltipLabelI(
                   label: label,
@@ -258,8 +258,8 @@ class CounterRow extends StatelessWidget {
             style: CatchTextStyles.sectionTitle(context),
           ),
         ),
-        CatchIconAction(
-          size: CatchIconButton.defaultSize,
+        CatchIconAction.toolbar(
+          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessCompanionFeedbackTooltipDecreasePeopleMet,
@@ -273,8 +273,8 @@ class CounterRow extends StatelessWidget {
           ),
           style: CatchTextStyles.sectionTitle(context),
         ),
-        CatchIconAction(
-          size: CatchIconButton.defaultSize,
+        CatchIconAction.toolbar(
+          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessCompanionFeedbackTooltipIncreasePeopleMet,

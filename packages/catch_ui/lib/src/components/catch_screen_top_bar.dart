@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
+import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_screen_header.dart';
 import 'package:catch_ui/src/components/catch_top_bar.dart';
 import 'package:catch_ui/src/components/catch_top_bar_leading.dart';
@@ -206,8 +206,8 @@ class CatchScreenTopBar extends StatelessWidget implements PreferredSizeWidget {
       textHeight += CatchLayout.topBarLargeTextActionReserve;
     }
 
-    final actionExtent = CatchIconButton.targetExtentFor(
-      CatchIconButton.navSize,
+    final actionExtent = CatchIconAction.targetExtentFor(
+      CatchIconAction.navSize,
     );
     final contentHeight = textHeight > actionExtent ? textHeight : actionExtent;
     // Text layout can round a scaled glyph run slightly above the nominal

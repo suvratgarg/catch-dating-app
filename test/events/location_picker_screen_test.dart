@@ -45,7 +45,7 @@ void main() {
           findsOneWidget,
         );
         expect(find.byType(CatchField), findsOneWidget);
-        final backButtonSize = tester.getSize(find.byType(CatchIconButton));
+        final backButtonSize = tester.getSize(find.byType(CatchIconAction));
         final searchFieldSize = tester.getSize(find.byType(CatchField));
         final targetExtent = defaultTargetPlatform == TargetPlatform.iOS
             ? 44.0

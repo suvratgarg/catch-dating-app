@@ -273,19 +273,19 @@ class HostEventRosterPanel extends StatelessWidget {
                     ),
                     gapW12,
                     if (onMessageGuests != null) ...[
-                      CatchIconButton.icon(
+                      CatchIconAction.icon(
                         icon: CatchIcons.forumOutlined,
                         tooltip: context
                             .l10n
                             .hostsHostEventRosterDrawerMessageGuests,
-                        onTap: onMessageGuests,
+                        onPressed: onMessageGuests,
                       ),
                       gapW8,
                     ],
-                    CatchIconButton.icon(
+                    CatchIconAction.icon(
                       icon: CatchIcons.closeRounded,
                       tooltip: context.l10n.hostsHostEventRosterDrawerClose,
-                      onTap: onClose,
+                      onPressed: onClose,
                     ),
                   ],
                 ),

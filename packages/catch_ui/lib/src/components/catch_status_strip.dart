@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
+import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_status_strip_data.dart';
-import 'package:catch_ui/src/components/catch_text_button.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -89,15 +89,15 @@ class CatchStatusStrip extends StatelessWidget {
                       children: [
                         for (final action in status.actions)
                           if (action.icon != null)
-                            CatchIconButton.icon(
+                            CatchIconAction.icon(
                               icon: action.icon!,
                               tooltip: action.label,
-                              onTap: action.onPressed,
+                              onPressed: action.onPressed,
                               accent: status.color,
-                              variant: CatchIconButtonVariant.plain,
+                              variant: CatchIconActionVariant.plain,
                             )
                           else
-                            CatchTextButton(
+                            CatchButton.text(
                               label: action.label,
                               onPressed: action.onPressed,
                               foregroundColor: foreground,

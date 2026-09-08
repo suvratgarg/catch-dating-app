@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
   "sourceDigest": "sha256:77d987b6381e21f1c65e500e78ad4390a27dd629426326c0f33204b929dabf32",
-  "resolvedDigest": "sha256:956b505b63a0adb43db8b817c1af81384902abdbf45e3ebae3b6086fa3e4c9eb",
+  "resolvedDigest": "sha256:5643249af42938049fb2fdd842251f7fb6ea753d6d6cda84ea95435eb4ec3d3f",
   "feature": {
     "id": "feature.dashboard_home",
     "name": "Dashboard Home",
@@ -1574,7 +1574,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -1617,12 +1618,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },

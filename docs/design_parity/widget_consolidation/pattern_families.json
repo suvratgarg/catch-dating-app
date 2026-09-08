@@ -277,10 +277,10 @@
       "priority": "P1",
       "status": "implemented",
       "targetContract": "catch.icon_button + catch.button",
-      "qualityReference": "CatchIconButton",
+      "qualityReference": "CatchIconAction",
       "decisionSource": "user-approved:2026-07-13",
       "acceptedVisualDelta": [
-        "Icon-only actions remain CatchIconButton; labelled floating actions retain a separate repaired contract while sharing family metrics.",
+        "Icon-only actions remain CatchIconAction; labelled floating actions retain a separate repaired contract while sharing family metrics.",
         "Compact icon actions use 44px minimum targets except the documented 40px app-bar navigation case.",
         "Counted icon actions accept integer counts and render CatchCountBadge internally.",
         "Picker triggers, toggle and loading adapters, bounded-step inputs, and media mutations retain their semantic boundaries while sharing renderers and metrics."
@@ -289,10 +289,10 @@
         {
           "id": "C1",
           "prompt": "Should icon-only and labelled floating actions remain separate public widgets?",
-          "recommendation": "Keep CatchIconButton for icon-only actions and a repaired labelled control, with shared family metrics.",
-          "selectedOption": "Keep CatchIconButton for icon-only actions and a repaired labelled control, with shared family metrics.",
+          "recommendation": "Keep CatchIconAction for icon-only actions and a repaired labelled control, with shared family metrics.",
+          "selectedOption": "Keep CatchIconAction for icon-only actions and a repaired labelled control, with shared family metrics.",
           "options": [
-            "Keep CatchIconButton for icon-only actions and a repaired labelled control, with shared family metrics.",
+            "Keep CatchIconAction for icon-only actions and a repaired labelled control, with shared family metrics.",
             "Replace both with one widget and named constructors."
           ]
         },
@@ -342,7 +342,7 @@
           "rationale": "Its floating recipe preserves the repaired labelled control while the icon-only role stays distinct."
         },
         {
-          "symbol": "CatchIconButton",
+          "symbol": "CatchIconAction",
           "disposition": "canonical",
           "preview": "required",
           "rationale": "Use its icon-only semantics, disabled state, floating palette, and 44px default as the ergonomic reference for compact icon commands."
@@ -350,14 +350,14 @@
         {
           "symbol": "ExploreFilterGlyphButton",
           "disposition": "unify",
-          "target": "CatchIconButton.counted",
+          "target": "CatchIconAction.counted",
           "preview": "not-applicable",
           "rationale": "Replace the custom 40px InkWell and separately composed badge with the canonical counted icon-action contract."
         },
         {
           "symbol": "DashboardNotificationBellButton",
           "disposition": "unify",
-          "target": "CatchIconButton.counted",
+          "target": "CatchIconAction.counted",
           "preview": "not-applicable",
           "rationale": "Its filled/unfilled notification mapping is useful evidence, but its only production caller can configure the shared counted icon action directly."
         },
@@ -365,12 +365,12 @@
           "symbol": "DockBell",
           "disposition": "register",
           "preview": "required",
-          "rationale": "Keep this feature adapter because it adds toggled and pending semantics while already delegating visual rendering to CatchIconButton."
+          "rationale": "Keep this feature adapter because it adds toggled and pending semantics while already delegating visual rendering to CatchIconAction."
         },
         {
           "symbol": "ProfileHeightStepButton",
           "disposition": "unify",
-          "target": "CatchIconButton",
+          "target": "CatchIconAction",
           "preview": "not-applicable",
           "rationale": "Replace the custom 36px Material circle with the canonical icon renderer while leaving bounded-step state in the profile input adapter."
         }
@@ -629,30 +629,30 @@
     {
       "id": "swipe-reaction-control-boundary",
       "title": "Swipe reaction control boundary",
-      "intent": "Determine whether CatchesPassButton and ReactionControlButton need independent rendering or should configure the existing CatchIconButton concept while retaining pass/reaction behavior in feature adapters.",
+      "intent": "Determine whether CatchesPassButton and ReactionControlButton need independent rendering or should configure the existing CatchIconAction concept while retaining pass/reaction behavior in feature adapters.",
       "priority": "P0",
       "status": "implemented",
-      "targetContract": "CatchIconButton plus feature-owned pass/reaction adapters",
-      "qualityReference": "CatchIconButton",
+      "targetContract": "CatchIconAction plus feature-owned pass/reaction adapters",
+      "qualityReference": "CatchIconAction",
       "decisionSource": "owner-approved:2026-07-19",
       "acceptedVisualDelta": [
-        "CatchesPassButton now uses CatchIconButton's canonical floating-action shadow instead of feature-local Material elevation; ReactionControlButton retains its no-shadow bordered treatment. Both retain feature palettes, sizes, semantics, pending states, and stable test keys."
+        "CatchesPassButton now uses CatchIconAction's canonical floating-action shadow instead of feature-local Material elevation; ReactionControlButton retains its no-shadow bordered treatment. Both retain feature palettes, sizes, semantics, pending states, and stable test keys."
       ],
       "reviewQuestions": [
         {
           "id": "SRC1",
-          "prompt": "Should pass and reaction controls keep two renderers, or share CatchIconButton with feature-owned semantics?",
-          "recommendation": "Share CatchIconButton rendering and retain small feature adapters only where pending-state semantics or stable test keys require them; do not create another core concept.",
-          "selectedOption": "Share CatchIconButton rendering and keep only behavior-bearing feature adapters.",
+          "prompt": "Should pass and reaction controls keep two renderers, or share CatchIconAction with feature-owned semantics?",
+          "recommendation": "Share CatchIconAction rendering and retain small feature adapters only where pending-state semantics or stable test keys require them; do not create another core concept.",
+          "selectedOption": "Share CatchIconAction rendering and keep only behavior-bearing feature adapters.",
           "options": [
-            "Share CatchIconButton rendering and keep only behavior-bearing feature adapters.",
+            "Share CatchIconAction rendering and keep only behavior-bearing feature adapters.",
             "Keep independent CatchesPassButton and ReactionControlButton renderers."
           ]
         }
       ],
       "members": [
         {
-          "symbol": "CatchIconButton",
+          "symbol": "CatchIconAction",
           "disposition": "canonical",
           "preview": "required",
           "rationale": "Owns the shared circular icon-action renderer, interaction surface, disabled behavior, and floating-action elevation treatment."
@@ -660,16 +660,16 @@
         {
           "symbol": "CatchesPassButton",
           "disposition": "unify",
-          "target": "CatchIconButton",
+          "target": "CatchIconAction",
           "preview": "required",
-          "rationale": "Retains pass localization, pending semantics, SwipeKeys.passButton, palette, and 56px geometry while delegating rendering to CatchIconButton."
+          "rationale": "Retains pass localization, pending semantics, SwipeKeys.passButton, palette, and 56px geometry while delegating rendering to CatchIconAction."
         },
         {
           "symbol": "ReactionControlButton",
           "disposition": "unify",
-          "target": "CatchIconButton",
+          "target": "CatchIconAction",
           "preview": "required",
-          "rationale": "Retains overlay/inline reaction palettes and pending semantics while delegating rendering to CatchIconButton."
+          "rationale": "Retains overlay/inline reaction palettes and pending semantics while delegating rendering to CatchIconAction."
         }
       ]
     },
@@ -1602,6 +1602,47 @@
           "target": "CatchButton.floating",
           "preview": "not-applicable",
           "rationale": "A labelled floating action is a button recipe. The integer badge and optional secondary value remain typed; icon-only controls keep their separate role."
+        }
+      ]
+    },
+    {
+      "id": "compact-action-canonical-recipes",
+      "title": "Canonical text and icon action recipes",
+      "intent": "Converge labelled text actions into Button and icon-only renderers/adapters into IconAction, with meaningful recipe distinctions.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.button + catch.icon_button",
+      "qualityReference": "CatchIconAction",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve native text-action focus/feedback, all target floors, toolbar glyph colors, counted overlays and selection/fill combinations."
+      ],
+      "members": [
+        {
+          "symbol": "CatchButton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Labelled actions share one owner; native text interaction is a recipe with the same action responsibility."
+        },
+        {
+          "symbol": "CatchTextButton",
+          "disposition": "unify",
+          "target": "CatchButton.text",
+          "preview": "not-applicable",
+          "rationale": "Native text-button rendering does not justify another public Button concept."
+        },
+        {
+          "symbol": "CatchIconAction",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One icon-only action owns rendering plus the former required-tooltip toolbar recipe."
+        },
+        {
+          "symbol": "CatchIconButton",
+          "disposition": "unify",
+          "target": "CatchIconAction",
+          "preview": "not-applicable",
+          "rationale": "The old Action wrapper already delegated to this renderer. Merge them under the deterministic IconAction role."
         }
       ]
     }

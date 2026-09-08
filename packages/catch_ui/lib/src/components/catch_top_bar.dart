@@ -1,6 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
 import 'package:catch_ui/src/components/catch_person_avatar.dart';
 import 'package:catch_ui/src/components/catch_screen_top_bar.dart';
 import 'package:catch_ui/src/components/catch_search_field.dart';
@@ -18,7 +17,7 @@ import 'package:flutter/material.dart';
 /// Canonical Catch app-bar primitive.
 ///
 /// Mirrors the design handoff's `AppBar`: compact or large title chrome,
-/// standard back/close [CatchIconButton] composition, optional trailing action, and
+/// standard back/close [CatchIconAction] composition, optional trailing action, and
 /// declarative expanding search.
 class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   const CatchTopBar({
@@ -34,7 +33,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     this.titleWidgetIncludesSupplementalText = false,
     this.leading,
     this.leadingType = CatchTopBarLeading.auto,
-    this.leadingActionVariant = CatchIconButtonVariant.bordered,
+    this.leadingActionVariant = CatchIconActionVariant.bordered,
     this.actions = const <Widget>[],
     this.showBackButton,
     this.onBack,
@@ -65,7 +64,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     this.onIdentityTap,
     this.leading,
     this.leadingType = CatchTopBarLeading.auto,
-    this.leadingActionVariant = CatchIconButtonVariant.bordered,
+    this.leadingActionVariant = CatchIconActionVariant.bordered,
     this.actions = const <Widget>[],
     this.showBackButton,
     this.onBack,
@@ -107,7 +106,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   final VoidCallback? onIdentityTap;
   final Widget? leading;
   final CatchTopBarLeading leadingType;
-  final CatchIconButtonVariant leadingActionVariant;
+  final CatchIconActionVariant leadingActionVariant;
   final List<Widget> actions;
   final bool? showBackButton;
   final VoidCallback? onBack;
@@ -220,7 +219,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
       if (wantsLeading) {
         final isClose = type == CatchTopBarLeading.close;
         final localizations = MaterialLocalizations.of(context);
-        leading = CatchIconAction(
+        leading = CatchIconAction.toolbar(
           tooltip: isClose
               ? localizations.closeButtonTooltip
               : localizations.backButtonTooltip,
@@ -475,9 +474,9 @@ class _CatchTopBarState extends State<CatchTopBar> {
                                   trailingEdge,
                                   if (trailing != null) gapW4,
                                   SizedBox(
-                                    width: CatchIconButton.targetExtentFor(
+                                    width: CatchIconAction.targetExtentFor(
                                       widget.search?.collapsedExtent ??
-                                          CatchIconButton.navSize,
+                                          CatchIconAction.navSize,
                                     ),
                                   ),
                                 ],

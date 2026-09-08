@@ -128,11 +128,11 @@ class _CatchCelebrationScreenState
                         alignment: Alignment.centerRight,
                         child: !showCloseButton || widget.onClose == null
                             ? gapH44
-                            : CatchIconButton(
-                                background: _celebrationCream.withValues(
+                            : CatchIconAction(
+                                backgroundColor: _celebrationCream.withValues(
                                   alpha: 0.22,
                                 ),
-                                onTap: widget.onClose,
+                                onPressed: widget.onClose,
                                 child: Icon(
                                   CatchIcons.closeRounded,
                                   color: _celebrationInk,
@@ -289,9 +289,9 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   if (showCloseButton && onClose != null) ...[
                     Align(
                       alignment: Alignment.centerRight,
-                      child: CatchIconButton(
-                        background: t.primarySoft,
-                        onTap: onClose,
+                      child: CatchIconAction(
+                        backgroundColor: t.primarySoft,
+                        onPressed: onClose,
                         child: Icon(CatchIcons.closeRounded, color: t.primary),
                       ),
                     ),

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:29134dd066b5ed235fe7aff133f5b85282a068017daa584fd195baa697922e40",
-  "resolvedDigest": "sha256:71d1f66657a64566c84a63b9718f1bf1e11eeb1f5b92e67ceac4628999fa8cfd",
+  "resolvedDigest": "sha256:eda18da2b892571b72b6705289c97edef98695cc2fdbc1a35b9620a060479686",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -1663,7 +1663,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -1695,12 +1696,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },
@@ -3944,7 +3946,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -3987,12 +3990,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },

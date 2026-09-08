@@ -721,8 +721,8 @@ class _EventCheckInQrScannerSheetState
                   message: context
                       .l10n
                       .eventSuccessEventSuccessCompanionLiveCardsMessageClose,
-                  child: CatchIconButton(
-                    onTap: () => Navigator.of(context).maybePop(),
+                  child: CatchIconAction(
+                    onPressed: () => Navigator.of(context).maybePop(),
                     child: Icon(
                       CatchIcons.closeRounded,
                       size: CatchIcon.md,
@@ -923,8 +923,8 @@ class StageCueLine extends StatelessWidget {
                       : context
                             .l10n
                             .eventSuccessEventSuccessCompanionLiveCardsMessageCopyCue,
-                  child: CatchIconButton(
-                    onTap: () => _copyCue(context, cue),
+                  child: CatchIconAction(
+                    onPressed: () => _copyCue(context, cue),
                     child: Icon(
                       CatchIcons.contentCopyRounded,
                       size: CatchIcon.md,

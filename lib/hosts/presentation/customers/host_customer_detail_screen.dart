@@ -114,7 +114,7 @@ class _HostCustomerDetailScreenState
             CatchTopBarMenuAction<_HostCustomerRecordAction>(
               key: const ValueKey('host-customer-record-actions'),
               tooltip: context.l10n.hostCustomersMoreActions,
-              variant: CatchIconButtonVariant.plain,
+              variant: CatchIconActionVariant.plain,
               enabled: !_updatingCustomer && !_openingConversation,
               items: [
                 if (MediaQuery.textScalerOf(context).scale(1) >=

@@ -401,13 +401,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     }
 
     Widget savedEventsAction({bool onDarkBackdrop = false}) {
-      return CatchIconAction(
+      return CatchIconAction.toolbar(
         icon: CatchIcons.bookmarkBorderRounded,
         tooltip: context.l10n.exploreExploreScreenTooltipSavedEvents,
         onPressed: () => context.push(Routes.savedEventsScreen.path),
         variant: onDarkBackdrop
-            ? CatchIconButtonVariant.plain
-            : CatchIconButtonVariant.bordered,
+            ? CatchIconActionVariant.plain
+            : CatchIconActionVariant.bordered,
         backgroundColor: onDarkBackdrop ? Colors.transparent : null,
         foregroundColor: onDarkBackdrop ? CatchTokens.dark.ink : null,
       );

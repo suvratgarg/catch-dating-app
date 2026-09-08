@@ -72,14 +72,14 @@ void main() {
       label: 'Go',
       onPressed: activate,
     ),
-    'explicit small icon': (activate) => CatchIconButton(
+    'explicit small icon': (activate) => CatchIconAction(
       key: _controlKey,
       size: 20,
       tooltip: 'Go',
-      onTap: activate,
+      onPressed: activate,
       child: const Icon(Icons.add),
     ),
-    'top-bar icon': (activate) => CatchIconAction(
+    'top-bar icon': (activate) => CatchIconAction.toolbar(
       key: _controlKey,
       icon: Icons.add,
       tooltip: 'Go',
@@ -91,7 +91,7 @@ void main() {
       label: 'Go',
       onPressed: activate,
     ),
-    'text button with compact overrides': (activate) => CatchTextButton(
+    'text button with compact overrides': (activate) => CatchButton.text(
       key: _controlKey,
       label: 'Go',
       onPressed: activate,
@@ -286,7 +286,7 @@ void main() {
                   size: CatchButtonSize.sm,
                   onPressed: () {},
                 ),
-                CatchTextButton(
+                CatchButton.text(
                   label: 'Retry saving these changes',
                   onPressed: () {},
                 ),
@@ -346,7 +346,7 @@ void main() {
           ),
           scale: scale,
         );
-        final clear = find.byType(CatchIconButton);
+        final clear = find.byType(CatchIconAction);
         expect(
           tester.getSize(clear).height,
           greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
@@ -418,22 +418,22 @@ void main() {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchIconButton(
+            CatchIconAction(
               size: 20,
               tooltip: 'Left',
-              onTap: () => left++,
+              onPressed: () => left++,
               child: const Icon(Icons.chevron_left),
             ),
-            CatchIconButton(
+            CatchIconAction(
               size: 20,
               tooltip: 'Right',
-              onTap: () => right++,
+              onPressed: () => right++,
               child: const Icon(Icons.chevron_right),
             ),
           ],
         ),
       );
-      final icons = find.byType(CatchIconButton);
+      final icons = find.byType(CatchIconAction);
       final first = tester.getRect(icons.first);
       final second = tester.getRect(icons.last);
       expect(first.right, lessThanOrEqualTo(second.left));
@@ -489,7 +489,7 @@ void main() {
                   leadingType: CatchTopBarLeading.none,
                   actions: [
                     for (var i = 0; i < 3; i++)
-                      CatchIconAction(
+                      CatchIconAction.toolbar(
                         icon: Icons.add,
                         tooltip: 'Action $i',
                         onPressed: () {},
@@ -501,7 +501,7 @@ void main() {
             ),
           ),
         );
-        for (final item in find.byType(CatchIconButton).evaluate()) {
+        for (final item in find.byType(CatchIconAction).evaluate()) {
           expect(
             tester.getSize(find.byWidget(item.widget)).width,
             greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
@@ -555,7 +555,7 @@ void main() {
         onSelected: (_) {},
       ),
     );
-    final trigger = find.byType(CatchIconButton);
+    final trigger = find.byType(CatchIconAction);
     expect(
       tester.getSize(trigger).height,
       greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
@@ -639,10 +639,10 @@ void main() {
   ) async {
     await _pump(
       tester,
-      CatchIconButton(
+      CatchIconAction(
         size: 20,
         tooltip: 'Open',
-        onTap: () {},
+        onPressed: () {},
         child: const Icon(Icons.add),
       ),
     );
@@ -652,12 +652,12 @@ void main() {
     final visualRect = tester.getRect(find.byType(CatchSurface));
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer(location: const Offset(400, 400));
-    await mouse.moveTo(tester.getCenter(find.byType(CatchIconButton)));
+    await mouse.moveTo(tester.getCenter(find.byType(CatchIconAction)));
     await tester.pump();
     final hovered = fill();
     expect(hovered, isNot(resting));
     expect(tester.getRect(find.byType(CatchSurface)), visualRect);
-    await mouse.down(tester.getCenter(find.byType(CatchIconButton)));
+    await mouse.down(tester.getCenter(find.byType(CatchIconAction)));
     await tester.pump();
     expect(fill(), isNot(hovered));
     await mouse.up();

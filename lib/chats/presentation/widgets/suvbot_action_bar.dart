@@ -107,11 +107,13 @@ class SuvbotActionBar extends StatelessWidget {
                       button: true,
                       child: Tooltip(
                         message: helpAction.label,
-                        child: CatchIconButton(
+                        child: CatchIconAction(
                           size: CatchLayout.suvbotCircleActionExtent,
-                          background: t.surface,
-                          disabled: pending,
-                          onTap: pending
+                          backgroundColor: t.surface,
+                          status: (pending)
+                              ? CatchIconActionStatus.disabled
+                              : CatchIconActionStatus.enabled,
+                          onPressed: pending
                               ? null
                               : () => unawaited(onAction(helpAction)),
                           child: Icon(

@@ -212,12 +212,12 @@ class _EventPinsMapState extends State<EventPinsMap> {
             child: SafeArea(
               child: Padding(
                 padding: CatchInsets.eventMapOverviewControl,
-                child: CatchIconButton(
-                  variant: CatchIconButtonVariant.float,
+                child: CatchIconAction(
+                  variant: CatchIconActionVariant.float,
                   tooltip: context
                       .l10n
                       .eventsEventPinsMapTooltipShowAllEventsAndDistance,
-                  onTap: _restoreOverview,
+                  onPressed: _restoreOverview,
                   child: Icon(CatchIcons.fitMap),
                 ),
               ),

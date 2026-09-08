@@ -19,18 +19,18 @@ void main() {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             spacing: 20,
             children: [
-              for (final tone in CatchTextButtonTone.values)
+              for (final tone in CatchButtonTone.values)
                 Row(
                   children: [
                     Expanded(
-                      child: CatchTextButton(
+                      child: CatchButton.text(
                         label: 'Try again',
                         tone: tone,
                         onPressed: _noop,
                       ),
                     ),
                     Expanded(
-                      child: CatchTextButton(
+                      child: CatchButton.text(
                         label: 'Try again',
                         tone: tone,
                         onPressed: null,
@@ -38,12 +38,12 @@ void main() {
                     ),
                   ],
                 ),
-              const CatchTextButton(
+              const CatchButton.text(
                 label: 'Open a longer action',
                 leading: Icon(Icons.open_in_new),
                 onPressed: _noop,
               ),
-              CatchTextButton(
+              CatchButton.text(
                 label: 'Custom color',
                 onPressed: _noop,
                 foregroundColor: CatchTokens.of(context).danger,
@@ -51,55 +51,55 @@ void main() {
                 side: BorderSide(color: CatchTokens.of(context).line2),
                 padding: const EdgeInsets.all(12),
               ),
-              for (final variant in CatchIconButtonVariant.values)
+              for (final variant in CatchIconActionVariant.values)
                 Wrap(
                   spacing: 24,
                   children: [
-                    CatchIconButton.icon(
+                    CatchIconAction.icon(
                       icon: Icons.favorite,
                       tooltip: 'Save',
                       variant: variant,
-                      onTap: _noop,
+                      onPressed: _noop,
                     ),
-                    CatchIconButton.icon(
+                    CatchIconAction.icon(
                       icon: Icons.favorite,
                       tooltip: 'Saved',
                       variant: variant,
                       active: true,
-                      onTap: _noop,
+                      onPressed: _noop,
                     ),
-                    CatchIconButton.icon(
+                    CatchIconAction.icon(
                       icon: Icons.favorite,
                       tooltip: 'Save unavailable',
                       variant: variant,
-                      disabled: true,
-                      onTap: _noop,
+                      status: CatchIconActionStatus.disabled,
+                      onPressed: _noop,
                     ),
-                    CatchIconButton.counted(
+                    CatchIconAction.counted(
                       icon: Icons.notifications,
                       tooltip: 'Notifications',
                       variant: variant,
                       count: 123,
-                      onTap: _noop,
+                      onPressed: _noop,
                     ),
                   ],
                 ),
               const Wrap(
                 spacing: 24,
                 children: [
-                  CatchIconAction(
+                  CatchIconAction.toolbar(
                     icon: Icons.close,
                     tooltip: 'Close',
                     onPressed: _noop,
                   ),
-                  CatchIconAction(
+                  CatchIconAction.toolbar(
                     icon: Icons.close,
                     tooltip: 'Close unavailable',
                   ),
-                  CatchIconAction(
+                  CatchIconAction.toolbar(
                     icon: Icons.close,
                     tooltip: 'Close overlay',
-                    variant: CatchIconButtonVariant.float,
+                    variant: CatchIconActionVariant.float,
                     onPressed: _noop,
                   ),
                 ],

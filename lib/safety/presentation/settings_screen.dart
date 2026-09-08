@@ -231,7 +231,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             title: context.l10n.safetySettingsScreenTitleSettings,
             leadingType: CatchTopBarLeading.back,
             leading: operationPending
-                ? CatchIconAction(
+                ? CatchIconAction.toolbar(
                     icon: CatchIcons.arrowBackIosNewRounded,
                     tooltip: MaterialLocalizations.of(
                       context,

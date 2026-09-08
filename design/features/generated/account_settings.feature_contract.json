@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
-  "resolvedDigest": "sha256:4f463298c55ca5492eccdd466d67a30ece99c66b9e9f248fb17c5f53aec23942",
+  "resolvedDigest": "sha256:a348ddeef222a869a40c90187c897b5fd839460dae75b0288f384f8093bb0455",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2044,7 +2044,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },

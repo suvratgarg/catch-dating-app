@@ -685,10 +685,10 @@ void _registerExploreDiscoveryWidgetsTests() {
   ) async {
     const topInset = 47.0;
     Widget heroAction({required IconData icon, required String tooltip}) {
-      return CatchIconAction(
+      return CatchIconAction.toolbar(
         icon: icon,
         tooltip: tooltip,
-        variant: CatchIconButtonVariant.plain,
+        variant: CatchIconActionVariant.plain,
         backgroundColor: Colors.transparent,
         foregroundColor: CatchTokens.dark.ink,
         onPressed: _noop,
@@ -754,7 +754,7 @@ void _registerExploreDiscoveryWidgetsTests() {
     final searchIcon = find.byIcon(CatchIcons.search);
     expect(searchIcon, findsOneWidget);
     final searchHitTargetTop =
-        tester.getCenter(searchIcon).dy - CatchIconButton.navSize / 2;
+        tester.getCenter(searchIcon).dy - CatchIconAction.navSize / 2;
     expect(searchHitTargetTop, greaterThanOrEqualTo(topInset));
 
     final title = tester.widget<Text>(find.text('Explore'));
@@ -794,7 +794,7 @@ void _registerExploreDiscoveryWidgetsTests() {
       );
       final buttonFinder = find.ancestor(
         of: find.byIcon(icon),
-        matching: find.byType(CatchIconButton),
+        matching: find.byType(CatchIconAction),
       );
       final buttonBox = tester.widget<DecoratedBox>(
         find.descendant(of: buttonFinder, matching: find.byType(DecoratedBox)),

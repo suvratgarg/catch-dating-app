@@ -289,11 +289,11 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
                   top: CatchSpacing.s5,
                   bottom: CatchSpacing.s5,
                 ),
-                child: CatchIconButton(
-                  variant: CatchIconButtonVariant.float,
+                child: CatchIconAction(
+                  variant: CatchIconActionVariant.float,
                   tooltip:
                       context.l10n.exploreExploreMapScreenTooltipBackToExplore,
-                  onTap: () {
+                  onPressed: () {
                     catchTransitionHaptic();
                     if (context.canPop()) context.pop();
                   },

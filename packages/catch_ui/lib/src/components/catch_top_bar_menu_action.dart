@@ -1,6 +1,6 @@
 import 'package:catch_ui/src/components/catch_action_menu.dart';
 import 'package:catch_ui/src/components/catch_action_menu_item.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
+import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +11,7 @@ class CatchTopBarMenuAction<T> extends StatelessWidget {
     required this.tooltip,
     this.onSelected,
     this.enabled = true,
-    this.variant = CatchIconButtonVariant.bordered,
+    this.variant = CatchIconActionVariant.bordered,
     IconData? icon,
     // Keep the public parameter name as `icon` while storing the optional
     // override privately.
@@ -22,7 +22,7 @@ class CatchTopBarMenuAction<T> extends StatelessWidget {
   final ValueChanged<T>? onSelected;
   final String tooltip;
   final bool enabled;
-  final CatchIconButtonVariant variant;
+  final CatchIconActionVariant variant;
   final IconData? _icon;
 
   IconData get icon => _icon ?? CatchIcons.moreHorizRounded;

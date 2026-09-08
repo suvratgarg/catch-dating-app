@@ -53,7 +53,7 @@ class SwipeHubScreen extends ConsumerWidget {
             iconColor: t.primary,
             backgroundColor: t.primarySoft,
             borderColor: t.primarySoft,
-            size: CatchIconButton.navSize,
+            size: CatchIconAction.navSize,
             iconSize: CatchIcon.md,
             radius: CatchRadius.pill,
           ),

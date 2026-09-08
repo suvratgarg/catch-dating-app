@@ -452,12 +452,12 @@ class WaitlistOfferLeading extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
-        CatchTextButton(
+        CatchButton.text(
           label: isDeclining
               ? context.l10n.eventsEventDetailCtaLabelDeclining
               : context.l10n.eventsEventDetailCtaLabelDecline,
           onPressed: onDecline,
-          tone: CatchTextButtonTone.neutral,
+          tone: CatchButtonTone.neutral,
           padding: EdgeInsets.zero,
         ),
       ],

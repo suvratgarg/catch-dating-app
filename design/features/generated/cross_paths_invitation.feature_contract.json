@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/cross_paths_invitation.feature.json",
   "generatedFor": "2026-08-06",
   "sourceDigest": "sha256:f7c1c48c708574510f02cee90e840b42d11b6765f6f3514e7217935cbef51fff",
-  "resolvedDigest": "sha256:b6d7fbd2ba2f8a60abc357f7d4bcce3db7ce6baf46cb1754cb40d71cadb055c4",
+  "resolvedDigest": "sha256:4ca2b22a700631c2875f0979b2b7d9ff1e7067f05f5eee0b06fbdf4b88fdd358",
   "feature": {
     "id": "feature.cross_paths_invitation",
     "name": "Cross Paths Invitation",
@@ -584,7 +584,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },

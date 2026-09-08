@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
+import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_top_bar_tab_label.dart';
 import 'package:catch_ui/src/foundations/catch_adaptive_platform.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
@@ -16,7 +16,7 @@ class CatchTopBarTabBar extends StatefulWidget
 
   @override
   Size get preferredSize => Size.fromHeight(
-    CatchIconButton.targetExtentFor(CatchLayout.topBarTabHeight),
+    CatchIconAction.targetExtentFor(CatchLayout.topBarTabHeight),
   );
 
   @override

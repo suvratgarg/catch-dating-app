@@ -377,11 +377,13 @@ class CatchRosterDecideTarget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchIconButton(
-      onTap: onTap,
-      disabled: onTap == null,
-      variant: CatchIconButtonVariant.plain,
-      background: t.surface,
+    return CatchIconAction(
+      onPressed: onTap,
+      status: (onTap == null)
+          ? CatchIconActionStatus.disabled
+          : CatchIconActionStatus.enabled,
+      variant: CatchIconActionVariant.plain,
+      backgroundColor: t.surface,
       borderColor: color.withValues(alpha: CatchOpacity.mutedBorderUrgent),
       size: CatchLayout.rosterDecideTargetExtent,
       tooltip: label,

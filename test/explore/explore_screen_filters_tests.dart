@@ -651,7 +651,7 @@ void _registerExploreScreenFiltersTests() {
       await tester.pump(midSearchMorphFrame);
 
       final morphingSearchWidth = tester.getSize(_topLevelSearchField()).width;
-      expect(morphingSearchWidth, greaterThan(CatchIconButton.navSize));
+      expect(morphingSearchWidth, greaterThan(CatchIconAction.navSize));
 
       await _pumpClubUi(tester);
 

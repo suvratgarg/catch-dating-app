@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_text_button.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
@@ -166,7 +166,7 @@ class CatchBanner extends StatelessWidget {
           for (final action in actions) ...[gapW8, action],
           if (onRetry != null) ...[
             gapW8,
-            CatchTextButton(
+            CatchButton.text(
               label: retryLabel!,
               onPressed: onRetry,
               foregroundColor: colorScheme.error,

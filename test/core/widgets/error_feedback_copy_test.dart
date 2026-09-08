@@ -23,7 +23,7 @@ void main() {
             message: 'Booking updated.',
             duration: const Duration(milliseconds: 800),
             actions: [
-              CatchTextButton(label: 'View', onPressed: () => actions++),
+              CatchButton.text(label: 'View', onPressed: () => actions++),
             ],
           ),
         ),
@@ -124,7 +124,7 @@ void main() {
     expect(find.text('Accès refusé.'), findsOneWidget);
     expect(find.text('Réessayer'), findsOneWidget);
     expect(find.text('Try again'), findsNothing);
-    expect(find.byType(CatchTextButton), findsOneWidget);
+    expect(find.byType(CatchButton), findsOneWidget);
     await tester.tap(find.text('Réessayer'));
     expect(retries, 1);
   });

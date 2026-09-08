@@ -53,7 +53,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.swipesEventRecapScreenTitleEventRecap,
         divider: scrolledUnder,
-        leading: CatchIconAction(
+        leading: CatchIconAction.toolbar(
           icon: CatchIcons.closeRounded,
           tooltip: context.l10n.swipesEventRecapScreenTooltipCloseRecap,
           onPressed: () => context.pop(),

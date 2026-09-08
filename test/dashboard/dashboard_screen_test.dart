@@ -156,10 +156,10 @@ void main() {
         );
         await tester.pump();
 
-        final button = tester.widget<CatchIconButton>(
-          find.byType(CatchIconButton),
+        final button = tester.widget<CatchIconAction>(
+          find.byType(CatchIconAction),
         );
-        expect(button.size, CatchIconButton.navSize);
+        expect(button.size, CatchIconAction.navSize);
         expect(find.byIcon(CatchIcons.notificationsRounded), findsOneWidget);
         expect(find.text('2'), findsOneWidget);
         expect(find.byTooltip('Notifications'), findsOneWidget);

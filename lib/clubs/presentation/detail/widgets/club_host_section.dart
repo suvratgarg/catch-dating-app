@@ -159,9 +159,9 @@ class ClubHostRow extends StatelessWidget {
           gapW8,
           Tooltip(
             message: context.l10n.clubsClubHostSectionMessageMessageHost,
-            child: CatchIconButton(
+            child: CatchIconAction(
               key: ValueKey<String>('club-host-message-${host.uid}'),
-              onTap: onMessage,
+              onPressed: onMessage,
               child: Icon(
                 CatchIcons.chatBubbleOutlineRounded,
                 size: CatchIcon.control,

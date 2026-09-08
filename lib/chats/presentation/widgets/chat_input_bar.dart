@@ -151,12 +151,14 @@ class _ChatComposer extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (showImageButton)
-                      CatchIconButton(
+                      CatchIconAction(
                         key: ChatInputBar.imageButtonKey,
-                        background: t.surface,
+                        backgroundColor: t.surface,
                         borderColor: t.line2,
-                        disabled: !sendingImage && !imageActionEnabled,
-                        onTap: imageActionEnabled ? onSendImage : null,
+                        status: (!sendingImage && !imageActionEnabled)
+                            ? CatchIconActionStatus.disabled
+                            : CatchIconActionStatus.enabled,
+                        onPressed: imageActionEnabled ? onSendImage : null,
                         tooltip: sendingImage
                             ? context.l10n.chatsChatInputBarLabelUploadingImage
                             : context.l10n.chatsChatInputBarMessageSendAnImage,
@@ -209,12 +211,14 @@ class _ChatComposer extends StatelessWidget {
                       ),
                     ),
                     gapW8,
-                    CatchIconButton(
+                    CatchIconAction(
                       key: ChatInputBar.sendButtonKey,
-                      variant: CatchIconButtonVariant.plain,
-                      background: t.ink,
-                      disabled: !sending && !sendActionEnabled,
-                      onTap: sendActionEnabled ? onSend : null,
+                      variant: CatchIconActionVariant.plain,
+                      backgroundColor: t.ink,
+                      status: (!sending && !sendActionEnabled)
+                          ? CatchIconActionStatus.disabled
+                          : CatchIconActionStatus.enabled,
+                      onPressed: sendActionEnabled ? onSend : null,
                       tooltip: sending
                           ? context.l10n.chatsChatInputBarLabelSendingMessage
                           : context.l10n.chatsChatInputBarMessageSendMessage,

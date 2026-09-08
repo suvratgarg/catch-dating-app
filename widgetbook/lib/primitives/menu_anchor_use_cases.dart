@@ -56,7 +56,7 @@ class WidgetbookMenuAnchorCanvas extends StatelessWidget {
                           ),
                       ],
                       onSelected: (_, _) => controller.close(),
-                      builder: (context, controller, child) => CatchTextButton(
+                      builder: (context, controller, child) => CatchButton.text(
                         label: 'Open menu',
                         onPressed: controller.open,
                       ),

@@ -103,7 +103,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         divider: scrolledUnder,
         actions: [
           if (view == HostFormWorkspaceView.questions && compact)
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.visibilityOutlined,
               tooltip: context.l10n.hostFormPreview,
               onPressed: editorValue == null ? null : _openPreview,
@@ -181,16 +181,16 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                       alignment: WrapAlignment.end,
                       spacing: CatchSpacing.s2,
                       children: [
-                        CatchIconButton(
+                        CatchIconAction(
                           tooltip: context.l10n.hostFormUndo,
-                          onTap: value.canUndo && !value.operationInProgress
+                          onPressed: value.canUndo && !value.operationInProgress
                               ? notifier.undo
                               : null,
                           child: Icon(CatchIcons.undoRounded),
                         ),
-                        CatchIconButton(
+                        CatchIconAction(
                           tooltip: context.l10n.hostFormRedo,
-                          onTap: value.canRedo && !value.operationInProgress
+                          onPressed: value.canRedo && !value.operationInProgress
                               ? notifier.redo
                               : null,
                           child: Icon(CatchIcons.redoRounded),
@@ -1038,7 +1038,7 @@ class _CompactSectionOutline extends StatelessWidget {
     first: sectionIndex == 0,
     trailing: CatchActionMenu<_SectionAction>(
       tooltip: context.l10n.hostFormSectionActions,
-      variant: CatchIconButtonVariant.plain,
+      variant: CatchIconActionVariant.plain,
       items: [
         CatchActionMenuItem(
           value: _SectionAction.edit,

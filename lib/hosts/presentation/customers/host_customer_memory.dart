@@ -69,7 +69,7 @@ class HostCustomerMemorySection extends StatelessWidget {
           title: context.l10n.hostCustomersMemory,
           trailing: notes.isEmpty
               ? null
-              : CatchTextButton(
+              : CatchButton.text(
                   key: const ValueKey('host-customer-add-note'),
                   label: context.l10n.hostCustomersAddNote,
                   textStyle: CatchTextStyles.control(context, selected: true),

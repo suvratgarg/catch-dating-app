@@ -112,7 +112,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
           topBarBuilder: (context, scrolledUnder) => CatchTopBar(
             title: context.l10n.swipesFiltersScreenTitleFilters,
             divider: scrolledUnder,
-            leading: CatchIconAction(
+            leading: CatchIconAction.toolbar(
               icon: CatchIcons.closeRounded,
               tooltip: context.l10n.swipesFiltersScreenTooltipCloseFilters,
               onPressed: saving ? null : () => context.pop(),

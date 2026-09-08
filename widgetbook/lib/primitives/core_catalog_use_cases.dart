@@ -406,31 +406,31 @@ Widget catchSectionHeaderTitleCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchTextButton,
+  name: 'Text states',
+  type: CatchButton,
   path: '[Core catalog]/Actions',
 )
 Widget catchTextButtonCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTextButton',
-    catalogId: 'core.widgets.catch_text_button',
+    title: 'CatchButton.text',
+    catalogId: 'core.widgets.catch_button',
     children: [
       _StateCard(
         label: 'tones',
         child: _InlineWrap(
           children: [
-            CatchTextButton(label: 'Retry', onPressed: _noop),
-            CatchTextButton(
+            CatchButton.text(label: 'Retry', onPressed: _noop),
+            CatchButton.text(
               label: 'Cancel',
-              tone: CatchTextButtonTone.neutral,
+              tone: CatchButtonTone.neutral,
               onPressed: _noop,
             ),
-            CatchTextButton(
+            CatchButton.text(
               label: 'Remove',
-              tone: CatchTextButtonTone.danger,
+              tone: CatchButtonTone.danger,
               onPressed: _noop,
             ),
-            const CatchTextButton(label: 'Disabled', onPressed: null),
+            const CatchButton.text(label: 'Disabled', onPressed: null),
           ],
         ),
       ),
@@ -973,7 +973,7 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
           title: 'Chats',
           subtitle: 'Messages from your matches',
           actions: [
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.search,
               tooltip: 'Search chats',
               onPressed: _noop,
@@ -985,7 +985,7 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
         label: 'root search chrome',
         child: CatchScreenTopBar(
           context: context,
-          leading: CatchIconAction(
+          leading: CatchIconAction.toolbar(
             icon: CatchIcons.locationOnOutlined,
             tooltip: 'Change city',
             onPressed: _noop,
@@ -1054,7 +1054,7 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
           onBack: _noop,
           surface: true,
           actions: [
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.savedOutlined,
               tooltip: 'Save',
               onPressed: _noop,
@@ -1094,12 +1094,12 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
           children: [
             CatchTopBarActionGroup(
               actions: [
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.share,
                   tooltip: 'Share',
                   onPressed: _noop,
                 ),
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.savedOutlined,
                   tooltip: 'Save',
                   onPressed: _noop,
@@ -1109,17 +1109,17 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
             gapH12,
             CatchTopBarActionGroup(
               actions: [
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.share,
                   tooltip: 'Share',
                   onPressed: _noop,
                 ),
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.calendarAdd,
                   tooltip: 'Add to calendar',
                   onPressed: _noop,
                 ),
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.savedOutlined,
                   tooltip: 'Save pending',
                   onPressed: null,
@@ -1177,25 +1177,25 @@ Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
 )
 Widget catchIconActionCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchIconAction',
+    title: 'CatchIconAction.toolbar',
     catalogId: 'core.widgets.catch_icon_action',
     children: [
       _StateCard(
         label: 'default / plain / disabled',
         child: _InlineWrap(
           children: [
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.savedOutlined,
               tooltip: 'Save',
               onPressed: _noop,
             ),
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.share,
               tooltip: 'Share',
-              variant: CatchIconButtonVariant.plain,
+              variant: CatchIconActionVariant.plain,
               onPressed: _noop,
             ),
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.moreHorizRounded,
               tooltip: 'Disabled',
               onPressed: null,
@@ -1895,7 +1895,7 @@ Widget catchBannerCatalogStates(BuildContext context) {
               title: 'Booking pending',
               message: 'We will confirm your spot after payment settles.',
               icon: CatchIcons.infoOutlineRounded,
-              actions: [CatchTextButton(label: 'View', onPressed: _noop)],
+              actions: [CatchButton.text(label: 'View', onPressed: _noop)],
             ),
             gapH12,
             CatchBanner(
@@ -3221,8 +3221,8 @@ Widget catchBottomDockCatalogStates(BuildContext context) {
                     ),
                   ),
                   gapW12,
-                  CatchIconButton(
-                    onTap: _noop,
+                  CatchIconAction(
+                    onPressed: _noop,
                     child: Icon(CatchIcons.sendRounded),
                   ),
                 ],
@@ -3599,7 +3599,7 @@ Widget catchSectionHeaderCatalogStates(BuildContext context) {
           children: [
             CatchSectionHeader(
               title: 'Upcoming events',
-              trailing: CatchTextButton(label: 'See all', onPressed: _noop),
+              trailing: CatchButton.text(label: 'See all', onPressed: _noop),
             ),
             const CatchSectionHeader(
               title: 'Host checklist',

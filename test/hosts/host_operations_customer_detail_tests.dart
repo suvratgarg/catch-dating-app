@@ -431,7 +431,10 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(
       find.descendant(
         of: find.byType(CatchTopBar),
-        matching: find.byType(CatchIconAction),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchIconAction && widget.tooltip == 'Add person',
+        ),
       ),
       findsOneWidget,
     );

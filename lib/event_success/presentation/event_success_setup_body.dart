@@ -99,7 +99,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         draft.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup;
     final formatActions = <Widget>[
       if (widget.editable)
-        CatchTextButton(
+        CatchButton.text(
           key: const ValueKey('eventSuccessCustomizeTools'),
           label: _customizingTools
               ? context
@@ -112,10 +112,10 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               setState(() => _customizingTools = !_customizingTools),
         ),
       if (widget.showResetToRecommended && widget.onResetToRecommended != null)
-        CatchTextButton(
+        CatchButton.text(
           label: context.l10n.eventSuccessEventSuccessSetupBodyLabelReset,
           onPressed: widget.onResetToRecommended,
-          tone: CatchTextButtonTone.neutral,
+          tone: CatchButtonTone.neutral,
         ),
     ];
 

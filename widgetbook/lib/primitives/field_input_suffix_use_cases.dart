@@ -34,7 +34,7 @@ Widget fieldInputSuffixStates(BuildContext context) => WidgetbookCatalogFrame(
         contractExemption: 'Catalog-only text-entry suffix fixture.',
         controller: controller,
         variant: CatchFieldVariant.underline,
-        action: CatchTextButton(label: 'Verify', onPressed: () {}),
+        action: CatchButton.text(label: 'Verify', onPressed: () {}),
       ),
     ),
     WidgetbookTextControllerScope(

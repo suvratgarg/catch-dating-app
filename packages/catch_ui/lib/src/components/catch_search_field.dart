@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
 import 'package:catch_ui/src/components/catch_contract_field_policy.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
+import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_search_field_copy.dart';
 import 'package:catch_ui/src/components/catch_search_field_mode.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
@@ -17,9 +17,9 @@ class CatchSearchField extends StatefulWidget {
   /// Full interactive line box shared with the top-bar slot owner.
   static double heightFor(
     BuildContext context, {
-    double visualExtent = CatchIconButton.navSize,
+    double visualExtent = CatchIconAction.navSize,
   }) {
-    final minimum = CatchIconButton.targetExtentFor(visualExtent);
+    final minimum = CatchIconAction.targetExtentFor(visualExtent);
     final style = CatchTextStyles.bodyM(context);
     final lineBox =
         MediaQuery.textScalerOf(context).scale(style.fontSize!) *
@@ -53,7 +53,7 @@ class CatchSearchField extends StatefulWidget {
        onOpenSearch = null,
        onCloseSearch = null,
        tooltip = null,
-       collapsedExtent = CatchIconButton.navSize;
+       collapsedExtent = CatchIconAction.navSize;
 
   /// A permanently visible browse search.
   ///
@@ -84,7 +84,7 @@ class CatchSearchField extends StatefulWidget {
        onOpenSearch = null,
        onCloseSearch = null,
        tooltip = null,
-       collapsedExtent = CatchIconButton.navSize;
+       collapsedExtent = CatchIconAction.navSize;
 
   /// Search chrome that morphs between a compact trigger and a full field.
   ///
@@ -110,7 +110,7 @@ class CatchSearchField extends StatefulWidget {
     this.onOpenSearch,
     this.onCloseSearch,
     this.tooltip,
-    this.collapsedExtent = CatchIconButton.navSize,
+    this.collapsedExtent = CatchIconAction.navSize,
     this.backgroundColor,
     this.borderColor,
     this.foregroundColor,
@@ -214,14 +214,14 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                 widget.maxWidth ??
                 (constraints.hasBoundedWidth
                     ? constraints.maxWidth
-                    : CatchIconButton.targetExtentFor(widget.collapsedExtent));
+                    : CatchIconAction.targetExtentFor(widget.collapsedExtent));
             final t = CatchTokens.of(context);
             final placeholder = widget.placeholder ?? widget.copy.searchLabel;
             final tooltip = widget.tooltip ?? widget.copy.searchLabel;
             final foreground = widget.foregroundColor ?? t.ink;
             final mutedForeground = widget.mutedForegroundColor ?? t.ink3;
             final clampedProgress = progress.clamp(0.0, 1.0);
-            final collapsedExtent = CatchIconButton.targetExtentFor(
+            final collapsedExtent = CatchIconAction.targetExtentFor(
               widget.collapsedExtent,
             );
             final fieldHeight = CatchSearchField.heightFor(
@@ -354,19 +354,19 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                         if (isEmpty && onPressed == null) {
                                           return SizedBox(
                                             width:
-                                                CatchIconButton.targetExtentFor(
+                                                CatchIconAction.targetExtentFor(
                                                   CatchLayout
                                                       .searchFieldClearSize,
                                                 ),
                                           );
                                         }
 
-                                        return CatchIconButton(
+                                        return CatchIconAction(
                                           size:
                                               CatchLayout.searchFieldClearSize,
-                                          variant: CatchIconButtonVariant.plain,
+                                          variant: CatchIconActionVariant.plain,
                                           tooltip: tooltip,
-                                          onTap: widget.enabled
+                                          onPressed: widget.enabled
                                               ? onPressed
                                               : null,
                                           child: Icon(
@@ -496,17 +496,17 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
               builder: (context, value, _) {
                 if (value.text.isEmpty) {
                   return SizedBox(
-                    width: CatchIconButton.targetExtentFor(
+                    width: CatchIconAction.targetExtentFor(
                       CatchLayout.searchFieldClearSize,
                     ),
                   );
                 }
 
-                return CatchIconButton(
+                return CatchIconAction(
                   size: CatchLayout.searchFieldClearSize,
-                  variant: CatchIconButtonVariant.plain,
+                  variant: CatchIconActionVariant.plain,
                   tooltip: widget.copy.clearTooltip(placeholder),
-                  onTap: widget.enabled ? _clear : null,
+                  onPressed: widget.enabled ? _clear : null,
                   child: Icon(
                     CatchIcons.clearCircle,
                     size: CatchLayout.searchFieldClearIconSize,

@@ -3650,7 +3650,7 @@
               "symbol": "NotificationsAction"
             },
             "currentOwner": "DashboardScreen",
-            "targetOwner": "NotificationsAction semantic adapter over CatchIconButton.counted",
+            "targetOwner": "NotificationsAction semantic adapter over CatchIconAction.counted",
             "dependencies": [
               "catch.badge",
               "catch.icon_button",
@@ -3661,7 +3661,7 @@
               "unread",
               "capped_count"
             ],
-            "migration": "NotificationsAction retains notification loading, analytics, and routing semantics while delegating icon chrome, typed count formatting, zero hiding, and the 40px app-bar target to CatchIconButton.counted.",
+            "migration": "NotificationsAction retains notification loading, analytics, and routing semantics while delegating icon chrome, typed count formatting, zero hiding, and the 40px app-bar target to CatchIconAction.counted.",
             "previewIds": [
               "DashboardScreen/Screen states"
             ]

@@ -530,8 +530,8 @@ class GroupOverrideUnitEditor extends StatelessWidget {
                 ),
               ),
               gapW8,
-              CatchIconAction(
-                size: CatchIconButton.defaultSize,
+              CatchIconAction.toolbar(
+                size: CatchIconAction.defaultSize,
                 tooltip: context
                     .l10n
                     .eventSuccessEventSuccessHostOverridesTooltipRemoveGroup,
@@ -616,8 +616,8 @@ class GroupOverrideMemberEditor extends StatelessWidget {
           ),
         ),
         gapW8,
-        CatchIconAction(
-          size: CatchIconButton.defaultSize,
+        CatchIconAction.toolbar(
+          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee,
@@ -1231,8 +1231,8 @@ class RotationOverridePairEditor extends StatelessWidget {
           ),
         ),
         gapW8,
-        CatchIconAction(
-          size: CatchIconButton.defaultSize,
+        CatchIconAction.toolbar(
+          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemovePair,

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ced80bb2dc64948a90e2ef412e0d4b1ef61cc13358bd1fa52e688eb8ba843e27",
-  "resolvedDigest": "sha256:e8fce10ae94946cd1602517c79b63c75be7cf80592107c0ad3df08ffb175e339",
+  "resolvedDigest": "sha256:b5e292d340ad6951766941ce2723684ea373b163f78d6c095fa737306bc93908",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -890,7 +890,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },

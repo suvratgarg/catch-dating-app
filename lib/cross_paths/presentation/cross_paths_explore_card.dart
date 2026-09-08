@@ -294,12 +294,12 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                           style: CatchTextStyles.titleL(context),
                         ),
                       ),
-                      CatchIconButton.icon(
+                      CatchIconAction.icon(
                         icon: CatchIcons.closeRounded,
-                        variant: CatchIconButtonVariant.plain,
+                        variant: CatchIconActionVariant.plain,
                         tooltip:
                             context.l10n.crossPathsProfilePreviewTooltipClose,
-                        onTap: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
                     ],
                   ),

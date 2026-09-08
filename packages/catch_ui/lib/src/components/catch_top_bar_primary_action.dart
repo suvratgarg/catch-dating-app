@@ -1,7 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
 import 'package:flutter/material.dart';
 
 /// Primary root-screen action that preserves canonical top-bar geometry.
@@ -28,11 +27,11 @@ class CatchTopBarPrimaryAction extends StatelessWidget {
       MediaQuery.sizeOf(context).width,
     );
     if (screenSize.isCompact) {
-      return CatchIconAction(
+      return CatchIconAction.toolbar(
         icon: icon,
         tooltip: label,
         onPressed: onPressed,
-        variant: CatchIconButtonVariant.plain,
+        variant: CatchIconActionVariant.plain,
       );
     }
 

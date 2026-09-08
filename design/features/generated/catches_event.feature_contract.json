@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_event.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a8c781d10f212a6e6a93cc33a6d8355ff7f94bf2195e98d1c5da67444edd5c9a",
-  "resolvedDigest": "sha256:dc29279b5e5681bdc9b9aa7389e902f611b40b0b65eff964212a472365877e79",
+  "resolvedDigest": "sha256:5c6b398dd8a184a3e64f82b490e326414040c6dd9991c392b63ae9b5476a5726",
   "feature": {
     "id": "feature.catches_event",
     "name": "Catches Event Deck",
@@ -1205,7 +1205,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -1237,12 +1238,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },

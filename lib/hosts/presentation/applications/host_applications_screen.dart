@@ -81,11 +81,11 @@ class _HostApplicationsScreenState
                 ),
             ],
             onSelected: (sort) => setState(() => _sort = sort),
-            builder: (context, selected, open, toggle) => CatchIconButton.icon(
+            builder: (context, selected, open, toggle) => CatchIconAction.icon(
               icon: CatchIcons.sort,
               tooltip: context.l10n.hostApplicationsSort,
               active: open,
-              onTap: toggle,
+              onPressed: toggle,
             ),
           ),
         ],

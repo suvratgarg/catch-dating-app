@@ -278,10 +278,10 @@ class DockBell extends StatelessWidget {
       label: active
           ? context.l10n.clubsClubDetailDockLabelDisableClubPushNotifications
           : context.l10n.clubsClubDetailDockLabelEnableClubPushNotifications,
-      child: CatchIconButton(
+      child: CatchIconAction(
         size: CatchSpacing.s12,
-        background: active ? accent : t.raised,
-        onTap: enabled ? onPressed : null,
+        backgroundColor: active ? accent : t.raised,
+        onPressed: enabled ? onPressed : null,
         child: isLoading
             ? SizedBox.square(
                 dimension: CatchIcon.md,

@@ -595,7 +595,7 @@
           "OutlinedButton",
           "TextButton"
         ],
-        "replacement": "CatchButton or CatchTextButton",
+        "replacement": "CatchButton, including CatchButton.text for text actions",
         "steeringGroup": "button",
         "steeringCode": "catch_no_raw_button_control",
         "probeSeed": "ElevatedButton(onPressed: null, child: const Text('x'))"
@@ -603,7 +603,7 @@
       "name": "CatchButton",
       "status": "active",
       "kind": "primitive",
-      "summary": "Canonical labelled action with CTA, command, current-selection and counted floating recipes.",
+      "summary": "Canonical labelled action with CTA, command, current-selection, counted floating and native text-action recipes.",
       "dart": {
         "symbol": "CatchButton",
         "file": "packages/catch_ui/lib/src/components/catch_button.dart",
@@ -611,7 +611,8 @@
           "CatchButton",
           "CatchButton.command",
           "CatchButton.selection",
-          "CatchButton.floating"
+          "CatchButton.floating",
+          "CatchButton.text"
         ]
       },
       "design": {
@@ -778,6 +779,78 @@
             "type": "color",
             "required": false,
             "dartType": "Color?"
+          },
+          {
+            "name": "tone",
+            "type": "enum",
+            "required": false,
+            "default": "primary",
+            "dartType": "CatchButtonTone",
+            "values": [
+              "primary",
+              "neutral",
+              "danger"
+            ]
+          },
+          {
+            "name": "disabledForegroundColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "disabledBackgroundColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "side",
+            "type": "object",
+            "required": false,
+            "dartType": "BorderSide?"
+          },
+          {
+            "name": "shape",
+            "type": "object",
+            "required": false,
+            "dartType": "OutlinedBorder?"
+          },
+          {
+            "name": "textStyle",
+            "type": "object",
+            "required": false,
+            "dartType": "TextStyle?"
+          },
+          {
+            "name": "leadingGap",
+            "type": "number",
+            "required": false,
+            "dartType": "double"
+          },
+          {
+            "name": "focusNode",
+            "type": "object",
+            "required": false,
+            "dartType": "FocusNode?"
+          },
+          {
+            "name": "tapTargetSize",
+            "type": "object",
+            "required": false,
+            "dartType": "MaterialTapTargetSize?"
+          },
+          {
+            "name": "minimumSize",
+            "type": "object",
+            "required": false,
+            "dartType": "Size"
+          },
+          {
+            "name": "padding",
+            "type": "object",
+            "required": false,
+            "dartType": "EdgeInsetsGeometry"
           }
         ],
         "states": [
@@ -800,7 +873,13 @@
           "floating-with-count",
           "floating-focused",
           "floating-semantic-label",
-          "floating-text-scale-reflow"
+          "floating-text-scale-reflow",
+          "text-primary",
+          "text-neutral",
+          "text-danger",
+          "text-disabled",
+          "text-custom-color",
+          "text-custom-padding"
         ],
         "slots": [
           {
@@ -840,8 +919,7 @@
           "CatchTextStyles.buttonSm",
           "CatchTextStyles.buttonMd",
           "CatchTextStyles.buttonLg",
-          "CatchTextButton",
-          "CatchTextButtonTone",
+          "CatchButtonTone",
           "CatchTextStyles.control",
           "CatchPlatformTokens.minimumInteractiveExtent",
           "CatchBorderRole.control",
@@ -852,27 +930,6 @@
         ],
         "goldens": [],
         "members": [
-          {
-            "id": "catch.button.text",
-            "symbol": "CatchTextButton",
-            "file": "packages/catch_ui/lib/src/components/catch_text_button.dart",
-            "summary": "Text-only action with naturally wrapping labels, native disabled/keyboard semantics, optional FocusNode forwarding, and a platform minimum that local minimumSize, shrinkWrap, or compact density cannot reduce.",
-            "states": [
-              "primary",
-              "neutral",
-              "danger",
-              "disabled",
-              "custom-color",
-              "custom-padding"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.button",
-              "parentConceptId": "catch.button",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.button"
-            }
-          },
           {
             "id": "catch.button.label",
             "symbol": "CatchButtonContentRow",
@@ -955,6 +1012,24 @@
             "count",
             "onPressed",
             "semanticsLabel"
+          ],
+          "CatchButton.text": [
+            "label",
+            "onPressed",
+            "tone",
+            "foregroundColor",
+            "backgroundColor",
+            "disabledForegroundColor",
+            "disabledBackgroundColor",
+            "side",
+            "shape",
+            "textStyle",
+            "leading",
+            "leadingGap",
+            "focusNode",
+            "tapTargetSize",
+            "minimumSize",
+            "padding"
           ]
         }
       },
@@ -963,10 +1038,11 @@
         "notes": [
           "Every product action still needs action cardinality and controller ownership outside this visual contract.",
           "Use accentColor only for activity-scoped primary actions.",
-          "Use CatchTextButton for text-only actions; do not create separate inline-action wrappers.",
+          "Use CatchButton.text for text-only actions; do not create separate inline-action wrappers.",
           "Command and CTA sizes and width modes reflow labels without a two-line cap or FittedBox shrinking. CatchButton.selection is only for a bounded current-value trigger in compact chrome: one visible line with ellipsis, full semantics and tooltip, and unchanged platform typography. One outer gesture/focus owner reserves the platform target around the compact visual; hover/press feedback is painted inside that visual.",
           "Use floating for raised labelled overlay actions with optional value copy and an integer count. Its callback and nonempty label are required. Counts render through CatchCountBadge, including zero hiding, 99+ clamping and preserved child constraints.",
-          "Busy CTA state uses CatchButtonStatus.loading. Leading and trailing are media slots, while the floating recipe accepts an IconData glyph. A geometry mode chooses the standard pill or rounded CTA silhouette."
+          "Busy CTA state uses CatchButtonStatus.loading. Leading and trailing are media slots, while the floating recipe accepts an IconData glyph. A geometry mode chooses the standard pill or rounded CTA silhouette.",
+          "CatchButton.text owns inline and dialog text actions, preserving native focus forwarding, disabled feedback, natural label wrapping and the platform target floor. It replaces the separate text-button Widget."
         ]
       },
       "governance": {
@@ -1983,7 +2059,7 @@
           "theme.light.color.danger"
         ],
         "dartRoles": [
-          "CatchTextButton",
+          "CatchButton.text",
           "CatchIcons.errorOutlineRounded",
           "CatchTextStyles.supporting",
           "AppErrorContext",
@@ -2357,8 +2433,8 @@
           "CatchStatusStripData",
           "CatchStatusStripAction",
           "CatchStatusStripScope",
-          "CatchTextButton",
-          "CatchIconButton"
+          "CatchButton.text",
+          "CatchIconAction"
         ],
         "goldens": [],
         "members": [
@@ -3756,7 +3832,7 @@
           {
             "id": "catch.field.commit_button",
             "symbol": "CatchFieldCommitButton",
-            "summary": "Field-owned Cancel or Done pill using CatchTextButton and the control text role, 18 by 10 padding, primaryInk Done content, animated saving opacity, a 13 px spinner with a 7 px label gap, sole explicit-commit progress ownership, and an immediate 2 px outer keyboard-focus ring at a 2 px offset.",
+            "summary": "Field-owned Cancel or Done pill using CatchButton.text and the control text role, 18 by 10 padding, primaryInk Done content, animated saving opacity, a 13 px spinner with a 7 px label gap, sole explicit-commit progress ownership, and an immediate 2 px outer keyboard-focus ring at a 2 px offset.",
             "states": [
               "cancel",
               "done",
@@ -6317,17 +6393,18 @@
         "vehicle": "plugin",
         "probeSeed": "IconButton(onPressed: () {}, icon: const Icon(Icons.add))"
       },
-      "name": "CatchIconButton",
+      "name": "CatchIconAction",
       "status": "active",
       "kind": "primitive",
       "summary": "Circular icon action for toolbar, overlay, and plain glyph-button affordances.",
       "dart": {
-        "symbol": "CatchIconButton",
-        "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+        "symbol": "CatchIconAction",
+        "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
         "constructors": [
-          "CatchIconButton",
-          "CatchIconButton.icon",
-          "CatchIconButton.counted"
+          "CatchIconAction",
+          "CatchIconAction.icon",
+          "CatchIconAction.counted",
+          "CatchIconAction.toolbar"
         ]
       },
       "design": {
@@ -6355,7 +6432,7 @@
             "dartType": "Widget"
           },
           {
-            "name": "onTap",
+            "name": "onPressed",
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?"
@@ -6365,7 +6442,7 @@
             "type": "enum",
             "required": false,
             "default": "bordered",
-            "dartType": "CatchIconButtonVariant",
+            "dartType": "CatchIconActionVariant",
             "values": [
               "bordered",
               "float",
@@ -6380,17 +6457,21 @@
             "dartType": "bool"
           },
           {
-            "name": "disabled",
-            "type": "bool",
+            "name": "status",
+            "type": "enum",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "default": "enabled",
+            "dartType": "CatchIconActionStatus",
+            "values": [
+              "enabled",
+              "disabled"
+            ]
           },
           {
             "name": "size",
             "type": "number",
             "required": false,
-            "default": "CatchIconButton.defaultSize",
+            "default": "CatchIconAction.defaultSize",
             "dartType": "double",
             "notes": "Visible circle diameter, not target allocation. targetExtentFor(size) supplies the greater of this diameter and the platform minimum; ancestor chrome must reserve that extent."
           },
@@ -6400,6 +6481,66 @@
             "required": false,
             "default": 0,
             "dartType": "int"
+          },
+          {
+            "name": "emphasis",
+            "type": "enum",
+            "required": false,
+            "default": "adaptive",
+            "dartType": "CatchIconActionEmphasis",
+            "values": [
+              "adaptive",
+              "filled",
+              "outline"
+            ]
+          },
+          {
+            "name": "icon",
+            "type": "object",
+            "required": false,
+            "dartType": "IconData"
+          },
+          {
+            "name": "tooltip",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "backgroundColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "foregroundColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "accent",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "borderColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
+          },
+          {
+            "name": "borderRadius",
+            "type": "number",
+            "required": false,
+            "dartType": "double?"
+          },
+          {
+            "name": "liveRegion",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool"
           }
         ],
         "states": [
@@ -6410,7 +6551,9 @@
           "bordered",
           "float",
           "plain",
-          "counted"
+          "counted",
+          "toolbar",
+          "glyph-emphasis"
         ],
         "slots": [
           {
@@ -6435,7 +6578,7 @@
           "CatchOpacity.disabledControl",
           "CatchElevation.iconButtonFloat",
           "CatchCountBadge",
-          "CatchIconButton.targetExtentFor",
+          "CatchIconAction.targetExtentFor",
           "CatchPlatformTokens.minimumInteractiveExtent"
         ],
         "goldens": [],
@@ -6452,35 +6595,72 @@
             "dark"
           ]
         },
-        "members": [
-          {
-            "id": "catch.icon_button.action",
-            "symbol": "CatchIconAction",
-            "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
-            "summary": "Required-tooltip icon action adapter for top bars and floating chrome.",
-            "states": [
-              "enabled",
-              "disabled",
-              "bordered",
-              "float",
-              "plain"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.icon_button",
-              "parentConceptId": "catch.icon_button",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.icon_button"
-            }
-          }
-        ]
+        "members": [],
+        "constructorProps": {
+          "CatchIconAction": [
+            "child",
+            "onPressed",
+            "variant",
+            "active",
+            "emphasis",
+            "accent",
+            "status",
+            "backgroundColor",
+            "borderColor",
+            "size",
+            "borderRadius",
+            "tooltip",
+            "liveRegion"
+          ],
+          "CatchIconAction.icon": [
+            "icon",
+            "onPressed",
+            "variant",
+            "active",
+            "emphasis",
+            "accent",
+            "status",
+            "backgroundColor",
+            "borderColor",
+            "size",
+            "borderRadius",
+            "tooltip",
+            "liveRegion"
+          ],
+          "CatchIconAction.counted": [
+            "icon",
+            "count",
+            "onPressed",
+            "variant",
+            "active",
+            "emphasis",
+            "accent",
+            "status",
+            "backgroundColor",
+            "borderColor",
+            "size",
+            "borderRadius",
+            "tooltip",
+            "liveRegion"
+          ],
+          "CatchIconAction.toolbar": [
+            "icon",
+            "tooltip",
+            "onPressed",
+            "backgroundColor",
+            "foregroundColor",
+            "variant",
+            "size"
+          ]
+        }
       },
       "handoff": {
         "allowedChildren": [],
         "notes": [
           "Design handoff must include tooltip/action label when used as an accessible command.",
-          "Use CatchIconButton.counted for integer overlays; zero hides and values above 99 clamp through CatchCountBadge.",
-          "defaultSize and navSize both select the current 44-point visual diameter. One outer gesture/focus owner supplies the larger platform target; hover/press tint is painted inside the opaque visual rather than hidden behind it."
+          "Use CatchIconAction.counted for integer overlays; zero hides and values above 99 clamp through CatchCountBadge.",
+          "defaultSize and navSize both select the current 44-point visual diameter. One outer gesture/focus owner supplies the larger platform target; hover/press tint is painted inside the opaque visual rather than hidden behind it.",
+          "One IconAction owns raw-child, themed-glyph, counted and required-tooltip toolbar recipes. Toolbar preserves the navigation glyph size and explicit foreground, including on floating backgrounds. Status and glyph emphasis replace disabled/fill booleans; active and liveRegion remain independent booleans."
         ]
       },
       "governance": {
@@ -6497,8 +6677,13 @@
         "conceptId": "catch.icon_button"
       },
       "surfaces": {
-        "flutter": "CatchIconButton",
+        "flutter": "CatchIconAction",
         "admin": "AdminIconButton"
+      },
+      "level": "L3",
+      "roleNoun": "IconAction",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -6604,7 +6789,7 @@
           "CatchAdaptiveSelectionMenu",
           "CatchAdaptiveSelectionControl",
           "CatchSurface",
-          "CatchIconButton",
+          "CatchIconAction",
           "CatchTextStyles.body",
           "CatchTextStyles.mono"
         ],
@@ -6835,7 +7020,7 @@
       "name": "CatchIconTile",
       "status": "active",
       "kind": "primitive",
-      "summary": "Non-interactive icon presentation with square-tile, quiet empty-state, circular accent and branded error recipes. Commands belong to CatchIconButton.",
+      "summary": "Non-interactive icon presentation with square-tile, quiet empty-state, circular accent and branded error recipes. Commands belong to CatchIconAction.",
       "dart": {
         "symbol": "CatchIconTile",
         "file": "packages/catch_ui/lib/src/primitives/catch_icon_tile.dart",
@@ -6969,7 +7154,7 @@
         "allowedChildren": [],
         "notes": [
           "Use for non-interactive icon-leading content blocks.",
-          "Use CatchIconButton when the glyph itself is a command."
+          "Use CatchIconAction when the glyph itself is a command."
         ]
       },
       "governance": {
@@ -7857,7 +8042,7 @@
             "type": "enum",
             "required": false,
             "default": "bordered",
-            "dartType": "CatchIconButtonVariant",
+            "dartType": "CatchIconActionVariant",
             "values": [
               "bordered",
               "float",
@@ -7939,7 +8124,7 @@
           "CatchScreenTopBar",
           "CatchLayout.topBarHeight",
           "CatchLayout.topBarLargeHeight",
-          "CatchIconButton.navSize",
+          "CatchIconAction.navSize",
           "CatchSearchField",
           "CatchKickerText",
           "CatchPersonAvatar",
@@ -8095,7 +8280,7 @@
           {
             "id": "catch.top_bar.text_action",
             "symbol": "CatchTopBarTextAction",
-            "summary": "Top-bar-scoped text action wrapper that composes CatchTextButton with route-chrome color defaults.",
+            "summary": "Top-bar-scoped text action wrapper that composes CatchButton.text with route-chrome color defaults.",
             "states": [
               "default",
               "disabled",
@@ -11138,7 +11323,7 @@
             "name": "collapsedExtent",
             "type": "number",
             "required": false,
-            "default": "CatchIconButton.navSize",
+            "default": "CatchIconAction.navSize",
             "dartType": "double",
             "notes": "Expanding-mode visual request. Collapsed allocation is clamped to the platform target; heightFor(context) also accounts for the scaled text line box."
           }
@@ -11171,7 +11356,7 @@
           "CatchTextStyles.bodyM",
           "CatchLayout.searchFieldClearSize",
           "CatchSearchField.heightFor",
-          "CatchIconButton.targetExtentFor",
+          "CatchIconAction.targetExtentFor",
           "CatchPlatformTokens.minimumInteractiveExtent"
         ],
         "goldens": [],
@@ -11194,7 +11379,7 @@
         "notes": [
           "Do not register a separate ExpandingSearch contract; expanding and expanded modes live here.",
           "Flutter callers supply CatchSearchFieldCopy; clear tooltips use the resolved placeholder and close labels belong only to transient search actions.",
-          "Named constructors determine mode. Fixed browse fields clear only non-empty input; .expanding owns opening and empty-query closing. Clear/close targets use CatchIconButton, header height shares the scaled line box, and reduced motion skips the morph animation."
+          "Named constructors determine mode. Fixed browse fields clear only non-empty input; .expanding owns opening and empty-query closing. Clear/close targets use CatchIconAction, header height shares the scaled line box, and reduced motion skips the morph animation."
         ]
       },
       "governance": {
@@ -11775,7 +11960,7 @@
         "dartRoles": [
           "CatchTopBar",
           "CatchTopBarLeading",
-          "CatchTextButton",
+          "CatchButton.text",
           "CatchTextStyles.monoLabel",
           "CatchLayout.stepHeaderProgressHeight",
           "CatchStepProgress"
@@ -12703,7 +12888,7 @@
         "dartRoles": [
           "ClubDetailDockRole",
           "CatchButton",
-          "CatchIconButton",
+          "CatchIconAction",
           "ActivityPalette.resolve"
         ],
         "goldens": [],
@@ -15223,7 +15408,7 @@
         ],
         "dartRoles": [
           "CatchField",
-          "CatchIconButton.defaultSize",
+          "CatchIconAction.defaultSize",
           "CatchLoadingIndicator",
           "CatchElevation.raised",
           "CatchElevation.focusRing",
@@ -15254,7 +15439,7 @@
           "catch.control_shell"
         ],
         "notes": [
-          "Both actions use CatchIconButton.defaultSize; composer call sites cannot supply independent image/send geometry.",
+          "Both actions use CatchIconAction.defaultSize; composer call sites cannot supply independent image/send geometry.",
           "Empty text disables Send automatically; callbacks describe capability, not draft validity.",
           "Text-send and image-upload pending states disable only their relevant action and do not disable or defocus the editor.",
           "Upload failures remain route-owned transient feedback through CatchMutationErrorListeners; do not add feature-local inline error chrome."
@@ -15637,7 +15822,7 @@
         "dartRoles": [
           "CatchPersonAvatar",
           "CatchRowPressSurface",
-          "CatchIconButton",
+          "CatchIconAction",
           "CatchAvatarColors"
         ],
         "goldens": [],

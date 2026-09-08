@@ -146,7 +146,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: routeTitle,
           subtitle: club.name,
-          leading: CatchIconAction(
+          leading: CatchIconAction.toolbar(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: CatchIcons.arrowBackIosNewRounded,
             onPressed: _leaveTeam,

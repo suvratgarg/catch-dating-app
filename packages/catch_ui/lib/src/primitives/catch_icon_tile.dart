@@ -6,7 +6,7 @@ enum CatchIconTileVariant { tile, plain, bubble, error }
 
 /// Non-interactive icon presentation with tiled, empty and error recipes.
 ///
-/// Commands use CatchIconButton; these recipes add no tap target or callback.
+/// Commands use CatchIconAction; these recipes add no tap target or callback.
 class CatchIconTile extends StatelessWidget {
   const CatchIconTile({
     super.key,

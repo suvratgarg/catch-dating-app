@@ -139,7 +139,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                     first: true,
                     title: context.l10n.hostSavedAudienceMembers,
                     count: state.preview.matchCount,
-                    trailing: CatchTextButton(
+                    trailing: CatchButton.text(
                       key: const ValueKey(
                         'host-saved-audience-refresh-preview',
                       ),

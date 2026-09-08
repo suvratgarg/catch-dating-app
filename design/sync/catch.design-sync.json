@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "eb3c94e6eec2dbb272d8c301eb3b511788a0831593121dd0d32de83b9d41a684",
+  "sourceDigest": "fdf5364a202041aae55b0d4d766f2825c682b504597615c86589c80ea7a0a227",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "eb3c94e6eec2dbb272d8c301eb3b511788a0831593121dd0d32de83b9d41a684",
-    "contractDigest": "eb3c94e6eec2dbb272d8c301eb3b511788a0831593121dd0d32de83b9d41a684"
+    "digest": "fdf5364a202041aae55b0d4d766f2825c682b504597615c86589c80ea7a0a227",
+    "contractDigest": "fdf5364a202041aae55b0d4d766f2825c682b504597615c86589c80ea7a0a227"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "227e06ef8564c9f2d1211f37ab5d31c592695231ab90b76841e4dd58533a6f91",
+    "handoffRequestDigest": "ad7c6f6661be2976d552f3650f406292de727d87efe4d063d7383e2c5c7cfe3e",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,18 +83,18 @@
   },
   "metrics": {
     "contractCount": 77,
-    "publicClassCount": 277,
+    "publicClassCount": 275,
     "conceptCount": 70,
-    "memberCount": 189,
-    "membersPerConcept": 2.7,
+    "memberCount": 187,
+    "membersPerConcept": 2.67,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 70,
-      "member": 189,
+      "member": 187,
       "screen": 15
     },
-    "collisionCount": 37,
+    "collisionCount": 36,
     "collisions": [
       {
         "key": "catch.async_value",
@@ -135,8 +135,7 @@
         "key": "catch.button",
         "symbols": [
           "CatchButton",
-          "CatchButtonContentRow",
-          "CatchTextButton"
+          "CatchButtonContentRow"
         ]
       },
       {
@@ -255,13 +254,6 @@
           "CatchFormTextRowEditor",
           "CatchResponsiveFieldInteractionPolicy",
           "CatchTextInput"
-        ]
-      },
-      {
-        "key": "catch.icon_button",
-        "symbols": [
-          "CatchIconAction",
-          "CatchIconButton"
         ]
       },
       {
@@ -658,8 +650,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 12,
-      "figmaExpectedPropertyDigest": "dac1cf9602cc4b905a36e0bd2a89f8aa06c1eefd202ebc3a5bda8a68db2186ef",
+      "figmaExpectedPropertyCount": 14,
+      "figmaExpectedPropertyDigest": "9df8d805ae03faadd1fd5d74e79f229b5140de980633f036c620dfc8cc1f6c37",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -667,7 +659,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Button",
       "claudeAllowed": true,
-      "contractDigest": "8474ea69e63599bd7314f10447bae923fde7816e9d27ba7c6c2de539f8aa57e1"
+      "contractDigest": "588b8df957eafcf401f53aa8953fa506b9f6c5e3edc6b88c26285ddb18db28cd"
     },
     {
       "contractId": "catch.chip",
@@ -941,7 +933,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "d39f92ce75e0279c35ef592fa24a465b2047afd62f3f6a91d19f051ccdc893bb"
+      "contractDigest": "ecd40f17c7e93db457466bccb48b35edbd61ab896378d6f256c4ef2f91c76148"
     },
     {
       "contractId": "catch.section",
@@ -1235,8 +1227,8 @@
       "contractId": "catch.icon_button",
       "conceptRole": "concept",
       "conceptId": "catch.icon_button",
-      "dartSymbol": "CatchIconButton",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+      "dartSymbol": "CatchIconAction",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
       "figmaName": "Catch/IconButton",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1252,8 +1244,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "c9d91ee96bb869be0f963cbeb9fd184e6fc6425335d66ed4d56040003a0d0bf6",
+      "figmaExpectedPropertyCount": 10,
+      "figmaExpectedPropertyDigest": "863ad1e76c48a5532986ea609b6aaae9803dd1f000427fde7574b389b4e2df04",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1261,7 +1253,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "IconButton",
       "claudeAllowed": true,
-      "contractDigest": "1bd88417ba03a3444334b1fafda15bfc9ba5199c6853bb001aa1b2e63ba99a51"
+      "contractDigest": "034f22063dd22874e7dac9adb55c3332d582a00bb4d4df51f4e6e681023caa72"
     },
     {
       "contractId": "catch.menu",
@@ -1485,7 +1477,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "b5352be2991e2eaf036b3417538ffff4c89e19e43506d6c915772c96f67dd964"
+      "contractDigest": "0d95cc4aef318b3d80159a01998344a3217b350614bc8e035fdc74696067845b"
     },
     {
       "contractId": "catch.privacy_badge",
@@ -1925,7 +1917,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "93e0ee27c9a8db1fba45247e051c9e070ecf1e7a57aa96d50d79884564e3cac2",
+      "figmaExpectedPropertyDigest": "c458f0afa3ff85a7b0c61755f0001d511458b26f7d79db8bce29edbe7989fb98",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1933,7 +1925,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "SearchField",
       "claudeAllowed": true,
-      "contractDigest": "d83bf4b1dbd1759867b9e039408a3747beada3c76a21ee9de5bfca2920fa0e9c"
+      "contractDigest": "293bc4e15df8662610d8af8f138e2049dbd2099e1b03358601677267a0088fe8"
     },
     {
       "contractId": "catch.range_slider",

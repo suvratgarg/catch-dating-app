@@ -135,7 +135,7 @@ void _registerExploreClubCardsTests() {
                 .first,
           )
           .height,
-      greaterThanOrEqualTo(CatchIconButton.defaultSize),
+      greaterThanOrEqualTo(CatchIconAction.defaultSize),
     );
 
     await tester.tap(find.text('MUMBAI'));
@@ -166,7 +166,7 @@ void _registerExploreClubCardsTests() {
 
     expect(
       tester.getSize(find.byType(CityTrigger)).height,
-      greaterThanOrEqualTo(CatchIconButton.defaultSize),
+      greaterThanOrEqualTo(CatchIconAction.defaultSize),
     );
   });
 
@@ -786,7 +786,7 @@ void _registerExploreClubCardsTests() {
     expect(
       tester.getSize(_topLevelSearchField()).width,
       lessThanOrEqualTo(
-        CatchIconButton.targetExtentFor(CatchIconButton.navSize),
+        CatchIconAction.targetExtentFor(CatchIconAction.navSize),
       ),
     );
     expect(find.byType(TextField), findsNothing);
@@ -801,7 +801,7 @@ void _registerExploreClubCardsTests() {
     final morphingSearchWidth = tester.getSize(_topLevelSearchField()).width;
     expect(
       morphingSearchWidth,
-      greaterThan(CatchIconButton.targetExtentFor(CatchIconButton.navSize)),
+      greaterThan(CatchIconAction.targetExtentFor(CatchIconAction.navSize)),
     );
 
     await _pumpClubUi(tester);
@@ -839,7 +839,7 @@ void _registerExploreClubCardsTests() {
     expect(
       tester.getSize(_topLevelSearchField()).width,
       lessThanOrEqualTo(
-        CatchIconButton.targetExtentFor(CatchIconButton.navSize),
+        CatchIconAction.targetExtentFor(CatchIconAction.navSize),
       ),
     );
     expect(find.byType(TextField), findsNothing);

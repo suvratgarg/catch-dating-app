@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:9ffa56a7f7bfd90119696ac218f30449f8e8272f77daa46470d588e0c08d5cd4",
-  "resolvedDigest": "sha256:47959fb015700ff6dc897b375863a5858c635f4eee429bb3420c8121a2fc2ab9",
+  "resolvedDigest": "sha256:1869dc6721fd15b30d1c89040e3cd64061395915d204717b3cd30384e7d23137",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4467,7 +4467,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },

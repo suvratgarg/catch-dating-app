@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:3cf24a11250fcfc2f4448cecf63159b12af51eecb6d3f14202171a21f3ed6bbe",
+  "resolvedDigest": "sha256:a3b825a11576f56d9ce4c8a4272ab777213e9b0b8e57b8ef6415483e67b52773",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1446,7 +1446,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },

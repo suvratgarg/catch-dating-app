@@ -292,7 +292,7 @@ const _roundedAffordanceConstructors = <String>{
   'CatchBadge',
   'CatchButton',
   'CatchChip',
-  'CatchIconButton',
+  'CatchIconAction',
   'CatchPersonAvatar',
   'CatchPersonAvatarStack',
   'CatchSearchField',
@@ -1772,7 +1772,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
         (_isCatchMenuImplementationPath && typeName == 'MenuAnchor') ||
         (_isCatchTextInputImplementationPath && typeName == 'TextField') ||
         (_isCatchRangeSliderImplementationPath && typeName == 'RangeSlider') ||
-        (_isCatchTextButtonImplementationPath && typeName == 'TextButton');
+        (_isCatchButtonImplementationPath && typeName == 'TextButton');
   }
 
   bool _isContainedCatchSection(InstanceCreationExpression node) {
@@ -2163,9 +2163,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     );
   }
 
-  bool get _isCatchTextButtonImplementationPath {
+  bool get _isCatchButtonImplementationPath {
     return path.endsWith(
-      '/packages/catch_ui/lib/src/components/catch_text_button.dart',
+      '/packages/catch_ui/lib/src/components/catch_button.dart',
     );
   }
 

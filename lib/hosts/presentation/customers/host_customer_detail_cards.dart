@@ -679,7 +679,7 @@ class HostCustomerRevenueCard extends StatelessWidget {
         if (onOpen != null)
           Align(
             alignment: AlignmentDirectional.centerStart,
-            child: CatchTextButton(
+            child: CatchButton.text(
               key: const ValueKey('host-customer-revenue-breakdown'),
               label: context.l10n.hostCustomersViewBreakdown,
               onPressed: onOpen,

@@ -146,7 +146,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                 spacing: CatchSpacing.s1,
                 runSpacing: CatchSpacing.s1,
                 children: [
-                  CatchTextButton(
+                  CatchButton.text(
                     label: hasImage
                         ? context
                               .l10n
@@ -156,12 +156,12 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                     padding: EdgeInsets.zero,
                   ),
                   if (hasImage)
-                    CatchTextButton(
+                    CatchButton.text(
                       label: context
                           .l10n
                           .hostsCreateClubPhotosPickerActionRemoveLogo,
                       onPressed: onRemove,
-                      tone: CatchTextButtonTone.danger,
+                      tone: CatchButtonTone.danger,
                       padding: EdgeInsets.zero,
                     ),
                 ],

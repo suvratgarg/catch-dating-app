@@ -76,13 +76,13 @@ class ExploreFilterRail extends StatelessWidget
       options: _timeOptions(effectiveDateStripState),
       scrollable: true,
       backgroundColor: backgroundColor ?? t.bg,
-      trailing: CatchIconButton.counted(
+      trailing: CatchIconAction.counted(
         key: const ValueKey('explore-filter-button'),
         icon: CatchIcons.tuneRounded,
         count: railState.activeCount,
-        variant: CatchIconButtonVariant.plain,
+        variant: CatchIconActionVariant.plain,
         tooltip: railState.filterButtonSemanticLabel,
-        onTap: onOpenFilters ?? () => _showExploreFilterSheet(context),
+        onPressed: onOpenFilters ?? () => _showExploreFilterSheet(context),
       ),
     );
   }

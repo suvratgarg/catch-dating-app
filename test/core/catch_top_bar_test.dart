@@ -39,7 +39,7 @@ void main() {
     expect(titleStyle.fontSize, 20);
     expect(titleStyle.fontWeight, FontWeight.w700);
     expect(titleStyle.height, 1.16);
-    expect(find.byType(CatchIconButton), findsNothing);
+    expect(find.byType(CatchIconAction), findsNothing);
     expect(
       _topBarMaterial(tester).color,
       AppTheme.light.scaffoldBackgroundColor,
@@ -288,7 +288,7 @@ void main() {
           showBackButton: true,
           onBack: () => backTaps++,
           actions: [
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.settingsOutlined,
               tooltip: 'Settings',
               onPressed: () => actionTaps++,
@@ -298,7 +298,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchIconButton), findsNWidgets(2));
+    expect(find.byType(CatchIconAction), findsNWidgets(2));
 
     await tester.tap(find.byIcon(CatchIcons.arrowBackIosNewRounded));
     await tester.pump();
@@ -323,13 +323,13 @@ void main() {
           title: 'Home',
           showBackButton: false,
           actions: [
-            CatchIconAction(
+            CatchIconAction.toolbar(
               key: const ValueKey('top-action-share'),
               icon: CatchIcons.share,
               tooltip: 'Share',
               onPressed: () {},
             ),
-            CatchIconAction(
+            CatchIconAction.toolbar(
               key: const ValueKey('top-action-save'),
               icon: CatchIcons.savedOutlined,
               tooltip: 'Save',
@@ -393,7 +393,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: Center(
-            child: CatchIconAction(
+            child: CatchIconAction.toolbar(
               icon: CatchIcons.settingsOutlined,
               tooltip: 'Settings',
               onPressed: () {},
@@ -404,8 +404,8 @@ void main() {
     );
 
     expect(
-      tester.getSize(find.byType(CatchIconButton)),
-      Size.square(CatchIconButton.targetExtentFor(CatchIconButton.navSize)),
+      tester.getSize(find.byType(CatchIconAction)),
+      Size.square(CatchIconAction.targetExtentFor(CatchIconAction.navSize)),
     );
     expect(
       tester.widget<Icon>(find.byIcon(CatchIcons.settingsOutlined)).size,
@@ -441,8 +441,8 @@ void main() {
       expect(find.byType(CatchIconAction), findsOneWidget);
       expect(find.byType(CatchButton), findsNothing);
       expect(
-        tester.getSize(find.byType(CatchIconButton)),
-        Size.square(CatchIconButton.targetExtentFor(CatchIconButton.navSize)),
+        tester.getSize(find.byType(CatchIconAction)),
+        Size.square(CatchIconAction.targetExtentFor(CatchIconAction.navSize)),
       );
       expect(find.byTooltip('Create event'), findsOneWidget);
       await tester.tap(find.byType(CatchIconAction));
@@ -699,16 +699,16 @@ void main() {
       _wrap(
         const CatchTopBar(
           showBackButton: true,
-          leadingActionVariant: CatchIconButtonVariant.plain,
+          leadingActionVariant: CatchIconActionVariant.plain,
         ),
       ),
     );
 
     expect(find.byIcon(CatchIcons.arrowBackIosNewRounded), findsOneWidget);
-    expect(find.byType(CatchIconButton), findsOneWidget);
+    expect(find.byType(CatchIconAction), findsOneWidget);
     expect(
-      tester.widget<CatchIconButton>(find.byType(CatchIconButton)).variant,
-      CatchIconButtonVariant.plain,
+      tester.widget<CatchIconAction>(find.byType(CatchIconAction)).variant,
+      CatchIconActionVariant.plain,
     );
   });
 

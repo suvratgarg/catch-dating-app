@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:85190d4d1062580e79d5b7541673bf5b53adfc37d66ca09a28597c0c04966d34",
-  "resolvedDigest": "sha256:abf177f904ac59f3ca3621f9367b7e3e4f1a639c5360df64525d3d4f5198fcb9",
+  "resolvedDigest": "sha256:0625446e69d123a5899d7ce2adc2af8e6ce91136644ba2bcb97c65a22aebcdbf",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -3473,7 +3473,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -3505,12 +3506,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },
@@ -5306,7 +5308,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },

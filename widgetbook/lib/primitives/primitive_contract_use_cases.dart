@@ -1384,7 +1384,7 @@ Widget catchBannerContractStates(BuildContext context) {
         label: 'with-action',
         child: CatchBanner(
           message: 'Review your booking.',
-          actions: [CatchTextButton(label: 'View', onPressed: _noop)],
+          actions: [CatchButton.text(label: 'View', onPressed: _noop)],
         ),
       ),
       const _StateCard(
@@ -1645,8 +1645,33 @@ Widget catchButtonContractStates(BuildContext context) {
       'floating-focused',
       'floating-semantic-label',
       'floating-text-scale-reflow',
+      'text-primary',
+      'text-neutral',
+      'text-danger',
+      'text-disabled',
+      'text-custom-color',
+      'text-custom-padding',
     ],
     children: [
+      _StateCard(
+        label: 'text-primary / text-neutral / text-danger / text-disabled',
+        child: _InlineWrap(
+          children: [
+            for (final tone in CatchButtonTone.values)
+              CatchButton.text(label: 'Retry', tone: tone, onPressed: _noop),
+            const CatchButton.text(label: 'Disabled', onPressed: null),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'text-custom-color / text-custom-padding',
+        child: CatchButton.text(
+          label: 'Inline action',
+          onPressed: _noop,
+          foregroundColor: t.primary,
+          padding: const EdgeInsets.all(CatchSpacing.s3),
+        ),
+      ),
       _StateCard(
         label: 'selection',
         child: SizedBox(
@@ -2905,7 +2930,7 @@ Widget catchFieldExplicitSaveControlContractStates(BuildContext context) {
       _StateCard(
         label: 'secondary-action',
         child: CatchFieldExplicitSaveControl(
-          secondaryAction: CatchTextButton(
+          secondaryAction: CatchButton.text(
             label: 'Change prompt',
             onPressed: _noop,
           ),
@@ -4070,14 +4095,14 @@ Widget catchSectionFocusSurfaceContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchIconButton,
+  type: CatchIconAction,
   path: '[Core primitives]/Actions',
 )
 Widget catchIconButtonContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchIconButton',
+    title: 'CatchIconAction',
     contractId: 'catch.icon_button',
     states: const [
       'default',
@@ -4088,90 +4113,115 @@ Widget catchIconButtonContractStates(BuildContext context) {
       'float',
       'plain',
       'counted',
+      'toolbar',
+      'glyph-emphasis',
     ],
     children: [
+      _StateCard(
+        label: 'toolbar',
+        child: CatchIconAction.toolbar(
+          icon: CatchIcons.close,
+          tooltip: 'Close',
+          onPressed: _noop,
+        ),
+      ),
+      _StateCard(
+        label: 'glyph-emphasis',
+        child: _InlineWrap(
+          children: [
+            for (final emphasis in CatchIconActionEmphasis.values)
+              CatchIconAction.icon(
+                icon: CatchIcons.savedOutlined,
+                tooltip: 'Save',
+                active: true,
+                emphasis: emphasis,
+                onPressed: _noop,
+              ),
+          ],
+        ),
+      ),
       _StateCard(
         label: 'default / bordered',
         child: _InlineWrap(
           children: [
-            CatchIconButton.icon(icon: CatchIcons.search, onTap: _noop),
-            CatchIconButton.icon(
+            CatchIconAction.icon(icon: CatchIcons.search, onPressed: _noop),
+            CatchIconAction.icon(
               icon: CatchIcons.notificationsOutlined,
-              onTap: _noop,
+              onPressed: _noop,
             ),
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               icon: CatchIcons.moreHorizRounded,
-              onTap: _noop,
+              onPressed: _noop,
             ),
           ],
         ),
       ),
       _StateCard(
         label: 'active',
-        child: CatchIconButton.icon(
+        child: CatchIconAction.icon(
           icon: CatchIcons.checkCircle,
           active: true,
           accent: t.like,
-          onTap: _noop,
+          onPressed: _noop,
         ),
       ),
       _StateCard(
         label: 'focused',
         description:
             'Use keyboard traversal to inspect the semantic focus ring.',
-        child: CatchIconButton.icon(
+        child: CatchIconAction.icon(
           icon: CatchIcons.search,
           tooltip: 'Keyboard focus target',
-          onTap: _noop,
+          onPressed: _noop,
         ),
       ),
       _StateCard(
         label: 'disabled',
-        child: CatchIconButton.icon(
+        child: CatchIconAction.icon(
           icon: CatchIcons.close,
-          disabled: true,
-          onTap: _noop,
+          status: CatchIconActionStatus.disabled,
+          onPressed: _noop,
         ),
       ),
       _StateCard(
         label: 'float',
         child: _PhotoLikePanel(
-          child: CatchIconButton.icon(
+          child: CatchIconAction.icon(
             icon: CatchIcons.close,
-            variant: CatchIconButtonVariant.float,
-            onTap: _noop,
+            variant: CatchIconActionVariant.float,
+            onPressed: _noop,
           ),
         ),
       ),
       _StateCard(
         label: 'plain',
-        child: CatchIconButton.icon(
+        child: CatchIconAction.icon(
           icon: CatchIcons.tuneRounded,
-          variant: CatchIconButtonVariant.plain,
-          onTap: _noop,
+          variant: CatchIconActionVariant.plain,
+          onPressed: _noop,
         ),
       ),
       _StateCard(
         label: 'counted / zero / overflow',
         child: _InlineWrap(
           children: [
-            CatchIconButton.counted(
+            CatchIconAction.counted(
               icon: CatchIcons.notificationsNoneRounded,
               count: 0,
               tooltip: 'Notifications',
-              onTap: _noop,
+              onPressed: _noop,
             ),
-            CatchIconButton.counted(
+            CatchIconAction.counted(
               icon: CatchIcons.notificationsRounded,
               count: 3,
               tooltip: 'Notifications, 3 unread',
-              onTap: _noop,
+              onPressed: _noop,
             ),
-            CatchIconButton.counted(
+            CatchIconAction.counted(
               icon: CatchIcons.notificationsRounded,
               count: 124,
               tooltip: 'Notifications, 124 unread',
-              onTap: _noop,
+              onPressed: _noop,
             ),
           ],
         ),
@@ -5257,13 +5307,13 @@ Widget catchTopBarContractStates(BuildContext context) {
             title: 'Form builder',
             allowContentHeightExpansion: true,
             leadingType: CatchTopBarLeading.back,
-            leadingActionVariant: CatchIconButtonVariant.plain,
+            leadingActionVariant: CatchIconActionVariant.plain,
             onBack: _noop,
             actions: [
               CatchTopBarTextAction(label: 'Preview', onPressed: _noop),
               CatchTopBarMenuAction<String>(
                 tooltip: 'Form actions',
-                variant: CatchIconButtonVariant.plain,
+                variant: CatchIconActionVariant.plain,
                 items: const [
                   CatchActionMenuItem(value: 'share', label: 'Share form'),
                 ],
@@ -5279,7 +5329,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             title: 'Chats',
             allowContentHeightExpansion: true,
             actions: [
-              CatchIconAction(
+              CatchIconAction.toolbar(
                 icon: CatchIcons.moreHorizRounded,
                 tooltip: 'More',
                 onPressed: _noop,
@@ -10748,7 +10798,7 @@ class _ExplicitSaveFieldDemoState extends State<_ExplicitSaveFieldDemo> {
       open: _expanded,
       onOpenChanged: (expanded) => setState(() => _expanded = expanded),
       supporting: const Text('19 / 300'),
-      secondaryAction: CatchTextButton(
+      secondaryAction: CatchButton.text(
         label: 'Change prompt',
         onPressed: _noop,
         padding: EdgeInsets.zero,

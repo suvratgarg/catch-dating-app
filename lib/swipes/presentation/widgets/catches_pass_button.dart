@@ -33,11 +33,11 @@ class CatchesPassButton extends StatelessWidget {
         child: AnimatedOpacity(
           opacity: isEnabled || isPending ? 1 : CatchOpacity.disabledControl,
           duration: CatchMotion.fast,
-          child: CatchIconButton(
+          child: CatchIconAction(
             key: SwipeKeys.passButton,
-            onTap: isEnabled ? onPressed : null,
-            variant: CatchIconButtonVariant.float,
-            background: t.surface.withValues(
+            onPressed: isEnabled ? onPressed : null,
+            variant: CatchIconActionVariant.float,
+            backgroundColor: t.surface.withValues(
               alpha: CatchOpacity.passButtonFill,
             ),
             borderColor: t.line,

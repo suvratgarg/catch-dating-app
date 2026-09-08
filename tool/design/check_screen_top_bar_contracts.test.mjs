@@ -759,7 +759,7 @@ test("does not let a navigation header hide legacy debt as content", () => {
     manualSource: `
       class FeatureHeader extends StatelessWidget {
         Widget build(BuildContext context) => Row(children: [
-          CatchIconButton.icon(icon: CatchIcons.arrowBackRounded),
+          CatchIconAction.icon(icon: CatchIcons.arrowBackRounded),
           Text('Feature', style: CatchTextStyles.titleL(context)),
         ]);
       }

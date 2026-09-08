@@ -200,9 +200,9 @@ class PaperCompanionNav extends StatelessWidget {
           children: [
             Tooltip(
               message: MaterialLocalizations.of(context).backButtonTooltip,
-              child: CatchIconButton(
-                background: Colors.transparent,
-                onTap: canPop ? () => _popCompanion(context) : null,
+              child: CatchIconAction(
+                backgroundColor: Colors.transparent,
+                onPressed: canPop ? () => _popCompanion(context) : null,
                 child: Icon(
                   CatchIcons.arrowBackRounded,
                   size: CatchIcon.md,
@@ -985,9 +985,11 @@ class StageNav extends StatelessWidget {
         Tooltip(
           message:
               context.l10n.eventSuccessEventSuccessCompanionSharedMessageBack,
-          child: CatchIconButton(
-            background: foreground.withValues(alpha: CatchOpacity.subtleFill),
-            onTap: canPop ? () => _popCompanion(context) : null,
+          child: CatchIconAction(
+            backgroundColor: foreground.withValues(
+              alpha: CatchOpacity.subtleFill,
+            ),
+            onPressed: canPop ? () => _popCompanion(context) : null,
             child: Icon(
               CatchIcons.arrowBackRounded,
               size: CatchIcon.md,

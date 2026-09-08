@@ -22,19 +22,19 @@ Widget sectionKickerStates(BuildContext context) {
       CatchSectionHeader.kicker(
         title: 'Upcoming events',
         color: tokens.ink,
-        trailing: CatchTextButton(label: 'View all', onPressed: () {}),
+        trailing: CatchButton.text(label: 'View all', onPressed: () {}),
       ),
       CatchSectionHeader.kicker(
         title: 'Team members',
         count: 12,
         color: tokens.ink,
-        trailing: CatchTextButton(label: 'Manage', onPressed: () {}),
+        trailing: CatchButton.text(label: 'Manage', onPressed: () {}),
       ),
       CatchSectionHeader.kicker(title: null, count: 8, color: tokens.ink),
       CatchSectionHeader.kicker(
         title: null,
         color: tokens.ink,
-        trailing: CatchTextButton(label: 'Edit', onPressed: () {}),
+        trailing: CatchButton.text(label: 'Edit', onPressed: () {}),
       ),
       CatchSectionHeader.kicker(
         title: 'Notification preferences',

@@ -757,10 +757,10 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Actions',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchTextButton',
+            name: 'CatchButton',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Text states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchTextButtonCatalogStates,
               ),
@@ -2250,7 +2250,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchIconButton',
+            name: 'CatchIconAction',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -5110,7 +5110,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Controls',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchIconButton',
+            name: 'CatchIconAction',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Counted filter action',
@@ -6373,7 +6373,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Dashboard primitives',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchIconButton',
+            name: 'CatchIconAction',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Counted notification action',

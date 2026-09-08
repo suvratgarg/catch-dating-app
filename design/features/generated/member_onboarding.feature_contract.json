@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6dd188ec35d38b9518f53e6b5a9c07af49b1d16c01ecbd2f062b6ea52cb2dd8d",
-  "resolvedDigest": "sha256:9b37239b2b66676be305a4bf7ca69bfc5c7d38281346a0951bd9bcf36e4f0ad1",
+  "resolvedDigest": "sha256:818c69cc9cda8ce8355b2d926a1da5b20d1da5158389c1090f1d2597cb40c2f6",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -2297,7 +2297,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -2798,7 +2799,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },

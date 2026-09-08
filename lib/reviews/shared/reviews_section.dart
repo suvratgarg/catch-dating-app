@@ -88,7 +88,7 @@ class EventReviewsSection extends StatelessWidget {
               .l10n
               .reviewsReviewsSectionMessageBeTheFirstToReviewThisEvent,
           emptyAction: canWriteEventReview
-              ? CatchTextButton(
+              ? CatchButton.text(
                   key: ReviewKeys.writeReviewButton,
                   label: context.l10n.reviewsReviewsSectionLabelWriteAReview,
                   onPressed: () => showWriteReviewSheet(
@@ -293,7 +293,7 @@ class ReviewsPreviewSection extends StatelessWidget {
           ],
           if (showAllAction && reviews.length > maxVisibleReviews) ...[
             gapH4,
-            CatchTextButton(
+            CatchButton.text(
               key: ReviewKeys.seeAllReviewsButton,
               label: context.l10n.reviewsReviewsSectionLabelSeeAllLengthReviews(
                 length: reviews.length,
@@ -352,9 +352,9 @@ class ReviewCard extends StatelessWidget {
               if (isOwn && onEdit != null)
                 Tooltip(
                   message: context.l10n.reviewsReviewsSectionMessageEditReview,
-                  child: CatchIconButton(
+                  child: CatchIconAction(
                     key: ReviewKeys.editReviewButton(review.id),
-                    onTap: onEdit!,
+                    onPressed: onEdit!,
                     child: Icon(
                       CatchIcons.editOutlined,
                       size: CatchIcon.xs,
@@ -369,9 +369,9 @@ class ReviewCard extends StatelessWidget {
                       : context
                             .l10n
                             .reviewsReviewsSectionMessageEditHostResponse,
-                  child: CatchIconButton(
+                  child: CatchIconAction(
                     key: ReviewKeys.respondToReviewButton(review.id),
-                    onTap: onRespond!,
+                    onPressed: onRespond!,
                     child: Icon(
                       CatchIcons.rateReviewOutlined,
                       size: CatchIcon.xs,

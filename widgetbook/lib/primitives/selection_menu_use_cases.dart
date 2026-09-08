@@ -64,7 +64,7 @@ Widget adaptiveSelectionMenuStates(BuildContext context) {
               value: selected,
               onSelected: (value) => setState(() => selected = value),
               builder: (context, item, open, toggle) =>
-                  CatchTextButton(label: item.label, onPressed: toggle),
+                  CatchButton.text(label: item.label, onPressed: toggle),
             ),
           ),
         ),

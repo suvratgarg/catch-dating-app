@@ -564,7 +564,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
             count: mediaAssetCount,
           ),
-          trailing: CatchTextButton(
+          trailing: CatchButton.text(
             key: OrderedPhotoPickerKeys.manageAction,
             label: context.l10n.hostsHostClubEditTabActionManageImages,
             onPressed: mediaPending

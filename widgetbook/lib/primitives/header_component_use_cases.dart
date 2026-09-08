@@ -27,7 +27,7 @@ Widget topBarTabLabelStates(BuildContext context) => WidgetbookCatalogFrame(
       ])
         SizedBox(
           height:
-              CatchIconButton.targetExtentFor(CatchLayout.topBarTabHeight) +
+              CatchIconAction.targetExtentFor(CatchLayout.topBarTabHeight) +
               CatchSpacing.s4,
           child: CatchTopBarTabLabel(tab: tab, selected: selected),
         ),

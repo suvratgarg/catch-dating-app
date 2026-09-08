@@ -136,7 +136,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final signOutMutation = ref.watch(AuthSessionController.signOutMutation);
-    final signOutAction = CatchIconAction(
+    final signOutAction = CatchIconAction.toolbar(
       key: const ValueKey<String>('host-organizer-sign-out'),
       tooltip: context.l10n.hostsHostClubTeamScreenTitleSignOut,
       icon: CatchIcons.logoutRounded,

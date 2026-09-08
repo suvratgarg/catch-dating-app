@@ -72,7 +72,7 @@ class _HostFormAutomationsScreenState
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
         actions: [
-          CatchIconAction(
+          CatchIconAction.toolbar(
             key: const ValueKey('automation-create'),
             icon: CatchIcons.add,
             tooltip: context.l10n.hostAutomationNew,

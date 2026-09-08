@@ -81,11 +81,11 @@ class EventDetailHeroSkeleton extends StatelessWidget {
             right: CatchSpacing.s2,
             child: Row(
               children: [
-                CatchSkeleton.circle(size: CatchIconButton.navSize),
+                CatchSkeleton.circle(size: CatchIconAction.navSize),
                 const Spacer(),
-                CatchSkeleton.circle(size: CatchIconButton.navSize),
+                CatchSkeleton.circle(size: CatchIconAction.navSize),
                 gapW8,
-                CatchSkeleton.circle(size: CatchIconButton.navSize),
+                CatchSkeleton.circle(size: CatchIconAction.navSize),
               ],
             ),
           ),

@@ -1554,7 +1554,7 @@ class _FiltersContentCapture extends StatelessWidget {
       backgroundColor: t.bg,
       appBar: CatchTopBar(
         title: 'Filters',
-        leading: CatchIconAction(
+        leading: CatchIconAction.toolbar(
           icon: CatchIcons.closeRounded,
           tooltip: 'Close filters',
           onPressed: _noopFiltersTap,
@@ -10400,7 +10400,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
             count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
               count: 4,
             ),
-            trailing: CatchTextButton(
+            trailing: CatchButton.text(
               label: context.l10n.hostsHostClubEditTabActionManageImages,
               onPressed: () {},
               padding: EdgeInsets.zero,

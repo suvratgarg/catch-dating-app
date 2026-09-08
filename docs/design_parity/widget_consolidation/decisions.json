@@ -6950,6 +6950,28 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:compact-action-canonical-recipes",
+      "patternFamilyId": "compact-action-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchButton + CatchIconAction",
+      "members": [
+        {
+          "name": "CatchTextButton",
+          "action": "absorb",
+          "target": "CatchButton.text"
+        },
+        {
+          "name": "CatchIconButton",
+          "action": "absorb",
+          "target": "CatchIconAction"
+        }
+      ],
+      "rationale": "Text actions have the same labelled action responsibility as Button; native Material interaction remains a named recipe. The previous icon Action wrapper adds only tooltip, navigation glyph and color defaults around IconButton, so one IconAction now owns all icon-only recipes. Preserve all existing paint, keyboard/focus, target-size and semantic behavior. Replace icon disabled/fill booleans with owning Status/Emphasis axes, preserving adaptive versus explicit glyph fill. Both public components stay below 800 lines; remove both redundant files, exports and registry members.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

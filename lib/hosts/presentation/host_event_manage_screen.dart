@@ -472,7 +472,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           ),
           allowContentHeightExpansion: true,
           contentCrossAxisAlignment: CrossAxisAlignment.start,
-          leading: CatchIconAction(
+          leading: CatchIconAction.toolbar(
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             icon: CatchIcons.arrowBackIosNewRounded,
             onPressed: onBackToSuccess,
@@ -1255,11 +1255,13 @@ class HostInviteLinkRow extends StatelessWidget {
       children: [
         Tooltip(
           message: context.l10n.hostsHostEventManageScreenMessageCopyLink,
-          child: CatchIconButton(
-            onTap: rowState.actionsDisabled
+          child: CatchIconAction(
+            onPressed: rowState.actionsDisabled
                 ? null
                 : () => onCopyInviteLink(link),
-            disabled: rowState.actionsDisabled,
+            status: (rowState.actionsDisabled)
+                ? CatchIconActionStatus.disabled
+                : CatchIconActionStatus.enabled,
             child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
           ),
         ),
@@ -1267,11 +1269,13 @@ class HostInviteLinkRow extends StatelessWidget {
           gapW8,
           Tooltip(
             message: context.l10n.hostsHostEventManageScreenMessageDisableLink,
-            child: CatchIconButton(
-              onTap: rowState.actionsDisabled
+            child: CatchIconAction(
+              onPressed: rowState.actionsDisabled
                   ? null
                   : () => onDisableInviteLink(link),
-              disabled: rowState.actionsDisabled,
+              status: (rowState.actionsDisabled)
+                  ? CatchIconActionStatus.disabled
+                  : CatchIconActionStatus.enabled,
               child: Icon(
                 CatchIcons.hourglassDisabledRounded,
                 size: CatchIcon.sm,
@@ -1322,11 +1326,11 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
           return CatchFormDialog(
             title: context.l10n.hostsHostEventManageScreenTitleNewInviteLink,
             actions: [
-              CatchTextButton(
+              CatchButton.text(
                 label: context.l10n.hostsHostEventManageScreenLabelCancel,
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              CatchTextButton(
+              CatchButton.text(
                 label: context.l10n.hostsHostEventManageScreenLabelCreate,
                 onPressed: label.isEmpty
                     ? null

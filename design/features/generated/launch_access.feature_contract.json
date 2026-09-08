@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:1644aaa43c115ffc3355dc8fc767222abdefe2122ba5ea31f934ac95d7ec3113",
-  "resolvedDigest": "sha256:8cc9bbb5bc2906d2a2ade52424786b48e5d9b9ead6b2683e18c337d3d32b6347",
+  "resolvedDigest": "sha256:bf273cc54f08e187ea12e226be59ba961f78d7aef29ed2fd809e4bb27464526f",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -872,7 +872,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },

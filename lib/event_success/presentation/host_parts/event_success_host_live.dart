@@ -1291,14 +1291,14 @@ class LiveNowConsole extends StatelessWidget {
       ],
     );
 
-    final previousAction = CatchIconButton.icon(
+    final previousAction = CatchIconAction.icon(
       key: ValueKey(
         context
             .l10n
             .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
       ),
       icon: CatchIcons.arrowBackRounded,
-      onTap: onPrevious,
+      onPressed: onPrevious,
       tooltip: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
     );
 
@@ -1754,14 +1754,14 @@ class LiveStepNavigation extends StatelessWidget {
             .l10n
             .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
       ),
-      leadingContent: CatchIconButton.icon(
+      leadingContent: CatchIconAction.icon(
         key: ValueKey(
           context
               .l10n
               .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
         ),
         icon: CatchIcons.arrowBackRounded,
-        onTap: onPrevious,
+        onPressed: onPrevious,
         tooltip: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
       ),
     );

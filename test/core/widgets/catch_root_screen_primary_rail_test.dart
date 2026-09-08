@@ -218,7 +218,7 @@ void main() {
         find.byType(CatchScreenTopBar),
       );
       final expectedContentHeight =
-          CatchIconButton.targetExtentFor(CatchIconButton.navSize) +
+          CatchIconAction.targetExtentFor(CatchIconAction.navSize) +
           CatchInsets.primaryRailTitleBlock.vertical;
       expect(titleBar.contentPadding, CatchInsets.primaryRailTitleBlock);
       expect(titleBar.applySafeArea, isFalse);

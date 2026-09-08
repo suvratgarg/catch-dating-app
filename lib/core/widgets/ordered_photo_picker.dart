@@ -378,7 +378,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
         divider: scrolledUnder,
         actions: widget.showDoneAction
             ? [
-                CatchTextButton(
+                CatchButton.text(
                   label: context.l10n.coreOrderedPhotoPickerActionDone,
                   onPressed: () => Navigator.of(context).pop(),
                 ),
@@ -406,7 +406,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                     style: CatchTextStyles.sectionTitle(context),
                   ),
                 ),
-                CatchTextButton(
+                CatchButton.text(
                   label: context.l10n.coreOrderedPhotoPickerActionAddPhotos,
                   onPressed:
                       widget.canAdd &&

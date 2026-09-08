@@ -53,26 +53,26 @@ void main() {
 
     await _pumpComposer(tester, controller: controller, onSend: () => sends++);
 
-    CatchIconButton sendButton() =>
+    CatchIconAction sendButton() =>
         tester.widget(find.byKey(ChatInputBar.sendButtonKey));
 
-    expect(sendButton().disabled, isTrue);
+    expect(sendButton().status, CatchIconActionStatus.disabled);
     await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
     expect(sends, 0);
 
     await tester.enterText(find.byType(TextField), '   ');
     await tester.pump();
-    expect(sendButton().disabled, isTrue);
+    expect(sendButton().status, CatchIconActionStatus.disabled);
 
     await tester.enterText(find.byType(TextField), 'Hello');
     await tester.pump();
-    expect(sendButton().disabled, isFalse);
+    expect(sendButton().status, CatchIconActionStatus.enabled);
     await tester.tap(find.byKey(ChatInputBar.sendButtonKey));
     expect(sends, 1);
 
     controller.clear();
     await tester.pump();
-    expect(sendButton().disabled, isTrue);
+    expect(sendButton().status, CatchIconActionStatus.disabled);
   });
 
   testWidgets('renders real focus chrome without changing geometry', (
@@ -191,34 +191,34 @@ void main() {
     await _pumpComposer(tester, controller: controller, sending: true);
 
     var field = tester.widget<TextField>(find.byType(TextField));
-    var image = tester.widget<CatchIconButton>(
+    var image = tester.widget<CatchIconAction>(
       find.byKey(ChatInputBar.imageButtonKey),
     );
-    var send = tester.widget<CatchIconButton>(
+    var send = tester.widget<CatchIconAction>(
       find.byKey(ChatInputBar.sendButtonKey),
     );
     final sendingRects = _actionRects(tester);
     expect(field.enabled, isTrue);
-    expect(image.onTap, isNotNull);
-    expect(image.disabled, isFalse);
-    expect(send.onTap, isNull);
-    expect(send.disabled, isFalse);
+    expect(image.onPressed, isNotNull);
+    expect(image.status, CatchIconActionStatus.enabled);
+    expect(send.onPressed, isNull);
+    expect(send.status, CatchIconActionStatus.enabled);
     expect(find.byTooltip('Sending message'), findsOneWidget);
 
     await _pumpComposer(tester, controller: controller, sendingImage: true);
 
     field = tester.widget<TextField>(find.byType(TextField));
-    image = tester.widget<CatchIconButton>(
+    image = tester.widget<CatchIconAction>(
       find.byKey(ChatInputBar.imageButtonKey),
     );
-    send = tester.widget<CatchIconButton>(
+    send = tester.widget<CatchIconAction>(
       find.byKey(ChatInputBar.sendButtonKey),
     );
     expect(field.enabled, isTrue);
-    expect(image.onTap, isNull);
-    expect(image.disabled, isFalse);
-    expect(send.onTap, isNotNull);
-    expect(send.disabled, isFalse);
+    expect(image.onPressed, isNull);
+    expect(image.status, CatchIconActionStatus.enabled);
+    expect(send.onPressed, isNotNull);
+    expect(send.status, CatchIconActionStatus.enabled);
     expect(find.byTooltip('Uploading image'), findsOneWidget);
     expect(_actionRects(tester), sendingRects);
   });

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:99537347f52975826c18ba813ca9c4e51de4e1d2d3980b51d41a7abab4350fa7",
-  "resolvedDigest": "sha256:b4fd0203af41bf3eb161a91038efe652aee2f6775c8132fd9119510de9d1061f",
+  "resolvedDigest": "sha256:81a344e7fbd97bb6843758fd8f92d967b3c0f697e126872f13dd84a4246608f1",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -3182,7 +3182,8 @@
                 "CatchButton",
                 "CatchButton.command",
                 "CatchButton.selection",
-                "CatchButton.floating"
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },

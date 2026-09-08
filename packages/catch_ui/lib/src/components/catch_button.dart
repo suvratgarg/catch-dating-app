@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button_content_row.dart';
 import 'package:catch_ui/src/components/catch_count_badge.dart';
@@ -16,6 +18,8 @@ enum CatchButtonSize { sm, md, lg }
 enum CatchButtonMode { pill, rounded }
 
 enum CatchButtonStatus { idle, loading }
+
+enum CatchButtonTone { primary, neutral, danger }
 
 /// Canonical labelled action with command, selection and floating recipes.
 ///
@@ -42,6 +46,18 @@ class CatchButton extends StatefulWidget {
     this.borderColor,
   }) : _selectionTooltip = null,
        _selection = false,
+       _text = false,
+       tone = CatchButtonTone.primary,
+       disabledForegroundColor = null,
+       disabledBackgroundColor = null,
+       side = null,
+       shape = null,
+       textStyle = null,
+       leadingGap = CatchSpacing.micro6,
+       focusNode = null,
+       tapTargetSize = null,
+       minimumSize = const Size.square(CatchSpacing.s10),
+       padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
        _command = false,
        trailing = null,
        _floatingIcon = null,
@@ -61,6 +77,18 @@ class CatchButton extends StatefulWidget {
     this.borderColor,
   }) : _selectionTooltip = tooltip,
        _selection = true,
+       _text = false,
+       tone = CatchButtonTone.primary,
+       disabledForegroundColor = null,
+       disabledBackgroundColor = null,
+       side = null,
+       shape = null,
+       textStyle = null,
+       leadingGap = CatchSpacing.micro6,
+       focusNode = null,
+       tapTargetSize = null,
+       minimumSize = const Size.square(CatchSpacing.s10),
+       padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
        _command = false,
        trailing = null,
        _floatingIcon = null,
@@ -84,6 +112,18 @@ class CatchButton extends StatefulWidget {
     this.semanticsLabel,
   }) : _selectionTooltip = null,
        _selection = false,
+       _text = false,
+       tone = CatchButtonTone.primary,
+       disabledForegroundColor = null,
+       disabledBackgroundColor = null,
+       side = null,
+       shape = null,
+       textStyle = null,
+       leadingGap = CatchSpacing.micro6,
+       focusNode = null,
+       tapTargetSize = null,
+       minimumSize = const Size.square(CatchSpacing.s10),
+       padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
        _command = true,
        _floatingIcon = null,
        value = null,
@@ -118,6 +158,18 @@ class CatchButton extends StatefulWidget {
        _floatingIcon = icon,
        _selectionTooltip = null,
        _selection = false,
+       _text = false,
+       tone = CatchButtonTone.primary,
+       disabledForegroundColor = null,
+       disabledBackgroundColor = null,
+       side = null,
+       shape = null,
+       textStyle = null,
+       leadingGap = CatchSpacing.micro6,
+       focusNode = null,
+       tapTargetSize = null,
+       minimumSize = const Size.square(CatchSpacing.s10),
+       padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
        _command = false,
        leading = null,
        trailing = null,
@@ -132,6 +184,44 @@ class CatchButton extends StatefulWidget {
        foregroundColor = null,
        borderColor = null;
 
+  /// Inline or dialog action with native text-button feedback and focus.
+  const CatchButton.text({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.tone = CatchButtonTone.primary,
+    this.foregroundColor,
+    this.backgroundColor,
+    this.disabledForegroundColor,
+    this.disabledBackgroundColor,
+    this.side,
+    this.shape,
+    this.textStyle,
+    this.leading,
+    this.leadingGap = CatchSpacing.micro6,
+    this.focusNode,
+    this.tapTargetSize,
+    this.minimumSize = const Size.square(CatchSpacing.s10),
+    this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
+  }) : _text = true,
+       _selectionTooltip = null,
+       _selection = false,
+       _command = false,
+       _floatingIcon = null,
+       value = null,
+       count = null,
+       trailing = null,
+       variant = CatchButtonVariant.ghost,
+       size = CatchButtonSize.md,
+       mode = CatchButtonMode.rounded,
+       status = CatchButtonStatus.idle,
+       fullWidth = false,
+       isInteractive = true,
+       semanticsLabel = null,
+       accentColor = null,
+       borderColor = null;
+
+  final bool _text;
   final String? _selectionTooltip;
   final bool _selection;
   final bool _command;
@@ -154,6 +244,18 @@ class CatchButton extends StatefulWidget {
 
   /// Floating count; zero hides the badge, while other recipes carry no count.
   final int? count;
+
+  final CatchButtonTone tone;
+  final Color? disabledForegroundColor;
+  final Color? disabledBackgroundColor;
+  final BorderSide? side;
+  final OutlinedBorder? shape;
+  final TextStyle? textStyle;
+  final double leadingGap;
+  final FocusNode? focusNode;
+  final MaterialTapTargetSize? tapTargetSize;
+  final Size minimumSize;
+  final EdgeInsetsGeometry padding;
 
   bool get isLoading => status == CatchButtonStatus.loading;
 
@@ -178,6 +280,64 @@ class _CatchButtonState extends State<CatchButton> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    if (widget._text) {
+      final color =
+          widget.foregroundColor ??
+          switch (widget.tone) {
+            CatchButtonTone.primary => t.primary,
+            CatchButtonTone.neutral => t.ink2,
+            CatchButtonTone.danger => t.danger,
+          };
+      final effectiveDisabledColor = widget.disabledForegroundColor ?? t.ink3;
+      final effectiveColor = widget.onPressed == null
+          ? effectiveDisabledColor
+          : color;
+      final effectiveTextStyle =
+          widget.textStyle ?? CatchTextStyles.labelL(context);
+      final labelText = Text(
+        widget.label,
+        textAlign: TextAlign.center,
+        style: effectiveTextStyle.copyWith(color: effectiveColor),
+      );
+
+      return TextButton(
+        onPressed: widget.onPressed,
+        focusNode: widget.focusNode,
+        style: TextButton.styleFrom(
+          foregroundColor: color,
+          backgroundColor: widget.backgroundColor,
+          disabledForegroundColor: effectiveDisabledColor,
+          disabledBackgroundColor: widget.disabledBackgroundColor,
+          minimumSize: Size(
+            math.max(
+              widget.minimumSize.width,
+              CatchPlatformTokens.minimumInteractiveExtent,
+            ),
+            math.max(
+              widget.minimumSize.height,
+              CatchPlatformTokens.minimumInteractiveExtent,
+            ),
+          ),
+          // Compact density must not subtract pixels from the platform floor.
+          visualDensity: VisualDensity.standard,
+          padding: widget.padding,
+          tapTargetSize: widget.tapTargetSize,
+          side: widget.side,
+          shape: widget.shape,
+          textStyle: effectiveTextStyle,
+        ),
+        child: widget.leading == null
+            ? labelText
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  widget.leading!,
+                  SizedBox(width: widget.leadingGap),
+                  Flexible(child: labelText),
+                ],
+              ),
+      );
+    }
     if (widget.count != null) {
       final icon = widget._floatingIcon;
       final label = widget.label;

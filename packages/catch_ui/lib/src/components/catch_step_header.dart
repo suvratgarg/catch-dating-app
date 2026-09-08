@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
-import 'package:catch_ui/src/components/catch_text_button.dart';
+import 'package:catch_ui/src/components/catch_icon_action.dart';
+import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/components/catch_top_bar.dart';
 import 'package:catch_ui/src/components/catch_top_bar_leading.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
@@ -78,13 +78,13 @@ class CatchStepHeader extends StatelessWidget {
                         button: true,
                         label: stepOverviewSemanticsLabel ?? stepLabel,
                         excludeSemantics: true,
-                        child: CatchTextButton(
+                        child: CatchButton.text(
                           label: visibleStepLabel!,
                           onPressed: onStepOverview,
-                          tone: CatchTextButtonTone.neutral,
+                          tone: CatchButtonTone.neutral,
                           minimumSize: const Size(
                             CatchSpacing.s0,
-                            CatchIconButton.navSize,
+                            CatchIconAction.navSize,
                           ),
                           padding: EdgeInsets.zero,
                           textStyle: CatchTextStyles.monoLabel(

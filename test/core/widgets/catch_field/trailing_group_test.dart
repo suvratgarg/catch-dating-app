@@ -31,11 +31,11 @@ void main() {
                 width: 188,
                 height: 24,
               ),
-              _ => CatchIconButton.icon(
+              _ => CatchIconAction.icon(
                 key: actionKey,
                 icon: Icons.more_horiz,
                 tooltip: 'More',
-                onTap: () => taps++,
+                onPressed: () => taps++,
               ),
             };
             await tester.pumpWidget(

@@ -314,7 +314,7 @@ void _registerCatchPrimitivesControlsTests() {
     },
   );
 
-  testWidgets('CatchIconButton renders handoff icon button variants', (
+  testWidgets('CatchIconAction renders handoff icon button variants', (
     tester,
   ) async {
     var taps = 0;
@@ -324,32 +324,32 @@ void _registerCatchPrimitivesControlsTests() {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('bordered-icon-button'),
               icon: CatchIcons.search,
               tooltip: 'Search events',
-              onTap: () => taps++,
+              onPressed: () => taps++,
             ),
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('active-icon-button'),
               icon: CatchIcons.favoriteRounded,
               active: true,
               accent: CatchTokens.editorialLight.danger,
-              onTap: () {},
+              onPressed: () {},
             ),
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('float-icon-button'),
               icon: CatchIcons.close,
-              variant: CatchIconButtonVariant.float,
-              onTap: () {},
+              variant: CatchIconActionVariant.float,
+              onPressed: () {},
             ),
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('plain-icon-button'),
               icon: CatchIcons.more,
-              variant: CatchIconButtonVariant.plain,
+              variant: CatchIconActionVariant.plain,
               borderColor: CatchTokens.editorialLight.line2,
-              disabled: true,
-              onTap: () => taps++,
+              status: CatchIconActionStatus.disabled,
+              onPressed: () => taps++,
             ),
           ],
         ),
@@ -380,7 +380,7 @@ void _registerCatchPrimitivesControlsTests() {
 
     expect(
       tester.getSize(borderedFinder),
-      Size.square(CatchIconButton.targetExtentFor(CatchLayout.iconButtonSize)),
+      Size.square(CatchIconAction.targetExtentFor(CatchLayout.iconButtonSize)),
     );
     expect(
       tester.getSize(
@@ -421,7 +421,7 @@ void _registerCatchPrimitivesControlsTests() {
     'compact-control constructors reject invalid count and label states',
     () {
       expect(
-        () => CatchIconButton.counted(
+        () => CatchIconAction.counted(
           icon: CatchIcons.notificationsRounded,
           count: -1,
         ),
@@ -440,7 +440,7 @@ void _registerCatchPrimitivesControlsTests() {
   );
 
   testWidgets(
-    'CatchIconButton.counted owns typed counts, target size, and semantics',
+    'CatchIconAction.counted owns typed counts, target size, and semantics',
     (tester) async {
       var taps = 0;
 
@@ -449,25 +449,25 @@ void _registerCatchPrimitivesControlsTests() {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CatchIconButton.counted(
+              CatchIconAction.counted(
                 key: const ValueKey('zero-count-icon-button'),
                 icon: CatchIcons.notificationsNoneRounded,
                 count: 0,
                 tooltip: 'Notifications',
-                onTap: () => taps++,
+                onPressed: () => taps++,
               ),
-              CatchIconButton.counted(
+              CatchIconAction.counted(
                 key: const ValueKey('counted-icon-button'),
                 icon: CatchIcons.tuneRounded,
                 count: 3,
                 tooltip: 'Filters, 3 active',
-                onTap: () => taps++,
+                onPressed: () => taps++,
               ),
-              CatchIconButton.counted(
+              CatchIconAction.counted(
                 icon: CatchIcons.notificationsRounded,
                 count: 124,
                 tooltip: 'Notifications, 124 unread',
-                onTap: () {},
+                onPressed: () {},
               ),
             ],
           ),
@@ -489,7 +489,7 @@ void _registerCatchPrimitivesControlsTests() {
       expect(
         tester.getSize(counted),
         Size.square(
-          CatchIconButton.targetExtentFor(CatchIconButton.defaultSize),
+          CatchIconAction.targetExtentFor(CatchIconAction.defaultSize),
         ),
       );
       expect(semantics.properties.button, isTrue);
@@ -599,10 +599,10 @@ void _registerCatchPrimitivesControlsTests() {
               variant: CatchButtonVariant.secondary,
               onPressed: () {},
             ),
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('outlined-icon-control'),
               icon: CatchIcons.search,
-              onTap: () {},
+              onPressed: () {},
             ),
           ],
         ),
@@ -930,13 +930,13 @@ void _registerCatchPrimitivesControlsTests() {
     expect(label.style?.color, CatchTokens.editorialDark.primaryInk);
   });
 
-  testWidgets('CatchTextButton applies token color and tap semantics', (
+  testWidgets('CatchButton applies token color and tap semantics', (
     tester,
   ) async {
     var taps = 0;
 
     await tester.pumpWidget(
-      _wrap(CatchTextButton(label: 'Retry', onPressed: () => taps++)),
+      _wrap(CatchButton.text(label: 'Retry', onPressed: () => taps++)),
     );
 
     await tester.tap(find.text('Retry'));
@@ -947,7 +947,7 @@ void _registerCatchPrimitivesControlsTests() {
     expect(label.style?.color, CatchTokens.editorialLight.primary);
   });
 
-  testWidgets('CatchTextButton keeps long localized labels constrained', (
+  testWidgets('CatchButton keeps long localized labels constrained', (
     tester,
   ) async {
     const plainLabel = 'Cancel this unexpectedly long localized action';
@@ -959,11 +959,11 @@ void _registerCatchPrimitivesControlsTests() {
           children: [
             SizedBox(
               width: 132,
-              child: CatchTextButton(label: plainLabel, onPressed: null),
+              child: CatchButton.text(label: plainLabel, onPressed: null),
             ),
             SizedBox(
               width: 132,
-              child: CatchTextButton(
+              child: CatchButton.text(
                 label: leadingLabel,
                 onPressed: null,
                 leading: SizedBox.square(dimension: 12),
