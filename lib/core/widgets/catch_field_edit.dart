@@ -38,10 +38,256 @@ extension _CatchFieldEdit on _CatchFieldState {
         _setTextEntryValidationError(state.hasError);
         final supportText = includeSupport ? error ?? widget.helperText : null;
 
+        final inlineAddAtRest =
+            rowBody && _inlineTextAddAtRestWith(hasError: hasError);
+        final addText = rowBody ? _emptyEditableValueText : null;
+        final effectiveInputHint = !rowBody
+            ? inputHintOverride
+            : inlineAddAtRest
+            ? null
+            : _textEntryExpandedWith(hasError: hasError)
+            ? inputHintOverride
+            : _emptyEditableValueText;
+        final effectiveHintWidget = !rowBody
+            ? inputHintWidgetOverride
+            : inlineAddAtRest
+            ? Text.rich(
+                _inlineAddTextSpan(t),
+                style: CatchTextStyles.fieldRowValue(
+                  context,
+                  color: t.ink3,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )
+            : null;
+        final effectiveSemanticLabel = !rowBody
+            ? semanticLabelOverride
+            : inlineAddAtRest && addText != null
+            ? _inlineAddSemanticLabel(addText)
+            : _title;
+
+        final canInteract =
+            canInteractOverride ?? (!widget.readOnly || widget.onTap != null);
+        final readOnly = readOnlyOverride ?? widget.readOnly;
+        final effectiveFocused = _focusNode.hasFocus || widget.focused;
+        final inlineAddHint = effectiveHintWidget != null;
+        final multiline =
+            !inlineAddHint &&
+            !widget.obscureText &&
+            (widget.maxLines != 1 || (widget.minLines ?? 1) > 1);
+        final multilineValueStyle = CatchTextStyles.fieldRowValue(
+          context,
+          color: widget.enabled ? t.ink : t.ink3,
+        ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
+        final multilineHintStyle = CatchTextStyles.fieldRowValue(
+          context,
+          color: t.ink2,
+        ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
+        final inputStyle = valueEmphasis
+            ? multiline
+                  ? multilineValueStyle
+                  : CatchTextStyles.fieldRowValue(
+                      context,
+                      color: widget.enabled ? t.ink : t.ink3,
+                    )
+            : _textStyle(context, color: widget.enabled ? t.ink : t.ink3);
+        final hintStyle = valueEmphasis
+            ? multiline
+                  ? multilineHintStyle
+                  : CatchTextStyles.fieldRowValue(context, color: t.ink2)
+            : widget.size == CatchFieldSize.floating
+            ? CatchTextStyles.bodyL(context, color: t.ink2)
+            : _textStyle(context, color: t.ink2);
+        final resolvedHintText = effectiveHintWidget == null
+            ? effectiveInputHint ?? _inputHintText
+            : null;
+        final visualOnlyHint = !effectiveShowLabel && resolvedHintText != null;
+        final textField = TextField(
+          key: const ValueKey<String>('catch-field-text-entry'),
+          groupId: _textFieldTapRegionGroup,
+          controller: _controller,
+          focusNode: _focusNode,
+          enabled: widget.enabled,
+          readOnly: readOnly,
+          canRequestFocus: canInteract,
+          enableInteractiveSelection: canInteract,
+          autofocus: widget.autofocus,
+          keyboardType: widget.keyboardType,
+          textInputAction: widget.textInputAction ?? TextInputAction.done,
+          textCapitalization: widget.textCapitalization,
+          inputFormatters: CatchContractFieldPolicy.effectiveInputFormatters(
+            widget.contract,
+            widget.inputFormatters,
+            explicitMaxLength: widget._editConfig?.maxLength,
+          ),
+          autofillHints: widget.autofillHints,
+          obscureText: widget.obscureText,
+          maxLines: widget.obscureText || inlineAddHint ? 1 : widget.maxLines,
+          minLines: inlineAddHint ? null : widget.minLines,
+          maxLength: widget.maxLength,
+          textAlign: widget.textAlign,
+          textAlignVertical: inlineAddHint
+              ? TextAlignVertical.center
+              : _textAlignVertical,
+          onTap: widget.onTap,
+          onTapOutside: widget._explicitSaveInput
+              ? null
+              : (_) => _focusNode.unfocus(),
+          onChanged: (value) {
+            state.didChange(value);
+            widget.onChanged?.call(value);
+          },
+          onEditingComplete: widget.retainFocusOnSubmitted ? () {} : null,
+          onSubmitted: _handleSubmitted,
+          style: inputStyle,
+          cursorColor: t.primary,
+          decoration: InputDecoration(
+            counterText: '',
+            isDense: true,
+            isCollapsed: effectiveVariant == CatchFieldVariant.bare,
+            filled: false,
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            focusedBorder: InputBorder.none,
+            disabledBorder: InputBorder.none,
+            errorBorder: InputBorder.none,
+            focusedErrorBorder: InputBorder.none,
+            contentPadding: _contentPadding(effectiveVariant),
+            labelText: _useFloatingLabel(effectiveVariant, effectiveShowLabel)
+                ? _title
+                : null,
+            labelStyle: _useFloatingLabel(effectiveVariant, effectiveShowLabel)
+                ? CatchTextStyles.bodyL(
+                    context,
+                    color: _fieldLabelColor(t, hasError: hasError),
+                  )
+                : null,
+            floatingLabelStyle:
+                _useFloatingLabel(effectiveVariant, effectiveShowLabel)
+                ? CatchFieldValueContent.captionStyle(
+                    context,
+                    color: _fieldLabelColor(t, hasError: hasError),
+                  )
+                : null,
+            floatingLabelBehavior:
+                _useFloatingLabel(effectiveVariant, effectiveShowLabel)
+                ? FloatingLabelBehavior.auto
+                : FloatingLabelBehavior.never,
+            hint: effectiveHintWidget != null
+                ? ExcludeSemantics(child: effectiveHintWidget)
+                : visualOnlyHint
+                ? ExcludeSemantics(child: Text(resolvedHintText))
+                : null,
+            hintText: effectiveHintWidget != null || visualOnlyHint
+                ? null
+                : resolvedHintText,
+            hintStyle: hintStyle,
+            prefixText: widget.prefixText,
+            prefixStyle: _textStyle(context, color: t.ink2),
+            suffixText: widget.suffixText,
+            suffixStyle: CatchTextStyles.bodyLead(context, color: t.ink2),
+            prefixIconConstraints: _iconConstraints,
+            prefixIcon: _usesRowPrefixIcon || widget.prefixIcon == null
+                ? null
+                : IconTheme(
+                    data: IconThemeData(color: t.ink3, size: CatchIcon.md),
+                    child: widget.prefixIcon!,
+                  ),
+            suffixIconConstraints: _suffixIconConstraints,
+            suffixIcon:
+                _usesRowTextEntryTrailing ||
+                    (!widget.showClearButton &&
+                        widget.action == null &&
+                        widget.suffixIcon == null)
+                ? null
+                : CatchFieldTrailing.inputSuffix(
+                    controller: _controller,
+                    clearTooltip: widget.copy.clearTooltip(_title),
+                    action: widget.action,
+                    suffixIcon: widget.suffixIcon,
+                    showClearButton: widget.showClearButton,
+                    onChanged: widget.onChanged,
+                  ),
+          ),
+        );
+        final Widget inputShell;
+        if (effectiveVariant == CatchFieldVariant.bare ||
+            effectiveVariant == CatchFieldVariant.row) {
+          inputShell = textField;
+        } else {
+          final active = effectiveFocused || hasError;
+          final baselineColor = hasError
+              ? t.danger
+              : widget.enabled
+              ? t.line2
+              : t.line;
+          final sweepColor = hasError ? t.danger : t.ink;
+          inputShell = ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: CatchControlMetrics.minHeight(_controlSize),
+            ),
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                DecoratedBox(
+                  key: const ValueKey('catch-field-underline-baseline'),
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: baselineColor)),
+                  ),
+                  child: textField,
+                ),
+                PositionedDirectional(
+                  start: 0,
+                  end: 0,
+                  bottom: -CatchFieldTokens.underlineSweepBottomOffset,
+                  height: CatchStroke.underline,
+                  child: LayoutBuilder(
+                    builder: (context, constraints) =>
+                        TweenAnimationBuilder<double>(
+                          key: const ValueKey('catch-field-underline-sweep'),
+                          duration: catchFieldMotionDuration(
+                            context,
+                            CatchFieldTokens.reveal,
+                          ),
+                          curve: CatchFieldTokens.curve,
+                          tween: Tween<double>(end: active ? 1 : 0),
+                          builder: (context, progress, _) => Align(
+                            alignment: AlignmentDirectional.centerStart,
+                            child: SizedBox(
+                              key: const ValueKey(
+                                'catch-field-underline-sweep-bar',
+                              ),
+                              width: constraints.maxWidth * progress,
+                              height: CatchStroke.underline,
+                              child: ColoredBox(color: sweepColor),
+                            ),
+                          ),
+                        ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        final singleLineControlHeight = _singleLineControlHeight(
+          effectiveVariant,
+        );
+        final sizedInputShell = singleLineControlHeight == null
+            ? inputShell
+            : SizedBox(height: singleLineControlHeight, child: inputShell);
+
+        final field = effectiveShowLabel
+            ? sizedInputShell
+            : MergeSemantics(
+                child: Semantics(
+                  label: effectiveSemanticLabel ?? _title,
+                  child: sizedInputShell,
+                ),
+              );
+
         if (rowBody) {
-          final expanded = _textEntryExpandedWith(hasError: hasError);
-          final inlineAddAtRest = _inlineTextAddAtRestWith(hasError: hasError);
-          final addText = _emptyEditableValueText;
           final body = CatchFieldValueContent(
             labelCopy: widget.copy.label,
             titleMaxLines: widget.titleMaxLines,
@@ -87,36 +333,7 @@ extension _CatchFieldEdit on _CatchFieldState {
                 ],
                 Expanded(
                   key: const ValueKey<String>('catch-field-text-input'),
-                  child: _buildTextEntryInput(
-                    context,
-                    state,
-                    variant: effectiveVariant,
-                    showLabel: effectiveShowLabel,
-                    valueEmphasis: valueEmphasis,
-                    hasError: hasError,
-                    canInteractOverride: canInteractOverride,
-                    readOnlyOverride: readOnlyOverride,
-                    inputHintOverride: inlineAddAtRest
-                        ? null
-                        : expanded
-                        ? inputHintOverride
-                        : _emptyEditableValueText,
-                    inputHintWidgetOverride: inlineAddAtRest
-                        ? Text.rich(
-                            _inlineAddTextSpan(t),
-                            style: CatchTextStyles.fieldRowValue(
-                              context,
-                              color: t.ink3,
-                              fontWeight: FontWeight.w500,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          )
-                        : null,
-                    semanticLabelOverride: inlineAddAtRest && addText != null
-                        ? _inlineAddSemanticLabel(addText)
-                        : _title,
-                  ),
+                  child: field,
                 ),
               ],
             ),
@@ -132,20 +349,6 @@ extension _CatchFieldEdit on _CatchFieldState {
             child: body,
           );
         }
-
-        final field = _buildTextEntryInput(
-          context,
-          state,
-          variant: effectiveVariant,
-          showLabel: effectiveShowLabel,
-          valueEmphasis: valueEmphasis,
-          hasError: hasError,
-          canInteractOverride: canInteractOverride,
-          readOnlyOverride: readOnlyOverride,
-          inputHintOverride: inputHintOverride,
-          inputHintWidgetOverride: inputHintWidgetOverride,
-          semanticLabelOverride: semanticLabelOverride,
-        );
 
         final counterText =
             effectiveVariant == CatchFieldVariant.underline &&
@@ -190,232 +393,6 @@ extension _CatchFieldEdit on _CatchFieldState {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildTextEntryInput(
-    BuildContext context,
-    FormFieldState<String> state, {
-    required CatchFieldVariant variant,
-    required bool showLabel,
-    required bool valueEmphasis,
-    required bool hasError,
-    bool? canInteractOverride,
-    bool? readOnlyOverride,
-    String? inputHintOverride,
-    Widget? inputHintWidgetOverride,
-    String? semanticLabelOverride,
-  }) {
-    final t = CatchTokens.of(context);
-    final canInteract =
-        canInteractOverride ?? (!widget.readOnly || widget.onTap != null);
-    final readOnly = readOnlyOverride ?? widget.readOnly;
-    final effectiveFocused = _focusNode.hasFocus || widget.focused;
-    final inlineAddHint = inputHintWidgetOverride != null;
-    final multiline =
-        !inlineAddHint &&
-        !widget.obscureText &&
-        (widget.maxLines != 1 || (widget.minLines ?? 1) > 1);
-    final multilineValueStyle = CatchTextStyles.fieldRowValue(
-      context,
-      color: widget.enabled ? t.ink : t.ink3,
-    ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
-    final multilineHintStyle = CatchTextStyles.fieldRowValue(
-      context,
-      color: t.ink2,
-    ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
-    final inputStyle = valueEmphasis
-        ? multiline
-              ? multilineValueStyle
-              : CatchTextStyles.fieldRowValue(
-                  context,
-                  color: widget.enabled ? t.ink : t.ink3,
-                )
-        : _textStyle(context, color: widget.enabled ? t.ink : t.ink3);
-    final hintStyle = valueEmphasis
-        ? multiline
-              ? multilineHintStyle
-              : CatchTextStyles.fieldRowValue(context, color: t.ink2)
-        : widget.size == CatchFieldSize.floating
-        ? CatchTextStyles.bodyL(context, color: t.ink2)
-        : _textStyle(context, color: t.ink2);
-    final resolvedHintText = inputHintWidgetOverride == null
-        ? inputHintOverride ?? _inputHintText
-        : null;
-    final visualOnlyHint = !showLabel && resolvedHintText != null;
-    final textField = TextField(
-      key: const ValueKey<String>('catch-field-text-entry'),
-      groupId: _textFieldTapRegionGroup,
-      controller: _controller,
-      focusNode: _focusNode,
-      enabled: widget.enabled,
-      readOnly: readOnly,
-      canRequestFocus: canInteract,
-      enableInteractiveSelection: canInteract,
-      autofocus: widget.autofocus,
-      keyboardType: widget.keyboardType,
-      textInputAction: widget.textInputAction ?? TextInputAction.done,
-      textCapitalization: widget.textCapitalization,
-      inputFormatters: CatchContractFieldPolicy.effectiveInputFormatters(
-        widget.contract,
-        widget.inputFormatters,
-        explicitMaxLength: widget._editConfig?.maxLength,
-      ),
-      autofillHints: widget.autofillHints,
-      obscureText: widget.obscureText,
-      maxLines: widget.obscureText || inlineAddHint ? 1 : widget.maxLines,
-      minLines: inlineAddHint ? null : widget.minLines,
-      maxLength: widget.maxLength,
-      textAlign: widget.textAlign,
-      textAlignVertical: inlineAddHint
-          ? TextAlignVertical.center
-          : _textAlignVertical,
-      onTap: widget.onTap,
-      onTapOutside: widget._explicitSaveInput
-          ? null
-          : (_) => _focusNode.unfocus(),
-      onChanged: (value) {
-        state.didChange(value);
-        widget.onChanged?.call(value);
-      },
-      onEditingComplete: widget.retainFocusOnSubmitted ? () {} : null,
-      onSubmitted: _handleSubmitted,
-      style: inputStyle,
-      cursorColor: t.primary,
-      decoration: InputDecoration(
-        counterText: '',
-        isDense: true,
-        isCollapsed: variant == CatchFieldVariant.bare,
-        filled: false,
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        disabledBorder: InputBorder.none,
-        errorBorder: InputBorder.none,
-        focusedErrorBorder: InputBorder.none,
-        contentPadding: _contentPadding(variant),
-        labelText: _useFloatingLabel(variant, showLabel) ? _title : null,
-        labelStyle: _useFloatingLabel(variant, showLabel)
-            ? CatchTextStyles.bodyL(
-                context,
-                color: _fieldLabelColor(t, hasError: hasError),
-              )
-            : null,
-        floatingLabelStyle: _useFloatingLabel(variant, showLabel)
-            ? CatchFieldValueContent.captionStyle(
-                context,
-                color: _fieldLabelColor(t, hasError: hasError),
-              )
-            : null,
-        floatingLabelBehavior: _useFloatingLabel(variant, showLabel)
-            ? FloatingLabelBehavior.auto
-            : FloatingLabelBehavior.never,
-        hint: inputHintWidgetOverride != null
-            ? ExcludeSemantics(child: inputHintWidgetOverride)
-            : visualOnlyHint
-            ? ExcludeSemantics(child: Text(resolvedHintText))
-            : null,
-        hintText: inputHintWidgetOverride != null || visualOnlyHint
-            ? null
-            : resolvedHintText,
-        hintStyle: hintStyle,
-        prefixText: widget.prefixText,
-        prefixStyle: _textStyle(context, color: t.ink2),
-        suffixText: widget.suffixText,
-        suffixStyle: CatchTextStyles.bodyLead(context, color: t.ink2),
-        prefixIconConstraints: _iconConstraints,
-        prefixIcon: _usesRowPrefixIcon || widget.prefixIcon == null
-            ? null
-            : IconTheme(
-                data: IconThemeData(color: t.ink3, size: CatchIcon.md),
-                child: widget.prefixIcon!,
-              ),
-        suffixIconConstraints: _suffixIconConstraints,
-        suffixIcon:
-            _usesRowTextEntryTrailing ||
-                (!widget.showClearButton &&
-                    widget.action == null &&
-                    widget.suffixIcon == null)
-            ? null
-            : CatchFieldTrailing.inputSuffix(
-                controller: _controller,
-                clearTooltip: widget.copy.clearTooltip(_title),
-                action: widget.action,
-                suffixIcon: widget.suffixIcon,
-                showClearButton: widget.showClearButton,
-                onChanged: widget.onChanged,
-              ),
-      ),
-    );
-    final Widget inputShell;
-    if (variant == CatchFieldVariant.bare || variant == CatchFieldVariant.row) {
-      inputShell = textField;
-    } else {
-      final active = effectiveFocused || hasError;
-      final baselineColor = hasError
-          ? t.danger
-          : widget.enabled
-          ? t.line2
-          : t.line;
-      final sweepColor = hasError ? t.danger : t.ink;
-      inputShell = ConstrainedBox(
-        constraints: BoxConstraints(
-          minHeight: CatchControlMetrics.minHeight(_controlSize),
-        ),
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            DecoratedBox(
-              key: const ValueKey('catch-field-underline-baseline'),
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: baselineColor)),
-              ),
-              child: textField,
-            ),
-            PositionedDirectional(
-              start: 0,
-              end: 0,
-              bottom: -CatchFieldTokens.underlineSweepBottomOffset,
-              height: CatchStroke.underline,
-              child: LayoutBuilder(
-                builder: (context, constraints) =>
-                    TweenAnimationBuilder<double>(
-                      key: const ValueKey('catch-field-underline-sweep'),
-                      duration: catchFieldMotionDuration(
-                        context,
-                        CatchFieldTokens.reveal,
-                      ),
-                      curve: CatchFieldTokens.curve,
-                      tween: Tween<double>(end: active ? 1 : 0),
-                      builder: (context, progress, _) => Align(
-                        alignment: AlignmentDirectional.centerStart,
-                        child: SizedBox(
-                          key: const ValueKey(
-                            'catch-field-underline-sweep-bar',
-                          ),
-                          width: constraints.maxWidth * progress,
-                          height: CatchStroke.underline,
-                          child: ColoredBox(color: sweepColor),
-                        ),
-                      ),
-                    ),
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-    final singleLineControlHeight = _singleLineControlHeight(variant);
-    final sizedInputShell = singleLineControlHeight == null
-        ? inputShell
-        : SizedBox(height: singleLineControlHeight, child: inputShell);
-
-    if (showLabel) return sizedInputShell;
-    return MergeSemantics(
-      child: Semantics(
-        label: semanticLabelOverride ?? _title,
-        child: sizedInputShell,
-      ),
     );
   }
 
