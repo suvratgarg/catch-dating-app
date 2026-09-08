@@ -212,7 +212,7 @@ void main() {
         expect(find.text('Forms'), findsWidgets);
         expect(find.text('Responses'), findsOneWidget);
         expect(find.byKey(const ValueKey('host-forms-create')), findsOneWidget);
-        expect(find.byType(CatchTopBarPrimaryAction), findsOneWidget);
+        expect(find.byType(CatchTopBarPrimaryButton), findsOneWidget);
         expect(find.byType(CatchSearchField), findsOneWidget);
         expect(
           tester

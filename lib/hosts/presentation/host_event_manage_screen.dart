@@ -478,7 +478,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             onPressed: onBackToSuccess,
           ),
           actions: [
-            CatchTopBarPrimaryAction(
+            CatchTopBarPrimaryButton(
               label: context.l10n.hostsHostEventRosterDrawerTitle,
               icon: CatchIcons.groupsRounded,
               onPressed: () => _setRosterOpen(true, screenState.phase),

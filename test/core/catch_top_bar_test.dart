@@ -194,7 +194,7 @@ void main() {
         title: 'Customers',
         textScale: 2,
         actions: [
-          CatchTopBarPrimaryAction(
+          CatchTopBarPrimaryButton(
             key: const ValueKey('add-customer'),
             label: 'Add customer',
             icon: CatchIcons.personAddAlt1Rounded,
@@ -415,7 +415,7 @@ void main() {
   });
 
   testWidgets(
-    'CatchTopBarPrimaryAction compacts to the icon action on phones',
+    'CatchTopBarPrimaryButton compacts to the icon action on phones',
     (tester) async {
       tester.view.devicePixelRatio = 1;
       tester.view.physicalSize = const Size(390, 800);
@@ -428,7 +428,7 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: Center(
-              child: CatchTopBarPrimaryAction(
+              child: CatchTopBarPrimaryButton(
                 label: 'Create event',
                 icon: CatchIcons.addRounded,
                 onPressed: () => taps += 1,
@@ -451,7 +451,7 @@ void main() {
     },
   );
 
-  testWidgets('CatchTopBarPrimaryAction keeps its label beyond phone width', (
+  testWidgets('CatchTopBarPrimaryButton keeps its label beyond phone width', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1;
@@ -464,7 +464,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: Center(
-            child: CatchTopBarPrimaryAction(
+            child: CatchTopBarPrimaryButton(
               label: 'Create event',
               icon: CatchIcons.addRounded,
             ),

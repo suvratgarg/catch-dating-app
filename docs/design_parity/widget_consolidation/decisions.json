@@ -7062,6 +7062,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:top-bar-primary-button",
+      "patternFamilyId": "top-bar-primary-button",
+      "decision": "rename-in-place",
+      "canonicalSymbol": "CatchTopBarPrimaryButton",
+      "members": [
+        {
+          "name": "CatchTopBarPrimaryAction",
+          "action": "rename",
+          "target": "CatchTopBarPrimaryButton"
+        }
+      ],
+      "rationale": "The shared Button renders one chosen control recipe. This top-bar member switches between a quiet icon target on compact windows and a labelled small button on wider windows, owning the breakpoint and toolbar allocation while preserving one callback and accessible label. That responsive chrome contract is distinct from choosing another Button style. Compared with both TopBar and Button, it remains a complementary layout-aware operation; all painting stays delegated to the existing button and icon recipes.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

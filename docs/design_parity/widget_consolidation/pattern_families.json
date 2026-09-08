@@ -1792,6 +1792,34 @@
           "rationale": "Replace the non-role Group suffix with Row, which names the existing single visual job."
         }
       ]
+    },
+    {
+      "id": "top-bar-primary-button",
+      "title": "Responsive primary toolbar button",
+      "intent": "Retain the breakpoint-owning primary control under a meaningful Button role and reviewed TopBarPrimary use case.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.top_bar",
+      "qualityReference": "CatchTopBarPrimaryButton",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. The compact icon target and wider labelled button keep their existing geometry, palette and callback."
+      ],
+      "members": [
+        {
+          "symbol": "CatchTopBarPrimaryButton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The shared Button renders one chosen control recipe. This top-bar member switches between a quiet icon target on compact windows and a labelled small button on wider windows, owning the breakpoint and toolbar allocation while preserving one callback and accessible label. That responsive chrome contract is distinct from choosing another Button style."
+        },
+        {
+          "symbol": "CatchTopBarPrimaryAction",
+          "disposition": "unify",
+          "target": "CatchTopBarPrimaryButton",
+          "preview": "not-applicable",
+          "rationale": "Rename the existing responsive control; do not duplicate its breakpoint behavior in consumers."
+        }
+      ]
     }
   ]
 }

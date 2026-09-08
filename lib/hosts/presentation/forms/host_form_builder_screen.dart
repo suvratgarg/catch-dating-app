@@ -113,7 +113,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
               editorValue != null &&
               editorValue.editor.form.status !=
                   HostFormLifecycleStatus.archived)
-            CatchTopBarPrimaryAction(
+            CatchTopBarPrimaryButton(
               label:
                   editorValue.editor.form.status ==
                       HostFormLifecycleStatus.published

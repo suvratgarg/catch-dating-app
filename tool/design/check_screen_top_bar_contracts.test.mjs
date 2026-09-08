@@ -334,7 +334,7 @@ test("accepts the canonical adaptive primary top-bar action", () => {
       appBar: CatchScreenTopBar(
         title: 'Events',
         actions: [
-          CatchTopBarPrimaryAction(
+          CatchTopBarPrimaryButton(
             label: 'Create event',
             icon: CatchIcons.addRounded,
             onPressed: createEvent,

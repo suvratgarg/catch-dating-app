@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.31.0
+version: 3.32.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -258,7 +258,7 @@ Widgetbook callers.
 | `CatchPickerSheet` | `packages/catch_ui/lib/src/components/catch_picker_sheet.dart` | Native wheel-picker sheet anatomy in the existing sheet family; callers provide title, resolved copy, wheel content, and cancel/commit callbacks. |
 | `CatchSliverHeader` | `packages/catch_ui/lib/src/patterns/catch_sliver_header.dart` | Scroll-away title and optional pinned bottom row, preserving the existing SliverToBoxAdapter and SliverPersistentHeader sequence. |
 | `CatchIconAction` | `packages/catch_ui/lib/src/components/catch_icon_action.dart` | Canonical icon-only action with raw-child, glyph, counted and toolbar recipes, shared focus and pointer feedback, typed status/emphasis, optional live announcements and platform target allocation. The toolbar recipe preserves the navigation glyph and required tooltip. |
-| `CatchTopBarPrimaryAction` | `packages/catch_ui/lib/src/components/catch_top_bar_primary_action.dart` | Compact layouts use a plain CatchIconAction with tooltip semantics; wider layouts use a small labelled CatchButton with the same callback. |
+| `CatchTopBarPrimaryButton` | `packages/catch_ui/lib/src/components/catch_top_bar_primary_button.dart` | Compact layouts use a plain CatchIconAction with tooltip semantics; wider layouts use a small labelled CatchButton with the same callback. |
 | `CatchStepHeader` | `packages/catch_ui/lib/src/components/catch_step_header.dart` | Handoff `StepHeader`: wizard scaffold header composed from a compact 80 px large `CatchTopBar`, optional kicker/subtitle, configurable back/close leading action, top-right mono step counter or custom trailing status, and a 2px progress hairline. The counter aligns with the title lane when no kicker is present and becomes a labelled 44 px step-overview action when `onStepOverview` is supplied. |
 | `CatchFormStepSpec` | `packages/catch_ui/lib/src/patterns/catch_form_step_spec.dart` | Wizard step title, validation key and optional-step presentation metadata. |
 | `CatchFormStepStatus` | `packages/catch_ui/lib/src/patterns/catch_form_step_status.dart` | Complete, needs-information and optional review statuses. |

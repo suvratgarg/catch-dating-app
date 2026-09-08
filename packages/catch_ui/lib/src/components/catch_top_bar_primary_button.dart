@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 /// Medium and expanded layouts retain the labelled small primary button.
 /// Callers provide semantics and behavior; this member owns the breakpoint,
 /// action primitive, size, palette, and icon/label composition.
-class CatchTopBarPrimaryAction extends StatelessWidget {
-  const CatchTopBarPrimaryAction({
+class CatchTopBarPrimaryButton extends StatelessWidget {
+  const CatchTopBarPrimaryButton({
     super.key,
     required this.label,
     required this.icon,

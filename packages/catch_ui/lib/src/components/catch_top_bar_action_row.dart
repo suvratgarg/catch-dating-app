@@ -25,7 +25,7 @@ class CatchTopBarActionRow extends StatelessWidget {
         throw FlutterError.fromParts([
           ErrorSummary('CatchButton cannot be a direct top-bar action.'),
           ErrorDescription(
-            'Use CatchTopBarPrimaryAction for a primary action that compacts '
+            'Use CatchTopBarPrimaryButton for a primary action that compacts '
             'to an icon, CatchIconAction for an icon-only action, '
             'CatchButton.text for a semantic text action, or '
             'CatchActionMenu for overflow actions.',

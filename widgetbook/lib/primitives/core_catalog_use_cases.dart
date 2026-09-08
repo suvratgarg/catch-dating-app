@@ -1135,20 +1135,20 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTopBarPrimaryAction,
+  type: CatchTopBarPrimaryButton,
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
   final mediaQuery = MediaQuery.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBarPrimaryAction',
-    catalogId: 'core.widgets.catch_top_bar_primary_action',
+    title: 'CatchTopBarPrimaryButton',
+    catalogId: 'core.widgets.catch_top_bar_primary_button',
     children: [
       _StateCard(
         label: 'compact phone / icon action',
         child: MediaQuery(
           data: mediaQuery.copyWith(size: const Size(390, 844)),
-          child: CatchTopBarPrimaryAction(
+          child: CatchTopBarPrimaryButton(
             label: 'Create event',
             icon: CatchIcons.addRounded,
             onPressed: _noop,
@@ -1159,7 +1159,7 @@ Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
         label: 'medium viewport / labelled action',
         child: MediaQuery(
           data: mediaQuery.copyWith(size: const Size(800, 900)),
-          child: CatchTopBarPrimaryAction(
+          child: CatchTopBarPrimaryButton(
             label: 'Create event',
             icon: CatchIcons.addRounded,
             onPressed: _noop,

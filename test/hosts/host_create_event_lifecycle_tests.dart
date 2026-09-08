@@ -53,7 +53,7 @@ void runHostCreateEventLifecycleTests() {
     );
     expect(find.text('Event staff access'), findsOneWidget);
 
-    await tester.tap(find.byType(CatchTopBarPrimaryAction));
+    await tester.tap(find.byType(CatchTopBarPrimaryButton));
     await _pumpTestAnimation(tester);
 
     final rosterPanel = find.byKey(
@@ -145,7 +145,7 @@ void runHostCreateEventLifecycleTests() {
     );
     expect(find.text('Review event setup'), findsOneWidget);
 
-    await tester.tap(find.byType(CatchTopBarPrimaryAction));
+    await tester.tap(find.byType(CatchTopBarPrimaryButton));
     await _pumpTestAnimation(tester);
     final rosterPanel = find.byKey(
       const ValueKey<String>('host_event_roster_drawer.panel'),

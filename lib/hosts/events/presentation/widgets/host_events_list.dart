@@ -149,7 +149,7 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
       header: CatchRootScreenHeader.title(
         title: context.l10n.hostsHostEventsListTextEvents,
         actions: [
-          CatchTopBarPrimaryAction(
+          CatchTopBarPrimaryButton(
             key: const ValueKey<String>('host-events-create-event'),
             label: context.l10n.hostsHostEventsListLabelNewEvent,
             icon: CatchIcons.addRounded,

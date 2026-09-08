@@ -85,7 +85,7 @@ void main() {
       tooltip: 'Go',
       onPressed: activate,
     ),
-    'top-bar primary': (activate) => CatchTopBarPrimaryAction(
+    'top-bar primary': (activate) => CatchTopBarPrimaryButton(
       key: _controlKey,
       icon: Icons.add,
       label: 'Go',

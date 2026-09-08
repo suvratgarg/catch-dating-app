@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "febe9821d142a78c43ae977a0d19935c177f342f5db1a9fa1371d0333aeeb642",
+  "sourceDigest": "c8328d4407ab39d374b4652939358d11073f9ede51f6d7d4593a141e1680c54f",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "febe9821d142a78c43ae977a0d19935c177f342f5db1a9fa1371d0333aeeb642",
-    "contractDigest": "febe9821d142a78c43ae977a0d19935c177f342f5db1a9fa1371d0333aeeb642"
+    "digest": "c8328d4407ab39d374b4652939358d11073f9ede51f6d7d4593a141e1680c54f",
+    "contractDigest": "c8328d4407ab39d374b4652939358d11073f9ede51f6d7d4593a141e1680c54f"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "e99330deac81ccd0d55bf20239d3ea10c199543983be1bb216e209d2da065ca9",
+    "handoffRequestDigest": "1a6c50767247b21109d1891f57c0bad0458c2db870dbffde8e0466eb140b61e6",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -473,7 +473,7 @@
           "CatchSliverHeader",
           "CatchTopBar",
           "CatchTopBarActionRow",
-          "CatchTopBarPrimaryAction",
+          "CatchTopBarPrimaryButton",
           "CatchTopBarTabBar",
           "CatchTopBarTabLabel"
         ]
@@ -1472,7 +1472,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "f3652a89b5bc606290b41a9d4cddb75b469dc9ecdda682572084df44b625c453"
+      "contractDigest": "cad890b8123c0ad36c6fc23e4314ec47430606e2b1f38183d5a439605d77076e"
     },
     {
       "contractId": "catch.privacy_badge",

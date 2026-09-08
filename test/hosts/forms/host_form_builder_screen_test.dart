@@ -111,10 +111,10 @@ void main() {
       expect(find.text('Outline'), findsOneWidget);
       expect(find.text('SECTION 1'), findsOneWidget);
       expect(find.byType(CatchBottomAction), findsNothing);
-      final publishAction = find.byType(CatchTopBarPrimaryAction);
+      final publishAction = find.byType(CatchTopBarPrimaryButton);
       expect(publishAction, findsOneWidget);
       expect(
-        tester.widget<CatchTopBarPrimaryAction>(publishAction).label,
+        tester.widget<CatchTopBarPrimaryButton>(publishAction).label,
         'Review & publish',
       );
 

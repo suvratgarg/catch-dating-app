@@ -22,7 +22,7 @@ void main() {
                 title: 'People',
                 leadingType: CatchTopBarLeading.none,
                 actions: [
-                  CatchTopBarPrimaryAction(
+                  CatchTopBarPrimaryButton(
                     label: 'Add person',
                     icon: CatchIcons.add,
                     onPressed: _noop,

@@ -859,7 +859,7 @@ void main() {
         );
         expect(find.text('Arrival check-in'), findsNothing);
 
-        await tester.tap(find.byType(CatchTopBarPrimaryAction));
+        await tester.tap(find.byType(CatchTopBarPrimaryButton));
         await _pumpTestAnimation(tester);
 
         expect(publicProfiles.fetchPublicProfilesCalls, hasLength(1));

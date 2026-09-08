@@ -205,7 +205,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         title: context.l10n.hostNavigationAudience,
         actions: activeSearchIsForms
             ? [
-                CatchTopBarPrimaryAction(
+                CatchTopBarPrimaryButton(
                   key: const ValueKey('host-forms-create'),
                   label: context.l10n.hostFormsCreate,
                   icon: CatchIcons.add,

@@ -288,7 +288,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         title: context.l10n.hostNavigationAudience,
         actions: peopleView
             ? [
-                CatchTopBarPrimaryAction(
+                CatchTopBarPrimaryButton(
                   key: const ValueKey<String>('host-customers-add-customer'),
                   label: context.l10n.hostCustomersAdd,
                   icon: CatchIcons.personAddAlt1Rounded,
