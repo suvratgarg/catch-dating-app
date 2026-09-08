@@ -11,13 +11,13 @@ void main() {
       MaterialApp(
         theme: CatchTheme.light,
         home: Scaffold(
-          body: CatchNumberStepper(
+          body: CatchStepper(
             value: 0,
             min: 0,
             max: 2,
-            formatValue: (value) => '$value places',
-            decreaseTooltip: 'Réduire',
-            increaseTooltip: 'Augmenter',
+            valueLabelBuilder: (value) => '$value places',
+            decreaseSemanticLabel: 'Réduire',
+            increaseSemanticLabel: 'Augmenter',
             onChanged: changes.add,
           ),
         ),

@@ -1157,7 +1157,7 @@ function buildCandidates() {
     "CatchSkeleton",
     "CatchPersonRow",
     "CatchBottomSheetScaffold",
-    "CatchNumberStepper",
+    "CatchStepper",
     "CatchKickerText",
     "CatchSearchField",
     "CatchSurface",

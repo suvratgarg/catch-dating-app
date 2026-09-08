@@ -7316,6 +7316,33 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:number-stepper",
+      "patternFamilyId": "number-stepper",
+      "decision": "one-renderer-and-explicit-action-recipe",
+      "canonicalSymbol": "CatchStepper",
+      "members": [
+        {
+          "name": "CatchFieldStepper",
+          "action": "absorb",
+          "target": "CatchStepper"
+        },
+        {
+          "name": "CatchFieldRepeatButton",
+          "action": "rename",
+          "target": "CatchStepperRepeatButton"
+        },
+        {
+          "name": "CatchNumberStepper",
+          "action": "replace",
+          "target": "CatchStepper"
+        }
+      ],
+      "rationale": "The two minus/value/plus controls have the same responsibility. The compact field implementation supplies stronger press-and-hold, keyboard-focus and pointer-cancellation contracts; adopt it for one numeric concept. Preserve custom callbacks as actions with the same renderer, separated from bounded onChanged stepping. Retire the unused full-width renderer and duplicate field-member preview; migrate live Field callers without changing their geometry or cadence. Name formatting computations valueLabelBuilder, move repeat-button ownership and preserve all states in the canonical gallery. Keep the old generic control's support for fractional steps: the canonical arithmetic normalizes at caller-supplied decimal precision and clamps endpoints, with probes for 0.005, 0.1 + 0.2 and scientific notation.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

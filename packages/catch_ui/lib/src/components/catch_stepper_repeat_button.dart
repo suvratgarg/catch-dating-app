@@ -8,8 +8,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Hold-to-repeat platform-sized target used by `CatchFieldStepper`.
-class CatchFieldRepeatButton extends StatefulWidget {
+/// Hold-to-repeat platform-sized target used by `CatchStepper`.
+class CatchStepperRepeatButton extends StatefulWidget {
   static double get hitExtent => CatchControlMetrics.squareConstraints(
     CatchFieldTokens.stepperHitExtent,
   ).minHeight;
@@ -18,7 +18,7 @@ class CatchFieldRepeatButton extends StatefulWidget {
   static double get layoutGap =>
       CatchFieldTokens.stepperGap -
       (hitExtent - CatchFieldTokens.stepperVisualExtent) / 2;
-  const CatchFieldRepeatButton({
+  const CatchStepperRepeatButton({
     super.key,
     required this.icon,
     required this.semanticLabel,
@@ -34,10 +34,11 @@ class CatchFieldRepeatButton extends StatefulWidget {
   final AlignmentGeometry visualAlignment;
 
   @override
-  State<CatchFieldRepeatButton> createState() => _CatchFieldRepeatButtonState();
+  State<CatchStepperRepeatButton> createState() =>
+      _CatchStepperRepeatButtonState();
 }
 
-class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
+class _CatchStepperRepeatButtonState extends State<CatchStepperRepeatButton> {
   Timer? _delay;
   Timer? _repeat;
   int? _pressedPointer;
@@ -46,7 +47,7 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
   bool _showFocusHighlight = false;
 
   @override
-  void didUpdateWidget(CatchFieldRepeatButton oldWidget) {
+  void didUpdateWidget(CatchStepperRepeatButton oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.enabled && !widget.enabled) _stop();
   }
@@ -79,7 +80,8 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
 
   void _handlePointerMove(PointerMoveEvent event) {
     if (_pressedPointer != event.pointer) return;
-    final bounds = Offset.zero & Size.square(CatchFieldRepeatButton.hitExtent);
+    final bounds =
+        Offset.zero & Size.square(CatchStepperRepeatButton.hitExtent);
     if (!bounds.contains(event.localPosition)) {
       _pressedPointer = null;
       _stop();
@@ -195,7 +197,7 @@ class _CatchFieldRepeatButtonState extends State<CatchFieldRepeatButton> {
                       : const {},
                   borderRadius: BorderRadius.circular(CatchRadius.pill),
                   child: SizedBox.square(
-                    dimension: CatchFieldRepeatButton.hitExtent,
+                    dimension: CatchStepperRepeatButton.hitExtent,
                     child: Align(
                       alignment: widget.visualAlignment,
                       child: visual,

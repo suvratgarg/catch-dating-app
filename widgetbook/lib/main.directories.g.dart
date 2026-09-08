@@ -2954,17 +2954,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldRepeatButton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldRepeatButtonContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchFieldRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2972,17 +2961,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchFieldRowContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldStepper',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldStepperContractStates,
               ),
             ],
           ),
@@ -3005,17 +2983,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchFieldTrailingContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchNumberStepper',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchNumberStepperContractStates,
               ),
             ],
           ),
@@ -3049,6 +3016,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchSearchFieldContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchStepper',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchNumberStepperContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchStepperRepeatButton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchFieldRepeatButtonContractStates,
               ),
             ],
           ),
@@ -10365,21 +10354,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CatchFieldStepper',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Canonical height stepper bounds',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileHeightStepButtonStates,
-                  ),
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Canonical height stepper states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .profileHeightStepperControlsStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
                 name: 'CatchFormMultiChoiceRowEditor<dynamic, dynamic>',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
@@ -10426,6 +10400,21 @@ final directories = <_widgetbook.WidgetbookNode>[
                     name: 'Typed descriptor prototype',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
                         .catchFormTextRowEditorStates,
+                  ),
+                ],
+              ),
+              _widgetbook.WidgetbookComponent(
+                name: 'CatchStepper',
+                useCases: [
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Canonical height stepper bounds',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileHeightStepButtonStates,
+                  ),
+                  _widgetbook.WidgetbookUseCase(
+                    name: 'Canonical height stepper states',
+                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                        .profileHeightStepperControlsStates,
                   ),
                 ],
               ),

@@ -93,7 +93,7 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(find.text('60+'), findsOneWidget);
   });
 
-  testWidgets('CatchNumberStepper formats and clamps numeric changes', (
+  testWidgets('CatchStepper formats and clamps numeric changes', (
     tester,
   ) async {
     num value = 170;
@@ -101,13 +101,13 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchNumberStepper(
+          builder: (context, setState) => CatchStepper(
             value: value,
             min: 169,
             max: 171,
-            decreaseTooltip: 'Decrease height',
-            increaseTooltip: 'Increase height',
-            formatValue: (next) => '${next.round()} cm',
+            decreaseSemanticLabel: 'Decrease height',
+            increaseSemanticLabel: 'Increase height',
+            valueLabelBuilder: (next) => '${next.round()} cm',
             onChanged: (next) => setState(() => value = next),
           ),
         ),
@@ -120,17 +120,17 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pump();
     expect(find.text('171 cm'), findsOneWidget);
 
-    final disabledIncrease = tester.widget<IconButton>(
-      find.widgetWithIcon(IconButton, CatchIcons.addRounded),
+    final disabledIncrease = tester.widget<CatchStepperRepeatButton>(
+      find.widgetWithIcon(CatchStepperRepeatButton, CatchIcons.addRounded),
     );
-    expect(disabledIncrease.onPressed, isNull);
+    expect(disabledIncrease.enabled, isFalse);
 
     await tester.tap(find.byTooltip('Decrease height'));
     await tester.pump();
     expect(find.text('170 cm'), findsOneWidget);
   });
 
-  testWidgets('standalone controls share the md minimum height contract', (
+  testWidgets('standalone controls preserve their canonical target heights', (
     tester,
   ) async {
     CityOption? selected;
@@ -154,14 +154,14 @@ void _registerCatchPrimitivesCompositionTests() {
                 onChanged: (value) => selected = value,
               ),
               const SizedBox(height: 12),
-              CatchNumberStepper(
-                decreaseTooltip: 'Decrease',
-                increaseTooltip: 'Increase',
+              CatchStepper(
+                decreaseSemanticLabel: 'Decrease',
+                increaseSemanticLabel: 'Increase',
                 key: const Key('control-number-stepper'),
                 value: 60,
                 min: 30,
                 max: 120,
-                formatValue: (value) => '${value.round()} min',
+                valueLabelBuilder: (value) => '${value.round()} min',
                 onChanged: (_) {},
               ),
             ],
@@ -177,7 +177,7 @@ void _registerCatchPrimitivesCompositionTests() {
     );
     expect(
       tester.getSize(find.byKey(const Key('control-number-stepper'))).height,
-      expectedHeight,
+      CatchStepperRepeatButton.hitExtent,
     );
   });
 

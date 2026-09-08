@@ -67,7 +67,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             value: value.unitSize,
             min: 2,
             max: 12,
-            formatter: (number) => context.l10n
+            valueLabelBuilder: (number) => context.l10n
                 .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointPeople(
                   toInt: number.toInt(),
                 ),
@@ -125,7 +125,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             value: value.unitCount ?? estimatedUnitCount,
             min: 1,
             max: 40,
-            formatter: (number) => context.l10n
+            valueLabelBuilder: (number) => context.l10n
                 .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointTolowercase(
                   toInt: number.toInt(),
                   toLowerCase: value.unitKind.label.toLowerCase(),
@@ -230,7 +230,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             value: value.maxPairMeetings,
             min: 1,
             max: 10,
-            formatter: (number) => context.l10n
+            valueLabelBuilder: (number) => context.l10n
                 .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointValue2(
                   toInt: number.toInt(),
                   value2: number.toInt() == 1 ? 'time' : 'times',

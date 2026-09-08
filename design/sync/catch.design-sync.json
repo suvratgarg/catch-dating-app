@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "5ddc9afab2eedfd6d8a3d7c1989d04e403063ada295a35d2d87aae38a063599d",
+  "sourceDigest": "da4f257da89beeb55cbfabe0cea5375dcc61bbec434de4246731e04818b8298d",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "5ddc9afab2eedfd6d8a3d7c1989d04e403063ada295a35d2d87aae38a063599d",
-    "contractDigest": "5ddc9afab2eedfd6d8a3d7c1989d04e403063ada295a35d2d87aae38a063599d"
+    "digest": "da4f257da89beeb55cbfabe0cea5375dcc61bbec434de4246731e04818b8298d",
+    "contractDigest": "da4f257da89beeb55cbfabe0cea5375dcc61bbec434de4246731e04818b8298d"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "360af39cfa2097edf3a44dcea639989c444184d582de150a9ee2e59bb4c4d8e3",
+    "handoffRequestDigest": "1430ea151e9c1a621551d1f3d2d8a7b0e6c4db85a106f0e03eda555b46c43b20",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,18 +83,18 @@
   },
   "metrics": {
     "contractCount": 76,
-    "publicClassCount": 264,
+    "publicClassCount": 263,
     "conceptCount": 69,
-    "memberCount": 177,
-    "membersPerConcept": 2.57,
+    "memberCount": 176,
+    "membersPerConcept": 2.55,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 69,
-      "member": 177,
+      "member": 176,
       "screen": 15
     },
-    "collisionCount": 36,
+    "collisionCount": 37,
     "collisions": [
       {
         "key": "catch.async_value",
@@ -226,11 +226,9 @@
           "CatchFieldInteractionPlaneScope",
           "CatchFieldLanes",
           "CatchFieldOptionCardControl",
-          "CatchFieldRepeatButton",
           "CatchFieldRow",
           "CatchFieldSelectControl",
           "CatchFieldStatusIndicator",
-          "CatchFieldStepper",
           "CatchFieldSupportRow",
           "CatchFieldSurface",
           "CatchFieldTextEntry",
@@ -304,6 +302,13 @@
         "symbols": [
           "CatchNotice",
           "CatchNoticeHost"
+        ]
+      },
+      {
+        "key": "catch.number_stepper",
+        "symbols": [
+          "CatchStepper",
+          "CatchStepperRepeatButton"
         ]
       },
       {
@@ -923,7 +928,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "b1e7b28c0cc4e5760c3e8399ce20e19dbe078e302c98feedfbd71f0d2b5ba6ba"
+      "contractDigest": "a6465e6f944ad7978c3e0a1a44198745839ad4cf21c095d9118fa2ed7a11debc"
     },
     {
       "contractId": "catch.section",
@@ -1345,9 +1350,9 @@
       "contractId": "catch.number_stepper",
       "conceptRole": "concept",
       "conceptId": "catch.number_stepper",
-      "dartSymbol": "CatchNumberStepper",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_number_stepper.dart",
-      "figmaName": "Catch/NumberStepper",
+      "dartSymbol": "CatchStepper",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_stepper.dart",
+      "figmaName": "Catch/Stepper",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},
@@ -1362,16 +1367,16 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 8,
-      "figmaExpectedPropertyDigest": "8f2deed29ce1e0b9b1fbd5c37c89f791136c7c43692bdae7b71046ed013f2f6b",
+      "figmaExpectedPropertyCount": 9,
+      "figmaExpectedPropertyDigest": "35045904b7748fa8c8517add1ff5bc244a7a259f93d18e6011280e770ad58e36",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "NumberStepper",
+      "claudeHandoffName": "Stepper",
       "claudeAllowed": true,
-      "contractDigest": "206ae37a6c75edacea2d3e5ee16c770dcb1188f9eac08fbfde912f2addbebfba"
+      "contractDigest": "a36f2a623f07b4f97561b76499c87790f95b304ae5011034d232229f1371d5cf"
     },
     {
       "contractId": "catch.option_card",

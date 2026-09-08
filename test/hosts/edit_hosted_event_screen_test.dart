@@ -558,8 +558,8 @@ void main() {
     await _scrollToFinder(tester, durationField);
     await tester.tap(durationField);
     await pumpFeatureUi(tester);
-    final durationStepper = tester.widget<CatchFieldStepper>(
-      find.byType(CatchFieldStepper),
+    final durationStepper = tester.widget<CatchStepper>(
+      find.byType(CatchStepper),
     );
     durationStepper.onChanged?.call(75);
     await tester.pump();

@@ -75,13 +75,13 @@ void main() {
                 selectedLabel: 'Bandra Fort',
                 onTap: () {},
               ),
-              CatchNumberStepper(
+              CatchStepper.actions(
                 value: 75,
                 onDecrease: () => decreased = true,
                 onIncrease: () => increased = true,
-                decreaseTooltip: 'Decrease duration',
-                increaseTooltip: 'Increase duration',
-                formatValue: (minutes) => '${minutes.round()} min',
+                decreaseSemanticLabel: 'Decrease duration',
+                increaseSemanticLabel: 'Increase duration',
+                valueLabelBuilder: (minutes) => '${minutes.round()} min',
               ),
             ],
           ),
@@ -101,10 +101,8 @@ void main() {
         CatchControlMetrics.mdMinHeight,
       );
       expect(
-        tester
-            .getSize(find.widgetWithText(CatchNumberStepper, '75 min'))
-            .height,
-        CatchControlMetrics.mdMinHeight,
+        tester.getSize(find.widgetWithText(CatchStepper, '75 min')).height,
+        CatchStepperRepeatButton.hitExtent,
       );
       expect(
         tester.getSize(find.widgetWithText(MapPinTile, 'Choose on map')).height,

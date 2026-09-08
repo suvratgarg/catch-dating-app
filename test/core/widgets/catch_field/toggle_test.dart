@@ -104,7 +104,7 @@ void main() {
       );
       expect(
         tester.getSize(stepperOutline),
-        Size.square(CatchFieldRepeatButton.hitExtent),
+        Size.square(CatchStepperRepeatButton.hitExtent),
       );
       expect(
         tester.getSize(

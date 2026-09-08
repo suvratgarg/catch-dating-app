@@ -485,7 +485,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               min: CatchBusinessRules.eventMinDurationMinutes,
                               max: CatchBusinessRules.eventMaxDurationMinutes,
                               step: CatchBusinessRules.eventDurationStepMinutes,
-                              formatter: (value) =>
+                              valueLabelBuilder: (value) =>
                                   EventFormatters.durationMinutes(
                                     value.round(),
                                   ),

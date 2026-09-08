@@ -36,7 +36,7 @@ void main() {
       enabled: activate != null,
       onPressed: () => activate?.call(),
     ),
-    'field repeat': (activate) => CatchFieldRepeatButton(
+    'field repeat': (activate) => CatchStepperRepeatButton(
       key: _controlKey,
       icon: Icons.add,
       semanticLabel: 'Go',

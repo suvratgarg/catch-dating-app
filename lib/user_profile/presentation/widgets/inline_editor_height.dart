@@ -138,7 +138,7 @@ class _ProfileInlineHeightEditorState
         value: _heightCm,
         min: minimumHeightCm,
         max: maximumHeightCm,
-        formatter: (value) =>
+        valueLabelBuilder: (value) =>
             context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
               heightCm: value.toInt(),
             ),

@@ -286,7 +286,7 @@ void main() {
     var steps = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchFieldStepper(
+        CatchStepper(
           value: 168,
           min: 100,
           max: 220,
@@ -333,7 +333,7 @@ void main() {
     var steps = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchFieldStepper(
+        CatchStepper(
           value: 168,
           min: 100,
           max: 220,
@@ -751,7 +751,7 @@ void main() {
   );
 
   testWidgets(
-    'CatchField.stepper pins formatter, bounds, and semantic labels',
+    'CatchField.stepper pins valueLabelBuilder, bounds, and semantic labels',
     (tester) async {
       var value = 2;
       await tester.pumpWidget(
@@ -763,7 +763,7 @@ void main() {
               value: value,
               min: 1,
               max: 3,
-              formatter: (next) => '${next.toInt()} guests',
+              valueLabelBuilder: (next) => '${next.toInt()} guests',
               decreaseSemanticLabel: 'Decrease guests',
               increaseSemanticLabel: 'Increase guests',
               initiallyOpen: true,
@@ -808,9 +808,7 @@ void main() {
     await tester.pump();
     expect(value, 45);
 
-    final stepper = tester.widget<CatchFieldStepper>(
-      find.byType(CatchFieldStepper),
-    );
+    final stepper = tester.widget<CatchStepper>(find.byType(CatchStepper));
     expect(stepper.min, 30);
     expect(stepper.max, 240);
     expect(stepper.step, 15);
@@ -857,7 +855,7 @@ void main() {
               title: 'Preferred group size',
               body: 'Four people for a comfortable conversation',
               initiallyOpen: true,
-              control: CatchFieldStepper(
+              control: CatchStepper(
                 value: 4,
                 decreaseSemanticLabel: 'Decrease group size',
                 increaseSemanticLabel: 'Increase group size',
@@ -878,7 +876,7 @@ void main() {
       _wrap(
         Directionality(
           textDirection: TextDirection.rtl,
-          child: CatchFieldStepper(
+          child: CatchStepper(
             value: 4,
             decreaseSemanticLabel: 'Decrease group size',
             increaseSemanticLabel: 'Increase group size',

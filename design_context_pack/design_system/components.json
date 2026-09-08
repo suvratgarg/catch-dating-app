@@ -3809,26 +3809,6 @@
             }
           },
           {
-            "id": "catch.field.stepper",
-            "symbol": "CatchFieldStepper",
-            "summary": "Bounded minus-value-plus control with fieldRowTitle value typography, 15 px glyphs, platform-sized targets around 32 px visuals, a preserved 16 px visual circle-to-value gap, immediate pointer-down stepping, touch drag-exit cancellation, an outer keyboard-focus ring, and acceleration after the tenth repeat tick.",
-            "states": [
-              "default",
-              "minimum",
-              "maximum",
-              "repeating",
-              "keyboard-focused"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_stepper.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
             "id": "catch.field.commit_button",
             "symbol": "CatchFieldCommitButton",
             "summary": "Field-owned Cancel or Done pill using CatchButton.text and the control text role, 18 by 10 padding, primaryInk Done content, animated saving opacity, a 13 px spinner with a 7 px label gap, sole explicit-commit progress ownership, and an immediate 2 px outer keyboard-focus ring at a 2 px offset.",
@@ -3845,26 +3825,6 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
-            "id": "catch.field.repeat_button",
-            "symbol": "CatchFieldRepeatButton",
-            "summary": "Stepper-owned platform-sized repeat target with a 32 px visual circle. Rendered target and pointer-exit bounds share hitExtent; layoutGap preserves visual spacing. Supports immediate pointer-down step, pointer-up and drag-exit cancellation, 400 ms delay, 110 ms repeats, and 55 ms repeats after tick 10.",
-            "states": [
-              "enabled",
-              "disabled",
-              "pressed",
-              "repeating",
-              "keyboard-focused"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_repeat_button.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "variant",
               "decisionRef": "contract-family:catch.field"
             }
           },
@@ -7441,21 +7401,22 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchNumberStepper",
+      "name": "CatchStepper",
       "status": "active",
       "kind": "primitive",
-      "summary": "Canonical numeric increment/decrement control with bounded step logic, accessible tooltips, and Catch control-shell chrome.",
+      "summary": "Canonical numeric adjustment using one compact, accelerated repeat-control renderer for bounded values and explicit caller-owned stepping.",
       "dart": {
-        "symbol": "CatchNumberStepper",
-        "file": "packages/catch_ui/lib/src/components/catch_number_stepper.dart",
+        "symbol": "CatchStepper",
+        "file": "packages/catch_ui/lib/src/components/catch_stepper.dart",
         "constructors": [
-          "CatchNumberStepper"
+          "CatchStepper",
+          "CatchStepper.actions"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/NumberStepper",
+          "componentName": "Catch/Stepper",
           "componentUrl": null
         },
         "codeConnect": {
@@ -7464,7 +7425,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "NumberStepper",
+          "handoffName": "Stepper",
           "allowed": true
         }
       },
@@ -7477,10 +7438,10 @@
             "dartType": "num"
           },
           {
-            "name": "formatValue",
+            "name": "valueLabelBuilder",
             "type": "callback",
-            "required": true,
-            "dartType": "String Function(num value)"
+            "required": false,
+            "dartType": "String Function(num value)?"
           },
           {
             "name": "onChanged",
@@ -7515,18 +7476,34 @@
             "dartType": "bool"
           },
           {
-            "name": "decreaseTooltip",
+            "name": "decreaseSemanticLabel",
             "type": "string",
-            "required": false,
-            "default": "Decrease",
+            "required": true,
             "dartType": "String"
           },
           {
-            "name": "increaseTooltip",
+            "name": "increaseSemanticLabel",
+            "type": "string",
+            "required": true,
+            "dartType": "String"
+          },
+          {
+            "name": "unit",
             "type": "string",
             "required": false,
-            "default": "Increase",
-            "dartType": "String"
+            "dartType": "String?"
+          },
+          {
+            "name": "onDecrease",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
+          },
+          {
+            "name": "onIncrease",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?"
           }
         ],
         "states": [
@@ -7535,7 +7512,10 @@
           "max-bound",
           "disabled",
           "custom-step",
-          "custom-format"
+          "custom-format",
+          "repeating",
+          "keyboard-focused",
+          "explicit-actions"
         ],
         "slots": [],
         "tokens": [
@@ -7547,10 +7527,8 @@
           "theme.light.color.primary"
         ],
         "dartRoles": [
-          "CatchControlSurface",
-          "CatchControlSurfaceTone.raised",
-          "CatchControlMetrics.stepperIconExtent",
-          "CatchTextStyles.numericLarge",
+          "CatchStepperRepeatButton",
+          "CatchTextStyles.fieldRowTitle",
           "CatchIcons.removeRounded",
           "CatchIcons.addRounded"
         ],
@@ -7567,13 +7545,47 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.number_stepper.repeat_button",
+            "symbol": "CatchStepperRepeatButton",
+            "summary": "Stepper-owned platform-sized repeat target with a 32 px visual circle. Rendered target and pointer-exit bounds share hitExtent; layoutGap preserves visual spacing. Supports immediate pointer-down step, pointer-up and drag-exit cancellation, 400 ms delay, 110 ms repeats, and 55 ms repeats after tick 10.",
+            "states": [
+              "enabled",
+              "disabled",
+              "pressed",
+              "repeating",
+              "keyboard-focused"
+            ],
+            "file": "packages/catch_ui/lib/src/components/catch_stepper_repeat_button.dart",
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.number_stepper",
+              "parentConceptId": "catch.number_stepper",
+              "qualifier": "variant",
+              "decisionRef": "pattern-family:number-stepper"
+            },
+            "level": "L3",
+            "roleNoun": "Button",
+            "naming": {
+              "useCase": "StepperRepeat",
+              "comparedWith": [
+                "catch.number_stepper",
+                "catch.button"
+              ],
+              "reason": "Stepper owns numeric adjustment and bounds. Its repeat-button anatomy owns immediate pointer activation, delayed accelerated repetition, pointer cancellation and keyboard stepping. An ordinary Button owns one command per activation; these timer and hit-target contracts are not a visual variation."
+            }
+          }
+        ]
       },
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for bounded numeric choices where plus/minus adjustment is faster than text entry.",
-          "Callers own domain limits and mutation timing; the primitive only disables impossible local steps."
+          "Use for numeric choices where plus/minus adjustment is faster than text entry.",
+          "The default recipe clamps the final partial step to min/max and retains the decimal precision supplied by value and step, instead of rounding every change to two places. Callers own domain limits and save orchestration.",
+          "The actions recipe accepts explicit nullable decrement/increment callbacks; null disables that direction. It excludes numeric bounds and onChanged so callback ownership cannot silently override them.",
+          "Both recipes use the same platform-sized repeat targets, keyboard focus, touch exit cancellation and accelerated cadence."
         ]
       },
       "governance": {
@@ -7590,7 +7602,13 @@
         "conceptId": "catch.number_stepper"
       },
       "surfaces": {
-        "flutter": "CatchNumberStepper"
+        "flutter": "CatchStepper"
+      },
+      "level": "L3",
+      "roleNoun": "Stepper",
+      "naming": {
+        "useCase": "",
+        "reason": "Base numeric-stepper responsibility: decrease, display and increase one value. The former NumberStepper and FieldStepper implementations share this contract and renderer. Multi-step workflow progress belongs to StepFlow or Indicator, rather than another Stepper qualifier."
       }
     },
     {

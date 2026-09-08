@@ -2178,6 +2178,55 @@
           "rationale": "Absorb the exact rotation and icon as inline; field status and commit controls keep save transitions, localization and input policy."
         }
       ]
+    },
+    {
+      "id": "number-stepper",
+      "title": "One numeric stepper and repeat-control anatomy",
+      "intent": "Consolidate numeric adjustment around the compact repeat-capable control while retaining explicit caller-owned steps as a named recipe.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.number_stepper",
+      "qualityReference": "CatchStepper",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "Production field rendering is preserved: value typography, circle geometry, visual gaps, focus ring and repeat cadence come from the existing field stepper.",
+        "The unused full-width CatchNumberStepper renderer is retired. Its test/gallery examples now use the canonical compact control, including the explicit-actions recipe."
+      ],
+      "members": [
+        {
+          "symbol": "CatchStepper",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Own one numeric-adjustment contract. Adopt the stronger repeat-capable renderer and clamping, retain formatted values, bounds, steps and explicit callbacks through separate constructors. Preserve arbitrary fractional steps from the former NumberStepper; normalize floating-point noise at caller precision without the field renderer's fixed two-decimal truncation."
+        },
+        {
+          "symbol": "CatchFieldStepper",
+          "disposition": "unify",
+          "target": "CatchStepper",
+          "preview": "not-applicable",
+          "rationale": "The numeric control has no field-only responsibility. Move its renderer and repeat behavior into the canonical numeric concept while Field keeps disclosure, schema constraints and saving."
+        },
+        {
+          "symbol": "CatchStepperRepeatButton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Public stepper anatomy owns immediate activation, timer cadence, cancellation and keyboard focus; ordinary Button command behavior does not provide this repeated operation."
+        },
+        {
+          "symbol": "CatchFieldRepeatButton",
+          "disposition": "unify",
+          "target": "CatchStepperRepeatButton",
+          "preview": "not-applicable",
+          "rationale": "Relocate and name the exact repeat controller as anatomy of the numeric concept; preserve keys, targets and timers."
+        },
+        {
+          "symbol": "CatchNumberStepper",
+          "disposition": "unify",
+          "target": "CatchStepper",
+          "preview": "not-applicable",
+          "rationale": "Retire the full-width renderer and unnecessary Number qualifier. Preserve useful explicit callbacks as actions on the base Stepper role."
+        }
+      ]
     }
   ]
 }

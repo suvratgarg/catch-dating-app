@@ -1114,20 +1114,20 @@ Widget profileInlineHeightEditorStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical height stepper states',
-  type: CatchFieldStepper,
+  type: CatchStepper,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileHeightStepperControlsStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldStepper',
-    contractId: 'catch.field.stepper',
+    title: 'CatchStepper',
+    contractId: 'catch.number_stepper',
     children: [
       _StateCard(
         label: 'enabled',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldStepper(
+            child: CatchStepper(
               value: 172,
               min: 120,
               max: 220,
@@ -1145,7 +1145,7 @@ Widget profileHeightStepperControlsStates(BuildContext context) {
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldStepper(
+            child: CatchStepper(
               value: 172,
               min: 120,
               max: 220,
@@ -1164,13 +1164,13 @@ Widget profileHeightStepperControlsStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical height stepper bounds',
-  type: CatchFieldStepper,
+  type: CatchStepper,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileHeightStepButtonStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldStepper bounds',
-    contractId: 'catch.field.stepper.bounds',
+    title: 'CatchStepper bounds',
+    contractId: 'catch.number_stepper.bounds',
     children: [
       _StateCard(
         label: 'minimum and maximum endpoints',
@@ -1179,7 +1179,7 @@ Widget profileHeightStepButtonStates(BuildContext context) {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CatchFieldStepper(
+              CatchStepper(
                 value: 120,
                 min: 120,
                 max: 220,
@@ -1189,7 +1189,7 @@ Widget profileHeightStepButtonStates(BuildContext context) {
                 onChanged: (_) {},
               ),
               gapH16,
-              CatchFieldStepper(
+              CatchStepper(
                 value: 220,
                 min: 120,
                 max: 220,

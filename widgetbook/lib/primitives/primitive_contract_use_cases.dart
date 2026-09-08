@@ -3168,50 +3168,6 @@ Widget catchFieldOptionCardControlContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchFieldStepper,
-  path: '[Core primitives]/Inputs',
-)
-Widget catchFieldStepperContractStates(BuildContext context) {
-  CatchFieldStepper stepper(num value, {num? min, num? max}) {
-    return CatchFieldStepper(
-      value: value,
-      min: min,
-      max: max,
-      unit: 'cm',
-      decreaseSemanticLabel: 'Decrease height',
-      increaseSemanticLabel: 'Increase height',
-      onChanged: (_) {},
-    );
-  }
-
-  return _ContractScreen(
-    title: 'CatchFieldStepper',
-    contractId: 'catch.field.stepper',
-    states: const [
-      'default',
-      'minimum',
-      'maximum',
-      'repeating',
-      'keyboard-focused',
-    ],
-    children: [
-      _StateCard(label: 'default', child: stepper(168, min: 120, max: 220)),
-      _StateCard(label: 'minimum', child: stepper(120, min: 120, max: 220)),
-      _StateCard(label: 'maximum', child: stepper(220, min: 120, max: 220)),
-      _StateCard(
-        label: 'repeating · press and hold',
-        child: stepper(168, min: 120, max: 220),
-      ),
-      _StateCard(
-        label: 'keyboard-focused · use Tab',
-        child: stepper(168, min: 120, max: 220),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchFieldCommitButton,
   path: '[Core primitives]/Inputs',
 )
@@ -3259,13 +3215,13 @@ Widget catchFieldCommitButtonContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchFieldRepeatButton,
+  type: CatchStepperRepeatButton,
   path: '[Core primitives]/Inputs',
 )
 Widget catchFieldRepeatButtonContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchFieldRepeatButton',
-    contractId: 'catch.field.repeat_button',
+    title: 'CatchStepperRepeatButton',
+    contractId: 'catch.number_stepper.repeat_button',
     states: const [
       'enabled',
       'disabled',
@@ -3278,19 +3234,19 @@ Widget catchFieldRepeatButtonContractStates(BuildContext context) {
         label: 'enabled / disabled / press / hold to repeat',
         child: _InlineWrap(
           children: [
-            CatchFieldRepeatButton(
+            CatchStepperRepeatButton(
               icon: CatchIcons.removeRounded,
               semanticLabel: 'Decrease',
               enabled: true,
               onStep: _noop,
             ),
-            CatchFieldRepeatButton(
+            CatchStepperRepeatButton(
               icon: CatchIcons.addRounded,
               semanticLabel: 'Increase',
               enabled: true,
               onStep: _noop,
             ),
-            CatchFieldRepeatButton(
+            CatchStepperRepeatButton(
               icon: CatchIcons.addRounded,
               semanticLabel: 'Increase disabled',
               enabled: false,
@@ -3301,7 +3257,7 @@ Widget catchFieldRepeatButtonContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'keyboard-focused · use Tab',
-        child: CatchFieldRepeatButton(
+        child: CatchStepperRepeatButton(
           icon: CatchIcons.addRounded,
           semanticLabel: 'Increase from keyboard',
           enabled: true,
@@ -4366,14 +4322,14 @@ Widget catchControlShellContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchNumberStepper,
+  type: CatchStepper,
   path: '[Core primitives]/Inputs',
 )
 Widget catchNumberStepperContractStates(BuildContext context) {
   String whole(num value) => value.toStringAsFixed(0);
 
   return _ContractScreen(
-    title: 'CatchNumberStepper',
+    title: 'CatchStepper',
     contractId: 'catch.number_stepper',
     states: const [
       'interactive',
@@ -4382,77 +4338,115 @@ Widget catchNumberStepperContractStates(BuildContext context) {
       'disabled',
       'custom-step',
       'custom-format',
+      'repeating',
+      'keyboard-focused',
+      'explicit-actions',
     ],
     children: [
       _StateCard(
         label: 'interactive',
-        child: CatchNumberStepper(
-          decreaseTooltip: 'Decrease',
-          increaseTooltip: 'Increase',
+        child: CatchStepper(
+          decreaseSemanticLabel: 'Decrease',
+          increaseSemanticLabel: 'Increase',
           value: 2,
           min: 1,
           max: 5,
-          formatValue: whole,
+          valueLabelBuilder: whole,
           onChanged: (_) {},
         ),
       ),
       _StateCard(
         label: 'min-bound',
-        child: CatchNumberStepper(
-          decreaseTooltip: 'Decrease',
-          increaseTooltip: 'Increase',
+        child: CatchStepper(
+          decreaseSemanticLabel: 'Decrease',
+          increaseSemanticLabel: 'Increase',
           value: 1,
           min: 1,
           max: 5,
-          formatValue: whole,
+          valueLabelBuilder: whole,
           onChanged: (_) {},
         ),
       ),
       _StateCard(
         label: 'max-bound',
-        child: CatchNumberStepper(
-          decreaseTooltip: 'Decrease',
-          increaseTooltip: 'Increase',
+        child: CatchStepper(
+          decreaseSemanticLabel: 'Decrease',
+          increaseSemanticLabel: 'Increase',
           value: 5,
           min: 1,
           max: 5,
-          formatValue: whole,
+          valueLabelBuilder: whole,
           onChanged: (_) {},
         ),
       ),
       _StateCard(
         label: 'disabled',
-        child: CatchNumberStepper(
-          decreaseTooltip: 'Decrease',
-          increaseTooltip: 'Increase',
+        child: CatchStepper(
+          decreaseSemanticLabel: 'Decrease',
+          increaseSemanticLabel: 'Increase',
           value: 2,
-          formatValue: whole,
+          valueLabelBuilder: whole,
           enabled: false,
           onChanged: (_) {},
         ),
       ),
       _StateCard(
         label: 'custom-step',
-        child: CatchNumberStepper(
-          decreaseTooltip: 'Decrease',
-          increaseTooltip: 'Increase',
+        child: CatchStepper(
+          decreaseSemanticLabel: 'Decrease',
+          increaseSemanticLabel: 'Increase',
           value: 30,
           min: 0,
           max: 90,
           step: 15,
-          formatValue: (value) => '${value.toStringAsFixed(0)} min',
+          valueLabelBuilder: (value) => '${value.toStringAsFixed(0)} min',
           onChanged: (_) {},
         ),
       ),
       _StateCard(
         label: 'custom-format',
-        child: CatchNumberStepper(
-          decreaseTooltip: 'Decrease',
-          increaseTooltip: 'Increase',
+        child: CatchStepper(
+          decreaseSemanticLabel: 'Decrease',
+          increaseSemanticLabel: 'Increase',
           value: 1499,
           step: 100,
-          formatValue: (value) => 'Rs ${value.toStringAsFixed(0)}',
+          valueLabelBuilder: (value) => 'Rs ${value.toStringAsFixed(0)}',
           onChanged: (_) {},
+        ),
+      ),
+      _StateCard(
+        label: 'repeating · press and hold',
+        child: CatchStepper(
+          value: 168,
+          min: 120,
+          max: 220,
+          unit: 'cm',
+          decreaseSemanticLabel: 'Decrease height',
+          increaseSemanticLabel: 'Increase height',
+          onChanged: (_) {},
+        ),
+      ),
+      _StateCard(
+        label: 'keyboard-focused · use Tab',
+        child: CatchStepper(
+          value: 168,
+          min: 120,
+          max: 220,
+          unit: 'cm',
+          decreaseSemanticLabel: 'Decrease height',
+          increaseSemanticLabel: 'Increase height',
+          onChanged: (_) {},
+        ),
+      ),
+      _StateCard(
+        label: 'explicit-actions',
+        child: CatchStepper.actions(
+          value: 75,
+          unit: 'min',
+          decreaseSemanticLabel: 'Decrease duration',
+          increaseSemanticLabel: 'Increase duration',
+          onDecrease: _noop,
+          onIncrease: _noop,
         ),
       ),
     ],

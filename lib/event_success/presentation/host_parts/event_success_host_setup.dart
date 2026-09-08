@@ -343,7 +343,7 @@ class TargetAttendeeControl extends StatelessWidget {
         value: value,
         min: 1,
         max: 1000,
-        formatter: (number) =>
+        valueLabelBuilder: (number) =>
             context.l10n.eventSuccessEventSuccessHostSetupVisiblecopyToint(
               toInt: number.toInt(),
             ),
