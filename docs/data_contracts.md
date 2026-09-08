@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.74.0
+version: 1.75.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -255,6 +255,9 @@ or the event end. Sweeps have scoped reads but no transfer authority.
 command, request hash, source generation, episode and resulting revision. Current
 manager/scoped operator authority and reviewed source/revision/episode fences are
 checked in each transaction. Reads and retries never recreate an earlier effect.
+The membership store uses the shared bounded transaction callback adapter for
+closed-transaction read failures. Commit uncertainty is not translated or
+blindly retried; immutable request receipts remain the replay authority.
 Changed event/roster generations, guest re-entry and changed group setup require
 fresh review. Membership checks also gate group-specific joining instructions at
 publication, guest interactions and SMS/WhatsApp dispatch. Both collections deny

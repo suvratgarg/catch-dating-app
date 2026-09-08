@@ -1,6 +1,7 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
+import {runAssistanceTransaction} from "./transactionCallback";
 import {validateGetEventAssistanceMembershipCallablePayload} from
   "../../shared/generated/validators/getEventAssistanceMembershipInput";
 import {validateTransferEventAssistanceGroupCallablePayload} from
@@ -25,7 +26,7 @@ export class EventMembershipStore {
       throw new HttpsError("invalid-argument",
         "Invalid group membership scope.");
     }
-    return this.db.runTransaction(async (tx) => {
+    return runAssistanceTransaction(this.db, async (tx) => {
       const state = await readMembership(this.db, tx, input, actorUid,
         this.clock);
       if (!canReadMembership(state)) throw membershipDenied();
@@ -53,7 +54,7 @@ export class EventMembershipStore {
     const requestHash = operationContentHash([actorUid, input]);
     const receiptId = "membership-action:" + operationContentHash([
       scope, command.operationId]);
-    return this.db.runTransaction(async (tx) => {
+    return runAssistanceTransaction(this.db, async (tx) => {
       const state = await readMembership(this.db, tx, scope, actorUid,
         this.clock);
       if (!canReadMembership(state)) throw membershipDenied();
