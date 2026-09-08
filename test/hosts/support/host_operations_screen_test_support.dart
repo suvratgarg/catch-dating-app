@@ -134,7 +134,7 @@ void registerHostEventEntryTests() {
     expect(
       find.descendant(
         of: eventEntrySheet,
-        matching: find.byType(CatchSectionFocusSurface),
+        matching: find.byType(CatchSectionSurface),
       ),
       findsOneWidget,
     );

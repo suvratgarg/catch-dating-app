@@ -4008,12 +4008,12 @@ Widget catchSectionContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchSectionFocusSurface,
+  type: CatchSectionSurface,
   path: '[Core primitives]/Sections',
 )
-Widget catchSectionFocusSurfaceContractStates(BuildContext context) {
+Widget catchSectionSurfaceContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchSectionFocusSurface',
+    title: 'CatchSectionSurface',
     contractId: 'catch.section.focus_surface',
     states: const [
       'default',
@@ -4026,44 +4026,46 @@ Widget catchSectionFocusSurfaceContractStates(BuildContext context) {
       _StateCard(
         label: 'default',
         child: _FieldWidth(
-          child: CatchSectionFocusSurface(
+          child: CatchSectionSurface(
             padding: CatchInsets.content,
-            focused: false,
-            hasError: false,
-            child: const Text('Contained section content'),
+            child: Text(
+              'Contained section content',
+              style: CatchTextStyles.bodyM(context),
+            ),
           ),
         ),
       ),
       _StateCard(
         label: 'focused',
         child: _FieldWidth(
-          child: CatchSectionFocusSurface(
+          child: CatchSectionSurface(
             padding: CatchInsets.content,
-            focused: true,
-            hasError: false,
-            child: const Text('Focused contained section content'),
+            states: {WidgetState.focused},
+            child: Text(
+              'Focused contained section content',
+              style: CatchTextStyles.bodyM(context),
+            ),
           ),
         ),
       ),
       _StateCard(
         label: 'error',
         child: _FieldWidth(
-          child: CatchSectionFocusSurface(
+          child: CatchSectionSurface(
             padding: CatchInsets.content,
-            focused: false,
-            hasError: true,
-            child: const Text('Error contained section content'),
+            states: {WidgetState.error},
+            child: Text(
+              'Error contained section content',
+              style: CatchTextStyles.bodyM(context),
+            ),
           ),
         ),
       ),
       _StateCard(
         label: 'field-rows-child-active',
         child: _FieldWidth(
-          child: CatchSectionFocusSurface(
+          child: CatchSectionSurface.fieldRows(
             padding: EdgeInsets.zero,
-            focused: false,
-            hasError: false,
-            fieldRows: true,
             child: CatchField.input(
               copy: catchFieldCopy(context.l10n),
               title: 'Answer',
@@ -4076,11 +4078,9 @@ Widget catchSectionFocusSurfaceContractStates(BuildContext context) {
       _StateCard(
         label: 'field-rows-explicit-focused',
         child: _FieldWidth(
-          child: CatchSectionFocusSurface(
+          child: CatchSectionSurface.fieldRows(
             padding: EdgeInsets.zero,
-            focused: true,
-            hasError: false,
-            fieldRows: true,
+            states: {WidgetState.focused},
             child: CatchField.read(
               copy: catchFieldCopy(context.l10n),
               title: 'Section validation',

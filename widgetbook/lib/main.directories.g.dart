@@ -3916,17 +3916,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSectionFocusSurface',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSectionFocusSurfaceContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchSectionHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3956,6 +3945,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchSectionStackContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSectionSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchSectionSurfaceContractStates,
               ),
             ],
           ),

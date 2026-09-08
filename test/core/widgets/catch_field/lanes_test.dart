@@ -952,7 +952,7 @@ void main() {
       );
       final overlay = tester.widget<AnimatedContainer>(overlayFinder);
       final decoration = overlay.decoration! as BoxDecoration;
-      final sectionRect = tester.getRect(find.byType(CatchSectionFocusSurface));
+      final sectionRect = tester.getRect(find.byType(CatchSectionSurface));
       final overlayRect = tester.getRect(overlayFinder);
 
       expect(decoration.border, isNotNull);
@@ -962,7 +962,7 @@ void main() {
       expect(
         find.ancestor(
           of: overlayFinder,
-          matching: find.byKey(CatchSectionFocusSurface.rowGroupClipKey),
+          matching: find.byKey(CatchSectionSurface.rowGroupClipKey),
         ),
         findsOneWidget,
       );

@@ -518,7 +518,7 @@ void main() {
 
       final surfaceFinder = find
           .descendant(
-            of: find.byType(CatchSectionFocusSurface),
+            of: find.byType(CatchSectionSurface),
             matching: find.byType(AnimatedContainer),
           )
           .first;
@@ -630,7 +630,7 @@ void main() {
       final surfaceRect = tester.getRect(
         find
             .descendant(
-              of: find.byType(CatchSectionFocusSurface),
+              of: find.byType(CatchSectionSurface),
               matching: find.byType(AnimatedContainer),
             )
             .first,
@@ -667,7 +667,7 @@ void main() {
 
       final surfaceFinder = find
           .descendant(
-            of: find.byType(CatchSectionFocusSurface),
+            of: find.byType(CatchSectionSurface),
             matching: find.byType(AnimatedContainer),
           )
           .first;
@@ -765,7 +765,7 @@ void main() {
       for (final rowCount in [1, 3]) {
         await pumpRows(rowCount);
 
-        final clipFinder = find.byKey(CatchSectionFocusSurface.rowGroupClipKey);
+        final clipFinder = find.byKey(CatchSectionSurface.rowGroupClipKey);
         final clip = tester.widget<ClipRRect>(clipFinder);
         expect(clip.clipBehavior, Clip.hardEdge);
         expect(
@@ -909,7 +909,7 @@ void main() {
       final surface = tester.widget<AnimatedContainer>(
         find
             .descendant(
-              of: find.byType(CatchSectionFocusSurface),
+              of: find.byType(CatchSectionSurface),
               matching: find.byType(AnimatedContainer),
             )
             .first,
@@ -937,7 +937,7 @@ void main() {
     final surface = tester.widget<AnimatedContainer>(
       find
           .descendant(
-            of: find.byType(CatchSectionFocusSurface),
+            of: find.byType(CatchSectionSurface),
             matching: find.byType(AnimatedContainer),
           )
           .first,
@@ -963,7 +963,7 @@ void main() {
     final errorSurface = tester.widget<AnimatedContainer>(
       find
           .descendant(
-            of: find.byType(CatchSectionFocusSurface),
+            of: find.byType(CatchSectionSurface),
             matching: find.byType(AnimatedContainer),
           )
           .first,
@@ -1011,7 +1011,7 @@ void main() {
           final surface = tester.widget<AnimatedContainer>(
             find
                 .descendant(
-                  of: find.byType(CatchSectionFocusSurface),
+                  of: find.byType(CatchSectionSurface),
                   matching: find.byType(AnimatedContainer),
                 )
                 .first,
@@ -1030,9 +1030,7 @@ void main() {
             of: activeOverlayFinder,
             matching: find.byType(CatchField),
           );
-          final clipFinder = find.byKey(
-            CatchSectionFocusSurface.rowGroupClipKey,
-          );
+          final clipFinder = find.byKey(CatchSectionSurface.rowGroupClipKey);
           expect(activeOverlayFinder, findsOneWidget);
           expect(activeFieldFinder, findsOneWidget);
           expect(
@@ -1044,9 +1042,7 @@ void main() {
           );
           final activeDecoration = activeOverlay.decoration! as BoxDecoration;
           final activeOverlayRect = tester.getRect(activeOverlayFinder);
-          final surfaceRect = tester.getRect(
-            find.byType(CatchSectionFocusSurface),
-          );
+          final surfaceRect = tester.getRect(find.byType(CatchSectionSurface));
           final activeFieldRect = tester.getRect(activeFieldFinder);
 
           expect(background.border, isNull);
@@ -1084,17 +1080,14 @@ void main() {
   );
 
   testWidgets(
-    'CatchSectionFocusSurface field rows own active edge geometry directly',
+    'CatchSectionSurface field rows own active edge geometry directly',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
           SizedBox(
             width: 360,
-            child: CatchSectionFocusSurface(
+            child: CatchSectionSurface.fieldRows(
               padding: EdgeInsets.zero,
-              focused: false,
-              hasError: false,
-              fieldRows: true,
               child: CatchField.input(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Answer',
@@ -1106,7 +1099,7 @@ void main() {
         ),
       );
 
-      final surfaceRect = tester.getRect(find.byType(CatchSectionFocusSurface));
+      final surfaceRect = tester.getRect(find.byType(CatchSectionSurface));
       final fieldRect = tester.getRect(find.byType(CatchField));
       final activeOverlayRect = tester.getRect(
         find.byKey(const ValueKey('catch-field-active-overlay')),

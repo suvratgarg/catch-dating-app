@@ -402,7 +402,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.byKey(CatchSectionFocusSurface.rowGroupClipKey), findsNothing);
+    expect(find.byKey(CatchSectionSurface.rowGroupClipKey), findsNothing);
     expect(find.byKey(const ValueKey('host-form-published')), findsOneWidget);
     expect(
       tester.getSize(find.byKey(const ValueKey('host-form-published'))).width,

@@ -41,10 +41,7 @@ void main() {
     final waiting = find.text('Waiting for attendee feedback');
     expect(waiting, findsOneWidget);
     expect(
-      find.ancestor(
-        of: waiting,
-        matching: find.byType(CatchSectionFocusSurface),
-      ),
+      find.ancestor(of: waiting, matching: find.byType(CatchSectionSurface)),
       findsOneWidget,
     );
     expect(

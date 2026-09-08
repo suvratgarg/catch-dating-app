@@ -7,9 +7,9 @@ import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
 import 'package:catch_ui/src/components/catch_section_body.dart';
 import 'package:catch_ui/src/components/catch_section_body_mode.dart';
 import 'package:catch_ui/src/components/catch_section_field_group.dart';
-import 'package:catch_ui/src/components/catch_section_focus_surface.dart';
-import 'package:catch_ui/src/components/catch_section_header_placement.dart';
 import 'package:catch_ui/src/components/catch_section_header.dart';
+import 'package:catch_ui/src/components/catch_section_header_placement.dart';
+import 'package:catch_ui/src/components/catch_section_surface.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
@@ -602,18 +602,30 @@ class CatchSection extends StatelessWidget {
           gutterOwnership: fieldRows
               ? CatchFieldGutterOwnership.field
               : CatchFieldGutterOwnership.container,
-          child: CatchSectionFocusSurface(
-            padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
-            backgroundColor: backgroundColor,
-            borderColor: borderColor,
-            tone: tone,
-            emphasis: emphasis,
-            boxShadow: boxShadow,
-            focused: focused,
-            hasError: hasError,
-            fieldRows: fieldRows,
-            child: content,
-          ),
+          child: fieldRows
+              ? CatchSectionSurface.fieldRows(
+                  padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
+                  backgroundColor: backgroundColor,
+                  borderColor: borderColor,
+                  states: {
+                    if (focused) WidgetState.focused,
+                    if (hasError) WidgetState.error,
+                  },
+                  child: content,
+                )
+              : CatchSectionSurface(
+                  padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
+                  backgroundColor: backgroundColor,
+                  borderColor: borderColor,
+                  tone: tone,
+                  emphasis: emphasis,
+                  boxShadow: boxShadow,
+                  states: {
+                    if (focused) WidgetState.focused,
+                    if (hasError) WidgetState.error,
+                  },
+                  child: content,
+                ),
         );
         section = !fieldRows || !hasHeader || hasInternalFieldHeader
             ? surface

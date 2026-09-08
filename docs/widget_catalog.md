@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.41.0
+version: 3.42.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -396,7 +396,7 @@ Widgetbook callers.
 | `CatchDetailSliverSectionList` | `packages/catch_ui/lib/src/patterns/catch_detail_sliver_section_list.dart` | Sliver-native detail-screen insets around an explicitly empty-safe section list. |
 | `CatchMasterDetailLayout` / `CatchAdaptiveMasterDetailLayout` | `packages/catch_ui/lib/src/patterns/catch_master_detail_layout.dart` / `packages/catch_ui/lib/src/patterns/catch_adaptive_master_detail_layout.dart` | Shared master-detail workspace geometry. `CatchMasterDetailLayout` accepts an explicit split decision; `CatchAdaptiveMasterDetailLayout` resolves that decision from the actual route-body constraints and reports it to the master builder so navigation behavior and geometry cannot disagree after shell chrome takes width. Both own the canonical 360 px index pane and shared divider. |
 | `CatchDivider` | `packages/catch_ui/lib/src/primitives/catch_divider.dart:6` | Semantic hairline divider primitive for section and field-row/list separators. Use `CatchDivider.section` for full-width section boundaries and `CatchDivider.fieldSection` for full-strength text-lane-inset separators within field sections. Use `CatchDivider.fieldRow` only for deliberately muted separators in ordinary repeated-row lists. `CatchSection.fieldRows` and `containedFieldRows` select `fieldSection` internally so their header and sibling-field rules share one color and stroke family. |
-| `CatchSectionFocusSurface` | `packages/catch_ui/lib/src/components/catch_section_focus_surface.dart` | Internal renderer for the single contained-section perimeter, clip, focus, and error chrome. It is excluded from the app’s curated `catch_ui.dart` barrel; feature-level construction is rejected so contained fields cannot acquire a second perimeter. |
+| `CatchSectionSurface` | `packages/catch_ui/lib/src/components/catch_section_surface.dart` | Public section anatomy for one contained-group perimeter. The default recipe reflects descendant focus; `fieldRows` owns the group clip and explicit section states while children keep their own active treatment. Exported for package use and direct previews/tests; feature construction is rejected, so app callers use `CatchSection`. |
 | `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/core/widgets/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
 | `CatchTicketHeroLayout` | `packages/catch_ui/lib/src/components/catch_ticket_hero_layout.dart:11` | Presentation-neutral adaptive ticket hero slots with a shared compact flag, visual-height clamp and fitted body. |
 | `CatchTicketDivider` | `packages/catch_ui/lib/src/components/catch_ticket_divider.dart:5` | Ticket perforation with configurable height, line color and notch radius. |

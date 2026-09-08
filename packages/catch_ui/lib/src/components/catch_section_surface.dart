@@ -4,8 +4,13 @@ import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/widgets.dart';
 
-class CatchSectionFocusSurface extends StatefulWidget {
-  const CatchSectionFocusSurface({
+/// Contained section perimeter, including explicit error/focus chrome.
+///
+/// The default recipe may reflect descendant focus. [CatchSectionSurface.fieldRows]
+/// owns one clip around a group and leaves each child's active treatment inside
+/// that boundary. Feature code composes `CatchSection` instead of this anatomy.
+class CatchSectionSurface extends StatefulWidget {
+  const CatchSectionSurface({
     super.key,
     required this.child,
     required this.padding,
@@ -14,10 +19,20 @@ class CatchSectionFocusSurface extends StatefulWidget {
     this.tone = CatchSurfaceTone.surface,
     this.emphasis = CatchSurfaceEmphasis.subtle,
     this.boxShadow,
-    required this.focused,
-    required this.hasError,
-    this.fieldRows = false,
-  });
+    this.states = const {},
+  }) : _fieldRows = false;
+
+  const CatchSectionSurface.fieldRows({
+    super.key,
+    required this.child,
+    required this.padding,
+    this.backgroundColor,
+    this.borderColor,
+    this.states = const {},
+  }) : _fieldRows = true,
+       tone = CatchSurfaceTone.surface,
+       emphasis = CatchSurfaceEmphasis.flat,
+       boxShadow = null;
 
   /// The single rounded clip that owns every contained row's external corners.
   ///
@@ -35,23 +50,25 @@ class CatchSectionFocusSurface extends StatefulWidget {
   final CatchSurfaceTone tone;
   final CatchSurfaceEmphasis emphasis;
   final List<BoxShadow>? boxShadow;
-  final bool focused;
-  final bool hasError;
-  final bool fieldRows;
+
+  /// Explicit section focus and error. Error takes precedence when both apply.
+  final Set<WidgetState> states;
+  final bool _fieldRows;
 
   @override
-  State<CatchSectionFocusSurface> createState() =>
-      _CatchSectionFocusSurfaceState();
+  State<CatchSectionSurface> createState() => _CatchSectionSurfaceState();
 }
 
-class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
+class _CatchSectionSurfaceState extends State<CatchSectionSurface> {
   bool _descendantFocused = false;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final focused = widget.states.contains(WidgetState.focused);
+    final hasError = widget.states.contains(WidgetState.error);
 
-    if (widget.fieldRows) {
+    if (widget._fieldRows) {
       final duration = MediaQuery.maybeOf(context)?.disableAnimations == true
           ? Duration.zero
           : CatchFieldTokens.standard;
@@ -61,7 +78,7 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
         // edge. Active child chrome reclaims that exact horizontal inset so
         // both primitives paint on one coordinate instead of producing two
         // adjacent vertical strokes. Keep this contract here so direct users
-        // of CatchSectionFocusSurface cannot bypass it.
+        // of CatchSectionSurface cannot bypass it.
         // This surface owns one rounded clip for the complete row group.
         // Descendant press, focus, edit, and disclosure chrome therefore stays
         // rectangular and receives only the external corners it touches.
@@ -71,9 +88,9 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
       final sectionRadius = BorderRadius.circular(
         CatchFieldTokens.sectionRadius,
       );
-      final border = widget.hasError
+      final border = hasError
           ? CatchBorder.resolve(t, CatchBorderRole.danger)
-          : widget.focused
+          : focused
           ? CatchBorder.resolve(t, CatchBorderRole.focus)
           : CatchBorder.resolve(
               t,
@@ -81,7 +98,7 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
               color: widget.borderColor,
             );
       return ClipRRect(
-        key: CatchSectionFocusSurface.rowGroupClipKey,
+        key: CatchSectionSurface.rowGroupClipKey,
         borderRadius: sectionRadius,
         clipBehavior: Clip.hardEdge,
         child: AnimatedContainer(
@@ -109,8 +126,8 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
       );
     }
 
-    final effectiveFocused = widget.focused || _descendantFocused;
-    final border = widget.hasError
+    final effectiveFocused = focused || _descendantFocused;
+    final border = hasError
         ? CatchBorder.resolve(t, CatchBorderRole.danger)
         : effectiveFocused
         ? CatchBorder.resolve(t, CatchBorderRole.focus)
@@ -132,7 +149,7 @@ class _CatchSectionFocusSurfaceState extends State<CatchSectionFocusSurface> {
         emphasis: widget.emphasis,
         backgroundColor: widget.backgroundColor,
         borderSpec: border,
-        boxShadow: effectiveFocused && !widget.hasError
+        boxShadow: effectiveFocused && !hasError
             ? CatchElevation.focusRing(t)
             : widget.boxShadow,
         child: widget.child,

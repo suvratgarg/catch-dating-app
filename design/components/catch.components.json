@@ -3196,7 +3196,7 @@
           {
             "id": "catch.field.geometry_scope",
             "symbol": "CatchFieldGeometryScope",
-            "summary": "Ambient semantic geometry contract that independently publishes content-gutter ownership, interaction bleed, and whether fields own a rounded silhouette or inherit corners from one section clip. CatchSectionFocusSurface field-row surfaces publish one hairline of bleed plus section-clipped geometry; omitted bleed preserves the divided container-gutter default.",
+            "summary": "Ambient semantic geometry contract that independently publishes content-gutter ownership, interaction bleed, and whether fields own a rounded silhouette or inherit corners from one section clip. CatchSectionSurface field-row surfaces publish one hairline of bleed plus section-clipped geometry; omitted bleed preserves the divided container-gutter default.",
             "states": [
               "field-gutter",
               "container-gutter",
@@ -4586,9 +4586,9 @@
           },
           {
             "id": "catch.section.focus_surface",
-            "symbol": "CatchSectionFocusSurface",
-            "file": "packages/catch_ui/lib/src/components/catch_section_focus_surface.dart",
-            "summary": "Public contained-section focus and error chrome member. Generic contained sections may reflect descendant focus; field-row surfaces publish the one-hairline active-overlay overlap themselves, keep descendant focus child-owned, align active child chrome to the same perimeter geometry, paint the section edge last, and change perimeter color only for explicit focused or error state.",
+            "symbol": "CatchSectionSurface",
+            "file": "packages/catch_ui/lib/src/components/catch_section_surface.dart",
+            "summary": "Section perimeter and focus/error chrome. The content recipe may reflect descendant focus; fieldRows owns the one group clip and keeps child active treatment within that boundary.",
             "states": [
               "default",
               "focused",
@@ -4601,7 +4601,17 @@
               "conceptId": "catch.section",
               "parentConceptId": "catch.section",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.section"
+              "decisionRef": "pattern-family:section-surface-boundary"
+            },
+            "level": "L3",
+            "roleNoun": "Surface",
+            "naming": {
+              "useCase": "Section",
+              "comparedWith": [
+                "catch.section",
+                "catch.surface"
+              ],
+              "reason": "Section owns grouping, headers and layout. This member owns the complete contained-group perimeter and explicit focus/error chrome; its fieldRows recipe publishes group clipping geometry. Surface paints a general box and optional tap interaction, while this member coordinates the section boundary with child fields."
             }
           },
           {

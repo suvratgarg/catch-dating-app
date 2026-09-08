@@ -7265,6 +7265,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:section-surface-boundary",
+      "patternFamilyId": "section-surface-boundary",
+      "decision": "name-boundary-and-type-state",
+      "canonicalSymbol": "CatchSectionSurface",
+      "members": [
+        {
+          "name": "CatchSectionFocusSurface",
+          "action": "rename-and-type-state",
+          "target": "CatchSectionSurface"
+        }
+      ],
+      "rationale": "This member owns a whole contained section, including ordinary content and clipped field groups; focus is a state rather than a use-case distinction. Use Flutter WidgetState.focused/error, matching the field surface state vocabulary while preserving simultaneous states and error precedence. Field-group construction omits generic surface settings that its old branch ignored. Preserve the stable contract id, clip key, field geometry publication and feature-construction lint; delete the old public symbol/file and migrate every inventoried test and preview reference.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

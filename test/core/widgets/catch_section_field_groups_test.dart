@@ -52,8 +52,8 @@ void main() {
       ),
     );
 
-    final focusSurface = find.byType(CatchSectionFocusSurface);
-    final clip = find.byKey(CatchSectionFocusSurface.rowGroupClipKey);
+    final focusSurface = find.byType(CatchSectionSurface);
+    final clip = find.byKey(CatchSectionSurface.rowGroupClipKey);
     final surfaceRect = tester.getRect(focusSurface);
     final sectionDividers = find.descendant(
       of: focusSurface,
@@ -141,7 +141,7 @@ void main() {
       ),
     );
 
-    final surfaceRect = tester.getRect(find.byType(CatchSectionFocusSurface));
+    final surfaceRect = tester.getRect(find.byType(CatchSectionSurface));
     final activeOverlay = find.byKey(
       const ValueKey('catch-field-active-overlay'),
     );
@@ -152,7 +152,7 @@ void main() {
     expect(
       find.ancestor(
         of: activeOverlay,
-        matching: find.byKey(CatchSectionFocusSurface.rowGroupClipKey),
+        matching: find.byKey(CatchSectionSurface.rowGroupClipKey),
       ),
       findsOneWidget,
     );

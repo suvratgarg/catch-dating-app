@@ -590,10 +590,7 @@ void _registerProfileEditingPromptsTests() {
     }
 
     Rect promptSurfaceRect() => tester.getRect(
-      find.descendant(
-        of: card,
-        matching: find.byType(CatchSectionFocusSurface),
-      ),
+      find.descendant(of: card, matching: find.byType(CatchSectionSurface)),
     );
 
     void expectPromptEdgesShareGeometry() {

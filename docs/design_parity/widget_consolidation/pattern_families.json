@@ -2092,6 +2092,35 @@
           "rationale": "The old role field never participates in rendering; card and tinted are already constructor recipes. Delete that redundant field instead of relabelling it as a visual axis. Shadow prominence is the Emphasis axis: flat, subtle, raised and floating map to the existing none, card, raised and overlay token lists."
         }
       ]
+    },
+    {
+      "id": "section-surface-boundary",
+      "title": "One section perimeter with content and field-group recipes",
+      "intent": "Keep complete-group clipping and state chrome with Section, distinct from individual field paint.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.section",
+      "qualityReference": "CatchSectionSurface",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve the section perimeter, one-hairline content inset, clip key and silhouette, focus/error priority, generic descendant-focus behavior, field-group child-owned activity and reduced-motion handling.",
+        "The three generic preview slots now use an explicit theme-resolved body style so their light-mode text is readable. This is fixture copy styling; production callers retain their typography."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSectionSurface",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Section is the concrete use case. Focus and error are typed states of the same boundary; clipped field groups are a named recipe with no irrelevant shadow/tone controls. The field surface remains the painter of an individual child row, not a competing group perimeter."
+        },
+        {
+          "symbol": "CatchSectionFocusSurface",
+          "disposition": "unify",
+          "target": "CatchSectionSurface",
+          "preview": "not-applicable",
+          "rationale": "Rename the existing perimeter owner, replace the three booleans with Flutter WidgetState values and a fieldRows recipe, and retain one StatefulWidget identity across recipe changes."
+        }
+      ]
     }
   ]
 }
