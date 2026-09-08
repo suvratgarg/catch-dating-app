@@ -15,7 +15,7 @@ void main() {
           size: const Size(440, 1450),
           textScale: scale,
           builder: (context) => DefaultTextStyle(
-            style: CatchTextStyles.body(context),
+            style: CatchTextStyles.bodyL(context),
             child: const Padding(
               padding: EdgeInsets.all(20),
               child: Column(
