@@ -3137,6 +3137,9 @@ Widget catchChoiceInputContractStates(BuildContext context) {
       'wrapped',
       'form-validation',
       'label-free',
+      'described-selected',
+      'described-unselected',
+      'described-disabled',
     ],
     children: [
       _StateCard(
@@ -3157,7 +3160,7 @@ Widget catchChoiceInputContractStates(BuildContext context) {
           selected: const {'English', 'Hindi'},
           mode: CatchChipMode.multiple,
           allowEmptySelection: true,
-          chipKeyBuilder: (value) => ValueKey('preview-choice-$value'),
+          itemKeyBuilder: (value) => ValueKey('preview-choice-$value'),
           onChanged: (_) {},
         ),
       ),
@@ -3201,43 +3204,29 @@ Widget catchChoiceInputContractStates(BuildContext context) {
           onChanged: (_) {},
         ),
       ),
-    ],
-  );
-}
 
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchFieldOptionCardControl,
-  path: '[Core primitives]/Inputs',
-)
-Widget catchFieldOptionCardControlContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchFieldOptionCardControl',
-    contractId: 'catch.field.option_card_control',
-    states: const ['selected', 'unselected', 'disabled'],
-    children: [
       _StateCard(
         label: 'selected / unselected',
-        child: CatchFieldOptionCardControl<String>(
+        child: CatchChoiceInput<String>.described(
           values: const ['open', 'invite'],
-          itemTitle: (value) =>
+          selected: {'open'},
+          onChanged: (_) {},
+          itemLabelBuilder: (value) =>
               value == 'open' ? 'Open capacity' : 'Invite only',
-          itemDescription: (value) => value == 'open'
+          itemSubtitleBuilder: (value) => value == 'open'
               ? 'Anyone eligible can book until capacity.'
               : 'Only people with the invite code can book.',
-          selected: 'open',
-          onChanged: (_) {},
         ),
       ),
       _StateCard(
         label: 'disabled',
-        child: CatchFieldOptionCardControl<String>(
+        child: CatchChoiceInput<String>.described(
           values: const ['standard'],
-          itemTitle: (_) => 'Standard',
-          itemDescription: (_) => 'Refunds step down as the event approaches.',
-          selected: 'standard',
-          enabled: false,
+          selected: {'standard'},
           onChanged: null,
+          itemLabelBuilder: (_) => 'Standard',
+          itemSubtitleBuilder: (_) =>
+              'Refunds step down as the event approaches.',
         ),
       ),
     ],
@@ -4533,33 +4522,33 @@ Widget catchNumberStepperContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchOptionCard,
+  type: CatchChoiceTile,
   path: '[Core primitives]/Selection',
 )
-Widget catchOptionCardContractStates(BuildContext context) {
+Widget catchChoiceTileContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchOptionCard',
+    title: 'CatchChoiceTile',
     contractId: 'catch.option_card',
     states: const ['default', 'selected', 'focused', 'disabled-by-null-action'],
     children: [
       _StateCard(
         label: 'default',
         child: _OptionWidth(
-          child: CatchOptionCard(
+          child: CatchChoiceTile(
             title: 'Casual',
-            description: 'Low commitment attendance with flexible arrival.',
             onTap: _noop,
+            subtitle: 'Low commitment attendance with flexible arrival.',
           ),
         ),
       ),
       _StateCard(
         label: 'selected',
         child: _OptionWidth(
-          child: CatchOptionCard(
+          child: CatchChoiceTile(
             title: 'Curated',
-            description: 'Host approves each request before the event.',
             selected: true,
             onTap: _noop,
+            subtitle: 'Host approves each request before the event.',
           ),
         ),
       ),
@@ -4568,19 +4557,19 @@ Widget catchOptionCardContractStates(BuildContext context) {
         description:
             'Use keyboard traversal to inspect the semantic focus ring.',
         child: _OptionWidth(
-          child: CatchOptionCard(
+          child: CatchChoiceTile(
             title: 'Keyboard focus target',
-            description: 'The focus border is thicker without changing layout.',
             onTap: _noop,
+            subtitle: 'The focus border is thicker without changing layout.',
           ),
         ),
       ),
       _StateCard(
         label: 'disabled-by-null-action',
         child: const _OptionWidth(
-          child: CatchOptionCard(
+          child: CatchChoiceTile(
             title: 'Application only',
-            description: 'Visible but not currently selectable.',
+            subtitle: 'Visible but not currently selectable.',
           ),
         ),
       ),

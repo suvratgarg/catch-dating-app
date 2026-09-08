@@ -2932,17 +2932,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldOptionCardControl',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldOptionCardControlContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchFieldRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3932,13 +3921,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchOptionCard',
+            name: 'CatchChoiceTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchOptionCardContractStates,
+                        .catchChoiceTileContractStates,
               ),
             ],
           ),

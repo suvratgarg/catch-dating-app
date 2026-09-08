@@ -1281,43 +1281,7 @@
           "CatchOpacity.controlOverlayHover"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.chip.field",
-            "symbol": "CatchChoiceInput",
-            "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
-            "summary": "Single renderer and selection policy for wrapping checked choices. The form recipe adds schema filtering, localized labels and Flutter Form validation; disclosure callers retain save and close ownership.",
-            "states": [
-              "single-select",
-              "multi-select",
-              "selected",
-              "disabled",
-              "semantic-keys",
-              "allow-empty-selection",
-              "retain-final-selection",
-              "wrapped",
-              "form-validation",
-              "label-free"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.chip",
-              "parentConceptId": "catch.chip",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.chip"
-            },
-            "level": "L3",
-            "roleNoun": "Input",
-            "naming": {
-              "useCase": "Choice",
-              "comparedWith": [
-                "catch.chip",
-                "catch.code_input"
-              ],
-              "reason": "Selects existing typed values through checked chips; code input accepts typed text. This chip-family member owns group selection and an optional form recipe, while CatchField owns disclosure and saving."
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -3005,7 +2969,7 @@
             "type": "callback",
             "required": false,
             "dartType": "Color? Function(T item)?",
-            "notes": "CatchField.choices forwards a resolved item accent to CatchChip.selectable."
+            "notes": "CatchField.choices forwards a resolved item accent through CatchChoiceInput to CatchChip.choice."
           },
           {
             "name": "itemTitle",
@@ -3019,7 +2983,7 @@
             "type": "callback",
             "required": false,
             "dartType": "String Function(T value)?",
-            "notes": "CatchField.optionCards supporting-copy resolver. Every description stays inside its option's clickable CatchOptionCard."
+            "notes": "CatchField.optionCards supporting-copy resolver. Every description stays inside its option's clickable CatchChoiceTile."
           },
           {
             "name": "helperTone",
@@ -3808,24 +3772,6 @@
             }
           },
           {
-            "id": "catch.field.option_card_control",
-            "symbol": "CatchFieldOptionCardControl",
-            "summary": "Field-owned vertical single-select control that composes one complete CatchOptionCard title-and-description target per explanatory option.",
-            "states": [
-              "selected",
-              "unselected",
-              "disabled"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_option_card_control.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
             "id": "catch.field.commit_button",
             "symbol": "CatchFieldCommitButton",
             "summary": "Field-owned Cancel or Done pill using CatchButton.text and the control text role, 18 by 10 padding, primaryInk Done content, animated saving opacity, a 13 px spinner with a 7 px label gap, sole explicit-commit progress ownership, and an immediate 2 px outer keyboard-focus ring at a 2 px offset.",
@@ -4032,7 +3978,7 @@
           "CatchField.content always owns title/supporting-copy typography. Its default body emphasis preserves the React handoff's top-aligned leading/trailing slots; callers may opt into title emphasis when a combined content block and trailing action should center together.",
           "Choice chips compose CatchChip.selectable in a full-width wrapping group with an 8 px gap between allocated targets. Labels wrap naturally and compact visuals can sit within larger platform hit boxes. Explicit-save choices preserve staged selection until Done; a single choice without a save bar closes after 180 ms. Steppers center fieldRowTitle values between platform-sized repeat targets while preserving the 16 px visual circle-to-value gap. Toggle tracks remain 44 by 26 px inside platform-sized targets and stay visible but disabled while saving.",
           "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
-          "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchOptionCard target. Use chips only when labels are terse and do not need per-option explanation.",
+          "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchChoiceTile target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",
           "A populated labeled direct input reserves clear-action width from CatchFieldTrailing.clearTargetConstraints. Its overlaid target aligns toward the scaled value line and is clamped inside the row, without covering input text or changing an already sufficient collapsed-row height. Label-less compact clear inputs retain native suffix geometry.",
@@ -7639,26 +7585,28 @@
       }
     },
     {
-      "id": "catch.option_card",
+      "id": "catch.chip.field",
       "verification": {
         "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+        "reason": "Compact, described and form recipes mount the same selection implementation in generated Widgetbook cases."
       },
-      "name": "CatchOptionCard",
+      "name": "CatchChoiceInput",
       "status": "active",
       "kind": "primitive",
-      "summary": "Selectable explanatory choice card for mutually exclusive options with a sentence of supporting copy.",
+      "summary": "Caller-owned single or multiple selection through compact chips, explanatory tiles, or the form validation recipe. One selection and after-commit notification implementation serves every recipe.",
       "dart": {
-        "symbol": "CatchOptionCard",
-        "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
+        "symbol": "CatchChoiceInput",
+        "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
         "constructors": [
-          "CatchOptionCard"
+          "CatchChoiceInput",
+          "CatchChoiceInput.described",
+          "CatchChoiceInput.form"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/OptionCard",
+          "componentName": "Catch/ChoiceInput",
           "componentUrl": null
         },
         "codeConnect": {
@@ -7667,7 +7615,182 @@
           "template": null
         },
         "claude": {
-          "handoffName": "OptionCard",
+          "handoffName": "ChoiceInput",
+          "allowed": true
+        }
+      },
+      "contract": {
+        "props": [
+          {
+            "name": "values",
+            "type": "object",
+            "required": true,
+            "dartType": "List<T>"
+          },
+          {
+            "name": "selected",
+            "type": "object",
+            "required": true,
+            "dartType": "Set<T>"
+          },
+          {
+            "name": "onChanged",
+            "type": "callback",
+            "required": true,
+            "dartType": "ValueChanged<Set<T>>?",
+            "notes": "Null disables all options. Described choices select one value; compact choices use the declared mode."
+          },
+          {
+            "name": "itemLabelBuilder",
+            "type": "callback",
+            "required": true,
+            "dartType": "String Function(T value)"
+          },
+          {
+            "name": "itemSubtitleBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "String Function(T value)?",
+            "notes": "Required by described. Supporting copy stays inside each full-width target."
+          },
+          {
+            "name": "itemKeyBuilder",
+            "type": "callback",
+            "required": false,
+            "dartType": "Key? Function(T value)?"
+          },
+          {
+            "name": "allowEmptySelection",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "Explicit clearing policy for compact and form recipes; optional-label copy never changes it."
+          },
+          {
+            "name": "autoClose",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "Requests the enclosing field close protocol after the single-choice callback completes."
+          },
+          {
+            "name": "mode",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchChipMode",
+            "values": [
+              "single",
+              "multiple"
+            ],
+            "notes": "Required for compact/form recipes; described fixes single selection."
+          }
+        ],
+        "states": [
+          "single-select",
+          "multi-select",
+          "selected",
+          "disabled",
+          "semantic-keys",
+          "allow-empty-selection",
+          "retain-final-selection",
+          "wrapped",
+          "form-validation",
+          "label-free",
+          "described-selected",
+          "described-unselected",
+          "described-disabled"
+        ],
+        "slots": [],
+        "tokens": [
+          "space.s2",
+          "space.s3"
+        ],
+        "dartRoles": [
+          "CatchChip.choice",
+          "CatchChoiceTile",
+          "CatchFormFieldLabel",
+          "CatchFieldChoicePickedNotification"
+        ],
+        "goldens": [],
+        "accessibility": {
+          "largeText": {
+            "minimumScale": 2,
+            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+          },
+          "reducedMotion": {
+            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
+          },
+          "themes": [
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "handoff": {
+        "allowedChildren": [],
+        "notes": [
+          "Input owns typed selection and optional form validation; Chip and ChoiceTile own their individual target renderers. Field owns disclosure, commit bars and asynchronous saves.",
+          "The stable catch.chip.field ID is retained while the independently configured group moves from chip anatomy to the choice concept primary. Names are derived from the reviewed responsibility, not the historical ID."
+        ]
+      },
+      "governance": {
+        "role": "atom",
+        "canonicalFamily": "catch.chip.field",
+        "publicApi": true,
+        "stateOwnership": "local-ui-only",
+        "asyncOwnership": "none",
+        "layoutOwnership": "internal-only",
+        "actionOwnership": "callbacks-only",
+        "allowedDependencyLevel": "tokens-and-primitives",
+        "reviewPolicy": "contract-page-canonical",
+        "conceptRole": "concept",
+        "conceptId": "catch.chip.field"
+      },
+      "surfaces": {
+        "flutter": "CatchChoiceInput"
+      },
+      "level": "L3",
+      "roleNoun": "Input",
+      "naming": {
+        "useCase": "Choice",
+        "comparedWith": [
+          "catch.code_input"
+        ],
+        "reason": "Chooses existing typed values through discrete targets, with shared cardinality, schema filtering and form participation. CodeInput accepts entered text; individual Chip and ChoiceTile targets do not own group selection."
+      }
+    },
+    {
+      "id": "catch.option_card",
+      "verification": {
+        "vehicle": "widgetbook-contract",
+        "reason": "Canonical states are exercised through the generated Widgetbook contract."
+      },
+      "name": "CatchChoiceTile",
+      "status": "active",
+      "kind": "primitive",
+      "summary": "One full-width explanatory choice target with checked and disabled semantics. The tile is rendering anatomy of the selection input, distinct from metric display and icon-only targets.",
+      "dart": {
+        "symbol": "CatchChoiceTile",
+        "file": "packages/catch_ui/lib/src/components/catch_choice_tile.dart",
+        "constructors": [
+          "CatchChoiceTile"
+        ]
+      },
+      "design": {
+        "figma": {
+          "status": "unmapped",
+          "componentName": "Catch/ChoiceTile",
+          "componentUrl": null
+        },
+        "codeConnect": {
+          "status": "planned",
+          "snippetLanguage": "dart",
+          "template": null
+        },
+        "claude": {
+          "handoffName": "ChoiceTile",
           "allowed": true
         }
       },
@@ -7680,7 +7803,7 @@
             "dartType": "String"
           },
           {
-            "name": "description",
+            "name": "subtitle",
             "type": "string",
             "required": false,
             "dartType": "String?"
@@ -7722,7 +7845,7 @@
           "CatchBorderRole.focus",
           "CatchInsets.tileContentCompact",
           "CatchTextStyles.labelL",
-          "CatchTextStyles.bodyS",
+          "CatchTextStyles.supporting",
           "CatchIcon.lg"
         ],
         "goldens": [],
@@ -7743,7 +7866,7 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use Chip or SelectChip for terse filter labels; use OptionCard when the option needs explanation."
+          "Use compact choices for terse labels and ChoiceInput.described when each option needs an explanation. Each tile has one checked semantic node and disabled controls expose no action."
         ]
       },
       "governance": {
@@ -7756,12 +7879,25 @@
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.option_card"
+        "conceptRole": "member",
+        "conceptId": "catch.chip.field",
+        "parentConceptId": "catch.chip.field",
+        "qualifier": "anatomy",
+        "decisionRef": "contract-family:catch.chip.field"
       },
       "surfaces": {
-        "flutter": "CatchOptionCard",
+        "flutter": "CatchChoiceTile",
         "website": "ChoiceCard"
+      },
+      "level": "L3",
+      "roleNoun": "Tile",
+      "naming": {
+        "useCase": "Choice",
+        "comparedWith": [
+          "catch.chip.field",
+          "catch.metric_strip.stat_column"
+        ],
+        "reason": "This selection-family target combines one option title, its explanation and checked state inside one hit area. MetricTile displays a value and label without selection behavior."
       }
     },
     {

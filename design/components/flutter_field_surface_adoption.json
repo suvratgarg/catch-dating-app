@@ -222,7 +222,7 @@
       ],
       "anchors": [
         {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchOptionGroup", "expected": 1},
-        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchOptionCard", "expected": 1},
+        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchChoiceInput.described", "expected": 1},
         {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchField.input", "expected": 1}
       ],
       "targetModes": ["CatchField.choices", "CatchField.control", "CatchField.input"],

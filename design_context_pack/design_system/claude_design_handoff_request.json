@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "e6af21fc6b4ca9d4e0d9dad7fca36b2c524a2e890093714cf17b5ff2dd2ac106",
+  "sourceDigest": "3bd3441fa33c4a58e9775e092ed312bc7b03b2ceaf39dd59aed3df41b0baddd0",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -119,7 +119,7 @@
         "add"
       ],
       "supportedStatesDigest": "adb5de9605a60a3474197d597d00871e7dc8135bc9ce2bc3f6153521a4d48db3",
-      "propsDigest": "c0b0fcf03c1c96c80983edb1df4929d9479247c7a24fe1d9b6cfd53bc5a32718",
+      "propsDigest": "1365a5dfd309c8cd33dd24f78863fb679673f36d023351a876c9f1f64a017513",
       "tokens": [
         "space.micro10",
         "space.micro14",

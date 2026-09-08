@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.17.0
+version: 1.18.0
 updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -377,7 +377,7 @@ fall back to the passive boundary role plus disabled opacity.
 `CatchSurface.borderSpec` is reserved for a role with a justified color
 override. Raw `borderColor`/`borderWidth` remain deprecated migration shims.
 Higher-level controls (`CatchButton`, `CatchIconAction`, `CatchChip`,
-`CatchControlShell`, `CatchOptionCard`, search, tabs, and field sections) own
+`CatchControlShell`, `CatchChoiceTile`, search, tabs, and field sections) own
 their state-to-role mapping. Decorative `CustomPainter` illustration strokes
 are outside the UI-boundary system, but repeated artwork and progress geometry
 still uses named `CatchStroke` roles instead of feature-local literals.
@@ -605,7 +605,8 @@ selection rule above.
 Mutually exclusive options with per-option guidance use
 `CatchField.optionCards`: the selected title owns the collapsed value, and
 each expanded title plus description stays inside one clickable
-`CatchOptionCard`. Do not put only the selected description in the field body;
+`CatchChoiceTile`. Standalone groups use `CatchChoiceInput.described` so they
+share selection and spacing with the field recipe. Do not put only the selected description in the field body;
 that detaches the explanation from the options it describes.
 
 - **Sizing:** constraints over constant heights/widths; min/max constraints, intrinsics,

@@ -5,20 +5,18 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-/// Design-system `OptionCard` (`components/core/OptionCard`): a selectable choice
-/// card with a leading check/circle, a [title], and a one-line [description].
-/// Selected = ink border + faint ink wash + filled check. The descriptive
-/// counterpart to `Chip` / `SelectChip` — for mutually-exclusive choices that
-/// each need a sentence (admission presets, cancellation policy). Stack in a
-/// column.
-class CatchOptionCard extends StatefulWidget {
-  const CatchOptionCard({
+/// One mutually exclusive choice with optional explanatory copy.
+///
+/// The whole tile is one checked target, including its subtitle. The owning
+/// ChoiceInput supplies group selection; a null action disables this item.
+class CatchChoiceTile extends StatefulWidget {
+  const CatchChoiceTile({
     super.key,
     required this.title,
     this.contract,
     this.contractValue,
     this.contractExemption,
-    this.description,
+    this.subtitle,
     this.selected = false,
     this.onTap,
   });
@@ -27,19 +25,19 @@ class CatchOptionCard extends StatefulWidget {
   final CatchContractFieldConstraints? contract;
   final String? contractValue;
   final String? contractExemption;
-  final String? description;
+  final String? subtitle;
   final bool selected;
   final VoidCallback? onTap;
 
   @override
-  State<CatchOptionCard> createState() => _CatchOptionCardState();
+  State<CatchChoiceTile> createState() => _CatchChoiceTileState();
 }
 
-class _CatchOptionCardState extends State<CatchOptionCard> {
+class _CatchChoiceTileState extends State<CatchChoiceTile> {
   bool _focused = false;
 
   @override
-  void didUpdateWidget(CatchOptionCard oldWidget) {
+  void didUpdateWidget(CatchChoiceTile oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.onTap == null) _focused = false;
   }
@@ -52,11 +50,11 @@ class _CatchOptionCardState extends State<CatchOptionCard> {
           widget.contractValue == null ||
           allowedContractValues == null ||
           allowedContractValues.contains(widget.contractValue),
-      'CatchOptionCard value must be allowed by its contract.',
+      'CatchChoiceTile value must be allowed by its contract.',
     );
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
+    final surface = CatchSurface(
       onTap: widget.onTap,
       onFocusChange: (focused) {
         if (_focused != focused) setState(() => _focused = focused);
@@ -92,11 +90,10 @@ class _CatchOptionCardState extends State<CatchOptionCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(widget.title, style: CatchTextStyles.labelL(context)),
-                if (widget.description != null &&
-                    widget.description!.isNotEmpty) ...[
+                if (widget.subtitle != null && widget.subtitle!.isNotEmpty) ...[
                   const SizedBox(height: CatchSpacing.micro3),
                   Text(
-                    widget.description!,
+                    widget.subtitle!,
                     style: CatchTextStyles.supporting(context),
                   ),
                 ],
@@ -105,6 +102,20 @@ class _CatchOptionCardState extends State<CatchOptionCard> {
           ),
         ],
       ),
+    );
+    return Semantics(
+      container: true,
+      excludeSemantics: true,
+      button: true,
+      checked: widget.selected,
+      inMutuallyExclusiveGroup: true,
+      enabled: widget.onTap != null,
+      label: [
+        widget.title,
+        if (widget.subtitle?.isNotEmpty == true) widget.subtitle!,
+      ].join('\n'),
+      onTap: widget.onTap,
+      child: surface,
     );
   }
 }

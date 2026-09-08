@@ -256,7 +256,7 @@ void main() {
         expect(
           find.byWidgetPredicate(
             (widget) =>
-                widget is CatchOptionCard &&
+                widget is CatchChoiceTile &&
                 widget.title == 'Open capacity' &&
                 widget.selected,
             skipOffstage: false,

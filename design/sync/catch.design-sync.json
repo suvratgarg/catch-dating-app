@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "e6af21fc6b4ca9d4e0d9dad7fca36b2c524a2e890093714cf17b5ff2dd2ac106",
+  "sourceDigest": "3bd3441fa33c4a58e9775e092ed312bc7b03b2ceaf39dd59aed3df41b0baddd0",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "e6af21fc6b4ca9d4e0d9dad7fca36b2c524a2e890093714cf17b5ff2dd2ac106",
-    "contractDigest": "e6af21fc6b4ca9d4e0d9dad7fca36b2c524a2e890093714cf17b5ff2dd2ac106"
+    "digest": "3bd3441fa33c4a58e9775e092ed312bc7b03b2ceaf39dd59aed3df41b0baddd0",
+    "contractDigest": "3bd3441fa33c4a58e9775e092ed312bc7b03b2ceaf39dd59aed3df41b0baddd0"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "4c3592039b9be4d067a888fec108995cebf406fd8e6ea1328d2d9c98913eff6f",
+    "handoffRequestDigest": "5ff90f3f31e0bad95be9c8dfb9beab3136f18e75ad4ceb6f005a398fca1b28e5",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -82,16 +82,16 @@
     }
   },
   "metrics": {
-    "contractCount": 76,
-    "publicClassCount": 260,
+    "contractCount": 77,
+    "publicClassCount": 259,
     "conceptCount": 69,
-    "memberCount": 173,
-    "membersPerConcept": 2.51,
+    "memberCount": 172,
+    "membersPerConcept": 2.49,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 69,
-      "member": 173,
+      "member": 172,
       "screen": 15
     },
     "collisionCount": 37,
@@ -139,10 +139,10 @@
         ]
       },
       {
-        "key": "catch.chip",
+        "key": "catch.chip.field",
         "symbols": [
-          "CatchChip",
-          "CatchChoiceInput"
+          "CatchChoiceInput",
+          "CatchChoiceTile"
         ]
       },
       {
@@ -222,7 +222,6 @@
           "CatchFieldInteractionPlane",
           "CatchFieldInteractionPlaneScope",
           "CatchFieldLanes",
-          "CatchFieldOptionCardControl",
           "CatchFieldRow",
           "CatchFieldSelectControl",
           "CatchFieldStatusIndicator",
@@ -498,7 +497,7 @@
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 74,
+      "missing": 75,
       "stale": 2
     },
     "figmaPropertyDriftCount": 2,
@@ -506,9 +505,9 @@
     "figmaReviewSnapshotMappings": 2,
     "figmaPublishedMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 76
+      "planned": 77
     },
-    "claudeAllowed": 76,
+    "claudeAllowed": 77,
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
     "figmaMappedConcepts": 0
@@ -683,7 +682,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Chip",
       "claudeAllowed": true,
-      "contractDigest": "fbbb675e5b2e8cd4a03fb3816593123e8579e3ea6959fd8f6f15ca1c5f8a8488"
+      "contractDigest": "e57d51643669790eb1120ac8ab7dec05a43ac8dcd547f63b25f4c9cd3c8188b0"
     },
     {
       "contractId": "catch.empty_state",
@@ -925,7 +924,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "2e8de7f6f9d1ceb5324b0b6a051673d8dc74c1fd12bab7f68ae1484f81b1813f"
+      "contractDigest": "203adbfcc92675268360aedfd6775c1fe7c6ee5cd5ba5d4ebb99fc74bffa28ae"
     },
     {
       "contractId": "catch.section",
@@ -1376,12 +1375,12 @@
       "contractDigest": "a36f2a623f07b4f97561b76499c87790f95b304ae5011034d232229f1371d5cf"
     },
     {
-      "contractId": "catch.option_card",
+      "contractId": "catch.chip.field",
       "conceptRole": "concept",
-      "conceptId": "catch.option_card",
-      "dartSymbol": "CatchOptionCard",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_option_card.dart",
-      "figmaName": "Catch/OptionCard",
+      "conceptId": "catch.chip.field",
+      "dartSymbol": "CatchChoiceInput",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
+      "figmaName": "Catch/ChoiceInput",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},
@@ -1397,15 +1396,47 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 4,
-      "figmaExpectedPropertyDigest": "92d7638739969bc141c5bba15e238179a61802ddd6469c41f76dc1a832f4cc6a",
+      "figmaExpectedPropertyDigest": "a27bd60bc4585284437edb3b25b4b272e9a96cba1e7d39afb8002dd6d34fbc48",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "OptionCard",
+      "claudeHandoffName": "ChoiceInput",
       "claudeAllowed": true,
-      "contractDigest": "f80e6adff6f9caec9e702a2036e888fcdc32057dec52b33d3e96202b3b7bbe58"
+      "contractDigest": "d7d85a47e863ccb33c74731c591e3e890f404ececdfaf14cabfdc5f20c5a6104"
+    },
+    {
+      "contractId": "catch.option_card",
+      "conceptRole": "member",
+      "conceptId": "catch.chip.field",
+      "dartSymbol": "CatchChoiceTile",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_choice_tile.dart",
+      "figmaName": "Catch/ChoiceTile",
+      "figmaPropertyProjectionMode": "inferred",
+      "figmaReviewStatePolicy": "variant",
+      "figmaPropertySources": {},
+      "figmaDeclaredStatus": "unmapped",
+      "figmaDeclaredUrl": null,
+      "figmaStatus": "missing",
+      "figmaUrl": null,
+      "figmaNodeId": null,
+      "figmaComponentKey": null,
+      "figmaPublishStatus": null,
+      "figmaSnapshotCaptureMethod": "figma-mcp",
+      "figmaVariableBindingCount": 0,
+      "figmaVariableBindingDigest": null,
+      "figmaReviewSnapshot": null,
+      "figmaExpectedPropertyCount": 4,
+      "figmaExpectedPropertyDigest": "d71df2d5d42a0fffc4eb3f771bf847cf6925008f60f6928cb751ff1c8470853c",
+      "figmaActualPropertyCount": 0,
+      "figmaActualPropertyDigest": null,
+      "figmaDrift": [],
+      "codeConnectStatus": "planned",
+      "codeConnectTemplate": null,
+      "claudeHandoffName": "ChoiceTile",
+      "claudeAllowed": true,
+      "contractDigest": "8104680067ae89eb41d98a5c1ea3da9c1e75fd6d1309668892c9fe34687953af"
     },
     {
       "contractId": "catch.surface",

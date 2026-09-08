@@ -192,20 +192,19 @@ class _HostBroadcastComposerSheetState
                 style: CatchTextStyles.fieldRowTitle(context),
               ),
               gapH8,
-              for (final template in HostBroadcastTemplate.values) ...[
-                CatchOptionCard(
-                  contract: CatchContractConstraints
-                      .mobileFormStateHostBroadcastTemplate,
-                  contractValue: template.name,
-                  title: template.label(context.l10n),
-                  description: template.description(context.l10n),
-                  selected: _template == template,
-                  onTap: mutation.isPending
-                      ? null
-                      : () => _selectTemplate(template),
-                ),
-                if (template != HostBroadcastTemplate.values.last) gapH8,
-              ],
+              CatchChoiceInput<HostBroadcastTemplate>.described(
+                values: HostBroadcastTemplate.values,
+                itemLabelBuilder: (template) => template.label(context.l10n),
+                itemSubtitleBuilder: (template) =>
+                    template.description(context.l10n),
+                selected: {?_template},
+                contract: CatchContractConstraints
+                    .mobileFormStateHostBroadcastTemplate,
+                contractValueBuilder: (template) => template.name,
+                onChanged: mutation.isPending
+                    ? null
+                    : (selection) => _selectTemplate(selection.single),
+              ),
               gapH20,
               CatchFieldLanes.single(
                 child: CatchField.input(

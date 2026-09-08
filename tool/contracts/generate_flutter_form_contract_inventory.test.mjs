@@ -29,6 +29,19 @@ test("form choice recipe cannot hide a missing contract binding", () => {
   assert.equal(results[0].contract, null);
 });
 
+test("described input and individual choice tiles retain schema binding checks", () => {
+  const results = scanCatchFieldCalls({source: `
+    CatchChoiceInput<String>.described(values: values, contract: choicesContract);
+    CatchChoiceTile(title: 'Bound', contract: tileContract);
+    CatchChoiceInput<String>.described(values: values);
+    CatchChoiceTile(title: 'Missing binding');
+  `});
+  assert.deepEqual(results.map(({symbol, contract}) => [symbol, contract]), [
+    ["choiceInputDescribed", "choicesContract"], ["choiceTile", "tileContract"],
+    ["choiceInputDescribed", null], ["choiceTile", null],
+  ]);
+});
+
 test("records top-level generated bindings without accepting nested arguments", () => {
   const results = scanCatchFieldCalls({
     source: `

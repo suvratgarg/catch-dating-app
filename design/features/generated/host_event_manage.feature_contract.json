@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:85190d4d1062580e79d5b7541673bf5b53adfc37d66ca09a28597c0c04966d34",
-  "resolvedDigest": "sha256:0625446e69d123a5899d7ce2adc2af8e6ce91136644ba2bcb97c65a22aebcdbf",
+  "resolvedDigest": "sha256:9794a8296a27d67ee3822f0ec10c0814fceeee097fd9593370326fcc76eb385c",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -3520,10 +3520,10 @@
             "id": "catch.option_card",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionCard",
-              "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
+              "symbol": "CatchChoiceTile",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_tile.dart",
               "constructors": [
-                "CatchOptionCard"
+                "CatchChoiceTile"
               ]
             }
           },
@@ -5376,10 +5376,10 @@
             "id": "catch.option_card",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionCard",
-              "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
+              "symbol": "CatchChoiceTile",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_tile.dart",
               "constructors": [
-                "CatchOptionCard"
+                "CatchChoiceTile"
               ]
             }
           },

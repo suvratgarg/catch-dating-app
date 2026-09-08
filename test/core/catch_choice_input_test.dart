@@ -204,7 +204,7 @@ void main() {
                   valueTypes: ['string'],
                   enumValues: ['1', '2'],
                 ),
-                chipKeyBuilder: (value) => ValueKey(value),
+                itemKeyBuilder: (value) => ValueKey(value),
                 mode: CatchChipMode.single,
                 isOptional: true,
                 validator: (value) =>

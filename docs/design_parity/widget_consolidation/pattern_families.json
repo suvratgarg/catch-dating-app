@@ -2337,6 +2337,48 @@
           "rationale": "The distinct Flutter Form protocol is retained as form; its duplicate Wrap, checkmark and selection algorithm are removed."
         }
       ]
+    },
+    {
+      "id": "described-choice-input",
+      "title": "Explanatory choices share input selection",
+      "intent": "One choice input owns selection and notifications; one tile owns the explanatory target.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.chip.field",
+      "qualityReference": "CatchChoiceInput",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "No production geometry or paint change: retain 8 px vertical gaps, tile padding, leading check/circle, title and supporting typography, selected fill, focus border and motion.",
+        "Standalone and grouped tiles expose one checked, exclusive, enabled/disabled semantic target containing both title and explanation; unavailable actions are absent."
+      ],
+      "members": [
+        {
+          "symbol": "CatchChoiceInput",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Compact, described and form recipes share selection and after-commit notification logic. Promote the existing stable input identity to the choice concept primary; it is no longer chip-specific anatomy."
+        },
+        {
+          "symbol": "CatchChoiceTile",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Choice input anatomy renders one explanatory checked target; distinct from display-only metric tiles and terse chips."
+        },
+        {
+          "symbol": "CatchOptionCard",
+          "disposition": "unify",
+          "target": "CatchChoiceTile",
+          "preview": "not-applicable",
+          "rationale": "Use the closed Tile role and Choice responsibility. Preserve the renderer and give standalone callers the same complete semantics as grouped choices."
+        },
+        {
+          "symbol": "CatchFieldOptionCardControl",
+          "disposition": "unify",
+          "target": "CatchChoiceInput",
+          "preview": "not-applicable",
+          "rationale": "Replace duplicated group selection and notification code with described; the enclosing field still controls saving, close delay and disclosure."
+        }
+      ]
     }
   ]
 }

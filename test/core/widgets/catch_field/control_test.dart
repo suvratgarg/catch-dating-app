@@ -162,18 +162,15 @@ void main() {
         ),
       );
 
-      final openCard = tester.widget<CatchOptionCard>(
+      final openCard = tester.widget<CatchChoiceTile>(
         find.byKey(const ValueKey('catch-field-option-card-Open')),
       );
-      final inviteCard = tester.widget<CatchOptionCard>(
+      final inviteCard = tester.widget<CatchChoiceTile>(
         find.byKey(const ValueKey('catch-field-option-card-Invite only')),
       );
-      expect(openCard.description, 'Anyone eligible can book until capacity.');
+      expect(openCard.subtitle, 'Anyone eligible can book until capacity.');
       expect(openCard.selected, isTrue);
-      expect(
-        inviteCard.description,
-        'Only people with the invite code can book.',
-      );
+      expect(inviteCard.subtitle, 'Only people with the invite code can book.');
       expect(inviteCard.selected, isFalse);
 
       await tester.tap(
@@ -183,7 +180,7 @@ void main() {
       expect(selected, 'invite');
       expect(
         tester
-            .widget<CatchOptionCard>(
+            .widget<CatchChoiceTile>(
               find.byKey(
                 const ValueKey('catch-field-option-card-Invite only'),
                 skipOffstage: false,

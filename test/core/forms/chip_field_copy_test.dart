@@ -31,7 +31,7 @@ void main() {
                 values: const [1, 2],
                 selected: selected,
                 isOptional: true,
-                chipKeyBuilder: (value) => ValueKey(value),
+                itemKeyBuilder: (value) => ValueKey(value),
                 onChanged: (next) => setState(() => selected = next),
                 validator: (value) {
                   validated = value;

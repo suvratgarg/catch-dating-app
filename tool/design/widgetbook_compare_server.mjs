@@ -1339,7 +1339,7 @@ function buildCandidates() {
       "Both are selectable option affordances. Decide whether chip/card are variants of one option primitive or remain separate size/form-factor primitives.",
     recommended: "catch.option",
     left: findFirst(byName, "CatchChip"),
-    right: findFirst(byName, "CatchOptionCard"),
+    right: findFirst(byName, "CatchChoiceTile"),
     priority: "P1",
     tags: ["selection"],
   });
@@ -2045,7 +2045,7 @@ function buildCandidates() {
       recommended: "catch.option",
       tags: ["selection", "forms"],
       names: [
-        "CatchOptionCard",
+        "CatchChoiceTile",
         "CatchChip",
         "IncludeMeToggle",
         "RecommendationSwitch",

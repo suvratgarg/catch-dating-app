@@ -636,7 +636,7 @@ class CatchField<T> extends StatefulWidget
 
   /// Canonical single-select disclosure for choices that need both a title
   /// and explanatory copy. Terse labels stay in [choices]; policy, admission,
-  /// and setup choices use the existing [CatchOptionCard] primitive through
+  /// and setup choices use the existing [CatchChoiceTile] primitive through
   /// this field-owned facade.
   factory CatchField.optionCards({
     required CatchFieldCopy copy,
@@ -686,14 +686,15 @@ class CatchField<T> extends StatefulWidget
       title: title,
       contract: contract,
       body: body ?? itemTitle(selected),
-      control: CatchFieldOptionCardControl<T>(
+      control: CatchChoiceInput<T>.described(
         values: supportedValues,
-        itemTitle: itemTitle,
-        itemDescription: itemDescription,
-        selected: selected,
+        selected: {selected},
         autoClose: onSubmit == null,
-        enabled: enabled && !isLoading,
-        onChanged: onChanged,
+        onChanged: enabled && !isLoading && onChanged != null
+            ? (selection) => onChanged(selection.single)
+            : null,
+        itemLabelBuilder: itemTitle,
+        itemSubtitleBuilder: itemDescription,
       ),
       open: open,
       initiallyOpen: initiallyOpen,

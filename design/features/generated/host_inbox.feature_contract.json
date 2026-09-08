@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
   "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:02c41526a7fff5c138a0b5aefb21982019c278b8c964a453e04f67b7ad103ddd",
+  "resolvedDigest": "sha256:cb257bdab1e0ac5e0266f3f00ae2e101be4b3660e920b9c5841525056bd03a47",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -4778,10 +4778,10 @@
             "id": "catch.option_card",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionCard",
-              "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
+              "symbol": "CatchChoiceTile",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_tile.dart",
               "constructors": [
-                "CatchOptionCard"
+                "CatchChoiceTile"
               ]
             }
           },

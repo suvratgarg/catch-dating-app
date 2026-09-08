@@ -19,13 +19,14 @@ void main() {
                     return true;
                   },
                   child: useCards
-                      ? CatchFieldOptionCardControl<String>(
+                      ? CatchChoiceInput<String>.described(
                           values: const ['Morning', 'Evening'],
-                          itemTitle: (value) => value,
-                          itemDescription: (value) => '$value details',
-                          selected: 'Morning',
+                          selected: {'Morning'},
                           autoClose: autoClose,
-                          onChanged: (value) => events.add(value),
+                          onChanged: (selection) =>
+                              events.add(selection.single),
+                          itemLabelBuilder: (value) => value,
+                          itemSubtitleBuilder: (value) => '$value details',
                         )
                       : CatchChoiceInput<String>(
                           values: const ['Morning', 'Evening'],
