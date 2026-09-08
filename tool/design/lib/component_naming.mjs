@@ -6,6 +6,13 @@ const schema = JSON.parse(fs.readFileSync(new URL(
   "../../../design/components/catch.components.schema.json", import.meta.url), "utf8"));
 export const roleNouns = Object.freeze(schema.$defs.roleNoun.enum);
 export const componentLevels = Object.freeze(schema.$defs.componentLevel.enum);
+export const componentAxes = Object.freeze([
+  "Variant", "Size", "Tone", "Emphasis", "Status", "Placement", "Mode",
+]);
+export const widgetSlotNames = Object.freeze([
+  "leading", "trailing", "title", "subtitle", "kicker", "meta", "body", "footer",
+  "actions", "media", "mediaOverlay", "child", "children",
+]);
 const sharedHomes = new Map([
   ["packages/catch_ui/lib/src/foundations/", "L1"],
   ["packages/catch_ui/lib/src/primitives/", "L2"],

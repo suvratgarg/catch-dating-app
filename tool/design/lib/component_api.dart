@@ -1,0 +1,245 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
+import 'package:path/path.dart' as p;
+
+/// Syntax-only inventory of every constructor, including named/factory forms.
+/// No analysis context, plugin, package resolution or repository output writes.
+Map<String, Object?> collectComponentApi({
+  required String repoRoot,
+  List<String>? files,
+  bool includeFramework = true,
+}) {
+  final paths =
+      files ??
+      [
+        for (final root in ['packages/catch_ui/lib', 'lib/core/riverpod_ui'])
+          if (Directory(p.join(repoRoot, root)).existsSync())
+            for (final file in Directory(
+              p.join(repoRoot, root),
+            ).listSync(recursive: true, followLinks: false))
+              if (file is File &&
+                  file.path.endsWith('.dart') &&
+                  !file.path.endsWith('.g.dart'))
+                p.relative(file.path, from: repoRoot),
+      ];
+  final classes = <Map<String, Object?>>[];
+  final aliases = <Map<String, Object?>>[];
+  final enums = <Map<String, Object?>>[];
+  final failures = <String>[];
+  for (final file in paths.toSet().toList()..sort()) {
+    final path = p.isAbsolute(file) ? file : p.join(repoRoot, file);
+    final parsed = parseString(
+      path: path,
+      content: File(path).readAsStringSync(),
+      throwIfDiagnostics: false,
+    );
+    for (final error in parsed.errors) {
+      failures.add(
+        '$file:${parsed.lineInfo.getLocation(error.offset).lineNumber}: '
+        '${error.message}',
+      );
+    }
+    Map<String, Object?> location(AstNode node) => {
+      'file': file,
+      'line': parsed.lineInfo.getLocation(node.offset).lineNumber,
+      'column': parsed.lineInfo.getLocation(node.offset).columnNumber,
+    };
+
+    for (final declaration in parsed.unit.declarations) {
+      switch (declaration) {
+        case ClassDeclaration():
+          final name = declaration.namePart.typeName.lexeme;
+          if (declaration.namePart is PrimaryConstructorDeclaration) {
+            failures.add(
+              '$file: $name uses primary-constructor syntax that '
+              'requires an explicit API collector update',
+            );
+          }
+          final fields = <String, String?>{};
+          for (final field
+              in declaration.body.members.whereType<FieldDeclaration>()) {
+            if (field.isStatic) continue;
+            for (final variable in field.fields.variables) {
+              fields[variable.name.lexeme] =
+                  field.fields.type?.toSource() ??
+                  (variable.initializer is BooleanLiteral ? 'bool' : null);
+            }
+          }
+          classes.add({
+            ...location(declaration),
+            'name': name,
+            'base': declaration.extendsClause?.superclass.toSource(),
+            'fields': fields,
+            'typeParameters': {
+              for (final parameter
+                  in declaration.namePart.typeParameters?.typeParameters ??
+                      <TypeParameter>[])
+                parameter.name.lexeme: parameter.bound?.toSource(),
+            },
+            'constructors': [
+              for (final constructor
+                  in declaration.body.members
+                      .whereType<ConstructorDeclaration>())
+                if (!(constructor.name?.lexeme.startsWith('_') ?? false))
+                  {
+                    ...location(constructor),
+                    'name': constructor.name?.lexeme ?? '',
+                    'superConstructor':
+                        [
+                          for (final initializer
+                              in constructor.initializers
+                                  .whereType<SuperConstructorInvocation>())
+                            RegExp(r'^super(?:\.([\w$]+))?\(')
+                                    .firstMatch(initializer.toSource())
+                                    ?.group(1) ??
+                                '',
+                        ].firstOrNull ??
+                        '',
+                    'parameters': [
+                      for (final parameter in constructor.parameters.parameters)
+                        {...location(parameter), ..._parameter(parameter)},
+                    ],
+                  },
+            ],
+          });
+        case EnumDeclaration():
+          enums.add({
+            ...location(declaration),
+            'name': declaration.namePart.typeName.lexeme,
+          });
+        case GenericTypeAlias():
+          aliases.add({
+            ...location(declaration),
+            'name': declaration.name.lexeme,
+            'type': declaration.type.toSource(),
+            'parameters': [
+              for (final parameter
+                  in declaration.typeParameters?.typeParameters ??
+                      <TypeParameter>[])
+                parameter.name.lexeme,
+            ],
+          });
+        case FunctionTypeAlias():
+          aliases.add({
+            ...location(declaration),
+            'name': declaration.name.lexeme,
+            'type':
+                '${declaration.returnType?.toSource() ?? 'dynamic'} '
+                'Function${declaration.parameters.toSource()}',
+            'parameters': [
+              for (final parameter
+                  in declaration.typeParameters?.typeParameters ??
+                      <TypeParameter>[])
+                parameter.name.lexeme,
+            ],
+          });
+        case ClassTypeAlias():
+          failures.add(
+            '$file: class aliases require an explicit API collector '
+            'update so inherited constructors cannot escape the inventory',
+          );
+      }
+    }
+  }
+  Map<String, Object?> framework = const {};
+  if (includeFramework) {
+    final config = File(p.join(repoRoot, '.dart_tool/package_config.json'));
+    if (config.existsSync()) {
+      final packages =
+          (jsonDecode(config.readAsStringSync()) as Map)['packages'] as List;
+      final flutter = packages
+          .cast<Map>()
+          .where((entry) => entry['name'] == 'flutter')
+          .firstOrNull;
+      if (flutter != null) {
+        final packageRoot = config.uri.resolve(flutter['rootUri'] as String);
+        final library = Uri.directory(
+          packageRoot.toFilePath(),
+        ).resolve(flutter['packageUri'] as String? ?? 'lib/').toFilePath();
+        // Read inherited parameter types and standard callback aliases from the
+        // installed SDK. Do not duplicate Flutter signatures in the checker.
+        framework = collectComponentApi(
+          repoRoot: library,
+          files: [
+            'src/widgets/framework.dart',
+            'src/foundation/basic_types.dart',
+          ],
+          includeFramework: false,
+        );
+        failures.addAll((framework['failures'] as List).cast<String>());
+      }
+    }
+  }
+  return {
+    'classes': classes,
+    'aliases': aliases,
+    'enums': enums,
+    'externalClasses': framework['classes'] ?? const [],
+    'externalAliases': framework['aliases'] ?? const [],
+    'failures': failures,
+  };
+}
+
+Map<String, Object?> _parameter(FormalParameter parameter) {
+  final normal = parameter is DefaultFormalParameter
+      ? parameter.parameter
+      : parameter;
+  final name = normal.name?.lexeme;
+  final kind = switch (normal) {
+    FieldFormalParameter() => 'field',
+    SuperFormalParameter() => 'super',
+    _ => 'value',
+  };
+  final String? type = switch (normal) {
+    FieldFormalParameter(:final type, :final parameters) ||
+    SuperFormalParameter(:final type, :final parameters) =>
+      parameters == null
+          ? type?.toSource()
+          : '${type?.toSource() ?? 'dynamic'} Function${parameters.toSource()}',
+    SimpleFormalParameter(:final type) => type?.toSource(),
+    FunctionTypedFormalParameter(:final returnType, :final parameters) =>
+      '${returnType?.toSource() ?? 'dynamic'} Function${parameters.toSource()}',
+    _ => null,
+  };
+  return {
+    // Named private field formals expose the name without the leading underscore.
+    'name':
+        kind == 'field' && parameter.isNamed && (name?.startsWith('_') ?? false)
+        ? name!.substring(1)
+        : name,
+    'field': kind == 'field' ? name : null,
+    'kind': kind,
+    'type': type,
+    'named': parameter.isNamed,
+    'required': parameter.isRequired,
+  };
+}
+
+void main(List<String> args) {
+  if (args.contains('--help')) {
+    stdout.writeln(
+      'Usage: dart --packages=.dart_tool/package_config.json tool/design/lib/component_api.dart '
+      '[--root <repo>] [--files <comma-separated paths>]',
+    );
+    return;
+  }
+  var root = Directory.current.path;
+  List<String>? files;
+  for (var i = 0; i < args.length; i++) {
+    if (i + 1 >= args.length) throw ArgumentError('Missing value: ${args[i]}');
+    switch (args[i]) {
+      case '--root':
+        root = p.absolute(args[++i]);
+      case '--files':
+        files = args[++i].split(',');
+      default:
+        throw ArgumentError('Unknown argument: ${args[i]}');
+    }
+  }
+  final result = collectComponentApi(repoRoot: root, files: files);
+  stdout.writeln(jsonEncode(result));
+  if ((result['failures'] as List).isNotEmpty) exitCode = 1;
+}

@@ -4,9 +4,11 @@ import test from "node:test";
 import Ajv2020 from "ajv/dist/2020.js";
 import {
   canonicalWidgetName,
+  componentAxes,
   componentNamingEntries,
   roleNouns,
   sharedWidgetNamingProblems,
+  widgetSlotNames,
 } from "./lib/component_naming.mjs";
 
 const home = "packages/catch_ui/lib/src/components/";
@@ -66,6 +68,16 @@ test("the durable naming vocabulary matches the schema exactly", () => {
   const roles = owner.match(/\*\*Role nouns \(closed; extend only via component-registry review\):\*\* ([\s\S]*?)\./u);
   assert.ok(roles, "binding Role nouns paragraph is required");
   assert.deepEqual(roles[1].split(/,\s*/u).map((word) => word.trim()), roleNouns);
+});
+
+test("API axes and slots match the binding grammar", () => {
+  const owner = fs.readFileSync(new URL("../../docs/app_architecture.md", import.meta.url), "utf8");
+  const axes = owner.match(/\*\*Variants\.\*\*[\s\S]*?axis vocabulary([\s\S]*?)\. At/u);
+  const slots = owner.match(/\*\*Slots\.\*\*([\s\S]*?);/u);
+  assert.ok(axes && slots, "binding Variants and Slots paragraphs are required");
+  const words = (text) => [...text.matchAll(/`(\w+)`/gu)].map((match) => match[1]);
+  assert.deepEqual(words(axes[1]), componentAxes);
+  assert.deepEqual(words(slots[1]), widgetSlotNames);
 });
 
 function scopeFamily() {
