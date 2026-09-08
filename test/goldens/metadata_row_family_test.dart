@@ -30,13 +30,13 @@ void main() {
                 ),
                 const Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: CatchMetaEntryView(
+                  child: CatchMetaRow.entry(
                     entry: CatchMetaEntry(label: 'Tonight'),
                   ),
                 ),
                 Align(
                   alignment: AlignmentDirectional.centerStart,
-                  child: CatchMetaEntryView(
+                  child: CatchMetaRow.entry(
                     entry: CatchMetaEntry(
                       label: 'Bandra West',
                       icon: Icons.place,
@@ -46,21 +46,21 @@ void main() {
                     isStrong: true,
                   ),
                 ),
-                const CatchMetaEntryFlow(
+                const CatchMetaRow.flow(
                   entries: [
                     CatchMetaEntry(label: 'Friday evening', icon: Icons.event),
                     CatchMetaEntry(label: 'Bandra West'),
                     CatchMetaEntry(label: 'Easy pace'),
                   ],
                 ),
-                const CatchMetaEntryFlow(
+                const CatchMetaRow.flow(
                   maxLines: 2,
                   entries: [
                     CatchMetaEntry(label: 'Friday evening', icon: Icons.event),
                     CatchMetaEntry(label: 'A longer location label'),
                   ],
                 ),
-                const CatchMetaDotRow(
+                const CatchMetaRow.group(
                   entries: [
                     CatchMetaEntry(label: 'Tonight', icon: Icons.event),
                     CatchMetaEntry(label: 'Bandra West'),
@@ -69,7 +69,7 @@ void main() {
                 ),
                 const Directionality(
                   textDirection: TextDirection.rtl,
-                  child: CatchMetaDotRow(
+                  child: CatchMetaRow.group(
                     entries: [
                       CatchMetaEntry(label: 'Tonight', icon: Icons.event),
                       CatchMetaEntry(label: 'Bandra West'),

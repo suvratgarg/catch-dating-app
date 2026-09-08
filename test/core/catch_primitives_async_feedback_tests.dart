@@ -495,7 +495,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CatchMetaDotRow(
+              CatchMetaRow.group(
                 entries: [
                   CatchMetaEntry(
                     label: 'Tonight',
@@ -534,8 +534,22 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.text('Tonight'), findsOneWidget);
     expect(find.text('Bandra'), findsOneWidget);
     expect(find.text('2.3 km'), findsOneWidget);
-    expect(find.byType(CatchMetaEntryFlow), findsOneWidget);
-    expect(find.byType(CatchMetaEntryView), findsNWidgets(3));
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchMetaRow &&
+            widget.variant == CatchMetaRowVariant.flow,
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchMetaRow &&
+            widget.variant == CatchMetaRowVariant.entry,
+      ),
+      findsNWidgets(3),
+    );
     expect(find.text('Payment ID'), findsOneWidget);
     expect(find.text('pay_123'), findsOneWidget);
     expect(find.text('24'), findsOneWidget);

@@ -5742,66 +5742,6 @@
             }
           },
           {
-            "id": "catch.metric_strip.meta_dot_row",
-            "symbol": "CatchMetaDotRow",
-            "file": "packages/catch_ui/lib/src/components/catch_meta_dot_row.dart",
-            "summary": "Dot-separated inline metadata row for event and club cards with optional icons and trailing strong metadata.",
-            "states": [
-              "entries",
-              "with-icons",
-              "with-trailing",
-              "custom-color",
-              "truncated"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.metric_strip",
-              "parentConceptId": "catch.metric_strip",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.metric_strip"
-            }
-          },
-          {
-            "id": "catch.metric_strip.meta_entry_flow",
-            "symbol": "CatchMetaEntryFlow",
-            "file": "packages/catch_ui/lib/src/components/catch_meta_entry_flow.dart",
-            "summary": "Direct dot-separated metadata flow renderer used by CatchMetaDotRow.",
-            "states": [
-              "entries",
-              "with-icons",
-              "with-trailing",
-              "wrapped",
-              "truncated"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.metric_strip",
-              "parentConceptId": "catch.metric_strip",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.metric_strip"
-            }
-          },
-          {
-            "id": "catch.metric_strip.meta_entry_view",
-            "symbol": "CatchMetaEntryView",
-            "file": "packages/catch_ui/lib/src/components/catch_meta_entry_view.dart",
-            "summary": "Direct metadata entry renderer for optional icon, color override, strong trailing weight, and ellipsis behavior.",
-            "states": [
-              "label",
-              "with-icon",
-              "strong",
-              "custom-color",
-              "truncated"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.metric_strip",
-              "parentConceptId": "catch.metric_strip",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.metric_strip"
-            }
-          },
-          {
             "id": "catch.metric_strip.cell",
             "symbol": "CatchMetricStripCell",
             "file": "packages/catch_ui/lib/src/components/catch_metric_strip_cell.dart",
@@ -13431,6 +13371,15 @@
         "reason": "A read-only record composition has no distinct raw widget equivalent to ban. Contract and behavior tests own its reading and navigation semantics.",
         "owner": "design_system",
         "expires": "2026-10-04"
+      },
+      "level": "L3",
+      "roleNoun": "Row",
+      "naming": {
+        "useCase": "Record",
+        "comparedWith": [
+          "catch.meta_row"
+        ],
+        "reason": "A readable record owns a heading, contextual metadata, a list of facts and optional prose. A destination adds full-row press semantics and disclosure. MetaRow presents compact passive facts without those narrative or navigation lanes."
       }
     },
     {
@@ -15866,12 +15815,15 @@
       "name": "CatchMetaRow",
       "status": "active",
       "kind": "primitive",
-      "summary": "Single icon-and-label metadata line for compact factual context; distinct from structural section labels.",
+      "summary": "Passive factual metadata rows with single-label, compact-entry, dot-separated flow and strong-trailing group recipes.",
       "dart": {
         "symbol": "CatchMetaRow",
         "file": "packages/catch_ui/lib/src/components/catch_meta_row.dart",
         "constructors": [
-          "CatchMetaRow"
+          "CatchMetaRow",
+          "CatchMetaRow.entry",
+          "CatchMetaRow.flow",
+          "CatchMetaRow.group"
         ]
       },
       "surfaces": {
@@ -15918,13 +15870,63 @@
             "type": "color",
             "required": false,
             "dartType": "Color?"
+          },
+          {
+            "name": "entry",
+            "type": "object",
+            "dartType": "CatchMetaEntry",
+            "required": false,
+            "notes": "Required by the entry constructor."
+          },
+          {
+            "name": "entries",
+            "type": "list",
+            "dartType": "List<CatchMetaEntry>",
+            "required": false,
+            "notes": "Required by flow and group constructors."
+          },
+          {
+            "name": "trailing",
+            "type": "object",
+            "dartType": "CatchMetaEntry?",
+            "required": false,
+            "notes": "Optional strong trailing fact in the group recipe."
+          },
+          {
+            "name": "iconSize",
+            "type": "number",
+            "dartType": "double",
+            "required": false,
+            "default": "CatchIcon.sm",
+            "notes": "Compact entry, flow and group icon extent."
+          },
+          {
+            "name": "maxLines",
+            "type": "number",
+            "dartType": "int",
+            "required": false,
+            "default": 1
+          },
+          {
+            "name": "isStrong",
+            "type": "bool",
+            "dartType": "bool",
+            "required": false,
+            "default": false,
+            "notes": "Entry emphasis; group trailing entries use this recipe."
           }
         ],
         "states": [
           "default",
           "semantic-icon",
           "semantic-label",
-          "truncated"
+          "truncated",
+          "entry",
+          "flow",
+          "group",
+          "strong",
+          "rtl",
+          "large-text"
         ],
         "slots": [],
         "tokens": [
@@ -15933,9 +15935,8 @@
           "theme.light.color.ink2"
         ],
         "dartRoles": [
-          "CatchMetaRow",
-          "CatchTextStyles.labelM",
-          "CatchIcon.sm"
+          "CatchMetaEntry",
+          "CatchMetaRowVariant"
         ],
         "goldens": [],
         "accessibility": {
@@ -15969,9 +15970,17 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for a factual icon-and-label line; use catch.ui_label for structural section hierarchy.",
-          "The CatchMetaRow/StageSectionLabel ledger decision is an intentional false-positive boundary."
+          "Use the default recipe for a full-width icon and label with the standard label style. Use entry for a compact numeric-metadata treatment, flow for dot-separated entries, or group to reserve strong trailing metadata. All four share one rendering family. Records with headings, prose and navigation remain CatchRecordRow."
         ]
+      },
+      "level": "L3",
+      "roleNoun": "Row",
+      "naming": {
+        "useCase": "Meta",
+        "comparedWith": [
+          "catch.record_row"
+        ],
+        "reason": "Compact passive facts use a single icon/label, compact entry, dot-separated flow or strong trailing value. RecordRow owns a heading, readable context and prose, with navigation and disclosure when a destination exists; those are a different row responsibility."
       }
     },
     {

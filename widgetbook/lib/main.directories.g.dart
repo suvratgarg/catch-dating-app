@@ -797,32 +797,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Data display',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMetaDotRow',
+            name: 'CatchMetaRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Entry states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchMetaDotRowCatalogStates,
+                    .catchMetaRowEntryStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchMetaEntryFlow',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Flow states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchMetaEntryFlowCatalogStates,
+                    .catchMetaRowFlowStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchMetaEntryView',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Group states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchMetaEntryViewCatalogStates,
+                    .catchMetaRowGroupStates,
               ),
             ],
           ),

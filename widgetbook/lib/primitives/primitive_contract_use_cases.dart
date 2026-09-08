@@ -113,7 +113,18 @@ Widget catchMetaRowContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchMetaRow',
     contractId: 'catch.meta_row',
-    states: const ['default', 'semantic-icon', 'semantic-label', 'truncated'],
+    states: const [
+      'default',
+      'semantic-icon',
+      'semantic-label',
+      'truncated',
+      'entry',
+      'flow',
+      'group',
+      'strong',
+      'rtl',
+      'large-text',
+    ],
     children: [
       _StateCard(
         label: 'default',
@@ -147,6 +158,36 @@ Widget catchMetaRowContractStates(BuildContext context) {
               'A deliberately long venue description that demonstrates the single-line truncation contract in the review surface',
         ),
       ),
+      const _StateCard(
+        label: 'entry / strong',
+        child: CatchMetaRow.entry(
+          entry: CatchMetaEntry(label: '2.4 km'),
+          isStrong: true,
+        ),
+      ),
+      const _StateCard(
+        label: 'flow',
+        child: CatchMetaRow.flow(
+          entries: [
+            CatchMetaEntry(label: 'Tonight'),
+            CatchMetaEntry(label: 'Easy pace'),
+          ],
+        ),
+      ),
+      for (final direction in TextDirection.values)
+        _StateCard(
+          label: 'group / ${direction.name}',
+          child: Directionality(
+            textDirection: direction,
+            child: const CatchMetaRow.group(
+              entries: [
+                CatchMetaEntry(label: 'Tonight'),
+                CatchMetaEntry(label: 'Easy pace'),
+              ],
+              trailing: CatchMetaEntry(label: '2.4 km'),
+            ),
+          ),
+        ),
     ],
   );
 }

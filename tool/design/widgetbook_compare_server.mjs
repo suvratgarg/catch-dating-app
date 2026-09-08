@@ -1706,7 +1706,7 @@ function buildCandidates() {
       recommended: "catch.meta_row",
       tags: ["rows", "metadata"],
       names: [
-        "CatchMetaDotRow",
+        "CatchMetaRow",
         "HostMetaRow",
         "HostManageMetaRow",
         "HostEventSummaryRow",

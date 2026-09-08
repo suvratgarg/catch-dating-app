@@ -6827,6 +6827,37 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:metadata-row-canonical-recipes",
+      "patternFamilyId": "metadata-row-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchMetaRow",
+      "members": [
+        {
+          "name": "CatchMetaDotRow",
+          "action": "absorb",
+          "target": "CatchMetaRow.group"
+        },
+        {
+          "name": "CatchMetaEntryFlow",
+          "action": "absorb",
+          "target": "CatchMetaRow.flow"
+        },
+        {
+          "name": "CatchMetaEntryView",
+          "action": "absorb",
+          "target": "CatchMetaRow.entry"
+        },
+        {
+          "name": "CatchRecordRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Default icon/label metadata and compact entries render the same passive icon/text responsibility with different existing typography and gaps. CatchMetaRow owns both recipes and composes its flow and group constructors for dot-separated facts and a strong trailing value. The three former Widgets are removed, along with their metric-strip registry members; metadata has its existing canonical concept. Preserve const constructors and original normal/scaled, LTR/RTL images. RecordRow remains distinct because it owns heading, context, prose and optional navigation/disclosure. This supersedes the separate metadata-member registrations while preserving the earlier single-row versus record boundary.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

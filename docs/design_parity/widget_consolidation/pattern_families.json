@@ -1391,6 +1391,54 @@
           "rationale": "Dash pattern, ticket ink, notch insets and selected vertical band are complementary ticket anatomy, not a second continuous divider."
         }
       ]
+    },
+    {
+      "id": "metadata-row-canonical-recipes",
+      "title": "Canonical compact metadata rows",
+      "intent": "One passive metadata renderer family, with named entry, dot-separated flow and strong-trailing group recipes. Record headings and navigation remain a reviewed Row responsibility.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.meta_row + catch.record_row",
+      "qualityReference": "CatchMetaRow",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve label and numeric-meta type styles, 6/4 px icon gaps, dot spacing, clipping, color overrides, strong trailing text and right-to-left behavior."
+      ],
+      "members": [
+        {
+          "symbol": "CatchMetaRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Default, entry, flow and group constructors share one canonical row family."
+        },
+        {
+          "symbol": "CatchMetaDotRow",
+          "disposition": "unify",
+          "target": "CatchMetaRow.group",
+          "preview": "not-applicable",
+          "rationale": "Group recipe adds the clipped flexible flow and strong trailing value."
+        },
+        {
+          "symbol": "CatchMetaEntryFlow",
+          "disposition": "unify",
+          "target": "CatchMetaRow.flow",
+          "preview": "not-applicable",
+          "rationale": "Flow recipe owns dot insertion and flexible entry constraints."
+        },
+        {
+          "symbol": "CatchMetaEntryView",
+          "disposition": "unify",
+          "target": "CatchMetaRow.entry",
+          "preview": "not-applicable",
+          "rationale": "Compact entry and default label share the icon/text renderer with explicit recipe metrics."
+        },
+        {
+          "symbol": "CatchRecordRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Record heading, narrative context and navigation differ from passive metadata."
+        }
+      ]
     }
   ]
 }

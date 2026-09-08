@@ -3099,20 +3099,20 @@ Widget catchStatColumnCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMetaDotRow,
+  name: 'Group states',
+  type: CatchMetaRow,
   path: '[Core catalog]/Data display',
 )
-Widget catchMetaDotRowCatalogStates(BuildContext context) {
+Widget catchMetaRowGroupStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchMetaDotRow',
+    title: 'CatchMetaRow.group',
     catalogId: 'core.widgets.catch_meta_dot_row',
     children: [
       _StateCard(
         label: 'entries / trailing / truncation',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchMetaDotRow(
+          child: CatchMetaRow.group(
             entries: [
               CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
               CatchMetaEntry(
@@ -3130,20 +3130,20 @@ Widget catchMetaDotRowCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMetaEntryFlow,
+  name: 'Flow states',
+  type: CatchMetaRow,
   path: '[Core catalog]/Data display',
 )
-Widget catchMetaEntryFlowCatalogStates(BuildContext context) {
+Widget catchMetaRowFlowStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchMetaEntryFlow',
+    title: 'CatchMetaRow.flow',
     catalogId: 'core.widgets.catch_meta_dot_row.flow',
     children: [
       _StateCard(
         label: 'entries / truncation',
         child: SizedBox(
           width: WidgetbookPreviewLayout.compactComponentWidth,
-          child: CatchMetaEntryFlow(
+          child: CatchMetaRow.flow(
             entries: [
               CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
               CatchMetaEntry(
@@ -3160,15 +3160,15 @@ Widget catchMetaEntryFlowCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMetaEntryView,
+  name: 'Entry states',
+  type: CatchMetaRow,
   path: '[Core catalog]/Data display',
 )
-Widget catchMetaEntryViewCatalogStates(BuildContext context) {
+Widget catchMetaRowEntryStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return WidgetbookCatalogFrame(
-    title: 'CatchMetaEntryView',
+    title: 'CatchMetaRow.entry',
     catalogId: 'core.widgets.catch_meta_dot_row.entry',
     children: [
       _StateCard(
@@ -3176,9 +3176,9 @@ Widget catchMetaEntryViewCatalogStates(BuildContext context) {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CatchMetaEntryView(entry: CatchMetaEntry(label: 'Tonight')),
+            const CatchMetaRow.entry(entry: CatchMetaEntry(label: 'Tonight')),
             const SizedBox(width: CatchSpacing.s4),
-            CatchMetaEntryView(
+            CatchMetaRow.entry(
               entry: CatchMetaEntry(
                 label: 'Bandra',
                 icon: CatchIcons.pinOutlined,
@@ -3186,7 +3186,7 @@ Widget catchMetaEntryViewCatalogStates(BuildContext context) {
               ),
             ),
             const SizedBox(width: CatchSpacing.s4),
-            const CatchMetaEntryView(
+            const CatchMetaRow.entry(
               entry: CatchMetaEntry(label: '2.4 km'),
               isStrong: true,
             ),

@@ -110,7 +110,7 @@ class EventActionCard extends StatelessWidget {
                   gapH12,
                   for (var index = 0; index < metaRows.length; index += 1) ...[
                     if (index > 0) gapH6,
-                    CatchMetaDotRow(entries: metaRows[index]),
+                    CatchMetaRow.group(entries: metaRows[index]),
                   ],
                 ],
                 if (actions.isNotEmpty) ...[
