@@ -2881,7 +2881,12 @@
             "states": [
               "empty",
               "populated",
-              "disabled"
+              "disabled",
+              "editable",
+              "read-only",
+              "inactive",
+              "obscured",
+              "multiline"
             ],
             "governance": {
               "conceptRole": "member",
@@ -3167,6 +3172,27 @@
               "single-choice-auto-close",
               "option-card-auto-close",
               "caller-controlled-disclosure"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "anatomy",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.text_entry",
+            "symbol": "CatchFieldTextEntry",
+            "file": "lib/core/widgets/catch_field_text_entry.dart",
+            "summary": "Field-owned native text entry and validation renderer. The facade supplies immutable configuration and retains controllers, focus, dismissal and save orchestration; rendering uses the shared CatchTextInput primitive.",
+            "states": [
+              "underline",
+              "row",
+              "read-only",
+              "obscured-disabled",
+              "validation-error",
+              "explicit-save"
             ],
             "governance": {
               "conceptRole": "member",

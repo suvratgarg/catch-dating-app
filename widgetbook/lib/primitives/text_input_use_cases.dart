@@ -35,6 +35,39 @@ Widget catchTextInputContractStates(BuildContext context) {
             ],
           ),
         ),
+      for (final mode in CatchTextInputMode.values)
+        for (final variant in CatchTextInputVariant.values)
+          WidgetbookTextControllerScope(
+            initialText: 'Example',
+            builder: (context, controller) => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  '${mode.name} · ${variant.name}',
+                  style: CatchTextStyles.supporting(context),
+                ),
+                gapH8,
+                CatchTextInput(
+                  controller: controller,
+                  mode: mode,
+                  variant: variant,
+                  showCursor: false,
+                  style: CatchTextStyles.bodyM(context),
+                ),
+              ],
+            ),
+          ),
+      WidgetbookTextControllerScope(
+        initialText: 'A longer answer\nwith a second line',
+        builder: (context, controller) => CatchTextInput(
+          controller: controller,
+          minLines: 2,
+          maxLines: 3,
+          textAlign: TextAlign.center,
+          showCursor: false,
+          style: CatchTextStyles.bodyM(context),
+        ),
+      ),
     ],
   );
 }

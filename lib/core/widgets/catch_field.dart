@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 part 'catch_field_control.dart';
 part 'catch_field_configs.dart';
 part 'catch_field_edit.dart';
+part 'catch_field_text_entry.dart';
 part 'catch_field_row_modes.dart';
 part 'catch_field_state.dart';
 part 'catch_field_behavior.dart';

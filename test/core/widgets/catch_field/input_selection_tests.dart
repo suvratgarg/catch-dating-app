@@ -239,7 +239,7 @@ void _registerInputSelectionTests() {
         selected = 'Second';
         if (removesPrevious) values = ['Second'];
       });
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(tester.state(find.byType(CatchField)), same(fieldState));
       expect(find.text('Second'), findsOneWidget);

@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.15
+version: 1.9.16
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1110,6 +1110,14 @@ cleanup cannot erase a newly supplied selection. The field row now renders
 directly in its owning State's build method. Lifecycle, timers, focus and
 expansion behavior move unchanged into a non-rendering part; the private row
 renderer is deleted and both resulting files stay within D6.
+
+`CatchFieldTextEntry` replaces the final private rendering helper. It consumes
+its facade's immutable configuration plus explicit state handles; controllers,
+focus, dismissal and save orchestration stay with the field. Native rendering
+uses the existing `CatchTextInput` primitive, extended with editing and obscuring
+enum axes and platform input options. The text-entry member and its facade
+remain app-side until their constructor/configuration migration is complete;
+no shared package imports the app to reach this intermediate component.
 
 ### Phase 4 — One registry, binding grammar
 

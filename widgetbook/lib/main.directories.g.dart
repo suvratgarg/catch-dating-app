@@ -73,6 +73,8 @@ import 'package:widgetbook_workspace/primitives/field_select_control_use_cases.d
     as _widgetbook_workspace_primitives_field_select_control_use_cases;
 import 'package:widgetbook_workspace/primitives/field_surface_use_cases.dart'
     as _widgetbook_workspace_primitives_field_surface_use_cases;
+import 'package:widgetbook_workspace/primitives/field_text_entry_use_cases.dart'
+    as _widgetbook_workspace_primitives_field_text_entry_use_cases;
 import 'package:widgetbook_workspace/primitives/field_value_content_use_cases.dart'
     as _widgetbook_workspace_primitives_field_value_content_use_cases;
 import 'package:widgetbook_workspace/primitives/form_protocol_use_cases.dart'
@@ -2739,6 +2741,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_field_surface_use_cases
                         .fieldSurfaceStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldTextEntry',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Native input and validation states',
+                builder:
+                    _widgetbook_workspace_primitives_field_text_entry_use_cases
+                        .fieldTextEntryStates,
               ),
             ],
           ),

@@ -63,6 +63,32 @@ class _CatchFieldState extends State<CatchField>
 
   @override
   Widget build(BuildContext context) {
+    final textEntry = !_isEdit
+        ? null
+        : CatchFieldTextEntry(
+            field: widget,
+            formFieldKey: _fieldKey,
+            controller: _controller,
+            focusNode: _focusNode,
+            tapRegionGroupId: _textFieldTapRegionGroup,
+            onValidationErrorChanged: _setTextEntryValidationError,
+            onSubmitted: _handleSubmitted,
+            mode: _usesUnderlineChrome
+                ? CatchFieldTextEntryMode.standalone
+                : widget._explicitSaveInput
+                ? CatchFieldTextEntryMode.explicitSave
+                : CatchFieldTextEntryMode.row,
+            states: {
+              if (_active) WidgetState.selected,
+              if (_focused) WidgetState.focused,
+            },
+            emptyValueText: _emptyEditableValueText,
+            inputHintText: _inputHintText,
+            addTextSpan: _inlineAddTextSpan(CatchTokens.of(context)),
+            headerTrailingReserve: _contentTrailingReserve,
+            expanded: _isOpen,
+            inlineAddAtRest: _inlineTextAddAtRest,
+          );
     final Widget field;
     switch (widget._config) {
       case _SelectConfig():
@@ -89,7 +115,7 @@ class _CatchFieldState extends State<CatchField>
               : CatchFieldValueContentStatus.idle,
         );
       case _EditConfig() when _usesUnderlineChrome:
-        field = _buildTextEntryField(context);
+        field = textEntry!;
       case _EditConfig() || _RowConfig() || _ToggleConfig() || _ControlConfig():
         final t = CatchTokens.of(context);
         final Widget configuredRow;
@@ -201,8 +227,9 @@ class _CatchFieldState extends State<CatchField>
               rawTrailingSlot = ValueListenableBuilder<TextEditingValue>(
                 valueListenable: _controller,
                 builder: (_, value, _) {
-                  if (value.text.isEmpty)
+                  if (value.text.isEmpty) {
                     return fallback ?? const SizedBox.shrink();
+                  }
                   return CatchFieldTrailing.clear(
                     tooltip: widget.copy.clearTooltip(_title),
                     onPressed: () {
@@ -354,39 +381,7 @@ class _CatchFieldState extends State<CatchField>
             final error = _displayError?.trim();
             final inlineAddAtRest =
                 error?.isNotEmpty != true && _inlineTextAddAtRest;
-            final addText = _emptyEditableValueText;
-            final input = IgnorePointer(
-              ignoring: !_isOpen,
-              child: _buildTextEntryField(
-                context,
-                showLabelOverride: false,
-                variantOverride: CatchFieldVariant.bare,
-                valueEmphasis: true,
-                canInteractOverride: _isOpen && widget.enabled,
-                readOnlyOverride: !_isOpen,
-                includeSupport: false,
-                inputHintOverride: inlineAddAtRest
-                    ? null
-                    : _isOpen
-                    ? _inputHintText
-                    : _emptyEditableValueText,
-                inputHintWidgetOverride: inlineAddAtRest
-                    ? Text.rich(
-                        _inlineAddTextSpan(t),
-                        style: CatchTextStyles.fieldRowValue(
-                          context,
-                          color: t.ink3,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    : null,
-                semanticLabelOverride: inlineAddAtRest && addText != null
-                    ? _inlineAddSemanticLabel(addText)
-                    : _title,
-              ),
-            );
+            final input = IgnorePointer(ignoring: !_isOpen, child: textEntry);
             rowBody = CatchFieldValueContent(
               labelCopy: widget.copy.label,
               titleMaxLines: widget.titleMaxLines,
@@ -413,13 +408,7 @@ class _CatchFieldState extends State<CatchField>
               ),
             );
           } else if (_isEdit) {
-            rowBody = _buildTextEntryField(
-              context,
-              showLabelOverride: false,
-              variantOverride: CatchFieldVariant.bare,
-              valueEmphasis: true,
-              rowBody: true,
-            );
+            rowBody = textEntry!;
           } else if (inlineMetadata?.isNotEmpty == true) {
             final title = _title?.trim() ?? '';
             rowBody = Semantics(

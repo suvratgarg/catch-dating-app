@@ -496,7 +496,6 @@ extension _CatchFieldBehavior on _CatchFieldState {
       _isSaving && !_disclosureOffstage && widget._onSubmit != null;
   bool get _active => _focused || _rowFocused || widget.focused || _isOpen;
   bool get _isEdit => widget._config is _EditConfig;
-  bool get _isSelect => widget._config is _SelectConfig;
   bool get _isToggle => widget._config is _ToggleConfig;
   bool get _isNavigation => switch (widget._config) {
     _ControlConfig() => true,
@@ -601,23 +600,6 @@ extension _CatchFieldBehavior on _CatchFieldState {
   bool get _textEntryCollapsed => _textEntryCanCollapse && !_textEntryExpanded;
   bool get _compactTextEntry =>
       _isEdit && widget.size == CatchFieldSize.floating && !widget.showLabel;
-
-  Color _supportColor(CatchTokens t) {
-    return switch (widget.helperTone) {
-      CatchFieldSupportTone.neutral => t.ink2,
-      CatchFieldSupportTone.brand => t.primary,
-      CatchFieldSupportTone.success => t.success,
-    };
-  }
-
-  Color _fieldLabelColor(
-    CatchTokens t, {
-    required bool hasError,
-    Color? inactiveColor,
-  }) {
-    if (hasError) return t.danger;
-    return _active ? t.ink : inactiveColor ?? t.ink2;
-  }
 
   Color _toneColor(
     CatchTokens t, {
