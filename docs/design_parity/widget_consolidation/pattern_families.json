@@ -2043,6 +2043,34 @@
           "rationale": "Use the semantic Row role and Avatar use case; Stack only describes the internal Flutter layout technique. Preserve the existing implementation and delete the old export."
         }
       ]
+    },
+    {
+      "id": "avatar-viewport-obscuring",
+      "title": "Avatar obscuring is a viewport recipe",
+      "intent": "Use the avatar frame for both ordinary and obscured content without a separate public content wrapper.",
+      "priority": "P2",
+      "status": "approved",
+      "targetContract": "catch.person_avatar",
+      "qualityReference": "CatchAvatarViewport",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None in production. Preserve the blur sigma, content scale, dark scrim, clipping order, border ring and existing fallback selection. The viewport preview adds both obscured silhouettes; the redundant direct content-wrapper page is removed."
+      ],
+      "members": [
+        {
+          "symbol": "CatchAvatarViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Clipping and obscuring share one bounded avatar frame. Keep ordinary clipping and fitted labels as separate recipes, and preserve the existing content obscuring through a named constructor."
+        },
+        {
+          "symbol": "CatchObscuredAvatarContent",
+          "disposition": "unify",
+          "target": "CatchAvatarViewport",
+          "preview": "not-applicable",
+          "rationale": "This wrapper has one production owner, the avatar, which always clips it through the viewport. Move its exact Stack and filter into the obscured viewport recipe and delete its public class and export."
+        }
+      ]
     }
   ]
 }

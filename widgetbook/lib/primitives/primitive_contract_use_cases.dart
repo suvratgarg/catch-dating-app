@@ -9280,7 +9280,13 @@ Widget catchPersonAvatarShellContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchAvatarViewport',
     contractId: 'catch.person_avatar.shell',
-    states: const ['circle', 'square', 'label-fit'],
+    states: const [
+      'circle',
+      'square',
+      'label-fit',
+      'obscured-circle',
+      'obscured-square',
+    ],
     children: [
       _StateCard(
         label: 'circle',
@@ -9311,32 +9317,18 @@ Widget catchPersonAvatarShellContractStates(BuildContext context) {
           ),
         ),
       ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchObscuredAvatarContent,
-  path: '[Core primitives]/People',
-)
-Widget catchObscuredAvatarContentContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return _ContractScreen(
-    title: 'CatchObscuredAvatarContent',
-    contractId: 'catch.person_avatar.obscured_content',
-    states: const ['default'],
-    children: [
-      _StateCard(
-        label: 'default',
-        child: SizedBox.square(
-          dimension: WidgetbookPreviewLayout.avatarPreviewExtent,
-          child: CatchObscuredAvatarContent(
-            child: ColoredBox(color: t.primarySoft),
+      for (final variant in CatchAvatarVariant.values)
+        _StateCard(
+          label: 'obscured-${variant.name}',
+          child: CatchAvatarViewport.obscured(
+            size: 56,
+            variant: variant,
+            child: const CatchAvatarInitialsSurface(
+              name: 'Private guest',
+              size: 56,
+            ),
           ),
         ),
-      ),
     ],
   );
 }

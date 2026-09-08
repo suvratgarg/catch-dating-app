@@ -7227,6 +7227,23 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:avatar-viewport-obscuring",
+      "patternFamilyId": "avatar-viewport-obscuring",
+      "decision": "absorb-anatomy-recipe",
+      "canonicalSymbol": "CatchAvatarViewport",
+      "members": [
+        {
+          "name": "CatchObscuredAvatarContent",
+          "action": "absorb",
+          "target": "CatchAvatarViewport.obscured"
+        }
+      ],
+      "rationale": "The sole production caller immediately clips this wrapper inside AvatarViewport. Move the same render objects inside the same SizedBox/clip order as a named recipe. Preserve the parent branch choices: photos and ordinary initials may be obscured; the existing activity-only fallback, count and veil paths retain their original behavior. The public Mode enum describes clip, label or obscured operation. Delete the obsolete member API and catalog page; retain the owning viewport member id.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

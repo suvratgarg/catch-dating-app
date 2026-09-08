@@ -663,7 +663,15 @@ void _registerCatchPrimitivesCompositionTests() {
 
     expect(find.text('PG'), findsOneWidget);
     expect(find.byType(CatchAvatarViewport), findsNWidgets(2));
-    expect(find.byType(CatchObscuredAvatarContent), findsOneWidget);
+    expect(
+      tester
+          .widgetList<CatchAvatarViewport>(find.byType(CatchAvatarViewport))
+          .where(
+            (viewport) => viewport.mode == CatchAvatarViewportMode.obscured,
+          ),
+      hasLength(1),
+    );
+    expect(find.byType(ImageFiltered), findsOneWidget);
     expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
   });
 

@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "d767091e2b525466205233c5d3b7b7dabbae8b78dca4342ef380fa34c7fcd855",
+  "sourceDigest": "6a4595fa9998bc16766c93ea0a9cccc0c98b4122106d93b233db77f29c114ede",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "d767091e2b525466205233c5d3b7b7dabbae8b78dca4342ef380fa34c7fcd855",
-    "contractDigest": "d767091e2b525466205233c5d3b7b7dabbae8b78dca4342ef380fa34c7fcd855"
+    "digest": "6a4595fa9998bc16766c93ea0a9cccc0c98b4122106d93b233db77f29c114ede",
+    "contractDigest": "6a4595fa9998bc16766c93ea0a9cccc0c98b4122106d93b233db77f29c114ede"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "3f0e7eab6c7c2a4c656c4f8072a6d9f31e7ed9db3c0d39b883390fa9dca81e57",
+    "handoffRequestDigest": "3794e9f622c666fe1263d5b84921986aaef43391e6f048d26a18c68dd1e61822",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 76,
-    "publicClassCount": 267,
+    "publicClassCount": 266,
     "conceptCount": 69,
-    "memberCount": 180,
-    "membersPerConcept": 2.61,
+    "memberCount": 179,
+    "membersPerConcept": 2.59,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 69,
-      "member": 180,
+      "member": 179,
       "screen": 15
     },
     "collisionCount": 36,
@@ -333,8 +333,7 @@
           "CatchAvatarColors",
           "CatchAvatarInitialsSurface",
           "CatchAvatarRow",
-          "CatchAvatarViewport",
-          "CatchObscuredAvatarContent"
+          "CatchAvatarViewport"
         ]
       },
       {
@@ -2302,7 +2301,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Avatar",
       "claudeAllowed": true,
-      "contractDigest": "9b1196197ebe5b6aeb2db3cab2fb98fff436f5a20e2a7201bcca92a6728c6072"
+      "contractDigest": "fc8dc51b32f1ffbddda5c3457b266920d71f610cdf839f07b915131e571f4e94"
     },
     {
       "contractId": "catch.record_row",

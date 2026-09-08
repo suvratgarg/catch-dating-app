@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.39.0
+version: 3.40.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -434,8 +434,7 @@ Widgetbook callers.
 | `CatchPersonRosterLayout` | `packages/catch_ui/lib/src/components/catch_person_roster_layout.dart` | Direct roster body renderer for `CatchPersonRow`: name, optional metadata, and optional event context line. |
 | `CatchAvatarColors` | `packages/catch_ui/lib/src/components/catch_avatar_colors.dart` | Presentation-only accent, deep and soft colors. App activity mapping remains in `ActivityPalette`; the shared avatar renderer never reads a feature model. |
 | `CatchAvatar` | `packages/catch_ui/lib/src/components/catch_avatar.dart` | Canonical photo, initials and activity avatar with shared clipping, ring and typed online status. The `count` recipe formats caller-owned count copy; `veiled` renders caller-colored anonymous slots. Initials and counts fit the frame at large text instead of wrapping behind its clip. |
-| `CatchAvatarViewport` | `packages/catch_ui/lib/src/components/catch_avatar_viewport.dart` | Avatar clipping for circle and rounded-square variants, plus the shared `label` recipe that bounds initials and counts within the frame. |
-| `CatchObscuredAvatarContent` | `packages/catch_ui/lib/src/components/catch_obscured_avatar_content.dart` | Direct privacy-preserving avatar obscuring layer: blur, scale, and editorial dark scrim for hidden guest/photo states. |
+| `CatchAvatarViewport` | `packages/catch_ui/lib/src/components/catch_avatar_viewport.dart` | Avatar clipping for circle and rounded-square variants. The `label` recipe fits complete initials/count copy inside the frame; `obscured` applies the existing blur, content scale and dark scrim within the same clipping boundary. |
 | `CatchAvatarRow` | `packages/catch_ui/lib/src/components/catch_avatar_row.dart` | Layout member of Avatar: overlapping photo or initials identities, caller-colored veiled slots, and caller-formatted overflow. The identity limit excludes the optional count slot; empty and count-only rows are supported. Use this for avatar collections instead of a second avatar painter. |
 | `CatchViewport` | `packages/catch_ui/lib/src/patterns/catch_viewport.dart:21` | Selects caller-owned compact, medium and expanded content from its available width, preserving the medium-to-compact and expanded-to-medium-to-compact fallback order. |
 | `CatchViewportBreakpoint` | `packages/catch_ui/lib/src/patterns/catch_viewport_breakpoint.dart:10` | Selects a component layout below or at/above a caller-owned local-width threshold. Feature-specific ComponentBreakpoints remain app policy. |

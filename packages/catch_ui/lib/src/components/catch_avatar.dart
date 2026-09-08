@@ -6,7 +6,6 @@ import 'package:catch_ui/src/components/catch_avatar_initials.dart';
 import 'package:catch_ui/src/components/catch_avatar_initials_surface.dart';
 import 'package:catch_ui/src/components/catch_avatar_variant.dart';
 import 'package:catch_ui/src/components/catch_avatar_viewport.dart';
-import 'package:catch_ui/src/components/catch_obscured_avatar_content.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_network_image.dart';
@@ -94,6 +93,7 @@ class CatchAvatar extends StatelessWidget {
     final t = CatchTokens.of(context);
     final innerSize = size - borderWidth * 2;
     final Widget content;
+    var obscuresContent = false;
     if (_veiled) {
       content = ColoredBox(
         color: colors!.soft,
@@ -123,7 +123,7 @@ class CatchAvatar extends StatelessWidget {
         ),
       );
     } else if (imageUrl != null && imageUrl!.isNotEmpty) {
-      final image = CatchNetworkImage(
+      content = CatchNetworkImage(
         imageUrl!,
         errorBuilder: (context, _, _) => colors == null
             ? CatchAvatarInitialsSurface(
@@ -138,7 +138,7 @@ class CatchAvatar extends StatelessWidget {
                 dim: dim,
               ),
       );
-      content = obscured ? CatchObscuredAvatarContent(child: image) : image;
+      obscuresContent = obscured;
     } else if (colors != null) {
       content = CatchAvatarInitialsSurface.activity(
         colors: colors!,
@@ -147,21 +147,25 @@ class CatchAvatar extends StatelessWidget {
         dim: dim,
       );
     } else {
-      final placeholder = CatchAvatarInitialsSurface(
+      content = CatchAvatarInitialsSurface(
         name: name,
         initials: initials,
         size: innerSize,
       );
-      content = obscured
-          ? CatchObscuredAvatarContent(child: placeholder)
-          : placeholder;
+      obscuresContent = obscured;
     }
 
-    Widget avatar = CatchAvatarViewport(
-      size: innerSize,
-      variant: variant,
-      child: content,
-    );
+    Widget avatar = obscuresContent
+        ? CatchAvatarViewport.obscured(
+            size: innerSize,
+            variant: variant,
+            child: content,
+          )
+        : CatchAvatarViewport(
+            size: innerSize,
+            variant: variant,
+            child: content,
+          );
     if (borderWidth > 0) {
       avatar = Container(
         width: size,

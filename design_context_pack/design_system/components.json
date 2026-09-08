@@ -13355,18 +13355,20 @@
             "id": "catch.person_avatar.shell",
             "symbol": "CatchAvatarViewport",
             "file": "packages/catch_ui/lib/src/components/catch_avatar_viewport.dart",
-            "summary": "Shared circle/rounded-square clipping and an inscribed label viewport that fits full glyph bounds without wrapping.",
+            "summary": "Avatar clipping, bounded label allocation, and the obscured recipe that filters content inside the same frame.",
             "states": [
               "circle",
               "square",
-              "label-fit"
+              "label-fit",
+              "obscured-circle",
+              "obscured-square"
             ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.person_avatar",
               "parentConceptId": "catch.person_avatar",
               "qualifier": "layout",
-              "decisionRef": "pattern-family:canonical-avatar-recipes"
+              "decisionRef": "pattern-family:avatar-viewport-obscuring"
             },
             "level": "L3",
             "roleNoun": "Viewport",
@@ -13375,23 +13377,7 @@
               "comparedWith": [
                 "catch.person_avatar"
               ],
-              "reason": "The parent Avatar chooses photo, initials, count or veil content and owns its ring and status. This member owns only the clipping geometry and bounded label allocation, shared by initials and count recipes."
-            }
-          },
-          {
-            "id": "catch.person_avatar.obscured_content",
-            "symbol": "CatchObscuredAvatarContent",
-            "file": "packages/catch_ui/lib/src/components/catch_obscured_avatar_content.dart",
-            "summary": "Direct obscured-avatar content renderer.",
-            "states": [
-              "default"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.person_avatar",
-              "parentConceptId": "catch.person_avatar",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.person_avatar"
+              "reason": "The parent Avatar chooses photo, initials, count or veil content and owns its ring and status. This member owns clipping geometry, bounded label allocation and optional content obscuring within that clipping boundary. Obscuring is a viewport recipe, not another identity renderer."
             }
           },
           {

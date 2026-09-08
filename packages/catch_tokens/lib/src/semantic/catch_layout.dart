@@ -200,6 +200,8 @@ abstract final class CatchLayout {
   static const double personAvatarInitialsScale = 0.34;
   static const double avatarCountFontScale = 0.30;
   static const double avatarVeilGlyphScale = 0.38;
+  static const double avatarObscuringBlurSigma = 3.5;
+  static const double avatarObscuringScale = 1.16;
   // A label rectangle stays inside the circular frame, including its corners.
   static const double avatarLabelContentScale = 0.7;
   static const double activityAvatarGradientRotationDegrees = 150.0;

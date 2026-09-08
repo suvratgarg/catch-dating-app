@@ -116,7 +116,6 @@ export 'src/components/catch_notice.dart';
 export 'src/components/catch_notice_data.dart';
 export 'src/components/catch_notice_tone.dart';
 export 'src/components/catch_number_stepper.dart';
-export 'src/components/catch_obscured_avatar_content.dart';
 export 'src/components/catch_option.dart';
 export 'src/components/catch_option_card.dart';
 export 'src/components/catch_option_group.dart';
