@@ -6201,8 +6201,8 @@
         "members": [
           {
             "id": "catch.sheet.picker",
-            "symbol": "CatchPickerSheet",
-            "file": "packages/catch_ui/lib/src/components/catch_picker_sheet.dart",
+            "symbol": "CatchWheelPickerSheet",
+            "file": "packages/catch_ui/lib/src/components/catch_wheel_picker_sheet.dart",
             "summary": "Native wheel-picker sheet with caller-resolved toolbar copy, safe area and cancel/commit callbacks.",
             "states": [
               "date-wheel",
@@ -6215,6 +6215,16 @@
               "parentConceptId": "catch.sheet",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.sheet"
+            },
+            "level": "L3",
+            "roleNoun": "Sheet",
+            "naming": {
+              "useCase": "WheelPicker",
+              "comparedWith": [
+                "catch.sheet",
+                "catch.menu.selection_sheet"
+              ],
+              "reason": "The owning sheet family supplies route-neutral popup surfaces. WheelPicker stages the current wheel value until the explicit Done callback and exposes Cancel without committing; its toolbar and fixed wheel viewport differ from SelectionSheet, which commits immediately when a selected row is tapped. These interaction contracts are complementary, not alternative renderers of the same selected-row control."
             }
           },
           {
@@ -6934,6 +6944,16 @@
               "parentConceptId": "catch.menu",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.menu"
+            },
+            "level": "L3",
+            "roleNoun": "Sheet",
+            "naming": {
+              "useCase": "Selection",
+              "comparedWith": [
+                "catch.menu",
+                "catch.sheet.picker"
+              ],
+              "reason": "The parent Menu owns shared command and choice row rendering. SelectionSheet presents mutually exclusive choices in a bounded phone sheet and returns a value immediately on row selection. Unlike WheelPickerSheet, it has no staged wheel value or separate Done/Cancel transaction; it reuses MenuRow selected, disabled and accessible-choice semantics."
             }
           }
         ],

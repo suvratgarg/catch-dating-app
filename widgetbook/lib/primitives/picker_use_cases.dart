@@ -5,7 +5,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Date and time wheels',
-  type: CatchPickerSheet,
+  type: CatchWheelPickerSheet,
   path: '[Core primitives]/Sheets',
 )
 Widget pickerSheetStates(BuildContext context) {
@@ -31,7 +31,7 @@ Widget pickerSheetStates(BuildContext context) {
                   bottom: mode == CupertinoDatePickerMode.time ? 34 : 0,
                 ),
               ),
-              child: CatchPickerSheet(
+              child: CatchWheelPickerSheet(
                 title: mode == CupertinoDatePickerMode.date
                     ? copy.title
                     : 'Select time',

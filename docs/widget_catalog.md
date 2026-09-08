@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.33.0
+version: 3.34.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -255,7 +255,7 @@ Widgetbook callers.
 | `showCatchConfirmDialog` / `CatchConfirmDialog<T>` | `packages/catch_ui/lib/src/components/catch_confirm_dialog.dart` | Handoff confirm-dialog API and Material card primitive. Receives caller-resolved confirmation defaults through `CatchDialogCopy`, optional danger-filled commit action, centered `CatchSurface` card, 46% ink scrim, 320px max width, and tokenized card padding. |
 | `CatchFormDialog` | `packages/catch_ui/lib/src/components/catch_form_dialog.dart` | Shared Catch modal shell for short form dialogs that need custom content plus tokenized dialog actions. Uses the same `CatchSurface`, scrim, max width, title role, and card padding as confirm dialogs; screens provide canonical inputs/actions such as `CatchField` and `CatchButton.text` rather than raw Material dialog chrome. |
 | `showCatchDatePicker` / `showCatchTimePicker` | `packages/catch_ui/lib/src/components/catch_adaptive_picker.dart` | Shared platform-adaptive date/time picker helpers. iOS renders bottom-wheel `CupertinoDatePicker` sheets with a caller-resolved `CatchPickerCopy` toolbar; Android/non-iOS platforms keep Flutter's Material calendar and clock pickers. |
-| `CatchPickerSheet` | `packages/catch_ui/lib/src/components/catch_picker_sheet.dart` | Native wheel-picker sheet anatomy in the existing sheet family; callers provide title, resolved copy, wheel content, and cancel/commit callbacks. |
+| `CatchWheelPickerSheet` | `packages/catch_ui/lib/src/components/catch_wheel_picker_sheet.dart` | Native wheel-picker sheet anatomy in the existing sheet family; callers provide title, resolved copy, wheel content, and cancel/commit callbacks. |
 | `CatchSliverHeader` | `packages/catch_ui/lib/src/patterns/catch_sliver_header.dart` | Scroll-away title and optional pinned bottom row, preserving the existing SliverToBoxAdapter and SliverPersistentHeader sequence. |
 | `CatchIconAction` | `packages/catch_ui/lib/src/components/catch_icon_action.dart` | Canonical icon-only action with raw-child, glyph, counted and toolbar recipes, shared focus and pointer feedback, typed status/emphasis, optional live announcements and platform target allocation. The toolbar recipe preserves the navigation glyph and required tooltip. |
 | `CatchTopBarPrimaryButton` | `packages/catch_ui/lib/src/components/catch_top_bar_primary_button.dart` | Compact layouts use a plain CatchIconAction with tooltip semantics; wider layouts use a small labelled CatchButton with the same callback. |

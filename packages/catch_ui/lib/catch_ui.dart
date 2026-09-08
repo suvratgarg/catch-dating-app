@@ -134,7 +134,7 @@ export 'src/components/catch_person_row.dart';
 export 'src/components/catch_person_row_copy.dart';
 export 'src/components/catch_person_row_data.dart';
 export 'src/components/catch_picker_copy.dart';
-export 'src/components/catch_picker_sheet.dart';
+export 'src/components/catch_wheel_picker_sheet.dart';
 export 'src/components/catch_primary_rail.dart';
 export 'src/components/catch_privacy_badge.dart';
 export 'src/components/catch_progress_cue.dart';

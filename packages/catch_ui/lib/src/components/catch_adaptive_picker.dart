@@ -1,5 +1,5 @@
 import 'package:catch_ui/src/components/catch_picker_copy.dart';
-import 'package:catch_ui/src/components/catch_picker_sheet.dart';
+import 'package:catch_ui/src/components/catch_wheel_picker_sheet.dart';
 import 'package:catch_ui/src/foundations/catch_adaptive_platform.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,7 @@ Future<DateTime?> showCatchDatePicker({
   return showCupertinoModalPopup<DateTime>(
     context: context,
     semanticsDismissible: true,
-    builder: (context) => CatchPickerSheet(
+    builder: (context) => CatchWheelPickerSheet(
       copy: copy,
       title: title ?? copy.title,
       onCancel: () => Navigator.of(context).pop(),
@@ -79,7 +79,7 @@ Future<TimeOfDay?> showCatchTimePicker({
   return showCupertinoModalPopup<TimeOfDay>(
     context: context,
     semanticsDismissible: true,
-    builder: (context) => CatchPickerSheet(
+    builder: (context) => CatchWheelPickerSheet(
       copy: copy,
       title: title ?? copy.title,
       onCancel: () => Navigator.of(context).pop(),

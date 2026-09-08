@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "163f8e4172594469accb3c33213e9bee0610f8ee4c43cc58177f11522aed039d",
+  "sourceDigest": "c569ede38e5ee1d6b5d0a137bd1e277b96f20037548111f251dd60dec64f3eb2",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "163f8e4172594469accb3c33213e9bee0610f8ee4c43cc58177f11522aed039d",
-    "contractDigest": "163f8e4172594469accb3c33213e9bee0610f8ee4c43cc58177f11522aed039d"
+    "digest": "c569ede38e5ee1d6b5d0a137bd1e277b96f20037548111f251dd60dec64f3eb2",
+    "contractDigest": "c569ede38e5ee1d6b5d0a137bd1e277b96f20037548111f251dd60dec64f3eb2"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "34f3ea95309781d50488ca0a4ce8c0621debfe39d506260c717f12da887d6745",
+    "handoffRequestDigest": "8c6c6d72041909f8fbfdb5a2ca95fab90ca8fc98a1f17cc0dcbc31b773275564",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -416,12 +416,12 @@
         "symbols": [
           "CatchBottomSheetScaffold",
           "CatchDraggableSheetShell",
-          "CatchPickerSheet",
           "CatchShareCardFooter",
           "CatchShareCardSheet",
           "CatchSheetDragIndicator",
           "CatchSheetHeader",
-          "CatchSheetShare"
+          "CatchSheetShare",
+          "CatchWheelPickerSheet"
         ]
       },
       {
@@ -1216,7 +1216,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Sheet",
       "claudeAllowed": true,
-      "contractDigest": "28971dbcf862e163120eb2fa49eb22e7ac87f7d7aa3b9b9eb0fcb7610894e4a9"
+      "contractDigest": "daef274fdc42992383ce421bcc2ff17a2fdfe70b2b2c02b4975f0c28de48881c"
     },
     {
       "contractId": "catch.icon_button",
@@ -1280,7 +1280,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Menu",
       "claudeAllowed": true,
-      "contractDigest": "68654d679fd93cbe727c9e3ecc52cc1f4991982dafef1484b48895f74f920b69"
+      "contractDigest": "a54cf4f4e1e88f59d78ab66c3059fb823ed95b2b1f30c086b1494cce8dcde73a"
     },
     {
       "contractId": "catch.icon_tile",

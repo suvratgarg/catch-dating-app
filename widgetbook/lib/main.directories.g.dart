@@ -4069,7 +4069,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sheets',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchPickerSheet',
+            name: 'CatchWheelPickerSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Date and time wheels',

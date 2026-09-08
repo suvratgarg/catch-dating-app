@@ -1848,6 +1848,40 @@
           "rationale": "Rename the operation without introducing another visual button style or retry alias."
         }
       ]
+    },
+    {
+      "id": "selection-and-wheel-picker-sheets",
+      "title": "Selection and wheel-picker transactions",
+      "intent": "Keep immediate choice selection and staged wheel editing explicit in their Sheet use cases.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.sheet",
+      "qualityReference": "CatchWheelPickerSheet",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None. Preserve both existing interaction models and renderers."
+      ],
+      "members": [
+        {
+          "symbol": "CatchWheelPickerSheet",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns a wheel viewport and explicit Done/Cancel toolbar; callers hold the pending value until commit."
+        },
+        {
+          "symbol": "CatchSelectionSheet",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns an immediate mutually exclusive choice transaction and delegates row semantics and rendering to MenuRow."
+        },
+        {
+          "symbol": "CatchPickerSheet",
+          "disposition": "unify",
+          "target": "CatchWheelPickerSheet",
+          "preview": "not-applicable",
+          "rationale": "The WheelPicker use case names the actual transaction so a generic Picker qualifier cannot hide a competing selection sheet."
+        }
+      ]
     }
   ]
 }

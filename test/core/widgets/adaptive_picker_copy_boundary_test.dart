@@ -88,7 +88,7 @@ void main() {
       await tester.tap(find.text('Open'));
       await pumpFeatureUi(tester);
       expect(find.byType(DatePickerDialog), findsOneWidget);
-      expect(find.byType(CatchPickerSheet), findsNothing);
+      expect(find.byType(CatchWheelPickerSheet), findsNothing);
       expect(find.text(_copy.title), findsNothing);
     },
     variant: TargetPlatformVariant.only(TargetPlatform.android),

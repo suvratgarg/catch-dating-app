@@ -7096,6 +7096,28 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-09",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:selection-and-wheel-picker-sheets",
+      "patternFamilyId": "selection-and-wheel-picker-sheets",
+      "decision": "keep-complementary-operations",
+      "canonicalSymbol": "CatchWheelPickerSheet",
+      "members": [
+        {
+          "name": "CatchPickerSheet",
+          "action": "rename",
+          "target": "CatchWheelPickerSheet"
+        },
+        {
+          "name": "CatchSelectionSheet",
+          "action": "keep",
+          "target": "CatchSelectionSheet"
+        }
+      ],
+      "rationale": "Compared both complete widgets and the date/time callers: wheel edits stay local until Done and Cancel returns no committed value; choice rows return immediately. Their distinct interaction contracts justify WheelPicker and Selection under the same Sheet role. Row rendering remains shared with the Menu family and both existing bodies stay unchanged.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

@@ -7,8 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// Shared wheel-picker sheet with caller-resolved copy and actions.
-class CatchPickerSheet extends StatelessWidget {
-  const CatchPickerSheet({
+class CatchWheelPickerSheet extends StatelessWidget {
+  const CatchWheelPickerSheet({
     super.key,
     required this.title,
     required this.copy,
