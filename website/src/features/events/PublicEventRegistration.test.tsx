@@ -7,6 +7,10 @@ vi.mock("../eventMessaging/EventSmsPreferencePanel", () => ({
   EventSmsPreferencePanel: ({eventId, attendeeId}: {eventId: string; attendeeId: string}) =>
     <section aria-label="Event text preferences">{eventId}:{attendeeId}</section>,
 }));
+vi.mock("../eventMessaging/EventRcsPreferencesPanel", () => ({
+  EventRcsPreferencesPanel: ({eventId, attendeeId}: {eventId: string; attendeeId: string}) =>
+    <section aria-label="Event RCS preferences">{eventId}:{attendeeId}</section>,
+}));
 import {PublicEventRegistration} from "./PublicEventRegistration";
 import {eventDetailCopy} from "../../content/events";
 const copy = eventDetailCopy.hero.webRegistration;
@@ -19,6 +23,7 @@ beforeEach(() => {
 async function register() {
   render(<PublicEventRegistration eventId="event-1" />);
   expect(screen.queryByRole("region", {name: "Event text preferences"})).toBeNull();
+  expect(screen.queryByRole("region", {name: "Event RCS preferences"})).toBeNull();
   fireEvent.change(screen.getByLabelText(copy.nameLabel), {target: {value: "Fixture Guest"}});
   fireEvent.change(screen.getByLabelText(copy.phoneLabel), {target: {value: "+919999999999"}});
   fireEvent.click(screen.getByRole("button", {name: copy.sendCodeAction}));
@@ -31,6 +36,8 @@ it.each(["registered", "alreadyRegistered"])("offers separate event texts after 
   await register();
   expect((await screen.findByRole("region", {name: "Event text preferences"})).textContent)
     .toBe("event-1:verified-guest");
+  expect((await screen.findByRole("region", {name: "Event RCS preferences"})).textContent)
+    .toBe("event-1:verified-guest");
   expect(api.register.mock.calls[0][0].organizerUpdates)
     .toEqual({whatsapp: false, sms: false, termsVersion: "organizer-updates-v1"});
 });
@@ -39,4 +46,5 @@ it("does not offer event-service texts for a waitlist place", async () => {
   await register();
   await screen.findByText(copy.waitlisted);
   expect(screen.queryByRole("region", {name: "Event text preferences"})).toBeNull();
+  expect(screen.queryByRole("region", {name: "Event RCS preferences"})).toBeNull();
 });

@@ -1,3 +1,4 @@
+import {EventRcsPreferencesPanel} from "../eventMessaging/EventRcsPreferencesPanel";
 import {type FormEvent, useEffect, useId, useRef, useState} from "react";
 import {EventSmsPreferencePanel} from "../eventMessaging/EventSmsPreferencePanel";
 import {eventDetailCopy} from "../../content/events";
@@ -177,7 +178,10 @@ export function PublicEventRegistration({
       ) : null}
       <FormStatus status={status} />
       {stage === "success" && registeredScope?.eventId === eventId ?
-        <EventSmsPreferencePanel {...registeredScope} /> : null}
+        <>
+          <EventSmsPreferencePanel {...registeredScope} />
+          <EventRcsPreferencesPanel {...registeredScope} />
+        </> : null}
       <EventRegistrationPrivacy>{copy.privacy}</EventRegistrationPrivacy>
     </EventRegistrationForm>
   );

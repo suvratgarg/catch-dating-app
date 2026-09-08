@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.72.0
+version: 1.73.0
 updated: 2026-09-08
 owner: recursive_audit_loop
 status: active
@@ -1550,8 +1550,8 @@ provenance. Its allowed result contains a granted permission but no spending,
 sender-readiness, capability or send authority. Renaming the same provider
 agent preserves existing consent; a newly reviewed grant captures the updated
 name. Tests cover stale review hashes, source replacement, rollback, receipt
-tampering, withdrawal, concurrent retries and a STOP racing a grant. Guest-page
-preference UI, audited provisioning, deployment and activation remain open.
+tampering, withdrawal, concurrent retries and a STOP racing a grant. Audited provisioning, deployment and activation remain
+open.
 No live sender is activated by these callables.
 
 `listEventRcsPreferences` discovers the saved RCS sender for a verified
@@ -1577,8 +1577,29 @@ Each page rechecks participant ownership. A current sender is excluded from the
 previous-sender list. Discovery neither grants nor withdraws permission, creates
 no runtime work and performs no provider I/O. Tests cover sender changes,
 paused configuration, participant relinking, stale source evidence, bounded
-history and real Firestore pagination. The verified opt-in page and its
-progressive disclosure of previous preferences remain the next client step.
+history and real Firestore pagination.
+
+`EventRcsPreferencesPanel` composes this discovery and reviewed-consent flow
+on successful public registration and the guest venue/live runtime, using only
+the authenticated participant's event and attendee scope. It shows the saved
+sender's display name, event title, verified phone suffix and server consent
+text before offering an explicit opt-in. An unconfigured event with no previous
+preferences hides the optional panel. Unavailable offers explain their current
+reason; enabled preferences retain withdrawal when the sender is paused.
+
+Earlier senders are disclosed on demand, one preference at a time, with explicit
+paging past filtered history. Those cards permit withdrawal only; discovery is
+never enrollment. The page-session sender selection remains stable during a
+review. Preference reads refresh on focus/reconnect and while visible, but pause
+while a save is unresolved. Submission binds the exact displayed revision and
+review hash, including STOP changes at the same revision. Account epochs and
+keyed event/attendee instances fence delayed replies; private cache is discarded
+on unmount. Unknown or malformed write responses retain the original request
+for an exact retry and disable sender navigation. Closed response validation
+rejects foreign scopes, unexpected data and non-advancing cursors before cache.
+SMS and WhatsApp preferences remain independent, and rehearsal never mounts
+this live controller. Consumer app enrollment, audited provisioning, deployment
+and activation remain separate work.
 
 ### RCS message-link withdrawal
 

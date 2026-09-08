@@ -1,3 +1,8 @@
+import type {GetEventRcsPreferenceCallablePayload} from "../../functions/src/shared/generated/getEventRcsPreferenceInput";
+import type {SetEventRcsPreferenceCallablePayload} from "../../functions/src/shared/generated/setEventRcsPreferenceInput";
+import type {EventRcsPreferenceCallableResponse} from "../../functions/src/shared/generated/eventRcsPreferenceOutput";
+import type {ListEventRcsPreferencesCallablePayload} from "../../functions/src/shared/generated/listEventRcsPreferencesInput";
+import type {ListEventRcsPreferencesCallableResponse} from "../../functions/src/shared/generated/listEventRcsPreferencesOutput";
 import type {GetEventRcsWithdrawalCallablePayload} from "../../functions/src/shared/generated/getEventRcsWithdrawalInput";
 import type {WithdrawEventRcsCallablePayload} from "../../functions/src/shared/generated/withdrawEventRcsInput";
 import type {EventRcsWithdrawalCallableResponse} from "../../functions/src/shared/generated/eventRcsWithdrawalOutput";
@@ -1036,4 +1041,19 @@ export async function withdrawEventRcs(
 ): Promise<EventRcsWithdrawalCallableResponse> {
   return invokeWebsiteCallable("withdrawEventRcs", payload,
     eventRuntimeFirebaseConfigured, "Event RCS withdrawal");
+}
+
+export async function listEventRcsPreferences(payload: ListEventRcsPreferencesCallablePayload): Promise<ListEventRcsPreferencesCallableResponse> {
+  return invokeWebsiteCallable("listEventRcsPreferences", payload,
+    eventRuntimeFirebaseConfigured, "Event RCS preferences");
+}
+
+export async function getEventRcsPreference(payload: GetEventRcsPreferenceCallablePayload): Promise<EventRcsPreferenceCallableResponse> {
+  return invokeWebsiteCallable("getEventRcsPreference", payload,
+    eventRuntimeFirebaseConfigured, "Event RCS preferences");
+}
+
+export async function setEventRcsPreference(payload: SetEventRcsPreferenceCallablePayload): Promise<EventRcsPreferenceCallableResponse> {
+  return invokeWebsiteCallable("setEventRcsPreference", payload,
+    eventRuntimeFirebaseConfigured, "Event RCS preferences");
 }

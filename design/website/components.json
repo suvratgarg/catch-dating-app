@@ -1,7 +1,7 @@
 {
   "$schema": "./website.components.schema.json",
   "version": 95,
-  "updated": "2026-08-19",
+  "updated": "2026-09-08",
   "owner": "marketing_website",
   "sourceOfTruth": {
     "architecture": "docs/marketing_website_architecture.md",
@@ -3375,6 +3375,64 @@
         ]
       },
       "notes": "Neutral vertical spacing between event sections without notice-specific paragraph styling."
+    },
+    {
+      "id": "event_rcs_preferences_panel",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "event_detail_canonical",
+        "event_invite"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventRcsPreferencesPanel.tsx",
+      "exportName": "EventRcsPreferencesPanel",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "planned",
+        "states": [
+          "offer",
+          "enabled",
+          "earlier",
+          "unavailable",
+          "uncertain",
+          "loading",
+          "error"
+        ]
+      },
+      "notes": "Verified, sender-specific RCS preference review. Earlier senders are disclosed separately for withdrawal. Exact reviewed consent and uncertain request identity are preserved."
+    },
+    {
+      "id": "event_rcs_preferences_card",
+      "kind": "supporting-component",
+      "routeIds": [
+        "event_runtime",
+        "event_detail_canonical",
+        "event_invite"
+      ],
+      "owner": "features/eventMessaging",
+      "source": "website/src/features/eventMessaging/EventRcsPreferencesPanel.tsx",
+      "exportName": "EventRcsPreferencesCard",
+      "css": [
+        "website/src/styles/event-runtime.css"
+      ],
+      "storybook": {
+        "status": "ready",
+        "states": [
+          "offer",
+          "enabled",
+          "earlier",
+          "unavailable",
+          "uncertain",
+          "loading",
+          "error"
+        ],
+        "story": "website/src/stories/EventRcsPreferences.stories.tsx",
+        "exportName": "Offer"
+      },
+      "notes": "Verified, sender-specific RCS preference review. Earlier senders are disclosed separately for withdrawal. Exact reviewed consent and uncertain request identity are preserved."
     }
   ]
 }
