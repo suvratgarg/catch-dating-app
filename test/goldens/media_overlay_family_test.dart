@@ -6,6 +6,37 @@ import 'package:flutter_test/flutter_test.dart';
 import 'support/golden_pump.dart';
 
 void main() {
+  testWidgets('transparent thumbnail recipe paints and lets taps through', (
+    tester,
+  ) async {
+    var taps = 0;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Center(
+          child: SizedBox(
+            width: 200,
+            height: 120,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                GestureDetector(
+                  onTap: () => taps++,
+                  child: const ColoredBox(color: Colors.white),
+                ),
+                const CatchMediaOverlay.thumbnail(
+                  variant: CatchMediaOverlayVariant.none,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    await tester.tapAt(tester.getCenter(find.byType(CatchMediaOverlay)));
+    expect(taps, 1);
+  });
+
   testWidgets(
     'media readability preserves every production gradient',
     (tester) async {
@@ -20,14 +51,14 @@ void main() {
             runSpacing: 16,
             children: [
               for (final overlay in [
-                const CatchScrim.detailHero(),
-                const CatchScrim.photoFrame(),
-                CatchScrim.heroTint(base: CatchTokens.of(context).ink),
-                const CatchEventThumbnailScrimOverlay(
-                  style: CatchEventThumbnailScrim.bottom,
+                const CatchMediaOverlay.detailHero(),
+                const CatchMediaOverlay.photoFrame(),
+                CatchMediaOverlay.heroTint(base: CatchTokens.of(context).ink),
+                const CatchMediaOverlay.thumbnail(
+                  variant: CatchMediaOverlayVariant.bottom,
                 ),
-                const CatchEventThumbnailScrimOverlay(
-                  style: CatchEventThumbnailScrim.full,
+                const CatchMediaOverlay.thumbnail(
+                  variant: CatchMediaOverlayVariant.full,
                 ),
               ])
                 SizedBox(

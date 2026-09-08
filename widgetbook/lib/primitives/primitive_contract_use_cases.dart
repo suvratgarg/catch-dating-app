@@ -8695,7 +8695,7 @@ Widget catchDetailHeroFallbackContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchScrim,
+  type: CatchMediaOverlay,
   path: '[Core primitives]/Media',
 )
 Widget catchScrimContractStates(BuildContext context) {
@@ -8703,9 +8703,16 @@ Widget catchScrimContractStates(BuildContext context) {
   final walking = ActivityPalette.of(context).forKind(ActivityKind.walking);
 
   return _ContractScreen(
-    title: 'CatchScrim',
+    title: 'CatchMediaOverlay',
     contractId: 'catch.detail_media.scrim',
-    states: ['detail-hero', 'photo-frame', 'hero-tint'],
+    states: [
+      'detail-hero',
+      'photo-frame',
+      'hero-tint',
+      'bottom',
+      'full',
+      'none',
+    ],
     children: [
       _StateCard(
         label: 'detail hero',
@@ -8714,7 +8721,7 @@ Widget catchScrimContractStates(BuildContext context) {
           height: WidgetbookPreviewLayout.mediaPanelHeight,
           child: DecoratedBox(
             decoration: BoxDecoration(color: CatchTokens.editorialBlack),
-            child: CatchScrim.detailHero(),
+            child: CatchMediaOverlay.detailHero(),
           ),
         ),
       ),
@@ -8731,7 +8738,7 @@ Widget catchScrimContractStates(BuildContext context) {
                 colors: [walking.accent, CatchTokens.editorialBlack],
               ),
             ),
-            child: CatchScrim.photoFrame(),
+            child: CatchMediaOverlay.photoFrame(),
           ),
         ),
       ),
@@ -8742,7 +8749,38 @@ Widget catchScrimContractStates(BuildContext context) {
           height: WidgetbookPreviewLayout.tallNarrowPanelHeight,
           child: DecoratedBox(
             decoration: BoxDecoration(color: t.ink),
-            child: CatchScrim.heroTint(base: t.ink),
+            child: CatchMediaOverlay.heroTint(base: t.ink),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'scrim styles',
+        child: _InlineWrap(
+          children: [
+            SizedBox(
+              width: WidgetbookPreviewLayout.thumbnailWidth,
+              height: WidgetbookPreviewLayout.thumbnailHeight,
+              child: CatchMediaOverlay.thumbnail(
+                variant: CatchMediaOverlayVariant.bottom,
+              ),
+            ),
+            SizedBox(
+              width: WidgetbookPreviewLayout.thumbnailWidth,
+              height: WidgetbookPreviewLayout.thumbnailHeight,
+              child: CatchMediaOverlay.thumbnail(
+                variant: CatchMediaOverlayVariant.full,
+              ),
+            ),
+          ],
+        ),
+      ),
+      const _StateCard(
+        label: 'none',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.thumbnailWidth,
+          height: WidgetbookPreviewLayout.thumbnailHeight,
+          child: CatchMediaOverlay.thumbnail(
+            variant: CatchMediaOverlayVariant.none,
           ),
         ),
       ),
@@ -8785,42 +8823,6 @@ Widget catchEventThumbnailActivityFallbackContractStates(BuildContext context) {
               child: CatchEventThumbnailActivityFallback(
                 activityKind: ActivityKind.pickleball,
                 iconSize: 92,
-              ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchEventThumbnailScrimOverlay,
-  path: '[Core primitives]/Media',
-)
-Widget catchEventThumbnailScrimOverlayContractStates(BuildContext context) {
-  return const _ContractScreen(
-    title: 'CatchEventThumbnailScrimOverlay',
-    contractId: 'catch.event_card.event_thumbnail.scrim',
-    states: ['bottom', 'full'],
-    children: [
-      _StateCard(
-        label: 'scrim styles',
-        child: _InlineWrap(
-          children: [
-            SizedBox(
-              width: WidgetbookPreviewLayout.thumbnailWidth,
-              height: WidgetbookPreviewLayout.thumbnailHeight,
-              child: CatchEventThumbnailScrimOverlay(
-                style: CatchEventThumbnailScrim.bottom,
-              ),
-            ),
-            SizedBox(
-              width: WidgetbookPreviewLayout.thumbnailWidth,
-              height: WidgetbookPreviewLayout.thumbnailHeight,
-              child: CatchEventThumbnailScrimOverlay(
-                style: CatchEventThumbnailScrim.full,
               ),
             ),
           ],

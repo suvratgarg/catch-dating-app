@@ -70,6 +70,26 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Media readability overlay
+
+Owner-delegated source and rendered review: `media-readability-canonical-overlay`
+in the existing pattern families and decisions. `CatchMediaOverlay` owns the
+shared gradient renderer with retained hero and thumbnail named recipes.
+
+- [x] Capture all five production gradient recipes before edits; both original
+  images remain unchanged through consecutive comparisons.
+- [x] Remove the thumbnail-specific Widget and registry member; event data and
+  image/fallback selection remain with the existing app component.
+- [x] Reproduce the direct-mount `none` variant crash against source identical to
+  origin/main (`colors.length >= 2`), then repair it with transparent stops.
+  The regression verifies successful painting and pointer transparency.
+- [x] Four focused root tests pass; five gallery/enumeration tests pass twice,
+  including the unchanged production thumbnail page. All 29 reviewed naming
+  entries pass the deterministic validator.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
 ## Phase 4 — Primitive roles and typed control status
 
 Owner-delegated source and rendered review: `primitive-role-boundaries` in the

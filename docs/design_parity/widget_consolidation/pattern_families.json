@@ -960,6 +960,41 @@
           "rationale": "Stops focus reveal propagation at a horizontal pager page."
         }
       ]
+    },
+    {
+      "id": "media-readability-canonical-overlay",
+      "title": "Canonical media readability overlay",
+      "intent": "Use one pointer-transparent gradient renderer with named hero, photo-frame and thumbnail recipes.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.detail_media",
+      "qualityReference": "CatchMediaOverlay",
+      "decisionSource": "owner-delegated:2026-09-08 source and rendered review",
+      "acceptedVisualDelta": [
+        "None for existing production recipes. The formerly invalid none thumbnail variant renders transparently when mounted directly."
+      ],
+      "members": [
+        {
+          "symbol": "CatchMediaOverlay",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns gradient paint and pointer transparency; callers keep media selection and layout."
+        },
+        {
+          "symbol": "CatchScrim",
+          "disposition": "unify",
+          "target": "CatchMediaOverlay",
+          "preview": "not-applicable",
+          "rationale": "Existing named hero and photo recipes move to the explicit Overlay role."
+        },
+        {
+          "symbol": "CatchEventThumbnailScrimOverlay",
+          "disposition": "unify",
+          "target": "CatchMediaOverlay.thumbnail",
+          "preview": "not-applicable",
+          "rationale": "Same renderer with thumbnail gradient stops; event data is absent from this primitive."
+        }
+      ]
     }
   ]
 }

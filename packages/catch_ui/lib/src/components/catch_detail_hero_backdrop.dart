@@ -1,7 +1,7 @@
 import 'package:catch_ui/src/components/catch_detail_hero_fallback.dart';
 import 'package:catch_ui/src/primitives/catch_graded_image.dart';
 import 'package:catch_ui/src/primitives/catch_network_image.dart';
-import 'package:catch_ui/src/primitives/catch_scrim.dart';
+import 'package:catch_ui/src/primitives/catch_media_overlay.dart';
 import 'package:flutter/material.dart';
 
 class CatchDetailHeroBackdrop extends StatelessWidget {
@@ -36,7 +36,7 @@ class CatchDetailHeroBackdrop extends StatelessWidget {
           )
         else
           const CatchDetailHeroFallback(),
-        if (showScrim) const CatchScrim.detailHero(),
+        if (showScrim) const CatchMediaOverlay.detailHero(),
       ],
     );
   }

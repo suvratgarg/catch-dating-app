@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "bf36a70c2610e8393c221fbdacc1a434af70b1c7a717d3cac52725dd513e3df3",
+  "sourceDigest": "79de091318ae94c054301424078bf4f41e24db3edb5844ddc29790841b833288",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "bf36a70c2610e8393c221fbdacc1a434af70b1c7a717d3cac52725dd513e3df3",
-    "contractDigest": "bf36a70c2610e8393c221fbdacc1a434af70b1c7a717d3cac52725dd513e3df3"
+    "digest": "79de091318ae94c054301424078bf4f41e24db3edb5844ddc29790841b833288",
+    "contractDigest": "79de091318ae94c054301424078bf4f41e24db3edb5844ddc29790841b833288"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "7c934bb3e05d5680c7e491887a51e06db5ea945b2cb898380fb48d151ca80ea2",
+    "handoffRequestDigest": "b9af4b4e17e72d92b14fd1f18b27c9cb8cc28f127d65bdd364e25e3d0af97152",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 303,
+    "publicClassCount": 302,
     "conceptCount": 71,
-    "memberCount": 214,
-    "membersPerConcept": 3.01,
+    "memberCount": 213,
+    "membersPerConcept": 3,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 71,
-      "member": 214,
+      "member": 213,
       "screen": 15
     },
     "collisionCount": 38,
@@ -168,7 +168,7 @@
         "symbols": [
           "CatchDetailHeroBackdrop",
           "CatchDetailHeroFallback",
-          "CatchScrim"
+          "CatchMediaOverlay"
         ]
       },
       {
@@ -212,7 +212,6 @@
           "CatchEventCard",
           "CatchEventThumbnail",
           "CatchEventThumbnailActivityFallback",
-          "CatchEventThumbnailScrimOverlay",
           "CatchTicketClock",
           "CatchTicketStatusBadge",
           "EventActivityBackdrop",
@@ -2508,7 +2507,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "EventCard",
       "claudeAllowed": true,
-      "contractDigest": "d2811c48ac04a27a864411757b797596d19cbf31c10da00e564083fc0c7d345b"
+      "contractDigest": "59b421ff0e5199243e2dcf6a24d3040f06e0e555337346d52436b0b81fe52ba6"
     },
     {
       "contractId": "catch.graded_image",
@@ -2572,7 +2571,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "DetailMedia",
       "claudeAllowed": true,
-      "contractDigest": "7f3fa00b7ef28fab1de63a462ca36758ab9e511abd8a568f3ad1097d41257db3"
+      "contractDigest": "549373a9d32665f1a8f06759138426c2f6c414629e6e7c42d954b0bfd0e9f26f"
     },
     {
       "contractId": "catch.activity_map_pin",

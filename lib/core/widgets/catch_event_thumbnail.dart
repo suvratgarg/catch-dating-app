@@ -19,7 +19,7 @@ class CatchEventThumbnail extends StatelessWidget {
     required this.photoUrl,
     required this.pace,
     required this.activityKind,
-    this.scrim = CatchEventThumbnailScrim.bottom,
+    this.scrim = CatchMediaOverlayVariant.bottom,
     this.fit = BoxFit.cover,
     this.iconAlignment = Alignment.bottomRight,
     this.preferActivityArtwork = false,
@@ -31,7 +31,7 @@ class CatchEventThumbnail extends StatelessWidget {
   final String? photoUrl;
   final PaceLevel pace;
   final ActivityKind activityKind;
-  final CatchEventThumbnailScrim scrim;
+  final CatchMediaOverlayVariant scrim;
   final BoxFit fit;
   final Alignment iconAlignment;
   final bool preferActivityArtwork;
@@ -80,8 +80,8 @@ class CatchEventThumbnail extends StatelessWidget {
             iconOpacity: fallbackIconOpacity,
             patternOpacity: fallbackPatternOpacity,
           ),
-        if (scrim != CatchEventThumbnailScrim.none)
-          CatchEventThumbnailScrimOverlay(style: scrim),
+        if (scrim != CatchMediaOverlayVariant.none)
+          CatchMediaOverlay.thumbnail(variant: scrim),
       ],
     );
   }

@@ -2378,7 +2378,7 @@ Widget catchEventThumbnailCatalogStates(BuildContext context) {
                 photoUrl: null,
                 pace: PaceLevel.moderate,
                 activityKind: ActivityKind.dinner,
-                scrim: CatchEventThumbnailScrim.full,
+                scrim: CatchMediaOverlayVariant.full,
               ),
             ),
             _ThumbnailBox(
@@ -2386,7 +2386,7 @@ Widget catchEventThumbnailCatalogStates(BuildContext context) {
                 photoUrl: null,
                 pace: PaceLevel.fast,
                 activityKind: ActivityKind.pickleball,
-                scrim: CatchEventThumbnailScrim.none,
+                scrim: CatchMediaOverlayVariant.none,
               ),
             ),
           ],

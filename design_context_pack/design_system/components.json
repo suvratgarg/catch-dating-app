@@ -14065,23 +14065,6 @@
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.event_card"
             }
-          },
-          {
-            "id": "catch.event_card.event_thumbnail.scrim",
-            "symbol": "CatchEventThumbnailScrimOverlay",
-            "file": "packages/catch_ui/lib/src/components/catch_event_thumbnail_scrim_overlay.dart",
-            "summary": "Presentation-only thumbnail scrim renderer; event data and fallback selection stay with the app.",
-            "states": [
-              "bottom",
-              "full"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.event_card",
-              "parentConceptId": "catch.event_card",
-              "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.event_card"
-            }
           }
         ],
         "accessibility": {
@@ -14320,7 +14303,9 @@
           "CatchGradedImage",
           "CatchNetworkImage"
         ],
-        "goldens": [],
+        "goldens": [
+          "media_overlay_family"
+        ],
         "members": [
           {
             "id": "catch.detail_media.fallback",
@@ -14340,20 +14325,32 @@
           },
           {
             "id": "catch.detail_media.scrim",
-            "symbol": "CatchScrim",
-            "file": "packages/catch_ui/lib/src/primitives/catch_scrim.dart",
-            "summary": "Shared photo scrim renderer for detail heroes, photo frames, and profile hero tinting.",
+            "symbol": "CatchMediaOverlay",
+            "file": "packages/catch_ui/lib/src/primitives/catch_media_overlay.dart",
+            "summary": "Pointer-transparent readability gradients for hero, photo-frame and thumbnail recipes; image loading and event data remain with their callers.",
             "states": [
               "detail-hero",
               "photo-frame",
-              "hero-tint"
+              "hero-tint",
+              "bottom",
+              "full",
+              "none"
             ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.detail_media",
               "parentConceptId": "catch.detail_media",
               "qualifier": "variant",
-              "decisionRef": "contract-family:catch.detail_media"
+              "decisionRef": "pattern-family:media-readability-canonical-overlay"
+            },
+            "level": "L2",
+            "roleNoun": "Overlay",
+            "naming": {
+              "useCase": "Media",
+              "comparedWith": [
+                "catch.detail_media"
+              ],
+              "reason": "Owns only gradient paint and pointer transparency over media. The parent composes images, fallback and hero layout; thumbnail and full-size media share this renderer through named recipes."
             }
           }
         ],

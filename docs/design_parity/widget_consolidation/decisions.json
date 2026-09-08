@@ -6582,6 +6582,28 @@
       "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
       "date": "2026-09-08",
       "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:media-readability-canonical-overlay",
+      "patternFamilyId": "media-readability-canonical-overlay",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchMediaOverlay",
+      "members": [
+        {
+          "name": "CatchScrim",
+          "action": "absorb",
+          "target": "CatchMediaOverlay"
+        },
+        {
+          "name": "CatchEventThumbnailScrimOverlay",
+          "action": "absorb",
+          "target": "CatchMediaOverlay.thumbnail"
+        }
+      ],
+      "rationale": "The two implementations used identical pointer-transparent vertical-gradient rendering and differed only in recipe data. Keep hero, photo-frame and tinted-hero constructors, absorb thumbnail variants, and keep event/image selection in the app. Both original gradient images match twice; five gallery/enumeration tests also pass twice, including unchanged production thumbnail pages. A new direct-mount regression first failed on the unchanged origin/main implementation because its none variant supplied only one gradient color; the canonical recipe uses two transparent stops and the same test now proves successful painting and pointer transparency. Remove the duplicate Widget and registry member; every supported recipe is on the canonical gallery page.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
     }
   ]
 }

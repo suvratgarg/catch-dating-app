@@ -281,7 +281,7 @@ class EventDetailTicketSurface extends StatelessWidget {
               photoUrl: event.photoUrl,
               pace: event.pace,
               activityKind: event.activityKind,
-              scrim: CatchEventThumbnailScrim.none,
+              scrim: CatchMediaOverlayVariant.none,
               iconAlignment: Alignment.centerRight,
               fallbackIconSize: CatchLayout.eventHeroBackdropIconSize,
               fallbackIconOpacity: 0.15,

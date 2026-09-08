@@ -15,7 +15,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
 
     expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
-    expect(find.byType(CatchScrim), findsOneWidget);
+    expect(find.byType(CatchMediaOverlay), findsOneWidget);
 
     await tester.pumpWidget(
       _wrap(
@@ -28,7 +28,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
 
     expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
-    expect(find.byType(CatchScrim), findsNothing);
+    expect(find.byType(CatchMediaOverlay), findsNothing);
   });
 
   testWidgets('CatchEventThumbnail composes fallback and scrim renderers', (
@@ -49,7 +49,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
 
     expect(find.byType(CatchEventThumbnailActivityFallback), findsOneWidget);
-    expect(find.byType(CatchEventThumbnailScrimOverlay), findsOneWidget);
+    expect(find.byType(CatchMediaOverlay), findsOneWidget);
 
     await tester.pumpWidget(
       _wrap(
@@ -60,14 +60,14 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
             photoUrl: null,
             pace: PaceLevel.easy,
             activityKind: ActivityKind.dinner,
-            scrim: CatchEventThumbnailScrim.none,
+            scrim: CatchMediaOverlayVariant.none,
           ),
         ),
       ),
     );
 
     expect(find.byType(CatchEventThumbnailActivityFallback), findsOneWidget);
-    expect(find.byType(CatchEventThumbnailScrimOverlay), findsNothing);
+    expect(find.byType(CatchMediaOverlay), findsNothing);
   });
 
   testWidgets('CatchMetricStrip renders compact labeled data pairs', (
