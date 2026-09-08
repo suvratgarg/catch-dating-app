@@ -528,7 +528,7 @@ The highest-leverage improvement. Generalize the consumer profile pattern
 inline editors) into core so consumer, host, and onboarding share one form
 orchestration stack.
 
-1. New `lib/core/forms/catch_form_descriptors.dart` (names ratified by owner
+1. New `packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart` (names ratified by owner
    on review of this doc):
 
    ```dart

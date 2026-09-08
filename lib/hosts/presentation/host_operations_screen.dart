@@ -14,7 +14,6 @@ import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/forms/catch_form_row_list.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';

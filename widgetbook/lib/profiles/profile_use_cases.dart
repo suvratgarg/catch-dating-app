@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/forms/catch_form_multi_choice_row_editor.dart';
 import 'package:catch_dating_app/core/forms/catch_form_range_row_editor.dart';
 import 'package:catch_dating_app/core/forms/catch_form_row_list.dart';

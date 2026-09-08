@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/forms/catch_form_row_list.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';

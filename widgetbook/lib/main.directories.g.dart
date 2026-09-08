@@ -77,6 +77,8 @@ import 'package:widgetbook_workspace/primitives/field_text_entry_use_cases.dart'
     as _widgetbook_workspace_primitives_field_text_entry_use_cases;
 import 'package:widgetbook_workspace/primitives/field_value_content_use_cases.dart'
     as _widgetbook_workspace_primitives_field_value_content_use_cases;
+import 'package:widgetbook_workspace/primitives/form_descriptor_use_cases.dart'
+    as _widgetbook_workspace_primitives_form_descriptor_use_cases;
 import 'package:widgetbook_workspace/primitives/form_protocol_use_cases.dart'
     as _widgetbook_workspace_primitives_form_protocol_use_cases;
 import 'package:widgetbook_workspace/primitives/header_component_use_cases.dart'
@@ -1955,6 +1957,17 @@ final directories = <_widgetbook.WidgetbookNode>[
       _widgetbook.WidgetbookFolder(
         name: 'Form rows',
         children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormRowDescriptor',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed rows and commit modes',
+                builder:
+                    _widgetbook_workspace_primitives_form_descriptor_use_cases
+                        .formDescriptorStates,
+              ),
+            ],
+          ),
           _widgetbook.WidgetbookComponent(
             name: 'CatchFormRowScope',
             useCases: [

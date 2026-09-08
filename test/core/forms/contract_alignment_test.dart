@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/update_club_patch.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/forms/catch_form_row_list.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';

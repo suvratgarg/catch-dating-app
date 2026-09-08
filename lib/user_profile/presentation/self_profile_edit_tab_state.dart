@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'

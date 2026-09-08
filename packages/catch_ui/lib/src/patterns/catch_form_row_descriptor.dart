@@ -1,11 +1,18 @@
-import 'package:catch_dating_app/core/forms/catch_form_multi_choice_row_editor.dart';
-import 'package:catch_dating_app/core/forms/catch_form_range_row_editor.dart';
-import 'package:catch_dating_app/core/forms/catch_form_single_choice_row_editor.dart';
-import 'package:catch_dating_app/core/forms/catch_form_text_row_editor.dart';
-import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+/// Type-preserving dispatch for the six form row descriptions.
+///
+/// Callers choose the result type; row descriptions contain no render methods.
+typedef CatchFormRowVisitor<P, R> = ({
+  R Function(CatchFormReadRow<P> row) read,
+  R Function(CatchFormTextRow<P> row) text,
+  R Function<T>(CatchFormSingleChoiceRow<P, T> row) singleChoice,
+  R Function<T>(CatchFormMultiChoiceRow<P, T> row) multiChoice,
+  R Function(CatchFormRangeRow<P> row) range,
+  R Function(CatchFormCustomRow<P> row) custom,
+});
 
 /// P is the patch type committed by the owning surface.
 sealed class CatchFormRowDescriptor<P> {
@@ -21,11 +28,8 @@ sealed class CatchFormRowDescriptor<P> {
 
   String get accordionKey => id;
 
-  Widget buildRow(
-    BuildContext context,
-    CatchFormRowScope<P> scope,
-    CatchFormErrorText errorText,
-  );
+  /// Dispatches without erasing a choice row's item type or producing UI.
+  R accept<R>(CatchFormRowVisitor<P, R> visitor);
 }
 
 final class CatchFormReadRow<P> extends CatchFormRowDescriptor<P> {
@@ -41,19 +45,7 @@ final class CatchFormReadRow<P> extends CatchFormRowDescriptor<P> {
   final int bodyMaxLines;
 
   @override
-  Widget buildRow(
-    BuildContext context,
-    CatchFormRowScope<P> scope,
-    CatchFormErrorText errorText,
-  ) {
-    return CatchField.read(
-      copy: scope.fieldCopy,
-      icon: icon,
-      title: label,
-      body: body,
-      bodyMaxLines: bodyMaxLines,
-    );
-  }
+  R accept<R>(CatchFormRowVisitor<P, R> visitor) => visitor.read(this);
 }
 
 final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
@@ -125,24 +117,7 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
   );
 
   @override
-  Widget buildRow(
-    BuildContext context,
-    CatchFormRowScope<P> scope,
-    CatchFormErrorText errorText,
-  ) {
-    assert(
-      maxLength == null ||
-          contract?.maxLength == null ||
-          maxLength! <= contract!.maxLength!,
-      'An explicit maxLength cannot exceed the schema contract.',
-    );
-    return CatchFormTextRowEditor<P>(
-      key: ValueKey('catch-form-text-$id'),
-      descriptor: this,
-      scope: scope,
-      errorText: errorText,
-    );
-  }
+  R accept<R>(CatchFormRowVisitor<P, R> visitor) => visitor.text(this);
 }
 
 final class CatchFormSingleChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
@@ -181,22 +156,8 @@ final class CatchFormSingleChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
   String get accordionKey => fieldName ?? id;
 
   @override
-  Widget buildRow(
-    BuildContext context,
-    CatchFormRowScope<P> scope,
-    CatchFormErrorText errorText,
-  ) {
-    assert(
-      contract?.enumValues == null || contractValue != null,
-      'Schema-enumerated single-choice rows require contractValue.',
-    );
-    return CatchFormSingleChoiceRowEditor<P, T>(
-      key: ValueKey('catch-form-single-choice-$id'),
-      descriptor: this,
-      scope: scope,
-      errorText: errorText,
-    );
-  }
+  R accept<R>(CatchFormRowVisitor<P, R> visitor) =>
+      visitor.singleChoice<T>(this);
 }
 
 final class CatchFormMultiChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
@@ -237,22 +198,8 @@ final class CatchFormMultiChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
   String get accordionKey => fieldName ?? id;
 
   @override
-  Widget buildRow(
-    BuildContext context,
-    CatchFormRowScope<P> scope,
-    CatchFormErrorText errorText,
-  ) {
-    assert(
-      contract?.itemEnumValues == null || contractValue != null,
-      'Schema-enumerated multi-choice rows require contractValue.',
-    );
-    return CatchFormMultiChoiceRowEditor<P, T>(
-      key: ValueKey('catch-form-multi-choice-$id'),
-      descriptor: this,
-      scope: scope,
-      errorText: errorText,
-    );
-  }
+  R accept<R>(CatchFormRowVisitor<P, R> visitor) =>
+      visitor.multiChoice<T>(this);
 }
 
 final class CatchFormRangeRow<P> extends CatchFormRowDescriptor<P> {
@@ -282,26 +229,7 @@ final class CatchFormRangeRow<P> extends CatchFormRowDescriptor<P> {
   final P Function(int min, int max) patchForRange;
 
   @override
-  Widget buildRow(
-    BuildContext context,
-    CatchFormRowScope<P> scope,
-    CatchFormErrorText errorText,
-  ) {
-    assert(
-      contract?.minimum == null || sliderMin >= contract!.minimum!,
-      'The slider minimum cannot undercut the schema contract.',
-    );
-    assert(
-      contract?.maximum == null || sliderMax <= contract!.maximum!,
-      'The slider maximum cannot exceed the schema contract.',
-    );
-    return CatchFormRangeRowEditor<P>(
-      key: ValueKey('catch-form-range-$id'),
-      descriptor: this,
-      scope: scope,
-      errorText: errorText,
-    );
-  }
+  R accept<R>(CatchFormRowVisitor<P, R> visitor) => visitor.range(this);
 }
 
 final class CatchFormCustomRow<P> extends CatchFormRowDescriptor<P> {
@@ -322,11 +250,5 @@ final class CatchFormCustomRow<P> extends CatchFormRowDescriptor<P> {
   String get accordionKey => fieldName ?? id;
 
   @override
-  Widget buildRow(
-    BuildContext context,
-    CatchFormRowScope<P> scope,
-    CatchFormErrorText errorText,
-  ) {
-    return build(context, scope);
-  }
+  R accept<R>(CatchFormRowVisitor<P, R> visitor) => visitor.custom(this);
 }

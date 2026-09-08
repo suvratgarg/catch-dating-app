@@ -1,4 +1,8 @@
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
+import 'package:catch_dating_app/core/forms/catch_form_multi_choice_row_editor.dart';
+import 'package:catch_dating_app/core/forms/catch_form_range_row_editor.dart';
+import 'package:catch_dating_app/core/forms/catch_form_single_choice_row_editor.dart';
+import 'package:catch_dating_app/core/forms/catch_form_text_row_editor.dart';
+import 'package:catch_dating_app/core/widgets/catch_field.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
@@ -76,10 +80,77 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
       count: widget.count,
       trailing: widget.trailing,
       footer: widget.footer,
-      children: [
-        for (final row in widget.rows)
-          row.buildRow(context, _scopeFor(row), widget.errorText),
-      ],
+      children: widget.rows.map((row) {
+        final scope = _scopeFor(row);
+        return row.accept<Widget>((
+          read: (descriptor) => CatchField.read(
+            copy: scope.fieldCopy,
+            icon: descriptor.icon,
+            title: descriptor.label,
+            body: descriptor.body,
+            bodyMaxLines: descriptor.bodyMaxLines,
+          ),
+          text: (descriptor) {
+            assert(
+              descriptor.maxLength == null ||
+                  descriptor.contract?.maxLength == null ||
+                  descriptor.maxLength! <= descriptor.contract!.maxLength!,
+              'An explicit maxLength cannot exceed the schema contract.',
+            );
+            return CatchFormTextRowEditor<P>(
+              key: ValueKey('catch-form-text-${descriptor.id}'),
+              descriptor: descriptor,
+              scope: scope,
+              errorText: widget.errorText,
+            );
+          },
+          singleChoice: <T>(CatchFormSingleChoiceRow<P, T> descriptor) {
+            assert(
+              descriptor.contract?.enumValues == null ||
+                  descriptor.contractValue != null,
+              'Schema-enumerated single-choice rows require contractValue.',
+            );
+            return CatchFormSingleChoiceRowEditor<P, T>(
+              key: ValueKey('catch-form-single-choice-${descriptor.id}'),
+              descriptor: descriptor,
+              scope: scope,
+              errorText: widget.errorText,
+            );
+          },
+          multiChoice: <T>(CatchFormMultiChoiceRow<P, T> descriptor) {
+            assert(
+              descriptor.contract?.itemEnumValues == null ||
+                  descriptor.contractValue != null,
+              'Schema-enumerated multi-choice rows require contractValue.',
+            );
+            return CatchFormMultiChoiceRowEditor<P, T>(
+              key: ValueKey('catch-form-multi-choice-${descriptor.id}'),
+              descriptor: descriptor,
+              scope: scope,
+              errorText: widget.errorText,
+            );
+          },
+          range: (descriptor) {
+            assert(
+              descriptor.contract?.minimum == null ||
+                  descriptor.sliderMin >= descriptor.contract!.minimum!,
+              'The slider minimum cannot undercut the schema contract.',
+            );
+            assert(
+              descriptor.contract?.maximum == null ||
+                  descriptor.sliderMax <= descriptor.contract!.maximum!,
+              'The slider maximum cannot exceed the schema contract.',
+            );
+            return CatchFormRangeRowEditor<P>(
+              key: ValueKey('catch-form-range-${descriptor.id}'),
+              descriptor: descriptor,
+              scope: scope,
+              errorText: widget.errorText,
+            );
+          },
+          custom: (descriptor) => descriptor.build(context, scope),
+        ));
+      }).toList(),
     );
   }
 

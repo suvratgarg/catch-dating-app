@@ -3203,6 +3203,125 @@
             }
           },
           {
+            "id": "catch.field.form_row_descriptor",
+            "symbol": "CatchFormRowDescriptor",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
+            "summary": "Typed presentation data dispatched without erasing choice item types; the form list owns rendering.",
+            "states": [
+              "read",
+              "text",
+              "single-choice",
+              "multi-choice",
+              "range",
+              "custom"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_read_row",
+            "symbol": "CatchFormReadRow",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
+            "summary": "Read-only form row description with caller-owned identity and body.",
+            "states": [
+              "populated"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_text_row",
+            "symbol": "CatchFormTextRow",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
+            "summary": "Text row description with caller-resolved validation and typed patch construction.",
+            "states": [
+              "explicit",
+              "on-blur"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_single_choice_row",
+            "symbol": "CatchFormSingleChoiceRow",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
+            "summary": "Single-choice row description retaining the item and patch types.",
+            "states": [
+              "selected",
+              "expanded"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_multi_choice_row",
+            "symbol": "CatchFormMultiChoiceRow",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
+            "summary": "Multiple-choice row description retaining typed selections and patch construction.",
+            "states": [
+              "selected"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_range_row",
+            "symbol": "CatchFormRangeRow",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
+            "summary": "Bounded range description retaining schema limits and typed patch construction.",
+            "states": [
+              "bounded"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_custom_row",
+            "symbol": "CatchFormCustomRow",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
+            "summary": "Caller-owned form content callback that receives the shared row scope.",
+            "states": [
+              "caller-content"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "adapter",
+              "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
             "id": "catch.field.surface",
             "symbol": "CatchFieldSurface",
             "file": "packages/catch_ui/lib/src/components/catch_field_surface.dart",

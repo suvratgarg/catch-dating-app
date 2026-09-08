@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.9.18
+version: 1.9.19
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -1128,6 +1128,13 @@ file no longer declares a Widget or State, and every resulting file is below
 The final form review body and step navigator have individual source owners
 and explicit registry membership. Their field rows, status labels, callbacks
 and scrolling are unchanged. They also remain app-side until the field move.
+
+The seven typed form descriptors now live in the shared pattern package. A
+generic visitor preserves each choice type without rendering; the form list
+owns the same row constructors, schema assertions and stable editor keys in
+its build method. All seven former `buildRow` declarations and the old app
+descriptor file are deleted. A direct preview mounts all six descriptor modes
+through the production form list under both text-commit policies.
 
 ### Phase 4 — One registry, binding grammar
 

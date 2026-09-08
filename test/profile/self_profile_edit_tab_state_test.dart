@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/core/forms/catch_form_descriptors.dart';
 import 'package:catch_dating_app/image_uploads/domain/photo_upload_state.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_edit_tab_state.dart';
 import 'package:catch_dating_app/user_profile/presentation/self_profile_photo_intent_factory.dart';
+import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart';

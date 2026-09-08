@@ -239,6 +239,7 @@ export 'src/patterns/catch_fill_viewport_scroll_view.dart';
 export 'src/patterns/catch_form_error_text.dart';
 export 'src/patterns/catch_form_review_state.dart';
 export 'src/patterns/catch_form_review_summary_item.dart';
+export 'src/patterns/catch_form_row_descriptor.dart';
 export 'src/patterns/catch_form_row_scope.dart';
 export 'src/patterns/catch_form_save.dart';
 export 'src/patterns/catch_form_step_body.dart';

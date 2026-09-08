@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.31.1
+version: 1.31.2
 updated: 2026-09-08
 owner: app_architecture
 status: active
@@ -4152,7 +4152,7 @@ class CalendarEventSummary {
 
 Reference files:
 
-- `lib/core/forms/catch_form_descriptors.dart`
+- `packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart`
 - `lib/core/forms/catch_form_row_list.dart` and the four `catch_form_*_row_editor.dart` owners
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab.dart`
@@ -4170,6 +4170,10 @@ owns labels, values, validation policy, and typed patch factories. The shared
 wiring, pending/error presentation, and one `Future<bool> Function(P)` save
 delegate. Product-specific controls use `CatchFormCustomRow<P>` and the
 provided scope instead of adding feature policy to core.
+
+The descriptor family is shared, provider-free data. Its generic visitor retains
+each choice row's item type; the form list owns all row construction, schema
+assertions and editor keys inside `build`. Descriptors have no rendering methods.
 
 Text commit behavior is a form-section policy, not descriptor styling.
 `CatchFormRowList<P>` defaults to `CatchFormTextCommitMode.explicit`, which

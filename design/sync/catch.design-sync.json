@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "f0b32e729786aebbfa11511acb23b841c18ace7953e2fdf84fa92799b39382bc",
+  "sourceDigest": "034c0d3c3cb8190b3dc9c502f3b1835ab20038db4cda70f29de6def589a2bc90",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "f0b32e729786aebbfa11511acb23b841c18ace7953e2fdf84fa92799b39382bc",
-    "contractDigest": "f0b32e729786aebbfa11511acb23b841c18ace7953e2fdf84fa92799b39382bc"
+    "digest": "034c0d3c3cb8190b3dc9c502f3b1835ab20038db4cda70f29de6def589a2bc90",
+    "contractDigest": "034c0d3c3cb8190b3dc9c502f3b1835ab20038db4cda70f29de6def589a2bc90"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "6c916fcd7b29461e3aed8e35920b43c37e2199e4f1993bdcb32e0c7c915be7a6",
+    "handoffRequestDigest": "8e8b67316f6eb2eef2ca850b052b0c9c2f387cb0aaa9e62e79ebcdd1423b0e08",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 78,
-    "publicClassCount": 297,
+    "publicClassCount": 304,
     "conceptCount": 72,
-    "memberCount": 207,
-    "membersPerConcept": 2.88,
+    "memberCount": 214,
+    "membersPerConcept": 2.97,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 72,
-      "member": 207,
+      "member": 214,
       "screen": 15
     },
     "collisionCount": 39,
@@ -258,8 +258,15 @@
           "CatchFieldTrailing",
           "CatchFieldValueContent",
           "CatchFieldVisibilityScope",
+          "CatchFormCustomRow",
           "CatchFormFieldLabel",
           "CatchFormFieldOptionalBadge",
+          "CatchFormMultiChoiceRow",
+          "CatchFormRangeRow",
+          "CatchFormReadRow",
+          "CatchFormRowDescriptor",
+          "CatchFormSingleChoiceRow",
+          "CatchFormTextRow",
           "CatchResponsiveFieldInteractionPolicy",
           "CatchTextInput"
         ]
@@ -971,7 +978,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "f55e3820e5d3a950cd76fab509d6b72342724205ee3021183065aabcb6eb7934"
+      "contractDigest": "d5b9919a6c2cd9f6aab06fa8167f772b883a1efc5e212451db80f08c5a3f22ec"
     },
     {
       "contractId": "catch.section",
