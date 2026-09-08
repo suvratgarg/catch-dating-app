@@ -3092,7 +3092,11 @@
           "live-moment",
           "fault",
           "complete",
-          "unavailable"
+          "unavailable",
+          "joining-instruction",
+          "reply-saved",
+          "reply-uncertain",
+          "reply-closed"
         ]
       },
       "notes": "Noindex anonymous synthetic-guest route with deterministic browser slot redemption, virtual event updates, guest actions, persistent practice identity, and fault-aware recovery. The deterministic story is implemented; visual promotion remains planned until reviewed Darwin and pinned Linux baselines exist."
@@ -3116,7 +3120,11 @@
         "states": [
           "live-moment",
           "fault",
-          "complete"
+          "complete",
+          "joining-instruction",
+          "reply-saved",
+          "reply-uncertain",
+          "reply-closed"
         ]
       },
       "notes": "Pure guest-phone presentation used by the route and deterministic Storybook fixtures; all remote state remains in the feature controller. Visual promotion remains planned until reviewed Darwin and pinned Linux baselines exist."

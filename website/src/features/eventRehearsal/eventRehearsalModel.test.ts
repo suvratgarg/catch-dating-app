@@ -4,6 +4,7 @@ import type {EventRehearsalGuestBootstrap} from "../../firebase";
 import {
   availableEventRehearsalGuestActions,
   eventRehearsalGuestActionClientId,
+  reconcileRehearsalProjection,
 } from "./eventRehearsalModel";
 
 const bootstrap: EventRehearsalGuestBootstrap = {
@@ -32,6 +33,23 @@ const bootstrap: EventRehearsalGuestBootstrap = {
 };
 
 describe("eventRehearsalModel", () => {
+  it("preserves a confirmed instruction but accepts a reset's new identity", () => {
+    const message = {messageId: `outbox:${"a".repeat(64)}`,
+      intentId: `message:${"b".repeat(64)}`, intentRevision: 1,
+      text: "Join us here", choices: [], lifecycle: "responded" as const,
+      expiresAt: 1000, canRespond: false, responseChoiceId: "on-my-way"};
+    const previous = {...bootstrap, session: {...bootstrap.session, runtimeRevision: 10},
+      actor: {...bootstrap.actor, assistanceMessage: message}};
+    const stale = {...previous, session: {...previous.session, runtimeRevision: 9},
+      actor: {...previous.actor, assistanceMessage: {...message,
+        lifecycle: "active" as const, responseChoiceId: null}}};
+    expect(reconcileRehearsalProjection(previous, stale)).toBe(previous);
+    const reset = {...bootstrap, session: {...bootstrap.session, runtimeRevision: 0}};
+    expect(reconcileRehearsalProjection(previous, reset)).toBe(reset);
+    const restarted = {...reset, actor: {...reset.actor,
+      assistanceMessage: {...message, messageId: `outbox:${"c".repeat(64)}`}}};
+    expect(reconcileRehearsalProjection(previous, restarted)).toBe(restarted);
+  });
   it("offers bounded actions for an expected synthetic guest", () => {
     expect(availableEventRehearsalGuestActions(bootstrap)).toEqual([
       "checkIn",

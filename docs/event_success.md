@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.78.0
+version: 1.79.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -165,9 +165,24 @@ message. Reset and expiry remove practice history in bounded batches.
 Host bootstrap exposes sanitized instructions and simulated attempt status;
 guest bootstrap exposes only that actor's instruction and response choices.
 
-This integrates backend fact assembly, storage and guest effects. Native and
-web presentation, setup/coach plan assembly and automatic evaluation on clock
-or actor changes remain unfinished. No real sender or delivery is enabled.
+The existing public rehearsal page now renders the actor's joining instruction
+and exact server-projected choices ahead of its ordinary guest controls.
+Replies carry message identity and intent revision; arrival remains a separate
+action. The controller serializes mutations, freezes uncertain replies for an
+exact retry and prevents competing choices until refreshed evidence resolves
+them. Cancelled or older reads cannot undo a confirmed response to that
+instruction. Query state belongs to one mounted phone, and changing public
+links remounts the controller. Saved replies remain visible after closure;
+expired or stale instructions cannot offer new responses. Rendering uses the
+existing Event Runtime primitives and keeps the practice banner visible.
+Snapshot freshness lasts at most 15 seconds from request start, measured by the
+browser's monotonic clock independently of the paused or advanced virtual time.
+Refresh restores controls only after another successful read.
+
+This integrates backend fact assembly, storage, guest effects and the guest
+web reply flow. Native Host presentation, setup/coach plan assembly and
+automatic evaluation on clock or actor changes remain unfinished. No real
+sender or delivery is enabled.
 
 The registered `event-assistance` workflow now evaluates bounded late-join
 snapshots through the existing Operations engine. Its manifest exposes plan,
