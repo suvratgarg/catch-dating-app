@@ -1933,19 +1933,19 @@ Widget catchBannerCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchFrameworkErrorView,
+  type: CatchFrameworkErrorState,
   path: '[Core catalog]/Feedback',
 )
-Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
+Widget catchFrameworkErrorStateCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchFrameworkErrorView',
-    catalogId: 'core.widgets.catch_framework_error_view',
+    title: 'Framework error',
+    catalogId: 'catch.error_state.framework_error_view',
     children: [
       _StateCard(
         label: 'user-safe / debug details',
         child: SizedBox(
           height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchFrameworkErrorView(
+          child: CatchFrameworkErrorState(
             copy: catchFrameworkErrorCopy(context.l10n),
             details: FlutterErrorDetails(
               exception: StateError('Widgetbook sample framework failure'),
@@ -1960,24 +1960,24 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchFrameworkErrorDebugDetails,
+  type: CatchErrorDetailsAccordion,
   path: '[Core catalog]/Feedback',
 )
-Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
+Widget catchErrorDetailsAccordionCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchFrameworkErrorDebugDetails',
-    catalogId: 'core.widgets.catch_framework_error_debug_details',
+    title: 'Error details',
+    catalogId: 'catch.error_state.framework_error_debug_details',
     children: [
       _StateCard(
         label: 'collapsed',
-        child: CatchFrameworkErrorDebugDetails(
+        child: CatchErrorDetailsAccordion(
           label: context.l10n.coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'StateError: Widgetbook sample framework failure',
         ),
       ),
       _StateCard(
         label: 'expanded',
-        child: CatchFrameworkErrorDebugDetails(
+        child: CatchErrorDetailsAccordion(
           label: context.l10n.coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'StateError: Widgetbook sample framework failure',
           initiallyExpanded: true,

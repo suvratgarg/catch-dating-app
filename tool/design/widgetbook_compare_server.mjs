@@ -1599,7 +1599,7 @@ function buildCandidates() {
         "CatchErrorState",
         "CatchErrorState",
         "CatchSliverErrorState",
-        "CatchFrameworkErrorView",
+        "CatchFrameworkErrorState",
         "CatchErrorScaffold",
         "CatchBanner",
         "CatchLocalizedErrorBanner",

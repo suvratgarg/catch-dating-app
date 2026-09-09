@@ -3255,6 +3255,48 @@
           "rationale": "Keep optional/error/inline semantics under the field label Text responsibility; replace the third boolean with its Size axis."
         }
       ]
+    },
+    {
+      "id": "framework-error-fallback",
+      "title": "Framework error fallback and diagnostic disclosure",
+      "intent": "Keep crash fallback independent of app recovery while making its error and disclosure responsibilities explicit.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.error_state",
+      "qualityReference": "CatchFrameworkErrorState",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "Production resting images are unchanged. Diagnostic expansion and chevron rotation become immediate when reduced motion is enabled.",
+        "Catalog pages use short human-readable titles and their existing registry member IDs."
+      ],
+      "members": [
+        {
+          "symbol": "CatchFrameworkErrorState",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Minimal ErrorWidget.builder fallback with safe caller copy and opt-in diagnostics; no app retry or provider dependency. Existing error content owns working-tree recovery and cannot replace this failure boundary."
+        },
+        {
+          "symbol": "CatchErrorDetailsAccordion",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Labeled, internally stateful diagnostic disclosure with expanded semantics and reduced-motion support; the field drawer accepts parent-controlled geometry and editing state."
+        },
+        {
+          "symbol": "CatchFrameworkErrorView",
+          "disposition": "unify",
+          "target": "CatchFrameworkErrorState",
+          "preview": "not-applicable",
+          "rationale": "Name the existing failure responsibility with the ErrorState role and preserve its minimal renderer."
+        },
+        {
+          "symbol": "CatchFrameworkErrorDebugDetails",
+          "disposition": "unify",
+          "target": "CatchErrorDetailsAccordion",
+          "preview": "not-applicable",
+          "rationale": "Name the diagnostic disclosure by its Accordion responsibility; remove the old class and path."
+        }
+      ]
     }
   ]
 }

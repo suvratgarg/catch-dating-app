@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.67.0
+version: 3.68.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -268,8 +268,8 @@ Widgetbook callers.
 | `CatchTimestampedMessageText` | `packages/catch_ui/lib/src/components/catch_timestamped_message_text.dart:7` | Canonical measured chat-text layout: keeps the timestamp on the final message line when it fits and stacks it directly below otherwise. |
 | `CatchLoadingIndicator` | `packages/catch_ui/lib/src/primitives/catch_loading_indicator.dart` | Canonical indeterminate activity feedback: circular progress, static `dots` for buttons and a fixed-cadence `inline` glyph for field status and commit content. The inline recipe preserves the 800 ms rotation and caller-selected size; callers own operation state, disabling and localized announcements. |
 | `CatchStartupLoadingScreen` | `lib/core/widgets/catch_startup_loading_screen.dart:9` | Boot-only startup composition used by the force-update gate. It renders the role-specific native-splash background/mark continuation—centered Consumer `Catch_`, or the Host `Catch Host` mark through the shared top-center `CatchStartupBrandStage` also used by Host auth—and only mounts `CatchLoadingIndicator` after `CatchMotion.startupIndicatorDelay`, so route and feature loading states must use content-shaped skeletons instead. Its formal contract is `catch.startup_loading_screen`. |
-| `CatchFrameworkErrorView` | `packages/catch_ui/lib/src/components/catch_framework_error_view.dart:27` | Branded fallback view used by `ErrorWidget.builder` for Flutter framework/build errors. Shows user-safe recovery copy and keeps debug exception details behind a tokenized `CatchSurface` disclosure in debug builds rather than Material expansion chrome. Keep separate from app-facing error surfaces because the normal widget tree may already be unstable. |
-| `CatchFrameworkErrorDebugDetails` | `packages/catch_ui/lib/src/components/catch_framework_error_debug_details.dart:8` | Direct debug disclosure renderer used by `CatchFrameworkErrorView`. Owns collapsed/expanded state, tokenized developer-detail chrome, and mono debug text while keeping framework-crash recovery separate from app-facing error surfaces. |
+| `CatchFrameworkErrorState` | `packages/catch_ui/lib/src/components/catch_framework_error_state.dart:27` | Branded fallback view used by `ErrorWidget.builder` for Flutter framework/build errors. Shows user-safe recovery copy and keeps debug exception details behind a tokenized `CatchSurface` disclosure in debug builds rather than Material expansion chrome. Keep separate from app-facing error surfaces because the normal widget tree may already be unstable. |
+| `CatchErrorDetailsAccordion` | `packages/catch_ui/lib/src/components/catch_error_details_accordion.dart:8` | Direct debug disclosure renderer used by `CatchFrameworkErrorState`. Owns collapsed/expanded state, reduced-motion handling, tokenized developer-detail chrome, and mono debug text while keeping framework-crash recovery separate from app-facing error surfaces. |
 | `CatchErrorIcon` | `packages/catch_ui/lib/src/primitives/catch_error_icon.dart:7` | Shared branded error medallion used by framework and app-facing error surfaces. Treat as an atom composed by error surfaces, not a separate product component to review in Widgetbook. |
 | `CatchErrorState` | `packages/catch_ui/lib/src/components/catch_error_state.dart` | Canonical branded app-facing error content. Supports full-screen, inline, and compact modes, mapped title/message copy, optional retry, and optional secondary action while composing the shared public, cardless `CatchErrorBody`. Widgetbook groups this family as one recovery-state review point. |
 | `CatchErrorBackButton` | `packages/catch_ui/lib/src/components/catch_error_back_button.dart` | Canonical alternate action for terminal route errors where retry is not truthful. Uses the secondary button treatment and either invokes a caller-owned destination or safely pops the current route. |
@@ -1478,7 +1478,7 @@ begins.
 
 | Candidate | Current State | Recommended Direction |
 |---|---|---|
-| `FieldLabel` | Thin create-event wrapper around `CatchFieldLabelText(large: true)`. | Delete only if call sites stay clearer with direct `CatchFieldLabelText`; otherwise keep as a create-event semantic wrapper. |
+| `FieldLabel` | Thin create-event wrapper around `CatchFieldLabelText(size: CatchFieldLabelTextSize.lg)`. | Delete only if call sites stay clearer with direct `CatchFieldLabelText`; otherwise keep as a create-event semantic wrapper. |
 | `_DashboardLoadingScreen`, route-level loading scaffolds | Several screens still create a full-screen loading scaffold by hand. | Consider `CatchLoadingScreen` only if another pass touches two or more route-level loading screens together. |
 | `_DashboardMessageScreen`, route-level error/message scaffolds | Message screens are similar but not identical. | Consider `CatchMessageScreen` with optional title/body/action if repeated route-level message screens continue to grow. |
 | `ExploreBrowseHeaderContent`, `ChatsBrowseHeader` | Feature browse-header content now shares root title/search/action structure through `CatchScreenTopBar` while keeping feature-specific city/filter/search state adapters. | Keep them as content adapters unless a future pass proves a shared browse-header content API is clearer than passing feature state directly into `CatchSliverHeader`. |

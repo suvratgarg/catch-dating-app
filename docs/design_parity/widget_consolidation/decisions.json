@@ -7802,6 +7802,30 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:framework-error-fallback",
+      "patternFamilyId": "framework-error-fallback",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchFrameworkErrorState",
+      "members": [
+        {
+          "name": "CatchFrameworkErrorState",
+          "action": "keep"
+        },
+        {
+          "name": "CatchErrorState",
+          "action": "keep"
+        },
+        {
+          "name": "CatchErrorDetailsAccordion",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Framework build failure replaces a broken subtree using its own minimal Material, safe-area, scrolling and safe-copy boundary, with optional diagnostics and no app recovery or providers. Normal error state presents actions within a functioning tree. The shared icon and typography stay canonical; diagnostic disclosure uses the existing Accordion role and now honors reduced motion. Old View and DebugDetails symbols and paths are deleted, and production callers and previews move in the same slice.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

@@ -1706,7 +1706,7 @@
           "CatchTextStyles.titleL",
           "CatchTextStyles.sectionTitle",
           "CatchTextStyles.bodyLead",
-          "CatchFrameworkErrorView",
+          "CatchFrameworkErrorState",
           "appErrorDescriptor"
         ],
         "goldens": [],
@@ -1877,8 +1877,8 @@
           },
           {
             "id": "catch.error_state.framework_error_view",
-            "symbol": "CatchFrameworkErrorView",
-            "file": "packages/catch_ui/lib/src/components/catch_framework_error_view.dart",
+            "symbol": "CatchFrameworkErrorState",
+            "file": "packages/catch_ui/lib/src/components/catch_framework_error_state.dart",
             "summary": "Framework-build-error fallback that stays intentionally boring and robust while composing the shared branded error medallion.",
             "states": [
               "user-safe",
@@ -1892,18 +1892,28 @@
               "parentConceptId": "catch.error_state",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.error_state"
+            },
+            "level": "L3",
+            "roleNoun": "ErrorState",
+            "naming": {
+              "useCase": "Framework",
+              "comparedWith": [
+                "catch.error_state"
+              ],
+              "reason": "The app error state assumes a working widget tree and presents caller-owned retry or other recovery. This member is installed in ErrorWidget.builder after a framework build failure: it supplies its own Material, safe-area and scrolling containment, has no provider or navigation dependency, and reveals exception text only behind an opt-in diagnostic disclosure. It shares the branded icon and typography while retaining this minimal fallback boundary."
             }
           },
           {
             "id": "catch.error_state.framework_error_debug_details",
-            "symbol": "CatchFrameworkErrorDebugDetails",
-            "file": "packages/catch_ui/lib/src/components/catch_framework_error_debug_details.dart",
-            "summary": "Tokenized debug-only framework error disclosure used by CatchFrameworkErrorView.",
+            "symbol": "CatchErrorDetailsAccordion",
+            "file": "packages/catch_ui/lib/src/components/catch_error_details_accordion.dart",
+            "summary": "Tokenized debug-only framework error disclosure used by CatchFrameworkErrorState.",
             "states": [
               "collapsed",
               "expanded",
               "long-stack",
-              "debug-only"
+              "debug-only",
+              "reduced-motion"
             ],
             "governance": {
               "conceptRole": "member",
@@ -1911,6 +1921,15 @@
               "parentConceptId": "catch.error_state",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.error_state"
+            },
+            "level": "L3",
+            "roleNoun": "Accordion",
+            "naming": {
+              "useCase": "ErrorDetails",
+              "comparedWith": [
+                "catch.error_state"
+              ],
+              "reason": "The parent error state presents safe recovery copy. This member independently toggles a labeled diagnostic text disclosure, publishes expanded/button semantics and honors reduced motion. It owns a header and its disclosure state, unlike the field drawer whose opening and transaction lifecycle are controlled by the parent field; it has no form editor or provider dependency."
             }
           }
         ],
@@ -1937,7 +1956,7 @@
           "Shared renderers require caller-resolved retryLabel whenever onRetry is supplied; CatchLocalized error adapters resolve the app descriptor during build.",
           "Recovery content is cardless; inherit any justified fill or outline from the owning route or section.",
           "Use scaffold and sliver members for placement only; do not create separate error visual systems.",
-          "Keep framework crash surfaces separate in CatchFrameworkErrorView, but compose the shared error icon medallion."
+          "Keep framework crash surfaces separate in CatchFrameworkErrorState, but compose the shared error icon medallion."
         ]
       },
       "governance": {

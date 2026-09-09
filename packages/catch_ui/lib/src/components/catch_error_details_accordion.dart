@@ -5,8 +5,8 @@ import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-class CatchFrameworkErrorDebugDetails extends StatefulWidget {
-  const CatchFrameworkErrorDebugDetails({
+class CatchErrorDetailsAccordion extends StatefulWidget {
+  const CatchErrorDetailsAccordion({
     super.key,
     required this.details,
     required this.label,
@@ -18,12 +18,12 @@ class CatchFrameworkErrorDebugDetails extends StatefulWidget {
   final bool initiallyExpanded;
 
   @override
-  State<CatchFrameworkErrorDebugDetails> createState() =>
-      _CatchFrameworkErrorDebugDetailsState();
+  State<CatchErrorDetailsAccordion> createState() =>
+      _CatchErrorDetailsAccordionState();
 }
 
-class _CatchFrameworkErrorDebugDetailsState
-    extends State<CatchFrameworkErrorDebugDetails> {
+class _CatchErrorDetailsAccordionState
+    extends State<CatchErrorDetailsAccordion> {
   late bool _expanded;
 
   @override
@@ -33,7 +33,7 @@ class _CatchFrameworkErrorDebugDetailsState
   }
 
   @override
-  void didUpdateWidget(CatchFrameworkErrorDebugDetails oldWidget) {
+  void didUpdateWidget(CatchErrorDetailsAccordion oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.initiallyExpanded != oldWidget.initiallyExpanded) {
       _expanded = widget.initiallyExpanded;
@@ -45,6 +45,25 @@ class _CatchFrameworkErrorDebugDetailsState
     final tokens =
         Theme.of(context).extension<CatchTokens>() ??
         CatchTokens.editorialLight;
+
+    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations == true;
+    final duration = reduceMotion ? Duration.zero : CatchMotion.fast;
+
+    final details = _expanded
+        ? Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(CatchSpacing.s3),
+            decoration: BoxDecoration(
+              color: tokens.raised,
+              borderRadius: BorderRadius.circular(CatchRadius.md),
+              border: Border.all(color: tokens.line),
+            ),
+            child: Text(
+              widget.details,
+              style: CatchTextStyles.debugDetails(context, color: tokens.ink2),
+            ),
+          )
+        : const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -72,7 +91,7 @@ class _CatchFrameworkErrorDebugDetailsState
                 gapW12,
                 AnimatedRotation(
                   turns: _expanded ? 0.25 : 0,
-                  duration: CatchMotion.fast,
+                  duration: duration,
                   curve: CatchMotion.standardCurve,
                   child: Icon(
                     CatchIcons.chevronRightRounded,
@@ -84,29 +103,15 @@ class _CatchFrameworkErrorDebugDetailsState
             ),
           ),
         ),
-        AnimatedSize(
-          duration: CatchMotion.fast,
-          curve: CatchMotion.standardCurve,
-          alignment: Alignment.topCenter,
-          child: _expanded
-              ? Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(CatchSpacing.s3),
-                  decoration: BoxDecoration(
-                    color: tokens.raised,
-                    borderRadius: BorderRadius.circular(CatchRadius.md),
-                    border: Border.all(color: tokens.line),
-                  ),
-                  child: Text(
-                    widget.details,
-                    style: CatchTextStyles.debugDetails(
-                      context,
-                      color: tokens.ink2,
-                    ),
-                  ),
-                )
-              : const SizedBox.shrink(),
-        ),
+        if (reduceMotion)
+          details
+        else
+          AnimatedSize(
+            duration: duration,
+            curve: CatchMotion.standardCurve,
+            alignment: Alignment.topCenter,
+            child: details,
+          ),
       ],
     );
   }

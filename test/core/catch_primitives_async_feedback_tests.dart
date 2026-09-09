@@ -958,12 +958,12 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     },
   );
 
-  testWidgets('CatchFrameworkErrorView renders branded recovery UI', (
+  testWidgets('CatchFrameworkErrorState renders branded recovery UI', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchFrameworkErrorView(
+        CatchFrameworkErrorState(
           copy: catchFrameworkErrorCopy(AppLocalizationsEn()),
           details: FlutterErrorDetails(exception: StateError('boom')),
           showDebugDetails: false,
@@ -1002,12 +1002,12 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     },
   );
 
-  testWidgets('CatchFrameworkErrorView can expose debug details', (
+  testWidgets('CatchFrameworkErrorState can expose debug details', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchFrameworkErrorView(
+        CatchFrameworkErrorState(
           copy: catchFrameworkErrorCopy(AppLocalizationsEn()),
           details: FlutterErrorDetails(exception: StateError('boom')),
         ),
@@ -1015,19 +1015,19 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
 
     expect(find.text('Developer details'), findsOneWidget);
-    expect(find.byType(CatchFrameworkErrorDebugDetails), findsOneWidget);
+    expect(find.byType(CatchErrorDetailsAccordion), findsOneWidget);
     expect(find.byType(ExpansionTile), findsNothing);
     await tester.tap(find.text('Developer details'));
     await pumpFeatureUi(tester);
     expect(find.textContaining('Bad state: boom'), findsOneWidget);
   });
 
-  testWidgets('CatchFrameworkErrorDebugDetails renders expanded details', (
+  testWidgets('CatchErrorDetailsAccordion renders expanded details', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchFrameworkErrorDebugDetails(
+        CatchErrorDetailsAccordion(
           label: AppLocalizationsEn()
               .coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'debug exception details',
@@ -1038,6 +1038,43 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
 
     expect(find.text('Developer details'), findsOneWidget);
     expect(find.text('debug exception details'), findsOneWidget);
+  });
+
+  testWidgets('debug disclosure honors reduced motion', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        const MediaQuery(
+          data: MediaQueryData(disableAnimations: true),
+          child: CatchErrorDetailsAccordion(
+            label: 'Developer details',
+            details: 'debug exception details',
+          ),
+        ),
+      ),
+    );
+
+    final disclosure = find.byType(CatchErrorDetailsAccordion);
+    await tester.tap(find.text('Developer details'));
+    await tester.pump();
+    expect(find.text('debug exception details').hitTestable(), findsOneWidget);
+    final initialBounds = tester.getRect(find.text('debug exception details'));
+    await tester.pump(CatchMotion.fast);
+    expect(tester.getRect(find.text('debug exception details')), initialBounds);
+    expect(
+      tester
+          .widget<AnimatedRotation>(
+            find.descendant(
+              of: disclosure,
+              matching: find.byType(AnimatedRotation),
+            ),
+          )
+          .duration,
+      Duration.zero,
+    );
+    await tester.tap(find.text('Developer details'));
+    await tester.pump();
+    expect(find.text('debug exception details'), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 }
 

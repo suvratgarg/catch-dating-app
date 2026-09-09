@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.47.0
+version: 1.48.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -1363,7 +1363,7 @@ empty, retry, stale data, and mutation failure are handled.
 | Form validation | Form/controller/domain validator | field error text or inline form banner |
 | Optional enrichment failure | Repository/view model | keep primary UI alive, log through error context when useful |
 | Platform/plugin failure | Service/repository/controller seam | typed app error, snackbar/banner if user action failed |
-| Framework/runtime failure | Global handlers | `FlutterError.onError`, `PlatformDispatcher.instance.onError`, `CatchFrameworkErrorView` |
+| Framework/runtime failure | Global handlers | `FlutterError.onError`, `PlatformDispatcher.instance.onError`, `CatchFrameworkErrorState` |
 
 Use `CatchAsyncBoundary` for simple body screens with one async value.
 
@@ -1454,7 +1454,7 @@ delivery channels:
   transitions. Riverpod cancels the subscriptions when that branch or widget
   leaves; rebuilds never replay an existing failure.
 - `showCatchErrorSnackBar` is the canonical transient action failure surface.
-- `CatchFrameworkErrorView` is separate and only for `ErrorWidget.builder` /
+- `CatchFrameworkErrorState` is separate and only for `ErrorWidget.builder` /
   framework build/render crashes.
 
 Do not reintroduce `CatchErrorText`, raw `Center(Text(error.toString()))`,
@@ -1476,7 +1476,7 @@ A first-class Catch error system covers these channels:
 | Domain/business rejections | Sign-in required, permission denied, already joined, not eligible, payment cancelled/failed, booking rejected | Use typed `AppException` subclasses only when code, retry policy, analytics, or tests need stable branching. |
 | Controller/mutation failures | Riverpod mutations, multi-step flow mutations, callback-completer APIs | Let typed errors propagate to mutation state; add action context where the repository boundary cannot explain the failure. |
 | Provider/load failures | `FutureProvider`, `StreamProvider`, cached/stale refresh, empty vs error states | Render through the `CatchErrorState` family, preserve retry actions, and log provider errors centrally. |
-| Flutter framework failures | Build/layout/render exceptions, `ErrorWidget.builder` fallback | Keep minimal `CatchFrameworkErrorView`; report through global hooks; do not try to run normal app UI in an unstable build tree. |
+| Flutter framework failures | Build/layout/render exceptions, `ErrorWidget.builder` fallback | Keep minimal `CatchFrameworkErrorState`; report through global hooks; do not try to run normal app UI in an unstable build tree. |
 | Uncaught asynchronous failures | Timers, plugin callbacks, unawaited futures, platform dispatcher errors | Wire `PlatformDispatcher.instance.onError`, pass to `ErrorLogger`, report fatal/nonfatal according to severity. |
 | Unexpected programmer bugs | Bad state, invalid arguments, invariant violations, null/schema mismatch | Do not show raw details to users. Log/report with stack trace, show generic app copy, and turn recurring user-correctable instances into typed exceptions. |
 | Operational/release signals | Crashlytics, Analytics, console fallback, emulator tests, dashboards, alerts | Attach useful non-PII keys/logs; smoke-test reporting in release-like builds. |
@@ -1574,7 +1574,7 @@ Surface rules:
 | `CatchLocalizedErrorBanner` / `.mutation` | Persistent form/mutation failure | Preserve explicit recovery; no retry unless action exists; avoid duplicating field validation. |
 | `showCatchErrorSnackBar` | Transient action failure | Descriptor message and retry action if the failed action can safely rerun. |
 | Field validation error | Per-field invalid input | Specific field copy, not snackbar or generic exception. |
-| `CatchFrameworkErrorView` | Flutter build/render failure | Minimal fallback; diagnostic details only in debug/reporting. |
+| `CatchFrameworkErrorState` | Flutter build/render failure | Minimal fallback; diagnostic details only in debug/reporting. |
 | Empty state | Successful load with zero items | Never use an error primitive for empty data. |
 
 Rules:
@@ -1597,7 +1597,7 @@ Rules:
   `CatchLocalizedErrorBanner.mutation`.
 - Transient action failures use `listenToCatchMutationErrors` or
   `showCatchErrorSnackBar`.
-- Flutter framework/build/layout crashes use `CatchFrameworkErrorView`, not the
+- Flutter framework/build/layout crashes use `CatchFrameworkErrorState`, not the
   normal app-facing error family.
 - Empty state means successful data load with zero items. It is not an error
   fallback.

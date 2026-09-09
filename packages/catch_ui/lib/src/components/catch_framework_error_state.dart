@@ -1,5 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_framework_error_debug_details.dart';
+import 'package:catch_ui/src/components/catch_error_details_accordion.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
@@ -24,8 +24,8 @@ class CatchFrameworkErrorCopy {
 /// This intentionally avoids higher-level app primitives that depend on
 /// complex layout or provider state. Error fallbacks must be boring and robust:
 /// if the normal widget tree is already failing, this view still needs to paint.
-class CatchFrameworkErrorView extends StatelessWidget {
-  const CatchFrameworkErrorView({
+class CatchFrameworkErrorState extends StatelessWidget {
+  const CatchFrameworkErrorState({
     super.key,
     required this.details,
     required this.copy,
@@ -84,7 +84,7 @@ class CatchFrameworkErrorView extends StatelessWidget {
                       ),
                       if (showDebugDetails) ...[
                         gapH18,
-                        CatchFrameworkErrorDebugDetails(
+                        CatchErrorDetailsAccordion(
                           details: debugText,
                           label: copy.debugDetailsLabel,
                         ),

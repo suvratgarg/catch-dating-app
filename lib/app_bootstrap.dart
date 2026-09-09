@@ -465,7 +465,7 @@ void _registerErrorHandlers(ErrorLogger errorLogger) {
   // useful framework details, but the raw Flutter red screen should not leak
   // into the product shell.
   ErrorWidget.builder = (details) => Builder(
-    builder: (context) => CatchFrameworkErrorView(
+    builder: (context) => CatchFrameworkErrorState(
       copy: catchFrameworkErrorCopy(context.l10n),
       details: details,
     ),

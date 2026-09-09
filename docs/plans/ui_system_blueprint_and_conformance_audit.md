@@ -1112,7 +1112,8 @@ only field-state behavior, with both renderer declarations deleted there.
 
 `CatchFieldContentRow.value` owns the field caption, value, badge and supporting
 lanes alongside its title/description constructor. The four former helper call
-sites supply the same state, copy and trailing reservation; status and placeholder behavior use explicit enum axes. Caption
+sites supply the same state, copy and trailing reservation; status and placeholder
+behavior use explicit enum axes. Caption
 styling is shared with the text-entry and select shells. The old render helper
 and redundant text-entry body helper are deleted.
 

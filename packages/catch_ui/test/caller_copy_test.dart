@@ -91,7 +91,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: CatchTheme.light,
-        home: CatchFrameworkErrorView(
+        home: CatchFrameworkErrorState(
           copy: const CatchFrameworkErrorCopy(
             title: 'Une erreur est survenue',
             message: 'Veuillez réessayer',
