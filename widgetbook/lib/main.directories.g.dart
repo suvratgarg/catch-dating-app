@@ -1173,7 +1173,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFormReviewBody',
+            name: 'CatchFormReviewPageBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
@@ -1798,7 +1798,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFormStepOverview',
+            name: 'CatchFormStepRowList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Required, optional and complete steps',

@@ -8142,6 +8142,34 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:form-review-navigation-roles",
+      "patternFamilyId": "form-review-navigation-roles",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchFormReviewPageBody",
+      "members": [
+        {
+          "name": "CatchFormReviewPageBody",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFormStepRowList",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFormReviewBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFormStepOverview",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "K1 preserves the final-review page composition and the navigable form-step rows it mounts. Source and rendered comparison distinguish the passive numbered StepRowList and the editing/saving FormRowList. Replace the ungrammatical names in one slice and bind completion status to its FormStepRowList owner; retain copy, field/badge rendering, scroll geometry and navigation.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

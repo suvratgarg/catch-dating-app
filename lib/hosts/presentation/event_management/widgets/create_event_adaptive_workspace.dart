@@ -217,13 +217,17 @@ class CreateEventStepRail extends StatelessWidget {
     );
   }
 
-  String _statusLabel(BuildContext context, CatchFormStepStatus status) =>
-      switch (status) {
-        CatchFormStepStatus.complete => context.l10n.hostsWizardStatusComplete,
-        CatchFormStepStatus.needsInformation =>
-          context.l10n.hostsWizardStatusNeedsInformation,
-        CatchFormStepStatus.optional => context.l10n.hostsWizardStatusOptional,
-      };
+  String _statusLabel(
+    BuildContext context,
+    CatchFormStepRowListStatus status,
+  ) => switch (status) {
+    CatchFormStepRowListStatus.complete =>
+      context.l10n.hostsWizardStatusComplete,
+    CatchFormStepRowListStatus.needsInformation =>
+      context.l10n.hostsWizardStatusNeedsInformation,
+    CatchFormStepRowListStatus.optional =>
+      context.l10n.hostsWizardStatusOptional,
+  };
 }
 
 class CreateEventConsequencePane extends StatelessWidget {

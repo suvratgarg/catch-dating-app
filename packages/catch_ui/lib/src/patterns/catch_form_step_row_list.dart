@@ -1,20 +1,20 @@
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 
-Future<int?> showCatchFormStepOverview({
+Future<int?> showCatchFormStepSheet({
   required CatchFieldCopy fieldCopy,
   required BuildContext context,
   required String title,
   required String subtitle,
   required List<CatchFormStepReviewItem> items,
-  required String Function(CatchFormStepStatus) statusLabelBuilder,
+  required String Function(CatchFormStepRowListStatus) statusLabelBuilder,
 }) {
   return showCatchBottomSheet<int>(
     context: context,
     builder: (context) => CatchSheet(
       title: title,
       subtitle: subtitle,
-      child: CatchFormStepOverview(
+      child: CatchFormStepRowList(
         fieldCopy: fieldCopy,
         items: items,
         statusLabelBuilder: statusLabelBuilder,
@@ -23,8 +23,14 @@ Future<int?> showCatchFormStepOverview({
   );
 }
 
-class CatchFormStepOverview extends StatelessWidget {
-  const CatchFormStepOverview({
+/// Navigable form sections with completion status and caller-owned selection.
+///
+/// Each row reuses CatchField.nav and the shared badge. This list resumes a form
+/// section; CatchStepRowList presents passive instructions, while CatchFormRowList
+/// owns editors and per-field saves. A sheet returns the chosen index when no
+/// selection callback is supplied.
+class CatchFormStepRowList extends StatelessWidget {
+  const CatchFormStepRowList({
     required this.fieldCopy,
     super.key,
     required this.items,
@@ -33,7 +39,7 @@ class CatchFormStepOverview extends StatelessWidget {
   });
 
   final List<CatchFormStepReviewItem> items;
-  final String Function(CatchFormStepStatus) statusLabelBuilder;
+  final String Function(CatchFormStepRowListStatus) statusLabelBuilder;
   final ValueChanged<int>? onStepSelected;
 
   final CatchFieldCopy fieldCopy;
@@ -65,8 +71,9 @@ class CatchFormStepOverview extends StatelessWidget {
   }
 }
 
-CatchBadgeTone _statusTone(CatchFormStepStatus status) => switch (status) {
-  CatchFormStepStatus.complete => CatchBadgeTone.success,
-  CatchFormStepStatus.needsInformation => CatchBadgeTone.warning,
-  CatchFormStepStatus.optional => CatchBadgeTone.neutral,
-};
+CatchBadgeTone _statusTone(CatchFormStepRowListStatus status) =>
+    switch (status) {
+      CatchFormStepRowListStatus.complete => CatchBadgeTone.success,
+      CatchFormStepRowListStatus.needsInformation => CatchBadgeTone.warning,
+      CatchFormStepRowListStatus.optional => CatchBadgeTone.neutral,
+    };

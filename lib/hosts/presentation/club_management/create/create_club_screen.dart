@@ -589,7 +589,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
 
   Future<void> _showStepOverview() async {
     if (_requestPending) return;
-    final selected = await showCatchFormStepOverview(
+    final selected = await showCatchFormStepSheet(
       fieldCopy: catchFieldCopy(context.l10n),
       statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
       context: context,
@@ -704,7 +704,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                 body: IgnorePointer(
                   ignoring: !screenState.requestControlsEnabled,
                   child: _isReviewing
-                      ? CatchFormReviewBody(
+                      ? CatchFormReviewPageBody(
                           fieldCopy: catchFieldCopy(context.l10n),
                           statusLabelBuilder: catchFormStepStatusLabelBuilder(
                             context.l10n,

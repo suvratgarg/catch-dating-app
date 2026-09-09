@@ -5050,7 +5050,7 @@ Widget stepperFooterCatalogStates(BuildContext context) {
         label: 'review needs information',
         child: _DeviceFrame(
           child: StepperFooter(
-            body: CatchFormReviewBody(
+            body: CatchFormReviewPageBody(
               fieldCopy: catchFieldCopy(context.l10n),
               statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
               message:
@@ -5059,17 +5059,17 @@ Widget stepperFooterCatalogStates(BuildContext context) {
                 CatchFormStepReviewItem(
                   index: 0,
                   title: 'Event basics',
-                  status: CatchFormStepStatus.complete,
+                  status: CatchFormStepRowListStatus.complete,
                 ),
                 CatchFormStepReviewItem(
                   index: 1,
                   title: 'Meeting location',
-                  status: CatchFormStepStatus.needsInformation,
+                  status: CatchFormStepRowListStatus.needsInformation,
                 ),
                 CatchFormStepReviewItem(
                   index: 2,
                   title: 'Live event guide',
-                  status: CatchFormStepStatus.optional,
+                  status: CatchFormStepRowListStatus.optional,
                 ),
               ],
               onStepSelected: (_) {},

@@ -221,10 +221,10 @@ class CreateEventWizardReviewState {
           index: index,
           title: activeSteps[index].title,
           status: activeSteps[index].optional
-              ? CatchFormStepStatus.optional
+              ? CatchFormStepRowListStatus.optional
               : completion[index]
-              ? CatchFormStepStatus.complete
-              : CatchFormStepStatus.needsInformation,
+              ? CatchFormStepRowListStatus.complete
+              : CatchFormStepRowListStatus.needsInformation,
         ),
     ];
     return CreateEventWizardReviewState(

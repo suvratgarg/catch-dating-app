@@ -1,4 +1,4 @@
-import 'package:catch_ui/src/patterns/catch_form_step_status.dart';
+import 'package:catch_ui/src/patterns/catch_form_step_row_list_status.dart';
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -11,7 +11,8 @@ class CatchFormStepReviewItem {
 
   final int index;
   final String title;
-  final CatchFormStepStatus status;
+  final CatchFormStepRowListStatus status;
 
-  bool get blocksCompletion => status == CatchFormStepStatus.needsInformation;
+  bool get blocksCompletion =>
+      status == CatchFormStepRowListStatus.needsInformation;
 }

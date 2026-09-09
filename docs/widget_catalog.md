@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.81.0
+version: 3.82.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -242,11 +242,11 @@ Widgetbook callers.
 | `CatchTopBarPrimaryButton` | `packages/catch_ui/lib/src/components/catch_top_bar_primary_button.dart` | Compact layouts use a plain CatchIconAction with tooltip semantics; wider layouts use a small labelled CatchButton with the same callback. |
 | `CatchStepHeader` | `packages/catch_ui/lib/src/components/catch_step_header.dart` | Handoff `StepHeader`: wizard scaffold header composed from a compact 80 px large `CatchTopBar`, optional kicker/subtitle, configurable back/close leading action, top-right mono step counter or custom trailing status, and a 2px progress hairline. The counter aligns with the title lane when no kicker is present and becomes a labelled 44 px step-overview action when `onStepOverview` is supplied. |
 | `CatchFormStepSpec` | `packages/catch_ui/lib/src/patterns/catch_form_step_spec.dart` | Wizard step title, validation key and optional-step presentation metadata. |
-| `CatchFormStepStatus` | `packages/catch_ui/lib/src/patterns/catch_form_step_status.dart` | Complete, needs-information and optional review statuses. |
+| `CatchFormStepRowListStatus` | `packages/catch_ui/lib/src/patterns/catch_form_step_row_list_status.dart` | Complete, needs-information and optional review statuses. |
 | `CatchFormStepReviewItem` | `packages/catch_ui/lib/src/patterns/catch_form_step_review_item.dart` | Indexed display item and its required-completion status. |
 | `CatchFormReviewState` | `packages/catch_ui/lib/src/patterns/catch_form_review_state.dart` | Ordered review readiness and the first incomplete step. |
-| `CatchFormStepOverview` | `packages/catch_ui/lib/src/patterns/catch_form_step_overview.dart` | Shared resumable-form section navigator and review list. Renders each section as a canonical navigation field with Complete, Needs information, or Optional status, and returns the chosen section to the owning flow. `CatchFormReviewBody` reuses the same status list on the final review screen. |
-| `CatchFormReviewBody` | `packages/catch_ui/lib/src/patterns/catch_form_review_body.dart` | Final form review with a caller-supplied message, optional summary rows, and the canonical step navigator. The owning flow retains navigation and submission. |
+| `CatchFormStepRowList` | `packages/catch_ui/lib/src/patterns/catch_form_step_row_list.dart` | Shared resumable-form section navigator and review list. Renders each section as a canonical navigation field with Complete, Needs information, or Optional status, and returns the chosen section to the owning flow. `CatchFormReviewPageBody` reuses the same status list on the final review screen. |
+| `CatchFormReviewPageBody` | `packages/catch_ui/lib/src/patterns/catch_form_review_page_body.dart` | Final form review with a caller-supplied message, optional summary rows, and the canonical step navigator. The owning flow retains navigation and submission. |
 | `CatchChoiceTile` | `packages/catch_ui/lib/src/components/catch_choice_tile.dart` | One explanatory choice target with selected fill, keyboard focus and one checked semantic node containing title and subtitle. Null actions retain disabled semantics. `CatchChoiceInput.described` owns group selection and spacing. |
 | `CatchOption<T>` | `packages/catch_ui/lib/src/components/catch_option.dart` | Caller-owned option value, visible/spoken labels, icon and availability. Disabled options retain the required reason used by the shared renderer for accessibility and tooltips. |
 | `CatchSkeleton` | `packages/catch_ui/lib/src/patterns/catch_skeleton.dart` | Explicit-shape loading placeholder. Named constructors: `.card()`, `.box()` with optional border color, `.text()`, `.textBlock()`, `.circle()`, `.custom()`. Uses the same Skeletonizer effect, token colors, timing, and static Reduce Motion fallback as `CatchSkeletonized`; temporary labels and actions are excluded while loading. |

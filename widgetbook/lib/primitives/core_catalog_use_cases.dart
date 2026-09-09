@@ -602,12 +602,12 @@ Widget catchDividerCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchFormReviewBody,
+  type: CatchFormReviewPageBody,
   path: '[Core catalog]/Layout',
 )
 Widget catchFormReviewBodyCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchFormReviewBody',
+    title: 'CatchFormReviewPageBody',
     catalogId: 'core.widgets.catch_form_review_body',
     children: [
       _StateCard(
@@ -617,7 +617,7 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
             WidgetbookPreviewLayout.phoneChromeWidth,
             WidgetbookPreviewLayout.paperScaffoldViewportHeight,
           ),
-          child: CatchFormReviewBody(
+          child: CatchFormReviewPageBody(
             fieldCopy: catchFieldCopy(context.l10n),
             statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
             message: 'Review the event before publishing.',
@@ -629,12 +629,12 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
               CatchFormStepReviewItem(
                 index: 0,
                 title: 'Event basics',
-                status: CatchFormStepStatus.complete,
+                status: CatchFormStepRowListStatus.complete,
               ),
               CatchFormStepReviewItem(
                 index: 1,
                 title: 'Meeting point',
-                status: CatchFormStepStatus.needsInformation,
+                status: CatchFormStepRowListStatus.needsInformation,
               ),
             ],
           ),

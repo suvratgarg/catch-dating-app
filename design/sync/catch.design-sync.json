@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "6fd4f2b2afa1e4b36336a4756b25341d600e0bba60b05e4901644c972e9144d3",
+  "sourceDigest": "e6f7f40c41a610fab9a446a7c15fb4dc03ac1cc497e112cc0d2065ee4a1fd26c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "6fd4f2b2afa1e4b36336a4756b25341d600e0bba60b05e4901644c972e9144d3",
-    "contractDigest": "6fd4f2b2afa1e4b36336a4756b25341d600e0bba60b05e4901644c972e9144d3"
+    "digest": "e6f7f40c41a610fab9a446a7c15fb4dc03ac1cc497e112cc0d2065ee4a1fd26c",
+    "contractDigest": "e6f7f40c41a610fab9a446a7c15fb4dc03ac1cc497e112cc0d2065ee4a1fd26c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "f8d2eb34afbfe12e245fcf7e4144cb96bb1a29963d05861fe0c570b8bb531458",
+    "handoffRequestDigest": "9f667f82396932f6e29fb68e5dced61ecdbd00a1f4ed0fcc68e4babae6b79dc1",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -302,12 +302,12 @@
       {
         "key": "catch.screen_body",
         "symbols": [
-          "CatchFormReviewBody",
+          "CatchFormReviewPageBody",
           "CatchFormReviewState",
-          "CatchFormStepOverview",
           "CatchFormStepReviewItem",
+          "CatchFormStepRowList",
+          "CatchFormStepRowListStatus",
           "CatchFormStepSpec",
-          "CatchFormStepStatus",
           "CatchFractionalViewport",
           "CatchMasterDetailViewport",
           "CatchPageBody",
@@ -1486,7 +1486,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PageBody",
       "claudeAllowed": true,
-      "contractDigest": "5b82eb4412e5c9af64a9843bf6e0e120cb23cf1a2faa0f4eaa8a2e55e4c24450"
+      "contractDigest": "b8fc90f59f7cb5939637d3f21d8dee352d4e8578d6cd8e384e1a776df28ab587"
     },
     {
       "contractId": "catch.section_stack",

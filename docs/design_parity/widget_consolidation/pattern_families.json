@@ -3771,6 +3771,47 @@
           "rationale": "Readable sliver width is local viewport geometry, not a second page body. CatchViewport.sliverLane shares the sliver measurement path, passes compact content directly and retains the same equal flexible sides plus constrained center on wide layouts. PageBody still owns gutters; Host Sends retains its existing width token."
         }
       ]
+    },
+    {
+      "id": "form-review-navigation-roles",
+      "title": "Form navigation and final review use explicit roles",
+      "intent": "Keep editing, instructional rows, form-section navigation and final-review page ownership distinct while sharing their existing canonical renderers.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.screen_body",
+      "qualityReference": "CatchFormReviewPageBody",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "No production rendering or behavior changes. Catalog headings may use the reviewed public names."
+      ],
+      "members": [
+        {
+          "symbol": "CatchFormStepRowList",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Resumes a form section through a caller callback or sheet result and shows each section completion status using canonical navigation fields and badges. FormRowList edits values and coordinates patch saves; StepRowList presents passive numbered instructions without navigation or completion status."
+        },
+        {
+          "symbol": "CatchFormReviewPageBody",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Composes final-review copy, read-only summary fields and the canonical form-step navigator inside one scrolling body with bottom-action clearance. PageBody supplies generic geometry; FormStepRowList supplies navigable status rows without owning this review page or its submission."
+        },
+        {
+          "symbol": "CatchFormStepOverview",
+          "disposition": "unify",
+          "target": "CatchFormStepRowList",
+          "preview": "not-applicable",
+          "rationale": "Replace the vague Overview role with the reviewed FormStep RowList identity. Preserve the same navigation-field renderer, status labels, callbacks and sheet result."
+        },
+        {
+          "symbol": "CatchFormReviewBody",
+          "disposition": "unify",
+          "target": "CatchFormReviewPageBody",
+          "preview": "not-applicable",
+          "rationale": "Use the PageBody role for the existing final-review composition. It keeps reusing the form-step list and does not create a second row renderer."
+        }
+      ]
     }
   ]
 }

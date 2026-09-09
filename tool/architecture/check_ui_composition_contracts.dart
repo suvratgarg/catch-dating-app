@@ -760,7 +760,7 @@ const _competingPageGeometryOwners = <String>{
   'CatchPageBody.formStep',
   'CatchPageBody.sliver',
   'CatchPageBody.slivers',
-  'CatchFormReviewBody',
+  'CatchFormReviewPageBody',
   'CatchSectionList.page',
   'CatchScreenSkeleton',
 };

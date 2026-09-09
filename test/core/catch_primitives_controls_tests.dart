@@ -830,13 +830,13 @@ void _registerCatchPrimitivesControlsTests() {
     },
   );
 
-  testWidgets('CatchFormStepOverview renders status and opens a section', (
+  testWidgets('CatchFormStepRowList renders status and opens a section', (
     tester,
   ) async {
     int? selectedStep;
     await tester.pumpWidget(
       _wrap(
-        CatchFormStepOverview(
+        CatchFormStepRowList(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           statusLabelBuilder: catchFormStepStatusLabelBuilder(
             AppLocalizationsEn(),
@@ -845,17 +845,17 @@ void _registerCatchPrimitivesControlsTests() {
             CatchFormStepReviewItem(
               index: 0,
               title: 'Event basics',
-              status: CatchFormStepStatus.complete,
+              status: CatchFormStepRowListStatus.complete,
             ),
             CatchFormStepReviewItem(
               index: 1,
               title: 'Meeting location',
-              status: CatchFormStepStatus.needsInformation,
+              status: CatchFormStepRowListStatus.needsInformation,
             ),
             CatchFormStepReviewItem(
               index: 2,
               title: 'Live event guide',
-              status: CatchFormStepStatus.optional,
+              status: CatchFormStepRowListStatus.optional,
             ),
           ],
           onStepSelected: (index) => selectedStep = index,
