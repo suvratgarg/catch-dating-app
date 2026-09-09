@@ -166,6 +166,11 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     try {
       _requireCurrentReview();
       final command = resolve();
+      if (command is RehearsalTakeDelivery) {
+        throw const ValidationException(
+          'Use the delivery review to take over this message.',
+        );
+      }
       final change = command == null
           ? null
           : RehearsalAssistanceChange(

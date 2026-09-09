@@ -166,9 +166,9 @@ final class AssistanceManualDeliveryHandling
 }
 
 sealed class AssistanceHostDelivery {
-  const AssistanceHostDelivery._(this._fields);
-  final _DeliveryFields _fields;
-  EventAssistanceDeliveryScope get scope => _fields.scope;
+  const AssistanceHostDelivery._(this._fields, this.scope);
+  final AssistanceDeliveryEvidence _fields;
+  final EventAssistanceDeliveryScope scope;
   int get revision => _fields.revision;
   String get reviewHash => _fields.reviewHash;
   int get createdAt => _fields.createdAt;
@@ -186,7 +186,81 @@ sealed class AssistanceHostDelivery {
     required EventAssistanceDeliveryScope scope,
     required int serverTime,
   }) {
-    assistanceInteger(serverTime);
+    final fields = AssistanceDeliveryEvidence.fromJson(
+      value,
+      observedAt: serverTime,
+    );
+    if (fields.messageId != scope.messageId) {
+      throw const FormatException('Delivery message scope mismatch.');
+    }
+    final attendeeId = fields.attendeeId;
+    if (attendeeId == null) return AssistanceStaleDelivery._(fields, scope);
+    final guest = EventAssistanceGuestScope(
+      organizerId: scope.organizerId,
+      eventId: scope.eventId,
+      attendeeId: attendeeId,
+    );
+    return fields.offersManualHandoff
+        ? AssistanceActionableDelivery._(fields, scope, guest)
+        : AssistanceObservedDelivery._(fields, scope, guest);
+  }
+}
+
+final class AssistanceActionableDelivery extends AssistanceHostDelivery {
+  const AssistanceActionableDelivery._(
+    super.fields,
+    super.scope,
+    this.guestScope,
+  ) : super._();
+  final EventAssistanceGuestScope guestScope;
+}
+
+final class AssistanceObservedDelivery extends AssistanceHostDelivery {
+  const AssistanceObservedDelivery._(super.fields, super.scope, this.guestScope)
+    : super._();
+  final EventAssistanceGuestScope guestScope;
+}
+
+final class AssistanceStaleDelivery extends AssistanceHostDelivery {
+  const AssistanceStaleDelivery._(super.fields, super.scope) : super._();
+}
+
+/// Immutable delivery evidence shared by live and rehearsal projections.
+/// Context-specific wrappers own the authority to construct a command.
+final class AssistanceDeliveryEvidence {
+  const AssistanceDeliveryEvidence._({
+    required this.messageId,
+    required this.attendeeId,
+    required this.offersManualHandoff,
+    required this.revision,
+    required this.reviewHash,
+    required this.createdAt,
+    required this.expiresAt,
+    required this.observedAt,
+    required this.lifecycle,
+    required this.purpose,
+    required this.status,
+    required this.attempts,
+    required this.coordination,
+    required this.handling,
+  });
+  final String messageId;
+  final String? attendeeId;
+  final bool offersManualHandoff;
+  final int revision, createdAt, expiresAt, observedAt;
+  final String reviewHash;
+  final AssistanceMessageLifecycle lifecycle;
+  final AssistanceMessagePurpose purpose;
+  final AssistanceDeliveryStatus status;
+  final List<AssistanceDeliveryAttempt> attempts;
+  final AssistanceDeliveryCoordination coordination;
+  final AssistanceDeliveryHandling handling;
+
+  factory AssistanceDeliveryEvidence.fromJson(
+    Object? value, {
+    required int observedAt,
+  }) {
+    final now = assistanceInteger(observedAt);
     final map = assistanceObject(value, {
       'messageId',
       'revision',
@@ -203,98 +277,7 @@ sealed class AssistanceHostDelivery {
       'attendeeId',
       'actions',
     });
-    final fields = _DeliveryFields.parse(map, scope, serverTime);
-    final actions = map['actions'];
-    if (actions is! List ||
-        actions.length > 1 ||
-        actions.any((a) => a != 'manualHandoff')) {
-      throw const FormatException('Unsupported delivery action.');
-    }
-    switch (map['availability']) {
-      case 'sourceChanged':
-        if (map['attendeeId'] != null || actions.isNotEmpty) {
-          throw const FormatException(
-            'Stale delivery exposed guest authority.',
-          );
-        }
-        return AssistanceStaleDelivery._(fields);
-      case 'current':
-        final guest = EventAssistanceGuestScope(
-          organizerId: scope.organizerId,
-          eventId: scope.eventId,
-          attendeeId: assistanceId(map['attendeeId']),
-        );
-        if (actions.isEmpty) return AssistanceObservedDelivery._(fields, guest);
-        final handled = fields.handling;
-        if (fields.lifecycle != AssistanceMessageLifecycle.active ||
-            serverTime >= fields.expiresAt ||
-            fields.attempts.any(
-              (a) =>
-                  a.state == AssistanceDeliveryAttemptState.read ||
-                  a.state == AssistanceDeliveryAttemptState.delivered,
-            ) ||
-            (handled is AssistanceManualDeliveryHandling &&
-                handled.authority ==
-                    AssistanceDeliveryOwnerAuthority.current)) {
-          throw const FormatException(
-            'Delivery offered an impossible handoff.',
-          );
-        }
-        return AssistanceActionableDelivery._(fields, guest);
-      default:
-        throw const FormatException('Unknown delivery availability.');
-    }
-  }
-}
-
-final class AssistanceActionableDelivery extends AssistanceHostDelivery {
-  const AssistanceActionableDelivery._(super.fields, this.guestScope)
-    : super._();
-  final EventAssistanceGuestScope guestScope;
-}
-
-final class AssistanceObservedDelivery extends AssistanceHostDelivery {
-  const AssistanceObservedDelivery._(super.fields, this.guestScope) : super._();
-  final EventAssistanceGuestScope guestScope;
-}
-
-final class AssistanceStaleDelivery extends AssistanceHostDelivery {
-  const AssistanceStaleDelivery._(super.fields) : super._();
-}
-
-final class _DeliveryFields {
-  const _DeliveryFields({
-    required this.scope,
-    required this.revision,
-    required this.reviewHash,
-    required this.createdAt,
-    required this.expiresAt,
-    required this.observedAt,
-    required this.lifecycle,
-    required this.purpose,
-    required this.status,
-    required this.attempts,
-    required this.coordination,
-    required this.handling,
-  });
-  final EventAssistanceDeliveryScope scope;
-  final int revision, createdAt, expiresAt, observedAt;
-  final String reviewHash;
-  final AssistanceMessageLifecycle lifecycle;
-  final AssistanceMessagePurpose purpose;
-  final AssistanceDeliveryStatus status;
-  final List<AssistanceDeliveryAttempt> attempts;
-  final AssistanceDeliveryCoordination coordination;
-  final AssistanceDeliveryHandling handling;
-
-  factory _DeliveryFields.parse(
-    Map<Object?, Object?> map,
-    EventAssistanceDeliveryScope scope,
-    int now,
-  ) {
-    if (assistanceMessageIdentity(map['messageId']) != scope.messageId) {
-      throw const FormatException('Delivery message scope mismatch.');
-    }
+    final messageId = assistanceMessageIdentity(map['messageId']);
     final created = assistanceInteger(map['createdAt']);
     final expiry = assistanceInteger(map['expiresAt']);
     if (created > now || expiry <= created) {
@@ -360,17 +343,53 @@ final class _DeliveryFields {
         'Manual ownership has no committed revision.',
       );
     }
-    return _DeliveryFields(
-      scope: scope,
+    final lifecycle = assistanceEnum(
+      AssistanceMessageLifecycle.values,
+      map['lifecycle'],
+    );
+    final actions = map['actions'];
+    if (actions is! List ||
+        actions.length > 1 ||
+        actions.any((a) => a != 'manualHandoff')) {
+      throw const FormatException('Unsupported delivery action.');
+    }
+    final String? attendeeId;
+    switch (map['availability']) {
+      case 'sourceChanged':
+        if (map['attendeeId'] != null || actions.isNotEmpty) {
+          throw const FormatException(
+            'Stale delivery exposed guest authority.',
+          );
+        }
+        attendeeId = null;
+      case 'current':
+        attendeeId = assistanceId(map['attendeeId']);
+      default:
+        throw const FormatException('Unknown delivery availability.');
+    }
+    if (actions.isNotEmpty &&
+        (lifecycle != AssistanceMessageLifecycle.active ||
+            now >= expiry ||
+            attempts.any(
+              (a) =>
+                  a.state == AssistanceDeliveryAttemptState.read ||
+                  a.state == AssistanceDeliveryAttemptState.delivered,
+            ) ||
+            handling is AssistanceManualDeliveryHandling &&
+                handling.authority ==
+                    AssistanceDeliveryOwnerAuthority.current)) {
+      throw const FormatException('Delivery offered an impossible handoff.');
+    }
+    return AssistanceDeliveryEvidence._(
+      messageId: messageId,
+      attendeeId: attendeeId,
+      offersManualHandoff: actions.isNotEmpty,
       revision: revision,
       reviewHash: assistanceHash(map['reviewHash']),
       createdAt: created,
       expiresAt: expiry,
       observedAt: now,
-      lifecycle: assistanceEnum(
-        AssistanceMessageLifecycle.values,
-        map['lifecycle'],
-      ),
+      lifecycle: lifecycle,
       purpose: assistanceEnum(AssistanceMessagePurpose.values, map['purpose']),
       status: status,
       attempts: List.unmodifiable(attempts),

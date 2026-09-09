@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
@@ -446,6 +447,7 @@ class EventRehearsalBootstrap {
     required this.guestUrl,
     required this.canUseInternalFaults,
     this.helpRequests,
+    this.deliveryReviews,
   });
 
   factory EventRehearsalBootstrap.fromCallableData(Object? data) {
@@ -460,6 +462,13 @@ class EventRehearsalBootstrap {
     return EventRehearsalBootstrap(
       session: session,
       actors: actors,
+      deliveryReviews: map['deliveryReviews'] == null
+          ? null
+          : RehearsalDeliveryReviews.fromJson(
+              map['deliveryReviews'],
+              session: session,
+              actors: actors,
+            ),
       helpRequests: map['helpRequests'] == null
           ? null
           : RehearsalHelpRequests.fromJson(
@@ -482,6 +491,7 @@ class EventRehearsalBootstrap {
   final String guestUrl;
   final bool canUseInternalFaults;
   final RehearsalHelpRequests? helpRequests;
+  final RehearsalDeliveryReviews? deliveryReviews;
 
   int get presentCount => actors
       .where(

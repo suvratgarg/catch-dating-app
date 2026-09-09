@@ -3,8 +3,10 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistan
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_outcome.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
 export 'event_rehearsal_delivery_outcome.dart';
@@ -125,6 +127,89 @@ final class RehearsalDispatchMessage extends RehearsalAssistanceCommand {
   };
 }
 
+final class RehearsalTakeDelivery extends RehearsalAssistanceCommand {
+  RehearsalTakeDelivery({required this.snapshot, required this.actorUid})
+    : super(snapshot.actorId) {
+    assistanceId(actorUid);
+    assistanceInteger(snapshot.evidence.revision + 1);
+  }
+  final RehearsalActionableDelivery snapshot;
+  final String actorUid;
+  @override
+  String get kind => 'repairDelivery';
+  @override
+  Map<String, Object?> toJson() => {
+    'kind': kind,
+    'actorId': actorId,
+    'expectedMessageRevision': snapshot.evidence.revision,
+    'expectedReviewHash': snapshot.evidence.reviewHash,
+    'payload': {
+      'deliveryId': snapshot.scope.messageId,
+      'action': 'manualHandoff',
+    },
+  };
+
+  void _requireResult(
+    EventRehearsalSession before,
+    EventRehearsalBootstrap result,
+  ) {
+    final reviews = result.deliveryReviews;
+    if (reviews == null || reviews.clockId != snapshot.scope.clockId) {
+      throw const FormatException('Missing practice delivery confirmation.');
+    }
+    final row = reviews.deliveries
+        .where((r) => r.scope == snapshot.scope)
+        .firstOrNull;
+    final immediate =
+        result.session.runtimeRevision == before.runtimeRevision + 1;
+    if (row == null) {
+      // A later instruction can replace this message in current-only coverage.
+      if (immediate ||
+          !result.actors.any(
+            (a) =>
+                a.actorId == actorId &&
+                a.assistance?.latestMessageId != snapshot.scope.messageId,
+          )) {
+        throw const FormatException('Practice handoff lost its message.');
+      }
+      return;
+    }
+    final old = snapshot.evidence;
+    final next = row.evidence;
+    final handling = next.handling;
+    if (next.revision < old.revision + 1 ||
+        next.reviewHash == old.reviewHash ||
+        next.createdAt != old.createdAt ||
+        next.expiresAt != old.expiresAt ||
+        row.actorId != actorId ||
+        next.attempts.length != old.attempts.length ||
+        handling is! AssistanceManualDeliveryHandling ||
+        handling.at < before.virtualNow.millisecondsSinceEpoch) {
+      throw const FormatException('Practice handoff evidence is inconsistent.');
+    }
+    for (var i = 0; i < old.attempts.length; i++) {
+      if (next.attempts[i].channel != old.attempts[i].channel) {
+        throw const FormatException('Practice handoff changed its channel.');
+      }
+    }
+    if (immediate &&
+        (next.revision != old.revision + 1 ||
+            handling.actorUid != actorUid ||
+            handling.at != before.virtualNow.millisecondsSinceEpoch ||
+            handling.authority != AssistanceDeliveryOwnerAuthority.current ||
+            next.lifecycle != old.lifecycle ||
+            next.status != old.status ||
+            List.generate(
+              old.attempts.length,
+              (i) => i,
+            ).any((i) => old.attempts[i] != next.attempts[i]))) {
+      throw const FormatException(
+        'Practice handoff changed delivery evidence.',
+      );
+    }
+  }
+}
+
 final class RehearsalRecordReceipt extends RehearsalAssistanceCommand {
   RehearsalRecordReceipt({
     required String actorId,
@@ -181,6 +266,18 @@ final class RehearsalAssistanceChange {
         );
       }
     }
+    if (command case RehearsalTakeDelivery(snapshot: final delivery)) {
+      final scope = delivery.scope;
+      if (scope.sessionId != session.id ||
+          scope.organizerId != session.organizerId ||
+          scope.setupRevision != session.setupRevision ||
+          !(snapshot.deliveryReviews?.deliveries.any(
+                (r) => identical(r, delivery),
+              ) ??
+              false)) {
+        throw const FormatException('Review the current practice delivery.');
+      }
+    }
   }
   final EventRehearsalSession session;
   final RehearsalAssistanceCommand command;
@@ -210,6 +307,15 @@ final class RehearsalAssistanceChange {
       throw const FormatException(
         'Practice response does not confirm this command.',
       );
+    }
+    if (command case final RehearsalTakeDelivery handoff) {
+      if (result.actions
+              .where((a) => a.clientActionId == clientActionId)
+              .length !=
+          1) {
+        throw const FormatException('Ambiguous practice handoff receipt.');
+      }
+      handoff._requireResult(session, result);
     }
   }
 }

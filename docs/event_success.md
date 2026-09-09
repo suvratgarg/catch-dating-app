@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.97.0
+version: 1.98.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -633,8 +633,30 @@ only after a fresh review. A new instruction has independent ownership, and
 reset/expiry use the existing message cleanup. Provider lookup and verified retry
 remain unavailable in rehearsal as in the live Host action.
 
-Visible Host delivery review, native rehearsal delivery-review bindings,
-provider lookup/verified retry and deployment remain subsequent integration work.
+Native rehearsal bootstrap now parses those reviews using the same immutable
+delivery-evidence model as live delivery. A separate rehearsal scope binds the
+session, organizer, setup generation, virtual clock and message. Parsing checks
+the complete current-actor coverage against the actor's instruction and route
+attempts; private fields, foreign clocks and stale offered actions fail closed.
+Only a reviewed actionable row can construct `RehearsalTakeDelivery`, through
+the existing rehearsal callable. Immediate confirmation must retain the original
+attempt evidence and record the authenticated host's ownership. Replays retain
+later receipts and allow a replaced instruction to leave current-only coverage
+only when the original action receipt and later runtime revision are present.
+
+`EventRehearsalDeliveryController` owns one pending handoff per rehearsal message
+and uninterrupted sign-in period. Its current-page review is required for a new
+request; an uncertain request survives page refresh and sheet closure with its
+original setup/runtime revisions, review hash and action id. Duplicate or
+reentrant taps share the pending future. A temporary strong auth subscription
+revokes pending state across account changes even while the sheet is closed.
+Definitive rejection requires a fresh review, and confirmed completion refreshes
+the rehearsal runtime and review. The generic rehearsal editor rejects delivery
+takeover so it cannot replace that message-scoped retry owner.
+
+Visible live/rehearsal delivery review, provider lookup/verified retry and
+deployment remain subsequent integration work. These native bindings are not yet
+mounted in the Host screens.
 
 ### Saved assistance settings
 
