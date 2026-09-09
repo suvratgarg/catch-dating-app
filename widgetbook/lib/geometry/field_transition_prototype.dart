@@ -37,7 +37,7 @@ class _ProductionInteractionTransitionPageState
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchScreenBody(
+    return CatchPageBody.screen(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -5,8 +5,7 @@ import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.da
 import 'package:catch_ui/src/components/catch_field_interaction_plane_scope.dart';
 import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_responsive_field_interaction_policy.dart';
-import 'package:catch_ui/src/patterns/catch_field_interaction_plane.dart';
-import 'package:catch_ui/src/patterns/catch_screen_body.dart';
+import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_scroll_terminal_padding.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_item.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_mode.dart';
@@ -180,7 +179,7 @@ class CatchSectionList extends StatelessWidget {
       final layout = responsive!;
       return CatchFieldVisibilityScope(
         bottomObstruction: CatchTabViewportScope.bottomOverlayInsetOf(context),
-        child: CatchScreenBody(
+        child: CatchPageBody.screen(
           pt: page.pt,
           pb: 0,
           controller: page.controller,
@@ -322,7 +321,11 @@ class CatchSectionList extends StatelessWidget {
     if (padding != null) {
       return Padding(
         padding: padding,
-        child: CatchFieldInteractionPlane(padding: padding, child: content),
+        child: CatchFieldInteractionPlaneScope.fromPadding(
+          context: context,
+          padding: padding,
+          child: content,
+        ),
       );
     }
     final detailInsets = sequence.detailInsets;

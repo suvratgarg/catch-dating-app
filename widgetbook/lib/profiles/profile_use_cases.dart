@@ -228,9 +228,9 @@ Widget profileInsightsTabSliverBodyStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: CustomScrollView(
             slivers: [
-              CatchSliverScreenBody(
-                layout: CatchScreenBodyLayout.standard,
-                slivers: [ProfileInsightsTabSliverBody()],
+              CatchPageBody.slivers(
+                mode: CatchPageBodyMode.standard,
+                children: [ProfileInsightsTabSliverBody()],
               ),
             ],
           ),
@@ -858,9 +858,9 @@ Widget profileTabSliverBodyStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
           child: CustomScrollView(
             slivers: [
-              CatchSliverScreenBody(
-                layout: CatchScreenBodyLayout.standard,
-                slivers: [
+              CatchPageBody.slivers(
+                mode: CatchPageBodyMode.standard,
+                children: [
                   ProfileTabSliverBody(
                     user: _viewer,
                     uploadState: _idlePhotoUploadState,
@@ -891,9 +891,9 @@ Widget profileTabSkeletonSliverBodyStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: CustomScrollView(
             slivers: [
-              CatchSliverScreenBody(
-                layout: CatchScreenBodyLayout.standard,
-                slivers: [ProfileTabSkeletonSliverBody()],
+              CatchPageBody.slivers(
+                mode: CatchPageBodyMode.standard,
+                children: [ProfileTabSkeletonSliverBody()],
               ),
             ],
           ),

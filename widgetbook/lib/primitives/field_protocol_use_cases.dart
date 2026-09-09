@@ -184,8 +184,8 @@ Widget dividedFieldInteractionStates(BuildContext context) =>
       children: [
         for (final interaction in CatchDividedFieldInteraction.values) ...[
           Text(interaction.name, style: CatchTextStyles.bodyM(context)),
-          CatchScreenBody(
-            scrollable: false,
+          CatchPageBody.screen(
+            variant: CatchPageBodyVariant.fixed,
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: CatchDividedFieldInteractionScope(
               interaction: interaction,
@@ -213,8 +213,8 @@ Widget responsiveFieldInteractionStates(BuildContext context) =>
           ),
           WidgetbookLayoutViewport(
             size: Size(width, width < 660 ? 560 : 280),
-            child: CatchScreenBody(
-              scrollable: false,
+            child: CatchPageBody.screen(
+              variant: CatchPageBodyVariant.fixed,
               child: CatchSectionList.responsive(
                 emptyStateOmitted: true,
                 mode: CatchSectionListMode.adaptiveTwoColumn,

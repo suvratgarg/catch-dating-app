@@ -177,7 +177,8 @@ class CatchUiLintProbe extends StatelessWidget {
           gutterOwnership: CatchFieldGutterOwnership.container,
           child: SizedBox.shrink(),
         ),
-        const CatchFieldInteractionPlane(
+        CatchFieldInteractionPlaneScope.fromPadding(
+          context: context,
           padding: EdgeInsets.all(16),
           child: SizedBox.shrink(),
         ),

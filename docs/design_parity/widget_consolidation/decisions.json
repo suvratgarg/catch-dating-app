@@ -7894,6 +7894,54 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:page-body-layout-recipes",
+      "patternFamilyId": "page-body-layout-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchPageBody",
+      "members": [
+        {
+          "name": "CatchPageBody",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScrollView",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFieldInteractionPlaneScope",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScreenBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFormStepBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSliverPageBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSliverScreenBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFillViewportScrollView",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFieldInteractionPlane",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Five page-body Widgets consolidate into named PageBody recipes. Screen scrolling reuses the canonical viewport-filling ScrollView; a typed variant preserves fixed bodies. The existing inherited field scope absorbs padding-derived publication, preserving directional accumulation and explicit ancestor policies. Six old Widget classes/files are removed, callers and geometry checks migrate, and runtime tests measure actual gutters, scroll bounds and terminal clearance.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

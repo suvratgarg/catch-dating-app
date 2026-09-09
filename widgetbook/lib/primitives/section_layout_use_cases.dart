@@ -8,54 +8,60 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Nested body paint extents',
-  type: CatchFieldInteractionPlane,
+  type: CatchFieldInteractionPlaneScope,
   path: '[Core patterns]/Section layout',
 )
-Widget fieldInteractionPlaneLayoutStates(
-  BuildContext context,
-) => WidgetbookCatalogFrame(
-  title: 'Page-owned field paint',
-  catalogId: 'catch.field.interaction_plane',
-  children: [
-    for (final nested in [false, true]) ...[
-      Text(
-        nested ? 'Nested page gutter' : 'Single page gutter',
-        style: CatchTextStyles.bodyM(context),
-      ),
-      Builder(
-        builder: (context) {
-          final body = Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
-            child: CatchFieldInteractionPlane(
-              padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
-              child: CatchSection.fieldRows(
-                children: [
-                  CatchField<String>.choices(
-                    copy: catchFieldCopy(context.l10n),
-                    title: 'Reminder',
-                    values: const ['Before', 'After'],
-                    itemLabel: (value) => value,
-                    selected: const {'Before'},
-                    onSelectionChanged: (_) {},
-                    initiallyOpen: true,
-                  ),
-                ],
-              ),
-            ),
-          );
-          return nested
-              ? CatchPageBody(
+Widget fieldInteractionPlaneLayoutStates(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'Page-owned field paint',
+      catalogId: 'catch.field.interaction_plane_scope',
+      children: [
+        for (final nested in [false, true]) ...[
+          Text(
+            nested ? 'Nested page gutter' : 'Single page gutter',
+            style: CatchTextStyles.bodyM(context),
+          ),
+          Builder(
+            builder: (context) {
+              final body = Builder(
+                builder: (context) => Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: CatchSpacing.s4,
+                    horizontal: CatchSpacing.s6,
                   ),
-                  child: body,
-                )
-              : body;
-        },
-      ),
-    ],
-  ],
-);
+                  child: CatchFieldInteractionPlaneScope.fromPadding(
+                    context: context,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CatchSpacing.s6,
+                    ),
+                    child: CatchSection.fieldRows(
+                      children: [
+                        CatchField<String>.choices(
+                          copy: catchFieldCopy(context.l10n),
+                          title: 'Reminder',
+                          values: const ['Before', 'After'],
+                          itemLabel: (value) => value,
+                          selected: const {'Before'},
+                          onSelectionChanged: (_) {},
+                          initiallyOpen: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+              return nested
+                  ? CatchPageBody(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CatchSpacing.s4,
+                      ),
+                      child: body,
+                    )
+                  : body;
+            },
+          ),
+        ],
+      ],
+    );
 
 @widgetbook.UseCase(
   name: 'Local breakpoint and single-lane fallback',
@@ -209,22 +215,22 @@ class _WidgetbookScrolledSectionPageState
 
 @widgetbook.UseCase(
   name: 'Standard and full-bleed sliver roles',
-  type: CatchSliverScreenBody,
+  type: CatchPageBody,
   path: '[Core patterns]/Section layout',
 )
 Widget sliverScreenBodyStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Semantic sliver bodies',
-  catalogId: 'catch.screen_body.sliver_screen_body',
+  catalogId: 'catch.screen_body',
   children: [
-    for (final layout in CatchScreenBodyLayout.values) ...[
+    for (final layout in CatchPageBodyMode.values) ...[
       Text(layout.name, style: CatchTextStyles.bodyM(context)),
       WidgetbookViewportFrame.device(
         size: const Size(360, 180),
         child: CustomScrollView(
           slivers: [
-            CatchSliverScreenBody(
-              layout: layout,
-              slivers: [
+            CatchPageBody.slivers(
+              mode: layout,
+              children: [
                 SliverToBoxAdapter(
                   child: SizedBox(
                     height: 96,

@@ -482,9 +482,9 @@ Widget dashboardFullSliverBodyReview(BuildContext context) {
           child: _DashboardRouteScope(
             child: CustomScrollView(
               slivers: [
-                CatchSliverScreenBody(
-                  layout: CatchScreenBodyLayout.standard,
-                  slivers: [
+                CatchPageBody.slivers(
+                  mode: CatchPageBodyMode.standard,
+                  children: [
                     DashboardFullSliverBody(
                       viewModel: _dashboardFullViewModel(),
                       user: _viewer,

@@ -113,7 +113,7 @@ void main() {
         child: Column(
           children: [
             CatchPageBody(child: SizedBox(key: pageChildKey)),
-            CatchFormStepBody(child: SizedBox(key: formChildKey)),
+            CatchPageBody.formStep(child: SizedBox(key: formChildKey)),
           ],
         ),
       ),

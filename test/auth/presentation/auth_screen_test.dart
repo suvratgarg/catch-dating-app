@@ -167,7 +167,7 @@ void main() {
       await pumpAuthScreen(tester, container: container);
 
       expect(find.byType(CatchScreenScaffold), findsOneWidget);
-      expect(find.byType(CatchScreenBody), findsOneWidget);
+      expect(find.byType(CatchPageBody), findsOneWidget);
       expect(
         find.byWidgetPredicate(
           (widget) =>

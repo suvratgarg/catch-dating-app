@@ -422,13 +422,12 @@ void _registerHostOperationsCustomersTests() {
     expect(search.placeholder, 'Search by name');
     expect(find.text('SMS reachable'), findsNothing);
     expect(requests.last.search, isNull);
-    final body = tester.widget<CatchSliverScreenBody>(
-      find.ancestor(
-        of: find.byType(HostCustomersDirectory),
-        matching: find.byType(CatchSliverScreenBody),
+    expect(
+      CatchFieldInteractionPlaneScope.outsetsOf(
+        tester.element(find.byType(HostCustomersDirectory)),
       ),
+      EdgeInsets.symmetric(horizontal: CatchInsets.pageBody.left),
     );
-    expect(body.layout, CatchScreenBodyLayout.standard);
 
     await tester.tap(searchFinder);
     await pumpFeatureUi(tester);

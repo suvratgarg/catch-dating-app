@@ -5,13 +5,13 @@ import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_status_strip.dart';
 import 'package:catch_ui/src/components/catch_status_strip_data.dart';
 import 'package:catch_ui/src/components/catch_status_strip_scope.dart';
-import 'package:catch_ui/src/patterns/catch_screen_body.dart';
-import 'package:catch_ui/src/patterns/catch_screen_body_layout.dart';
+import 'package:catch_ui/src/patterns/catch_page_body.dart';
+import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
+import 'package:catch_ui/src/patterns/catch_page_body_variant.dart';
 import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
 import 'package:catch_ui/src/patterns/catch_section_list.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_item.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_mode.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
 import 'package:flutter/material.dart';
@@ -307,9 +307,11 @@ final class CatchRouteBody {
       child: SafeArea(
         top: false,
         bottom: false,
-        child: CatchScreenBody(
+        child: CatchPageBody.screen(
           pb: terminalClearance,
-          scrollable: _scrollable,
+          variant: (_scrollable)
+              ? CatchPageBodyVariant.scrolling
+              : CatchPageBodyVariant.fixed,
           controller: _controller,
           physics: _physics,
           primary: _primary,
@@ -327,11 +329,11 @@ final class CatchRouteBody {
           ? _physics
           : AlwaysScrollableScrollPhysics(parent: _physics),
       slivers: [
-        CatchSliverScreenBody(
-          layout: CatchScreenBodyLayout.standard,
+        CatchPageBody.slivers(
+          mode: CatchPageBodyMode.standard,
           constrainToContentWidth: _constrainToContentWidth,
           maxContentExtent: _maxContentExtent,
-          slivers: _slivers!,
+          children: _slivers!,
         ),
         if (_includeTerminalPadding) const CatchSliverTerminalPadding(),
       ],

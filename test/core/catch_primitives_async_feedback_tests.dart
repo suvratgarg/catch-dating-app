@@ -412,7 +412,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     },
   );
 
-  testWidgets('CatchScreenBody owns the scrolling page gutter', (tester) async {
+  testWidgets('CatchPageBody owns the scrolling page gutter', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
@@ -420,7 +420,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
           body: SizedBox(
             width: 320,
             height: 480,
-            child: CatchScreenBody(
+            child: CatchPageBody.screen(
               pt: CatchSpacing.s2,
               pb: CatchSpacing.s8,
               child: SizedBox(height: 900, child: Text('Body')),
@@ -430,9 +430,16 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
     );
 
-    final bodyFinder = find.byType(CatchScreenBody);
+    final bodyFinder = find.byType(CatchPageBody);
     final padding = tester.widget<Padding>(
-      find.descendant(of: bodyFinder, matching: find.byType(Padding)).first,
+      find.descendant(
+        of: bodyFinder,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Padding &&
+              widget.child is CatchFieldInteractionPlaneScope,
+        ),
+      ),
     );
     final minHeight = tester.widget<ConstrainedBox>(
       find
@@ -453,14 +460,14 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(minHeight.constraints.minHeight, 480);
   });
 
-  testWidgets('CatchScreenBody can drop the gutter without owning scroll', (
+  testWidgets('CatchPageBody can drop the gutter without owning scroll', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchScreenBody(
+        const CatchPageBody.screen(
           gutter: false,
-          scrollable: false,
+          variant: CatchPageBodyVariant.fixed,
           child: Text('Full bleed body'),
         ),
       ),
@@ -469,7 +476,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     final padding = tester.widget<Padding>(
       find
           .descendant(
-            of: find.byType(CatchScreenBody),
+            of: find.byType(CatchPageBody),
             matching: find.byType(Padding),
           )
           .first,

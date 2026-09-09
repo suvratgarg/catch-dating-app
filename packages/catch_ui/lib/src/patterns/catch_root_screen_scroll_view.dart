@@ -10,10 +10,10 @@ import 'package:catch_ui/src/components/catch_screen_top_bar.dart';
 import 'package:catch_ui/src/components/catch_status_strip.dart';
 import 'package:catch_ui/src/components/catch_status_strip_scope.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
+import 'package:catch_ui/src/patterns/catch_page_body.dart';
+import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_top_edge.dart';
-import 'package:catch_ui/src/patterns/catch_screen_body_layout.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
@@ -39,7 +39,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
     this.topEdge = CatchRootScreenTopEdge.safeArea,
   }) : _header = header,
        _primaryRailHeader = null,
-       bodyLayout = CatchScreenBodyLayout.standard,
+       bodyLayout = CatchPageBodyMode.standard,
        slivers = slivers,
        primaryRail = null,
        body = null,
@@ -61,7 +61,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
     this.topEdge = CatchRootScreenTopEdge.safeArea,
   }) : _header = header,
        _primaryRailHeader = null,
-       bodyLayout = CatchScreenBodyLayout.fullBleed,
+       bodyLayout = CatchPageBodyMode.fullBleed,
        slivers = slivers,
        primaryRail = null,
        body = null,
@@ -92,7 +92,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
 
   final Widget? _header;
   final CatchRootScreenHeader? _primaryRailHeader;
-  final CatchScreenBodyLayout? bodyLayout;
+  final CatchPageBodyMode? bodyLayout;
   final List<Widget>? slivers;
   final CatchPrimaryRail? primaryRail;
   final CatchRootScreenBody? body;
@@ -124,11 +124,11 @@ class CatchRootScreenScrollView extends StatelessWidget {
           SliverToBoxAdapter(child: _header!),
           if (statuses.isNotEmpty)
             PinnedHeaderSliver(child: CatchStatusStrip(statuses: statuses)),
-          CatchSliverScreenBody(
-            layout: bodyLayout!,
+          CatchPageBody.slivers(
+            mode: bodyLayout!,
             constrainToContentWidth: constrainToContentWidth,
             maxContentExtent: maxContentExtent,
-            slivers: slivers!,
+            children: slivers!,
           ),
           const CatchSliverTerminalPadding(),
         ],

@@ -85,7 +85,7 @@ class CompanionStageScaffold extends StatelessWidget {
               ),
             ),
             SafeArea(
-              child: CatchFillViewportScrollView(
+              child: CatchScrollView(
                 scrollViewKey: EventSuccessCompanionKeys.scrollView,
                 maxContentWidth: CatchLayout.maxContentWidth,
                 padding: _companionMomentStagePadding,
@@ -150,7 +150,7 @@ class CompanionPaperScaffold extends StatelessWidget {
             )
           : null,
       body: SafeArea(
-        child: CatchFillViewportScrollView(
+        child: CatchScrollView(
           scrollViewKey: EventSuccessCompanionKeys.scrollView,
           maxContentWidth: CatchLayout.maxContentWidth,
           padding: CatchInsets.pageBody.copyWith(

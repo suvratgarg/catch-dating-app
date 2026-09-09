@@ -1188,22 +1188,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFormStepBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchFormStepBodyCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchPageBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Form step insets',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchFormStepBodyCatalogStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Page insets',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchPageBodyCatalogStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sliver insets',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchSliverPageBodyCatalogStates,
               ),
             ],
           ),
@@ -1214,16 +1214,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchScrollTerminalPaddingCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSliverPageBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchSliverPageBodyCatalogStates,
               ),
             ],
           ),
@@ -1992,13 +1982,24 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Section layout',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldInteractionPlane',
+            name: 'CatchFieldInteractionPlaneScope',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Nested body paint extents',
                 builder:
                     _widgetbook_workspace_primitives_section_layout_use_cases
                         .fieldInteractionPlaneLayoutStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchPageBody',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Standard and full-bleed sliver roles',
+                builder:
+                    _widgetbook_workspace_primitives_section_layout_use_cases
+                        .sliverScreenBodyStates,
               ),
             ],
           ),
@@ -2016,17 +2017,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_section_layout_use_cases
                         .responsiveSectionPageStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSliverScreenBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Standard and full-bleed sliver roles',
-                builder:
-                    _widgetbook_workspace_primitives_section_layout_use_cases
-                        .sliverScreenBodyStates,
               ),
             ],
           ),
@@ -2058,17 +2048,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFillViewportScrollView',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Short and overflowing content',
-                builder:
-                    _widgetbook_workspace_primitives_viewport_layout_use_cases
-                        .fillViewportStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchMasterDetailViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2082,6 +2061,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_viewport_layout_use_cases
                         .adaptiveMasterDetailStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchScrollView',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Short and overflowing content',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .fillViewportStates,
               ),
             ],
           ),
@@ -3570,13 +3560,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchScreenBody',
+            name: 'CatchPageBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchScreenBodyContractStates,
+                        .catchPageBodyContractStates,
               ),
             ],
           ),

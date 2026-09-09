@@ -409,7 +409,7 @@ void _registerExploreErrorsAndCreationTests() {
             find.byType(CatchRootScreenPageScrollView),
           )
           .bodyLayout,
-      CatchScreenBodyLayout.fullBleed,
+      CatchPageBodyMode.fullBleed,
     );
     expect(rootScaffold.topEdge, CatchRootScreenTopEdge.headerOwned);
     expect(find.text('Explore unavailable'), findsOneWidget);

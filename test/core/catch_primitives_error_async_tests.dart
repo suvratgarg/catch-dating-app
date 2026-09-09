@@ -455,7 +455,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
   ) async {
     await tester.pumpWidget(_wrap(const CatchScreenSkeleton(count: 2)));
 
-    expect(find.byType(CatchScreenBody), findsOneWidget);
+    expect(find.byType(CatchPageBody), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (widget) =>

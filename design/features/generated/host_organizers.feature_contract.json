@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:904895b385aed5d80a01c05000d85e20de0e55da75c6d8b318c67a80a38236d4",
-  "resolvedDigest": "sha256:e1250bdb544d220de6818dd0cd5b0554581852521884ca9aaa30bed0d69f2678",
+  "resolvedDigest": "sha256:67cc0c5bad07e94953739be97527a3d0e7fb3ee5780498f9efd304af23c33404",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5340,10 +5340,14 @@
             "id": "catch.screen_body",
             "kind": "pattern",
             "dart": {
-              "symbol": "CatchScreenBody",
-              "file": "packages/catch_ui/lib/src/patterns/catch_screen_body.dart",
+              "symbol": "CatchPageBody",
+              "file": "packages/catch_ui/lib/src/patterns/catch_page_body.dart",
               "constructors": [
-                "CatchScreenBody"
+                "CatchPageBody",
+                "CatchPageBody.formStep",
+                "CatchPageBody.screen",
+                "CatchPageBody.sliver",
+                "CatchPageBody.slivers"
               ]
             }
           },

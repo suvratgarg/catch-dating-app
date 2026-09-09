@@ -955,7 +955,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
           'CatchDividedFieldInteractionScope',
           'CatchFieldGeometryScope',
           'CatchFieldInteractionPlaneScope',
-          'CatchFieldInteractionPlane',
           'CatchSectionSurface',
         }.contains(typeName)) {
       _reportAtNode(node, CatchUiLayoutRules.fieldGeometryIsSectionOwned);

@@ -249,7 +249,7 @@ void _registerHostOperationsStateEventsTests() {
             find.byType(CatchRootScreenPageScrollView),
           )
           .bodyLayout,
-      CatchScreenBodyLayout.standard,
+      CatchPageBodyMode.standard,
     );
   });
 

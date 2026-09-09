@@ -89,7 +89,7 @@ class ExampleScreen {
 class ExampleScreen {
   Object build() => CatchRouteScaffold(
     body: CatchRouteBody.standard(
-      child: CatchScreenBody(
+      child: CatchPageBody.screen(
         child: Padding(
           padding: CatchInsets.pageBody,
           child: const SizedBox(),
@@ -106,7 +106,7 @@ class ExampleScreen {
       contains(
         allOf(
           contains('must not nest competing page geometry'),
-          contains('CatchScreenBody'),
+          contains('CatchPageBody'),
           contains('CatchInsets.pageBody'),
         ),
       ),
@@ -163,9 +163,9 @@ class ExampleScreen {
 class ExampleScreen {
   Object build() => CatchRootScreenScaffold.standard(
     slivers: [
-      CatchSliverScreenBody(
-        layout: CatchScreenBodyLayout.standard,
-        slivers: const [SliverToBoxAdapter()],
+      CatchPageBody.slivers(
+        mode: CatchPageBodyMode.standard,
+        children: const [SliverToBoxAdapter()],
       ),
       SliverPadding(
         padding: CatchInsets.pageBody,
@@ -182,7 +182,7 @@ class ExampleScreen {
       contains(
         allOf(
           contains('standard root content'),
-          contains('CatchSliverScreenBody'),
+          contains('CatchPageBody'),
           contains('CatchInsets.pageBody'),
         ),
       ),
@@ -202,7 +202,7 @@ class ExampleScreen {
       declarationSource: '''
 class ExampleScreen {
   Object build() => CatchRootScreenScaffold(
-    bodyLayout: CatchScreenBodyLayout.standard,
+    bodyLayout: CatchPageBodyMode.standard,
   );
 }
 ''',
@@ -873,7 +873,7 @@ class ExampleScreen {
 class SemanticPageOwner implements CatchRootScreenPageOwner {
   Object build() => CatchRootScreenPageScrollView.standard(
     slivers: [
-      CatchSliverPageBody(sliver: const SliverToBoxAdapter()),
+      CatchPageBody.sliver(child: const SliverToBoxAdapter()),
     ],
   );
 }
@@ -885,7 +885,7 @@ class SemanticPageOwner implements CatchRootScreenPageOwner {
       contains(
         allOf(
           contains('semantic root page content'),
-          contains('CatchSliverPageBody'),
+          contains('CatchPageBody'),
         ),
       ),
     );
@@ -913,7 +913,7 @@ class ExampleScreen {
 }
 ''',
       semanticRootPageOwnerRoles: const <String, String>{
-        'StandardSemanticPage': 'CatchScreenBodyLayout.standard',
+        'StandardSemanticPage': 'CatchPageBodyMode.standard',
       },
     );
 

@@ -291,8 +291,12 @@ void main() {
     final bodyPadding = tester.widget<Padding>(
       find
           .descendant(
-            of: find.byType(CatchScreenBody),
-            matching: find.byType(Padding),
+            of: find.byType(CatchPageBody),
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is Padding &&
+                  widget.child is CatchFieldInteractionPlaneScope,
+            ),
           )
           .first,
     );

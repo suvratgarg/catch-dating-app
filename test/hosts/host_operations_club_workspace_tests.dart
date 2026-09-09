@@ -23,7 +23,7 @@ void _registerHostOperationsClubWorkspaceTests() {
                 find.byType(CatchRootScreenPageScrollView),
               )
               .bodyLayout,
-          CatchScreenBodyLayout.standard,
+          CatchPageBodyMode.standard,
         );
       }
 

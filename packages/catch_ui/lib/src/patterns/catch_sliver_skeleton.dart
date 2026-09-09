@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_skeleton.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_page_body.dart';
 import 'package:flutter/widgets.dart';
 
 /// Sliver loading placement with caller-owned page padding.
@@ -18,9 +18,9 @@ class CatchSliverSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSliverPageBody(
+    return CatchPageBody.sliver(
       padding: padding,
-      sliver: SliverToBoxAdapter(
+      child: SliverToBoxAdapter(
         child: CatchSkeleton.cards(
           count: count,
           height: itemHeight ?? CatchLayout.skeletonCardHeight,

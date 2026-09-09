@@ -3875,10 +3875,13 @@
           {
             "id": "catch.field.interaction_plane_scope",
             "symbol": "CatchFieldInteractionPlaneScope",
-            "summary": "Publishes page or lane paint outsets for full-bleed field interaction.",
+            "summary": "Publishes explicit page/lane outsets; fromPadding accumulates directional insets and supplies full-bleed interaction only when no ancestor has chosen a policy.",
             "states": [
               "page-edge",
-              "lane-edge"
+              "lane-edge",
+              "nested-plane",
+              "directional-insets",
+              "inherited-interaction"
             ],
             "governance": {
               "conceptRole": "member",
@@ -3940,23 +3943,6 @@
               "decisionRef": "contract-family:catch.field"
             },
             "file": "packages/catch_ui/lib/src/components/catch_responsive_field_interaction_policy.dart"
-          },
-          {
-            "id": "catch.field.interaction_plane",
-            "symbol": "CatchFieldInteractionPlane",
-            "file": "packages/catch_ui/lib/src/patterns/catch_field_interaction_plane.dart",
-            "summary": "Internal page-body publisher for accumulated paint outsets and the existing divided-field interaction default. Features compose semantic page owners.",
-            "states": [
-              "page-plane",
-              "nested-plane"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
-            }
           },
           {
             "id": "catch.field.lanes",
@@ -4969,8 +4955,8 @@
           "CatchSkeleton.chips",
           "CatchScreenSkeleton",
           "CatchSliverSkeleton",
-          "CatchScreenBody",
-          "CatchSliverPageBody",
+          "CatchPageBody.screen",
+          "CatchPageBody.sliver",
           "CatchSkeleton.mediaRows",
           "CatchSkeleton.iconRows"
         ],
@@ -4980,7 +4966,7 @@
             "id": "catch.skeleton.async_screen",
             "symbol": "CatchScreenSkeleton",
             "file": "packages/catch_ui/lib/src/patterns/catch_screen_skeleton.dart",
-            "summary": "Screen-body placement adapter that composes CatchSkeleton.cards with CatchScreenBody.",
+            "summary": "Screen-body placement adapter that composes CatchSkeleton.cards with CatchPageBody.screen.",
             "states": [
               "async-screen",
               "scrollable",
@@ -5009,7 +4995,7 @@
             "id": "catch.skeleton.async_sliver",
             "symbol": "CatchSliverSkeleton",
             "file": "packages/catch_ui/lib/src/patterns/catch_sliver_skeleton.dart",
-            "summary": "Sliver placement adapter that composes CatchSkeleton.cards with CatchSliverPageBody.",
+            "summary": "Sliver placement adapter that composes CatchSkeleton.cards with CatchPageBody.sliver.",
             "states": [
               "async-sliver",
               "custom-padding",
@@ -8393,7 +8379,7 @@
         "steeringCode": "catch_no_raw_material_control",
         "placement": {
           "allowedParents": [
-            "CatchScreenBody",
+            "CatchPageBody.screen",
             "CatchRootScreenScaffold"
           ],
           "slot": "topBar"
@@ -9077,15 +9063,19 @@
         "vehicle": "plugin",
         "probeSeed": "Padding(padding: EdgeInsets.all(CatchSpacing.s4), child: const SizedBox())"
       },
-      "name": "CatchScreenBody",
+      "name": "CatchPageBody",
       "status": "active",
       "kind": "pattern",
-      "summary": "Screen-composition family that owns root body roles, optional pinned primary navigation, page gutters, vertical rhythm, scrolling, responsive width, and shell clearance.",
+      "summary": "Semantic page insets and field paint ownership across inset, form, screen and sliver recipes; the family retains its explicit root, route and scroll owners.",
       "dart": {
-        "symbol": "CatchScreenBody",
-        "file": "packages/catch_ui/lib/src/patterns/catch_screen_body.dart",
+        "symbol": "CatchPageBody",
+        "file": "packages/catch_ui/lib/src/patterns/catch_page_body.dart",
         "constructors": [
-          "CatchScreenBody"
+          "CatchPageBody",
+          "CatchPageBody.formStep",
+          "CatchPageBody.screen",
+          "CatchPageBody.sliver",
+          "CatchPageBody.slivers"
         ]
       },
       "design": {
@@ -9100,7 +9090,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "ScreenBody",
+          "handoffName": "PageBody",
           "allowed": true
         }
       },
@@ -9114,13 +9104,6 @@
           },
           {
             "name": "gutter",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool"
-          },
-          {
-            "name": "scrollable",
             "type": "bool",
             "required": false,
             "default": true,
@@ -9143,13 +9126,49 @@
             "type": "number",
             "required": false,
             "dartType": "double?"
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "scrolling",
+            "values": [
+              "scrolling",
+              "fixed"
+            ],
+            "dartType": "CatchPageBodyVariant",
+            "notes": "Screen recipe only. Fixed content does not acquire a scroll owner."
+          },
+          {
+            "name": "mode",
+            "type": "enum",
+            "required": true,
+            "values": [
+              "standard",
+              "fullBleed"
+            ],
+            "dartType": "CatchPageBodyMode",
+            "notes": "Slivers recipe only; explicitly selects standard page insets or an edge-owned body."
+          },
+          {
+            "name": "children",
+            "type": "list",
+            "required": true,
+            "dartType": "List<Widget>",
+            "notes": "Slivers recipe only; receives sliver content under one semantic geometry owner."
           }
         ],
         "states": [
           "scrolling-gutter",
           "non-scroll",
           "no-gutter",
-          "custom-padding"
+          "custom-padding",
+          "page-insets",
+          "form-step-insets",
+          "sliver-insets",
+          "standard-slivers",
+          "full-bleed-slivers",
+          "responsive-sliver-width"
         ],
         "slots": [
           {
@@ -9172,8 +9191,8 @@
           "CatchSpacing.screenPt",
           "CatchSpacing.screenPb",
           "CatchPageBody",
-          "CatchSliverPageBody",
-          "CatchSliverScreenBody",
+          "CatchPageBody.sliver",
+          "CatchPageBody.slivers",
           "CatchScreenScaffold",
           "CatchRootScreenScaffold",
           "CatchRootScreenScrollView",
@@ -9182,7 +9201,7 @@
           "CatchRootScreenPageSpec",
           "CatchRootScreenPageOwner",
           "CatchRootScreenPageScrollView",
-          "CatchFormStepBody",
+          "CatchPageBody.formStep",
           "CatchSectionList.page"
         ],
         "goldens": [],
@@ -9284,24 +9303,6 @@
             }
           },
           {
-            "id": "catch.screen_body.sliver_screen_body",
-            "symbol": "CatchSliverScreenBody",
-            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_screen_body.dart",
-            "summary": "Semantic sliver body used by ordinary and primary-rail root scroll owners; resolves the required standard or explicitly edge-owned full-bleed role and optional content-width lane.",
-            "states": [
-              "standard",
-              "full-bleed",
-              "responsive-width"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
             "id": "catch.screen_body.form_step_overview",
             "symbol": "CatchFormStepOverview",
             "file": "packages/catch_ui/lib/src/patterns/catch_form_step_overview.dart",
@@ -9335,60 +9336,6 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
-            "id": "catch.screen_body.form_step_body",
-            "symbol": "CatchFormStepBody",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_step_body.dart",
-            "summary": "Form-step body wrapper with the same page rhythm and gutter ownership as CatchScreenBody.",
-            "states": [
-              "default",
-              "no-gutter",
-              "custom-padding"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
-            "id": "catch.screen_body.page_body",
-            "symbol": "CatchPageBody",
-            "file": "packages/catch_ui/lib/src/patterns/catch_page_body.dart",
-            "summary": "Padding-only page body member for screens that already own scrolling.",
-            "states": [
-              "default",
-              "custom-padding",
-              "no-gutter"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
-            "id": "catch.screen_body.sliver_page_body",
-            "symbol": "CatchSliverPageBody",
-            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_page_body.dart",
-            "summary": "Sliver placement member for page-body padding inside CustomScrollView screens.",
-            "states": [
-              "default",
-              "custom-padding",
-              "fill-remaining"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "adapter",
               "decisionRef": "contract-family:catch.screen_body"
             }
           },
@@ -9474,10 +9421,10 @@
             }
           },
           {
-            "id": "catch.screen_body.fill_viewport_scroll_view",
-            "symbol": "CatchFillViewportScrollView",
-            "file": "packages/catch_ui/lib/src/patterns/catch_fill_viewport_scroll_view.dart",
-            "summary": "Box viewport scroller that fills short content, scrolls overflow and caps its content width.",
+            "id": "catch.screen_body.scroll_view",
+            "symbol": "CatchScrollView",
+            "file": "packages/catch_ui/lib/src/patterns/catch_scroll_view.dart",
+            "summary": "Fills short content to local viewport height and scrolls overflow, with optional width cap, alignment and scroll configuration. PageBody retains semantic insets and field geometry.",
             "states": [
               "short-content",
               "overflowing-content",
@@ -9488,7 +9435,12 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
+              "decisionRef": "pattern-family:page-body-layout-recipes"
+            },
+            "level": "L4",
+            "roleNoun": "ScrollView",
+            "naming": {
+              "useCase": ""
             }
           },
           {
@@ -9770,7 +9722,8 @@
           "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry. A root with primary peer navigation uses the same owner through its withPrimaryRail constructor and typed CatchRootScreenBody pages.",
           "Regular root bodies may not override the 16-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
           "Use CatchSectionList.page when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
-          "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding."
+          "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding.",
+          "CatchPageBody default, formStep, screen, sliver and slivers are one body contract. The screen recipe delegates viewport filling to CatchScrollView; its typed variant explicitly retains or omits scrolling."
         ]
       },
       "governance": {
@@ -9787,7 +9740,12 @@
         "conceptId": "catch.screen_body"
       },
       "surfaces": {
-        "flutter": "CatchScreenBody"
+        "flutter": "CatchPageBody"
+      },
+      "level": "L4",
+      "roleNoun": "PageBody",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -9969,7 +9927,7 @@
           "CatchInsets.pageBody",
           "CatchGaps.section",
           "CatchResponsiveFieldInteractionPolicy",
-          "CatchScreenBody",
+          "CatchPageBody.screen",
           "CatchScrollTerminalPadding"
         ],
         "goldens": [],

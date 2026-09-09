@@ -3410,6 +3410,82 @@
           "rationale": "Preserve this placement recipe under the canonical section-list contract, with explicit empty-content policy."
         }
       ]
+    },
+    {
+      "id": "page-body-layout-recipes",
+      "title": "Page geometry, viewport scrolling and field paint publication",
+      "intent": "One page-body API preserves form, screen and sliver geometry; one scroll view fills the local viewport; the inherited scope owns padding-derived paint extents.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.screen_body",
+      "qualityReference": "CatchPageBody",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "Production insets, field interaction policy, viewport filling and shell clearance are preserved. Catalog names and framing identify the canonical recipes.",
+        "The page-body contract gallery adds inset, form-step and sliver specimens; direct recipe and scope previews remain registered."
+      ],
+      "members": [
+        {
+          "symbol": "CatchPageBody",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Page insets and their field paint contract are one responsibility; form, screen and sliver protocols use named constructors."
+        },
+        {
+          "symbol": "CatchScrollView",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Local viewport filling, overflow, width and alignment share one scroll owner; PageBody supplies semantic insets."
+        },
+        {
+          "symbol": "CatchFieldInteractionPlaneScope",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Explicit and padding-derived outsets belong to the existing inherited publisher; the derived constructor preserves the ancestor interaction policy."
+        },
+        {
+          "symbol": "CatchScreenBody",
+          "disposition": "unify",
+          "target": "CatchPageBody.screen",
+          "preview": "not-applicable",
+          "rationale": "Absorb the same body, scroll or scope responsibility into its canonical owner and remove the redundant Widget."
+        },
+        {
+          "symbol": "CatchFormStepBody",
+          "disposition": "unify",
+          "target": "CatchPageBody.formStep",
+          "preview": "not-applicable",
+          "rationale": "Absorb the same body, scroll or scope responsibility into its canonical owner and remove the redundant Widget."
+        },
+        {
+          "symbol": "CatchSliverPageBody",
+          "disposition": "unify",
+          "target": "CatchPageBody.sliver",
+          "preview": "not-applicable",
+          "rationale": "Absorb the same body, scroll or scope responsibility into its canonical owner and remove the redundant Widget."
+        },
+        {
+          "symbol": "CatchSliverScreenBody",
+          "disposition": "unify",
+          "target": "CatchPageBody.slivers",
+          "preview": "not-applicable",
+          "rationale": "Absorb the same body, scroll or scope responsibility into its canonical owner and remove the redundant Widget."
+        },
+        {
+          "symbol": "CatchFillViewportScrollView",
+          "disposition": "unify",
+          "target": "CatchScrollView",
+          "preview": "not-applicable",
+          "rationale": "Absorb the same body, scroll or scope responsibility into its canonical owner and remove the redundant Widget."
+        },
+        {
+          "symbol": "CatchFieldInteractionPlane",
+          "disposition": "unify",
+          "target": "CatchFieldInteractionPlaneScope.fromPadding",
+          "preview": "not-applicable",
+          "rationale": "Absorb the same body, scroll or scope responsibility into its canonical owner and remove the redundant Widget."
+        }
+      ]
     }
   ]
 }

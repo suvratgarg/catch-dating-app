@@ -80,13 +80,12 @@ void _registerHostOperationsAnalyticsTeamTests() {
     }
 
     expectSharedChrome();
-    final editBody = tester.widget<CatchSliverScreenBody>(
-      find.ancestor(
-        of: find.byType(HostClubEditTab),
-        matching: find.byType(CatchSliverScreenBody),
+    expect(
+      CatchFieldInteractionPlaneScope.outsetsOf(
+        tester.element(find.byType(HostClubEditTab)),
       ),
+      EdgeInsets.symmetric(horizontal: CatchInsets.pageBody.left),
     );
-    expect(editBody.layout, CatchScreenBodyLayout.standard);
     final loadedHeader = tester.widget<CatchScreenHeader>(
       find.byWidgetPredicate(
         (widget) =>
@@ -595,12 +594,12 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(
       find.ancestor(
-        of: find.byType(CatchScreenBody),
+        of: find.byType(CatchPageBody),
         matching: find.byType(CatchSectionList),
       ),
       findsOneWidget,
     );
-    expect(find.byType(CatchScreenBody), findsOneWidget);
+    expect(find.byType(CatchPageBody), findsOneWidget);
     expect(find.byType(SingleChildScrollView), findsOneWidget);
     expect(find.byType(CatchToggleInput), findsNothing);
     expect(find.byType(CatchFieldActionRow), findsNothing);

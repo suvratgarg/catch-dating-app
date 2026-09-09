@@ -41,7 +41,7 @@ void main() {
           child: SizedBox(
             width: 400,
             height: 300,
-            child: CatchFillViewportScrollView(
+            child: CatchScrollView(
               maxContentWidth: 240,
               child: SizedBox(key: Key('tall-content'), height: 600),
             ),

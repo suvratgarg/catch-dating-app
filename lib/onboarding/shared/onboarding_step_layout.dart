@@ -33,7 +33,7 @@ class OnboardingStepLayout extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: CatchScreenBody(
+          child: CatchPageBody.screen(
             key: scrollBodyKey,
             padding: padding,
             child: Center(

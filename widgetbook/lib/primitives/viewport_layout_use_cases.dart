@@ -6,12 +6,12 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Short and overflowing content',
-  type: CatchFillViewportScrollView,
+  type: CatchScrollView,
   path: '[Core patterns]/Viewport',
 )
 Widget fillViewportStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Viewport scrolling',
-  catalogId: 'catch.screen_body.fill_viewport_scroll_view',
+  catalogId: 'catch.screen_body.scroll_view',
   children: [
     for (final tall in [false, true]) ...[
       CatchMetadataText(
@@ -20,7 +20,7 @@ Widget fillViewportStates(BuildContext context) => WidgetbookCatalogFrame(
       ),
       SizedBox(
         height: 180,
-        child: CatchFillViewportScrollView(
+        child: CatchScrollView(
           maxContentWidth: 280,
           child: SizedBox(
             height: tall ? 340 : null,

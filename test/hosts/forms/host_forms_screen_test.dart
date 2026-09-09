@@ -458,7 +458,7 @@ void _expectFormsAudienceStateOwner(
           find.byType(CatchRootScreenPageScrollView),
         )
         .bodyLayout,
-    CatchScreenBodyLayout.standard,
+    CatchPageBodyMode.standard,
   );
 }
 

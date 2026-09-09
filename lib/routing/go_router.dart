@@ -679,8 +679,8 @@ class _RouteLoadingScreen extends StatelessWidget {
 
     return CatchScreenScaffold.standalone(
       backgroundColor: t.bg,
-      body: CatchScreenBody(
-        scrollable: false,
+      body: CatchPageBody.screen(
+        variant: CatchPageBodyVariant.fixed,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

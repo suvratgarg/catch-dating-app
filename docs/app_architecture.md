@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.50.0
+version: 1.51.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -576,9 +576,18 @@ Screen composition should be predictable:
   -> feature widgets and core primitives
 ```
 
+`CatchPageBody` is the canonical page-inset owner. Its `formStep`, `screen`,
+`sliver`, and `slivers` recipes preserve their layout protocols. The screen
+recipe uses `CatchPageBodyVariant.scrolling` or `.fixed`; scrolling delegates
+to `CatchScrollView`, which fills short content to its local viewport and
+scrolls overflow. Field paint extents come from
+`CatchFieldInteractionPlaneScope.fromPadding`, preserving inherited interaction
+policy and accumulating directional insets. Features use the semantic body
+owner rather than publishing field geometry directly.
+
 Screen-level padding belongs at the screen/body boundary, not scattered across
 unrelated child widgets. Use `CatchInsets`, `CatchGaps`, `CatchPageBody`,
-`CatchSliverPageBody`, `CatchSectionList`, `CatchSectionList.sliver`, and
+`CatchPageBody.sliver`, `CatchSectionList`, `CatchSectionList.sliver`, and
 other semantic layout primitives described below.
 
 If a parent owns a `CustomScrollView`, async loading/error/empty/data branches
@@ -629,7 +638,7 @@ properties would allow. The root owner privately selects `CustomScrollView`
 without a rail or overlap-safe `NestedScrollView` with one. The adaptive app
 shell remains the separate owner of bottom navigation and its obstruction.
 
-`CatchScreenBodyLayout.standard` is the one regular body contract: 20 pt phone
+`CatchPageBodyMode.standard` is the one regular body contract: 20 pt phone
 gutters and 16 pt from the preceding title/tab boundary to the standard body
 content box. Root call sites select it through a `.standard` constructor rather
 than combining layout booleans. `fullBleed` is the explicit alternative for

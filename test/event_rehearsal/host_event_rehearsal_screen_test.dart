@@ -47,12 +47,12 @@ void main() {
     expect(find.byType(CatchScreenHeader), findsNothing);
     expect(
       find.ancestor(
-        of: find.byType(CatchScreenBody),
+        of: find.byType(CatchPageBody),
         matching: find.byType(CatchSectionList),
       ),
       findsOneWidget,
     );
-    expect(find.byType(CatchScreenBody), findsOneWidget);
+    expect(find.byType(CatchPageBody), findsOneWidget);
     expect(find.byType(SingleChildScrollView), findsOneWidget);
     expect(
       find.textContaining('No real guests, messages, payments'),

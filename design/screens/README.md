@@ -32,7 +32,7 @@ all three enforcement columns in the same change.
 
 For each registered layout owner, `family` plus `bodyGeometry` deterministically
 selects the body boundary; there is no second body-owner field to drift. Root
-owners explicitly select `CatchScreenBodyLayout`, pushed routes select the
+owners explicitly select `CatchPageBodyMode`, pushed routes select the
 matching `CatchRouteBody` variant, and roots with a primary rail select
 `CatchRootScreenBody` with an explicit `bodyLayout` on every
 `CatchRootScreenPageSpec`. The analyzer follows the owner declaration's actual

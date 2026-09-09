@@ -10,8 +10,8 @@ void _registerSectionInteractionTests() {
           home: Scaffold(
             body: SizedBox(
               width: 390,
-              child: CatchScreenBody(
-                scrollable: false,
+              child: CatchPageBody.screen(
+                variant: CatchPageBodyVariant.fixed,
                 pt: 0,
                 pb: 0,
                 child: CatchSection.fieldRows(
@@ -65,8 +65,8 @@ void _registerSectionInteractionTests() {
           home: Scaffold(
             body: SizedBox(
               width: 390,
-              child: CatchScreenBody(
-                scrollable: false,
+              child: CatchPageBody.screen(
+                variant: CatchPageBodyVariant.fixed,
                 pt: 0,
                 pb: 0,
                 child: CatchSection.fieldRows(

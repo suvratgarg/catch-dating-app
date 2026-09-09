@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/patterns/catch_page_body.dart';
+import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_page_owner.dart';
-import 'package:catch_ui/src/patterns/catch_screen_body_layout.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
 import 'package:catch_ui/src/primitives/catch_pager_focus_viewport.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class CatchRootScreenPageScrollView extends StatefulWidget
     this.scrollStateController,
     this.physics,
     this.onRefresh,
-  }) : bodyLayout = CatchScreenBodyLayout.standard,
+  }) : bodyLayout = CatchPageBodyMode.standard,
        includeTerminalPadding = true,
        constrainToContentWidth = true;
 
@@ -39,7 +39,7 @@ class CatchRootScreenPageScrollView extends StatefulWidget
     this.scrollStateController,
     this.physics,
     this.onRefresh,
-  }) : bodyLayout = CatchScreenBodyLayout.fullBleed,
+  }) : bodyLayout = CatchPageBodyMode.fullBleed,
        includeTerminalPadding = true,
        constrainToContentWidth = false,
        maxContentExtent = null;
@@ -54,13 +54,13 @@ class CatchRootScreenPageScrollView extends StatefulWidget
     this.scrollStateController,
     this.physics,
     this.onRefresh,
-  }) : bodyLayout = CatchScreenBodyLayout.fullBleed,
+  }) : bodyLayout = CatchPageBodyMode.fullBleed,
        includeTerminalPadding = false,
        constrainToContentWidth = false,
        maxContentExtent = null;
 
   final PageStorageKey<String> scrollKey;
-  final CatchScreenBodyLayout bodyLayout;
+  final CatchPageBodyMode bodyLayout;
   final List<Widget> slivers;
   final bool includeTerminalPadding;
 
@@ -191,12 +191,12 @@ class _CatchRootScreenPageScrollViewState
                   context,
                 ),
               ),
-              CatchSliverScreenBody(
-                layout: widget.bodyLayout,
+              CatchPageBody.slivers(
+                mode: widget.bodyLayout,
                 constrainToContentWidth: widget.constrainToContentWidth,
                 maxContentExtent:
                     widget.maxContentExtent ?? CatchLayout.screenPageMaxExtent,
-                slivers: widget.slivers,
+                children: widget.slivers,
               ),
               if (widget.includeTerminalPadding)
                 const CatchSliverTerminalPadding(),

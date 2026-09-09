@@ -306,7 +306,7 @@ void main() {
       final rootScaffold = tester.widget<CatchRootScreenScaffold>(
         find.byType(CatchRootScreenScaffold),
       );
-      expect(rootScaffold.bodyLayout, CatchScreenBodyLayout.standard);
+      expect(rootScaffold.bodyLayout, CatchPageBodyMode.standard);
       expect(
         find.text('Your catches unlock\nafter your first event.'),
         findsOneWidget,

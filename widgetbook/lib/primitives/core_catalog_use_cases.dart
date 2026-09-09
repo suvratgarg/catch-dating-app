@@ -645,14 +645,14 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
+  name: 'Page insets',
   type: CatchPageBody,
   path: '[Core catalog]/Layout',
 )
 Widget catchPageBodyCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchPageBody',
-    catalogId: 'core.widgets.catch_page_body',
+    title: 'Page insets',
+    catalogId: 'catch.screen_body',
     children: [
       _StateCard(
         label: 'standard body insets',
@@ -669,14 +669,14 @@ Widget catchPageBodyCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchFormStepBody,
+  name: 'Form step insets',
+  type: CatchPageBody,
   path: '[Core catalog]/Layout',
 )
 Widget catchFormStepBodyCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchFormStepBody',
-    catalogId: 'core.widgets.catch_form_step_body',
+    title: 'Form step insets',
+    catalogId: 'catch.screen_body',
     children: [
       _StateCard(
         label: 'form-step insets',
@@ -684,7 +684,9 @@ Widget catchFormStepBodyCatalogStates(BuildContext context) {
           height: WidgetbookPreviewLayout.insetPreviewHeight,
           child: ColoredBox(
             color: CatchTokens.of(context).raised,
-            child: CatchFormStepBody(child: _textData('Form step content')),
+            child: CatchPageBody.formStep(
+              child: _textData('Form step content'),
+            ),
           ),
         ),
       ),
@@ -693,14 +695,14 @@ Widget catchFormStepBodyCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchSliverPageBody,
+  name: 'Sliver insets',
+  type: CatchPageBody,
   path: '[Core catalog]/Layout',
 )
 Widget catchSliverPageBodyCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchSliverPageBody',
-    catalogId: 'core.widgets.catch_sliver_page_body',
+    title: 'Sliver insets',
+    catalogId: 'catch.screen_body',
     children: [
       _StateCard(
         label: 'sliver-native insets',
@@ -710,8 +712,8 @@ Widget catchSliverPageBodyCatalogStates(BuildContext context) {
             color: CatchTokens.of(context).raised,
             child: CustomScrollView(
               slivers: [
-                CatchSliverPageBody(
-                  sliver: _sliverTextData('Sliver page content'),
+                CatchPageBody.sliver(
+                  child: _sliverTextData('Sliver page content'),
                 ),
               ],
             ),

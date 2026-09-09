@@ -1,5 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/patterns/catch_screen_body.dart';
+import 'package:catch_ui/src/patterns/catch_page_body.dart';
+import 'package:catch_ui/src/patterns/catch_page_body_variant.dart';
 import 'package:catch_ui/src/patterns/catch_skeleton.dart';
 import 'package:flutter/widgets.dart';
 
@@ -18,8 +19,10 @@ class CatchScreenSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchScreenBody(
-      scrollable: scrollable,
+    return CatchPageBody.screen(
+      variant: (scrollable)
+          ? CatchPageBodyVariant.scrolling
+          : CatchPageBodyVariant.fixed,
       child: CatchSkeleton.cards(
         count: count,
         height: itemHeight ?? CatchLayout.skeletonCardHeight,

@@ -310,7 +310,7 @@ class FiltersContent extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: CatchScreenBody(pb: CatchSpacing.s5, child: fields),
+          child: CatchPageBody.screen(pb: CatchSpacing.s5, child: fields),
         ),
         CatchDockSurface(
           includeSafeArea: false,
@@ -363,7 +363,7 @@ class FiltersContentSkeleton extends StatelessWidget {
     return Column(
       children: [
         Expanded(
-          child: CatchScreenBody(pb: CatchSpacing.s5, child: fields),
+          child: CatchPageBody.screen(pb: CatchSpacing.s5, child: fields),
         ),
         CatchDockSurface(
           includeSafeArea: false,

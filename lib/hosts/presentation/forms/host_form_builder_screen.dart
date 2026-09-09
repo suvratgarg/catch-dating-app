@@ -205,8 +205,8 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                 final sectionIndex = _validSectionIndex(definition);
                 return Column(
                   children: [
-                    CatchScreenBody(
-                      scrollable: false,
+                    CatchPageBody.screen(
+                      variant: CatchPageBodyVariant.fixed,
                       pb: CatchSpacing.s4,
                       child: header,
                     ),
@@ -228,7 +228,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
                   ],
                 );
               }
-              return CatchScreenBody(
+              return CatchPageBody.screen(
                 key: ValueKey('host-form-builder-${view.name}'),
                 pb: CatchSpacing.s10,
                 child: Center(

@@ -3921,8 +3921,8 @@ Widget catchSectionContractStates(BuildContext context) {
         description:
             'The section-wide compact default reaches the nearest page interaction plane.',
         child: _FieldWidth(
-          child: CatchScreenBody(
-            scrollable: false,
+          child: CatchPageBody.screen(
+            variant: CatchPageBodyVariant.fixed,
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: CatchSection.fieldRows(
               title: 'Notifications',
@@ -3945,8 +3945,8 @@ Widget catchSectionContractStates(BuildContext context) {
         description:
             'The retained section-level alternative uses one inset perimeter.',
         child: _FieldWidth(
-          child: CatchScreenBody(
-            scrollable: false,
+          child: CatchPageBody.screen(
+            variant: CatchPageBodyVariant.fixed,
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: CatchSection.fieldRows(
               title: 'Notifications',
@@ -3969,8 +3969,8 @@ Widget catchSectionContractStates(BuildContext context) {
         description:
             'Keyboard focus adds the approved 2 px inset perimeter to the same full-bleed plane.',
         child: _FieldWidth(
-          child: CatchScreenBody(
-            scrollable: false,
+          child: CatchPageBody.screen(
+            variant: CatchPageBodyVariant.fixed,
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: CatchSection.fieldRows(
               title: 'Profile',
@@ -6112,24 +6112,30 @@ Widget catchScreenScaffoldContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchScreenBody,
+  type: CatchPageBody,
   path: '[Core primitives]/Sections',
 )
-Widget catchScreenBodyContractStates(BuildContext context) {
+Widget catchPageBodyContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchScreenBody',
+    title: 'Page body recipes',
     contractId: 'catch.screen_body',
     states: const [
       'scrolling-gutter',
       'non-scroll',
       'no-gutter',
       'custom-padding',
+      'page-insets',
+      'form-step-insets',
+      'sliver-insets',
+      'standard-slivers',
+      'full-bleed-slivers',
+      'responsive-sliver-width',
     ],
     children: [
       _StateCard(
         label: 'scrolling-gutter',
         child: _BodyFrame(
-          child: CatchScreenBody(
+          child: CatchPageBody.screen(
             child: CatchSectionList(
               emptyStateOmitted: true,
               gap: CatchGaps.section,
@@ -6145,8 +6151,8 @@ Widget catchScreenBodyContractStates(BuildContext context) {
       const _StateCard(
         label: 'non-scroll',
         child: _BodyFrame(
-          child: CatchScreenBody(
-            scrollable: false,
+          child: CatchPageBody.screen(
+            variant: CatchPageBodyVariant.fixed,
             child: _BodySpec(label: 'Static body with standard gutter'),
           ),
         ),
@@ -6154,9 +6160,9 @@ Widget catchScreenBodyContractStates(BuildContext context) {
       const _StateCard(
         label: 'no-gutter',
         child: _BodyFrame(
-          child: CatchScreenBody(
+          child: CatchPageBody.screen(
             gutter: false,
-            scrollable: false,
+            variant: CatchPageBodyVariant.fixed,
             pt: 0,
             pb: 0,
             child: _BodySpec(label: 'Embedded body without page gutter'),
@@ -6166,10 +6172,83 @@ Widget catchScreenBodyContractStates(BuildContext context) {
       const _StateCard(
         label: 'custom-padding',
         child: _BodyFrame(
-          child: CatchScreenBody(
-            scrollable: false,
+          child: CatchPageBody.screen(
+            variant: CatchPageBodyVariant.fixed,
             padding: EdgeInsets.all(CatchSpacing.s4),
             child: _BodySpec(label: 'Body with explicit inset override'),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'page-insets',
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.insetPreviewHeight,
+          child: CatchPageBody(child: _BodySpec(label: 'Inset page content')),
+        ),
+      ),
+      const _StateCard(
+        label: 'form-step-insets',
+        child: SizedBox(
+          height: WidgetbookPreviewLayout.insetPreviewHeight,
+          child: CatchPageBody.formStep(
+            child: _BodySpec(label: 'Form step content'),
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'sliver-insets',
+        child: _BodyFrame(
+          child: CustomScrollView(
+            slivers: [
+              CatchPageBody.sliver(
+                child: SliverToBoxAdapter(
+                  child: _BodySpec(label: 'Sliver page content'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      for (final mode in CatchPageBodyMode.values)
+        _StateCard(
+          label: mode == CatchPageBodyMode.standard
+              ? 'standard-slivers'
+              : 'full-bleed-slivers',
+          child: _BodyFrame(
+            child: CustomScrollView(
+              slivers: [
+                CatchPageBody.slivers(
+                  mode: mode,
+                  children: const [
+                    SliverToBoxAdapter(
+                      child: _BodySpec(label: 'Semantic sliver content'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      const _StateCard(
+        label: 'responsive-sliver-width',
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: WidgetbookViewportFrame.device(
+            size: Size(760, 240),
+            child: CustomScrollView(
+              slivers: [
+                CatchPageBody.slivers(
+                  mode: CatchPageBodyMode.standard,
+                  constrainToContentWidth: true,
+                  maxContentExtent: 520,
+                  children: [
+                    SliverToBoxAdapter(
+                      child: _BodySpec(label: 'Centered readable sliver lane'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),

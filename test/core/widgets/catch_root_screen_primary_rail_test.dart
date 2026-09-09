@@ -42,9 +42,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(
-        _wrap(bodyLayout: CatchScreenBodyLayout.fullBleed),
-      );
+      await tester.pumpWidget(_wrap(bodyLayout: CatchPageBodyMode.fullBleed));
       await tester.pump();
 
       expect(find.byType(SliverCrossAxisGroup), findsNothing);
@@ -65,8 +63,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     for (final (layout, expectedTop) in [
-      (CatchScreenBodyLayout.standard, CatchInsets.pageBody.top),
-      (CatchScreenBodyLayout.fullBleed, 0.0),
+      (CatchPageBodyMode.standard, CatchInsets.pageBody.top),
+      (CatchPageBodyMode.fullBleed, 0.0),
     ]) {
       await tester.pumpWidget(_wrap(bodyLayout: layout));
       await tester.pump();
@@ -107,7 +105,7 @@ void main() {
     await tester.pumpWidget(_wrap());
     expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
 
-    await tester.pumpWidget(_wrap(bodyLayout: CatchScreenBodyLayout.fullBleed));
+    await tester.pumpWidget(_wrap(bodyLayout: CatchPageBodyMode.fullBleed));
     expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
 
     await tester.pumpWidget(_wrapEmbeddedViewport());
@@ -299,7 +297,7 @@ void main() {
 }
 
 Widget _wrap({
-  CatchScreenBodyLayout bodyLayout = CatchScreenBodyLayout.standard,
+  CatchPageBodyMode bodyLayout = CatchPageBodyMode.standard,
   double contentHeight = 80,
   TextScaler textScaler = TextScaler.noScaling,
   bool useCanonicalRail = false,
@@ -318,11 +316,11 @@ Widget _wrap({
     ),
   ];
   final page = switch (bodyLayout) {
-    CatchScreenBodyLayout.standard => CatchRootScreenPageScrollView.standard(
+    CatchPageBodyMode.standard => CatchRootScreenPageScrollView.standard(
       scrollKey: const PageStorageKey<String>('root-page-test'),
       slivers: slivers,
     ),
-    CatchScreenBodyLayout.fullBleed => CatchRootScreenPageScrollView.fullBleed(
+    CatchPageBodyMode.fullBleed => CatchRootScreenPageScrollView.fullBleed(
       scrollKey: const PageStorageKey<String>('root-page-test'),
       slivers: slivers,
     ),

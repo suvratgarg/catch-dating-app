@@ -1541,7 +1541,7 @@ function buildCandidates() {
       recommended: "catch.step_flow",
       tags: ["forms", "wizard"],
       names: [
-        "CatchFormStepBody",
+        "CatchPageBody",
         "CatchStepHeader",
         "CatchStepFlowHeader",
         "CreateEventStepHeader",

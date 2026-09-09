@@ -2,10 +2,10 @@
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_primary_rail.dart';
+import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_scroll_view.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_top_edge.dart';
-import 'package:catch_ui/src/patterns/catch_screen_body_layout.dart';
 import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
 import 'package:flutter/material.dart';
 
@@ -31,7 +31,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
     this.topEdge = CatchRootScreenTopEdge.safeArea,
   }) : _header = header,
        _primaryRailHeader = null,
-       bodyLayout = CatchScreenBodyLayout.standard,
+       bodyLayout = CatchPageBodyMode.standard,
        slivers = slivers,
        primaryRail = null,
        body = null,
@@ -53,7 +53,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
     this.topEdge = CatchRootScreenTopEdge.safeArea,
   }) : _header = header,
        _primaryRailHeader = null,
-       bodyLayout = CatchScreenBodyLayout.fullBleed,
+       bodyLayout = CatchPageBodyMode.fullBleed,
        slivers = slivers,
        primaryRail = null,
        body = null,
@@ -88,7 +88,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
 
   final Widget? _header;
   final CatchRootScreenHeader? _primaryRailHeader;
-  final CatchScreenBodyLayout? bodyLayout;
+  final CatchPageBodyMode? bodyLayout;
   final List<Widget>? slivers;
   final CatchPrimaryRail? primaryRail;
   final CatchRootScreenBody? body;
@@ -122,7 +122,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
     }
     return CatchScreenScaffold.workspace(
       body: switch (bodyLayout!) {
-        CatchScreenBodyLayout.standard => CatchRootScreenScrollView.standard(
+        CatchPageBodyMode.standard => CatchRootScreenScrollView.standard(
           header: _header!,
           slivers: slivers!,
           scrollKey: scrollKey,
@@ -135,7 +135,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
           semanticsHint: semanticsHint,
           topEdge: topEdge,
         ),
-        CatchScreenBodyLayout.fullBleed => CatchRootScreenScrollView.fullBleed(
+        CatchPageBodyMode.fullBleed => CatchRootScreenScrollView.fullBleed(
           header: _header!,
           slivers: slivers!,
           scrollKey: scrollKey,
