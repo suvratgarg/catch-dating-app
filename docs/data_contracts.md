@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.92.0
+version: 1.93.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -3040,6 +3040,17 @@ evidence. Changed attendee creation stamps invalidate existing consent.
 Responses reveal only the participant's masked number,
 status, availability and consent text; there is no client collection access.
 Sender approval and activation remain separate trusted provisioning steps.
+
+Native `EventSmsPreferenceView` and `EventSmsPreferenceChange` model the closed
+review and explicit grant/revoke payloads without Firebase types. The read uses
+the generated callable DTO; the nested write decision is an immutable authored
+adapter whose output is checked against the canonical generated schema. Native
+response parsing rejects foreign scopes, unknown/private fields, unsupported
+consent versions and contradictory preference/expiry state. The repository
+preserves unavailable, permission and malformed-response failures. The
+controller binds actions to the displayed review and uninterrupted account,
+keeps uncertain writes frozen and displays current replay/conflict state.
+Consumer screen mounting and deployed enrollment remain pending.
 
 `eventAssistanceSmsBudgets` bounds both event spend and sender-day spend in
 Asia/Kolkata. A trusted worker atomically charges both ceilings with the

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.91.0
+version: 1.92.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1567,9 +1567,30 @@ old withdrawal request from undoing a later verified opt-in. Revoked links and
 replacement recipients cannot act on the original permission.
 
 Waitlist marketing preferences do not authorize event-service texts. Consumer
-app controls, provider inbound opt-out handling, deployed verification and
-retention cleanup remain integration work; no sender has been activated by
+app screen integration, provider inbound opt-out handling, deployed verification
+and retention cleanup remain integration work; no sender has been activated by
 these controls.
+
+The native `EventSmsPreferenceController` now provides the participant-scoped
+review and explicit enable/disable/retry actions for Consumer route composition.
+Its SDK-free model validates the closed response, scope, consent-copy version,
+masked number and consistent preference/expiry state. Applied results must match
+the submitted decision and next revision; replays display the server's current
+state, including a subsequent withdrawal. The repository uses only the verified
+preference callables. No local preference, roster write or provider send is
+involved.
+
+Native reloads and read failures replace old reviews instead of exposing them.
+Account changes and auth errors invalidate old actions and delayed responses,
+including an A-to-B-to-A sign-in sequence. An uncertain save holds its complete
+original request and permits only an identical retry; refresh/resume cannot
+replace it. Repeated taps share one in-flight request. Unavailable enrollment
+is hidden when no preference exists, while existing grants retain withdrawal.
+The controller is exported for route composition and tested against the wire
+schemas, mocked callable transport and account/race cases. Guest runtime,
+event-detail and payment-confirmation mounting, visible controls, lifecycle
+refresh wiring and device evidence remain pending while those UI entry points
+are claimed. These bindings are not a released Consumer enrollment flow.
 
 `EventSmsWorker` loads an exact numbered Secret Manager credential before the
 short reservation window. The resource claim atomically debits both spending
