@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.90.0
+version: 1.91.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -130,6 +130,14 @@ unresolved review reasons, explicit recording evidence and non-admission are
 preserved; counts and compact member ids cover all canonical rows together.
 Overflow beyond 1,000 rows or malformed source evidence fails the request.
 The aggregate cannot submit a decision or update legacy scorecard caches.
+Native report parsing checks exact field sets, closed variants, unique members,
+coverage and each count against the member classifications. It shares the
+individual closeout closure parser and exposes immutable per-guest scopes,
+without turning report evidence labels into mutation authority. The repository
+uses the generated live request; unavailable, unauthorized, oversized and
+malformed reads remain errors. Account-scoped providers discard prior reports
+on reload or auth change. Successful individual decisions invalidate only the
+matching event/account aggregate and fetch fresh totals.
 Roster and report UI integration remain separate work.
 
 ### Event Assistance Transaction Boundary

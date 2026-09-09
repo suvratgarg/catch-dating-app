@@ -1,9 +1,11 @@
 import 'dart:math';
 
 import 'package:catch_dating_app/event_success/data/event_attendance_disposition_repository.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/event_success/domain/event_attendance_disposition.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/event_success/presentation/event_attendance_disposition_provider.dart';
+import 'package:catch_dating_app/event_success/presentation/event_attendance_report_provider.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -182,6 +184,15 @@ class EventAttendanceDispositionEditor
       ref.invalidate(
         eventAttendanceDispositionForAccountProvider(
           review.view.scope,
+          account: review.account,
+        ),
+      );
+      ref.invalidate(
+        eventAttendanceReportForAccountProvider(
+          EventAssistanceRuntimeScope(
+            organizerId: review.view.scope.organizerId,
+            eventId: review.view.scope.eventId,
+          ),
           account: review.account,
         ),
       );

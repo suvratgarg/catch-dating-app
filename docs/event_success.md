@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.89.0
+version: 1.90.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -354,8 +354,9 @@ future across duplicate taps and retains the exact command after uncertainty.
 Source conflicts require a fresh review. Sign-out, auth errors or an account
 switch permanently revoke the old form, including after the same UID returns;
 late responses cannot restore it. An in-flight submission retains its owner
-until the result is reconciled. Success refreshes only that guest's closeout
-review, without optimistic attendance or report updates.
+until the result is reconciled. Success refreshes that guest's closeout review
+and the exact event/account attendance report. Pending, failed or old-account
+submissions cannot optimistically change counts or refresh another report.
 
 `getEventAttendanceReport` projects the current unified `eventAttendees` roster
 through the same authority, source-validation and disposition policy as the
@@ -377,6 +378,23 @@ evidence plus all member review hashes. Member ids let the Host UI open a fresh
 individual closeout review; the aggregate grants no mutation authority. The
 callable is App-Check-protected, current-manager-only and limited to ten reads
 per minute. It neither writes report caches nor changes scorecard semantics.
+
+The native `EventAttendanceReportRepository` reads the callable with a generated
+request DTO. `EventAttendanceReportView` preserves sealed classifications,
+separate evidence/review/admission enums and typed count records. It reuses
+`AttendanceClosure`, rejects unknown fields and unsafe values, and requires
+unique members with matching coverage, roster length and every count bucket.
+Event cancellation and open-event states cannot carry contradictory no-shows.
+Parsed member collections are immutable. Each member supplies only its scoped
+id for the existing individual review; report evidence labels cannot form a
+closeout command or substitute for the guest episode/revision evidence.
+
+`EventAttendanceReport` binds the snapshot to the same uninterrupted Host auth
+period as individual closeout. Loading, reload, backend failure, sign-out or auth
+failure hides the prior report. An account switch or a later login with the same
+UID cannot restore an old response. Reads have explicit reload and no automatic
+retry. Successful closeout, including an exact replay, invalidates only the
+matching event/account report and waits for new server totals.
 
 Host roster and recap UI integration remain pending.
 Existing report no-show counts retain their current semantics until their

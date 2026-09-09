@@ -81,6 +81,9 @@ final class AttendanceClearNoShow extends AttendanceDecision {
 
 sealed class AttendanceClosure {
   const AttendanceClosure();
+
+  factory AttendanceClosure.fromJson(Object? data, {required int serverTime}) =>
+      _attendanceClosure(data, _attendanceInteger(serverTime));
 }
 
 final class AttendanceStillOpen extends AttendanceClosure {
