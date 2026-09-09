@@ -246,7 +246,7 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
       ],
     );
 
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: ComponentBreakpoints.eventSuccessSpatialDragBreakpoint,
       compactBuilder: (_) => content(false),
       expandedBuilder: (_) => content(true),
@@ -605,7 +605,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchViewportBreakpoint(
+          CatchViewport.atWidth(
             breakpoint: ComponentBreakpoints
                 .eventSuccessSelectedPlacementInlineBreakpoint,
             compactBuilder: (_) => stackedHeader,

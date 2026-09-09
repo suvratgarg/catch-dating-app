@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "c1aad2d4a21b2782ce105400363b187127171f3162e880331407b85121d14cd9",
+  "sourceDigest": "9c80580ae105438f29f7d4d71b76fccc70fa8eac830b4ac696813681d9ba6d6a",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "c1aad2d4a21b2782ce105400363b187127171f3162e880331407b85121d14cd9",
-    "contractDigest": "c1aad2d4a21b2782ce105400363b187127171f3162e880331407b85121d14cd9"
+    "digest": "9c80580ae105438f29f7d4d71b76fccc70fa8eac830b4ac696813681d9ba6d6a",
+    "contractDigest": "9c80580ae105438f29f7d4d71b76fccc70fa8eac830b4ac696813681d9ba6d6a"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "9c48b5e8a4c69b49c03e9153b9f54966f926865a4d20c23c9dc4916cc71cead2",
+    "handoffRequestDigest": "7c967c358b7e771b7865279f31ef689fbd489d4a30c155c8d02bafe3d055f640",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 73,
-    "publicClassCount": 233,
+    "publicClassCount": 230,
     "conceptCount": 65,
-    "memberCount": 150,
-    "membersPerConcept": 2.31,
+    "memberCount": 147,
+    "membersPerConcept": 2.26,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 150,
+      "member": 147,
       "screen": 15
     },
     "collisionCount": 31,
@@ -303,7 +303,6 @@
       {
         "key": "catch.screen_body",
         "symbols": [
-          "CatchAdaptiveMasterDetailLayout",
           "CatchFillViewportScrollView",
           "CatchFormReviewBody",
           "CatchFormReviewState",
@@ -313,7 +312,7 @@
           "CatchFormStepSpec",
           "CatchFormStepStatus",
           "CatchFractionalViewport",
-          "CatchMasterDetailLayout",
+          "CatchMasterDetailViewport",
           "CatchPageBody",
           "CatchPagerFocusViewport",
           "CatchResponsiveSectionPage",
@@ -326,7 +325,6 @@
           "CatchRootScreenScrollView",
           "CatchRouteBody",
           "CatchRouteScaffold",
-          "CatchSceneViewport",
           "CatchScreenBody",
           "CatchScreenScaffold",
           "CatchScrollTerminalPadding",
@@ -427,9 +425,8 @@
         "key": "catch.viewport",
         "symbols": [
           "CatchViewport",
-          "CatchViewportBreakpoint",
           "CatchViewportGeometry",
-          "CatchViewportSliver"
+          "CatchViewportSceneData"
         ]
       }
     ],
@@ -1538,7 +1535,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ScreenBody",
       "claudeAllowed": true,
-      "contractDigest": "9e43b8e4b11e9e2e7ef1c8f75e79c20f671bfc2dcf849f1d3093015a572f3f0f"
+      "contractDigest": "4d7e46d6377ad5001d62dece5c5270b898c09c84da9f06e1752712d909882b09"
     },
     {
       "contractId": "catch.section_stack",
@@ -2873,8 +2870,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "514ff78d4012f12e8901864cfc2e12a354d0a5d72705f201e42cbe185de7742d",
+      "figmaExpectedPropertyCount": 3,
+      "figmaExpectedPropertyDigest": "fe0cea96cbda7c88de404d92174a8ef827a1ea028f2d41a6e165118b2d1a9ba9",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -2882,7 +2879,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Viewport",
       "claudeAllowed": true,
-      "contractDigest": "a1e98444b8a887282506953342151a7adffa7943ca9944e6b828e4baf00a6699"
+      "contractDigest": "18e8ae59388ace8cb5afbcfc7b8574bebd6a831cdfe9b6036b1f3dcba1beb0ab"
     }
   ]
 }

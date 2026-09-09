@@ -39,7 +39,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchViewportSliver(
+    return CatchViewport.sliver(
       sliverBuilder: (context, viewport) {
         const d = CatchTokens.dark;
         final t = CatchTokens.of(context);

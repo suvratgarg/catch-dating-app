@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.48.0
+version: 1.49.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -617,7 +617,7 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   terminal clearance remain shared mechanics.
 - A section-composed page without root-title chrome uses
   `CatchResponsiveSectionPage`; master-detail workspaces use
-  `CatchAdaptiveMasterDetailLayout` at their actual responsive boundary.
+  `CatchMasterDetailViewport.adaptive` at their actual responsive boundary.
 - A pushed utility or detail route uses `CatchRouteScaffold` with its compact
   `CatchTopBar`. A pushed route must not be restyled to resemble a root title.
 
@@ -832,7 +832,7 @@ widths; it does not scale typography, icons, cards, or spacing proportionally.
 | expanded | `>= 840` | labelled 240 px sidebar | bounded workspace canvas; master-detail and multi-pane composition; pointer and keyboard affordances |
 
 The whole-window class comes only from `CatchWindowSize`. Feature components use
-`CatchViewportBreakpoint` and a named local threshold when their own width,
+`CatchViewport.atWidth` and a named local threshold when their own width,
 not the application window, determines a table, grid, preview, or control-row
 reflow. Very wide three-pane workspaces may add named local thresholds around
 1100 or 1280 logical pixels without adding a second global breakpoint system.

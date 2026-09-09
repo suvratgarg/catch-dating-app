@@ -1114,7 +1114,7 @@ class HostInviteLinksList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchViewportBreakpoint(
+        CatchViewport.atWidth(
           breakpoint: ComponentBreakpoints.hostInviteLinksHeaderStackBreakpoint,
           compactBuilder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1293,7 +1293,7 @@ class HostInviteLinkRow extends StatelessWidget {
       child: CatchSurface(
         padding: CatchInsets.contentDense,
         borderColor: t.line,
-        child: CatchViewportBreakpoint(
+        child: CatchViewport.atWidth(
           breakpoint: ComponentBreakpoints.hostInviteLinkRowStackBreakpoint,
           compactBuilder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1794,7 +1794,7 @@ class HostEventSummaryRow extends StatelessWidget {
 
     return Column(
       children: [
-        CatchViewportBreakpoint(
+        CatchViewport.atWidth(
           breakpoint: ComponentBreakpoints.hostEventSummaryRowStackBreakpoint,
           compactBuilder: (context) => Row(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -1235,21 +1235,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .responsiveBuilderCatalogStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchViewportBreakpoint',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Local breakpoint',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchViewportBreakpointCatalogStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchViewportSliver',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Local sliver geometry',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
@@ -2062,17 +2052,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Viewport',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAdaptiveMasterDetailLayout',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Route body breakpoint',
-                builder:
-                    _widgetbook_workspace_primitives_viewport_layout_use_cases
-                        .adaptiveMasterDetailStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchBottomActionOverlay',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2095,7 +2074,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchMasterDetailLayout',
+            name: 'CatchMasterDetailViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Compact and split panes',
@@ -2103,16 +2082,11 @@ final directories = <_widgetbook.WidgetbookNode>[
                     _widgetbook_workspace_primitives_viewport_layout_use_cases
                         .masterDetailStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSceneViewport',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Bounded scene geometry',
+                name: 'Route body breakpoint',
                 builder:
                     _widgetbook_workspace_primitives_viewport_layout_use_cases
-                        .sceneViewportStates,
+                        .adaptiveMasterDetailStates,
               ),
             ],
           ),
@@ -2124,6 +2098,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_layout_motion_use_cases
                         .tabViewportContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchViewport',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Bounded scene geometry',
+                builder:
+                    _widgetbook_workspace_primitives_viewport_layout_use_cases
+                        .sceneViewportStates,
               ),
             ],
           ),

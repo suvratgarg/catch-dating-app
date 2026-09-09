@@ -419,7 +419,7 @@ class CatchRosterTable extends StatelessWidget {
       color: t.ink3,
     ).copyWith(fontSize: 8.5);
 
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: ComponentBreakpoints.hostRosterTableCompactBreakpoint,
       compactBuilder: (context) {
         if (showEmpty) {

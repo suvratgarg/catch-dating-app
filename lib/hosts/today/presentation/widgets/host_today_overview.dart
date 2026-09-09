@@ -55,7 +55,7 @@ class HostTodayOverview extends StatelessWidget {
       onOpenAttention: onOpenAttention,
     );
 
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
       compactBuilder: (_) => Column(
         key: const ValueKey<String>('host-today-compact-layout'),
@@ -79,7 +79,7 @@ class HostTodayOverview extends StatelessWidget {
           ),
         ],
       ),
-      expandedBuilder: (_) => CatchViewportBreakpoint(
+      expandedBuilder: (_) => CatchViewport.atWidth(
         breakpoint: CatchLayout.hostTodayExpandedAttentionPaneBreakpoint,
         compactBuilder: (_) => _HostTodayWideLayout(
           primary: primary,

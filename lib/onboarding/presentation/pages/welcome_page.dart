@@ -182,7 +182,7 @@ class _WelcomePageState extends ConsumerState<WelcomePage>
             key: WelcomePage.splashTapTargetKey,
             behavior: HitTestBehavior.opaque,
             onTap: _landed ? null : _skip,
-            child: CatchSceneViewport(
+            child: CatchViewport.scene(
               maxWidth: CatchWelcomeTokens.welcomeMaxWidth,
               builder: (context, viewport) => AnimatedBuilder(
                 animation: _sceneListenable,

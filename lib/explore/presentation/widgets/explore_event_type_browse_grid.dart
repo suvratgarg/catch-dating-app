@@ -111,7 +111,7 @@ class ActivityTypeRows extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint,
       compactBuilder: (context) => Column(
         children: [

@@ -62,7 +62,7 @@ void main() {
           child: SizedBox(
             width: 500,
             height: 320,
-            child: CatchSceneViewport(
+            child: CatchViewport.scene(
               maxWidth: 360,
               builder: (context, viewport) =>
                   Text('${viewport.width.toInt()}x${viewport.height.toInt()}'),
@@ -73,5 +73,38 @@ void main() {
     );
 
     expect(find.text('360x320'), findsOneWidget);
+  });
+
+  testWidgets('scene viewport falls back only on unbounded axes', (
+    tester,
+  ) async {
+    CatchViewportSceneData? measured;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(
+            size: Size(1200, 500),
+            padding: EdgeInsets.only(top: 24, bottom: 16),
+          ),
+          child: UnconstrainedBox(
+            child: CatchViewport.scene(
+              maxWidth: 360,
+              builder: (context, viewport) {
+                measured = viewport;
+                return const SizedBox(key: Key('unbounded-scene'));
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(measured?.width, 360);
+    expect(measured?.height, 500);
+    expect(measured?.mediaPadding, const EdgeInsets.only(top: 24, bottom: 16));
+    expect(
+      tester.getSize(find.byKey(const Key('unbounded-scene'))),
+      const Size(360, 500),
+    );
+    expect(tester.takeException(), isNull);
   });
 }

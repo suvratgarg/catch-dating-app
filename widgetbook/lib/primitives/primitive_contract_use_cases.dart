@@ -5145,6 +5145,13 @@ Widget catchViewportContractStates(BuildContext context) => _ContractScreen(
     'expanded-falls-back-to-medium',
     'missing-overrides-use-compact',
     'large-text',
+    'below-breakpoint',
+    'at-breakpoint',
+    'above-breakpoint',
+    'local-cross-axis-width',
+    'width-capped',
+    'local-height',
+    'safe-area-metrics',
   ],
   children: [
     for (final width in [599.0, 600.0, 839.0, 840.0])
@@ -5201,6 +5208,83 @@ Widget catchViewportContractStates(BuildContext context) => _ContractScreen(
                       ),
                     )
                   : null,
+            ),
+          ),
+        ),
+      ),
+    for (final width in [319.0, 320.0, 321.0])
+      _StateCard(
+        label: '${width.toInt()} px at a 320 px local breakpoint',
+        child: Align(
+          alignment: Alignment.centerLeft,
+          child: SizedBox(
+            width: width,
+            child: CatchViewport.atWidth(
+              breakpoint: 320,
+              compactBuilder: (_) => CatchSurface.card(
+                child: Text(
+                  'Compact component',
+                  style: CatchTextStyles.bodyM(context),
+                ),
+              ),
+              expandedBuilder: (_) => CatchSurface.card(
+                child: Text(
+                  'Expanded component',
+                  style: CatchTextStyles.bodyM(context),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    for (final width in [320.0, 600.0, 840.0])
+      _StateCard(
+        label: '${width.toInt()} px local sliver width',
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: width,
+            height: 100,
+            child: CustomScrollView(
+              slivers: [
+                CatchViewport.sliver(
+                  sliverBuilder: (context, viewport) => SliverToBoxAdapter(
+                    child: CatchSurface.card(
+                      child: Text(
+                        '${viewport.width.toInt()} px · ${viewport.sizeClass.name}',
+                        style: CatchTextStyles.bodyM(context),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    for (final maximum in [240.0, 520.0])
+      _StateCard(
+        label: '${maximum.toInt()} px scene cap with safe-area metrics',
+        child: MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(padding: const EdgeInsets.only(top: 24, bottom: 16)),
+          child: SizedBox(
+            height: 180,
+            child: CatchViewport.scene(
+              maxWidth: maximum,
+              builder:
+                  (
+                    BuildContext context,
+                    CatchViewportSceneData viewport,
+                  ) => CatchSurface.card(
+                    child: Text(
+                      '${viewport.width.toInt()} × ${viewport.height.toInt()}\n'
+                      'Insets ${viewport.mediaPadding.top.toInt()} / '
+                      '${viewport.mediaPadding.bottom.toInt()}',
+                      style: CatchTextStyles.bodyM(context),
+                    ),
+                  ),
             ),
           ),
         ),

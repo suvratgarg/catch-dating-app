@@ -47,12 +47,12 @@ Widget fillViewportStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Bounded scene geometry',
-  type: CatchSceneViewport,
+  type: CatchViewport,
   path: '[Core patterns]/Viewport',
 )
 Widget sceneViewportStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Scene viewport',
-  catalogId: 'catch.screen_body.scene_viewport',
+  catalogId: 'catch.viewport',
   children: [
     for (final maximum in [240.0, 520.0]) ...[
       CatchMetadataText(
@@ -65,14 +65,15 @@ Widget sceneViewportStates(BuildContext context) => WidgetbookCatalogFrame(
         ).copyWith(padding: const EdgeInsets.only(top: 24, bottom: 16)),
         child: SizedBox(
           height: 180,
-          child: CatchSceneViewport(
+          child: CatchViewport.scene(
             maxWidth: maximum,
-            builder: (context, viewport) => WidgetbookLayoutPane(
-              label:
-                  '${viewport.width.toInt()} × ${viewport.height.toInt()}\n'
-                  'Insets ${viewport.mediaPadding.top.toInt()} / '
-                  '${viewport.mediaPadding.bottom.toInt()}',
-            ),
+            builder: (BuildContext context, CatchViewportSceneData viewport) =>
+                WidgetbookLayoutPane(
+                  label:
+                      '${viewport.width.toInt()} × ${viewport.height.toInt()}\n'
+                      'Insets ${viewport.mediaPadding.top.toInt()} / '
+                      '${viewport.mediaPadding.bottom.toInt()}',
+                ),
           ),
         ),
       ),
@@ -82,7 +83,7 @@ Widget sceneViewportStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Compact and split panes',
-  type: CatchMasterDetailLayout,
+  type: CatchMasterDetailViewport,
   path: '[Core patterns]/Viewport',
 )
 Widget masterDetailStates(BuildContext context) => WidgetbookCatalogFrame(
@@ -96,10 +97,10 @@ Widget masterDetailStates(BuildContext context) => WidgetbookCatalogFrame(
       ),
       WidgetbookLayoutViewport(
         size: Size(expanded ? 760 : 360, 180),
-        child: CatchMasterDetailLayout(
+        child: CatchMasterDetailViewport(
           expanded: expanded,
-          master: const WidgetbookLayoutPane(label: 'Index'),
-          detail: const WidgetbookLayoutPane(label: 'Detail', accent: false),
+          leading: const WidgetbookLayoutPane(label: 'Index'),
+          body: const WidgetbookLayoutPane(label: 'Detail', accent: false),
         ),
       ),
     ],
@@ -108,13 +109,13 @@ Widget masterDetailStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Route body breakpoint',
-  type: CatchAdaptiveMasterDetailLayout,
+  type: CatchMasterDetailViewport,
   path: '[Core patterns]/Viewport',
 )
 Widget adaptiveMasterDetailStates(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Adaptive master and detail',
-      catalogId: 'catch.screen_body.adaptive_master_detail_layout',
+      catalogId: 'catch.screen_body.master_detail_layout',
       children: [
         for (final width in [719.0, 720.0]) ...[
           CatchMetadataText(
@@ -123,15 +124,12 @@ Widget adaptiveMasterDetailStates(BuildContext context) =>
           ),
           WidgetbookLayoutViewport(
             size: Size(width, 180),
-            child: CatchAdaptiveMasterDetailLayout(
+            child: CatchMasterDetailViewport.adaptive(
               minimumExpandedWidth: 720,
-              masterBuilder: (context, expanded) => WidgetbookLayoutPane(
+              leadingBuilder: (context, expanded) => WidgetbookLayoutPane(
                 label: expanded ? 'Split index' : 'Compact index',
               ),
-              detail: const WidgetbookLayoutPane(
-                label: 'Detail',
-                accent: false,
-              ),
+              body: const WidgetbookLayoutPane(label: 'Detail', accent: false),
             ),
           ),
         ],

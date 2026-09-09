@@ -81,7 +81,7 @@ class HostTodayHeader extends StatelessWidget {
     final date = now == null
         ? null
         : MaterialLocalizations.of(context).formatFullDate(now!);
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
       compactBuilder: (_) => CatchScreenHeader.block(
         title: context.l10n.hostNavigationToday,

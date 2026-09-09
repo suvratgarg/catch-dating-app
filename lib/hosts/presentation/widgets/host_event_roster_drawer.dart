@@ -52,7 +52,7 @@ class _HostEventRosterDrawerState extends State<HostEventRosterDrawer> {
     final duration = reduceMotion ? Duration.zero : CatchMotion.standard;
     final t = CatchTokens.of(context);
 
-    return CatchSceneViewport(
+    return CatchViewport.scene(
       maxWidth: double.infinity,
       builder: (context, viewport) {
         final handleWidth = CatchLayout.hostRosterDrawerHandleWidth;

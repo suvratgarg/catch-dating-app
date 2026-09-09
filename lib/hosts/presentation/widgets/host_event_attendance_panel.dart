@@ -1333,7 +1333,7 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
       borderColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
       radius: CatchRadius.md,
       backgroundColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
-      child: CatchViewportBreakpoint(
+      child: CatchViewport.atWidth(
         breakpoint: ComponentBreakpoints.hostWaitlistBulkOfferStackBreakpoint,
         compactBuilder: (context) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

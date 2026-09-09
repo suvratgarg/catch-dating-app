@@ -63,7 +63,7 @@ class ClubHeroAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchViewportSliver(
+    return CatchViewport.sliver(
       sliverBuilder: (context, viewport) {
         final t = CatchTokens.of(context);
         final width = viewport.width;

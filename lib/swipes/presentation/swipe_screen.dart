@@ -246,7 +246,7 @@ class CatchesProfileReview extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: CatchViewportBreakpoint(
+          child: CatchViewport.atWidth(
             breakpoint: ComponentBreakpoints.catchesWidePaddingBreakpoint,
             compactBuilder: (context) => ProfileSurface(
               key: ValueKey(profile.uid),

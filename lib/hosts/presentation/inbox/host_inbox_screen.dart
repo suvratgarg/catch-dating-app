@@ -226,15 +226,15 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
     return CatchScreenScaffold.workspace(
       backgroundColor: t.bg,
       body: isInbox
-          ? CatchAdaptiveMasterDetailLayout(
+          ? CatchMasterDetailViewport.adaptive(
               minimumExpandedWidth: CatchLayout.hostMessagingSplitViewMinWidth,
-              masterBuilder: buildMaster,
-              detail: detail,
+              leadingBuilder: buildMaster,
+              body: detail,
             )
-          : CatchMasterDetailLayout(
+          : CatchMasterDetailViewport(
               expanded: false,
-              master: buildMaster(context, false),
-              detail: detail,
+              leading: buildMaster(context, false),
+              body: detail,
             ),
     );
   }

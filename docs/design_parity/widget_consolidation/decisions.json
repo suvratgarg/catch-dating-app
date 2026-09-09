@@ -7826,6 +7826,42 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:local-viewport-recipes",
+      "patternFamilyId": "local-viewport-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchViewport",
+      "members": [
+        {
+          "name": "CatchViewport",
+          "action": "keep"
+        },
+        {
+          "name": "CatchViewportBreakpoint",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchViewportSliver",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSceneViewport",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchMasterDetailLayout",
+          "action": "rename"
+        },
+        {
+          "name": "CatchAdaptiveMasterDetailLayout",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Local size classes, explicit thresholds, sliver geometry and capped scene geometry share the Viewport owner through named const constructors. Master/detail composition retains an explicit comparison because it arranges pane width and a divider, and its adaptive recipe delegates to the same pane renderer while forwarding the measured split state to the route. Five old Widget classes and files are removed, every caller migrates, and all direct geometry previews remain registered.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

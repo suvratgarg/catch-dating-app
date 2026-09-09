@@ -3909,8 +3909,8 @@ Widget celebrationNoteCatalogStates(BuildContext context) {
 )
 Widget responsiveBuilderCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchViewport',
-    catalogId: 'core.responsive.responsive_builder',
+    title: 'Viewport layouts',
+    catalogId: 'catch.viewport',
     children: [
       _StateCard(
         label: 'compact / medium / expanded',
@@ -3944,12 +3944,12 @@ Widget responsiveBuilderCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Local breakpoint',
-  type: CatchViewportBreakpoint,
+  type: CatchViewport,
   path: '[Core catalog]/Layout',
 )
 Widget catchViewportBreakpointCatalogStates(BuildContext context) =>
     WidgetbookCatalogFrame(
-      title: 'CatchViewportBreakpoint',
+      title: 'Local breakpoint',
       catalogId: 'catch.viewport',
       children: [
         for (final width in [319.0, 320.0, 321.0])
@@ -3959,7 +3959,7 @@ Widget catchViewportBreakpointCatalogStates(BuildContext context) =>
               alignment: Alignment.centerLeft,
               child: SizedBox(
                 width: width,
-                child: CatchViewportBreakpoint(
+                child: CatchViewport.atWidth(
                   breakpoint: 320,
                   compactBuilder: (_) => CatchSurface.card(
                     child: Text(
@@ -3982,13 +3982,13 @@ Widget catchViewportBreakpointCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Local sliver geometry',
-  type: CatchViewportSliver,
+  type: CatchViewport,
   path: '[Core catalog]/Layout',
 )
 Widget catchViewportSliverCatalogStates(
   BuildContext context,
 ) => WidgetbookCatalogFrame(
-  title: 'CatchViewportSliver',
+  title: 'Sliver geometry',
   catalogId: 'catch.viewport',
   children: [
     for (final width in [320.0, 600.0, 840.0])
@@ -4001,7 +4001,7 @@ Widget catchViewportSliverCatalogStates(
             height: 100,
             child: CustomScrollView(
               slivers: [
-                CatchViewportSliver(
+                CatchViewport.sliver(
                   sliverBuilder:
                       (
                         BuildContext context,

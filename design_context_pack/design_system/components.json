@@ -9511,49 +9511,15 @@
             }
           },
           {
-            "id": "catch.screen_body.scene_viewport",
-            "symbol": "CatchSceneViewport",
-            "file": "packages/catch_ui/lib/src/patterns/catch_scene_viewport.dart",
-            "summary": "Bounded scene geometry supplying local width, height and inherited safe-area metrics.",
-            "states": [
-              "width-capped",
-              "local-width",
-              "local-height",
-              "safe-area-metrics"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
             "id": "catch.screen_body.master_detail_layout",
-            "symbol": "CatchMasterDetailLayout",
-            "file": "packages/catch_ui/lib/src/patterns/catch_master_detail_layout.dart",
-            "summary": "Master and detail pane placement with an explicit compact or expanded decision and canonical index width.",
+            "symbol": "CatchMasterDetailViewport",
+            "file": "packages/catch_ui/lib/src/patterns/catch_master_detail_viewport.dart",
+            "summary": "One compact/split pane owner; adaptive construction shares the actual local-width decision with its leading builder.",
             "states": [
               "compact",
               "expanded",
               "index-width",
-              "shared-divider"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
-            "id": "catch.screen_body.adaptive_master_detail_layout",
-            "symbol": "CatchAdaptiveMasterDetailLayout",
-            "file": "packages/catch_ui/lib/src/patterns/catch_adaptive_master_detail_layout.dart",
-            "summary": "Resolves master-detail expansion from route-body constraints and forwards that decision to the master builder.",
-            "states": [
+              "shared-divider",
               "below-breakpoint",
               "at-breakpoint",
               "master-builder-state"
@@ -9564,6 +9530,16 @@
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L4",
+            "roleNoun": "Viewport",
+            "naming": {
+              "useCase": "MasterDetail",
+              "comparedWith": [
+                "catch.screen_body",
+                "catch.viewport"
+              ],
+              "reason": "The page-body parent owns scrolling and insets, and CatchViewport measures geometry for caller-owned content. This member arranges the index/detail panes, canonical index width and divider. Its adaptive constructor reports the same local-width split decision to the leading builder that drives pane placement, so route push versus adjacent selection cannot disagree with shell-reduced width. Explicit and adaptive selection share one pane renderer; selection and navigation stay with callers."
             }
           },
           {
@@ -17314,12 +17290,15 @@
       "name": "CatchViewport",
       "status": "active",
       "kind": "pattern",
-      "summary": "Available-width layout selection with Material size classes, explicit component breakpoints and sliver geometry.",
+      "summary": "One local viewport owner with named size-class, explicit-width, sliver and bounded-scene recipes.",
       "dart": {
         "symbol": "CatchViewport",
         "file": "packages/catch_ui/lib/src/patterns/catch_viewport.dart",
         "constructors": [
-          "CatchViewport"
+          "CatchViewport",
+          "CatchViewport.atWidth",
+          "CatchViewport.sliver",
+          "CatchViewport.scene"
         ]
       },
       "design": {
@@ -17357,6 +17336,34 @@
             "type": "callback",
             "required": false,
             "dartType": "WidgetBuilder?"
+          },
+          {
+            "name": "breakpoint",
+            "type": "number",
+            "required": true,
+            "dartType": "double",
+            "notes": "Required by atWidth; compares actual local width using below versus at-or-above semantics."
+          },
+          {
+            "name": "sliverBuilder",
+            "type": "callback",
+            "required": true,
+            "dartType": "CatchViewportSliverBuilder",
+            "notes": "Required by sliver; returns a sliver from local cross-axis geometry."
+          },
+          {
+            "name": "maxWidth",
+            "type": "number",
+            "required": true,
+            "dartType": "double",
+            "notes": "Required by scene; caps the local or MediaQuery fallback width."
+          },
+          {
+            "name": "builder",
+            "type": "callback",
+            "required": true,
+            "dartType": "CatchViewportSceneBuilder",
+            "notes": "Required by scene; receives bounded width/height and inherited media padding."
           }
         ],
         "states": [
@@ -17365,60 +17372,32 @@
           "expanded",
           "expanded-falls-back-to-medium",
           "missing-overrides-use-compact",
-          "large-text"
+          "large-text",
+          "below-breakpoint",
+          "at-breakpoint",
+          "above-breakpoint",
+          "local-cross-axis-width",
+          "width-capped",
+          "local-height",
+          "safe-area-metrics"
         ],
         "slots": [
           "compactBuilder",
           "mediumBuilder",
-          "expandedBuilder"
+          "expandedBuilder",
+          "sliverBuilder",
+          "builder"
         ],
         "tokens": [],
         "dartRoles": [
           "CatchWindowSize",
-          "CatchViewportBreakpoint",
-          "CatchViewportSliver",
           "CatchViewportGeometry",
-          "CatchViewportSliverBuilder"
+          "CatchViewportSliverBuilder",
+          "CatchViewportSceneData",
+          "CatchViewportSceneBuilder"
         ],
         "goldens": [],
         "members": [
-          {
-            "id": "catch.viewport.breakpoint",
-            "symbol": "CatchViewportBreakpoint",
-            "file": "packages/catch_ui/lib/src/patterns/catch_viewport_breakpoint.dart",
-            "summary": "Selects compact or expanded content at a caller-owned local-width breakpoint.",
-            "states": [
-              "below-breakpoint",
-              "at-breakpoint",
-              "above-breakpoint"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.viewport",
-              "parentConceptId": "catch.viewport",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.viewport"
-            }
-          },
-          {
-            "id": "catch.viewport.sliver",
-            "symbol": "CatchViewportSliver",
-            "file": "packages/catch_ui/lib/src/patterns/catch_viewport_sliver.dart",
-            "summary": "Supplies local cross-axis width and its size class to a caller-owned sliver.",
-            "states": [
-              "local-cross-axis-width",
-              "compact",
-              "medium",
-              "expanded"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.viewport",
-              "parentConceptId": "catch.viewport",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.viewport"
-            }
-          },
           {
             "id": "catch.viewport.geometry",
             "symbol": "CatchViewportGeometry",
@@ -17433,6 +17412,23 @@
               "parentConceptId": "catch.viewport",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.viewport"
+            }
+          },
+          {
+            "id": "catch.viewport.scene_data",
+            "symbol": "CatchViewportSceneData",
+            "file": "packages/catch_ui/lib/src/patterns/catch_viewport_scene_data.dart",
+            "summary": "Immutable bounded scene width, height and inherited safe-area padding.",
+            "states": [
+              "bounded-dimensions",
+              "safe-area-metrics"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.viewport",
+              "parentConceptId": "catch.viewport",
+              "qualifier": "anatomy",
+              "decisionRef": "pattern-family:local-viewport-recipes"
             }
           }
         ],
@@ -17453,10 +17449,11 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "CatchViewport applies CatchWindowSize thresholds to its actual available width. Missing expanded content falls back to medium, then compact.",
-          "CatchViewportBreakpoint uses a caller-owned local threshold; feature-specific ComponentBreakpoints remain app policy.",
-          "CatchViewportSliver reports its sliver cross-axis extent without reading global window metrics.",
-          "The renderers do not own product copy, provider state, route selection or typography scaling."
+          "The default applies CatchWindowSize thresholds to available local width, with medium-to-compact and expanded-to-medium-to-compact fallbacks.",
+          "atWidth selects below versus at-or-above a caller-owned threshold; feature ComponentBreakpoints stay in the app.",
+          "sliver supplies its cross-axis extent and size class without reading global window metrics.",
+          "scene caps width, takes bounded local height and preserves inherited media padding; only unbounded axes fall back to MediaQuery size.",
+          "Master/detail viewport owns two-pane composition, index width and a divider. This viewport instead measures local geometry for caller-owned content; it owns no product selection or navigation."
         ]
       },
       "governance": {
@@ -17474,6 +17471,11 @@
       },
       "surfaces": {
         "flutter": "CatchViewport"
+      },
+      "level": "L4",
+      "roleNoun": "Viewport",
+      "naming": {
+        "useCase": ""
       }
     }
   ]

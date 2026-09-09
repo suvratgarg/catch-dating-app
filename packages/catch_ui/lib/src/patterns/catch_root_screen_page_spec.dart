@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_initializing_formals
 
-import 'package:catch_ui/src/patterns/catch_master_detail_layout.dart';
+import 'package:catch_ui/src/patterns/catch_master_detail_viewport.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_page_owner.dart';
 import 'package:flutter/widgets.dart';
 
@@ -51,10 +51,10 @@ final class CatchRootScreenPageSpec {
         color: _backgroundColor!,
         child: _page as Widget,
       ),
-      _CatchRootScreenPageKind.masterDetail => CatchMasterDetailLayout(
+      _CatchRootScreenPageKind.masterDetail => CatchMasterDetailViewport(
         expanded: _expanded,
-        master: _page as Widget,
-        detail: _detail!,
+        leading: _page as Widget,
+        body: _detail!,
       ),
     };
   }

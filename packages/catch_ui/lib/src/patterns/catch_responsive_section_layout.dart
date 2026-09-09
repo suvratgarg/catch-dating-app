@@ -8,7 +8,7 @@ import 'package:catch_ui/src/patterns/catch_responsive_section_composition.dart'
 import 'package:catch_ui/src/patterns/catch_responsive_section_item.dart';
 import 'package:catch_ui/src/patterns/catch_responsive_section_lane.dart';
 import 'package:catch_ui/src/patterns/catch_section_stack.dart';
-import 'package:catch_ui/src/patterns/catch_viewport_breakpoint.dart';
+import 'package:catch_ui/src/patterns/catch_viewport.dart';
 import 'package:flutter/widgets.dart';
 
 /// Responsive layout for pages composed from complete `CatchSection` blocks.
@@ -78,7 +78,7 @@ class CatchResponsiveSectionLayout extends StatelessWidget {
     if (composition == CatchResponsiveSectionComposition.centered) {
       return singleColumn;
     }
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: breakpoint,
       compactBuilder: (_) => singleColumn,
       expandedBuilder: (_) {

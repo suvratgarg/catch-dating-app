@@ -3297,6 +3297,69 @@
           "rationale": "Name the diagnostic disclosure by its Accordion responsibility; remove the old class and path."
         }
       ]
+    },
+    {
+      "id": "local-viewport-recipes",
+      "title": "Local viewport measurement and master/detail composition",
+      "intent": "Use named constructors for geometry protocols and for explicit/adaptive pane selection, without separate responsive implementations.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.viewport",
+      "qualityReference": "CatchViewport",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "Production viewport and pane rendering is unchanged. Shorter catalog titles identify the recipes and canonical registry IDs.",
+        "The viewport contract gallery adds its local-threshold, sliver and bounded-scene specimens; all former direct recipe previews remain registered."
+      ],
+      "members": [
+        {
+          "symbol": "CatchViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Measures local box/sliver constraints and selects caller-owned layouts; threshold, sliver and bounded-scene variants use named constructors."
+        },
+        {
+          "symbol": "CatchMasterDetailViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns fixed-width index/detail pane composition and the shared divider; the adaptive constructor reports its split decision to the leading builder."
+        },
+        {
+          "symbol": "CatchViewportBreakpoint",
+          "disposition": "unify",
+          "target": "CatchViewport.atWidth",
+          "preview": "not-applicable",
+          "rationale": "A caller-selected threshold is a viewport selection recipe, not another responsibility."
+        },
+        {
+          "symbol": "CatchViewportSliver",
+          "disposition": "unify",
+          "target": "CatchViewport.sliver",
+          "preview": "not-applicable",
+          "rationale": "The sliver render protocol uses the same local viewport measurement owner."
+        },
+        {
+          "symbol": "CatchSceneViewport",
+          "disposition": "unify",
+          "target": "CatchViewport.scene",
+          "preview": "not-applicable",
+          "rationale": "Bounded two-dimensional scene geometry is a named viewport recipe; its data remains nonvisual."
+        },
+        {
+          "symbol": "CatchMasterDetailLayout",
+          "disposition": "unify",
+          "target": "CatchMasterDetailViewport",
+          "preview": "not-applicable",
+          "rationale": "Name the pane composition by its Viewport responsibility."
+        },
+        {
+          "symbol": "CatchAdaptiveMasterDetailLayout",
+          "disposition": "unify",
+          "target": "CatchMasterDetailViewport.adaptive",
+          "preview": "not-applicable",
+          "rationale": "Share one pane renderer and preserve its local-width navigation decision."
+        }
+      ]
     }
   ]
 }

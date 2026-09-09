@@ -33,11 +33,11 @@ class CreateEventAdaptiveWorkspace extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: ComponentBreakpoints.hostCreateEventStepRailBreakpoint,
       compactBuilder: (_) =>
           CreateEventWorkspaceFrame(header: header, body: body),
-      expandedBuilder: (_) => CatchViewportBreakpoint(
+      expandedBuilder: (_) => CatchViewport.atWidth(
         breakpoint:
             ComponentBreakpoints.hostCreateEventConsequencePaneBreakpoint,
         compactBuilder: (_) => CreateEventWorkspaceFrame(
