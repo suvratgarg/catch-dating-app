@@ -215,17 +215,17 @@ Widget responsiveFieldInteractionStates(BuildContext context) =>
             size: Size(width, width < 660 ? 560 : 280),
             child: CatchScreenBody(
               scrollable: false,
-              child: CatchResponsiveSectionLayout(
-                composition:
-                    CatchResponsiveSectionComposition.adaptiveTwoColumn,
+              child: CatchSectionList.responsive(
+                emptyStateOmitted: true,
+                mode: CatchSectionListMode.adaptiveTwoColumn,
                 fieldInteractionPolicy:
                     const CatchResponsiveFieldInteractionPolicy(),
-                sections: [
+                items: [
                   for (final lane in [
-                    CatchResponsiveSectionLane.primary,
-                    CatchResponsiveSectionLane.secondary,
+                    CatchSectionListPlacement.primary,
+                    CatchSectionListPlacement.secondary,
                   ])
-                    CatchResponsiveSectionItem(
+                    CatchSectionListItem(
                       lane: lane,
                       child: CatchSection.fieldRows(
                         children: [_openField(context)],

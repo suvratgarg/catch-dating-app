@@ -33,6 +33,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 import '../preview_layout_contracts.dart';
 import 'code_input_demo.dart';
+import 'section_layout_use_cases.dart' show WidgetbookScrolledSectionPage;
 
 // ignore_for_file: invalid_use_of_internal_member
 
@@ -6177,24 +6178,19 @@ Widget catchScreenBodyContractStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchSectionStack,
+  name: 'Inset sections',
+  type: CatchSectionList,
   path: '[Core primitives]/Sections',
 )
-Widget catchSectionStackContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchSectionStack',
-    contractId: 'catch.section_stack',
-    states: const [
-      'handoff-sections',
-      'plain-sections',
-      'custom-gap',
-      'zero-padding',
-    ],
+Widget catchSectionInsetStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'Inset sections',
+    catalogId: 'catch.section_stack',
     children: [
       const _StateCard(
         label: 'handoff-sections',
-        child: CatchSectionStack(
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
           padding: EdgeInsets.zero,
           children: [
             CatchSection.divided(
@@ -6218,7 +6214,8 @@ Widget catchSectionStackContractStates(BuildContext context) {
       ),
       const _StateCard(
         label: 'plain-sections',
-        child: CatchSectionStack(
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
           padding: EdgeInsets.zero,
           children: [
             _BodySpec(label: 'First plain section block'),
@@ -6228,7 +6225,8 @@ Widget catchSectionStackContractStates(BuildContext context) {
       ),
       const _StateCard(
         label: 'custom-gap',
-        child: CatchSectionStack(
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
           padding: EdgeInsets.zero,
           gap: CatchSpacing.s3,
           children: [
@@ -6239,7 +6237,8 @@ Widget catchSectionStackContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'zero-padding',
-        child: CatchSectionStack(
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
           padding: EdgeInsets.zero,
           children: [
             CatchSection.contained(
@@ -6264,12 +6263,30 @@ Widget catchSectionStackContractStates(BuildContext context) {
   path: '[Core primitives]/Sections',
 )
 Widget catchSectionListContractStates(BuildContext context) {
-  return const _ContractScreen(
-    title: 'CatchSectionList',
-    contractId: 'catch.section_stack.section_list',
-    states: ['default-gap', 'zero-gap', 'custom-gap', 'main-min'],
+  return _ContractScreen(
+    title: 'Section lists',
+    contractId: 'catch.section_stack',
+    states: const [
+      'default-gap',
+      'zero-gap',
+      'custom-gap',
+      'main-min',
+      'empty',
+      'empty-omitted',
+      'handoff-sections',
+      'plain-sections',
+      'zero-padding',
+      'detail-gutter',
+      'section-owned-rhythm',
+      'centered',
+      'compact-fallback',
+      'two-column',
+      'single-lane-fallback',
+      'floating-bottom-navigation',
+      'no-bottom-navigation',
+    ],
     children: [
-      _StateCard(
+      const _StateCard(
         label: 'default-gap',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
@@ -6283,7 +6300,7 @@ Widget catchSectionListContractStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
+      const _StateCard(
         label: 'zero-gap',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
@@ -6297,7 +6314,7 @@ Widget catchSectionListContractStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
+      const _StateCard(
         label: 'custom-gap',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
@@ -6311,7 +6328,7 @@ Widget catchSectionListContractStates(BuildContext context) {
           ),
         ),
       ),
-      _StateCard(
+      const _StateCard(
         label: 'main-min',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
@@ -6325,28 +6342,82 @@ Widget catchSectionListContractStates(BuildContext context) {
           ),
         ),
       ),
-    ],
-  );
-}
 
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchDetailSliverSectionList,
-  path: '[Core primitives]/Sections',
-)
-Widget catchDetailSliverSectionListContractStates(BuildContext context) {
-  return const _ContractScreen(
-    title: 'CatchDetailSliverSectionList',
-    contractId: 'catch.section_stack.detail_sliver_section_list',
-    states: ['detail-gutter', 'section-owned-rhythm', 'custom-gap'],
-    children: [
+      const _StateCard(
+        label: 'handoff-sections',
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
+          padding: EdgeInsets.zero,
+          children: [
+            CatchSection.divided(
+              first: true,
+              lead: true,
+              title: 'Room',
+              count: 2,
+              child: _BodySpec(label: 'Lead section keeps no top rule.'),
+            ),
+            CatchSection.divided(
+              title: 'Guests',
+              count: 24,
+              child: _BodySpec(label: 'Next sections own the divider.'),
+            ),
+            CatchSection.divided(
+              title: 'Follow up',
+              child: _BodySpec(label: 'No ad-hoc gaps needed.'),
+            ),
+          ],
+        ),
+      ),
+      const _StateCard(
+        label: 'plain-sections',
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
+          padding: EdgeInsets.zero,
+          children: [
+            _BodySpec(label: 'First plain section block'),
+            _BodySpec(label: 'Second block follows stack rhythm'),
+          ],
+        ),
+      ),
+      const _StateCard(
+        label: 'custom-gap',
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
+          padding: EdgeInsets.zero,
+          gap: CatchSpacing.s3,
+          children: [
+            _BodySpec(label: 'First block'),
+            _BodySpec(label: 'Second block with explicit gap'),
+          ],
+        ),
+      ),
+      _StateCard(
+        label: 'zero-padding',
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
+          padding: EdgeInsets.zero,
+          children: [
+            CatchSection.contained(
+              children: [
+                CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
+                  title: 'Nested field',
+                  body: 'Section stack can hold contracted primitives.',
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+
       _StateCard(
         label: 'detail-gutter',
         child: _BodyFrame(
           child: CustomScrollView(
             slivers: [
-              CatchDetailSliverSectionList(
-                sections: [
+              CatchSectionList.sliver(
+                emptyStateOmitted: true,
+                children: [
                   CatchSection.divided(
                     first: true,
                     lead: true,
@@ -6368,11 +6439,150 @@ Widget catchDetailSliverSectionListContractStates(BuildContext context) {
         child: _BodyFrame(
           child: CustomScrollView(
             slivers: [
-              CatchDetailSliverSectionList(
+              CatchSectionList.sliver(
+                emptyStateOmitted: true,
                 gap: CatchSpacing.s4,
                 topPadding: CatchSpacing.s4,
                 bottomPadding: CatchSpacing.s4,
-                sections: [
+                children: [
+                  CatchSection.contained(
+                    child: _BodySpec(label: 'Contained card section'),
+                  ),
+                  CatchSection.plain(
+                    title: 'Notes',
+                    child: _BodySpec(label: 'Custom sliver gap.'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+
+      for (final setup in [
+        (
+          width: 760.0,
+          mode: CatchSectionListMode.centered,
+          secondary: true,
+          label: 'Centered lane',
+        ),
+        (
+          width: 659.0,
+          mode: CatchSectionListMode.adaptiveTwoColumn,
+          secondary: true,
+          label: 'Compact ordering',
+        ),
+        (
+          width: 660.0,
+          mode: CatchSectionListMode.adaptiveTwoColumn,
+          secondary: true,
+          label: 'Two complete lanes',
+        ),
+        (
+          width: 760.0,
+          mode: CatchSectionListMode.adaptiveTwoColumn,
+          secondary: false,
+          label: 'One populated lane',
+        ),
+      ])
+        _StateCard(
+          label: setup.label,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            child: WidgetbookViewportFrame.device(
+              size: Size(setup.width, 320),
+              child: CatchSectionList.responsive(
+                emptyStateOmitted: true,
+                mode: setup.mode,
+                items: [
+                  for (final index in [0, 1])
+                    CatchSectionListItem(
+                      lane: index == 1 && setup.secondary
+                          ? CatchSectionListPlacement.secondary
+                          : CatchSectionListPlacement.primary,
+                      child: CatchSection.fieldRows(
+                        children: [
+                          CatchField.read(
+                            copy: catchFieldCopy(context.l10n),
+                            title: index == 0 ? 'Primary' : 'Secondary',
+                            body: 'Complete section',
+                          ),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      for (final floating in [false, true])
+        _StateCard(
+          label: floating
+              ? 'Floating bottom navigation'
+              : 'No bottom navigation',
+          child: WidgetbookScrolledSectionPage(floating: floating),
+        ),
+      _StateCard(
+        label: 'Explicit empty-state owner',
+        child: CatchSectionList(
+          children: const [],
+          emptyStateOmitted: false,
+          emptyBuilder: (_) => const _BodySpec(label: 'No sections available'),
+        ),
+      ),
+      const _StateCard(
+        label: 'Explicit omission',
+        child: CatchSectionList(children: [], emptyStateOmitted: true),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Sliver section insets',
+  type: CatchSectionList,
+  path: '[Core primitives]/Sections',
+)
+Widget catchSectionSliverStates(BuildContext context) {
+  return const WidgetbookCatalogFrame(
+    title: 'Sliver section insets',
+    catalogId: 'catch.section_stack',
+    children: [
+      _StateCard(
+        label: 'detail-gutter',
+        child: _BodyFrame(
+          child: CustomScrollView(
+            slivers: [
+              CatchSectionList.sliver(
+                emptyStateOmitted: true,
+                children: [
+                  CatchSection.divided(
+                    first: true,
+                    lead: true,
+                    title: 'Overview',
+                    child: _BodySpec(label: 'Detail body starts inset.'),
+                  ),
+                  CatchSection.divided(
+                    title: 'Plan',
+                    child: _BodySpec(label: 'Section owns its divider rhythm.'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'custom-gap',
+        child: _BodyFrame(
+          child: CustomScrollView(
+            slivers: [
+              CatchSectionList.sliver(
+                emptyStateOmitted: true,
+                gap: CatchSpacing.s4,
+                topPadding: CatchSpacing.s4,
+                bottomPadding: CatchSpacing.s4,
+                children: [
                   CatchSection.contained(
                     child: _BodySpec(label: 'Contained card section'),
                   ),

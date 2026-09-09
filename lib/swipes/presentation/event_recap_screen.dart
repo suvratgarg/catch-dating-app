@@ -147,9 +147,10 @@ class EventRecapReadyBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchResponsiveSectionLayout(
-      sections: [
-        CatchResponsiveSectionItem(
+    return CatchSectionList.responsive(
+      emptyStateOmitted: true,
+      items: [
+        CatchSectionListItem(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -277,9 +278,10 @@ class EventRecapLoadingBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchResponsiveSectionLayout(
-      sections: [
-        CatchResponsiveSectionItem(
+    return CatchSectionList.responsive(
+      emptyStateOmitted: true,
+      items: [
+        CatchSectionListItem(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

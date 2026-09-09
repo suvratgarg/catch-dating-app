@@ -348,7 +348,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const useSectionList = LintCode(
     'catch_use_section_list',
-    'Use CatchSectionList/CatchDetailSliverSectionList for adjacent semantic sections instead of manually interleaving spacers.',
+    'Use CatchSectionList or its named placement recipes for adjacent semantic sections instead of manually interleaving spacers.',
     severity: DiagnosticSeverity.WARNING,
   );
 

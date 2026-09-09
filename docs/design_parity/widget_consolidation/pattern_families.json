@@ -3360,6 +3360,56 @@
           "rationale": "Share one pane renderer and preserve its local-width navigation decision."
         }
       ]
+    },
+    {
+      "id": "section-list-placement-recipes",
+      "title": "Ordered complete sections across layout contexts",
+      "intent": "Keep one section-list contract, with named constructors for insets, sliver output, responsive lanes and scrolling pages.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.section_stack",
+      "qualityReference": "CatchSectionList",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "Production section layout, field interaction bounds and terminal clearance are preserved. Catalog framing, titles and IDs identify the canonical contract; the shared canvas can reposition specimens and change subpixel text rasterization.",
+        "The canonical gallery includes every layout recipe and explicit empty-state ownership; former direct recipe previews remain registered."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSectionList",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Ordered complete sections are one responsibility; layout protocols use named constructors and retain their existing geometry owners."
+        },
+        {
+          "symbol": "CatchSectionStack",
+          "disposition": "unify",
+          "target": "CatchSectionList.inset",
+          "preview": "not-applicable",
+          "rationale": "Preserve this placement recipe under the canonical section-list contract, with explicit empty-content policy."
+        },
+        {
+          "symbol": "CatchDetailSliverSectionList",
+          "disposition": "unify",
+          "target": "CatchSectionList.sliver",
+          "preview": "not-applicable",
+          "rationale": "Preserve this placement recipe under the canonical section-list contract, with explicit empty-content policy."
+        },
+        {
+          "symbol": "CatchResponsiveSectionLayout",
+          "disposition": "unify",
+          "target": "CatchSectionList.responsive",
+          "preview": "not-applicable",
+          "rationale": "Preserve this placement recipe under the canonical section-list contract, with explicit empty-content policy."
+        },
+        {
+          "symbol": "CatchResponsiveSectionPage",
+          "disposition": "unify",
+          "target": "CatchSectionList.page",
+          "preview": "not-applicable",
+          "rationale": "Preserve this placement recipe under the canonical section-list contract, with explicit empty-content policy."
+        }
+      ]
     }
   ]
 }

@@ -393,12 +393,13 @@ void main() {
     }
   });
 
-  testWidgets('CatchSectionStack lets Section own the handoff rhythm', (
+  testWidgets('CatchSectionList lets Section own the handoff rhythm', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchSectionStack(
+        const CatchSectionList.inset(
+          emptyStateOmitted: true,
           children: [
             CatchSection.divided(
               title: 'First',
@@ -411,12 +412,17 @@ void main() {
       ),
     );
 
-    final stack = tester.widget<CatchSectionStack>(
-      find.byType(CatchSectionStack),
+    final sections = find.byType(CatchSection);
+    expect(
+      tester.getBottomLeft(sections.first).dy,
+      tester.getTopLeft(sections.last).dy,
     );
-
-    expect(stack.gap, 0);
-    expect(stack.padding, CatchInsets.pageBody);
+    final padding = CatchInsets.pageBody.resolve(TextDirection.ltr);
+    final list = find.byType(CatchSectionList);
+    expect(
+      tester.getTopLeft(sections.first).dx - tester.getTopLeft(list).dx,
+      padding.left,
+    );
     expect(find.byType(Divider), findsNothing);
     expect(find.text('SECOND'), findsOneWidget);
   });

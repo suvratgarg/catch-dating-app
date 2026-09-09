@@ -172,7 +172,7 @@ class HostClubSpokeScaffold extends StatelessWidget {
         divider: scrolledUnder,
       ),
       body: CatchRouteBody.standardSections(
-        sections: [CatchResponsiveSectionItem(child: child)],
+        sections: [CatchSectionListItem(child: child)],
       ),
     );
   }

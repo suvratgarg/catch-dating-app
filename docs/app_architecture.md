@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.49.0
+version: 1.50.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -578,7 +578,7 @@ Screen composition should be predictable:
 
 Screen-level padding belongs at the screen/body boundary, not scattered across
 unrelated child widgets. Use `CatchInsets`, `CatchGaps`, `CatchPageBody`,
-`CatchSliverPageBody`, `CatchSectionList`, `CatchDetailSliverSectionList`, and
+`CatchSliverPageBody`, `CatchSectionList`, `CatchSectionList.sliver`, and
 other semantic layout primitives described below.
 
 If a parent owns a `CustomScrollView`, async loading/error/empty/data branches
@@ -616,7 +616,7 @@ Screen composition is a closed family, not a per-feature assembly exercise:
   Overlap injection, restoration, focus isolation, body geometry, refresh, and
   terminal clearance remain shared mechanics.
 - A section-composed page without root-title chrome uses
-  `CatchResponsiveSectionPage`; master-detail workspaces use
+  `CatchSectionList.page`; master-detail workspaces use
   `CatchMasterDetailViewport.adaptive` at their actual responsive boundary.
 - A pushed utility or detail route uses `CatchRouteScaffold` with its compact
   `CatchTopBar`. A pushed route must not be restyled to resemble a root title.
@@ -918,7 +918,13 @@ captures. Reference images alone cannot reopen or bypass this boundary.
 
 **Section-page composition**
 
-Section-based non-sliver routes use `CatchResponsiveSectionPage` instead of
+`CatchSectionList` owns ordered complete sections. Its `.inset`, `.sliver`,
+`.responsive`, and `.page` recipes preserve their distinct layout protocols
+through named constructors. Every constructor declares an empty-state owner
+or explicit omission; a recipe must not duplicate its parent's gutter or scroll
+owner. Section delimiters stay with `CatchSection`.
+
+Section-based non-sliver routes use `CatchSectionList.page` instead of
 rebuilding screen gutters, a content clamp, field visibility, and terminal
 shell clearance independently. The route explicitly chooses either a centered
 reading lane or `adaptiveTwoColumn`; there is no automatic rule that turns

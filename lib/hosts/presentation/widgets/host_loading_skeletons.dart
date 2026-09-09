@@ -19,7 +19,8 @@ class HostRouteLoadingBody extends StatelessWidget {
         constraints: const BoxConstraints(
           maxWidth: CatchLayout.maxContentWidth,
         ),
-        child: CatchSectionStack(
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
           padding: padding,
           gap: CatchSpacing.micro18,
           children: [
@@ -101,7 +102,8 @@ class HostAnalyticsReportSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchSectionStack(
+    return const CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       children: [
         CatchSection.divided(

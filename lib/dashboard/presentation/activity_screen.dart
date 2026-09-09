@@ -84,10 +84,9 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
           ),
           builder: (context, uid) {
             if (uid == null) {
-              return const CatchResponsiveSectionLayout(
-                sections: [
-                  CatchResponsiveSectionItem(child: ActivitySignedOutState()),
-                ],
+              return const CatchSectionList.responsive(
+                emptyStateOmitted: true,
+                items: [CatchSectionListItem(child: ActivitySignedOutState())],
               );
             }
             return CatchAsyncBoundary<List<ActivityNotification>>(
@@ -167,8 +166,9 @@ class ActivityScreenLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchResponsiveSectionLayout(
-      sections: [CatchResponsiveSectionItem(child: ActivitySectionSkeleton())],
+    return const CatchSectionList.responsive(
+      emptyStateOmitted: true,
+      items: [CatchSectionListItem(child: ActivitySectionSkeleton())],
     );
   }
 }
@@ -187,9 +187,10 @@ class ActivityScreenBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchResponsiveSectionLayout(
-      sections: [
-        CatchResponsiveSectionItem(
+    return CatchSectionList.responsive(
+      emptyStateOmitted: true,
+      items: [
+        CatchSectionListItem(
           child: ActivitySection.fromState(
             state: state,
             onRetry: onRetry,

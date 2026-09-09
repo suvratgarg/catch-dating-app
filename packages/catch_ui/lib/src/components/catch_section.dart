@@ -24,7 +24,7 @@ enum _CatchSectionVariant { divided, contained, plain }
 /// Design-system `Section`: the canonical primitive for grouping information.
 ///
 /// Screens that adopt the handoff composition should place these inside
-/// `CatchSectionStack` or `CatchDetailSliverSectionList` with no ad-hoc gaps.
+/// `CatchSectionList` or `CatchSectionList` with no ad-hoc gaps.
 class CatchSection extends StatelessWidget {
   const CatchSection.divided({
     super.key,

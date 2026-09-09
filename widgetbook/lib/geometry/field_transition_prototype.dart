@@ -51,10 +51,11 @@ class _ProductionInteractionTransitionPageState
             style: CatchTextStyles.proseM(context, color: t.ink2),
           ),
           const SizedBox(height: CatchSpacing.s6),
-          CatchResponsiveSectionLayout(
-            composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
-            sections: [
-              CatchResponsiveSectionItem(
+          CatchSectionList.responsive(
+            emptyStateOmitted: true,
+            mode: CatchSectionListMode.adaptiveTwoColumn,
+            items: [
+              CatchSectionListItem(
                 child: _labelledSection(
                   context,
                   title: 'Contained section',
@@ -94,8 +95,8 @@ class _ProductionInteractionTransitionPageState
                   ),
                 ),
               ),
-              CatchResponsiveSectionItem(
-                lane: CatchResponsiveSectionLane.secondary,
+              CatchSectionListItem(
+                lane: CatchSectionListPlacement.secondary,
                 child: _labelledSection(
                   context,
                   title: 'Divided section',

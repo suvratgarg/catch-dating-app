@@ -274,9 +274,8 @@ void _registerExploreScreenFiltersTests() {
         ),
       );
       expect(detailGroup.children[2], isA<ClubScheduleSection>());
-      expect(detailGroup.children[3], isA<CatchDetailSliverSectionList>());
-      final trailingSections =
-          detailGroup.children[3] as CatchDetailSliverSectionList;
+      expect(detailGroup.children[3], isA<CatchSectionList>());
+      final trailingSections = detailGroup.children[3] as CatchSectionList;
       expect(
         trailingSections.sections.whereType<CatchSection>().map(
           (section) => section.title,

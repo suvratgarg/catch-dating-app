@@ -56,7 +56,15 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
-    expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byType(CatchScreenBody),
+        matching: find.byType(CatchSectionList),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(CatchScreenBody), findsOneWidget);
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
     expect(find.text('WhatsApp Business settings'), findsOneWidget);
   });
 

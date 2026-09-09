@@ -1800,12 +1800,12 @@ function buildCandidates() {
       id: "app-section-list-family",
       title: "Section list family",
       reason:
-        "Stacked section lists and preview sections repeat route-level composition that may be driven by CatchSectionStack/List conventions.",
+        "Stacked section lists and preview sections repeat route-level composition that may be driven by CatchSectionList placement recipes.",
       recommended: "catch.section_list",
       tags: ["sections", "lists"],
       names: [
         "CatchSectionList",
-        "CatchDetailSliverSectionList",
+        "CatchSectionList.sliver",
         "EventDetailOverviewSection",
         "EventDetailSocialSection",
         "ClubReviewsSection",

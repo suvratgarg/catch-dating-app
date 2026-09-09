@@ -1020,7 +1020,8 @@ class EventSuccessSetupTabSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchSectionStack(
+    return const CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s3,
       children: [
@@ -1045,7 +1046,8 @@ class EventSuccessLiveTabSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchSectionStack(
+    return const CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s3,
       children: [
@@ -1070,7 +1072,8 @@ class EventSuccessReportTabSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchSectionStack(
+    return const CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s3,
       children: [

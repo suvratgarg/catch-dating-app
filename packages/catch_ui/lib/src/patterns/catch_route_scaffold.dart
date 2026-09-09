@@ -5,12 +5,12 @@ import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_status_strip.dart';
 import 'package:catch_ui/src/components/catch_status_strip_data.dart';
 import 'package:catch_ui/src/components/catch_status_strip_scope.dart';
-import 'package:catch_ui/src/patterns/catch_responsive_section_composition.dart';
-import 'package:catch_ui/src/patterns/catch_responsive_section_item.dart';
-import 'package:catch_ui/src/patterns/catch_responsive_section_page.dart';
 import 'package:catch_ui/src/patterns/catch_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_screen_body_layout.dart';
 import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
+import 'package:catch_ui/src/patterns/catch_section_list.dart';
+import 'package:catch_ui/src/patterns/catch_section_list_item.dart';
+import 'package:catch_ui/src/patterns/catch_section_list_mode.dart';
 import 'package:catch_ui/src/patterns/catch_sliver_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
@@ -104,7 +104,7 @@ final class CatchRouteBody {
        _onRefresh = null,
        _sectionGap = CatchGaps.section,
        _columnGap = CatchGaps.section,
-       _sectionComposition = CatchResponsiveSectionComposition.centered;
+       _sectionComposition = CatchSectionListMode.centered;
 
   const CatchRouteBody.standardSlivers({
     required List<Widget> slivers,
@@ -164,12 +164,11 @@ final class CatchRouteBody {
        _onRefresh = onRefresh,
        _sectionGap = CatchGaps.section,
        _columnGap = CatchGaps.section,
-       _sectionComposition = CatchResponsiveSectionComposition.centered;
+       _sectionComposition = CatchSectionListMode.centered;
 
   const CatchRouteBody.standardSections({
-    required List<CatchResponsiveSectionItem> sections,
-    CatchResponsiveSectionComposition composition =
-        CatchResponsiveSectionComposition.centered,
+    required List<CatchSectionListItem> sections,
+    CatchSectionListMode composition = CatchSectionListMode.centered,
     double sectionGap = CatchGaps.section,
     double columnGap = CatchGaps.section,
     ScrollController? controller,
@@ -212,7 +211,7 @@ final class CatchRouteBody {
        _onRefresh = null,
        _sectionGap = CatchGaps.section,
        _columnGap = CatchGaps.section,
-       _sectionComposition = CatchResponsiveSectionComposition.centered;
+       _sectionComposition = CatchSectionListMode.centered;
 
   const CatchRouteBody.fullBleed({required Widget child})
     : _kind = _CatchRouteBodyKind.fullBleed,
@@ -231,12 +230,12 @@ final class CatchRouteBody {
       _onRefresh = null,
       _sectionGap = CatchGaps.section,
       _columnGap = CatchGaps.section,
-      _sectionComposition = CatchResponsiveSectionComposition.centered;
+      _sectionComposition = CatchSectionListMode.centered;
 
   final _CatchRouteBodyKind _kind;
   final Widget? _child;
   final List<Widget>? _slivers;
-  final List<CatchResponsiveSectionItem>? _sections;
+  final List<CatchSectionListItem>? _sections;
   final List<CatchRouteBody>? _pages;
   final TabController? _tabController;
   final bool _scrollable;
@@ -249,7 +248,7 @@ final class CatchRouteBody {
   final Future<void> Function()? _onRefresh;
   final double _sectionGap;
   final double _columnGap;
-  final CatchResponsiveSectionComposition _sectionComposition;
+  final CatchSectionListMode _sectionComposition;
 
   Widget _build(BuildContext context) {
     assert(
@@ -266,9 +265,10 @@ final class CatchRouteBody {
       _CatchRouteBodyKind.standardSections => SafeArea(
         top: false,
         bottom: false,
-        child: CatchResponsiveSectionPage(
-          sections: _sections!,
-          composition: _sectionComposition,
+        child: CatchSectionList.page(
+          emptyStateOmitted: true,
+          items: _sections!,
+          mode: _sectionComposition,
           sectionGap: _sectionGap,
           columnGap: _columnGap,
           controller: _controller,

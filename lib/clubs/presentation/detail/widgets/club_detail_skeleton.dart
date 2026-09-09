@@ -28,9 +28,10 @@ class ClubDetailLoadingSliverBody extends StatelessWidget {
     return SliverMainAxisGroup(
       slivers: [
         const SliverToBoxAdapter(child: ClubHeroLoadingSkeleton()),
-        CatchDetailSliverSectionList(
+        CatchSectionList.sliver(
+          emptyStateOmitted: true,
           gap: CatchSpacing.screenPt,
-          sections: [
+          children: [
             const ClubStatsLoadingSkeleton(),
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,

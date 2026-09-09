@@ -4091,7 +4091,7 @@
         "placement": {
           "allowedParents": [
             "CatchSectionList",
-            "CatchDetailSliverSectionList"
+            "CatchSectionList.sliver"
           ],
           "slot": "children"
         },
@@ -9183,7 +9183,7 @@
           "CatchRootScreenPageOwner",
           "CatchRootScreenPageScrollView",
           "CatchFormStepBody",
-          "CatchResponsiveSectionPage"
+          "CatchSectionList.page"
         ],
         "goldens": [],
         "members": [
@@ -9383,25 +9383,6 @@
               "default",
               "custom-padding",
               "fill-remaining"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
-            "id": "catch.screen_body.responsive_section_page",
-            "symbol": "CatchResponsiveSectionPage",
-            "file": "packages/catch_ui/lib/src/patterns/catch_responsive_section_page.dart",
-            "summary": "Scrolling section-page adapter that combines standard gutters, responsive section composition, shell-aware terminal clearance, and expanding-field visibility.",
-            "states": [
-              "centered",
-              "adaptive-two-column",
-              "floating-bottom-navigation",
-              "side-navigation"
             ],
             "governance": {
               "conceptRole": "member",
@@ -9788,7 +9769,7 @@
           "Use for regular non-sliver route bodies before composing ad hoc page padding.",
           "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry. A root with primary peer navigation uses the same owner through its withPrimaryRail constructor and typed CatchRootScreenBody pages.",
           "Regular root bodies may not override the 16-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
-          "Use CatchResponsiveSectionPage when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
+          "Use CatchSectionList.page when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding."
         ]
       },
@@ -9820,15 +9801,19 @@
         ],
         "probeSeed": "CatchSectionList(children: const <Widget>[])"
       },
-      "name": "CatchSectionStack",
+      "name": "CatchSectionList",
       "status": "active",
       "kind": "pattern",
-      "summary": "Standard stack wrapper for handoff sections, owning page padding and optional inserted gaps between section blocks.",
+      "summary": "Ordered complete sections with plain, inset, sliver, responsive and scrolling-page recipes.",
       "dart": {
-        "symbol": "CatchSectionStack",
-        "file": "packages/catch_ui/lib/src/patterns/catch_section_stack.dart",
+        "symbol": "CatchSectionList",
+        "file": "packages/catch_ui/lib/src/patterns/catch_section_list.dart",
         "constructors": [
-          "CatchSectionStack"
+          "CatchSectionList",
+          "CatchSectionList.inset",
+          "CatchSectionList.sliver",
+          "CatchSectionList.responsive",
+          "CatchSectionList.page"
         ]
       },
       "design": {
@@ -9843,7 +9828,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "SectionStack",
+          "handoffName": "SectionList",
           "allowed": true
         }
       },
@@ -9853,28 +9838,107 @@
             "name": "children",
             "type": "list",
             "required": true,
-            "dartType": "List<Widget>"
+            "dartType": "List<Widget>",
+            "notes": "Required by plain, inset and sliver constructors; ordered complete sections."
           },
           {
-            "name": "padding",
-            "type": "object",
+            "name": "items",
+            "type": "list",
+            "required": true,
+            "dartType": "List<CatchSectionListItem>",
+            "notes": "Required by responsive and page constructors; each item carries its complete section and lane."
+          },
+          {
+            "name": "emptyStateOmitted",
+            "type": "bool",
+            "required": true,
+            "dartType": "bool",
+            "notes": "Required by every constructor. False requires an emptyBuilder; true explicitly permits omission."
+          },
+          {
+            "name": "emptyBuilder",
+            "type": "callback",
             "required": false,
-            "default": "CatchInsets.pageBody",
-            "dartType": "EdgeInsetsGeometry"
+            "dartType": "WidgetBuilder?",
+            "notes": "Renders the caller-owned empty state when there are no sections."
           },
           {
             "name": "gap",
             "type": "number",
             "required": false,
-            "default": 0,
-            "dartType": "double"
+            "dartType": "double",
+            "notes": "Plain defaults to CatchGaps.section; inset and sliver default to zero so sections own their delimiters."
+          },
+          {
+            "name": "padding",
+            "type": "object",
+            "required": false,
+            "dartType": "EdgeInsetsGeometry",
+            "default": "CatchInsets.pageBody",
+            "notes": "Inset recipe only; use EdgeInsets.zero when the parent owns the gutter."
+          },
+          {
+            "name": "mode",
+            "type": "enum",
+            "required": false,
+            "dartType": "CatchSectionListMode",
+            "default": "centered",
+            "notes": "Responsive and page only; adaptiveTwoColumn moves complete sections at the local-width threshold.",
+            "values": [
+              "centered",
+              "adaptiveTwoColumn"
+            ]
+          },
+          {
+            "name": "fieldInteractionPolicy",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchResponsiveFieldInteractionPolicy",
+            "notes": "Single-column divided fields remain full bleed; split panes remain rounded tiles."
+          },
+          {
+            "name": "sectionGap",
+            "type": "number",
+            "required": false,
+            "dartType": "double",
+            "default": "CatchGaps.section",
+            "notes": "Responsive and page section rhythm."
+          },
+          {
+            "name": "columnGap",
+            "type": "number",
+            "required": false,
+            "dartType": "double",
+            "default": "CatchGaps.section",
+            "notes": "Responsive and page split-lane rhythm."
+          },
+          {
+            "name": "terminalExtra",
+            "type": "number",
+            "required": false,
+            "dartType": "double",
+            "default": "CatchSpacing.screenPb",
+            "notes": "Page only; the shared terminal-padding owner adds shell clearance."
           }
         ],
         "states": [
+          "default-gap",
+          "zero-gap",
+          "custom-gap",
+          "main-min",
+          "empty",
+          "empty-omitted",
           "handoff-sections",
           "plain-sections",
-          "custom-gap",
-          "zero-padding"
+          "zero-padding",
+          "detail-gutter",
+          "section-owned-rhythm",
+          "centered",
+          "compact-fallback",
+          "two-column",
+          "single-lane-fallback",
+          "floating-bottom-navigation",
+          "no-bottom-navigation"
         ],
         "slots": [
           {
@@ -9897,72 +9961,34 @@
           "theme.light.color.line"
         ],
         "dartRoles": [
-          "CatchInsets.pageBody",
           "CatchSectionList",
+          "CatchSectionListItem",
+          "CatchSectionListMode",
+          "CatchSectionListPlacement",
           "CatchSection",
+          "CatchInsets.pageBody",
           "CatchGaps.section",
-          "CatchDetailSliverSectionList",
-          "CatchResponsiveSectionLayout",
-          "CatchResponsiveSectionItem",
-          "CatchResponsiveSectionLane",
-          "CatchResponsiveSectionComposition"
+          "CatchResponsiveFieldInteractionPolicy",
+          "CatchScreenBody",
+          "CatchScrollTerminalPadding"
         ],
         "goldens": [],
         "members": [
           {
-            "id": "catch.section_stack.detail_sliver_section_list",
-            "symbol": "CatchDetailSliverSectionList",
-            "file": "packages/catch_ui/lib/src/patterns/catch_detail_sliver_section_list.dart",
-            "summary": "Sliver-native detail-page section list with standard detail gutter and section-owned rhythm.",
+            "id": "catch.section_stack.item",
+            "symbol": "CatchSectionListItem",
+            "file": "packages/catch_ui/lib/src/patterns/catch_section_list_item.dart",
+            "summary": "Nonvisual descriptor of one complete section and its preferred wide-layout lane.",
             "states": [
-              "detail-gutter",
-              "section-owned-rhythm",
-              "custom-gap"
+              "primary",
+              "secondary"
             ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.section_stack",
               "parentConceptId": "catch.section_stack",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.section_stack"
-            }
-          },
-          {
-            "id": "catch.section_stack.section_list",
-            "symbol": "CatchSectionList",
-            "file": "packages/catch_ui/lib/src/patterns/catch_section_list.dart",
-            "summary": "Column helper for ordered section blocks with configurable inserted rhythm.",
-            "states": [
-              "default-gap",
-              "zero-gap",
-              "custom-gap",
-              "main-min"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.section_stack",
-              "parentConceptId": "catch.section_stack",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.section_stack"
-            }
-          },
-          {
-            "id": "catch.section_stack.responsive_section_layout",
-            "symbol": "CatchResponsiveSectionLayout",
-            "file": "packages/catch_ui/lib/src/patterns/catch_responsive_section_layout.dart",
-            "summary": "Local-width section layout that preserves compact reading order and moves only complete sections into declared primary or secondary lanes.",
-            "states": [
-              "centered",
-              "compact-fallback",
-              "two-column",
-              "single-lane-fallback"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.section_stack",
-              "parentConceptId": "catch.section_stack",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.section_stack"
+              "qualifier": "anatomy",
+              "decisionRef": "pattern-family:section-list-placement-recipes"
             }
           }
         ],
@@ -9988,10 +10014,10 @@
           "catch.surface"
         ],
         "notes": [
-          "Use under CatchScreenBody or sliver wrappers to prevent screen-local section spacing drift.",
-          "Let CatchSection own section dividers; use the gap prop only for explicit non-handoff stacks.",
-          "ResponsiveSectionLayout moves complete section blocks between lanes from local width; it never splits a CatchSection or adds responsive behavior to CatchField.",
-          "SectionList, ResponsiveSectionLayout, and DetailSliverSectionList are public members of catch.section_stack for placement-specific layout, not separate section systems."
+          "Use the default recipe when a parent owns gutters; inset owns page padding, sliver owns detail insets, responsive owns complete lanes, and page composes the existing scroll and terminal-clearance owners.",
+          "Let CatchSection own section dividers; inset and sliver preserve zero inserted rhythm by default.",
+          "Every constructor requires an explicit empty-content policy.",
+          "Responsive and page move complete section blocks between lanes from local width; they never split a CatchSection or add responsive behavior to CatchField."
         ]
       },
       "governance": {
@@ -10008,7 +10034,12 @@
         "conceptId": "catch.section_stack"
       },
       "surfaces": {
-        "flutter": "CatchSectionStack"
+        "flutter": "CatchSectionList"
+      },
+      "level": "L4",
+      "roleNoun": "SectionList",
+      "naming": {
+        "useCase": ""
       }
     },
     {

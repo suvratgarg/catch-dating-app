@@ -23,7 +23,7 @@ class HostMessagingSetupScreen extends ConsumerWidget {
       ),
       body: CatchRouteBody.standardSections(
         sections: [
-          CatchResponsiveSectionItem(
+          CatchSectionListItem(
             child: club.when(
               loading: () => const CatchSkeleton.rows(),
               error: (error, _) => CatchLocalizedErrorState(

@@ -59,13 +59,13 @@ Widget fieldInteractionPlaneLayoutStates(
 
 @widgetbook.UseCase(
   name: 'Local breakpoint and single-lane fallback',
-  type: CatchResponsiveSectionLayout,
+  type: CatchSectionList,
   path: '[Core patterns]/Section layout',
 )
 Widget responsiveSectionLayoutStates(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Complete section lanes',
-      catalogId: 'catch.section_stack.responsive_section_layout',
+      catalogId: 'catch.section_stack',
       children: [
         for (final setup in [
           (width: 659.0, secondary: true, label: 'Below 660'),
@@ -77,15 +77,15 @@ Widget responsiveSectionLayoutStates(BuildContext context) =>
             fit: BoxFit.scaleDown,
             child: WidgetbookViewportFrame.device(
               size: Size(setup.width, 320),
-              child: CatchResponsiveSectionLayout(
-                composition:
-                    CatchResponsiveSectionComposition.adaptiveTwoColumn,
-                sections: [
+              child: CatchSectionList.responsive(
+                emptyStateOmitted: true,
+                mode: CatchSectionListMode.adaptiveTwoColumn,
+                items: [
                   for (final index in [0, 1])
-                    CatchResponsiveSectionItem(
+                    CatchSectionListItem(
                       lane: index == 1 && setup.secondary
-                          ? CatchResponsiveSectionLane.secondary
-                          : CatchResponsiveSectionLane.primary,
+                          ? CatchSectionListPlacement.secondary
+                          : CatchSectionListPlacement.primary,
                       child: CatchSection.fieldRows(
                         children: [
                           CatchField.read(
@@ -106,34 +106,36 @@ Widget responsiveSectionLayoutStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Scrolled terminal clearance',
-  type: CatchResponsiveSectionPage,
+  type: CatchSectionList,
   path: '[Core patterns]/Section layout',
 )
 Widget responsiveSectionPageStates(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Section page clearance',
-      catalogId: 'catch.screen_body.responsive_section_page',
+      catalogId: 'catch.section_stack',
       children: [
         for (final floating in [false, true]) ...[
           Text(
             floating ? 'Floating navigation' : 'No navigation overlay',
             style: CatchTextStyles.bodyM(context),
           ),
-          _ScrolledSectionPage(floating: floating),
+          WidgetbookScrolledSectionPage(floating: floating),
         ],
       ],
     );
 
-class _ScrolledSectionPage extends StatefulWidget {
-  const _ScrolledSectionPage({required this.floating});
+class WidgetbookScrolledSectionPage extends StatefulWidget {
+  const WidgetbookScrolledSectionPage({required this.floating});
 
   final bool floating;
 
   @override
-  State<_ScrolledSectionPage> createState() => _ScrolledSectionPageState();
+  State<WidgetbookScrolledSectionPage> createState() =>
+      _WidgetbookScrolledSectionPageState();
 }
 
-class _ScrolledSectionPageState extends State<_ScrolledSectionPage> {
+class _WidgetbookScrolledSectionPageState
+    extends State<WidgetbookScrolledSectionPage> {
   final _controller = ScrollController();
 
   @override
@@ -163,11 +165,12 @@ class _ScrolledSectionPageState extends State<_ScrolledSectionPage> {
           bottomBarPlacement: widget.floating
               ? CatchTabViewportScopePlacement.floating
               : CatchTabViewportScopePlacement.none,
-          child: CatchResponsiveSectionPage(
+          child: CatchSectionList.page(
+            emptyStateOmitted: true,
             controller: _controller,
-            sections: [
+            items: [
               for (var index = 0; index < 8; index++)
-                CatchResponsiveSectionItem(
+                CatchSectionListItem(
                   child: CatchSection.fieldRows(
                     title: 'Section ${index + 1}',
                     children: [

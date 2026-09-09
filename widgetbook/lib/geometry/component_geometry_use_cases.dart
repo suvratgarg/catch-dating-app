@@ -181,7 +181,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _compactPhoneViewportWidth,
         viewportHeight: _compactViewportHeight,
         platform: TargetPlatform.iOS,
-        composition: CatchResponsiveSectionComposition.centered,
+        composition: CatchSectionListMode.centered,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -191,7 +191,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _tabletPortraitViewportWidth,
         viewportHeight: _compactViewportHeight,
         platform: TargetPlatform.android,
-        composition: CatchResponsiveSectionComposition.centered,
+        composition: CatchSectionListMode.centered,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -201,7 +201,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _tabletWorkspaceViewportWidth,
         viewportHeight: _tabletViewportHeight,
         platform: TargetPlatform.android,
-        composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+        composition: CatchSectionListMode.adaptiveTwoColumn,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -211,7 +211,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _expandedViewportWidth,
         viewportHeight: _expandedViewportHeight,
         platform: TargetPlatform.android,
-        composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+        composition: CatchSectionListMode.adaptiveTwoColumn,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -221,7 +221,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _splitScreenViewportWidth,
         viewportHeight: _compactViewportHeight,
         platform: TargetPlatform.iOS,
-        composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+        composition: CatchSectionListMode.adaptiveTwoColumn,
       ),
     ],
   );
@@ -277,7 +277,8 @@ Widget _keyboardFocusTreatmentSample(
       borderColor: t.line,
       radius: CatchRadius.lg,
       clipBehavior: Clip.antiAlias,
-      child: CatchSectionStack(
+      child: CatchSectionList.inset(
+        emptyStateOmitted: true,
         padding: CatchInsets.pageBody,
         children: [
           CatchSection.fieldRows(
@@ -420,7 +421,8 @@ Widget _mixedSectionPageSample(
       borderColor: t.line,
       radius: CatchRadius.lg,
       clipBehavior: Clip.antiAlias,
-      child: CatchSectionStack(
+      child: CatchSectionList.inset(
+        emptyStateOmitted: true,
         padding: CatchInsets.pageBody,
         gap: CatchGaps.section,
         children: [
@@ -1040,7 +1042,7 @@ Widget _responsivePageContextSpecimen(
   required double viewportWidth,
   required double viewportHeight,
   required TargetPlatform platform,
-  required CatchResponsiveSectionComposition composition,
+  required CatchSectionListMode composition,
 }) {
   return _specimen(
     context,
@@ -1106,7 +1108,7 @@ Widget _scaledReviewViewport(
 
 Widget _responsiveGeometryShell(
   BuildContext context, {
-  required CatchResponsiveSectionComposition composition,
+  required CatchSectionListMode composition,
 }) {
   return CatchAdaptiveTabScaffold(
     activeIndex: 1,
@@ -1134,19 +1136,18 @@ Widget _responsiveGeometryShell(
         divider: scrolledUnder,
       ),
       body: CatchRouteBody.fullBleed(
-        child: CatchResponsiveSectionPage(
-          composition: composition,
-          sections: [
-            CatchResponsiveSectionItem(
+        child: CatchSectionList.page(
+          emptyStateOmitted: true,
+          mode: composition,
+          items: [
+            CatchSectionListItem(
               child: _responsiveEventSettingsSection(context),
             ),
-            CatchResponsiveSectionItem(
-              lane: CatchResponsiveSectionLane.secondary,
+            CatchSectionListItem(
+              lane: CatchSectionListPlacement.secondary,
               child: _responsiveNotificationSection(context),
             ),
-            CatchResponsiveSectionItem(
-              child: _responsivePrivacySection(context),
-            ),
+            CatchSectionListItem(child: _responsivePrivacySection(context)),
           ],
         ),
       ),

@@ -7862,6 +7862,38 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:section-list-placement-recipes",
+      "patternFamilyId": "section-list-placement-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSectionList",
+      "members": [
+        {
+          "name": "CatchSectionList",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSectionStack",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchDetailSliverSectionList",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchResponsiveSectionLayout",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchResponsiveSectionPage",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Five public section-list Widgets become one const component. Plain and inset sequences share spacing; sliver preserves detail insets; responsive preserves complete-section ordering and field interaction policy; page delegates to the existing scroll, gutter and terminal-clearance owners. Every constructor explicitly requires an empty policy. Four obsolete Widget files are deleted and all callers migrate.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

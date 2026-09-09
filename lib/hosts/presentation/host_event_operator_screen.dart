@@ -73,7 +73,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
           ),
           body: CatchRouteBody.standardSections(
             sections: [
-              CatchResponsiveSectionItem(
+              CatchSectionListItem(
                 child: CatchSection.contained(
                   title: context.l10n.hostsEventOperatorAccessTitle,
                   subtitle: context.l10n.hostsEventOperatorAccessSubtitle,
@@ -102,7 +102,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              CatchResponsiveSectionItem(
+              CatchSectionListItem(
                 child: HostOperationalRosterPanel(
                   eventId: eventId,
                   organizerId: access.organizerId,

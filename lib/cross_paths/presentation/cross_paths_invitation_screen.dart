@@ -154,10 +154,11 @@ class _InvitationDetailBody extends ConsumerWidget {
     );
     final analytics = ref.read(appAnalyticsProvider);
     final photo = profile.primaryPhotoThumbnailUrl;
-    return CatchResponsiveSectionLayout(
+    return CatchSectionList.responsive(
+      emptyStateOmitted: true,
       sectionGap: CatchSpacing.s4,
-      sections: [
-        CatchResponsiveSectionItem(
+      items: [
+        CatchSectionListItem(
           child: CatchPersonPolaroid(
             media: photo == null
                 ? CatchImageFallbackSurface(icon: CatchIcons.personOutlined)
@@ -173,7 +174,7 @@ class _InvitationDetailBody extends ConsumerWidget {
             ),
           ),
         ),
-        CatchResponsiveSectionItem(
+        CatchSectionListItem(
           child: CatchSurface.card(
             padding: CatchInsets.content,
             child: Column(
@@ -192,14 +193,14 @@ class _InvitationDetailBody extends ConsumerWidget {
           ),
         ),
         if (pairHold != null)
-          CatchResponsiveSectionItem(
+          CatchSectionListItem(
             child: _PairHoldPanel(
               hold: pairHold!,
               event: event,
               currentUid: currentUid,
             ),
           ),
-        CatchResponsiveSectionItem(
+        CatchSectionListItem(
           child: _InvitationActions(
             invitation: invitation,
             isRecipient: isRecipient,

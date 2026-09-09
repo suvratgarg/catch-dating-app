@@ -136,10 +136,11 @@ class EventDetailBody extends StatelessWidget {
             notchBackgroundColor: style.pageBackground,
           ),
         ),
-        CatchDetailSliverSectionList(
+        CatchSectionList.sliver(
+          emptyStateOmitted: true,
           topPadding: CatchSpacing.screenPt,
           bottomPadding: CatchSpacing.screenPb,
-          sections: [
+          children: [
             EventDetailOverviewSection(
               event: event,
               informationState: informationState,

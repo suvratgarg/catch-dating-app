@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "9c80580ae105438f29f7d4d71b76fccc70fa8eac830b4ac696813681d9ba6d6a",
+  "sourceDigest": "71a64a4e1606e8485b05901495a25bfba1fc8ad146c37637738927db3e208458",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "9c80580ae105438f29f7d4d71b76fccc70fa8eac830b4ac696813681d9ba6d6a",
-    "contractDigest": "9c80580ae105438f29f7d4d71b76fccc70fa8eac830b4ac696813681d9ba6d6a"
+    "digest": "71a64a4e1606e8485b05901495a25bfba1fc8ad146c37637738927db3e208458",
+    "contractDigest": "71a64a4e1606e8485b05901495a25bfba1fc8ad146c37637738927db3e208458"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "7c967c358b7e771b7865279f31ef689fbd489d4a30c155c8d02bafe3d055f640",
+    "handoffRequestDigest": "e21b7009f61f312eafc14f2c86b3a1b202e7351e8465d0118182fde147cae2bf",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 73,
-    "publicClassCount": 230,
+    "publicClassCount": 227,
     "conceptCount": 65,
-    "memberCount": 147,
-    "membersPerConcept": 2.26,
+    "memberCount": 144,
+    "membersPerConcept": 2.22,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 147,
+      "member": 144,
       "screen": 15
     },
     "collisionCount": 31,
@@ -315,7 +315,6 @@
           "CatchMasterDetailViewport",
           "CatchPageBody",
           "CatchPagerFocusViewport",
-          "CatchResponsiveSectionPage",
           "CatchRootScreenBody",
           "CatchRootScreenPageOwner",
           "CatchRootScreenPageScrollController",
@@ -352,10 +351,8 @@
       {
         "key": "catch.section_stack",
         "symbols": [
-          "CatchDetailSliverSectionList",
-          "CatchResponsiveSectionLayout",
           "CatchSectionList",
-          "CatchSectionStack"
+          "CatchSectionListItem"
         ]
       },
       {
@@ -1535,14 +1532,14 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ScreenBody",
       "claudeAllowed": true,
-      "contractDigest": "4d7e46d6377ad5001d62dece5c5270b898c09c84da9f06e1752712d909882b09"
+      "contractDigest": "fba5ab4a92c10fc2397da768e0b8fae491ee3d5127c6bc9ddfebda90846690b8"
     },
     {
       "contractId": "catch.section_stack",
       "conceptRole": "concept",
       "conceptId": "catch.section_stack",
-      "dartSymbol": "CatchSectionStack",
-      "dartFile": "packages/catch_ui/lib/src/patterns/catch_section_stack.dart",
+      "dartSymbol": "CatchSectionList",
+      "dartFile": "packages/catch_ui/lib/src/patterns/catch_section_list.dart",
       "figmaName": "Catch/SectionStack",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -1558,16 +1555,16 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 2,
-      "figmaExpectedPropertyDigest": "3ff363b86de860e7d58e7ea318ad96a53de72fa14c2ca1211728ab62c5aceb12",
+      "figmaExpectedPropertyCount": 7,
+      "figmaExpectedPropertyDigest": "5f367ef4a71d3aec0d7bc471668c1f52430cbbaca99a6ba753a21119c7ea383f",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "SectionStack",
+      "claudeHandoffName": "SectionList",
       "claudeAllowed": true,
-      "contractDigest": "1fa1098b8530f734512e627ab00a2c7b94ce28f13c1bc3d879abfa224fb9aaca"
+      "contractDigest": "8a345129e34c4b9fde0a3e3b18cbd2d64667a1afc0103e8fc65845a110910766"
     },
     {
       "contractId": "catch.roster_tiles",

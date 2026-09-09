@@ -1424,7 +1424,7 @@
         },
         {
           "path": "lib/event_rehearsal/presentation/host_event_rehearsal_start_screen.dart",
-          "role": "pushed-route adopter using shared Archivo compact route-title typography while delegating section rhythm and responsive columns to CatchResponsiveSectionPage",
+          "role": "pushed-route adopter using shared Archivo compact route-title typography while delegating section rhythm and responsive columns to CatchSectionList.page",
           "status": "aligned"
         }
       ],

@@ -300,7 +300,8 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
           (card) => card.status != HostAnalyticsMetricStatus.ready,
         );
 
-    return CatchSectionStack(
+    return CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       children: [
         CatchSection.divided(

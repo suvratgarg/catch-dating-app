@@ -2003,7 +2003,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchResponsiveSectionLayout',
+            name: 'CatchSectionList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Local breakpoint and single-lane fallback',
@@ -2011,11 +2011,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                     _widgetbook_workspace_primitives_section_layout_use_cases
                         .responsiveSectionLayoutStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchResponsiveSectionPage',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Scrolled terminal clearance',
                 builder:
@@ -3565,17 +3560,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sections',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchDetailSliverSectionList',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchDetailSliverSectionListContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchHorizontalScrollView',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3649,16 +3633,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchSectionListContractStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSectionStack',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
+                name: 'Inset sections',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSectionStackContractStates,
+                        .catchSectionInsetStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sliver section insets',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchSectionSliverStates,
               ),
             ],
           ),

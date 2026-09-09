@@ -29,10 +29,11 @@ class EventDetailLoadingScreen extends StatelessWidget {
             child: EventDetailHeroSkeleton(presentationMode: presentationMode),
           ),
           const SliverToBoxAdapter(child: EventDetailTicketStubSkeleton()),
-          const CatchDetailSliverSectionList(
+          const CatchSectionList.sliver(
+            emptyStateOmitted: true,
             topPadding: CatchSpacing.screenPt,
             bottomPadding: CatchSpacing.screenPb,
-            sections: [
+            children: [
               EventDetailPlanSkeleton(),
               EventDetailHintSkeleton(),
               EventDetailItinerarySkeleton(),

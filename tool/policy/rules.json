@@ -1227,7 +1227,7 @@
         "docs/design_parity/**",
         "tool/design/check_screen_gutters.mjs"
       ],
-      "instruction": "Screen, page, and body horizontal gutters should be owned by CatchInsets roles, CatchScreenBody, CatchSectionStack, CatchSection, CatchDetailSliverSectionList, or another documented layout primitive. Raw EdgeInsets rebuilt from CatchSpacing.screenPx/s5 in presentation code is a review candidate unless it is clearly component-local geometry.",
+      "instruction": "Screen, page, and body horizontal gutters should be owned by CatchInsets roles, CatchScreenBody, CatchSectionList.inset, CatchSection, CatchSectionList.sliver, or another documented layout primitive. Raw EdgeInsets rebuilt from CatchSpacing.screenPx/s5 in presentation code is a review candidate unless it is clearly component-local geometry.",
       "sunset_when": [
         "High-confidence screen-gutter candidates reach zero or are cataloged as accepted local geometry",
         "Deterministic cases graduate into analyzer diagnostics or a failing ratchet"

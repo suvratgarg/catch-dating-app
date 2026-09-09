@@ -239,10 +239,10 @@ void _registerHostOperationsStateEventsTests() {
       {HostClubTab.edit},
     );
     expect(find.text('Sign in required'), findsNothing);
-    expect(
-      tester.widget<CatchSectionStack>(find.byType(CatchSectionStack)).padding,
-      EdgeInsets.zero,
-    );
+    final sectionBounds = tester.getRect(find.byType(CatchSectionList));
+    final summaryBounds = tester.getRect(find.byType(HostSummarySkeleton));
+    expect(summaryBounds.left, sectionBounds.left);
+    expect(summaryBounds.right, sectionBounds.right);
     expect(
       tester
           .widget<CatchRootScreenPageScrollView>(

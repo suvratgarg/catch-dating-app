@@ -18,7 +18,8 @@ class DashboardEmptySliverBody extends StatelessWidget {
               constraints: const BoxConstraints(
                 maxWidth: CatchLayout.maxContentWidth,
               ),
-              child: CatchSectionStack(
+              child: CatchSectionList.inset(
+                emptyStateOmitted: true,
                 padding: CatchInsets.pageBody.copyWith(
                   top: CatchSpacing.s5,
                   bottom: 0,

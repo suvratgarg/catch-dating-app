@@ -40,7 +40,7 @@ class _HostFormTemplatesScreenState
       ),
       body: CatchRouteBody.standardSections(
         sections: [
-          CatchResponsiveSectionItem(
+          CatchSectionListItem(
             child: CatchSection.plain(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

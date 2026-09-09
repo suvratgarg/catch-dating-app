@@ -125,10 +125,11 @@ class ClubDetailSliverBody extends StatelessWidget {
               ? ClubHeroPresentationMode.embeddedReadOnlyPreview
               : ClubHeroPresentationMode.route,
         ),
-        CatchDetailSliverSectionList(
+        CatchSectionList.sliver(
+          emptyStateOmitted: true,
           gap: CatchSpacing.screenPt,
           bottomPadding: 0,
-          sections: [
+          children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -200,9 +201,10 @@ class ClubDetailSliverBody extends StatelessWidget {
               : CatchLayout.detailScreenBottomPadding,
         ),
         if (showTrailingSections)
-          CatchDetailSliverSectionList(
+          CatchSectionList.sliver(
+            emptyStateOmitted: true,
             topPadding: 0,
-            sections: [
+            children: [
               if (state.showReviews)
                 CatchSection.divided(
                   title: context.l10n.clubsClubDetailBodyTitleReviews,

@@ -13,7 +13,7 @@ void main() {
       await tester.pumpWidget(
         _layoutSubject(
           width: 659,
-          composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+          composition: CatchSectionListMode.adaptiveTwoColumn,
         ),
       );
 
@@ -39,7 +39,7 @@ void main() {
       await tester.pumpWidget(
         _layoutSubject(
           width: 660,
-          composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+          composition: CatchSectionListMode.adaptiveTwoColumn,
         ),
       );
 
@@ -65,18 +65,19 @@ void main() {
           alignment: Alignment.topLeft,
           child: SizedBox(
             width: width,
-            child: CatchResponsiveSectionLayout(
-              composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
-              sections: [
-                CatchResponsiveSectionItem(
+            child: CatchSectionList.responsive(
+              emptyStateOmitted: true,
+              mode: CatchSectionListMode.adaptiveTwoColumn,
+              items: [
+                CatchSectionListItem(
                   child: Builder(
                     builder: (context) => Text(
                       'primary:${CatchDividedFieldInteractionScope.interactionOf(context).name}',
                     ),
                   ),
                 ),
-                CatchResponsiveSectionItem(
-                  lane: CatchResponsiveSectionLane.secondary,
+                CatchSectionListItem(
+                  lane: CatchSectionListPlacement.secondary,
                   child: Builder(
                     builder: (context) => Text(
                       'secondary:${CatchDividedFieldInteractionScope.interactionOf(context).name}',
@@ -103,10 +104,7 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      _layoutSubject(
-        width: 780,
-        composition: CatchResponsiveSectionComposition.centered,
-      ),
+      _layoutSubject(width: 780, composition: CatchSectionListMode.centered),
     );
 
     final primary = tester.getRect(find.byKey(const Key('primary-a')));
@@ -136,9 +134,10 @@ void main() {
             body: SizedBox(
               width: 780,
               height: 640,
-              child: CatchResponsiveSectionPage(
-                sections: [
-                  CatchResponsiveSectionItem(
+              child: CatchSectionList.page(
+                emptyStateOmitted: true,
+                items: [
+                  CatchSectionListItem(
                     child: CatchSection.fieldRows(
                       first: true,
                       children: [
@@ -186,14 +185,15 @@ void main() {
           body: SizedBox(
             width: 780,
             height: 640,
-            child: CatchResponsiveSectionPage(
-              composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+            child: CatchSectionList.page(
+              emptyStateOmitted: true,
+              mode: CatchSectionListMode.adaptiveTwoColumn,
               fieldInteractionPolicy:
                   const CatchResponsiveFieldInteractionPolicy(
                     splitPane: CatchDividedFieldInteraction.fullBleed,
                   ),
-              sections: [
-                CatchResponsiveSectionItem(
+              items: [
+                CatchSectionListItem(
                   child: CatchSection.fieldRows(
                     first: true,
                     children: [
@@ -205,8 +205,8 @@ void main() {
                     ],
                   ),
                 ),
-                CatchResponsiveSectionItem(
-                  lane: CatchResponsiveSectionLane.secondary,
+                CatchSectionListItem(
+                  lane: CatchSectionListPlacement.secondary,
                   child: CatchSection.fieldRows(
                     first: true,
                     children: [
@@ -259,9 +259,10 @@ void main() {
               body: SizedBox(
                 width: 390,
                 height: 640,
-                child: CatchResponsiveSectionPage(
-                  sections: [
-                    CatchResponsiveSectionItem(
+                child: CatchSectionList.page(
+                  emptyStateOmitted: true,
+                  items: [
+                    CatchSectionListItem(
                       child: Builder(
                         builder: (context) {
                           final obstruction =
@@ -311,7 +312,7 @@ void _noop() {}
 
 Widget _layoutSubject({
   required double width,
-  required CatchResponsiveSectionComposition composition,
+  required CatchSectionListMode composition,
 }) {
   return MaterialApp(
     theme: AppTheme.light,
@@ -320,17 +321,18 @@ Widget _layoutSubject({
         alignment: Alignment.topLeft,
         child: SizedBox(
           width: width,
-          child: CatchResponsiveSectionLayout(
-            composition: composition,
-            sections: const [
-              CatchResponsiveSectionItem(
+          child: CatchSectionList.responsive(
+            emptyStateOmitted: true,
+            mode: composition,
+            items: const [
+              CatchSectionListItem(
                 child: SizedBox(key: Key('primary-a'), height: 80),
               ),
-              CatchResponsiveSectionItem(
-                lane: CatchResponsiveSectionLane.secondary,
+              CatchSectionListItem(
+                lane: CatchSectionListPlacement.secondary,
                 child: SizedBox(key: Key('secondary'), height: 60),
               ),
-              CatchResponsiveSectionItem(
+              CatchSectionListItem(
                 child: SizedBox(key: Key('primary-b'), height: 40),
               ),
             ],

@@ -168,9 +168,10 @@ class _HostSavedAudienceEditorFormState
                   .toList();
               return Form(
                 key: _formKey,
-                child: CatchResponsiveSectionLayout(
-                  sections: [
-                    CatchResponsiveSectionItem(
+                child: CatchSectionList.responsive(
+                  emptyStateOmitted: true,
+                  items: [
+                    CatchSectionListItem(
                       child: CatchSection.fieldRows(
                         title: context.l10n.hostSavedAudienceDetails,
                         children: [
@@ -241,7 +242,7 @@ class _HostSavedAudienceEditorFormState
                       ),
                     ),
                     if (_static)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: HostStaticAudienceMembersEditor(
                           organizerId: widget.organizerId,
                           selectedIds: _selectedIds,
@@ -252,7 +253,7 @@ class _HostSavedAudienceEditorFormState
                       ),
                     if (!_static)
                       for (var index = 0; index < _rules.length; index++)
-                        CatchResponsiveSectionItem(
+                        CatchSectionListItem(
                           child: _HostSavedAudienceRuleSection(
                             key: ValueKey('host-saved-audience-rule-$index'),
                             number: index + 1,
@@ -268,7 +269,7 @@ class _HostSavedAudienceEditorFormState
                           ),
                         ),
                     if (!_static && _rules.length < 8)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: CatchSection.fieldRows(
                           children: [
                             CatchField.add(
@@ -289,7 +290,7 @@ class _HostSavedAudienceEditorFormState
                           ],
                         ),
                       ),
-                    CatchResponsiveSectionItem(
+                    CatchSectionListItem(
                       child: CatchSection.divided(
                         title: context.l10n.hostAudienceWhoWillBelong,
                         child: Column(
@@ -333,7 +334,7 @@ class _HostSavedAudienceEditorFormState
                       ),
                     ),
                     if (_previewError case final error?)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -351,7 +352,7 @@ class _HostSavedAudienceEditorFormState
                         ),
                       ),
                     if (_audience case final audience?)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: CatchSection.fieldRows(
                           title: context.l10n.hostSavedAudienceCurrentPreview,
                           footer: Text(
@@ -379,7 +380,7 @@ class _HostSavedAudienceEditorFormState
                         ),
                       ),
                     if (_audience != null)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: CatchSection.fieldRows(
                           children: [
                             CatchField.action(

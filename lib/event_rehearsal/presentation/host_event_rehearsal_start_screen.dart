@@ -48,7 +48,7 @@ class _HostEventRehearsalStartScreenState
       ),
       body: CatchRouteBody.standardSections(
         sections: [
-          CatchResponsiveSectionItem(
+          CatchSectionListItem(
             child: CatchSection.plain(
               padding: EdgeInsets.zero,
               child: CatchBanner(
@@ -58,7 +58,7 @@ class _HostEventRehearsalStartScreenState
               ),
             ),
           ),
-          CatchResponsiveSectionItem(
+          CatchSectionListItem(
             child: CatchSection.plain(
               padding: EdgeInsets.zero,
               child: Text(
@@ -67,7 +67,7 @@ class _HostEventRehearsalStartScreenState
               ),
             ),
           ),
-          CatchResponsiveSectionItem(
+          CatchSectionListItem(
             child: CatchSection.fieldRows(
               first: true,
               children: [
@@ -156,7 +156,7 @@ class _HostEventRehearsalStartScreenState
               ],
             ),
           ),
-          CatchResponsiveSectionItem(
+          CatchSectionListItem(
             child: CatchSection.plain(
               padding: EdgeInsets.zero,
               child: CatchButton(

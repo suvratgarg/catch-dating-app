@@ -13,7 +13,8 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 Widget catchSkeletonContentCatalogState(BuildContext context) {
   return Scaffold(
     body: CatchSkeleton.content(
-      child: CatchSectionStack(
+      child: CatchSectionList.inset(
+        emptyStateOmitted: true,
         children: [
           CatchSection.containedFieldRows(
             title: 'Customer details',

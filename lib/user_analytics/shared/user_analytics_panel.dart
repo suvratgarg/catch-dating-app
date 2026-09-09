@@ -85,7 +85,8 @@ class UserAnalyticsReportView extends StatelessWidget {
       return const UserAnalyticsEmptyState();
     }
 
-    return CatchSectionStack(
+    return CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       children: [
         CatchSection.divided(
@@ -148,7 +149,8 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSectionStack(
+    return CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       children: [
         CatchSection.divided(

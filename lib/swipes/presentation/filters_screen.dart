@@ -247,9 +247,10 @@ class FiltersContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fields = CatchResponsiveSectionLayout(
-      sections: [
-        CatchResponsiveSectionItem(
+    final fields = CatchSectionList.responsive(
+      emptyStateOmitted: true,
+      items: [
+        CatchSectionListItem(
           child: FiltersSection(
             title: context.l10n.swipesFiltersScreenTitleAge,
             child: Column(
@@ -281,7 +282,7 @@ class FiltersContent extends StatelessWidget {
             ),
           ),
         ),
-        CatchResponsiveSectionItem(
+        CatchSectionListItem(
           child: FiltersSection(
             title: context.l10n.swipesFiltersScreenTitleInterestedIn,
             child: Wrap(
@@ -341,15 +342,16 @@ class FiltersContentSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fields = CatchResponsiveSectionLayout(
-      sections: [
-        CatchResponsiveSectionItem(
+    final fields = CatchSectionList.responsive(
+      emptyStateOmitted: true,
+      items: [
+        CatchSectionListItem(
           child: FiltersSection(
             title: context.l10n.swipesFiltersScreenTitleAge,
             child: const AgeFilterSkeleton(),
           ),
         ),
-        CatchResponsiveSectionItem(
+        CatchSectionListItem(
           child: FiltersSection(
             title: context.l10n.swipesFiltersScreenTitleInterestedIn,
             child: const CatchSkeleton.chips(),

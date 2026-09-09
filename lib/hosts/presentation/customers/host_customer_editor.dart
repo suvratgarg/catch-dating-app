@@ -51,9 +51,10 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
       body: CatchRouteBody.standard(
         child: Form(
           key: _formKey,
-          child: CatchResponsiveSectionLayout(
-            sections: [
-              CatchResponsiveSectionItem(
+          child: CatchSectionList.responsive(
+            emptyStateOmitted: true,
+            items: [
+              CatchSectionListItem(
                 child: HostCustomerIdentityInputSection(
                   key: const ValueKey('host-add-customer-details'),
                   title: context.l10n.hostCustomersContactDetails,
@@ -79,7 +80,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                   ),
                 ),
               ),
-              CatchResponsiveSectionItem(
+              CatchSectionListItem(
                 child: CatchFieldLanes.single(
                   child: CatchField.control(
                     copy: catchFieldCopy(context.l10n),

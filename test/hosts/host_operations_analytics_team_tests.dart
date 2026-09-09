@@ -593,7 +593,15 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(topBar.leadingType, CatchTopBarLeading.back);
     expect(topBar.divider, isFalse);
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
-    expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
+    expect(
+      find.ancestor(
+        of: find.byType(CatchScreenBody),
+        matching: find.byType(CatchSectionList),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(CatchScreenBody), findsOneWidget);
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
     expect(find.byType(CatchToggleInput), findsNothing);
     expect(find.byType(CatchFieldActionRow), findsNothing);
     expect(find.text('Default activity'), findsOneWidget);
@@ -822,10 +830,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ),
     );
 
-    final stack = tester.widget<CatchSectionStack>(
-      find.byType(CatchSectionStack),
-    );
-    expect(stack.gap, 0);
-    expect(find.byType(CatchSection), findsNWidgets(4));
+    final sections = find.byType(CatchSection);
+    expect(sections, findsNWidgets(4));
+    for (var index = 1; index < 4; index++) {
+      expect(
+        tester.getBottomLeft(sections.at(index - 1)).dy,
+        tester.getTopLeft(sections.at(index)).dy,
+      );
+    }
   });
 }
