@@ -4,8 +4,8 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -148,7 +148,7 @@ class _HostCustomerDetailScreenState
         divider: scrolledUnder,
       ),
       body: CatchRouteBody.standard(
-        child: CatchAsyncValueView<HostAudienceContactDetail>(
+        child: CatchAsyncBoundary<HostAudienceContactDetail>(
           value: detail,
           onRetry: () => ref.invalidate(
             hostAudienceContactDetailProvider(
@@ -192,16 +192,12 @@ class _HostCustomerDetailScreenState
               onUndoMerge: (_) {},
             ),
           ),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.customer,
-            onRetry: () => ref.invalidate(
-              hostAudienceContactDetailProvider(
-                widget.organizerId,
-                widget.contactId,
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.customer,
+                onRetry: onBoundaryRetry,
               ),
-            ),
-          ),
           builder: (context, customer) => HostCustomerDetailBody(
             customer: customer,
             currentUid: currentUid,

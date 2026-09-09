@@ -7742,6 +7742,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:async-state-boundary",
+      "patternFamilyId": "async-state-boundary",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchAsyncBoundary",
+      "members": [
+        {
+          "name": "CatchAsyncValueView",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchAsyncValueSliver",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Box and sliver APIs duplicate state selection, timeout and recovery logic. One AsyncBoundary role describes that responsibility; skeleton, error content, paint and geometric viewports keep distinct owners. Named sliver construction preserves the rendering protocol. A typed retention set preserves all eight combinations of refresh, reload and terminal-error data retention. Custom errors receive the deadline-resetting recovery callback, and disabling or changing the timeout cancels the old timer. Source inventory covers 61 production calls across 44 files.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

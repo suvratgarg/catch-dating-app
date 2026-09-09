@@ -5,7 +5,7 @@ import 'package:catch_dating_app/clubs/presentation/detail/widgets/club_detail_d
 import 'package:catch_dating_app/clubs/shared/catch_club_cover.dart';
 import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
@@ -876,7 +876,7 @@ Widget catchLoadingIndicatorContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchAsyncValueView,
+  type: CatchAsyncBoundary,
   path: '[Core primitives]/Loading',
 )
 Widget catchAsyncValueContractStates(BuildContext context) {
@@ -897,7 +897,7 @@ Widget catchAsyncValueContractStates(BuildContext context) {
       );
 
   return _ContractScreen(
-    title: 'CatchAsyncValueView',
+    title: 'Async state boundary',
     contractId: 'catch.async_value',
     states: const [
       'data',
@@ -912,7 +912,7 @@ Widget catchAsyncValueContractStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'data',
-        child: CatchAsyncValueView<String>(
+        child: CatchAsyncBoundary<String>(
           value: const AsyncValue.data('3 events ready'),
           builder: (context, value) => CatchSurface.card(child: Text(value)),
         ),
@@ -921,7 +921,7 @@ Widget catchAsyncValueContractStates(BuildContext context) {
         label: 'initial-loading',
         child: SizedBox(
           height: WidgetbookPreviewLayout.loadingSlotHeight,
-          child: CatchAsyncValueView<String>(
+          child: CatchAsyncBoundary<String>(
             value: const AsyncValue.loading(),
             builder: (context, value) => Text(value),
           ),
@@ -931,7 +931,7 @@ Widget catchAsyncValueContractStates(BuildContext context) {
         label: 'retrying',
         child: SizedBox(
           height: WidgetbookPreviewLayout.loadingSlotHeight,
-          child: CatchAsyncValueView<String>(
+          child: CatchAsyncBoundary<String>(
             value: retrying,
             builder: (context, value) => Text(value),
             loadingBuilder: (context) => const CatchStatusRow(
@@ -942,24 +942,27 @@ Widget catchAsyncValueContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'refreshing',
-        child: CatchAsyncValueView<String>(
+        child: CatchAsyncBoundary<String>(
           value: refreshing,
           builder: (context, value) => CatchSurface.card(child: Text(value)),
         ),
       ),
       _StateCard(
         label: 'stale-data-with-error',
-        child: CatchAsyncValueView<String>(
+        child: CatchAsyncBoundary<String>(
           value: staleDataWithError,
           builder: (context, value) => CatchSurface.card(child: Text(value)),
-          skipError: true,
+          retainDataOn: const {
+            CatchAsyncBoundaryMode.refresh,
+            CatchAsyncBoundaryMode.error,
+          },
         ),
       ),
       _StateCard(
         label: 'terminal-error',
         child: SizedBox(
           height: WidgetbookPreviewLayout.stateViewportHeight,
-          child: CatchAsyncValueView<String>(
+          child: CatchAsyncBoundary<String>(
             value: AsyncValue.error(
               Exception('Could not load events'),
               StackTrace.current,
@@ -971,15 +974,15 @@ Widget catchAsyncValueContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'skip-loading-on-refresh',
-        child: CatchAsyncValueView<String>(
+        child: CatchAsyncBoundary<String>(
           value: const AsyncValue.data('Existing data remains visible'),
           builder: (context, value) => CatchSurface.card(child: Text(value)),
-          skipLoadingOnRefresh: true,
+          retainDataOn: const {CatchAsyncBoundaryMode.refresh},
         ),
       ),
       _StateCard(
         label: 'custom-builders',
-        child: CatchAsyncValueView<String>(
+        child: CatchAsyncBoundary<String>(
           value: const AsyncValue.loading(),
           builder: (context, value) => Text(value),
           loadingBuilder: (context) =>

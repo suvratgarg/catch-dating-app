@@ -19,7 +19,7 @@ class HostClubsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
     final selectedTab = effectiveInitialTab;
-    return CatchAsyncValueView<String?>(
+    return CatchAsyncBoundary<String?>(
       value: uidAsync,
       onRetry: () => ref.invalidate(uidProvider),
       loadingBuilder: (_) => HostOrganizerStateScaffold(
@@ -33,20 +33,19 @@ class HostClubsScreen extends ConsumerWidget {
           ),
         ],
       ),
-      errorBuilderWithRetry: (_, error, _, onRetry) =>
-          HostOrganizerStateScaffold(
-            selectedTab: selectedTab,
-            scrollKey: const PageStorageKey<String>(
-              'host-organizer-auth-route-state',
-            ),
-            slivers: [
-              CatchLocalizedSliverErrorState(
-                error,
-                context: AppErrorContext.auth,
-                onRetry: onRetry,
-              ),
-            ],
+      errorBuilder: (_, error, _, onRetry) => HostOrganizerStateScaffold(
+        selectedTab: selectedTab,
+        scrollKey: const PageStorageKey<String>(
+          'host-organizer-auth-route-state',
+        ),
+        slivers: [
+          CatchLocalizedSliverErrorState(
+            error,
+            context: AppErrorContext.auth,
+            onRetry: onRetry,
           ),
+        ],
+      ),
       builder: (context, uid) {
         if (uid == null) {
           return HostOrganizerStateScaffold(
@@ -70,7 +69,7 @@ class HostClubsScreen extends ConsumerWidget {
         }
 
         final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
-        return CatchAsyncValueView<List<Club>>(
+        return CatchAsyncBoundary<List<Club>>(
           value: clubsAsync,
           onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
           loadingBuilder: (_) => HostOrganizerStateScaffold(
@@ -84,20 +83,19 @@ class HostClubsScreen extends ConsumerWidget {
               ),
             ],
           ),
-          errorBuilderWithRetry: (_, error, _, onRetry) =>
-              HostOrganizerStateScaffold(
-                selectedTab: selectedTab,
-                scrollKey: const PageStorageKey<String>(
-                  'host-organizer-data-route-state',
-                ),
-                slivers: [
-                  CatchLocalizedSliverErrorState(
-                    error,
-                    context: AppErrorContext.club,
-                    onRetry: onRetry,
-                  ),
-                ],
+          errorBuilder: (_, error, _, onRetry) => HostOrganizerStateScaffold(
+            selectedTab: selectedTab,
+            scrollKey: const PageStorageKey<String>(
+              'host-organizer-data-route-state',
+            ),
+            slivers: [
+              CatchLocalizedSliverErrorState(
+                error,
+                context: AppErrorContext.club,
+                onRetry: onRetry,
               ),
+            ],
+          ),
           builder: (context, clubs) => HostClubsScaffold(
             clubs: clubs,
             currentUid: uid,

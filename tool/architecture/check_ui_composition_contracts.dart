@@ -1004,7 +1004,7 @@ const _widgetBuilderArgumentNames = <String>{
 const _widgetBuilderOwnerSignatures = <String>{
   'AnimatedBuilder',
   'Builder',
-  'CatchAsyncValueView',
+  'CatchAsyncBoundary',
   'FutureBuilder',
   'LayoutBuilder',
   'ListenableBuilder',

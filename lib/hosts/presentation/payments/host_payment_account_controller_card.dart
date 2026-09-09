@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/presentation/payments/host_payment_account_card.dart';
@@ -102,18 +102,14 @@ class HostPaymentAccountControllerCard extends ConsumerWidget {
       }
     }
 
-    return CatchAsyncValueView<List<HostPaymentAccount>>(
+    return CatchAsyncBoundary<List<HostPaymentAccount>>(
       value: accountsAsync,
       onRetry: uid == null
           ? null
           : () => ref.invalidate(watchHostPaymentAccountsProvider(uid)),
       loadingBuilder: (_) => const HostPaymentAccountLoadingCard(),
-      errorBuilder: (_, error, _) => HostPaymentAccountErrorCard(
-        error: error,
-        onRetry: uid == null
-            ? null
-            : () => ref.invalidate(watchHostPaymentAccountsProvider(uid)),
-      ),
+      errorBuilder: (_, error, _, onBoundaryRetry) =>
+          HostPaymentAccountErrorCard(error: error, onRetry: onBoundaryRetry),
       builder: (context, accounts) => HostPaymentAccountCard(
         club: club,
         accounts: accounts,

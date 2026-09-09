@@ -445,16 +445,16 @@ class HostCustomersSummary extends StatelessWidget {
   final HostCustomerSegmentCount? newCustomerCount;
 
   @override
-  Widget build(BuildContext context) => CatchAsyncValueView<HostCrmSummary>(
+  Widget build(BuildContext context) => CatchAsyncBoundary<HostCrmSummary>(
     value: summary,
     onRetry: onRetry,
     initialLoadTimeout: null,
     loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
-    errorBuilder: (_, error, _) => CatchLocalizedErrorState(
+    errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
       error,
       context: AppErrorContext.customers,
       mode: CatchErrorStateMode.compact,
-      onRetry: onRetry,
+      onRetry: onBoundaryRetry,
     ),
     builder: (context, value) {
       String countLabel(int count) => value.truncated ? '$count+' : '$count';

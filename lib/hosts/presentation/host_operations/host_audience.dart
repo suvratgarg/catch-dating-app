@@ -30,19 +30,19 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
     final messaging = ref.watch(hostMessagingSetupProvider(widget.club.id));
     return CatchSection.divided(
       title: context.l10n.hostsHostAudienceWhatsappSender,
-      child: CatchAsyncValueView<HostMessagingSetup>(
+      child: CatchAsyncBoundary<HostMessagingSetup>(
         value: messaging,
         onRetry: () =>
             ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
         initialLoadTimeout: null,
         loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
-        errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-          error,
-          context: AppErrorContext.club,
-          mode: CatchErrorStateMode.compact,
-          onRetry: () =>
-              ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
-        ),
+        errorBuilder: (_, error, _, onBoundaryRetry) =>
+            CatchLocalizedErrorState(
+              error,
+              context: AppErrorContext.club,
+              mode: CatchErrorStateMode.compact,
+              onRetry: onBoundaryRetry,
+            ),
         builder: (context, setup) {
           final connection = setup.connection;
           return CatchFieldLanes.custom(

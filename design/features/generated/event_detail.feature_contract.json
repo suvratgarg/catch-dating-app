@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:99537347f52975826c18ba813ca9c4e51de4e1d2d3980b51d41a7abab4350fa7",
-  "resolvedDigest": "sha256:81a344e7fbd97bb6843758fd8f92d967b3c0f697e126872f13dd84a4246608f1",
+  "resolvedDigest": "sha256:c6131f438b659fbaed3e1d2b033e23e160fabc065ef73273fa554914eaf02998",
   "feature": {
     "id": "feature.event_detail",
     "name": "Event Detail",
@@ -1596,10 +1596,11 @@
             "id": "catch.async_value",
             "kind": "pattern",
             "dart": {
-              "symbol": "CatchAsyncValueView",
-              "file": "lib/core/riverpod_ui/catch_async_value_view.dart",
+              "symbol": "CatchAsyncBoundary",
+              "file": "lib/core/riverpod_ui/catch_async_boundary.dart",
               "constructors": [
-                "CatchAsyncValueView"
+                "CatchAsyncBoundary",
+                "CatchAsyncBoundary.sliver"
               ]
             }
           },

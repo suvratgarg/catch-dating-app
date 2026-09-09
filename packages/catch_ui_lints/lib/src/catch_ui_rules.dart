@@ -630,13 +630,13 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const asyncRequiresStateSurface = LintCode(
     'catch_async_requires_state_surface',
-    'Route presentation AsyncValue handling through CatchAsyncValueView or cover loading and error explicitly; do not force value/requireValue.',
+    'Route presentation AsyncValue handling through CatchAsyncBoundary or cover loading and error explicitly; do not force value/requireValue.',
     severity: DiagnosticSeverity.INFO,
   );
 
   static const asyncRequiresRetry = LintCode(
     'catch_async_requires_retry',
-    'CatchAsyncValueView/CatchAsyncValueSliver must declare onRetry so both provider errors and initial-load timeouts have an actionable recovery path.',
+    'CatchAsyncBoundary and its sliver constructor must declare onRetry so both provider errors and initial-load timeouts have an actionable recovery path.',
     severity: DiagnosticSeverity.WARNING,
   );
 
@@ -981,8 +981,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
 
     if (isFeaturePresentationPath &&
-        (typeName == 'CatchAsyncValueView' ||
-            typeName == 'CatchAsyncValueSliver') &&
+        typeName == 'CatchAsyncBoundary' &&
         !_hasNamedArgument(node, 'onRetry')) {
       _reportAtNode(node, CatchUiLayoutRules.asyncRequiresRetry);
     }

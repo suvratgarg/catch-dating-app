@@ -7,8 +7,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -857,7 +857,7 @@ class HostPrivateAccessCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchAsyncValueView<EventPrivateAccess?>(
+    return CatchAsyncBoundary<EventPrivateAccess?>(
       value: accessAsync,
       onRetry: onRetryPrivateAccess,
       loadingBuilder: (_) => HostPrivateAccessShell(
@@ -876,11 +876,11 @@ class HostPrivateAccessCard extends StatelessWidget {
           ],
         ),
       ),
-      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.event,
         mode: CatchErrorStateMode.compact,
-        onRetry: onRetryPrivateAccess,
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, access) {
         final privateAccessState = HostPrivateAccessDisplayState.resolve(
@@ -1144,19 +1144,20 @@ class HostInviteLinksList extends StatelessWidget {
           ),
         ],
         gapH12,
-        CatchAsyncValueView<List<EventInviteLink>>(
+        CatchAsyncBoundary<List<EventInviteLink>>(
           value: linksAsync,
           onRetry: onRetry,
           loadingBuilder: (_) => Text(
             context.l10n.hostsHostEventManageScreenTextLoadingInviteLinks,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.event,
-            mode: CatchErrorStateMode.compact,
-            onRetry: onRetry,
-          ),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.event,
+                mode: CatchErrorStateMode.compact,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, links) => links.isEmpty
               ? Text(
                   state.emptyCopy,

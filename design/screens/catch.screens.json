@@ -6905,7 +6905,7 @@
           "id": "messages_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncValueView while watchConversationMessagesProvider loads.",
+          "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncBoundary while watchConversationMessagesProvider loads.",
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
             "ChatScreen/Route states"
@@ -17264,7 +17264,7 @@
           "id": "messages_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncValueView while watchConversationMessagesProvider is loading.",
+          "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncBoundary while watchConversationMessagesProvider is loading.",
           "nextAction": "Compare the skeleton pattern against the host-chat design reference before visual edits.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -24754,7 +24754,7 @@
           "offline",
           "permission"
         ],
-        "owner": "LaunchAccessApplicationScreen, LaunchAccessController, and CatchAsyncValueView"
+        "owner": "LaunchAccessApplicationScreen, LaunchAccessController, and CatchAsyncBoundary"
       },
       "name": "Launch Access Application",
       "owner": "launch_access",
@@ -24914,7 +24914,7 @@
           "id": "provider_error",
           "kind": "error",
           "status": "captured",
-          "source": "Application stream failures render through CatchAsyncValueView with an exact provider retry.",
+          "source": "Application stream failures render through CatchAsyncBoundary with an exact provider retry.",
           "captureIds": ["launch_access_error"],
           "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
           "tests": ["test/ui_captures/capture_runner_test.dart"],
@@ -24928,7 +24928,7 @@
           "captureIds": ["launch_access_offline"],
           "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
           "tests": ["test/ui_captures/capture_runner_test.dart"],
-          "nextAction": "Keep offline classification centralized in CatchAsyncValueView."
+          "nextAction": "Keep offline classification centralized in CatchAsyncBoundary."
         },
         {
           "id": "locked_status",
@@ -25709,7 +25709,7 @@
       },
       "statePolicy": {
         "requiredStates": ["data", "error", "loading", "mutation"],
-        "owner": "eventRehearsalProvider, EventRehearsalController mutations, and CatchAsyncValueView"
+        "owner": "eventRehearsalProvider, EventRehearsalController mutations, and CatchAsyncBoundary"
       },
       "stateController": {
         "primary": "eventRehearsalProvider + EventRehearsalController",
@@ -25761,7 +25761,7 @@
           "id": "host_event_rehearsal_loading",
           "kind": "loading",
           "status": "implemented",
-          "source": "CatchSkeletonRows through CatchAsyncValueView",
+          "source": "CatchSkeletonRows through CatchAsyncBoundary",
           "tests": ["test/event_rehearsal/host_event_rehearsal_screen_test.dart"],
           "nextAction": "Retain the route-owned skeleton while the first isolated projection loads."
         },

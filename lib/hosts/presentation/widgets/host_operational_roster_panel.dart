@@ -6,8 +6,8 @@ import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -320,19 +320,18 @@ class _HostOperationalRosterPanelState
             ),
             gapH12,
           ],
-          CatchAsyncValueView<List<EventRuntimeClaimRequest>>(
+          CatchAsyncBoundary<List<EventRuntimeClaimRequest>>(
             value: claimsAsync,
             onRetry: () => ref.invalidate(
               watchPendingEventRuntimeClaimsProvider(widget.eventId),
             ),
             loadingBuilder: (_) => const SizedBox.shrink(),
-            errorBuilder: (_, error, _) => CatchLocalizedErrorBanner(
-              error,
-              context: AppErrorContext.event,
-              onRetry: () => ref.invalidate(
-                watchPendingEventRuntimeClaimsProvider(widget.eventId),
-              ),
-            ),
+            errorBuilder: (_, error, _, onBoundaryRetry) =>
+                CatchLocalizedErrorBanner(
+                  error,
+                  context: AppErrorContext.event,
+                  onRetry: onBoundaryRetry,
+                ),
             builder: (context, claims) {
               if (claims.isEmpty) return const SizedBox.shrink();
               return Padding(
@@ -355,7 +354,7 @@ class _HostOperationalRosterPanelState
               );
             },
           ),
-          CatchAsyncValueView<List<EventAttendee>>(
+          CatchAsyncBoundary<List<EventAttendee>>(
             value: attendeesAsync,
             errorContext: AppErrorContext.event,
             onRetry: () =>
@@ -1167,7 +1166,7 @@ class _HostProviderControl extends StatelessWidget {
         style: CatchTextStyles.supporting(context),
       );
     }
-    return CatchAsyncValueView<HostProviderSetup>(
+    return CatchAsyncBoundary<HostProviderSetup>(
       value: setupValue,
       errorContext: AppErrorContext.event,
       onRetry: onRetry,

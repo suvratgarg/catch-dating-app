@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_body_screen.dart';
@@ -66,16 +66,16 @@ class _EventLocationMapRouteScreenState
     final eventId = widget.eventId;
     final vmAsync = ref.watch(eventDetailViewModelProvider(eventId));
 
-    return CatchAsyncValueView<EventDetailViewModel?>(
+    return CatchAsyncBoundary<EventDetailViewModel?>(
       value: vmAsync,
       onRetry: () => ref.invalidate(eventDetailViewModelProvider(eventId)),
       loadingBuilder: (_) =>
           const ChromelessMapScaffold(child: EventLocationMapLoadingBody()),
-      errorBuilder: (_, error, _) => ChromelessMapScaffold(
+      errorBuilder: (_, error, _, onBoundaryRetry) => ChromelessMapScaffold(
         child: CatchLocalizedErrorState(
           error,
           context: AppErrorContext.event,
-          onRetry: () => ref.invalidate(eventDetailViewModelProvider(eventId)),
+          onRetry: onBoundaryRetry,
         ),
       ),
       builder: (context, vm) {

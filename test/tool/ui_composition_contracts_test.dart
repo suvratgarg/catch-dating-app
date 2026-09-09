@@ -377,7 +377,7 @@ class ExampleScreen {
       },
       declarationSource: '''
 class ExampleScreen {
-  Object build() => CatchAsyncValueView(
+  Object build() => CatchAsyncBoundary(
     loadingBuilder: (_) => CatchRouteScaffold(
       body: CatchRouteBody.standard(child: const SizedBox()),
     ),

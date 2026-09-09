@@ -122,16 +122,17 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               ),
             ),
             gapH24,
-            CatchAsyncValueView<HostSavedAudienceMembersState>(
+            CatchAsyncBoundary<HostSavedAudienceMembersState>(
               value: members,
               initialLoadTimeout: null,
               onRetry: () => ref.invalidate(provider),
               loadingBuilder: (_) => const CatchSkeleton.rows(count: 4),
-              errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.customers,
-                onRetry: () => ref.invalidate(provider),
-              ),
+              errorBuilder: (_, error, _, onBoundaryRetry) =>
+                  CatchLocalizedErrorState(
+                    error,
+                    context: AppErrorContext.customers,
+                    onRetry: onBoundaryRetry,
+                  ),
               builder: (context, state) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

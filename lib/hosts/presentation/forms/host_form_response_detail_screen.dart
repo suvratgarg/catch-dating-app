@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -62,16 +62,17 @@ class _HostFormResponseDetailScreenState
             )
           : null,
       body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncValueView<HostFormResponseDetail>(
+        child: CatchAsyncBoundary<HostFormResponseDetail>(
           value: detail,
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeleton.rows(count: 8),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.formResponses,
-            onRetry: () => ref.invalidate(provider),
-          ),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.formResponses,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, value) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -489,16 +490,16 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
       organizerId: organizerId,
       responseId: detail.response.responseId,
     );
-    return CatchAsyncValueView<bool>(
+    return CatchAsyncBoundary<bool>(
       value: ref.watch(provider),
       initialLoadTimeout: null,
       onRetry: () => ref.invalidate(provider),
       loadingBuilder: (_) => const SizedBox.shrink(),
-      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.formResponses,
         mode: CatchErrorStateMode.compact,
-        onRetry: () => ref.invalidate(provider),
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, canApply) {
         if (canApply) {

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -31,7 +31,7 @@ class PaymentHistoryScreen extends ConsumerWidget {
         divider: scrolledUnder,
       ),
       body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncValueView<String?>(
+        child: CatchAsyncBoundary<String?>(
           value: uidAsync,
           loadingBuilder: (_) => const PaymentHistorySkeleton(),
           errorContext: AppErrorContext.payments,
@@ -69,7 +69,7 @@ class PaymentHistoryListController extends ConsumerWidget {
       paymentHistoryViewModelProvider(userId),
     );
 
-    return CatchAsyncValueView<PaymentHistoryViewModel>(
+    return CatchAsyncBoundary<PaymentHistoryViewModel>(
       value: paymentHistoryAsync,
       loadingBuilder: (_) => const PaymentHistorySkeleton(),
       errorContext: AppErrorContext.payments,

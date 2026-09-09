@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.13.0
+version: 1.14.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -123,7 +123,7 @@ rules, the composition migration spec's Layer 0–N model) and in practice
 of a given widget is recorded nowhere machine-readable; (b) `core/widgets` is
 a flat 116-file namespace where `CatchLoadingIndicator` sits beside `CatchOrganizerPoster`
 and `CatchFormStepFlow`; (c) the riverpod-consuming adapters
-(`CatchAsyncValueView`, the mutation error family, `CatchNotice`) sit in the
+(`CatchAsyncBoundary`, the mutation error family, `CatchNotice`) sit in the
 same folder as pure primitives, which is exactly why P1's boundary cannot be
 compiled today.
 
@@ -373,8 +373,8 @@ packages/catch_ui/lib/
 ```
 
 Riverpod-consuming adapters stay in the app package under
-`lib/core/riverpod_ui/` (moved from `core/widgets`): `CatchAsyncValueView`,
-`CatchAsyncValueSliver`, `CatchLocalizedErrorBanner.mutation`,
+`lib/core/riverpod_ui/` (moved from `core/widgets`): `CatchAsyncBoundary`,
+`CatchAsyncBoundary.sliver`, `CatchLocalizedErrorBanner.mutation`,
 `listenToCatchMutationErrors`, `mutation_error_util`, `CatchNotice`'s
 provider factory. They are thin translations onto `catch_ui` surfaces
 (`CatchAsyncState`, `CatchErrorState`), which is what they already are.
@@ -479,6 +479,12 @@ reserved for that job: a member of its data-owning concept, with a use-case
 naming the published contract and an executable inheritance/ownership check.
 Geometry, visibility, interaction policy, active-tab clearance and status
 publication retain their independently consumed contracts.
+The delegated source review also consolidates box and sliver asynchronous state
+switching into one `AsyncBoundary` role. Skeleton, ErrorState, Surface and
+Viewport own visual or geometric responsibilities, so none accurately names
+state selection, retention and recovery. The new role is unqualified at its
+canonical entry point; box/sliver output uses named constructors, and the
+existing typed state snapshot remains nonvisual data.
 Public anatomy remains a registered member of its primary concept; this does
 not permit private shared Widgets or multiple unrelated primaries in one file.
 

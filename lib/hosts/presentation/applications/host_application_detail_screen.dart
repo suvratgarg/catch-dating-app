@@ -81,16 +81,17 @@ class _HostApplicationDetailScreenState
             )
           : null,
       body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncValueView<HostApplicationDetail>(
+        child: CatchAsyncBoundary<HostApplicationDetail>(
           value: detail,
           onRetry: _invalidateDetail,
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.applications,
-            onRetry: _invalidateDetail,
-          ),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.applications,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, application) {
             if (_loadedRevision != application.revision) {
               _loadedRevision = application.revision;

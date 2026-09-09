@@ -8,8 +8,7 @@ import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_sliver.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
@@ -1438,19 +1437,19 @@ Widget catchStartupLoadingScreenCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchAsyncValueView,
+  type: CatchAsyncBoundary,
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncValueViewCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchAsyncValueView',
-    catalogId: 'core.widgets.catch_async_value_view',
+    title: 'Async state boundary',
+    catalogId: 'catch.async_value',
     children: [
       _StateCard(
         label: 'data / loading / error',
         child: Column(
           children: [
-            CatchAsyncValueView<String>(
+            CatchAsyncBoundary<String>(
               value: const AsyncValue.data('3 events ready'),
               builder: (context, value) =>
                   CatchSurface.card(child: Text(value)),
@@ -1458,7 +1457,7 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
             gapH12,
             SizedBox(
               height: WidgetbookPreviewLayout.loadingSlotHeight,
-              child: CatchAsyncValueView<String>(
+              child: CatchAsyncBoundary<String>(
                 value: AsyncValue.loading(),
                 builder: (context, value) => _textData(value),
               ),
@@ -1466,7 +1465,7 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
             gapH12,
             SizedBox(
               height: WidgetbookPreviewLayout.stateViewportHeight,
-              child: CatchAsyncValueView<String>(
+              child: CatchAsyncBoundary<String>(
                 value: AsyncValue.error(
                   Exception('Could not load events'),
                   StackTrace.current,
@@ -1483,14 +1482,14 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchAsyncValueSliver,
+  name: 'Sliver states',
+  type: CatchAsyncBoundary,
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchAsyncValueSliver',
-    catalogId: 'core.widgets.catch_async_value_sliver',
+    title: 'Sliver async boundary',
+    catalogId: 'catch.async_value',
     children: [
       _StateCard(
         label: 'sliver data / loading / error',
@@ -1498,7 +1497,7 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
           height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CustomScrollView(
             slivers: [
-              CatchAsyncValueSliver<String>(
+              CatchAsyncBoundary<String>.sliver(
                 value: const AsyncValue.data('Sliver data loaded'),
                 builder: (context, value) => SliverToBoxAdapter(
                   child: Padding(
@@ -1507,18 +1506,18 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
                   ),
                 ),
               ),
-              CatchAsyncValueSliver<String>(
+              CatchAsyncBoundary<String>.sliver(
                 value: AsyncValue.loading(),
                 builder: (context, value) => _sliverTextData(value),
               ),
-              CatchAsyncValueSliver<String>(
+              CatchAsyncBoundary<String>.sliver(
                 value: AsyncValue.error(
                   Exception('Could not load sliver list'),
                   StackTrace.current,
                 ),
                 builder: (context, value) => _sliverTextData(value),
                 onRetry: _noop,
-                fillErrorRemaining: false,
+                fillRemaining: false,
               ),
             ],
           ),

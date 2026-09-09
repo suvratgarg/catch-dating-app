@@ -105,11 +105,11 @@ class HostClubSpokeResolver extends ConsumerWidget {
     }
 
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
-    return CatchAsyncValueView<List<Club>>(
+    return CatchAsyncBoundary<List<Club>>(
       value: clubsAsync,
       onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       loadingBuilder: (_) => HostLoadingScreen(title: title),
-      errorBuilder: (_, error, _) => CatchRouteScaffold(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: title,
           leadingType: CatchTopBarLeading.back,
@@ -119,7 +119,7 @@ class HostClubSpokeResolver extends ConsumerWidget {
           child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.club,
-            onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+            onRetry: onBoundaryRetry,
           ),
         ),
       ),

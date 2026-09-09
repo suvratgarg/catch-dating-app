@@ -52,7 +52,7 @@ class _HostStaticAudienceMembersEditorState
       ),
     );
     final people = ref.watch(peopleProvider);
-    return CatchAsyncValueView<List<HostStaticAudienceMember>>(
+    return CatchAsyncBoundary<List<HostStaticAudienceMember>>(
       value: ref.watch(selectedProvider),
       errorContext: AppErrorContext.customers,
       onRetry: () => ref.invalidate(selectedProvider),
@@ -152,7 +152,7 @@ class _HostStaticAudienceMembersEditorState
                 ),
               ],
             ),
-            CatchAsyncValueView<HostAudiencePage>(
+            CatchAsyncBoundary<HostAudiencePage>(
               value: people,
               errorContext: AppErrorContext.customers,
               onRetry: () => ref.invalidate(peopleProvider),

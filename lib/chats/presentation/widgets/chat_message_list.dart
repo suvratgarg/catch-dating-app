@@ -2,7 +2,7 @@ import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_conversation_context.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_copy.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -34,7 +34,7 @@ class ChatMessageList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchAsyncValueView<List<ChatMessage>>(
+    return CatchAsyncBoundary<List<ChatMessage>>(
       value: messagesAsync,
       onRetry: onRetry,
       loadingBuilder: (_) {
@@ -99,12 +99,12 @@ class ChatMessageList extends StatelessWidget {
           ],
         );
       },
-      errorBuilder: (_, e, _) => CatchErrorState(
+      errorBuilder: (_, e, _, onBoundaryRetry) => CatchErrorState(
         retryLabel: context.l10n.sharedActionTryAgain,
         title: context.l10n.chatsChatMessageListTitleMessagesUnavailable,
         message: context.l10n.chatsChatMessageListMessageUnableToLoadMessages,
         icon: CatchIcons.chatBubbleOutlineRounded,
-        onRetry: onRetry,
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, messages) {
         if (messages.isEmpty) {

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
@@ -113,19 +113,19 @@ class _HostFormResponsesPanelState
           ],
         ),
         gapH8,
-        CatchAsyncValueView<HostFormResponsesState>(
+        CatchAsyncBoundary<HostFormResponsesState>(
           value: responses,
           onRetry: () =>
               ref.invalidate(hostFormResponsesControllerProvider(request)),
           initialLoadTimeout: null,
           loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.formResponses,
-            mode: CatchErrorStateMode.compact,
-            onRetry: () =>
-                ref.invalidate(hostFormResponsesControllerProvider(request)),
-          ),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.formResponses,
+                mode: CatchErrorStateMode.compact,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, state) {
             if (state.responses.isEmpty) {
               final filtered = widget.query != null || _status != null;
@@ -267,7 +267,7 @@ class _HostFormResponsesPanelState
                   onTap: () => Navigator.of(sheetContext).pop(''),
                 ),
               ),
-              CatchAsyncValueView<HostFormsDirectoryState>(
+              CatchAsyncBoundary<HostFormsDirectoryState>(
                 value: ref.watch(hostFormsDirectoryControllerProvider(request)),
                 onRetry: () => ref.invalidate(
                   hostFormsDirectoryControllerProvider(request),

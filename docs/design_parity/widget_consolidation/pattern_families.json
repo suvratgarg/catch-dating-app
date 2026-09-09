@@ -568,21 +568,29 @@
         },
         {
           "symbol": "CatchAsyncValueView",
-          "disposition": "canonical",
-          "preview": "required",
-          "rationale": "Generic data/loading/error boundary and proposed async-value concept owner."
+          "disposition": "unify",
+          "preview": "not-applicable",
+          "rationale": "Generic data/loading/error boundary and proposed async-value concept owner. Public API disposition is superseded by async-state-boundary; the decompressed concept boundary is unchanged.",
+          "target": "CatchAsyncBoundary"
         },
         {
           "symbol": "CatchAsyncValueSliver",
-          "disposition": "register",
-          "preview": "required",
-          "rationale": "Sliver layout member of the async-value boundary concept."
+          "disposition": "unify",
+          "preview": "not-applicable",
+          "rationale": "Sliver layout member of the async-value boundary concept. Public API disposition is superseded by async-state-boundary; the decompressed concept boundary is unchanged.",
+          "target": "CatchAsyncBoundary"
         },
         {
           "symbol": "CatchStartupLoadingScreen",
           "disposition": "register",
           "preview": "required",
           "rationale": "App-start screen composition that uses the indicator but should not become another primitive concept."
+        },
+        {
+          "symbol": "CatchAsyncBoundary",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The async-state-boundary review absorbs box and sliver state switching into one implementation while preserving this family’s distinct async concept."
         }
       ]
     },
@@ -3079,6 +3087,44 @@
           "disposition": "canonical",
           "preview": "not-applicable",
           "rationale": "Existing app error mapping and transient publisher; preserve explicit caller recovery in this shared boundary."
+        }
+      ]
+    },
+    {
+      "id": "async-state-boundary",
+      "title": "Async data state and retry boundary",
+      "intent": "One exhaustive async-state owner for box and sliver output, sharing retained-data selection, timeout lifecycle, and explicit recovery.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.async_value",
+      "qualityReference": "CatchAsyncBoundary",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve existing loading, data, localized failure and retry renderers in both layouts. Gallery names change to the canonical async-boundary identity; sliver output remains an explicit named constructor.",
+        "Replace retention booleans with a typed set of refresh, reload and error conditions. Defaults and all existing caller selections keep their branch behavior.",
+        "Cancel a pending deadline when timeout is disabled or reconfigured. Consolidate duplicate timer/retry state and pass its recovery callback to custom errors, forwarding callers existing retry actions through the same deadline reset.",
+        "Custom event-management and saved-events retry actions use the already-declared boundary recovery, including its authentication retry and timeout reset. Optional saved-place enrichment keeps its nonblocking content and save action."
+      ],
+      "members": [
+        {
+          "symbol": "CatchAsyncBoundary",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Exhaustive async-state switching is distinct from visual skeleton/error content and geometric viewports. One AsyncBoundary role forces future equivalent implementations into this contract."
+        },
+        {
+          "symbol": "CatchAsyncValueView",
+          "disposition": "unify",
+          "target": "CatchAsyncBoundary",
+          "preview": "not-applicable",
+          "rationale": "Absorb the box state boundary into the canonical default constructor."
+        },
+        {
+          "symbol": "CatchAsyncValueSliver",
+          "disposition": "unify",
+          "target": "CatchAsyncBoundary",
+          "preview": "not-applicable",
+          "rationale": "The sliver protocol changes builder output and default placement; it shares all state, timeout, and recovery logic through the sliver constructor."
         }
       ]
     }

@@ -284,3 +284,15 @@ test("deterministic diagnostics do not depend on source or registry ordering", (
   const source = declarations([a, b]);
   assert.deepEqual(problems([a, b], source), problems([b, a], source.reverse()));
 });
+
+test("async box and sliver protocols share one canonical role identity", () => {
+  const async = component("CatchAsyncBoundary", "AsyncBoundary", {
+    level: "L4a", dart: {symbol: "CatchAsyncBoundary", file: "lib/core/riverpod_ui/catch_async_boundary.dart"},
+  });
+  assert.deepEqual(problems([async]), []);
+  const competing = {...async, id: "catch.other_async"};
+  assert.ok(problems([async, competing]).length > 0,
+    "A second registry ID cannot authorize duplicate async-state ownership");
+  const qualified = {...async, dart: {...async.dart, symbol: "CatchRiverpodAsyncBoundary"}};
+  assert.ok(problems([qualified]).some(p => p.includes("expected CatchAsyncBoundary")));
+});

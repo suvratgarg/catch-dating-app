@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "7d3e4e9ff04871549cbadf578ddf1a63fd6044d968e69447102897bbfecfa65b",
+  "sourceDigest": "7f670ea96a7243386d501ee349282ecfc5d67f130b7641926cb8bc719a5a0dbc",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "7d3e4e9ff04871549cbadf578ddf1a63fd6044d968e69447102897bbfecfa65b",
-    "contractDigest": "7d3e4e9ff04871549cbadf578ddf1a63fd6044d968e69447102897bbfecfa65b"
+    "digest": "7f670ea96a7243386d501ee349282ecfc5d67f130b7641926cb8bc719a5a0dbc",
+    "contractDigest": "7f670ea96a7243386d501ee349282ecfc5d67f130b7641926cb8bc719a5a0dbc"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "dc2240714ecb4d1dba39bfd4e2b89b19855da4aaaf33908983216fa93d820799",
+    "handoffRequestDigest": "4419a385ce4cb5cb081c8ef080568ff14078706de2e5cd7e87c02f58154b639e",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,26 +83,19 @@
   },
   "metrics": {
     "contractCount": 73,
-    "publicClassCount": 235,
+    "publicClassCount": 234,
     "conceptCount": 65,
-    "memberCount": 152,
-    "membersPerConcept": 2.34,
+    "memberCount": 151,
+    "membersPerConcept": 2.32,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 152,
+      "member": 151,
       "screen": 15
     },
-    "collisionCount": 32,
+    "collisionCount": 31,
     "collisions": [
-      {
-        "key": "catch.async_value",
-        "symbols": [
-          "CatchAsyncValueSliver",
-          "CatchAsyncValueView"
-        ]
-      },
       {
         "key": "catch.badge",
         "symbols": [
@@ -976,8 +969,8 @@
       "contractId": "catch.async_value",
       "conceptRole": "concept",
       "conceptId": "catch.async_value",
-      "dartSymbol": "CatchAsyncValueView",
-      "dartFile": "lib/core/riverpod_ui/catch_async_value_view.dart",
+      "dartSymbol": "CatchAsyncBoundary",
+      "dartFile": "lib/core/riverpod_ui/catch_async_boundary.dart",
       "figmaName": "Catch/AsyncValue",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
@@ -993,8 +986,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 4,
-      "figmaExpectedPropertyDigest": "4c047e361cac745fb6e9d2be9335be04812efc3fcc2806416f8327f77accecfa",
+      "figmaExpectedPropertyCount": 2,
+      "figmaExpectedPropertyDigest": "badb135fe9eb7f6a77130ec0ea71d733f96e1fe4253f53ee0c0348f12477cebc",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1002,7 +995,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "AsyncValue",
       "claudeAllowed": true,
-      "contractDigest": "ee79892f5d6e797301b50fbe2cee1d79d862e74ec9b605ef12b183fd70a18e98"
+      "contractDigest": "6f675c68d83ec3fe42f47f40f4e081171b2d5468eacb09d6a83fe1dd00d8fbd8"
     },
     {
       "contractId": "catch.startup_loading_screen",

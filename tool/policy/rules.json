@@ -917,7 +917,7 @@
         "lib/core/widgets/**",
         "test/**"
       ],
-      "instruction": "Presentation widgets should route AsyncValue, Future, and Stream loading/error branches through CatchAsyncValueView, CatchAsyncValueSliver, or a feature-owned typed display-state adapter. View-models may call AsyncValue.when when they return non-widget display state. Empty states stay in successful data callbacks. Data-load errors must use Catch error primitives with retry unless retry is impossible or unsafe.",
+      "instruction": "Presentation widgets should route AsyncValue, Future, and Stream loading/error branches through CatchAsyncBoundary (box or sliver), or a feature-owned typed display-state adapter. View-models may call AsyncValue.when when they return non-widget display state. Empty states stay in successful data callbacks. Data-load errors must use Catch error primitives with retry unless retry is impossible or unsafe.",
       "sunset_when": [
         "Analyzer or scanner coverage enforces raw async UI branches and retryable data-load errors"
       ],
@@ -975,7 +975,7 @@
         "lib/core/widgets/**",
         "test/**"
       ],
-      "instruction": "When credible initial or fallback data is available (route extra, cached value, optimistic snapshot), render it ahead of blocking loading skeletons. Loading states should use skeletons that resemble the eventual UI shape when that shape is known; use compact spinners or loading copy only for tiny inline metadata, unknown one-off work, or platform/plugin actions. Initial provider loads must reach an actionable error state after the shared presentation deadline, and CatchAsyncValueView/CatchAsyncValueSliver call sites must supply onRetry that restarts the failing provider boundary.",
+      "instruction": "When credible initial or fallback data is available (route extra, cached value, optimistic snapshot), render it ahead of blocking loading skeletons. Loading states should use skeletons that resemble the eventual UI shape when that shape is known; use compact spinners or loading copy only for tiny inline metadata, unknown one-off work, or platform/plugin actions. Initial provider loads must reach an actionable error state after the shared presentation deadline, and CatchAsyncBoundary and its sliver constructor call sites must supply onRetry that restarts the failing provider boundary.",
       "sunset_when": [
         "Widgetbook and captures include content-shaped loading states for every contracted screen"
       ],

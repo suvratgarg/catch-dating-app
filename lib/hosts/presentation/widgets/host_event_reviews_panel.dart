@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -25,7 +25,7 @@ class HostEventReviewsPanel extends ConsumerWidget {
     return CatchSection.contained(
       title: context.l10n.hostsHostEventReviewsTitlePublicReviews,
       subtitle: context.l10n.hostsHostEventReviewsSubtitlePublicResponse,
-      child: CatchAsyncValueView<List<Review>>(
+      child: CatchAsyncBoundary<List<Review>>(
         value: reviewsAsync,
         errorContext: AppErrorContext.event,
         onRetry: () => ref.invalidate(watchReviewsForEventProvider(eventId)),

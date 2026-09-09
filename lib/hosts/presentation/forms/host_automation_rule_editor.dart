@@ -116,13 +116,13 @@ class _HostAutomationRuleEditorState
           onPressed:
               _busy ||
                   loadingMessage ||
-                  catchAsyncRenderBranchFromAsyncValue(options) !=
-                      CatchAsyncRenderBranch.data
+                  catchAsyncBoundaryStatus(options) !=
+                      CatchAsyncBoundaryStatus.data
               ? null
               : _save,
         ),
         body: CatchRouteBody.standard(
-          child: CatchAsyncValueView<HostSavedAudienceFilterOptions>(
+          child: CatchAsyncBoundary<HostSavedAudienceFilterOptions>(
             value: options,
             errorContext: AppErrorContext.forms,
             onRetry: () => ref.invalidate(optionsProvider),
@@ -454,7 +454,7 @@ class _HostAutomationRuleEditorState
                               title: l.hostAutomationMessage,
                               body: l.hostAutomationDraftHelp,
                             ),
-                            CatchAsyncValueView<HostAutomationMessagesState>(
+                            CatchAsyncBoundary<HostAutomationMessagesState>(
                               value: messages,
                               errorContext: AppErrorContext.forms,
                               onRetry: () => ref.invalidate(messagesProvider),

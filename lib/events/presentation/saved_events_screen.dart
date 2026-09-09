@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_name_lookup.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_sliver.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
@@ -54,7 +54,7 @@ class SavedEventsScreen extends ConsumerWidget {
               final savedEvents = userId == null
                   ? const AsyncData(<Event>[])
                   : ref.watch(watchSavedEventDetailsForUserProvider(userId));
-              return CatchAsyncValueSliver<List<Event>>(
+              return CatchAsyncBoundary<List<Event>>.sliver(
                 value: savedEvents,
                 onRetry: () {
                   ref.invalidate(uidProvider);
@@ -65,18 +65,12 @@ class SavedEventsScreen extends ConsumerWidget {
                   }
                 },
                 initialLoadTimeout: null,
-                sliverLoadingBuilder: (_) =>
+                loadingBuilder: (_) =>
                     const EventAgendaSliverSkeleton(padding: EdgeInsets.zero),
-                sliverErrorBuilder: (_, error, _) =>
+                errorBuilder: (_, error, _, onBoundaryRetry) =>
                     SavedEventsClubNamesErrorSliver(
                       error: error,
-                      onRetry: () {
-                        if (userId != null) {
-                          ref.invalidate(
-                            watchSavedEventDetailsForUserProvider(userId),
-                          );
-                        }
-                      },
+                      onRetry: onBoundaryRetry!,
                     ),
                 builder: (context, events) {
                   if (events.isEmpty) {
@@ -105,17 +99,16 @@ class SavedEventsScreen extends ConsumerWidget {
                   final clubNames = ref.watch(
                     clubNameLookupProvider(ClubNameLookupQuery(state.clubIds)),
                   );
-                  return CatchAsyncValueSliver<Map<String, String>>(
+                  return CatchAsyncBoundary<Map<String, String>>.sliver(
                     value: clubNames,
                     onRetry: () => ref.invalidate(clubNameLookupProvider),
-                    sliverLoadingBuilder: (_) =>
-                        const EventAgendaSliverSkeleton(
-                          padding: EdgeInsets.zero,
-                        ),
-                    sliverErrorBuilder: (_, error, _) =>
+                    loadingBuilder: (_) => const EventAgendaSliverSkeleton(
+                      padding: EdgeInsets.zero,
+                    ),
+                    errorBuilder: (_, error, _, onBoundaryRetry) =>
                         SavedEventsClubNamesErrorSliver(
                           error: error,
-                          onRetry: () => ref.invalidate(clubNameLookupProvider),
+                          onRetry: onBoundaryRetry!,
                         ),
                     builder: (context, names) => SavedEventsAgendaSliver(
                       state: state,

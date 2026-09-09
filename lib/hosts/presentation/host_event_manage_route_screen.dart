@@ -32,7 +32,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       initialEvent: initialEvent,
     );
 
-    return CatchAsyncValueView<_HostEventManageRouteData>(
+    return CatchAsyncBoundary<_HostEventManageRouteData>(
       value: routeDataAsync,
       onRetry: () {
         ref.invalidate(uidProvider);
@@ -48,7 +48,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           child: HostRouteLoadingBody(padding: EdgeInsets.zero),
         ),
       ),
-      errorBuilder: (_, error, _) => CatchRouteScaffold(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
           leadingType: CatchTopBarLeading.back,
@@ -58,10 +58,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
           child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.event,
-            onRetry: () {
-              ref.invalidate(fetchClubProvider(clubId));
-              ref.invalidate(watchEventProvider(eventId));
-            },
+            onRetry: onBoundaryRetry,
           ),
         ),
       ),

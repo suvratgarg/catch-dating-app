@@ -1265,22 +1265,17 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Loading',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAsyncValueSliver',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchAsyncValueSliverCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchAsyncValueView',
+            name: 'CatchAsyncBoundary',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchAsyncValueViewCatalogStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sliver states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchAsyncValueSliverCatalogStates,
               ),
             ],
           ),
@@ -3022,7 +3017,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Loading',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchAsyncValueView',
+            name: 'CatchAsyncBoundary',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',

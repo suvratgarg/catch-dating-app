@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -37,14 +37,14 @@ class PaymentConfirmationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final eventAsync = ref.watch(watchEventProvider(data.eventId));
 
-    return CatchAsyncValueView<Event?>(
+    return CatchAsyncBoundary<Event?>(
       value: eventAsync,
       onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
       loadingBuilder: (_) => const PaymentConfirmationLoadingScreen(),
-      errorBuilder: (_, e, _) => CatchLocalizedErrorScaffold(
+      errorBuilder: (_, e, _, onBoundaryRetry) => CatchLocalizedErrorScaffold(
         e,
         context: AppErrorContext.payments,
-        onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, event) {
         if (event == null) {

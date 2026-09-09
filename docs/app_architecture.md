@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.45.0
+version: 1.46.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -56,7 +56,7 @@ section under 120 lines.
 | L2 | primitives | one visual job: text, surface, icon, gap, tap target | `packages/catch_ui/lib/src/primitives` | unchanged | L0–L1 |
 | L3 | components | reusable slot-based assemblies: button, field, section, tile, banner, sheet, states | `packages/catch_ui/lib/src/components` | `packages/catch_ui` | L0–L2 |
 | L4 | patterns | page-scale skeletons: scaffolds, section pages, tab scroll views, form-row orchestration, skeletons | `packages/catch_ui/lib/src/patterns` | `packages/catch_ui` | L0–L3 |
-| L4a | riverpod adapters | `CatchAsyncValueView`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
+| L4a | riverpod adapters | `CatchAsyncBoundary`, mutation error family, provider-backed notices | `lib/core/riverpod_ui/**` | `lib/core/riverpod_ui/` | L0–L4 + Riverpod |
 | L5 | feature UI | domain-aware compositions; private widgets legal here only | `lib/<feature>/presentation/widgets/**` | unchanged | L0–L4 + own feature |
 | L6 | screens | route wiring, providers, controllers, navigation | `lib/<feature>/presentation/**` | unchanged | everything below |
 
@@ -184,9 +184,9 @@ window in `docs/migrations/clubs_to_organizers.md`.
 1. Keep the canonical feature folder shape as `domain`, `data`, and
    `presentation`. Do not rename `data` to `repositories`.
 
-2. A data-using screen does not have to use `CatchAsyncValueView` directly.
-   It does have to use a named async state boundary: `CatchAsyncValueView`,
-   `CatchAsyncValueSliver`, or a feature-owned typed UI-state adapter.
+2. A data-using screen does not have to use `CatchAsyncBoundary` directly.
+   It does have to use a named async state boundary: `CatchAsyncBoundary`,
+   `CatchAsyncBoundary.sliver`, or a feature-owned typed UI-state adapter.
 
 3. Widgets should not read repository providers directly. Plugin, platform, and
    local side effects must go through a provider, controller, repository, or
@@ -571,7 +571,7 @@ Screen composition should be predictable:
   -> mutation listener(s), if actions can fail transiently
   -> one approved screen-family owner
   -> one scroll owner or one body shell
-  -> CatchAsyncValueView / CatchAsyncValueSliver / typed UI-state adapter
+  -> CatchAsyncBoundary / CatchAsyncBoundary.sliver / typed UI-state adapter
   -> <Feature>Body / sliver body / state-specific widgets
   -> feature widgets and core primitives
 ```
@@ -1354,8 +1354,8 @@ empty, retry, stale data, and mutation failure are handled.
 
 | State category | Owner | UI primitive or pattern |
 |---|---|---|
-| Full-screen initial load | Screen | `CatchAsyncValueView`, `CatchErrorScaffold`, or typed screen-state adapter |
-| Sliver initial load | Screen/sliver body | `CatchAsyncValueSliver`, `CatchSliverErrorState`, or typed sliver adapter |
+| Full-screen initial load | Screen | `CatchAsyncBoundary`, `CatchErrorScaffold`, or typed screen-state adapter |
+| Sliver initial load | Screen/sliver body | `CatchAsyncBoundary.sliver`, `CatchSliverErrorState`, or typed sliver adapter |
 | Section-level load | Section widget or view model | `CatchErrorState` in inline/compact mode, section skeleton, section retry |
 | Empty success | Screen/body/section | `CatchEmptyState`, `CatchSliverEmptyState`, or a domain-specific empty widget, never an error primitive |
 | Mutation/action pending | Controller mutation + UI affordance | disabled control, spinner, optimistic state when intentional |
@@ -1365,9 +1365,9 @@ empty, retry, stale data, and mutation failure are handled.
 | Platform/plugin failure | Service/repository/controller seam | typed app error, snackbar/banner if user action failed |
 | Framework/runtime failure | Global handlers | `FlutterError.onError`, `PlatformDispatcher.instance.onError`, `CatchFrameworkErrorView` |
 
-Use `CatchAsyncValueView` for simple body screens with one async value.
+Use `CatchAsyncBoundary` for simple body screens with one async value.
 
-Use `CatchAsyncValueSliver` for simple sliver surfaces.
+Use `CatchAsyncBoundary.sliver` for simple sliver surfaces.
 
 When the loaded detail or form composition is known, render that same
 composition with representative branch data inside `CatchSkeletonized`.
@@ -2294,7 +2294,7 @@ or implementation technique cannot justify a second shared implementation.
   Skeleton, Indicator, TopBar, Header, HeaderTitle, Scaffold, PageBody,
   ScrollView, TabBar, TabScaffold, Poster, Polaroid, Ticket, Gap, Inset,
   Divider, Avatar, Photo, Cover, Stepper, StepFlow, Accordion, Drawer,
-  Overlay, Viewport, Menu, Surface, Input, Text, Image, Scope.
+  Overlay, Viewport, Menu, Surface, Input, Text, Image, Scope, AsyncBoundary.
 - **Role selection.** Classify the public responsibility, not a child it
   happens to render. Menu owns commands/choices; Surface owns token-backed
   paint and containment; Input owns editing mechanics; Text owns display-only
@@ -2307,6 +2307,11 @@ or implementation technique cannot justify a second shared implementation.
   Its use-case names the published contract. The owning components retain
   drawing, gestures and layout. This distinction is checked in both directions:
   an inherited publisher uses Scope, and a Scope requires inherited context.
+  AsyncBoundary owns exhaustive asynchronous state selection, credible-data
+  retention, initial-load deadlines and recovery. It does not own loading paint,
+  error content or viewport geometry. Box and sliver protocols are named
+  constructors of the same boundary; source types and framework names do not
+  justify competing async-state implementations.
   Banner owns persistent inline feedback, with error/retry as named recipes.
   Notice owns transient notification delivery with dismissal/open behavior;
   sharing an icon and message does not make those delivery contracts identical.
@@ -4367,7 +4372,7 @@ Use this order for architecture cleanup:
    - Move body sections into feature widgets.
 
 5. Establish the state boundary.
-   - Simple async screen: `CatchAsyncValueView` or `CatchAsyncValueSliver`.
+   - Simple async screen: `CatchAsyncBoundary` or `CatchAsyncBoundary.sliver`.
    - Complex async screen: typed `UiState` and adapter.
    - Preserve section/partial/stale/mutation states explicitly.
 

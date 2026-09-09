@@ -2,7 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -30,7 +30,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
         divider: scrolledUnder,
       ),
       body: CatchRouteBody.standard(
-        child: CatchAsyncValueView<String?>(
+        child: CatchAsyncBoundary<String?>(
           value: uidAsync,
           builder: (context, uid) {
             if (uid == null || uid.isEmpty) {
@@ -49,7 +49,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
             final applicationAsync = ref.watch(
               watchLaunchAccessApplicationProvider(uid),
             );
-            return CatchAsyncValueView<LaunchAccessApplication?>(
+            return CatchAsyncBoundary<LaunchAccessApplication?>(
               value: applicationAsync,
               loadingBuilder: (_) => const LaunchAccessLoadingBody(),
               errorContext: AppErrorContext.auth,

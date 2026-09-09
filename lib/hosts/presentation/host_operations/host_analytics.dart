@@ -69,14 +69,14 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
         fallbackTimezone;
     final query = _hostAnalyticsQueryFor(_state.query, timezone: timezone);
     final analyticsAsync = ref.watch(hostAnalyticsProvider(query));
-    return CatchAsyncValueView<HostAnalyticsReport>(
+    return CatchAsyncBoundary<HostAnalyticsReport>(
       value: analyticsAsync,
       onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
       loadingBuilder: (_) => const HostAnalyticsReportSkeleton(),
-      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, report) => HostAnalyticsReportView(
         report: report,

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
@@ -149,19 +149,18 @@ class _HostEventRehearsalScreenState
         child: SafeArea(
           top: false,
           bottom: false,
-          child: CatchAsyncValueView<EventRehearsalBootstrap>(
+          child: CatchAsyncBoundary<EventRehearsalBootstrap>(
             value: rehearsalAsync,
             onRetry: () =>
                 ref.invalidate(eventRehearsalProvider(widget.sessionId)),
             initialLoadTimeout: null,
             loadingBuilder: (_) =>
                 const CatchPageBody(child: CatchSkeleton.rows(count: 9)),
-            errorBuilder: (_, error, _) => CatchPageBody(
+            errorBuilder: (_, error, _, onBoundaryRetry) => CatchPageBody(
               child: CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.event,
-                onRetry: () =>
-                    ref.invalidate(eventRehearsalProvider(widget.sessionId)),
+                onRetry: onBoundaryRetry,
               ),
             ),
             builder: (context, rehearsal) {

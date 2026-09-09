@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -76,7 +76,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
               gapH12,
             ],
             if (_loaded)
-              CatchAsyncValueView<HostEventStaffList>(
+              CatchAsyncBoundary<HostEventStaffList>(
                 value: _staff,
                 errorContext: AppErrorContext.event,
                 onRetry: _load,

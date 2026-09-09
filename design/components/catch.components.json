@@ -5154,15 +5154,16 @@
         ],
         "probeSeed": "asyncValue.requireValue"
       },
-      "name": "CatchAsyncValueView",
+      "name": "CatchAsyncBoundary",
       "status": "active",
       "kind": "pattern",
-      "summary": "Exhaustive AsyncValue transition boundary with branded defaults for box and sliver layouts.",
+      "summary": "Exhaustive async-state boundary with typed data retention and one timeout/recovery lifecycle for box and sliver output.",
       "dart": {
-        "symbol": "CatchAsyncValueView",
-        "file": "lib/core/riverpod_ui/catch_async_value_view.dart",
+        "symbol": "CatchAsyncBoundary",
+        "file": "lib/core/riverpod_ui/catch_async_boundary.dart",
         "constructors": [
-          "CatchAsyncValueView"
+          "CatchAsyncBoundary",
+          "CatchAsyncBoundary.sliver"
         ]
       },
       "design": {
@@ -5193,19 +5194,19 @@
             "name": "builder",
             "type": "callback",
             "required": true,
-            "dartType": "CatchAsyncValueDataBuilder<T>"
+            "dartType": "CatchAsyncBoundaryDataBuilder<T>"
           },
           {
             "name": "loadingBuilder",
             "type": "callback",
             "required": false,
-            "dartType": "CatchAsyncValueLoadingBuilder?"
+            "dartType": "WidgetBuilder?"
           },
           {
             "name": "errorBuilder",
             "type": "callback",
             "required": false,
-            "dartType": "CatchAsyncValueErrorBuilder?"
+            "dartType": "CatchAsyncBoundaryErrorBuilder?"
           },
           {
             "name": "onRetry",
@@ -5214,25 +5215,23 @@
             "dartType": "VoidCallback?"
           },
           {
-            "name": "skipLoadingOnReload",
-            "type": "bool",
+            "name": "retainDataOn",
+            "type": "object",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "dartType": "Set<CatchAsyncBoundaryMode>"
           },
           {
-            "name": "skipLoadingOnRefresh",
-            "type": "bool",
+            "name": "initialLoadTimeout",
+            "type": "object",
             "required": false,
-            "default": true,
-            "dartType": "bool"
+            "dartType": "Duration?"
           },
           {
-            "name": "skipError",
+            "name": "fillRemaining",
             "type": "bool",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "dartType": "bool",
+            "default": true
           }
         ],
         "states": [
@@ -5261,35 +5260,15 @@
         ],
         "tokens": [],
         "dartRoles": [
-          "CatchAsyncValueView",
-          "CatchAsyncValueSliver",
+          "CatchAsyncBoundary",
+          "CatchAsyncBoundaryMode",
+          "CatchAsyncBoundaryStatus",
           "CatchLoadingIndicator",
-          "CatchErrorState",
-          "CatchSliverErrorState"
+          "CatchLocalizedErrorState",
+          "CatchLocalizedSliverErrorState"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.async_value.sliver",
-            "symbol": "CatchAsyncValueSliver",
-            "file": "lib/core/riverpod_ui/catch_async_value_sliver.dart",
-            "summary": "Sliver-native AsyncValue boundary for CustomScrollView bodies with branded loading and error defaults.",
-            "states": [
-              "data-sliver",
-              "loading-sliver",
-              "error-sliver",
-              "skip-loading-on-refresh",
-              "custom-builders"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.async_value",
-              "parentConceptId": "catch.async_value",
-              "qualifier": "adapter",
-              "decisionRef": "pattern-family:loading-concept-decompression"
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -5312,7 +5291,10 @@
         "notes": [
           "This concept owns async data-state switching, not a loading visual system.",
           "A retry without credible data renders loading and never replays its previous error.",
-          "Use the sliver member only inside sliver-native scroll layouts."
+          "Use the sliver member only inside sliver-native scroll layouts.",
+          "The default retains credible data during refresh; retainDataOn explicitly selects refresh, reload and/or terminal error. No mode invents data when none exists.",
+          "Error builders receive onRetry from the boundary so custom recovery resets the deadline and invokes the declared action once.",
+          "AsyncBoundary names state selection; adding a framework qualifier or registry ID must not create a second implementation of that responsibility."
         ]
       },
       "governance": {
@@ -5326,10 +5308,16 @@
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.async_value"
+        "conceptId": "catch.async_value",
+        "decisionRef": "pattern-family:async-state-boundary"
       },
       "surfaces": {
-        "flutter": "CatchAsyncValueView"
+        "flutter": "CatchAsyncBoundary"
+      },
+      "level": "L4a",
+      "roleNoun": "AsyncBoundary",
+      "naming": {
+        "useCase": ""
       }
     },
     {

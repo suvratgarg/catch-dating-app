@@ -25,13 +25,13 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
       );
     }
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
-    return CatchAsyncValueView<HostSavedAudiencePage>(
+    return CatchAsyncBoundary<HostSavedAudiencePage>(
       value: audiences,
       onRetry: () => ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
       initialLoadTimeout: null,
       loadingBuilder: (_) =>
           HostLoadingScreen(title: context.l10n.hostSavedAudiencesManage),
-      errorBuilder: (_, error, _) => CatchRouteScaffold(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
           context: context,
           title: context.l10n.hostSavedAudiencesManage,
@@ -42,8 +42,7 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
           child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.customers,
-            onRetry: () =>
-                ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+            onRetry: onBoundaryRetry,
           ),
         ),
       ),
@@ -152,7 +151,7 @@ class _HostSavedAudienceEditorFormState
           onPressed: _busy ? null : _save,
         ),
         body: CatchRouteBody.standard(
-          child: CatchAsyncValueView<HostSavedAudienceFilterOptions>(
+          child: CatchAsyncBoundary<HostSavedAudienceFilterOptions>(
             value: options,
             errorContext: AppErrorContext.customers,
             onRetry: () => ref.invalidate(

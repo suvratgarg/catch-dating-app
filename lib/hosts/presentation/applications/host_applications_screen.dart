@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -168,7 +168,7 @@ class _HostApplicationsScreenState
             ),
             gapH16,
             Expanded(
-              child: CatchAsyncValueView<HostApplicationsDirectoryState>(
+              child: CatchAsyncBoundary<HostApplicationsDirectoryState>(
                 value: directory,
                 onRetry: () => ref.invalidate(
                   hostApplicationsDirectoryControllerProvider(request),
@@ -178,13 +178,12 @@ class _HostApplicationsScreenState
                   padding: EdgeInsets.zero,
                   children: const [CatchSkeleton.rows(count: 6)],
                 ),
-                errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-                  error,
-                  context: AppErrorContext.applications,
-                  onRetry: () => ref.invalidate(
-                    hostApplicationsDirectoryControllerProvider(request),
-                  ),
-                ),
+                errorBuilder: (_, error, _, onBoundaryRetry) =>
+                    CatchLocalizedErrorState(
+                      error,
+                      context: AppErrorContext.applications,
+                      onRetry: onBoundaryRetry,
+                    ),
                 builder: (context, state) {
                   if (state.applications.isEmpty) {
                     return CatchEmptyState(

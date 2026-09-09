@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -152,17 +152,17 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         child: SafeArea(
           top: false,
           bottom: false,
-          child: CatchAsyncValueView<HostFormEditorState>(
+          child: CatchAsyncBoundary<HostFormEditorState>(
             value: editor,
             onRetry: notifier.reload,
             initialLoadTimeout: null,
             loadingBuilder: (_) =>
                 const CatchPageBody(child: CatchSkeleton.rows(count: 8)),
-            errorBuilder: (_, error, _) => CatchPageBody(
+            errorBuilder: (_, error, _, onBoundaryRetry) => CatchPageBody(
               child: CatchLocalizedErrorState(
                 error,
                 context: AppErrorContext.forms,
-                onRetry: notifier.reload,
+                onRetry: onBoundaryRetry,
               ),
             ),
             builder: (context, value) {
@@ -710,19 +710,18 @@ class HostFormWorkspaceOverview extends ConsumerWidget {
           CatchSection.divided(
             title: context.l10n.hostAudienceLatestResponse,
             first: true,
-            child: CatchAsyncValueView<HostFormResponsesState>(
+            child: CatchAsyncBoundary<HostFormResponsesState>(
               value: ref.watch(hostFormResponsesControllerProvider(request)),
               onRetry: () =>
                   ref.invalidate(hostFormResponsesControllerProvider(request)),
               loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
-              errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.formResponses,
-                mode: CatchErrorStateMode.compact,
-                onRetry: () => ref.invalidate(
-                  hostFormResponsesControllerProvider(request),
-                ),
-              ),
+              errorBuilder: (_, error, _, onBoundaryRetry) =>
+                  CatchLocalizedErrorState(
+                    error,
+                    context: AppErrorContext.formResponses,
+                    mode: CatchErrorStateMode.compact,
+                    onRetry: onBoundaryRetry,
+                  ),
               builder: (context, value) {
                 final response = value.responses.firstOrNull;
                 if (response == null) {

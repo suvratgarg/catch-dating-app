@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
@@ -38,7 +38,7 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
       contactId: contactId,
     );
     final provider = hostApplicationsDirectoryControllerProvider(request);
-    return CatchAsyncValueView<HostApplicationsDirectoryState>(
+    return CatchAsyncBoundary<HostApplicationsDirectoryState>(
       value: ref.watch(provider),
       onRetry: () => ref.invalidate(provider),
       loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
@@ -132,7 +132,7 @@ class HostCustomerApplicationSnapshot extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = hostApplicationDetailProvider(organizerId, applicationId);
-    return CatchAsyncValueView<HostApplicationDetail>(
+    return CatchAsyncBoundary<HostApplicationDetail>(
       value: ref.watch(provider),
       onRetry: () => ref.invalidate(provider),
       loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),

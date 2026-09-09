@@ -8,8 +8,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
@@ -447,21 +447,20 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
                                 _manualTag = null;
                               }),
                       ),
-                    CatchAsyncValueView<HostCustomersDirectoryState>(
+                    CatchAsyncBoundary<HostCustomersDirectoryState>(
                       value: directory,
                       onRetry: () => ref.invalidate(
                         hostCustomersDirectoryControllerProvider(request),
                       ),
                       initialLoadTimeout: null,
                       loadingBuilder: (_) => const CatchSkeleton.rows(count: 5),
-                      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-                        error,
-                        context: AppErrorContext.customers,
-                        mode: CatchErrorStateMode.compact,
-                        onRetry: () => ref.invalidate(
-                          hostCustomersDirectoryControllerProvider(request),
-                        ),
-                      ),
+                      errorBuilder: (_, error, _, onBoundaryRetry) =>
+                          CatchLocalizedErrorState(
+                            error,
+                            context: AppErrorContext.customers,
+                            mode: CatchErrorStateMode.compact,
+                            onRetry: onBoundaryRetry,
+                          ),
                       builder: (context, state) => HostCustomersDirectory(
                         state: state,
                         hasActiveQuery:

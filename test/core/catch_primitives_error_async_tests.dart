@@ -232,12 +232,12 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     },
   );
 
-  testWidgets('CatchAsyncValueView uses branded default error state', (
+  testWidgets('CatchAsyncBoundary uses branded default error state', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: AsyncError<int>(StateError('load failed'), StackTrace.empty),
           builder: (context, value) => Text('$value'),
         ),
@@ -251,16 +251,16 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     );
   });
 
-  testWidgets('CatchAsyncValueView supports context-aware state builders', (
+  testWidgets('CatchAsyncBoundary supports context-aware state builders', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: AsyncError<int>(StateError('load failed'), StackTrace.empty),
           builder: (context, value) => Text('$value'),
           loadingBuilder: (context) => const Text('Loading custom state'),
-          errorBuilder: (context, error, stackTrace) =>
+          errorBuilder: (context, error, stackTrace, onBoundaryRetry) =>
               Text('Custom error: $error'),
         ),
       ),
@@ -271,7 +271,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: const AsyncLoading<int>(),
           builder: (context, value) => Text('$value'),
           loadingBuilder: (context) => const Text('Loading custom state'),
@@ -283,7 +283,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
   });
 
   testWidgets(
-    'CatchAsyncValueView never replays a previous error while retrying',
+    'CatchAsyncBoundary never replays a previous error while retrying',
     (tester) async {
       final failure = StateError('previous failure');
       // Riverpod exposes combined retry states to consumers but keeps this
@@ -295,12 +295,12 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
       await tester.pumpWidget(
         _wrap(
-          CatchAsyncValueView<int>(
+          CatchAsyncBoundary<int>(
             value: retrying,
             initialLoadTimeout: null,
             builder: (context, value) => Text('Customer count: $value'),
             loadingBuilder: (context) => const Text('Loading customers'),
-            errorBuilder: (context, error, stackTrace) =>
+            errorBuilder: (context, error, stackTrace, onBoundaryRetry) =>
                 Text('Customers unavailable: $error'),
           ),
         ),
@@ -311,12 +311,12 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
       await tester.pumpWidget(
         _wrap(
-          CatchAsyncValueView<int>(
+          CatchAsyncBoundary<int>(
             value: const AsyncData<int>(2),
             initialLoadTimeout: null,
             builder: (context, value) => Text('Customer count: $value'),
             loadingBuilder: (context) => const Text('Loading customers'),
-            errorBuilder: (context, error, stackTrace) =>
+            errorBuilder: (context, error, stackTrace, onBoundaryRetry) =>
                 Text('Customers unavailable: $error'),
           ),
         ),
@@ -328,14 +328,14 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     },
   );
 
-  testWidgets('CatchAsyncValueView replaces an expired skeleton with retry', (
+  testWidgets('CatchAsyncBoundary replaces an expired skeleton with retry', (
     tester,
   ) async {
     const initialLoadTimeout = Duration(milliseconds: 10);
     var retryCount = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: const AsyncLoading<int>(),
           initialLoadTimeout: initialLoadTimeout,
           onRetry: () => retryCount += 1,
@@ -362,24 +362,23 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     expect(find.text('Loading custom state'), findsOneWidget);
   });
 
-  testWidgets('CatchAsyncValueView keeps custom error ownership on timeout', (
+  testWidgets('CatchAsyncBoundary keeps custom error ownership on timeout', (
     tester,
   ) async {
     const initialLoadTimeout = Duration(milliseconds: 10);
     var retryCount = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: const AsyncLoading<int>(),
           initialLoadTimeout: initialLoadTimeout,
           onRetry: () => retryCount += 1,
           builder: (context, value) => Text('$value'),
           loadingBuilder: (_) => const Text('Loading route state'),
-          errorBuilderWithRetry: (context, error, stackTrace, onRetry) =>
-              TextButton(
-                onPressed: onRetry,
-                child: const Text('Retry route-owned timeout'),
-              ),
+          errorBuilder: (context, error, stackTrace, onRetry) => TextButton(
+            onPressed: onRetry,
+            child: const Text('Retry route-owned timeout'),
+          ),
         ),
       ),
     );
@@ -401,7 +400,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
   });
 
   testWidgets(
-    'CatchAsyncValueSliver keeps custom error ownership on timeout retry',
+    'CatchAsyncBoundary keeps custom error ownership on timeout retry',
     (tester) async {
       const initialLoadTimeout = Duration(milliseconds: 10);
       var retryCount = 0;
@@ -411,23 +410,22 @@ void _registerCatchPrimitivesErrorAsyncTests() {
           home: Scaffold(
             body: CustomScrollView(
               slivers: [
-                CatchAsyncValueSliver<int>(
+                CatchAsyncBoundary<int>.sliver(
                   value: const AsyncLoading<int>(),
                   initialLoadTimeout: initialLoadTimeout,
                   onRetry: () => retryCount += 1,
                   builder: (context, value) =>
                       SliverToBoxAdapter(child: Text('$value')),
-                  sliverLoadingBuilder: (_) => const SliverToBoxAdapter(
+                  loadingBuilder: (_) => const SliverToBoxAdapter(
                     child: Text('Loading sliver state'),
                   ),
-                  sliverErrorBuilderWithRetry:
-                      (context, error, stackTrace, onRetry) =>
-                          SliverToBoxAdapter(
-                            child: TextButton(
-                              onPressed: onRetry,
-                              child: const Text('Retry sliver timeout'),
-                            ),
-                          ),
+                  errorBuilder: (context, error, stackTrace, onRetry) =>
+                      SliverToBoxAdapter(
+                        child: TextButton(
+                          onPressed: onRetry,
+                          child: const Text('Retry sliver timeout'),
+                        ),
+                      ),
                 ),
               ],
             ),

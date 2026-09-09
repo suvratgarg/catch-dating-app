@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/notification_route_util.dart';
@@ -72,17 +72,16 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
         ],
       ),
       body: CatchRouteBody.standard(
-        child: CatchAsyncValueView<String?>(
+        child: CatchAsyncBoundary<String?>(
           value: uidAsync,
           errorContext: AppErrorContext.auth,
           onRetry: () => ref.invalidate(uidProvider),
           loadingBuilder: (_) => const ActivityScreenLoading(),
-          errorBuilderWithRetry: (context, error, _, onRetry) =>
-              ActivityScreenBody(
-                state: NotificationsAccessError(error: error),
-                onRetry: onRetry,
-                onOpenRoute: _openNotificationRoute,
-              ),
+          errorBuilder: (context, error, _, onRetry) => ActivityScreenBody(
+            state: NotificationsAccessError(error: error),
+            onRetry: onRetry,
+            onOpenRoute: _openNotificationRoute,
+          ),
           builder: (context, uid) {
             if (uid == null) {
               return const CatchResponsiveSectionLayout(
@@ -91,19 +90,19 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
                 ],
               );
             }
-            return CatchAsyncValueView<List<ActivityNotification>>(
+            return CatchAsyncBoundary<List<ActivityNotification>>(
               value:
                   notificationsAsync ??
                   const AsyncLoading<List<ActivityNotification>>(),
               loadingBuilder: (_) => const ActivityScreenLoading(),
               onRetry: () =>
                   ref.invalidate(watchActivityNotificationsProvider(uid)),
-              errorBuilder: (context, error, _) => ActivityScreenBody(
-                state: NotificationsActivityError(uid: uid, error: error),
-                onRetry: () =>
-                    ref.invalidate(watchActivityNotificationsProvider(uid)),
-                onOpenRoute: _openNotificationRoute,
-              ),
+              errorBuilder: (context, error, _, onBoundaryRetry) =>
+                  ActivityScreenBody(
+                    state: NotificationsActivityError(uid: uid, error: error),
+                    onRetry: onBoundaryRetry,
+                    onOpenRoute: _openNotificationRoute,
+                  ),
               builder: (context, _) => ActivityScreenBody(
                 state: state,
                 onRetry: state.uid == null

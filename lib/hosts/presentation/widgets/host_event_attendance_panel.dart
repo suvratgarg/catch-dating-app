@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
@@ -103,7 +103,7 @@ class _HostEventParticipantsPanelState
       attendanceSheetViewModelProvider(eventId),
     );
 
-    return CatchAsyncValueView<AttendanceSheetViewModel?>(
+    return CatchAsyncBoundary<AttendanceSheetViewModel?>(
       value: attendanceAsync,
       onRetry: () {
         ref.invalidate(watchEventProvider(eventId));
@@ -114,16 +114,12 @@ class _HostEventParticipantsPanelState
         count: 4,
         titleWidth: CatchLayout.skeletonTextSectionWidth,
       ),
-      errorBuilder: (_, error, _) => Padding(
+      errorBuilder: (_, error, _, onBoundaryRetry) => Padding(
         padding: CatchInsets.content,
         child: CatchLocalizedErrorState(
           error,
           context: AppErrorContext.event,
-          onRetry: () {
-            ref.invalidate(watchEventProvider(eventId));
-            ref.invalidate(watchEventParticipationsForEventProvider(eventId));
-            ref.invalidate(attendanceSheetViewModelProvider(eventId));
-          },
+          onRetry: onBoundaryRetry,
           mode: CatchErrorStateMode.inline,
         ),
       ),

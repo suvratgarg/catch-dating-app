@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
@@ -18,7 +18,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accessAsync = ref.watch(hostEventOperatorAccessProvider(eventId));
-    return CatchAsyncValueView<HostEventOperatorAccess>(
+    return CatchAsyncBoundary<HostEventOperatorAccess>(
       value: accessAsync,
       onRetry: () => ref.invalidate(hostEventOperatorAccessProvider(eventId)),
       loadingBuilder: (_) => CatchRouteScaffold(
@@ -31,7 +31,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
           child: HostRouteLoadingBody(padding: EdgeInsets.zero),
         ),
       ),
-      errorBuilder: (_, error, _) => CatchRouteScaffold(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEventOperatorTitle,
           divider: scrolledUnder,
@@ -41,8 +41,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
           child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.event,
-            onRetry: () =>
-                ref.invalidate(hostEventOperatorAccessProvider(eventId)),
+            onRetry: onBoundaryRetry,
           ),
         ),
       ),

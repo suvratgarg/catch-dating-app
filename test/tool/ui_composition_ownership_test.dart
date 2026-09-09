@@ -281,15 +281,15 @@ class RegisteredDelegateScreen extends StatelessWidget {
 
 class RegisteredRootOwner extends Widget {}
 
-class CatchAsyncValueView<T> extends Widget {
-  CatchAsyncValueView({
+class CatchAsyncBoundary<T> extends Widget {
+  CatchAsyncBoundary({
     required Widget Function() loadingBuilder,
     required Widget Function(T) builder,
   });
 }
 
 class GenericBuilderWrapperScreen extends StatelessWidget {
-  Widget build() => CatchAsyncValueView<int>(
+  Widget build() => CatchAsyncBoundary<int>(
     loadingBuilder: () => CatchRootScreenScaffold(),
     builder: (_) => CatchRootScreenScaffold(),
   );
