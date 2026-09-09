@@ -35,7 +35,7 @@
           "catch.banner",
           "catch.error_state",
           "catch.field",
-          "catch.form_dialog",
+          "catch.confirm_dialog",
           "catch.map_preview",
           "catch.option_card",
           "catch.chip.field",

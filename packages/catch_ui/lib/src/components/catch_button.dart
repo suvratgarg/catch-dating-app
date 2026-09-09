@@ -227,6 +227,25 @@ class CatchButton extends StatefulWidget {
   final bool _command;
   final IconData? _floatingIcon;
 
+  /// Minimum width for a text-only standard action without breaking its label.
+  /// Dialog action reflow uses the same typography and padding as this recipe.
+  static double minimumLabelWidth(
+    BuildContext context,
+    String label, {
+    CatchButtonSize size = CatchButtonSize.md,
+  }) {
+    final spec = _ButtonSizeSpec.from(size);
+    final painter = TextPainter(
+      text: TextSpan(text: label, style: spec.textStyle(context)),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      locale: Localizations.maybeLocaleOf(context),
+    )..layout();
+    final width = painter.width.ceilToDouble() + spec.padding * 2;
+    painter.dispose();
+    return math.max(CatchPlatformTokens.minimumInteractiveExtent, width);
+  }
+
   final String label;
   final VoidCallback? onPressed;
   final CatchButtonVariant variant;

@@ -7530,6 +7530,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:bounded-modal-dialogs",
+      "patternFamilyId": "bounded-modal-dialogs",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchDialog",
+      "members": [
+        {
+          "name": "CatchConfirmDialog",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFormDialog",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Source and consistent-context render review show duplicate Dialog/Surface/title chrome. One CatchDialog retains slotted content with trailing actions and a typed confirmation constructor with centered copy and equal-width or stacked actions. Keep adaptive launchers and typed route results, remove both old classes and exports, and preserve all preview states under the stable confirmation contract ID. Repair existing mid-word action wrapping by measuring labels through the button contract and stacking choices when they cannot fit.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

@@ -2436,24 +2436,13 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Dialogs',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchConfirmDialog',
+            name: 'CatchDialog',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchConfirmDialogContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFormDialog',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFormDialogContractStates,
+                        .catchDialogContractStates,
               ),
             ],
           ),

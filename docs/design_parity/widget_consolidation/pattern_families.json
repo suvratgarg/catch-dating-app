@@ -2698,6 +2698,43 @@
           "rationale": "No independent production caller. Fold into the parent, share the name/context rendering and retain each state in the primary gallery."
         }
       ]
+    },
+    {
+      "id": "bounded-modal-dialogs",
+      "title": "Bounded modal content and confirmation choices",
+      "intent": "Use one modal frame with recipes for slotted content and typed confirmation actions.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.confirm_dialog",
+      "qualityReference": "CatchDialog",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve existing dialog frames, title alignment, message omission, normal action spacing, typed results and platform routing.",
+        "Stack confirmation actions when their measured labels cannot fit horizontally; the existing 2.0-scale Confirm label split mid-word. Button typography and padding own the shared measurement.",
+        "Combine confirmation and form states in the canonical gallery; catalog title, identity labels and pagination change."
+      ],
+      "members": [
+        {
+          "symbol": "CatchDialog",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One frame owns the modal surface, constraints, padding and title; confirmation is a typed recipe."
+        },
+        {
+          "symbol": "CatchConfirmDialog",
+          "disposition": "unify",
+          "target": "CatchDialog",
+          "preview": "not-applicable",
+          "rationale": "Typed results and centered choices belong to the confirmation constructor."
+        },
+        {
+          "symbol": "CatchFormDialog",
+          "disposition": "unify",
+          "target": "CatchDialog",
+          "preview": "not-applicable",
+          "rationale": "Slotted form content uses the default body/action constructor; its frame duplicates confirmation."
+        }
+      ]
     }
   ]
 }

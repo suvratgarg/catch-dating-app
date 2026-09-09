@@ -7934,12 +7934,12 @@ Widget catchNavigationButtonContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchConfirmDialog,
+  type: CatchDialog,
   path: '[Core primitives]/Dialogs',
 )
-Widget catchConfirmDialogContractStates(BuildContext context) {
+Widget catchDialogContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchConfirmDialog',
+    title: 'CatchDialog',
     contractId: 'catch.confirm_dialog',
     states: const [
       'default',
@@ -7948,11 +7948,15 @@ Widget catchConfirmDialogContractStates(BuildContext context) {
       'two-actions',
       'multi-action-stack',
       'adaptive-material',
+      'short-form',
+      'multiline-form',
+      'actions',
+      'no-actions',
     ],
     children: [
       _StateCard(
         label: 'default',
-        child: CatchConfirmDialog<bool>(
+        child: CatchDialog<bool>.confirmation(
           title: 'Join this event?',
           message: 'The host will review your request.',
           actions: _contractDialogActions,
@@ -7960,7 +7964,7 @@ Widget catchConfirmDialogContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'destructive',
-        child: CatchConfirmDialog<bool>(
+        child: CatchDialog<bool>.confirmation(
           title: 'Leave club?',
           message: 'You will stop receiving member-only updates.',
           actions: const [
@@ -7971,7 +7975,7 @@ Widget catchConfirmDialogContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'no-message',
-        child: CatchConfirmDialog<bool>(
+        child: CatchDialog<bool>.confirmation(
           title: 'Confirm?',
           message: '',
           actions: _contractDialogActions,
@@ -7979,7 +7983,7 @@ Widget catchConfirmDialogContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'two-actions',
-        child: CatchConfirmDialog<bool>(
+        child: CatchDialog<bool>.confirmation(
           title: 'Save changes?',
           message: 'This updates your public event page.',
           actions: _contractDialogActions,
@@ -7987,7 +7991,7 @@ Widget catchConfirmDialogContractStates(BuildContext context) {
       ),
       const _StateCard(
         label: 'multi-action-stack',
-        child: CatchConfirmDialog<String>(
+        child: CatchDialog<String>.confirmation(
           title: 'Chat actions',
           message: 'Choose how to handle this conversation.',
           actions: [
@@ -8005,30 +8009,15 @@ Widget catchConfirmDialogContractStates(BuildContext context) {
         label: 'adaptive-material',
         description:
             'Runtime presentation should go through showCatchAdaptiveDialog.',
-        child: CatchConfirmDialog<bool>(
+        child: CatchDialog<bool>.confirmation(
           title: 'Material fallback',
           message: 'This is the non-Cupertino dialog body.',
           actions: _contractDialogActions,
         ),
       ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchFormDialog,
-  path: '[Core primitives]/Dialogs',
-)
-Widget catchFormDialogContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchFormDialog',
-    contractId: 'catch.form_dialog',
-    states: const ['short-form', 'multiline-form', 'actions', 'no-actions'],
-    children: [
       _StateCard(
         label: 'short-form',
-        child: CatchFormDialog(
+        child: CatchDialog(
           title: 'Create invite link',
           actions: [
             CatchButton(
@@ -8047,7 +8036,7 @@ Widget catchFormDialogContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'multiline-form',
-        child: CatchFormDialog(
+        child: CatchDialog(
           title: 'Host note',
           actions: [CatchButton(label: 'Save note', onPressed: _noop)],
           child: CatchField.input(
@@ -8061,7 +8050,7 @@ Widget catchFormDialogContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'no-actions',
-        child: CatchFormDialog(
+        child: CatchDialog(
           title: 'Read-only form',
           actions: const [],
           child: CatchField.read(

@@ -163,13 +163,13 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(find.byType(Dialog), findsOneWidget);
-      expect(find.byType(CatchConfirmDialog<bool>), findsOneWidget);
+      expect(find.byType(CatchDialog<bool>), findsOneWidget);
       expect(find.byType(AlertDialog), findsNothing);
       expect(find.widgetWithText(CatchButton, 'Cancel'), findsOneWidget);
       expect(find.widgetWithText(CatchButton, 'Delete'), findsOneWidget);
       final surface = tester.widget<CatchSurface>(
         find.descendant(
-          of: find.byType(CatchConfirmDialog<bool>),
+          of: find.byType(CatchDialog<bool>),
           matching: find.byType(CatchSurface),
         ),
       );
@@ -211,7 +211,7 @@ void main() {
       await tester.tap(find.text('Open confirm dialog'));
       await pumpFeatureUi(tester);
 
-      expect(find.byType(CatchConfirmDialog<bool>), findsOneWidget);
+      expect(find.byType(CatchDialog<bool>), findsOneWidget);
       expect(find.text('Remove host?'), findsOneWidget);
       expect(find.text('This host will lose access.'), findsOneWidget);
       expect(find.widgetWithText(CatchButton, 'Cancel'), findsOneWidget);

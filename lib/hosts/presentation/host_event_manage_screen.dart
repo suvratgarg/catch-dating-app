@@ -1323,7 +1323,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
         builder: (context, setState) {
           final label = labelController.text.trim();
           final source = sourceController.text.trim();
-          return CatchFormDialog(
+          return CatchDialog(
             title: context.l10n.hostsHostEventManageScreenTitleNewInviteLink,
             actions: [
               CatchButton.text(

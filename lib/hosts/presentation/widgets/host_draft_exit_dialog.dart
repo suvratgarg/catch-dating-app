@@ -28,7 +28,7 @@ class HostDraftExitDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchConfirmDialog<HostDraftExitDecision>(
+    return CatchDialog<HostDraftExitDecision>.confirmation(
       title: context.l10n.hostsDraftExitTitle,
       message: context.l10n.hostsDraftExitMessage,
       actions: hostDraftExitDialogActions(context.l10n),

@@ -937,11 +937,7 @@ Widget modalGeometryMatrix(BuildContext context) {
   return _geometryPage(
     context,
     title: 'Sheets and dialogs',
-    contractIds: const [
-      'catch.sheet',
-      'catch.confirm_dialog',
-      'catch.form_dialog',
-    ],
+    contractIds: const ['catch.sheet', 'catch.confirm_dialog'],
     principles: const [
       'Modals establish a new plane; their internal fields and actions remain flat.',
       'Sheets own viewport edges, safe area, keyboard clearance, and top radii.',
@@ -1020,7 +1016,7 @@ Widget modalGeometryMatrix(BuildContext context) {
       _specimen(
         context,
         label: 'Dialog composition',
-        child: CatchConfirmDialog<bool>(
+        child: CatchDialog<bool>.confirmation(
           title: 'Cancel this event?',
           message: 'Guests will be notified immediately.',
           actions: const [

@@ -2120,13 +2120,13 @@ Widget settingsScreenStates(BuildContext context) {
 
 Widget settingsDangerDialogStates(BuildContext context) {
   return _UtilityCatalog(
-    title: 'CatchConfirmDialog',
+    title: 'CatchDialog',
     contractId: 'screen.settings.account.destructive_dialog',
     children: [
       _StateCard(
         label: 'delete account confirmation',
         child: const _DialogFrame(
-          child: CatchConfirmDialog<bool>(
+          child: CatchDialog<bool>.confirmation(
             title: 'Delete account?',
             message:
                 'This removes your public profile, signs you out, and keeps only the minimal records required for safety and payment history.',
@@ -2144,7 +2144,7 @@ Widget settingsDangerDialogStates(BuildContext context) {
       _StateCard(
         label: 'sign out confirmation pattern',
         child: const _DialogFrame(
-          child: CatchConfirmDialog<bool>(
+          child: CatchDialog<bool>.confirmation(
             title: 'Log out?',
             message: 'You can sign back in with your phone number.',
             actions: [

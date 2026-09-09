@@ -217,7 +217,7 @@ class _HostFormResponseDetailScreenState
   Future<bool?> _showConversionPreview(HostFormConversionPreview preview) =>
       showDialog<bool>(
         context: context,
-        builder: (dialogContext) => CatchFormDialog(
+        builder: (dialogContext) => CatchDialog(
           title: context.l10n.hostFormConversionReviewTitle,
           actions: [
             CatchButton(
@@ -300,7 +300,7 @@ class _HostFormResponseDetailScreenState
       if (!mounted) return null;
       return showDialog<Event>(
         context: context,
-        builder: (dialogContext) => CatchFormDialog(
+        builder: (dialogContext) => CatchDialog(
           title: context.l10n.hostFormSelectEventTitle,
           actions: [
             CatchButton(

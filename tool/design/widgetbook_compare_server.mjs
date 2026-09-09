@@ -2009,11 +2009,11 @@ function buildCandidates() {
       id: "app-dialog-family",
       title: "Dialog family",
       reason:
-        "Dialog-style confirmation and form surfaces should be checked against CatchFormDialog before more feature dialogs are added.",
+        "Dialog-style confirmation and form surfaces should be checked against CatchDialog before more feature dialogs are added.",
       recommended: "catch.dialog",
       tags: ["modal", "dialog"],
       names: [
-        "CatchFormDialog",
+        "CatchDialog",
         "MatchCelebrationDialog",
         "HostTeamHostActionDialog",
       ],

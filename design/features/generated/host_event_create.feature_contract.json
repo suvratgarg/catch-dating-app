@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:1d6fd9b3fdcf734765bd2d354ab5184e369e78d58622db2fb7367007e877364f",
-  "resolvedDigest": "sha256:c2c728bad05ca9c8a7b170aa02fd22a2432dd82621b924e8572cf12a7c3ae7a4",
+  "sourceDigest": "sha256:bae638ec3b70fbf9e4f4fd3e6efd73945d1e2c543f65b8ab6cccf5dc6b333900",
+  "resolvedDigest": "sha256:f0e6249866dc0b25dcf987808552fb6ecafd6bd55fcda15699998d29ff133739",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -91,7 +91,7 @@
           "catch.banner",
           "catch.error_state",
           "catch.field",
-          "catch.form_dialog",
+          "catch.confirm_dialog",
           "catch.map_preview",
           "catch.option_card",
           "catch.chip.field",
@@ -4521,13 +4521,14 @@
             }
           },
           {
-            "id": "catch.form_dialog",
+            "id": "catch.confirm_dialog",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchFormDialog",
-              "file": "packages/catch_ui/lib/src/components/catch_form_dialog.dart",
+              "symbol": "CatchDialog",
+              "file": "packages/catch_ui/lib/src/components/catch_dialog.dart",
               "constructors": [
-                "CatchFormDialog"
+                "CatchDialog",
+                "CatchDialog.confirmation"
               ]
             }
           },

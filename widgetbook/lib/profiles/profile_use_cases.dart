@@ -2456,7 +2456,7 @@ class _BlockDialogPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: CatchConfirmDialog<bool>(
+      child: CatchDialog<bool>.confirmation(
         title: 'Block ${profile.name}?',
         message:
             'You will stop seeing each other in chats, matches, Catches, and '

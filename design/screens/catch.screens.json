@@ -24439,7 +24439,7 @@
           ],
           "nextAction": "Add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
           "previewIds": [
-            "CatchConfirmDialog/Contract states",
+            "CatchDialog/Contract states",
             "SettingsScreen/Mutation states"
           ]
         },
@@ -24553,7 +24553,7 @@
             "migration": "SettingsAccountState now owns profile provider waves, preference draft values, blocked-account rows, provider retry states, and mutation pending flags; SettingsScreen keeps route callbacks and controller calls at the edge.",
             "previewIds": [
               "SettingsScreen/Screen states",
-              "CatchConfirmDialog/Contract states",
+              "CatchDialog/Contract states",
               "SettingsScreen/Mutation states"
             ]
           },
@@ -24639,7 +24639,7 @@
             "migration": "Keep safety row layout reusable while SettingsController owns destructive and privacy mutations. The Cross Paths master row remains hidden unless the consent-controls rollout flag is enabled, and missing profile values resolve off.",
             "previewIds": [
               "SettingsScreen/Screen states",
-              "CatchConfirmDialog/Contract states",
+              "CatchDialog/Contract states",
               "SettingsScreen/Mutation states"
             ]
           },

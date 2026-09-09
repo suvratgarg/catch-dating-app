@@ -12473,21 +12473,22 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchConfirmDialog",
+      "name": "CatchDialog",
       "status": "active",
       "kind": "composite",
-      "summary": "Material Catch confirmation dialog body used by the adaptive confirm-dialog launcher on non-Cupertino platforms.",
+      "summary": "Canonical bounded modal frame with slotted content/actions and a typed confirmation recipe. The stable confirm_dialog ID now owns both former dialog contracts.",
       "dart": {
-        "symbol": "CatchConfirmDialog",
-        "file": "packages/catch_ui/lib/src/components/catch_confirm_dialog.dart",
+        "symbol": "CatchDialog",
+        "file": "packages/catch_ui/lib/src/components/catch_dialog.dart",
         "constructors": [
-          "CatchConfirmDialog"
+          "CatchDialog",
+          "CatchDialog.confirmation"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/ConfirmDialog",
+          "componentName": "Catch/Dialog",
           "componentUrl": null
         },
         "codeConnect": {
@@ -12496,125 +12497,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "ConfirmDialog",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "title",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "message",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "actions",
-            "type": "generic-list",
-            "required": true,
-            "dartType": "List<CatchDialogAction<T>>"
-          }
-        ],
-        "states": [
-          "default",
-          "destructive",
-          "no-message",
-          "two-actions",
-          "multi-action-stack",
-          "adaptive-material"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s2",
-          "space.s3",
-          "space.s4",
-          "radius.lg",
-          "theme.light.color.ink",
-          "theme.light.color.ink2",
-          "theme.light.color.surface"
-        ],
-        "dartRoles": [
-          "CatchDialogAction",
-          "CatchSurfaceEmphasis.floating",
-          "CatchTextStyles.titleL",
-          "CatchTextStyles.supporting"
-        ],
-        "goldens": [],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.button"
-        ],
-        "notes": [
-          "Use showCatchAdaptiveDialog for runtime presentation so iOS can use CupertinoAlertDialog."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.confirm_dialog",
-        "publicApi": true,
-        "stateOwnership": "slot-state-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.confirm_dialog"
-      },
-      "surfaces": {
-        "flutter": "CatchConfirmDialog"
-      }
-    },
-    {
-      "id": "catch.form_dialog",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
-      "name": "CatchFormDialog",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Catch dialog shell for compact form bodies with title, slotted form content, and optional trailing action row.",
-      "dart": {
-        "symbol": "CatchFormDialog",
-        "file": "packages/catch_ui/lib/src/components/catch_form_dialog.dart",
-        "constructors": [
-          "CatchFormDialog"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/FormDialog",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "FormDialog",
+          "handoffName": "Dialog",
           "allowed": true
         }
       },
@@ -12629,17 +12512,32 @@
           {
             "name": "child",
             "type": "widget",
-            "required": true,
-            "dartType": "Widget"
+            "required": false,
+            "dartType": "Widget",
+            "notes": "Required non-null body for the default constructor; confirmation receives message instead."
           },
           {
             "name": "actions",
             "type": "list",
             "required": true,
-            "dartType": "List<Widget>"
+            "dartType": "List<Widget>",
+            "notes": "Default constructor receives List<Widget>; confirmation receives List<CatchDialogAction<T>> and owns typed Navigator results."
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "required": false,
+            "dartType": "String",
+            "notes": "Required by confirmation; an empty message omits supporting copy and its gap."
           }
         ],
         "states": [
+          "default",
+          "destructive",
+          "no-message",
+          "two-actions",
+          "multi-action-stack",
+          "adaptive-material",
           "short-form",
           "multiline-form",
           "actions",
@@ -12664,25 +12562,29 @@
         ],
         "tokens": [
           "space.s2",
+          "space.s3",
           "space.s4",
-          "space.s5",
           "radius.lg",
           "theme.light.color.ink",
-          "theme.light.color.surface"
+          "theme.light.color.ink2",
+          "theme.light.color.surface",
+          "space.s5"
         ],
         "dartRoles": [
-          "CatchSurface",
+          "CatchDialogAction",
           "CatchSurfaceEmphasis.floating",
+          "CatchTextStyles.titleL",
+          "CatchTextStyles.supporting",
+          "CatchSurface",
           "CatchInsets.confirmDialogCard",
           "CatchLayout.confirmDialogInset",
-          "CatchLayout.confirmDialogMaxWidth",
-          "CatchTextStyles.titleL"
+          "CatchLayout.confirmDialogMaxWidth"
         ],
         "goldens": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
+            "policy": "Measure action labels using the button typography, padding and platform text scaler; stack choices when equal-width horizontal actions cannot fit. Preserve complete labels and typed results."
           },
           "reducedMotion": {
             "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
@@ -12700,13 +12602,15 @@
           "catch.button"
         ],
         "notes": [
-          "Use for compact modal forms whose body is already composed from field/section primitives.",
-          "Use CatchConfirmDialog for typed confirmation choices; do not overload FormDialog for simple message confirmations."
+          "Use the default constructor for slotted modal content/actions and CatchDialog<T>.confirmation for typed choices. Both share the same frame and title renderer.",
+          "Use showCatchAdaptiveDialog for runtime confirmations so iOS retains CupertinoAlertDialog and Material uses the shared confirmation recipe.",
+          "The stable catch.confirm_dialog ID subsumes the retired catch.form_dialog contract.",
+          "Confirmation action reflow uses CatchButton.minimumLabelWidth; two short actions stay horizontal, long or scaled labels stack before they split."
         ]
       },
       "governance": {
         "role": "composition",
-        "canonicalFamily": "catch.form_dialog",
+        "canonicalFamily": "catch.confirm_dialog",
         "publicApi": true,
         "stateOwnership": "slot-state-only",
         "asyncOwnership": "none",
@@ -12715,10 +12619,16 @@
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.form_dialog"
+        "conceptId": "catch.confirm_dialog"
       },
       "surfaces": {
-        "flutter": "CatchFormDialog"
+        "flutter": "CatchDialog"
+      },
+      "level": "L3",
+      "roleNoun": "Dialog",
+      "naming": {
+        "useCase": "",
+        "reason": "Confirmation choices and compact form content share one bounded modal frame. A named confirmation recipe preserves typed results, centered copy and equal or stacked actions; the default constructor retains slotted body and trailing actions."
       }
     },
     {

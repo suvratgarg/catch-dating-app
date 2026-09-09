@@ -12196,7 +12196,7 @@
               ],
               "notes": "Delete account row opens confirm danger dialog and delegates confirmed deletion to SettingsController.requestAccountDeletion; pending and error route captures cover the request lifecycle.",
               "previewIds": [
-                "CatchConfirmDialog/Dialog states",
+                "CatchDialog/Dialog states",
                 "SettingsScreen/Mutation states"
               ]
             },

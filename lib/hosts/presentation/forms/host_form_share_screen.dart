@@ -335,7 +335,7 @@ Future<_TrackedLinkInput?> _showTrackedLinkDialog(BuildContext context) async {
   final source = TextEditingController();
   final result = await showDialog<_TrackedLinkInput>(
     context: context,
-    builder: (dialogContext) => CatchFormDialog(
+    builder: (dialogContext) => CatchDialog(
       title: context.l10n.hostFormTrackedLinkTitle,
       actions: [
         CatchButton(

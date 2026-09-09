@@ -110,7 +110,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
   final result = await showDialog<_ItineraryDialogResult>(
     context: context,
     builder: (dialogContext) => StatefulBuilder(
-      builder: (context, setState) => CatchFormDialog(
+      builder: (context, setState) => CatchDialog(
         title: existing == null
             ? context.l10n.hostsEventItineraryDialogAdd
             : context.l10n.hostsEventItineraryDialogEdit,
