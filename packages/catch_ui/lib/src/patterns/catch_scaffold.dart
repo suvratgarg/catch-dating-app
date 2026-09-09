@@ -4,8 +4,8 @@ import 'package:catch_ui/src/components/catch_banner_status_scope.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
 import 'package:flutter/material.dart';
 
-/// Safe-area ownership for canonical full-screen composition families.
-enum CatchScreenSafeArea { all, top, none }
+/// Safe-area placement owned by CatchScaffold; workspace parents supply insets.
+enum CatchScaffoldPlacement { all, top, none }
 
 /// Canonical surface owner for full-screen compositions.
 ///
@@ -13,47 +13,47 @@ enum CatchScreenSafeArea { all, top, none }
 /// background, keyboard resize, and safe-area mechanics out of features.
 /// Root-title, primary-rail, and pushed-route shells use [workspace] because their
 /// nested owner already applies the appropriate insets.
-class CatchScreenScaffold extends StatelessWidget {
-  const CatchScreenScaffold.standalone({
+class CatchScaffold extends StatelessWidget {
+  const CatchScaffold.standalone({
     super.key,
     this.scaffoldKey,
     required this.body,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
-    this.safeArea = CatchScreenSafeArea.all,
+    this.safeArea = CatchScaffoldPlacement.all,
     this.extendBody = false,
-  }) : appBar = null,
-       bottomNavigationBar = null;
+  }) : title = null,
+       footer = null;
 
-  const CatchScreenScaffold.stepFlow({
+  const CatchScaffold.stepFlow({
     super.key,
     this.scaffoldKey,
     required this.body,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
-    this.safeArea = CatchScreenSafeArea.all,
+    this.safeArea = CatchScaffoldPlacement.all,
     this.extendBody = false,
-  }) : appBar = null,
-       bottomNavigationBar = null;
+  }) : title = null,
+       footer = null;
 
-  const CatchScreenScaffold.workspace({
+  const CatchScaffold.workspace({
     super.key,
     this.scaffoldKey,
     required this.body,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
-    this.appBar,
-    this.bottomNavigationBar,
+    this.title,
+    this.footer,
     this.extendBody = false,
-  }) : safeArea = CatchScreenSafeArea.none;
+  }) : safeArea = CatchScaffoldPlacement.none;
 
   final Key? scaffoldKey;
   final Widget body;
   final Color? backgroundColor;
   final bool? resizeToAvoidBottomInset;
-  final CatchScreenSafeArea safeArea;
-  final PreferredSizeWidget? appBar;
-  final Widget? bottomNavigationBar;
+  final CatchScaffoldPlacement safeArea;
+  final PreferredSizeWidget? title;
+  final Widget? footer;
   final bool extendBody;
 
   @override
@@ -61,7 +61,7 @@ class CatchScreenScaffold extends StatelessWidget {
     final statuses = CatchBannerStatusScope.of(context);
     // Keep this ancestry stable when connectivity changes: inserting a new
     // wrapper only while offline would recreate focused editors and state.
-    final content = safeArea == CatchScreenSafeArea.none
+    final content = safeArea == CatchScaffoldPlacement.none
         ? body
         : CatchBannerStatusScope(
             statuses: const [],
@@ -73,23 +73,23 @@ class CatchScreenScaffold extends StatelessWidget {
             ),
           );
     final child = switch (safeArea) {
-      CatchScreenSafeArea.all => SafeArea(child: content),
-      CatchScreenSafeArea.top => SafeArea(bottom: false, child: content),
-      CatchScreenSafeArea.none => content,
+      CatchScaffoldPlacement.all => SafeArea(child: content),
+      CatchScaffoldPlacement.top => SafeArea(bottom: false, child: content),
+      CatchScaffoldPlacement.none => content,
     };
     return Scaffold(
       key: scaffoldKey,
       backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
       resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       extendBody: extendBody,
-      appBar: switch (appBar) {
+      appBar: switch (title) {
         final CatchScaledPreferredSize scaled => PreferredSize(
           preferredSize: scaled.preferredSizeFor(context),
           child: scaled,
         ),
         final bar => bar,
       },
-      bottomNavigationBar: bottomNavigationBar,
+      bottomNavigationBar: footer,
       body: child,
     );
   }

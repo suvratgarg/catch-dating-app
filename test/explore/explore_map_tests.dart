@@ -673,7 +673,7 @@ void _registerExploreMapTests() {
     );
     await _pumpClubUi(tester);
 
-    expect(find.byType(CatchScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchScaffold), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (widget) => widget is Semantics && widget.properties.selected == true,

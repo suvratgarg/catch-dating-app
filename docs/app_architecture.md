@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.56.0
+version: 1.57.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -83,7 +83,7 @@ receive a resolved `retryLabel`; explicit recovery callbacks stay authoritative.
 metrics for shared layouts. App tab identities and route selection stay in the
 app; anchored, floating, and absent bars keep their existing clearance rules.
 `CatchBanner.statuses` and its publication scope own persistent header rendering;
-`CatchScreenScaffold` owns the Material surface, safe area and keyboard resize
+`CatchScaffold` owns the Material surface, safe area and keyboard resize
 in the shared package. Connectivity and rehearsal state remain app callers.
 
 ### Placement decision tree
@@ -606,7 +606,7 @@ lazy slivers.
 Screen composition is a closed family, not a per-feature assembly exercise:
 
 - Every full-screen composition terminates in a named
-  `CatchScreenScaffold.standalone`, `.stepFlow`, or `.workspace` role. That
+  `CatchScaffold.standalone`, `.stepFlow`, or `.workspace` role. That
   canonical owner is the only production location allowed to instantiate
   Material `Scaffold`; higher-level root, tabbed, and pushed-route owners
   delegate to it. It centralizes page surface, keyboard resize, safe-area
@@ -713,7 +713,7 @@ The analyzer-resolved
 registry membership; resolves each named declaration; verifies an allowed
 family expression; checks selected explicit body and top-edge arguments; and
 rejects analyzer-resolved Flutter `Scaffold` construction, constructor/type
-aliases, and direct or indirect subclasses outside `CatchScreenScaffold` in
+aliases, and direct or indirect subclasses outside `CatchScaffold` in
 hand-authored production source. It compares every generated `builder` or
 `pageBuilder` expression with the analyzer-resolved `GoRoute`, proves
 conservative static reachability from each named or imperative presentation
@@ -1233,12 +1233,12 @@ preview under one root-owned primary-rail path:
 ```dart
 CatchRootScreenPageScrollView.standard(
   scrollKey: editScrollKey,
-  slivers: editSlivers,
+  children: editSlivers,
 )
 
 CatchRootScreenPageScrollView.fullBleed(
   scrollKey: previewScrollKey,
-  slivers: previewSlivers, // Full-bleed and sliver-native.
+  children: previewSlivers, // Full-bleed and sliver-native.
 )
 ```
 
@@ -1259,7 +1259,7 @@ the Preview slivers.
 | Event detail | Keep sliver-native because the collapsing hero justifies it. |
 | Club detail | Keep sliver-native with agenda-style event list. |
 | User profile | Use the shared `CatchRootScreenPageScrollView` contract for every tab, preserving overlap injection and the Preview card scroll bridge. The semantic constructor owns terminal clearance structurally: `standard` and `fullBleed` add it, while `embeddedViewport` delegates it to the embedded surface. |
-| Map-heavy screens | Keep the stable full-bleed viewport, but declare it as an immersive `CatchScreenScaffold.workspace`; overlays continue to own their local safe-area insets. |
+| Map-heavy screens | Keep the stable full-bleed viewport, but declare it as an immersive `CatchScaffold.workspace`; overlays continue to own their local safe-area insets. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Use the typed `stepFlow` or `standalone` surface role while preserving their task-specific header, safe-area, keyboard, and footer behavior. |
 | Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchDockSurface.primary`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
@@ -2339,6 +2339,18 @@ or implementation technique cannot justify a second shared implementation.
   on `CatchSkeleton`; recipe configuration remains private and const-capable.
   `CatchScreenSkeleton` and `CatchSliverSkeleton` retain their page-body and
   render-sliver placement protocols. They do not select asynchronous state.
+  Scaffold owns the page surface, platform safe area, keyboard resize and
+  preferred-size forwarding through `CatchScaffold`. `CatchRouteScaffold`
+  adds fixed route chrome and scroll-under state; `CatchRootScreenScaffold`
+  adds the root scroll composition. They delegate to the same surface owner.
+  `CatchRootScreenScrollView` owns the outer title and pinned rail, while
+  `CatchRootScreenPageScrollView` owns each overlap-aware inner page and its
+  focus/offset retention. The latter two do not create another Scaffold.
+  Their title and children slots retain box-header and sliver-child protocols;
+  `CatchScaffold.title` is a preferred-size bar and `footer` is bottom chrome.
+  The root `withPrimaryRail` recipe exposes its pinned page controls as
+  `actions`, constrained by `CatchPrimaryRail`; its scroll-away header and
+  typed page-body recipe retain their separate ownership.
   Header owns a heading assembly with optional supporting copy, count or
   actions; HeaderTitle owns the title itself. Section and sheet presentation
   recipes use `CatchSectionHeader.kicker` and `CatchSheetHeader.branded`.

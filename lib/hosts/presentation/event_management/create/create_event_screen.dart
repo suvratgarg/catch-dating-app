@@ -1305,7 +1305,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           ).ignore();
         }
       },
-      child: CatchScreenScaffold.stepFlow(
+      child: CatchScaffold.stepFlow(
         backgroundColor: t.bg,
         body: CreateEventAdaptiveWorkspace(
           header: CreateEventStepHeader(

@@ -65,7 +65,7 @@ void main() {
     await tester.pumpWidget(
       _rootScreen(
         bodyLayout: CatchPageBodyMode.standard,
-        topEdge: CatchRootScreenTopEdge.headerOwned,
+        topEdge: CatchRootScreenScrollViewPlacement.headerOwned,
       ),
     );
 
@@ -85,8 +85,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const CatchScreenScaffold.stepFlow(
-          safeArea: CatchScreenSafeArea.top,
+        home: const CatchScaffold.stepFlow(
+          safeArea: CatchScaffoldPlacement.top,
           body: SizedBox(key: ValueKey('step-body')),
         ),
       ),
@@ -99,7 +99,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const CatchScreenScaffold.workspace(
+        home: const CatchScaffold.workspace(
           body: SizedBox(key: ValueKey('workspace-body')),
         ),
       ),
@@ -358,7 +358,8 @@ Widget _standardRouteWithBottomGeometry({
 
 Widget _rootScreen({
   required CatchPageBodyMode bodyLayout,
-  CatchRootScreenTopEdge topEdge = CatchRootScreenTopEdge.safeArea,
+  CatchRootScreenScrollViewPlacement topEdge =
+      CatchRootScreenScrollViewPlacement.safeArea,
 }) {
   const header = SizedBox(
     key: ValueKey('root-header'),
@@ -376,14 +377,14 @@ Widget _rootScreen({
   ];
   final root = switch (bodyLayout) {
     CatchPageBodyMode.standard => CatchRootScreenScaffold.standard(
-      header: header,
+      title: header,
       topEdge: topEdge,
-      slivers: slivers,
+      children: slivers,
     ),
     CatchPageBodyMode.fullBleed => CatchRootScreenScaffold.fullBleed(
-      header: header,
+      title: header,
       topEdge: topEdge,
-      slivers: slivers,
+      children: slivers,
     ),
   };
   return MaterialApp(

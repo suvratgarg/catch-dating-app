@@ -1,5 +1,5 @@
 /// Declares which owner consumes the physical top safe-area inset.
-enum CatchRootScreenTopEdge {
+enum CatchRootScreenScrollViewPlacement {
   /// The canonical root scroll owner keeps all content below the safe area.
   safeArea,
 

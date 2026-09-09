@@ -39,12 +39,12 @@ class SwipeHubScreen extends ConsumerWidget {
     final slivers = <Widget>[CatchesHubStateView(state: state)];
     if (!showHubChrome) {
       return CatchRootScreenScaffold.fullBleed(
-        header: const SizedBox.shrink(),
-        slivers: slivers,
+        title: const SizedBox.shrink(),
+        children: slivers,
       );
     }
     return CatchRootScreenScaffold.standard(
-      header: CatchScreenHeader.block(
+      title: CatchScreenHeader.block(
         kicker: context.l10n.swipesSwipeHubScreenTitleCatches,
         title: context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
         actions: [
@@ -59,7 +59,7 @@ class SwipeHubScreen extends ConsumerWidget {
           ),
         ],
       ),
-      slivers: slivers,
+      children: slivers,
     );
   }
 }

@@ -65,7 +65,7 @@ class AuthScreen extends ConsumerWidget {
       );
     }
 
-    return CatchScreenScaffold.standalone(
+    return CatchScaffold.standalone(
       body: switch (step) {
         AuthStep.phone => const PhonePage(),
         AuthStep.otp => OtpPage(
@@ -89,7 +89,7 @@ class HostAuthFlowFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchScreenScaffold.standalone(
+    return CatchScaffold.standalone(
       backgroundColor: t.bg,
       resizeToAvoidBottomInset: true,
       body: Column(

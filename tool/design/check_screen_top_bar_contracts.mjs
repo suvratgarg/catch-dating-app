@@ -14,8 +14,8 @@ const routeTopBarBuilderPattern =
 const canonicalRouteScaffoldPath =
   "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart";
 const canonicalScreenScaffoldPath =
-  "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart";
-const canonicalScreenScaffoldSymbol = "CatchScreenScaffold";
+  "packages/catch_ui/lib/src/patterns/catch_scaffold.dart";
+const canonicalScreenScaffoldSymbol = "CatchScaffold";
 const rawChromePattern =
   /\b(AppBar|SliverAppBar|CupertinoNavigationBar|CupertinoSliverNavigationBar)\s*\(/gu;
 const manualHeaderClassPattern =
@@ -304,7 +304,7 @@ function checkCanonicalScreenScaffoldAppBar({root, findings}) {
       message:
         `${canonicalScreenScaffoldSymbol}.build must contain exactly one ` +
         "returned Scaffold whose top-level appBar argument forwards the " +
-        "class appBar field directly or through its canonical scaled-size adapter. " +
+        "class title field directly or through its canonical scaled-size adapter. " +
         "Only that exact infrastructure " +
         "declaration is exempt from per-screen chrome registration.",
     });
@@ -325,7 +325,7 @@ function findCanonicalScreenScaffoldAppBarIndex(source) {
   );
   if (classOpenBrace < 0) return null;
   const classBody = readBalanced(source, classOpenBrace, "{", "}");
-  if (!/\bfinal\s+PreferredSizeWidget\?\s+appBar\s*;/u.test(classBody)) {
+  if (!/\bfinal\s+PreferredSizeWidget\?\s+title\s*;/u.test(classBody)) {
     return null;
   }
 
@@ -351,10 +351,10 @@ function findCanonicalScreenScaffoldAppBarIndex(source) {
   const argument = readNamedArgument(scaffoldCall, "appBar");
   const compactArgument = argument?.replace(/\s+/gu, "");
   const scaledForwarder =
-    "switch(appBar){finalCatchScaledPreferredSizescaled=>PreferredSize(" +
+    "switch(title){finalCatchScaledPreferredSizescaled=>PreferredSize(" +
     "preferredSize:scaled.preferredSizeFor(context),child:scaled,)," +
     "finalbar=>bar,}";
-  if (argument !== "appBar" && compactArgument !== scaledForwarder) return null;
+  if (argument !== "title" && compactArgument !== scaledForwarder) return null;
 
   const appBarMatches = [...scaffoldCall.matchAll(appBarPattern)];
   if (appBarMatches.length !== 1) return null;
@@ -401,7 +401,22 @@ function collectAppBars(root, {canonicalScreenScaffoldAppBarIndex = null} = {}) 
         };
       },
     );
-    const matches = [...directMatches, ...builderMatches];
+    const scaffoldTitles = [...source.matchAll(/\bCatchScaffold\.workspace\s*\(/gu)]
+      .flatMap((match) => {
+        const start = match.index ?? 0;
+        const openParen = start + match[0].lastIndexOf("(");
+        const call = readBalanced(source, openParen, "(", ")");
+        // Only this canonical preferred-size slot is screen chrome. A title
+        // nested in its body or in another component is not an app bar.
+        const value = readNamedArgument(call, "title");
+        const expression = value?.match(/^([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/u)?.[1];
+        return expression == null ? [] : [{
+          expression,
+          line: lineNumberAt(source, start),
+          value,
+        }];
+      });
+    const matches = [...directMatches, ...builderMatches, ...scaffoldTitles];
     if (matches.length > 0) result.set(relativePath, matches);
   }
   return result;

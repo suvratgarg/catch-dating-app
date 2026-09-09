@@ -235,7 +235,7 @@ class _ExploreMapScreenState extends ConsumerState<ExploreMapScreen> {
             ),
           );
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       backgroundColor: t.bg,
       body: Stack(
         children: [

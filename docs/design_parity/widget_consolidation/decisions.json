@@ -8170,6 +8170,42 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:canonical-scaffold-and-root-scroll-owners",
+      "patternFamilyId": "canonical-scaffold-and-root-scroll-owners",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchScaffold",
+      "members": [
+        {
+          "name": "CatchScaffold",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRouteScaffold",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRootScreenScaffold",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRootScreenScrollView",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRootScreenPageScrollView",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScreenScaffold",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "K1 preserves the root and route compositions that delegate to the sole Material scaffold renderer, and the paired outer/inner root scroll owners. The base responsibility receives the unqualified Scaffold name. Canonical title, children and footer slots replace framework-specific public labels; typed placement options name their actual renderer owner. Keep header pinning, safe areas, status consumption, refresh, scroll offsets, keyboard resizing and scaled preferred-size forwarding unchanged.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

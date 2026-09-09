@@ -222,8 +222,8 @@ class _CatchCelebrationScreenState
         ),
       ),
     );
-    return CatchScreenScaffold.standalone(
-      safeArea: CatchScreenSafeArea.none,
+    return CatchScaffold.standalone(
+      safeArea: CatchScaffoldPlacement.none,
       extendBody: true,
       body: body,
     );
@@ -378,8 +378,8 @@ class PaperCelebrationScaffold extends StatelessWidget {
         },
       ),
     );
-    return CatchScreenScaffold.stepFlow(
-      safeArea: CatchScreenSafeArea.none,
+    return CatchScaffold.stepFlow(
+      safeArea: CatchScaffoldPlacement.none,
       backgroundColor: t.bg,
       body: body,
     );

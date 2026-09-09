@@ -273,7 +273,7 @@ void main() {
                   color: CatchTokens.of(context).warning,
                 ),
             ],
-            child: const CatchScreenScaffold.standalone(
+            child: const CatchScaffold.standalone(
               body: TextField(autofocus: true),
             ),
           ),
@@ -395,7 +395,7 @@ Widget _app({
                               title: 'Organizer',
                             ),
                             controller: controller,
-                            primaryRail: CatchPageTabBar<int>.controlled(
+                            actions: CatchPageTabBar<int>.controlled(
                               key: _rail,
                               controller: tabs,
                               options: const [
@@ -411,7 +411,7 @@ Widget _app({
                                     page:
                                         CatchRootScreenPageScrollView.standard(
                                           scrollKey: PageStorageKey('page-$i'),
-                                          slivers: slivers,
+                                          children: slivers,
                                         ),
                                   ),
                               ],
@@ -421,12 +421,12 @@ Widget _app({
                       ),
                     )
                   : CatchRootScreenScaffold.standard(
-                      header: const CatchScreenHeader.block(title: 'Today'),
-                      slivers: slivers,
+                      title: const CatchScreenHeader.block(title: 'Today'),
                       controller: controller,
                       topEdge: headerOwned
-                          ? CatchRootScreenTopEdge.headerOwned
-                          : CatchRootScreenTopEdge.safeArea,
+                          ? CatchRootScreenScrollViewPlacement.headerOwned
+                          : CatchRootScreenScrollViewPlacement.safeArea,
+                      children: slivers,
                     ),
             ),
           ),

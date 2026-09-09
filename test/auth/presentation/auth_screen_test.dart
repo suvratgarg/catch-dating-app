@@ -51,7 +51,7 @@ void main() {
 
       await pumpAuthScreen(tester, container: container, appRole: AppRole.host);
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
+      expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.byType(HostAuthFlowFrame), findsOneWidget);
       expect(find.byType(CatchStartupBrandStage), findsOneWidget);
       expect(find.byType(HostAuthCard), findsOneWidget);
@@ -166,7 +166,7 @@ void main() {
 
       await pumpAuthScreen(tester, container: container);
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
+      expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.byType(CatchPageBody), findsOneWidget);
       expect(
         find.byWidgetPredicate(

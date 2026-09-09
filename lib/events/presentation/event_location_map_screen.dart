@@ -187,7 +187,7 @@ class ChromelessMapScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       backgroundColor: CatchTokens.of(context).bg,
       body: Stack(
         children: [

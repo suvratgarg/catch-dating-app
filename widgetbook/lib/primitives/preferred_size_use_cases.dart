@@ -40,8 +40,8 @@ Widget scaledHeaderReservationStates(BuildContext context) =>
                         footer: rail,
                       )
                     : rail;
-                return CatchScreenScaffold.workspace(
-                  appBar: header,
+                return CatchScaffold.workspace(
+                  title: header,
                   body: Align(
                     alignment: Alignment.topCenter,
                     child: ColoredBox(

@@ -3812,6 +3812,58 @@
           "rationale": "Use the PageBody role for the existing final-review composition. It keeps reusing the form-step list and does not create a second row renderer."
         }
       ]
+    },
+    {
+      "id": "canonical-scaffold-and-root-scroll-owners",
+      "title": "One scaffold surface with explicit route and root scroll owners",
+      "intent": "Keep one Material surface renderer and make the route, root and inner-page composition boundaries explicit in names and slot contracts.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.screen_body",
+      "qualityReference": "CatchScaffold",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "No production rendering or navigation changes. Catalog headings and type names may use the canonical names."
+      ],
+      "members": [
+        {
+          "symbol": "CatchScaffold",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Sole Material Scaffold construction, with token surface, keyboard resize, physical safe-area placement and scaled preferred-size forwarding. Root and pushed-route compositions delegate here instead of constructing a second surface owner."
+        },
+        {
+          "symbol": "CatchRouteScaffold",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Composes the canonical Scaffold with a fixed route bar, vertical scroll-under state and typed route-body geometry. RootScreenScaffold puts its title into the scroll content and coordinates pinned rails and nested pages; the base Scaffold owns surface and platform insets without either navigation composition."
+        },
+        {
+          "symbol": "CatchRootScreenScaffold",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Composes the canonical Scaffold and RootScreenScrollView for a root destination: scroll-away title, optional pinned primary rail, shell clearance and typed pages. RouteScaffold owns fixed pushed-route chrome and scroll-under state; the base Scaffold does not own scrolling or tab overlap."
+        },
+        {
+          "symbol": "CatchRootScreenScrollView",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Owns a root destination scroll-away title, pinned rail/status overlap, refresh, shell obstruction and outer safe area when the parent already owns the surface. ScrollView scrolls one box to fill a local viewport; RootScreenPageScrollView is the paired inner page that injects overlap and preserves page offsets."
+        },
+        {
+          "symbol": "CatchRootScreenPageScrollView",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Owns one typed inner root page: overlap injection, pager focus isolation, keep-alive offset restoration, readable sliver width and terminal clearance. RootScreenScrollView owns the outer title and pinned rail; ScrollView only scrolls a local box without that shared overlap protocol."
+        },
+        {
+          "symbol": "CatchScreenScaffold",
+          "disposition": "unify",
+          "target": "CatchScaffold",
+          "preview": "not-applicable",
+          "rationale": "Remove the redundant Screen qualifier from the sole generic scaffold owner; every existing composition keeps delegating to this renderer."
+        }
+      ]
     }
   ]
 }

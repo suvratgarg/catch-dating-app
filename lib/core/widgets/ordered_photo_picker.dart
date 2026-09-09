@@ -389,7 +389,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
               ]
             : const [],
       ),
-      bottomNavigationBar: widget.footer,
+      footer: widget.footer,
       body: CatchRouteBody.standardViewport(
         child: Column(
           children: [

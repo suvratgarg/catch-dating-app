@@ -147,7 +147,7 @@ class ClubDetailScreen extends ConsumerWidget {
           ClubHostContactController.startConversationMutation,
         ],
       );
-      return CatchScreenScaffold.workspace(
+      return CatchScaffold.workspace(
         body: ClubDetailBody(
           state: bodyState,
           onShareClub: (buttonContext, club) => showClubShareCardSheet(
@@ -173,7 +173,7 @@ class ClubDetailScreen extends ConsumerWidget {
               messageHost(buttonContext, bodyState.club, host),
           onContactSelected: openClubContact,
         ),
-        bottomNavigationBar: switch (bodyState.dockState) {
+        footer: switch (bodyState.dockState) {
           null => null,
           final state => ClubMembershipDock(
             club: state.club,
@@ -187,7 +187,7 @@ class ClubDetailScreen extends ConsumerWidget {
       );
     }
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       body: switch (screenState) {
         HostClubDetailLoading() => const ClubDetailLoadingBody(),
         HostClubDetailError(:final error, :final retryIntent) =>

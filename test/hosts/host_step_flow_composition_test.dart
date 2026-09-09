@@ -12,7 +12,7 @@ void main() {
   ) async {
     await _pump(tester, const HostClubEditorLoadingScreen());
 
-    expect(find.byType(CatchScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchScaffold), findsOneWidget);
     expect(find.text('Organizer basics'), findsOneWidget);
   });
 
@@ -21,7 +21,7 @@ void main() {
   ) async {
     await _pump(tester, const HostCreateEventRouteLoadingScreen());
 
-    expect(find.byType(CatchScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchScaffold), findsOneWidget);
     expect(find.text('Event basics'), findsOneWidget);
   });
 }

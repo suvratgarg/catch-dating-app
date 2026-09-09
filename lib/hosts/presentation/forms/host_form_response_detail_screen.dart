@@ -56,8 +56,7 @@ class _HostFormResponseDetailScreenState
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      bottomNavigationBar:
-          loadedDetail?.response.status == HostFormResponseStatus.submitted
+      footer: loadedDetail?.response.status == HostFormResponseStatus.submitted
           ? HostFormResponsePrimaryAction(
               detail: loadedDetail!,
               organizerId: widget.organizerId,

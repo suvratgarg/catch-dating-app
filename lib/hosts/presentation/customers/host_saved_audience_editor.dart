@@ -154,7 +154,7 @@ class _HostSavedAudienceEditorFormState
               ? CatchTopBarEmphasis.divided
               : CatchTopBarEmphasis.plain,
         ),
-        bottomNavigationBar: CatchDockSurface.primary(
+        footer: CatchDockSurface.primary(
           label: editing
               ? context.l10n.hostAudienceSaveCheckMembership
               : context.l10n.hostAudienceCreateCheckMembership,

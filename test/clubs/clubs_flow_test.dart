@@ -186,7 +186,7 @@ void main() {
         );
         await tester.pump();
 
-        expect(find.byType(CatchScreenScaffold), findsOneWidget);
+        expect(find.byType(CatchScaffold), findsOneWidget);
         expect(find.byType(ClubDetailLoadingBody), findsOneWidget);
         expect(find.byType(CatchSkeleton), findsWidgets);
         expect(find.byType(CircularProgressIndicator), findsNothing);

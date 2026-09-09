@@ -157,7 +157,7 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
           ),
         ],
       ),
-      primaryRail: CatchPageTabBar<HostEventsView>.controlled(
+      actions: CatchPageTabBar<HostEventsView>.controlled(
         controller: _tabs,
         groupKey: const ValueKey('host-events-tabs'),
         options: [
@@ -244,7 +244,7 @@ class HostEventsTimelinePage extends StatelessWidget
         : state.loadingMorePast;
     return CatchRootScreenPageScrollView.standard(
       scrollKey: PageStorageKey('host-events-$organizerId-${view.name}'),
-      slivers: [
+      children: [
         if (state.status == HostEventsWorkspaceStatus.loading ||
             (sections.isEmpty && loadingMore))
           const SliverToBoxAdapter(child: CatchSkeleton.rows(count: 4))

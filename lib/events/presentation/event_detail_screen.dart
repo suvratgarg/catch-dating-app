@@ -127,7 +127,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
 
     if (vm != null) {
       if (vm.event.clubId != widget.clubId) {
-        return CatchScreenScaffold.workspace(
+        return CatchScaffold.workspace(
           body: SafeArea(
             child: CatchErrorState(
               title: context.l10n.eventsEventDetailScreenTitleEventNotFound,
@@ -292,7 +292,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         ],
         errorContext: AppErrorContext.event,
       );
-      return CatchScreenScaffold.workspace(
+      return CatchScaffold.workspace(
         backgroundColor: style.pageBackground,
         body: EventDetailBody(
           event: vm.event,
@@ -375,7 +375,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                     .setConsent(eventId: vm.event.id, enabled: enabled),
               ),
         ),
-        bottomNavigationBar:
+        footer:
             _showsEventDetailBottomNavigation(
               event: vm.event,
               userProfile: vm.userProfile,
@@ -454,7 +454,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         l10n: context.l10n,
       );
 
-      return CatchScreenScaffold.workspace(
+      return CatchScaffold.workspace(
         backgroundColor: style.pageBackground,
         body: EventDetailBody(
           event: event,
@@ -514,7 +514,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           heroTag: widget.heroTag,
           enableMapNetworkTiles: widget.enableMapNetworkTiles,
         ),
-        bottomNavigationBar:
+        footer:
             _showsEventDetailBottomNavigation(
               event: event,
               userProfile: null,
@@ -560,7 +560,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     }
 
     if (vmAsync.hasError) {
-      return CatchScreenScaffold.workspace(
+      return CatchScaffold.workspace(
         body: SafeArea(
           child: CatchLocalizedErrorState(
             vmAsync.error!,
@@ -572,7 +572,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       );
     }
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       body: SafeArea(
         child: CatchErrorState(
           title: context.l10n.eventsEventDetailScreenTitleEventNotFound,

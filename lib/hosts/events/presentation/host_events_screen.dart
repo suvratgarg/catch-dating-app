@@ -49,10 +49,10 @@ class HostEventsScreen extends ConsumerWidget {
 
     return switch (routeState.status) {
       HostEventsRouteStatus.authRequired => CatchRootScreenScaffold.standard(
-        header: CatchScreenHeader.block(
+        title: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        slivers: [
+        children: [
           CatchSliverErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
@@ -64,20 +64,20 @@ class HostEventsScreen extends ConsumerWidget {
         ],
       ),
       HostEventsRouteStatus.loading => CatchRootScreenScaffold.standard(
-        header: CatchScreenHeader.block(
+        title: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        slivers: const [
+        children: const [
           CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],
       ),
       HostEventsRouteStatus.error => CatchRootScreenScaffold.standard(
-        header: CatchScreenHeader.block(
+        title: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        slivers: [
+        children: [
           CatchLocalizedSliverErrorState(
             routeState.error!,
             context: routeState.errorContext,
@@ -194,10 +194,10 @@ class _HostEventsRouteScaffoldState
       );
     }
     return CatchRootScreenScaffold.standard(
-      header: CatchScreenHeader.block(
+      title: CatchScreenHeader.block(
         title: context.l10n.hostsHostEventsListTextEvents,
       ),
-      slivers: [
+      children: [
         CatchSliverEmptyState(
           icon: CatchIcons.groupsOutlined,
           title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,

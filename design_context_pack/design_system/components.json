@@ -9138,7 +9138,7 @@
           "CatchPageBody",
           "CatchPageBody.sliver",
           "CatchPageBody.slivers",
-          "CatchScreenScaffold",
+          "CatchScaffold",
           "CatchRootScreenScaffold",
           "CatchRootScreenScrollView",
           "CatchRootScreenHeader",
@@ -9153,21 +9153,26 @@
         "members": [
           {
             "id": "catch.screen_body.screen_scaffold",
-            "symbol": "CatchScreenScaffold",
-            "summary": "Canonical full-screen surface owner with lintable standalone, step-flow, and workspace constructors plus explicit safe-area and keyboard-resize policy.",
+            "symbol": "CatchScaffold",
+            "summary": "Sole Material Scaffold construction, with token surface, keyboard resize, physical safe-area placement and scaled preferred-size forwarding. Root and pushed-route compositions delegate here instead of constructing a second surface owner.",
             "states": [
               "standalone-safe-area",
               "step-flow-safe-area",
               "workspace-owned-insets",
               "keyboard-resize"
             ],
-            "file": "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
+            "file": "packages/catch_ui/lib/src/patterns/catch_scaffold.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
+              "decisionRef": "pattern-family:canonical-scaffold-and-root-scroll-owners"
+            },
+            "level": "L4",
+            "roleNoun": "Scaffold",
+            "naming": {
+              "useCase": ""
             }
           },
           {
@@ -9189,7 +9194,17 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
+              "decisionRef": "pattern-family:canonical-scaffold-and-root-scroll-owners"
+            },
+            "level": "L4",
+            "roleNoun": "Scaffold",
+            "naming": {
+              "useCase": "RootScreen",
+              "comparedWith": [
+                "catch.screen_body.screen_scaffold",
+                "catch.screen_body.route_scaffold"
+              ],
+              "reason": "Composes the canonical Scaffold and RootScreenScrollView for a root destination: scroll-away title, optional pinned primary rail, shell clearance and typed pages. RouteScaffold owns fixed pushed-route chrome and scroll-under state; the base Scaffold does not own scrolling or tab overlap."
             }
           },
           {
@@ -9207,7 +9222,17 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
+              "decisionRef": "pattern-family:canonical-scaffold-and-root-scroll-owners"
+            },
+            "level": "L4",
+            "roleNoun": "ScrollView",
+            "naming": {
+              "useCase": "RootScreen",
+              "comparedWith": [
+                "catch.screen_body.scroll_view",
+                "catch.screen_body.root_screen_page_scroll_view"
+              ],
+              "reason": "Owns a root destination scroll-away title, pinned rail/status overlap, refresh, shell obstruction and outer safe area when the parent already owns the surface. ScrollView scrolls one box to fill a local viewport; RootScreenPageScrollView is the paired inner page that injects overlap and preserves page offsets."
             }
           },
           {
@@ -9227,7 +9252,17 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.screen_body"
+              "decisionRef": "pattern-family:canonical-scaffold-and-root-scroll-owners"
+            },
+            "level": "L4",
+            "roleNoun": "ScrollView",
+            "naming": {
+              "useCase": "RootScreenPage",
+              "comparedWith": [
+                "catch.screen_body.scroll_view",
+                "catch.screen_body.root_screen_scroll_view"
+              ],
+              "reason": "Owns one typed inner root page: overlap injection, pager focus isolation, keep-alive offset restoration, readable sliver width and terminal clearance. RootScreenScrollView owns the outer title and pinned rail; ScrollView only scrolls a local box without that shared overlap protocol."
             }
           },
           {
@@ -9541,7 +9576,17 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
+              "decisionRef": "pattern-family:canonical-scaffold-and-root-scroll-owners"
+            },
+            "level": "L4",
+            "roleNoun": "Scaffold",
+            "naming": {
+              "useCase": "Route",
+              "comparedWith": [
+                "catch.screen_body.screen_scaffold",
+                "catch.screen_body.root_screen_scaffold"
+              ],
+              "reason": "Composes the canonical Scaffold with a fixed route bar, vertical scroll-under state and typed route-body geometry. RootScreenScaffold puts its title into the scroll content and coordinates pinned rails and nested pages; the base Scaffold owns surface and platform insets without either navigation composition."
             }
           },
           {
@@ -9661,7 +9706,7 @@
         ],
         "notes": [
           "Use for regular non-sliver route bodies before composing ad hoc page padding.",
-          "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScreenScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry. A root with primary peer navigation uses the same owner through its withPrimaryRail constructor and typed CatchRootScreenBody pages.",
+          "Every full-screen composition terminates in standalone, step-flow, or workspace surface ownership through CatchScaffold. Root title destinations use CatchRootScreenScaffold or CatchRootScreenScrollView and declare standard or explicitly edge-owned full-bleed body geometry. A root with primary peer navigation uses the same owner through its withPrimaryRail constructor and typed CatchRootScreenBody pages.",
           "Regular root bodies may not override the 16-point standard start; specialized full-bleed or intrinsic families and named semantic primitives own any alternate rhythm.",
           "Use CatchSectionList.page when a route is composed from complete sections and must share one centered or adaptive two-column layout plus shell-aware terminal behavior.",
           "Screen-body governance covers non-sliver and sliver placement members; screens should not hand-roll page gutters or form-step padding.",

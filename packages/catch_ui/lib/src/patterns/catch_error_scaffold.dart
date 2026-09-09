@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_error_state.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
-import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
+import 'package:catch_ui/src/patterns/catch_scaffold.dart';
 import 'package:flutter/material.dart';
 
 class CatchErrorScaffold extends StatelessWidget {
@@ -31,7 +31,7 @@ class CatchErrorScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchScreenScaffold.standalone(
+    return CatchScaffold.standalone(
       backgroundColor: backgroundColor ?? CatchTokens.of(context).bg,
       body: CatchErrorState(
         title: title,

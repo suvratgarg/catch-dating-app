@@ -38,7 +38,7 @@ class HostAudienceStateScaffold extends StatelessWidget {
       header: CatchRootScreenHeader.title(
         title: context.l10n.hostNavigationAudience,
       ),
-      primaryRail: HostAudienceTabRail(
+      actions: HostAudienceTabRail(
         selected: selected,
         selectionPosition: selected.index.toDouble(),
         onChanged: onChanged ?? (view) => _openView(context, view),
@@ -47,7 +47,7 @@ class HostAudienceStateScaffold extends StatelessWidget {
         page: CatchRootScreenPageSpec.scroll(
           page: CatchRootScreenPageScrollView.standard(
             scrollKey: scrollKey,
-            slivers: slivers,
+            children: slivers,
           ),
         ),
       ),

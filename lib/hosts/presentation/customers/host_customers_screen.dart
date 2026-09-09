@@ -355,7 +355,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
           textInputAction: TextInputAction.search,
         ),
       ),
-      primaryRail: HostAudienceTabRail(
+      actions: HostAudienceTabRail(
         selected: _view,
         selectionAnimation: _tabController.animation!,
         onChanged: (view) => _selectAudienceView(view, selectedClub.id),
@@ -367,7 +367,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
             expanded: screenSize.isExpanded,
             master: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey<String>('host-customers-people'),
-              slivers: [
+              children: [
                 SliverList.list(
                   children: [
                     HostCustomersSummary(

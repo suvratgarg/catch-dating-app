@@ -481,8 +481,8 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             home: SizedBox(
               width: 320,
-              child: CatchScreenScaffold.workspace(
-                appBar: CatchTopBar(
+              child: CatchScaffold.workspace(
+                title: CatchTopBar(
                   title: 'Workspace',
                   navigation: const CatchTopBarNavigation(
                     mode: CatchTopBarNavigationMode.none,

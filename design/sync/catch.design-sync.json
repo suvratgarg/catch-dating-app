@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "e6f7f40c41a610fab9a446a7c15fb4dc03ac1cc497e112cc0d2065ee4a1fd26c",
+  "sourceDigest": "fc1f6ac911330420b5d88414fa8e9455fc3be13702e19cdf6df8ae727d16cdf4",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "e6f7f40c41a610fab9a446a7c15fb4dc03ac1cc497e112cc0d2065ee4a1fd26c",
-    "contractDigest": "e6f7f40c41a610fab9a446a7c15fb4dc03ac1cc497e112cc0d2065ee4a1fd26c"
+    "digest": "fc1f6ac911330420b5d88414fa8e9455fc3be13702e19cdf6df8ae727d16cdf4",
+    "contractDigest": "fc1f6ac911330420b5d88414fa8e9455fc3be13702e19cdf6df8ae727d16cdf4"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "9f667f82396932f6e29fb68e5dced61ecdbd00a1f4ed0fcc68e4babae6b79dc1",
+    "handoffRequestDigest": "7ba46067f45930a921aaa49e26316229b532bfaea74ad4d3bea137f16406047c",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -321,7 +321,7 @@
           "CatchRootScreenScrollView",
           "CatchRouteBody",
           "CatchRouteScaffold",
-          "CatchScreenScaffold",
+          "CatchScaffold",
           "CatchScrollTerminalGap",
           "CatchScrollView",
           "CatchTabViewportScope"
@@ -1486,7 +1486,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PageBody",
       "claudeAllowed": true,
-      "contractDigest": "b8fc90f59f7cb5939637d3f21d8dee352d4e8578d6cd8e384e1a776df28ab587"
+      "contractDigest": "82be03a2325ed10ff3454f1f21b7f820b73831914b9fc4163fff2554e085eba3"
     },
     {
       "contractId": "catch.section_stack",

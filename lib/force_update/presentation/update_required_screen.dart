@@ -61,7 +61,7 @@ class UpdateRequiredContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchScreenScaffold.standalone(
+    return CatchScaffold.standalone(
       body: Padding(
         padding: CatchInsets.emptyStateContent,
         child: Column(

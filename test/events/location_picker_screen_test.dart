@@ -33,7 +33,7 @@ void main() {
           const LocationPickerScreen(loadMapTiles: false),
         );
 
-        expect(find.byType(CatchScreenScaffold), findsOneWidget);
+        expect(find.byType(CatchScaffold), findsOneWidget);
         expect(find.text('Pick starting point'), findsNothing);
         expect(find.byTooltip('Back'), findsOneWidget);
         expect(find.text('Choose meeting location'), findsNothing);

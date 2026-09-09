@@ -105,7 +105,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
         title: context.l10n.userProfileProfileScreenTitleYourProfile,
         actions: const [ProfileSettingsButton()],
       ),
-      primaryRail: ProfileTabBar(controller: _tabController),
+      actions: ProfileTabBar(controller: _tabController),
       controller: _outerScrollController,
       semanticsLabel: context.l10n.userProfileProfileScreenLabelProfileTabs,
       semanticsHint: context.l10n.userProfileProfileScreenBodyDragLeftOrRight,
@@ -147,13 +147,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             const CatchRootScreenPageSpec.scroll(
               page: CatchRootScreenPageScrollView.standard(
                 scrollKey: PageStorageKey('profile-edit-tab-loading'),
-                slivers: [ProfileTabSkeletonSliverBody()],
+                children: [ProfileTabSkeletonSliverBody()],
               ),
             ),
             CatchRootScreenPageSpec.scroll(
               page: CatchRootScreenPageScrollView.embeddedViewport(
                 scrollKey: const PageStorageKey('profile-preview-tab-loading'),
-                slivers: [
+                children: [
                   PreviewTabSkeletonSliverBody(
                     scrollController: previewScrollController,
                     onForwardScroll: onPreviewForwardScroll,
@@ -165,7 +165,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             const CatchRootScreenPageSpec.scroll(
               page: CatchRootScreenPageScrollView.standard(
                 scrollKey: PageStorageKey('profile-insights-tab-loading'),
-                slivers: [ProfileInsightsTabSliverBody()],
+                children: [ProfileInsightsTabSliverBody()],
               ),
             ),
           ],
@@ -175,7 +175,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           page: CatchRootScreenPageSpec.scroll(
             page: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey('profile-error-tab-scroll'),
-              slivers: [
+              children: [
                 CatchLocalizedSliverErrorState(
                   state.error!,
                   context: AppErrorContext.profile,
@@ -190,7 +190,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           page: CatchRootScreenPageSpec.scroll(
             page: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey('profile-unavailable-tab-scroll'),
-              slivers: [
+              children: [
                 CatchSliverEmptyState(
                   icon: CatchIcons.personOffOutlined,
                   title: context
@@ -213,7 +213,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             CatchRootScreenPageSpec.scroll(
               page: CatchRootScreenPageScrollView.standard(
                 scrollKey: const PageStorageKey('profile-edit-tab-scroll'),
-                slivers: [
+                children: [
                   ProfileTabSliverBody(
                     user: user,
                     uploadState: state.uploadState,
@@ -224,7 +224,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             CatchRootScreenPageSpec.scroll(
               page: CatchRootScreenPageScrollView.embeddedViewport(
                 scrollKey: const PageStorageKey('profile-preview-tab-scroll'),
-                slivers: [
+                children: [
                   PreviewTabSliverBody(
                     profile: previewProfile,
                     scrollController: previewScrollController,
@@ -237,7 +237,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
             const CatchRootScreenPageSpec.scroll(
               page: CatchRootScreenPageScrollView.standard(
                 scrollKey: PageStorageKey('profile-insights-tab-scroll'),
-                slivers: [ProfileInsightsTabSliverBody()],
+                children: [ProfileInsightsTabSliverBody()],
               ),
             ),
           ],

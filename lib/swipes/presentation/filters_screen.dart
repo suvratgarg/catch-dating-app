@@ -130,7 +130,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             ),
           ],
         ),
-        bottomNavigationBar: profileAsync.isLoading
+        footer: profileAsync.isLoading
             ? CatchDockSurface(
                 includeSafeArea: false,
                 padding: CatchInsets.formActionDock,

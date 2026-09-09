@@ -69,7 +69,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     final initialDraft = this.initialDraft;
     final initialPrefill = this.initialPrefill;
     if (initialClub != null && initialClub.id != clubId) {
-      return CatchScreenScaffold.stepFlow(
+      return CatchScaffold.stepFlow(
         body: CatchErrorState(
           title:
               context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
@@ -81,7 +81,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
       );
     }
     if (initialPrefill != null && initialPrefill.values.clubId != clubId) {
-      return CatchScreenScaffold.stepFlow(
+      return CatchScaffold.stepFlow(
         body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleRepeatUnavailable,
           message:
@@ -91,7 +91,7 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
       );
     }
     if (initialDraft != null && initialDraft.clubId != clubId) {
-      return CatchScreenScaffold.stepFlow(
+      return CatchScaffold.stepFlow(
         body: CatchErrorState(
           title:
               context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
@@ -147,7 +147,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
     return switch (state.status) {
       HostCreateEventRouteStatus.loading =>
         const HostCreateEventRouteLoadingScreen(),
-      HostCreateEventRouteStatus.error => CatchScreenScaffold.stepFlow(
+      HostCreateEventRouteStatus.error => CatchScaffold.stepFlow(
         body: CatchLocalizedErrorState(
           state.error!,
           context: AppErrorContext.club,
@@ -161,14 +161,14 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
           },
         ),
       ),
-      HostCreateEventRouteStatus.notFound => CatchScreenScaffold.stepFlow(
+      HostCreateEventRouteStatus.notFound => CatchScaffold.stepFlow(
         body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleClubNotFound,
           message: context.l10n.hostsHostCreateEventScreenMessageThisClubIsNo,
           actions: const [CatchErrorBackButton()],
         ),
       ),
-      HostCreateEventRouteStatus.forbidden => CatchScreenScaffold.stepFlow(
+      HostCreateEventRouteStatus.forbidden => CatchScaffold.stepFlow(
         body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleHostAccessRequired,
           message: context.l10n.hostsHostCreateEventScreenMessageOnlyThisClubS,

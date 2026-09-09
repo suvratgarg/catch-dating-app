@@ -186,7 +186,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchScaffold), findsOneWidget);
     expect(
       find.byKey(const ValueKey('catch-master-detail-divider')),
       findsOneWidget,

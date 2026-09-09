@@ -71,9 +71,9 @@
         "CatchRootScreenScrollView.fullBleed",
         "CatchRootScreenScrollView.withPrimaryRail",
         "CatchRouteScaffold",
-        "CatchScreenScaffold.standalone",
-        "CatchScreenScaffold.stepFlow",
-        "CatchScreenScaffold.workspace"
+        "CatchScaffold.standalone",
+        "CatchScaffold.stepFlow",
+        "CatchScaffold.workspace"
       ]
     },
     "layoutContract": {

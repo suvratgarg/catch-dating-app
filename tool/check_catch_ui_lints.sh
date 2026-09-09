@@ -715,7 +715,7 @@ for status_owner in \
   "packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart" \
   "lib/core/widgets/catch_tabbed_screen.dart" \
   "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart" \
-  "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart"; do
+  "packages/catch_ui/lib/src/patterns/catch_scaffold.dart"; do
   probe_path="$probe_root/$status_owner"
   stage_probe "status owner $status_owner" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
@@ -726,7 +726,7 @@ done
 
 for non_status_owner in \
   "lib/core/widgets/catch_route_scaffold.dart" \
-  "lib/core/widgets/catch_screen_scaffold.dart" \
+  "lib/core/widgets/catch_scaffold.dart" \
   "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart"; do
   probe_path="$probe_root/$non_status_owner"
   stage_probe "retired or delegating status non-owner $non_status_owner" <<'DART'

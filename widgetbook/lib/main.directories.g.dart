@@ -3561,7 +3561,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchScreenScaffold',
+            name: 'CatchScaffold',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',

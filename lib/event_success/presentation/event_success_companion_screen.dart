@@ -88,9 +88,9 @@ class CompanionScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final canPop = _companionCanPop(context);
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       backgroundColor: CatchTokens.of(context).bg,
-      appBar: CatchTopBar(
+      title: CatchTopBar(
         title: context
             .l10n
             .eventSuccessEventSuccessCompanionScreenTitleEventCompanion,

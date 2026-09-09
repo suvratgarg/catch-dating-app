@@ -144,8 +144,8 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchScreenScaffold.standalone(
-      safeArea: CatchScreenSafeArea.none,
+    return CatchScaffold.standalone(
+      safeArea: CatchScaffoldPlacement.none,
       backgroundColor: t.bg,
       body: Stack(
         children: [

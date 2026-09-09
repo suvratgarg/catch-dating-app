@@ -121,7 +121,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       now: widget.now,
     );
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       backgroundColor: t.bg,
       body: switch (state) {
         CatchesEventQueueLoading() => const CatchesProfileReviewSkeleton(),

@@ -229,7 +229,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           onSubmitted: (value) => _applySearch(_view, value),
         ),
       ),
-      primaryRail: HostAudienceTabRail(
+      actions: HostAudienceTabRail(
         selected: _view,
         selectionAnimation: _tabController.animation!,
         animationOffset: 2,
@@ -256,7 +256,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           CatchRootScreenPageSpec.scroll(
             page: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
-              slivers: [
+              children: [
                 SliverToBoxAdapter(
                   child: HostFormResponsesPanel(
                     organizerId: selectedClub.id,
@@ -472,7 +472,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
     return CatchRootScreenPageScrollView.standard(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
       maxContentExtent: CatchLayout.hostFormsDirectoryPageMaxExtent,
-      slivers: [
+      children: [
         SliverList.list(
           children: [
             CatchChoiceInput<HostFormLifecycleStatus?>.segmented(

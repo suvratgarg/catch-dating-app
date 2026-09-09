@@ -237,7 +237,7 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
     final diagnostic = forceUpdateDevelopmentDiagnostic(error);
     final l10n = context.l10n;
 
-    return CatchScreenScaffold.standalone(
+    return CatchScaffold.standalone(
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(CatchSpacing.s6),

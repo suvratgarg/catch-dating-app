@@ -62,7 +62,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      bottomNavigationBar: current == null
+      footer: current == null
           ? null
           : CatchDockSurface.primary(
               buttonKey: const ValueKey('host-saved-audience-message'),

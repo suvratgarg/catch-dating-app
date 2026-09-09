@@ -13,7 +13,7 @@ import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_body.dart';
-import 'package:catch_ui/src/patterns/catch_root_screen_top_edge.dart';
+import 'package:catch_ui/src/patterns/catch_root_screen_scroll_view_placement.dart';
 import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
@@ -26,8 +26,8 @@ part 'catch_root_screen_header.dart';
 class CatchRootScreenScrollView extends StatelessWidget {
   const CatchRootScreenScrollView.standard({
     super.key,
-    required Widget header,
-    required List<Widget> slivers,
+    required Widget title,
+    required List<Widget> children,
     this.scrollKey,
     this.controller,
     this.physics,
@@ -36,21 +36,21 @@ class CatchRootScreenScrollView extends StatelessWidget {
     this.maxContentExtent = CatchLayout.screenPageMaxExtent,
     this.semanticsLabel,
     this.semanticsHint,
-    this.topEdge = CatchRootScreenTopEdge.safeArea,
-  }) : _header = header,
+    this.topEdge = CatchRootScreenScrollViewPlacement.safeArea,
+  }) : _title = title,
        _primaryRailHeader = null,
        bodyLayout = CatchPageBodyMode.standard,
-       slivers = slivers,
-       primaryRail = null,
+       children = children,
+       actions = null,
        body = null,
        constrainToContentWidth = true,
-       assert(slivers.length > 0),
+       assert(children.length > 0),
        assert(maxContentExtent > 0);
 
   const CatchRootScreenScrollView.fullBleed({
     super.key,
-    required Widget header,
-    required List<Widget> slivers,
+    required Widget title,
+    required List<Widget> children,
     this.scrollKey,
     this.controller,
     this.physics,
@@ -58,43 +58,47 @@ class CatchRootScreenScrollView extends StatelessWidget {
     this.onRefresh,
     this.semanticsLabel,
     this.semanticsHint,
-    this.topEdge = CatchRootScreenTopEdge.safeArea,
-  }) : _header = header,
+    this.topEdge = CatchRootScreenScrollViewPlacement.safeArea,
+  }) : _title = title,
        _primaryRailHeader = null,
        bodyLayout = CatchPageBodyMode.fullBleed,
-       slivers = slivers,
-       primaryRail = null,
+       children = children,
+       actions = null,
        body = null,
        constrainToContentWidth = false,
        maxContentExtent = CatchLayout.screenPageMaxExtent,
-       assert(slivers.length > 0);
+       assert(children.length > 0);
 
   /// Embedded root composition with a scroll-away header and pinned rail.
+  /// [actions] accepts only a typed primary control rail.
   const CatchRootScreenScrollView.withPrimaryRail({
     super.key,
     required CatchRootScreenHeader header,
-    required this.primaryRail,
+    required CatchPrimaryRail actions,
     required this.body,
     this.scrollKey,
     this.controller,
     this.physics,
     this.semanticsLabel,
     this.semanticsHint,
-    this.topEdge = CatchRootScreenTopEdge.safeArea,
-  }) : _header = null,
+    this.topEdge = CatchRootScreenScrollViewPlacement.safeArea,
+  }) : _title = null,
        _primaryRailHeader = header,
+       actions = actions,
        bodyLayout = null,
-       slivers = null,
+       children = null,
        primary = null,
        onRefresh = null,
        constrainToContentWidth = false,
        maxContentExtent = CatchLayout.screenPageMaxExtent;
 
-  final Widget? _header;
+  final Widget? _title;
   final CatchRootScreenHeader? _primaryRailHeader;
   final CatchPageBodyMode? bodyLayout;
-  final List<Widget>? slivers;
-  final CatchPrimaryRail? primaryRail;
+
+  /// Sliver children of the standard/fullBleed recipes; the rail recipe uses body.
+  final List<Widget>? children;
+  final CatchPrimaryRail? actions;
   final CatchRootScreenBody? body;
   final Key? scrollKey;
   final ScrollController? controller;
@@ -105,14 +109,14 @@ class CatchRootScreenScrollView extends StatelessWidget {
   final double maxContentExtent;
   final String? semanticsLabel;
   final String? semanticsHint;
-  final CatchRootScreenTopEdge topEdge;
+  final CatchRootScreenScrollViewPlacement topEdge;
 
   @override
   Widget build(BuildContext context) {
     final obstruction = CatchTabViewportScope.bottomOverlayInsetOf(context);
     final statuses = CatchBannerStatusScope.of(context);
     Widget scrollView;
-    if (primaryRail == null) {
+    if (actions == null) {
       scrollView = CustomScrollView(
         key: scrollKey,
         controller: controller,
@@ -121,14 +125,14 @@ class CatchRootScreenScrollView extends StatelessWidget {
             ? physics
             : AlwaysScrollableScrollPhysics(parent: physics),
         slivers: [
-          SliverToBoxAdapter(child: _header!),
+          SliverToBoxAdapter(child: _title!),
           if (statuses.isNotEmpty)
             PinnedHeaderSliver(child: CatchBanner.statuses(statuses: statuses)),
           CatchPageBody.slivers(
             mode: bodyLayout!,
             constrainToContentWidth: constrainToContentWidth,
             maxContentExtent: maxContentExtent,
-            children: slivers!,
+            children: children!,
           ),
           const CatchScrollTerminalGap.sliver(),
         ],
@@ -153,12 +157,12 @@ class CatchRootScreenScrollView extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
-                        height: switch (primaryRail) {
+                        height: switch (actions) {
                           final CatchScaledPreferredSize scaled =>
                             scaled.preferredSizeFor(context).height,
                           _ => CatchPageTabBar.heightFor(context),
                         },
-                        child: primaryRail,
+                        child: actions,
                       ),
                       CatchBanner.statuses(statuses: statuses),
                     ],
@@ -171,7 +175,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
         body: body!.build(),
       );
     }
-    if (primaryRail == null && onRefresh != null) {
+    if (actions == null && onRefresh != null) {
       scrollView = RefreshIndicator.adaptive(
         onRefresh: onRefresh!,
         child: scrollView,
@@ -193,7 +197,8 @@ class CatchRootScreenScrollView extends StatelessWidget {
           // SafeArea removes it from MediaQuery so an edge-owned hero cannot
           // apply it twice or let the pinned status move under system chrome.
           top:
-              topEdge == CatchRootScreenTopEdge.safeArea || statuses.isNotEmpty,
+              topEdge == CatchRootScreenScrollViewPlacement.safeArea ||
+              statuses.isNotEmpty,
           bottom: false,
           child: scrollView,
         ),
@@ -202,16 +207,16 @@ class CatchRootScreenScrollView extends StatelessWidget {
   }
 
   void _validatePrimaryRailGeometry(BuildContext context) {
-    final declaredHeight = primaryRail!.preferredSize.height;
+    final declaredHeight = actions!.preferredSize.height;
     // Canonical variants own their insets as well as their target floor.
     // Feature adapters must forward the same unscaled minimum, never restate
     // the old 44-point constant or substitute local geometry.
-    final variant = primaryRail is CatchPageTabBar
-        ? (primaryRail as CatchPageTabBar).variant
+    final variant = actions is CatchPageTabBar
+        ? (actions as CatchPageTabBar).variant
         : CatchChoiceInputVariant.label;
     final expectedMinimum = CatchPageTabBar.minimumHeightFor(variant);
     final expectedScaled = CatchPageTabBar.heightFor(context, variant: variant);
-    final declaredScaled = switch (primaryRail) {
+    final declaredScaled = switch (actions) {
       final CatchScaledPreferredSize scaled =>
         scaled.preferredSizeFor(context).height,
       _ => expectedScaled,
@@ -226,7 +231,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
         '$expectedMinimum-point primary rail.',
       ),
       ErrorDescription(
-        '${primaryRail.runtimeType} declared a preferred height of '
+        '${actions.runtimeType} declared a preferred height of '
         '$declaredHeight points and a scaled height of $declaredScaled points '
         '(expected $expectedScaled).',
       ),

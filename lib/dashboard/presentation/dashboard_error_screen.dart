@@ -13,8 +13,8 @@ class DashboardErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchRootScreenScaffold.standard(
-      header: const SizedBox.shrink(),
-      slivers: [
+      title: const SizedBox.shrink(),
+      children: [
         CatchLocalizedSliverErrorState(
           error,
           context: AppErrorContext.dashboard,

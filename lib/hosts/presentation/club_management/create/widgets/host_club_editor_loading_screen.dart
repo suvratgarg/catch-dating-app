@@ -11,7 +11,7 @@ class HostClubEditorLoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchScreenScaffold.stepFlow(
+    return CatchScaffold.stepFlow(
       backgroundColor: t.bg,
       body: Column(
         children: [

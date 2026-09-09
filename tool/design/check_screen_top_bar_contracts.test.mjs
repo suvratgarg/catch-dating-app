@@ -257,7 +257,7 @@ test("accepts the typed root header as the canonical title owner", () => {
       class RootHeader {
         Widget build() => CatchRootScreenScaffold.withPrimaryRail(
           header: const CatchRootScreenHeader.title(title: 'Profile'),
-          primaryRail: rail,
+          actions: rail,
           body: body,
         );
       }
@@ -880,18 +880,48 @@ test("flags a tracked root Screen that drops its canonical owner", () => {
   assert.ok(hasFinding(result, "tracked-root-header-missing-owner"));
 });
 
-test("exempts only the canonical CatchScreenScaffold app-bar forwarder", () => {
+test("canonical scaffold title is checked as screen chrome", () => {
+  const root = fixtureRoot({
+    source: "CatchScaffold.workspace(title: CatchTopBar(title: 'Details'), body: Text('Body'));",
+    contract: compactContract(),
+    includeRootContracts: false,
+  });
+  assert.deepEqual(checkScreenTopBarContracts({root}).findings, []);
+});
+
+for (const source of [
+  "CatchScaffold.workspace(body: CatchTopBar(title: 'Nested title'));",
+  "CatchSection(title: CatchTopBar(title: 'Other component'));",
+]) {
+  test(`a nested or unrelated title does not satisfy screen chrome: ${source}`, () => {
+    const root = fixtureRoot({source, contract: compactContract(), includeRootContracts: false});
+    assert.ok(hasFinding(checkScreenTopBarContracts({root}), "missing-app-bar"));
+  });
+}
+
+test("unregistered canonical scaffold titles remain violations", () => {
+  const root = fixtureRoot({
+    source: "CatchScaffold.workspace(title: CatchTopBar(title: 'Details'));",
+    contract: compactContract(),
+    includeRootContracts: false,
+  });
+  write(root, "lib/unregistered.dart", "CatchScaffold.workspace(title: CatchTopBar(title: 'Rogue')); ");
+  const result = checkScreenTopBarContracts({root});
+  assert.ok(result.findings.some((finding) => finding.code === "unregistered-app-bar" && finding.path === "lib/unregistered.dart"));
+});
+
+test("exempts only the canonical CatchScaffold app-bar forwarder", () => {
   const root = fixtureRoot({
     source: "Scaffold(appBar: CatchTopBar(title: 'Details'));",
     contract: compactContract(),
     includeRootContracts: false,
     canonicalScaffoldSource: `
-      class CatchScreenScaffold extends StatelessWidget {
-        final PreferredSizeWidget? appBar;
+      class CatchScaffold extends StatelessWidget {
+        final PreferredSizeWidget? title;
         final Widget body;
 
         Widget build(BuildContext context) {
-          return Scaffold(appBar: appBar, body: body);
+          return Scaffold(appBar: title, body: body);
         }
       }
 
@@ -908,7 +938,7 @@ test("exempts only the canonical CatchScreenScaffold app-bar forwarder", () => {
     result.findings.some(
       (finding) =>
         finding.code === "unregistered-app-bar" &&
-        finding.path === "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
+        finding.path === "packages/catch_ui/lib/src/patterns/catch_scaffold.dart",
     ),
   );
   assert.equal(
@@ -926,12 +956,12 @@ test("fails closed when the canonical app-bar forwarder drifts", () => {
     contract: compactContract(),
     includeRootContracts: false,
     canonicalScaffoldSource: `
-      class CatchScreenScaffold extends StatelessWidget {
-        final PreferredSizeWidget? appBar;
+      class CatchScaffold extends StatelessWidget {
+        final PreferredSizeWidget? title;
         final Widget body;
 
         Widget build(BuildContext context) {
-          return Scaffold(appBar: resolveAppBar(appBar), body: body);
+          return Scaffold(appBar: resolveAppBar(title), body: body);
         }
       }
     `,
@@ -946,7 +976,7 @@ test("fails closed when the canonical app-bar forwarder drifts", () => {
     result.findings.some(
       (finding) =>
         finding.code === "unregistered-app-bar" &&
-        finding.path === "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
+        finding.path === "packages/catch_ui/lib/src/patterns/catch_scaffold.dart",
     ),
   );
 });
@@ -963,10 +993,10 @@ for (const [label, height, child, fallback, valid] of [
       contract: compactContract(),
       includeRootContracts: false,
       canonicalScaffoldSource: `
-        class CatchScreenScaffold extends StatelessWidget {
-          final PreferredSizeWidget? appBar;
+        class CatchScaffold extends StatelessWidget {
+          final PreferredSizeWidget? title;
           Widget build(BuildContext context) {
-            return Scaffold(appBar: switch (appBar) {
+            return Scaffold(appBar: switch (title) {
               final CatchScaledPreferredSize scaled => PreferredSize(
                 preferredSize: ${height}, child: ${child},
               ),
@@ -1090,12 +1120,12 @@ function fixtureRoot({
   manualHeaders = [],
   trackedRootSources = [],
   canonicalScaffoldSource = `
-    class CatchScreenScaffold extends StatelessWidget {
-      final PreferredSizeWidget? appBar;
+    class CatchScaffold extends StatelessWidget {
+      final PreferredSizeWidget? title;
       final Widget body;
 
       Widget build(BuildContext context) {
-        return Scaffold(appBar: appBar, body: body);
+        return Scaffold(appBar: title, body: body);
       }
     }
   `,
@@ -1112,7 +1142,7 @@ function fixtureRoot({
   write(root, contract.path, source);
   write(
     root,
-    "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
+    "packages/catch_ui/lib/src/patterns/catch_scaffold.dart",
     canonicalScaffoldSource,
   );
   if (includeRootContracts) {

@@ -46,14 +46,14 @@ List<String> _standalone(String body) => evaluateLayoutOwnerContract(
   owner: {
     'symbol': 'ExampleScreen',
     'family': 'standalone',
-    'expression': 'CatchScreenScaffold.standalone',
+    'expression': 'CatchScaffold.standalone',
     'bodyGeometry': 'standard',
     'topEdge': 'safe-area',
   },
   declarationSource:
       '''
 class ExampleScreen {
-  Object build() => CatchScreenScaffold.standalone(body: $body);
+  Object build() => CatchScaffold.standalone(body: $body);
 }
 ''',
 );

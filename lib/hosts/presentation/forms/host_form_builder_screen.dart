@@ -145,7 +145,7 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
             ),
         ],
       ),
-      bottomNavigationBar: _HostFormBuilderBottomAction(
+      footer: _HostFormBuilderBottomAction(
         state: editorValue,
         visible: compact && view == HostFormWorkspaceView.questions,
         onReviewAndPublish: editorValue == null

@@ -396,7 +396,7 @@ void main() {
           ],
         );
 
-        expect(find.byType(CatchScreenScaffold), findsOneWidget);
+        expect(find.byType(CatchScaffold), findsOneWidget);
         expect(find.byType(EventLocationMapLoadingBody), findsOneWidget);
         expect(find.byType(CatchSkeleton), findsWidgets);
         expect(find.byType(CircularProgressIndicator), findsNothing);

@@ -191,7 +191,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             compactForPrimaryRail: true,
           ),
         ),
-        primaryRail: HostMessagingWorkspaceRail(
+        actions: HostMessagingWorkspaceRail(
           selected: _workspace,
           onChanged: _campaignBusy ? null : _selectWorkspace,
         ),
@@ -201,7 +201,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
               scrollKey: PageStorageKey<String>(
                 'host-messaging-${_workspace.name}',
               ),
-              slivers: [workspaceSliver],
+              children: [workspaceSliver],
             ),
           ),
         ),
@@ -223,7 +223,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             embedded: true,
           );
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       backgroundColor: t.bg,
       body: isInbox
           ? CatchMasterDetailViewport.adaptive(

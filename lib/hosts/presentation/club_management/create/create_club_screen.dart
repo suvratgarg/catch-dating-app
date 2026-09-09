@@ -675,7 +675,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
           ).ignore();
         }
       },
-      child: CatchScreenScaffold.stepFlow(
+      child: CatchScaffold.stepFlow(
         backgroundColor: t.bg,
         body: Column(
           children: [

@@ -50,7 +50,7 @@ class ExampleScreen {
         'lib/app.dart',
         'apps/consumer/lib/consumer_platform_app.dart',
         'apps/host/lib/host_platform_app.dart',
-        'packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart',
+        'packages/catch_ui/lib/src/patterns/catch_scaffold.dart',
       ],
     );
 
@@ -60,8 +60,7 @@ class ExampleScreen {
   test(
     'only the exact package scaffold owns the Material construction',
     () async {
-      const source =
-          'packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart';
+      const source = 'packages/catch_ui/lib/src/patterns/catch_scaffold.dart';
       final root = Directory.current.absolute.path;
       expect(
         await resolveScaffoldOwnershipFailuresForFile(
@@ -74,7 +73,7 @@ class ExampleScreen {
         await resolveScaffoldOwnershipFailuresForFile(
           root: root,
           relativePath: source,
-          canonicalScaffoldPath: 'lib/core/widgets/catch_screen_scaffold.dart',
+          canonicalScaffoldPath: 'lib/core/widgets/catch_scaffold.dart',
         ),
         contains(contains(screenScaffoldOwnershipCode)),
       );
@@ -239,7 +238,10 @@ class ExampleScreen {
 ''',
     );
 
-    expect(failures, contains(contains('CatchRootScreenTopEdge.headerOwned')));
+    expect(
+      failures,
+      contains(contains('CatchRootScreenScrollViewPlacement.headerOwned')),
+    );
   });
 }
 

@@ -6096,16 +6096,16 @@ Widget catchStepRowListContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchScreenScaffold,
+  type: CatchScaffold,
   path: '[Core primitives]/Sections',
 )
 Widget catchScreenScaffoldContractStates(BuildContext context) {
   final mediaQuery = MediaQuery.of(context);
   final t = CatchTokens.of(context);
 
-  return CatchScreenScaffold.standalone(
+  return CatchScaffold.standalone(
     body: _ContractScreen(
-      title: 'CatchScreenScaffold',
+      title: 'CatchScaffold',
       contractId: 'catch.screen_body.screen_scaffold',
       states: const [
         'standalone-safe-area',
@@ -6132,8 +6132,8 @@ Widget catchScreenScaffoldContractStates(BuildContext context) {
                   bottom: WidgetbookPreviewLayout.compactPanelHeight,
                 ),
               ),
-              child: CatchScreenScaffold.standalone(
-                safeArea: CatchScreenSafeArea.none,
+              child: CatchScaffold.standalone(
+                safeArea: CatchScaffoldPlacement.none,
                 resizeToAvoidBottomInset: true,
                 body: ColoredBox(
                   color: t.surface,
@@ -6650,14 +6650,14 @@ Widget catchSectionListContractStates(BuildContext context) {
       _StateCard(
         label: 'Explicit empty-state owner',
         child: CatchSectionList(
-          children: const [],
           emptyStateOmitted: false,
           emptyBuilder: (_) => const _BodySpec(label: 'No sections available'),
+          children: const [],
         ),
       ),
       const _StateCard(
         label: 'Explicit omission',
-        child: CatchSectionList(children: [], emptyStateOmitted: true),
+        child: CatchSectionList(emptyStateOmitted: true, children: []),
       ),
     ],
   );
@@ -11286,7 +11286,7 @@ class _RootScreenPrimaryRailContractDemoState
         subtitle: 'Independent page scroll state',
       ),
       semanticsLabel: 'Root primary-rail contract preview',
-      primaryRail: CatchPageTabBar<String>.controlled(
+      actions: CatchPageTabBar<String>.controlled(
         controller: _controller,
         options: const [
           CatchOption(value: 'edit', label: 'Edit'),
@@ -11299,7 +11299,7 @@ class _RootScreenPrimaryRailContractDemoState
           CatchRootScreenPageSpec.scroll(
             page: CatchRootScreenPageScrollView.standard(
               scrollKey: PageStorageKey<String>('contract-tab-edit'),
-              slivers: [
+              children: [
                 SliverToBoxAdapter(
                   child: Text('Edit owns this scroll position.'),
                 ),
@@ -11309,7 +11309,7 @@ class _RootScreenPrimaryRailContractDemoState
           CatchRootScreenPageSpec.scroll(
             page: CatchRootScreenPageScrollView.standard(
               scrollKey: PageStorageKey<String>('contract-tab-preview'),
-              slivers: [
+              children: [
                 SliverToBoxAdapter(
                   child: Text('Preview owns a separate scroll position.'),
                 ),

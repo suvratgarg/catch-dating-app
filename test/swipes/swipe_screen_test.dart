@@ -44,7 +44,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byType(CatchScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchScaffold), findsOneWidget);
     expect(find.byType(CatchesProfileReviewSkeleton), findsOneWidget);
     expect(find.byType(ProfileSurfaceSkeleton), findsOneWidget);
     expect(find.byType(CatchSkeleton), findsWidgets);

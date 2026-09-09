@@ -19,7 +19,7 @@ class CatchRootScreenPageScrollView extends StatefulWidget
   const CatchRootScreenPageScrollView.standard({
     super.key,
     required this.scrollKey,
-    required this.slivers,
+    required this.children,
     this.maxContentExtent = CatchLayout.screenPageMaxExtent,
     this.controller,
     this.scrollStateController,
@@ -29,12 +29,12 @@ class CatchRootScreenPageScrollView extends StatefulWidget
        includeTerminalPadding = true,
        constrainToContentWidth = true;
 
-  /// Full-bleed root page whose slivers still use shell-owned terminal
+  /// Full-bleed root page whose sliver children still use shell-owned terminal
   /// clearance.
   const CatchRootScreenPageScrollView.fullBleed({
     super.key,
     required this.scrollKey,
-    required this.slivers,
+    required this.children,
     this.controller,
     this.scrollStateController,
     this.physics,
@@ -49,7 +49,7 @@ class CatchRootScreenPageScrollView extends StatefulWidget
   const CatchRootScreenPageScrollView.embeddedViewport({
     super.key,
     required this.scrollKey,
-    required this.slivers,
+    required this.children,
     this.controller,
     this.scrollStateController,
     this.physics,
@@ -61,7 +61,9 @@ class CatchRootScreenPageScrollView extends StatefulWidget
 
   final PageStorageKey<String> scrollKey;
   final CatchPageBodyMode bodyLayout;
-  final List<Widget> slivers;
+
+  /// Sliver children following this page's shared overlap injector.
+  final List<Widget> children;
   final bool includeTerminalPadding;
 
   /// Centers each supplied sliver around a [CatchLayout.maxContentWidth]
@@ -196,7 +198,7 @@ class _CatchRootScreenPageScrollViewState
                 constrainToContentWidth: widget.constrainToContentWidth,
                 maxContentExtent:
                     widget.maxContentExtent ?? CatchLayout.screenPageMaxExtent,
-                children: widget.slivers,
+                children: widget.children,
               ),
               if (widget.includeTerminalPadding)
                 const CatchScrollTerminalGap.sliver(),

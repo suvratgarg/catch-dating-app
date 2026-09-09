@@ -8,7 +8,7 @@ import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_variant.dart';
-import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
+import 'package:catch_ui/src/patterns/catch_scaffold.dart';
 import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/patterns/catch_section_list.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_item.dart';
@@ -362,7 +362,7 @@ class CatchRouteScaffold extends StatefulWidget {
     required this.topBarBuilder,
     required this.body,
     this.statuses = const [],
-    this.bottomNavigationBar,
+    this.footer,
     this.backgroundColor,
     this.resizeToAvoidBottomInset,
   });
@@ -370,7 +370,7 @@ class CatchRouteScaffold extends StatefulWidget {
   final CatchRouteTopBarBuilder topBarBuilder;
   final CatchRouteBody body;
   final List<CatchBannerStatus> statuses;
-  final Widget? bottomNavigationBar;
+  final Widget? footer;
   final Color? backgroundColor;
   final bool? resizeToAvoidBottomInset;
 
@@ -401,11 +401,11 @@ class _CatchRouteScaffoldState extends State<CatchRouteScaffold> {
     ];
     return CatchBannerStatusScope(
       statuses: const [],
-      child: CatchScreenScaffold.workspace(
+      child: CatchScaffold.workspace(
         backgroundColor: background,
         resizeToAvoidBottomInset: widget.resizeToAvoidBottomInset,
-        appBar: widget.topBarBuilder(context, _scrolledUnder),
-        bottomNavigationBar: widget.bottomNavigationBar,
+        title: widget.topBarBuilder(context, _scrolledUnder),
+        footer: widget.footer,
         body: NotificationListener<ScrollNotification>(
           onNotification: _handleScroll,
           child: Column(

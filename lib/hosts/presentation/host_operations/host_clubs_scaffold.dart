@@ -44,7 +44,7 @@ class HostOrganizerStateScaffold extends StatelessWidget {
         rowCrossAxisAlignment: CrossAxisAlignment.start,
         actions: actions,
       ),
-      primaryRail: CatchPageTabBar<HostClubTab>(
+      actions: CatchPageTabBar<HostClubTab>(
         groupKey: _hostClubTabRailKey,
         selected: selectedTab,
         selectionPosition: selectedTab.index.toDouble(),
@@ -55,7 +55,7 @@ class HostOrganizerStateScaffold extends StatelessWidget {
         page: CatchRootScreenPageSpec.scroll(
           page: CatchRootScreenPageScrollView.standard(
             scrollKey: scrollKey,
-            slivers: slivers,
+            children: slivers,
           ),
         ),
       ),
@@ -197,7 +197,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
         rowCrossAxisAlignment: CrossAxisAlignment.start,
         actions: [signOutAction],
       ),
-      primaryRail: CatchPageTabBar<HostClubTab>.controlled(
+      actions: CatchPageTabBar<HostClubTab>.controlled(
         controller: _tabController,
         groupKey: _hostClubTabRailKey,
         options: _hostClubTabOptions(context),
@@ -213,7 +213,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               scrollKey: PageStorageKey(
                 'host-club-${selectedClub.id}-edit-scroll',
               ),
-              slivers: [
+              children: [
                 SliverToBoxAdapter(
                   child: SizedBox(
                     width: double.infinity,
@@ -240,7 +240,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               scrollKey: PageStorageKey(
                 'host-club-${selectedClub.id}-insights-scroll',
               ),
-              slivers: [
+              children: [
                 SliverToBoxAdapter(
                   child: SizedBox(
                     width: double.infinity,
@@ -262,7 +262,7 @@ class _HostClubsScaffoldState extends ConsumerState<HostClubsScaffold>
               scrollKey: PageStorageKey(
                 'host-club-${selectedClub.id}-preview-scroll',
               ),
-              slivers: [
+              children: [
                 ClubDetailReadOnlyPreviewSliver(
                   initialClub: selectedClub,
                   currentUid: state.currentUid,

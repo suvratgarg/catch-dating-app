@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.24.0
+version: 1.25.0
 updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -470,7 +470,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep
   Consumer Chats and Host Inbox on the same 20 pt horizontal rhythm.
 - Every full-screen composition terminates in
-  `CatchScreenScaffold.standalone`, `.stepFlow`, or `.workspace`; higher-level
+  `CatchScaffold.standalone`, `.stepFlow`, or `.workspace`; higher-level
   root, tabbed, and pushed-route owners delegate to that role. Only the
   canonical primitive may construct a Material `Scaffold`. The composition gate
   reconciles route, coverage, and registry membership; resolves declared

@@ -162,7 +162,7 @@ class ExampleScreen {
       declarationSource: '''
 class ExampleScreen {
   Object build() => CatchRootScreenScaffold.standard(
-    slivers: [
+    children: [
       CatchPageBody.slivers(
         mode: CatchPageBodyMode.standard,
         children: const [SliverToBoxAdapter()],
@@ -257,7 +257,7 @@ class ExampleScreen {
   Object build() {
     Object buildMaster() => CatchRootScreenScrollView.fullBleed();
 
-    return CatchScreenScaffold.workspace(body: buildMaster());
+    return CatchScaffold.workspace(body: buildMaster());
   }
 }
 ''',
@@ -488,7 +488,7 @@ class ExampleScreen {
   Object build(bool showOverlay) => Stack(
     children: [
       CatchRootScreenScaffold.fullBleed(
-        topEdge: CatchRootScreenTopEdge.headerOwned,
+        topEdge: CatchRootScreenScrollViewPlacement.headerOwned,
       ),
       if (showOverlay) Positioned(child: const MapLauncher()),
     ],
@@ -801,7 +801,7 @@ class ExampleScreen {
     body: CatchRootScreenBody.single(
       page: CatchRootScreenPageSpec.scroll(
         page: CatchRootScreenPageScrollView.standard(
-          slivers: [
+          children: [
             SliverPadding(
               padding: CatchInsets.pageBody,
               sliver: const SliverToBoxAdapter(),
@@ -843,12 +843,12 @@ class ExampleScreen {
       pages: [
         CatchRootScreenPageSpec.scroll(
           page: CatchRootScreenPageScrollView.standard(
-            slivers: [const SliverToBoxAdapter()],
+            children: [const SliverToBoxAdapter()],
           ),
         ),
         CatchRootScreenPageSpec.scroll(
           page: CatchRootScreenPageScrollView.fullBleed(
-            slivers: [
+            children: [
               SliverPadding(
                 padding: CatchInsets.pageBody,
                 sliver: const SliverToBoxAdapter(),
@@ -872,7 +872,7 @@ class ExampleScreen {
       declarationSource: '''
 class SemanticPageOwner implements CatchRootScreenPageOwner {
   Object build() => CatchRootScreenPageScrollView.standard(
-    slivers: [
+    children: [
       CatchPageBody.sliver(child: const SliverToBoxAdapter()),
     ],
   );
@@ -961,7 +961,7 @@ class ExampleScreen {
   test('collects named-constructor layout owners from the AST', () {
     final instantiations = layoutOwnerInstantiations('''
 class ExampleScreen {
-  Object build() => CatchScreenScaffold.stepFlow(
+  Object build() => CatchScaffold.stepFlow(
     body: const SizedBox(),
   );
 }
@@ -969,7 +969,7 @@ class ExampleScreen {
 
     expect(
       instantiations.map((instantiation) => instantiation.signature),
-      contains('CatchScreenScaffold.stepFlow'),
+      contains('CatchScaffold.stepFlow'),
     );
   });
 

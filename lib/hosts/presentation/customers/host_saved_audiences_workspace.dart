@@ -26,7 +26,7 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
           ref.invalidate(hostAllSavedAudiencesProvider(organizerId));
           await ref.read(hostAllSavedAudiencesProvider(organizerId).future);
         },
-        slivers: [
+        children: [
           HostSavedAudiencesDirectory(
             organizerId: organizerId,
             query: query,

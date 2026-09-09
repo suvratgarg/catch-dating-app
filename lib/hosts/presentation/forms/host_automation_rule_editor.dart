@@ -114,7 +114,7 @@ class _HostAutomationRuleEditorState
               ? CatchTopBarEmphasis.divided
               : CatchTopBarEmphasis.plain,
         ),
-        bottomNavigationBar: CatchDockSurface.primary(
+        footer: CatchDockSurface.primary(
           label: l.hostAutomationSave,
           buttonKey: const ValueKey('automation-save'),
           isLoading: _busy,

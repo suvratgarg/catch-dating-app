@@ -152,7 +152,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
           )
         : ColoredBox(color: t.bg);
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       body: Stack(
         children: [
           Positioned.fill(child: mapLayer),

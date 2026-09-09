@@ -131,7 +131,7 @@ Widget responsiveSectionPageStates(BuildContext context) =>
     );
 
 class WidgetbookScrolledSectionPage extends StatefulWidget {
-  const WidgetbookScrolledSectionPage({required this.floating});
+  const WidgetbookScrolledSectionPage({super.key, required this.floating});
 
   final bool floating;
 

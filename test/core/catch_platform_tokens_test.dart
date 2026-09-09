@@ -101,8 +101,8 @@ void main() {
             ).copyWith(textScaler: const TextScaler.linear(2)),
             child: child!,
           ),
-          home: const CatchScreenScaffold.workspace(
-            appBar: CatchTopBar(
+          home: const CatchScaffold.workspace(
+            title: CatchTopBar(
               title: 'Customers',
               footer: CatchPageTabBar<int>(
                 selected: 0,

@@ -49,7 +49,7 @@ class _HostApplicationDetailScreenState
             ? CatchTopBarEmphasis.divided
             : CatchTopBarEmphasis.plain,
       ),
-      bottomNavigationBar:
+      footer:
           loaded != null &&
               loaded.reviewStatus != HostApplicationReviewStatus.withdrawn &&
               loaded.dataAccessState != 'revokedParticipantGrant' &&

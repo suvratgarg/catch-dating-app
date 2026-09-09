@@ -196,12 +196,12 @@ void main() {
                 tooltip: 'Search forms',
               ),
             ),
-            primaryRail: const _TestPrimaryRail(),
+            actions: const _TestPrimaryRail(),
             body: const CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 page: CatchRootScreenPageScrollView.standard(
                   scrollKey: PageStorageKey('search-root-page'),
-                  slivers: <Widget>[
+                  children: <Widget>[
                     SliverToBoxAdapter(child: SizedBox.shrink()),
                   ],
                 ),
@@ -243,12 +243,12 @@ void main() {
           theme: AppTheme.light,
           home: const CatchRootScreenScaffold.withPrimaryRail(
             header: CatchRootScreenHeader.title(title: 'Workspace'),
-            primaryRail: _TestPrimaryRail(height: 52),
+            actions: _TestPrimaryRail(height: 52),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 page: CatchRootScreenPageScrollView.standard(
                   scrollKey: PageStorageKey('invalid-rail-root-page'),
-                  slivers: <Widget>[],
+                  children: <Widget>[],
                 ),
               ),
             ),
@@ -281,7 +281,7 @@ void main() {
         theme: AppTheme.light,
         home: const CatchRootScreenScaffold.withPrimaryRail(
           header: CatchRootScreenHeader.title(title: 'Workspace'),
-          primaryRail: _TestPrimaryRail(),
+          actions: _TestPrimaryRail(),
           body: CatchRootScreenBody.single(
             page: CatchRootScreenPageSpec.scroll(page: _TestPageOwner()),
           ),
@@ -316,11 +316,11 @@ Widget _wrap({
   final page = switch (bodyLayout) {
     CatchPageBodyMode.standard => CatchRootScreenPageScrollView.standard(
       scrollKey: const PageStorageKey<String>('root-page-test'),
-      slivers: slivers,
+      children: slivers,
     ),
     CatchPageBodyMode.fullBleed => CatchRootScreenPageScrollView.fullBleed(
       scrollKey: const PageStorageKey<String>('root-page-test'),
-      slivers: slivers,
+      children: slivers,
     ),
   };
   return MaterialApp(
@@ -331,7 +331,7 @@ Widget _wrap({
     ),
     home: CatchRootScreenScaffold.withPrimaryRail(
       header: const CatchRootScreenHeader.title(title: 'Workspace'),
-      primaryRail: useCanonicalRail
+      actions: useCanonicalRail
           ? const CatchPageTabBar<int>(
               key: ValueKey('root-page-rail'),
               selected: 0,
@@ -350,12 +350,12 @@ Widget _wrapEmbeddedViewport() {
     theme: AppTheme.light,
     home: const CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.title(title: 'Workspace'),
-      primaryRail: _TestPrimaryRail(),
+      actions: _TestPrimaryRail(),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
           page: CatchRootScreenPageScrollView.embeddedViewport(
             scrollKey: PageStorageKey<String>('root-page-embedded-test'),
-            slivers: [SliverFillRemaining(child: SizedBox.shrink())],
+            children: [SliverFillRemaining(child: SizedBox.shrink())],
           ),
         ),
       ),

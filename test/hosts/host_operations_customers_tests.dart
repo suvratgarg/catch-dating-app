@@ -196,7 +196,7 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const _CustomersTestPrimaryRail(),
+        actions: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
@@ -225,7 +225,7 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const _CustomersTestPrimaryRail(),
+        actions: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
@@ -251,7 +251,7 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const _CustomersTestPrimaryRail(),
+        actions: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
@@ -766,7 +766,7 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const _CustomersTestPrimaryRail(),
+        actions: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(

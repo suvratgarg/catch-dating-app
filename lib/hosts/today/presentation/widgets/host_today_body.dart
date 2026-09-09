@@ -36,9 +36,9 @@ class HostTodayBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchRootScreenScaffold.standard(
       scrollKey: const ValueKey<String>('host-today-scroll-view'),
-      header: HostTodayHeader(now: now),
+      title: HostTodayHeader(now: now),
       maxContentExtent: CatchLayout.hostTodayWorkspacePageMaxExtent,
-      slivers: [
+      children: [
         switch (state.status) {
           HostTodayStatus.loading => const SliverToBoxAdapter(
             child: CatchSkeleton.mediaRows(count: 4),

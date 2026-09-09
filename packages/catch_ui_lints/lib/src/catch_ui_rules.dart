@@ -107,7 +107,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
         element.name == 'statuses' &&
         uri == 'package:catch_ui/src/components/catch_banner.dart' &&
         !const {
-          '/packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart',
+          '/packages/catch_ui/lib/src/patterns/catch_scaffold.dart',
           '/packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart',
           '/lib/core/widgets/catch_tabbed_screen.dart',
           '/packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart',

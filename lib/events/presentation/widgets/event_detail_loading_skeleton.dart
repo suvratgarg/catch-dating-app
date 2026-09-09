@@ -21,7 +21,7 @@ class EventDetailLoadingScreen extends StatelessWidget {
     final isSpotlight =
         presentationMode == EventDetailPresentationMode.spotlightDark;
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       backgroundColor: isSpotlight ? t.ink : t.bg,
       body: CustomScrollView(
         slivers: [
@@ -44,9 +44,7 @@ class EventDetailLoadingScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: showBottomNavigation
-          ? const EventDetailLoadingCta()
-          : null,
+      footer: showBottomNavigation ? const EventDetailLoadingCta() : null,
     );
   }
 }

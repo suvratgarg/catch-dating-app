@@ -39,7 +39,7 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
             expandedSideNavigation ?? mediumSideNavigation,
         };
         if (sideNavigation != null) {
-          return CatchScreenScaffold.workspace(
+          return CatchScaffold.workspace(
             scaffoldKey: AppShellKeys.scaffold,
             body: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -85,7 +85,7 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
           child: body,
         );
 
-        return CatchScreenScaffold.workspace(
+        return CatchScaffold.workspace(
           scaffoldKey: AppShellKeys.scaffold,
           extendBody: tabBarFloats,
           body: candidateTabBarFloats
@@ -102,7 +102,7 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
                   ],
                 )
               : scopedBody,
-          bottomNavigationBar: anchoredBar,
+          footer: anchoredBar,
         );
       },
     );

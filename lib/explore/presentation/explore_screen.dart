@@ -533,7 +533,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
     return Stack(
       children: [
         CatchRootScreenScaffold.withPrimaryRail(
-          topEdge: CatchRootScreenTopEdge.headerOwned,
+          topEdge: CatchRootScreenScrollViewPlacement.headerOwned,
           header: CatchRootScreenHeader.custom(
             ExploreDiscoveryCoverHeader(
               cityPickerState: cityPickerState,
@@ -556,7 +556,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               onFeaturedEventSelected: openFeaturedEvent,
             ),
           ),
-          primaryRail: ExploreFilterRail(
+          actions: ExploreFilterRail(
             filters: visibleFilters,
             state: filterRailState,
             dateStripState: dateStripState,
@@ -588,7 +588,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 scrollKey: ExploreScreenKeys.scrollView,
                 physics: const AlwaysScrollableScrollPhysics(),
                 onRefresh: _refreshExploreData,
-                slivers: [
+                children: [
                   SliverToBoxAdapter(
                     child: ExploreAppliedFilterChips(
                       filters: visibleFilters,
