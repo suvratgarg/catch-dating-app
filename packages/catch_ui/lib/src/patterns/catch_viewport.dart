@@ -43,9 +43,8 @@ class CatchViewport extends StatelessWidget {
 
   const CatchViewport.sliver({
     super.key,
-    required CatchViewportSliverBuilder sliverBuilder,
+    required CatchViewportSliverBuilder this._sliverBuilder,
   }) : _selection = null,
-       _sliverBuilder = sliverBuilder,
        _scene = null,
        _sliverLane = null;
 

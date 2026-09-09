@@ -1,6 +1,6 @@
 import 'package:catch_ui/src/components/catch_field_copy.dart';
-import 'package:catch_ui/src/patterns/catch_form_save.dart';
 import 'package:catch_ui/src/patterns/catch_form_row_list_mode.dart';
+import 'package:catch_ui/src/patterns/catch_form_save.dart';
 import 'package:flutter/foundation.dart';
 
 /// Field-local access to the list's shared accordion and save pipeline.

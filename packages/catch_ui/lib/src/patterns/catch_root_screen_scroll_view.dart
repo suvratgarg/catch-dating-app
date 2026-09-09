@@ -1,13 +1,13 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_banner.dart';
+import 'package:catch_ui/src/components/catch_banner_status_scope.dart';
 import 'package:catch_ui/src/components/catch_choice_input_variant.dart';
 import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_page_tab_bar.dart';
 import 'package:catch_ui/src/components/catch_primary_rail.dart';
 import 'package:catch_ui/src/components/catch_screen_header.dart';
-import 'package:catch_ui/src/components/catch_banner.dart';
-import 'package:catch_ui/src/components/catch_banner_status_scope.dart';
 import 'package:catch_ui/src/components/catch_top_bar.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';

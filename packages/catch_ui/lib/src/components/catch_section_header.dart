@@ -1,23 +1,22 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_section_header_variant.dart';
-import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
 import 'package:flutter/material.dart';
 
 /// Section heading, count and trailing-action layouts, selected by recipe.
 class CatchSectionHeader extends StatelessWidget {
   const CatchSectionHeader({
     super.key,
-    required String title,
+    required String this.title,
     this.subtitle,
     this.trailing,
     this.uppercase = false,
     this.heavy = false,
     this.padding = const EdgeInsets.only(bottom: CatchSpacing.s2),
     this.titleStyle,
-  }) : title = title,
-       variant = CatchSectionHeaderVariant.standard,
+  }) : variant = CatchSectionHeaderVariant.standard,
        count = null,
        color = null,
        textVariant = CatchKickerTextVariant.md;
@@ -26,12 +25,11 @@ class CatchSectionHeader extends StatelessWidget {
   const CatchSectionHeader.kicker({
     super.key,
     required this.title,
-    required Color color,
+    required Color this.color,
     this.count,
     this.trailing,
     this.textVariant = CatchKickerTextVariant.md,
-  }) : color = color,
-       variant = CatchSectionHeaderVariant.kicker,
+  }) : variant = CatchSectionHeaderVariant.kicker,
        subtitle = null,
        uppercase = false,
        heavy = false,

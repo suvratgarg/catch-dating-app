@@ -1,18 +1,18 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_banner.dart';
 import 'package:catch_ui/src/components/catch_banner_status.dart';
 import 'package:catch_ui/src/components/catch_banner_status_scope.dart';
+import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_variant.dart';
 import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
+import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/patterns/catch_section_list.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_item.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_mode.dart';
-import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
 import 'package:flutter/material.dart';
 

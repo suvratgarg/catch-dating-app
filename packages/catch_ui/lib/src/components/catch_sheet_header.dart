@@ -11,12 +11,11 @@ class CatchSheetHeader extends StatelessWidget {
       variant = CatchSheetHeaderVariant.plain;
   const CatchSheetHeader.branded({
     super.key,
-    required IconData glyph,
+    required IconData this._glyph,
     this.title,
     this.subtitle,
     this.trailing,
-  }) : _glyph = glyph,
-       variant = CatchSheetHeaderVariant.branded;
+  }) : variant = CatchSheetHeaderVariant.branded;
 
   final String? title;
   final String? subtitle;

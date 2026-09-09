@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_picker_copy.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
+import 'package:catch_ui/src/components/catch_picker_copy.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:flutter/cupertino.dart';

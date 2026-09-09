@@ -15,14 +15,12 @@ enum CatchMetaRowVariant { label, entry, flow, group }
 class CatchMetaRow extends StatelessWidget {
   const CatchMetaRow({
     super.key,
-    required IconData icon,
-    required String label,
+    required IconData this._icon,
+    required String this._label,
     this.color,
     this.labelColor,
     this.maxLines = 1,
   }) : variant = CatchMetaRowVariant.label,
-       _icon = icon,
-       _label = label,
        _entry = null,
        entries = const [],
        trailing = null,
@@ -31,13 +29,12 @@ class CatchMetaRow extends StatelessWidget {
 
   const CatchMetaRow.entry({
     super.key,
-    required CatchMetaEntry entry,
+    required CatchMetaEntry this._entry,
     this.color,
     this.iconSize = CatchIcon.sm,
     this.maxLines = 1,
     this.isStrong = false,
   }) : variant = CatchMetaRowVariant.entry,
-       _entry = entry,
        _icon = null,
        _label = null,
        labelColor = null,

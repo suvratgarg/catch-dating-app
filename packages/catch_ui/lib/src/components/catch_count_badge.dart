@@ -35,9 +35,8 @@ class CatchCountBadge extends StatelessWidget {
     required IconData icon,
     required Color color,
     this.count = 0,
-    Widget? child,
+    Widget? this._child,
   }) : _navigationIcon = (icon: icon, color: color),
-       _child = child,
        semanticsLabel = null,
        alignment = Alignment.topRight,
        offset = const Offset(-1, 2);

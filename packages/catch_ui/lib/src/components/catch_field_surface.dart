@@ -15,10 +15,9 @@ class CatchFieldSurface extends StatelessWidget {
   const CatchFieldSurface({
     super.key,
     required this.child,
-    required Key pressedOverlayKey,
+    required Key this._pressedOverlayKey,
     this.states = const {},
-  }) : _pressedOverlayKey = pressedOverlayKey,
-       _focusTarget = null;
+  }) : _focusTarget = null;
 
   const CatchFieldSurface.focusTarget({
     super.key,

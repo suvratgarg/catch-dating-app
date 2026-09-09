@@ -31,7 +31,7 @@ typedef _PrimaryAction = ({
 class CatchDockSurface extends StatelessWidget {
   const CatchDockSurface({
     super.key,
-    required Widget child,
+    required Widget this.child,
     this.padding = const EdgeInsets.fromLTRB(
       CatchSpacing.s4,
       CatchSpacing.s3,
@@ -39,8 +39,7 @@ class CatchDockSurface extends StatelessWidget {
       CatchSpacing.s3,
     ),
     this.includeSafeArea = true,
-  }) : child = child,
-       variant = CatchDockSurfaceVariant.utility,
+  }) : variant = CatchDockSurfaceVariant.utility,
        _primary = null,
        backgroundColor = null,
        dividerColor = null;

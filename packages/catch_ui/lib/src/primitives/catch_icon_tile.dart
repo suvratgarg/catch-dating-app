@@ -10,21 +10,19 @@ enum CatchIconTileVariant { tile, plain, bubble, error }
 class CatchIconTile extends StatelessWidget {
   const CatchIconTile({
     super.key,
-    required IconData icon,
-    required Color iconColor,
+    required IconData this.icon,
+    required Color this.iconColor,
     this.backgroundColor,
     this.borderColor,
     this.size = 42,
     this.iconSize = 21,
     this.radius = CatchRadius.md,
-  }) : icon = icon,
-       iconColor = iconColor,
-       variant = CatchIconTileVariant.tile;
+  }) : variant = CatchIconTileVariant.tile;
 
   /// The quiet glyph or circular accent used inside successful empty states.
   const CatchIconTile.empty({
     super.key,
-    required IconData icon,
+    required IconData this.icon,
     this.variant = CatchIconTileVariant.plain,
     double? size,
     double? iconSize,
@@ -32,7 +30,6 @@ class CatchIconTile extends StatelessWidget {
          variant == CatchIconTileVariant.plain ||
              variant == CatchIconTileVariant.bubble,
        ),
-       icon = icon,
        size = size ?? 76,
        iconSize = iconSize ?? 34,
        iconColor = null,

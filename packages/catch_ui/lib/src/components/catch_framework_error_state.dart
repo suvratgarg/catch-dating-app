@@ -1,8 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_error_details_accordion.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

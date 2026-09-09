@@ -1,7 +1,7 @@
-import 'package:catch_ui/src/primitives/catch_image_fallback_surface.dart';
 import 'package:catch_ui/src/primitives/catch_graded_image.dart';
-import 'package:catch_ui/src/primitives/catch_network_image.dart';
+import 'package:catch_ui/src/primitives/catch_image_fallback_surface.dart';
 import 'package:catch_ui/src/primitives/catch_media_overlay.dart';
+import 'package:catch_ui/src/primitives/catch_network_image.dart';
 import 'package:flutter/material.dart';
 
 class CatchHeroImage extends StatelessWidget {

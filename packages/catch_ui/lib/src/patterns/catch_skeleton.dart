@@ -40,10 +40,9 @@ class CatchSkeleton extends StatelessWidget {
   /// Derive placeholders from the real composition, restoring it when disabled.
   const CatchSkeleton.content({
     super.key,
-    required Widget child,
+    required Widget this.child,
     this.enabled = true,
-  }) : child = child,
-       variant = CatchSkeletonVariant.content,
+  }) : variant = CatchSkeletonVariant.content,
        _recipe = null;
 
   /// A vertical list of card placeholders.

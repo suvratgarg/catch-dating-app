@@ -98,8 +98,8 @@ class CatchBanner extends StatelessWidget {
     this.onRetry,
     this.retryLabel,
     this.statuses = const [],
-    CatchBannerStatus? status,
-  }) : _status = status;
+    CatchBannerStatus? this._status,
+  });
 
   static const _errorPadding = EdgeInsets.symmetric(
     horizontal: CatchSpacing.s3,
@@ -213,7 +213,7 @@ class CatchBanner extends StatelessWidget {
           ),
       ],
     ];
-    final LayoutWidgetBuilder contentBuilder = (context, constraints) {
+    Widget contentBuilder(BuildContext context, BoxConstraints constraints) {
       final stacked =
           isStatus &&
           (MediaQuery.textScalerOf(context).scale(1) >= 1.4 ||
@@ -267,7 +267,8 @@ class CatchBanner extends StatelessWidget {
               )
             : row,
       );
-    };
+    }
+
     // Only status bands need local width measurement. Inline recipes retain
     // intrinsic sizing while using the same content renderer.
     final content = isStatus

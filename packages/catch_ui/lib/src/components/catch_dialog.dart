@@ -82,10 +82,9 @@ class CatchDialog<T> extends StatelessWidget {
   const CatchDialog({
     super.key,
     required this.title,
-    required Widget child,
+    required Widget this.child,
     required this.actions,
-  }) : child = child,
-       _confirmation = null;
+  }) : _confirmation = null;
 
   const CatchDialog.confirmation({
     super.key,

@@ -6,12 +6,10 @@ import 'package:flutter/material.dart';
 class CatchHeroViewport extends StatelessWidget {
   const CatchHeroViewport({
     super.key,
-    required Object tag,
+    required Object this._tag,
     required this.child,
-    HeroFlightShuttleBuilder? flightShuttleBuilder,
-  }) : _tag = tag,
-       _flightShuttleBuilder = flightShuttleBuilder,
-       _ticketPrefix = null,
+    HeroFlightShuttleBuilder? this._flightShuttleBuilder,
+  }) : _ticketPrefix = null,
        _ticketId = null;
 
   /// Shared ticket tag and spring-backed flight, with transparent Material.

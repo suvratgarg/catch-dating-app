@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 /// Bounded or fractional widths for items in a horizontal section viewport.
 class CatchRailItemWidth {
   const CatchRailItemWidth.fractional({
-    required double fraction,
+    required double this.fraction,
     required this.min,
     required this.max,
-  }) : fraction = fraction;
+  });
 
   const CatchRailItemWidth.fixed(double width)
     : fraction = null,

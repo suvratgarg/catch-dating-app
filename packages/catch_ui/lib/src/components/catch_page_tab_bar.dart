@@ -44,7 +44,7 @@ class CatchPageTabBar<T> extends StatelessWidget
 
   const CatchPageTabBar({
     super.key,
-    required T selected,
+    required T this._selected,
     required this.options,
     this.onChanged,
     this.groupKey,
@@ -55,8 +55,7 @@ class CatchPageTabBar<T> extends StatelessWidget
     this.accent,
     this.backgroundColor,
     this.contentPadding = CatchInsets.screenControlRow,
-  }) : _selected = selected,
-       controller = null;
+  }) : controller = null;
 
   /// Shares selection, drag interpolation and geometry with the value recipe.
   /// The caller owns and disposes [controller].

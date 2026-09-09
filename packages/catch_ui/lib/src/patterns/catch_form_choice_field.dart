@@ -8,17 +8,17 @@ import 'package:flutter/material.dart';
 class CatchFormChoiceField<P, T> extends StatefulWidget {
   const CatchFormChoiceField.single({
     super.key,
-    required CatchFormSingleChoiceRow<P, T> descriptor,
+    required CatchFormSingleChoiceRow<P, T> this.descriptor,
     required this.scope,
     required this.errorTextBuilder,
-  }) : descriptor = descriptor;
+  });
 
   const CatchFormChoiceField.multiple({
     super.key,
-    required CatchFormMultiChoiceRow<P, T> descriptor,
+    required CatchFormMultiChoiceRow<P, T> this.descriptor,
     required this.scope,
     required this.errorTextBuilder,
-  }) : descriptor = descriptor;
+  });
 
   final CatchFormChoiceRow<P, T> descriptor;
   final CatchFormRowScope<P> scope;
