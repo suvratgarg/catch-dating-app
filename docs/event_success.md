@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.100.0
+version: 1.101.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1319,6 +1319,27 @@ or correcting the canonical result changes that evidence. It never adds the
 guest to the checkpoint's accounted-for set or changes the arrival-report
 review hash. These facts prepare explicit closeout; they do not close a request,
 remove overdue work, send a message or create a second accountability record.
+
+The native accountability flow now reads the exact guest, group and optional
+recorded checkpoint scope through generated callable DTOs. Its closed availability
+model covers all nine server reasons and withholds writes when the visit cannot be
+resolved. A missing assistance episode remains explicit `null`; it does not prevent
+an authorized physical-visit decision. Returned, departed and unresolved retain
+the shared event-visit semantics. None of these results reports checkpoint arrival,
+checks a guest in, changes participation, closes a checkpoint or sends a message.
+
+`EventAssistanceAccountabilityController` owns one pending decision per guest and
+authenticated account across all group and checkpoint views. Refreshing the review,
+changing the viewed stop or closing/reopening the sheet cannot replace an uncertain
+command with a contradictory result. Retries retain the original operation ID,
+source hash, episode, group, departure revision and disposition. Fresh reviews and
+an explicit selection are required after a definitive rejection. Account changes
+retire reviews and pending decisions; old completions cannot restore them. Applied
+results must confirm the original scope, episode, next revision and disposition;
+replays preserve any later correction. The server remains responsible for verifying
+the exact physical check-in and source generations. Successful writes invalidate
+accountability and Host guest reviews. Native screen mounting, checkpoint arrival
+reporting and rehearsal integration remain separate work.
 
 ### Guest group membership and handovers
 
