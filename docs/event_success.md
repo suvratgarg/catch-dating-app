@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.95.0
+version: 1.96.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -587,8 +587,30 @@ operation revision with the current view. The existing dormant coordinator
 observes the handoff as `hostStopped` and closes its work without claiming a
 provider outcome. Host commands do not write Operations checkpoints directly.
 Provider lookup and verified retry actions are still unavailable and are not
-advertised in the returned actions. Native bindings, visible delivery review,
-rehearsal handling and deployment remain subsequent integration work.
+advertised in the returned actions.
+
+The native delivery repository uses the generated callable DTOs. Strict,
+SDK-free Dart models distinguish actionable, observed and source-changed rows;
+only an actionable row can construct a handoff. Sealed coordinator states keep
+queued, waiting for receipts, retrying, review and completed work separate from
+provider evidence. Contract-driven tests cover each canonical phase/reason and
+message purpose. Parsers reject leaked fields, foreign scope, contradictory
+summaries, impossible deadlines and invalid pagination. An applied handoff must
+retain the reviewed attempt evidence and belong to the authenticated actor;
+replays preserve later receipts, source changes and ownership without replacing
+their original operation revision.
+
+The account-scoped page provider hides old rows while loading, after sign-out
+and across authentication failures. A review is bound to its actual page row
+and uninterrupted sign-in period. The per-message controller requires that
+current review before a new action, deduplicates submissions and retains one
+immutable request through uncertain failures, sheet dismissal and page reload.
+A temporary strong auth subscription fences unseen account changes while the
+sheet's normal provider dependencies are paused. Definitive conflicts discard
+the request and require a fresh page. Success invalidates delivery pages and
+uses the returned current state, with no optimistic delivery or handoff.
+Visible Host delivery review, rehearsal handling, provider lookup/verified retry
+and deployment remain subsequent integration work.
 
 ### Saved assistance settings
 
