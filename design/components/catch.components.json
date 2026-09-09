@@ -2527,7 +2527,7 @@
               {
                 "name": "Optional Label",
                 "type": "TEXT",
-                "defaultValue": " · Optional",
+                "defaultValue": " \u00b7 Optional",
                 "sourceProps": [
                   "isOptional"
                 ]
@@ -2757,7 +2757,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
-            "notes": "Presentation and accessibility copy only; renders the inline ' · Optional' suffix and never controls whether a selection may be cleared."
+            "notes": "Presentation and accessibility copy only; renders the inline ' \u00b7 Optional' suffix and never controls whether a selection may be cleared."
           },
           {
             "name": "allowEmptySelection",
@@ -3916,7 +3916,7 @@
           "Press feedback begins on header pointer down; disclosure ownership transfers once on pointer up. The full-row disclosure drawer is a sibling below that header, so nested chips, steppers, and commit buttons cannot trigger header press tint and retain complete hit/focus geometry. Coordinated pressed and active layers use one contextual silhouette: standalone and divided fields paint a rounded tint plus outline, while contained rows paint rectangular internal bands beneath one section-owned group clip. CatchFieldGeometryScope separately publishes content-gutter ownership, interaction bleed, and interaction-shape ownership; divided rows retain their tile overlap, while contained edge rows overlap the section's consumed border inset by exactly one hairline so both primitives paint one shared left/right edge. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. A closed explicit-save input transfers native focus when its drawer reveal completes so keyboard viewport relayout cannot compete with disclosure motion; an editor built already open focuses immediately, and a direct input tap during reveal may still focus intentionally. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchMotion.base, and becomes instantaneous when reduced motion is enabled.",
           "CatchField.content always owns title/supporting-copy typography. Its default body emphasis preserves the React handoff's top-aligned leading/trailing slots; callers may opt into title emphasis when a combined content block and trailing action should center together.",
           "Choice chips compose CatchChip.selectable in a full-width wrapping group with an 8 px gap between allocated targets. Labels wrap naturally and compact visuals can sit within larger platform hit boxes. Explicit-save choices preserve staged selection until Done; a single choice without a save bar closes after 180 ms. Steppers center fieldRowTitle values between platform-sized repeat targets while preserving the 16 px visual circle-to-value gap. Toggle tracks remain 44 by 26 px inside platform-sized targets and stay visible but disabled while saving.",
-          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
+          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' \u00b7 '. An explicit body remains the compatibility override for custom formatting.",
           "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchChoiceTile target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",
@@ -9226,23 +9226,6 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
-            "id": "catch.screen_body.sliver_content_width",
-            "symbol": "CatchSliverContentWidth",
-            "summary": "Sliver-preserving responsive width adapter used by root screen bodies on viewports wider than their semantic content lane.",
-            "states": [
-              "direct-narrow",
-              "centered-wide"
-            ],
-            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_content_width.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
               "decisionRef": "contract-family:catch.screen_body"
             }
           },
@@ -17274,7 +17257,7 @@
       "name": "CatchViewport",
       "status": "active",
       "kind": "pattern",
-      "summary": "One local viewport owner with named size-class, explicit-width, sliver and bounded-scene recipes.",
+      "summary": "One local viewport owner with named size-class, explicit-width, sliver geometry, readable sliver lane and bounded-scene recipes.",
       "dart": {
         "symbol": "CatchViewport",
         "file": "packages/catch_ui/lib/src/patterns/catch_viewport.dart",
@@ -17282,7 +17265,8 @@
           "CatchViewport",
           "CatchViewport.atWidth",
           "CatchViewport.sliver",
-          "CatchViewport.scene"
+          "CatchViewport.scene",
+          "CatchViewport.sliverLane"
         ]
       },
       "design": {
@@ -17348,6 +17332,21 @@
             "required": true,
             "dartType": "CatchViewportSceneBuilder",
             "notes": "Required by scene; receives bounded width/height and inherited media padding."
+          },
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget",
+            "notes": "Required sliver content for sliverLane; stays direct below the width cap."
+          },
+          {
+            "name": "maxExtent",
+            "type": "number",
+            "required": false,
+            "dartType": "double",
+            "default": "CatchLayout.screenPageMaxExtent",
+            "notes": "Positive local cross-axis width cap for sliverLane; wide lanes are centered without gutters."
           }
         ],
         "states": [
@@ -17370,7 +17369,8 @@
           "mediumBuilder",
           "expandedBuilder",
           "sliverBuilder",
-          "builder"
+          "builder",
+          "child"
         ],
         "tokens": [],
         "dartRoles": [
@@ -17437,7 +17437,8 @@
           "atWidth selects below versus at-or-above a caller-owned threshold; feature ComponentBreakpoints stay in the app.",
           "sliver supplies its cross-axis extent and size class without reading global window metrics.",
           "scene caps width, takes bounded local height and preserves inherited media padding; only unbounded axes fall back to MediaQuery size.",
-          "Master/detail viewport owns two-pane composition, index width and a divider. This viewport instead measures local geometry for caller-owned content; it owns no product selection or navigation."
+          "Master/detail viewport owns two-pane composition, index width and a divider. This viewport instead measures local geometry for caller-owned content; it owns no product selection or navigation.",
+          "sliverLane applies the same local-width ownership to sliver content: direct at or below maxExtent, centered with equal flexible sides above it. The compact and width-capped states retain their existing meaning; page-body padding and scroll ownership remain with PageBody and its screen owner."
         ]
       },
       "governance": {

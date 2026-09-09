@@ -8806,10 +8806,10 @@ Widget catchRootScreenPageContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Readable sliver width',
-  type: CatchSliverContentWidth,
+  type: CatchViewport,
   path: '[Core primitives]/Navigation',
 )
-Widget catchSliverContentWidthContractStates(BuildContext context) {
+Widget catchViewportSliverLaneContractStates(BuildContext context) {
   return const _RootScreenContractUseCase();
 }
 

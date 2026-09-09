@@ -9230,23 +9230,6 @@
             }
           },
           {
-            "id": "catch.screen_body.sliver_content_width",
-            "symbol": "CatchSliverContentWidth",
-            "summary": "Sliver-preserving responsive width adapter used by root screen bodies on viewports wider than their semantic content lane.",
-            "states": [
-              "direct-narrow",
-              "centered-wide"
-            ],
-            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_content_width.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
             "id": "catch.screen_body.form_step_overview",
             "symbol": "CatchFormStepOverview",
             "file": "packages/catch_ui/lib/src/patterns/catch_form_step_overview.dart",
@@ -17274,7 +17257,7 @@
       "name": "CatchViewport",
       "status": "active",
       "kind": "pattern",
-      "summary": "One local viewport owner with named size-class, explicit-width, sliver and bounded-scene recipes.",
+      "summary": "One local viewport owner with named size-class, explicit-width, sliver geometry, readable sliver lane and bounded-scene recipes.",
       "dart": {
         "symbol": "CatchViewport",
         "file": "packages/catch_ui/lib/src/patterns/catch_viewport.dart",
@@ -17282,7 +17265,8 @@
           "CatchViewport",
           "CatchViewport.atWidth",
           "CatchViewport.sliver",
-          "CatchViewport.scene"
+          "CatchViewport.scene",
+          "CatchViewport.sliverLane"
         ]
       },
       "design": {
@@ -17348,6 +17332,21 @@
             "required": true,
             "dartType": "CatchViewportSceneBuilder",
             "notes": "Required by scene; receives bounded width/height and inherited media padding."
+          },
+          {
+            "name": "child",
+            "type": "widget",
+            "required": true,
+            "dartType": "Widget",
+            "notes": "Required sliver content for sliverLane; stays direct below the width cap."
+          },
+          {
+            "name": "maxExtent",
+            "type": "number",
+            "required": false,
+            "dartType": "double",
+            "default": "CatchLayout.screenPageMaxExtent",
+            "notes": "Positive local cross-axis width cap for sliverLane; wide lanes are centered without gutters."
           }
         ],
         "states": [
@@ -17370,7 +17369,8 @@
           "mediumBuilder",
           "expandedBuilder",
           "sliverBuilder",
-          "builder"
+          "builder",
+          "child"
         ],
         "tokens": [],
         "dartRoles": [
@@ -17437,7 +17437,8 @@
           "atWidth selects below versus at-or-above a caller-owned threshold; feature ComponentBreakpoints stay in the app.",
           "sliver supplies its cross-axis extent and size class without reading global window metrics.",
           "scene caps width, takes bounded local height and preserves inherited media padding; only unbounded axes fall back to MediaQuery size.",
-          "Master/detail viewport owns two-pane composition, index width and a divider. This viewport instead measures local geometry for caller-owned content; it owns no product selection or navigation."
+          "Master/detail viewport owns two-pane composition, index width and a divider. This viewport instead measures local geometry for caller-owned content; it owns no product selection or navigation.",
+          "sliverLane applies the same local-width ownership to sliver content: direct at or below maxExtent, centered with equal flexible sides above it. The compact and width-capped states retain their existing meaning; page-body padding and scroll ownership remain with PageBody and its screen owner."
         ]
       },
       "governance": {

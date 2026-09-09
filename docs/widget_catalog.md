@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.79.0
+version: 3.80.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -315,7 +315,6 @@ Widgetbook callers.
 | `CatchRootScreenPageSpec` | `packages/catch_ui/lib/src/patterns/catch_root_screen_page_spec.dart` | Typed scroll-page, surface or master-detail adapter around the canonical page owner. |
 | `CatchRootScreenPageOwner` | `packages/catch_ui/lib/src/patterns/catch_root_screen_page_owner.dart` | Interface identifying a canonical root-page scroll owner; feature delegates remain checked by resolved source identity. |
 | `CatchRootScreenPageScrollController` | `packages/catch_ui/lib/src/patterns/catch_root_screen_page_scroll_view.dart` | Captures and restores one mounted page offset; shares the page widget library so private attachment and lifetime remain unchanged. |
-| `CatchSliverContentWidth` | `packages/catch_ui/lib/src/patterns/catch_sliver_content_width.dart` | Centers a readable sliver lane on wide local viewports. |
 | `CatchMetaRow` | `packages/catch_ui/lib/src/components/catch_meta_row.dart:13` | Single icon and label metadata row with caller-provided text, semantic icon tint, optional label color, and bounded ellipsis. Use `CatchMetaRow.group` for multiple separated entries. |
 | `CatchDockSurface` | `packages/catch_ui/lib/src/components/catch_dock_surface.dart` | Persistent control docking. The default constructor hosts utility content; `primary` selects floating Cupertino or anchored Material chrome and renders the shared action body; `primaryContent` reuses that body inside caller-owned chrome. Safe areas, optional leading content, accents, catch line, footnote and action states remain owned by this contract. |
 | `CatchBottomActionOverlay` | `packages/catch_ui/lib/src/patterns/catch_bottom_action_overlay.dart` | Canonical dockless multi-action form overlay. Measures wrapped or stacked actions and optional metadata before sizing the usable form viewport. A tokenized fade reaches the page background above the controls so transparent buttons remain readable; form-step terminal insets keep the final field clear of the fade. Safe-area clearance is owned once, with no dock edge or divider. |
@@ -392,7 +391,7 @@ Widgetbook callers.
 | `CatchAvatar` | `packages/catch_ui/lib/src/components/catch_avatar.dart` | Canonical photo, initials and activity avatar with shared clipping, ring and typed online status. The `count` recipe formats caller-owned count copy; `veiled` renders caller-colored anonymous slots. Initials and counts fit the frame at large text instead of wrapping behind its clip. |
 | `CatchAvatarViewport` | `packages/catch_ui/lib/src/components/catch_avatar_viewport.dart` | Avatar clipping for circle and rounded-square variants. The `label` recipe fits complete initials/count copy inside the frame; `obscured` applies the existing blur, content scale and dark scrim within the same clipping boundary. |
 | `CatchAvatarRow` | `packages/catch_ui/lib/src/components/catch_avatar_row.dart` | Layout member of Avatar: overlapping photo or initials identities, caller-colored veiled slots, and caller-formatted overflow. The identity limit excludes the optional count slot; empty and count-only rows are supported. Use this for avatar collections instead of a second avatar painter. |
-| `CatchViewport` | `packages/catch_ui/lib/src/patterns/catch_viewport.dart` | Canonical local viewport owner. Default construction selects size-class builders with fallback; `.atWidth` uses a caller threshold; `.sliver` supplies cross-axis width and size class; `.scene` supplies capped width, bounded height and inherited safe-area padding, using media size only for unbounded axes. |
+| `CatchViewport` | `packages/catch_ui/lib/src/patterns/catch_viewport.dart` | Canonical local viewport owner. Default construction selects size-class builders with fallback; `.atWidth` uses a caller threshold; `.sliver` supplies cross-axis width and size class; `.sliverLane` preserves sliver layout while centering a positive readable-width cap; `.scene` supplies capped width, bounded height and inherited safe-area padding, using media size only for unbounded axes. |
 | `CatchViewportGeometry` | `packages/catch_ui/lib/src/patterns/catch_viewport_geometry.dart:4` | Immutable width and size-class descriptor delivered to the sliver builder. |
 | `CatchViewportSceneData` | `packages/catch_ui/lib/src/patterns/catch_viewport_scene_data.dart` | Immutable bounded scene dimensions and inherited safe-area padding supplied by `CatchViewport.scene`. |
 | `CatchButtonContentRow` | `packages/catch_ui/lib/src/components/catch_button_content_row.dart` | Direct label+icon row for `CatchButton`. Preserves the provided font size: command/CTA labels wrap naturally, while bounded selection labels use one line with ellipsis. Neither path shrinks text. |

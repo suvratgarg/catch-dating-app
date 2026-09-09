@@ -3,7 +3,7 @@ import 'package:catch_ui/src/components/catch_field_interaction_plane_scope.dart
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_variant.dart';
 import 'package:catch_ui/src/patterns/catch_scroll_view.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_content_width.dart';
+import 'package:catch_ui/src/patterns/catch_viewport.dart';
 import 'package:flutter/widgets.dart';
 
 /// Page insets and field paint geometry, with form, screen and sliver recipes.
@@ -157,9 +157,9 @@ class CatchPageBody extends StatelessWidget {
         );
       }
       if (slivers.constrainToContentWidth) {
-        body = CatchSliverContentWidth(
+        body = CatchViewport.sliverLane(
           maxExtent: slivers.maxContentExtent,
-          sliver: body,
+          child: body,
         );
       }
       return body;

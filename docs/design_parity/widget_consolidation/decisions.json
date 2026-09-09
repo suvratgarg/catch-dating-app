@@ -8122,6 +8122,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:local-viewport-sliver-lane",
+      "patternFamilyId": "local-viewport-sliver-lane",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchViewport",
+      "members": [
+        {
+          "name": "CatchViewport",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSliverContentWidth",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Readable sliver width is local viewport geometry, not a second page body. CatchViewport.sliverLane shares the sliver measurement path, passes compact content directly and retains the same equal flexible sides plus constrained center on wide layouts. PageBody still owns gutters; Host Sends retains its existing width token.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

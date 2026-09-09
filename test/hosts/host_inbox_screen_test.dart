@@ -20,6 +20,7 @@ import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -287,10 +288,20 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    final lane = tester.widget<CatchSliverContentWidth>(
-      find.byType(CatchSliverContentWidth),
+    final lane = find.byWidgetPredicate(
+      (widget) =>
+          widget is SliverConstrainedCrossAxis &&
+          widget.maxExtent == CatchLayout.hostMessagingSendsPageMaxExtent,
     );
-    expect(lane.maxExtent, CatchLayout.hostMessagingSendsPageMaxExtent);
+    expect(lane, findsOneWidget);
+    expect(
+      tester
+          .renderObject<RenderSliverConstrainedCrossAxis>(lane)
+          .child!
+          .constraints
+          .crossAxisExtent,
+      CatchLayout.hostMessagingSendsPageMaxExtent,
+    );
     expect(find.text('Outbound delivery and history.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });

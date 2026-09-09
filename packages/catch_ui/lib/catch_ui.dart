@@ -212,7 +212,6 @@ export 'src/patterns/catch_section_list_mode.dart';
 export 'src/patterns/catch_section_list_placement.dart';
 export 'src/patterns/catch_skeleton.dart';
 export 'src/patterns/catch_skeleton_variant.dart';
-export 'src/patterns/catch_sliver_content_width.dart';
 export 'src/patterns/catch_sliver_empty_state.dart';
 export 'src/patterns/catch_sliver_error_state.dart';
 export 'src/patterns/catch_sliver_header.dart';

@@ -23,7 +23,8 @@ class CatchViewport extends StatelessWidget {
          breakpoint: null,
        ),
        _sliverBuilder = null,
-       _scene = null;
+       _scene = null,
+       _sliverLane = null;
 
   const CatchViewport.atWidth({
     super.key,
@@ -37,14 +38,16 @@ class CatchViewport extends StatelessWidget {
          breakpoint: breakpoint,
        ),
        _sliverBuilder = null,
-       _scene = null;
+       _scene = null,
+       _sliverLane = null;
 
   const CatchViewport.sliver({
     super.key,
     required CatchViewportSliverBuilder sliverBuilder,
   }) : _selection = null,
        _sliverBuilder = sliverBuilder,
-       _scene = null;
+       _scene = null,
+       _sliverLane = null;
 
   const CatchViewport.scene({
     super.key,
@@ -52,7 +55,21 @@ class CatchViewport extends StatelessWidget {
     required CatchViewportSceneBuilder builder,
   }) : _selection = null,
        _sliverBuilder = null,
-       _scene = (maxWidth: maxWidth, builder: builder);
+       _scene = (maxWidth: maxWidth, builder: builder),
+       _sliverLane = null;
+
+  /// Centers a sliver in a readable lane without boxing or adding gutters.
+  const CatchViewport.sliverLane({
+    super.key,
+    required Widget child,
+    double maxExtent = CatchLayout.screenPageMaxExtent,
+  }) : assert(maxExtent > 0),
+       _selection = null,
+       _sliverBuilder = null,
+       _scene = null,
+       _sliverLane = (child: child, maxExtent: maxExtent);
+
+  final ({Widget child, double maxExtent})? _sliverLane;
 
   final ({
     WidgetBuilder compactBuilder,
@@ -67,11 +84,31 @@ class CatchViewport extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final sliverBuilder = _sliverBuilder;
-    if (sliverBuilder != null) {
+    final lane = _sliverLane;
+    if (sliverBuilder != null || lane != null) {
       return SliverLayoutBuilder(
         builder: (context, constraints) {
           final width = constraints.crossAxisExtent;
-          return sliverBuilder(
+          if (lane != null) {
+            if (width <= lane.maxExtent) return lane.child;
+            return SliverCrossAxisGroup(
+              slivers: [
+                const SliverCrossAxisExpanded(
+                  flex: 1,
+                  sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
+                ),
+                SliverConstrainedCrossAxis(
+                  maxExtent: lane.maxExtent,
+                  sliver: lane.child,
+                ),
+                const SliverCrossAxisExpanded(
+                  flex: 1,
+                  sliver: SliverToBoxAdapter(child: SizedBox.shrink()),
+                ),
+              ],
+            );
+          }
+          return sliverBuilder!(
             context,
             CatchViewportGeometry(
               width: width,

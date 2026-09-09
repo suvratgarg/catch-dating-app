@@ -3743,6 +3743,34 @@
           "rationale": "Rename the same inherited publisher into the Banner family; keep update notification and nested clearing semantics."
         }
       ]
+    },
+    {
+      "id": "local-viewport-sliver-lane",
+      "title": "Readable sliver lanes share the viewport owner",
+      "intent": "Readable sliver width is local viewport geometry, not a second page body. CatchViewport.sliverLane shares the sliver measurement path, passes compact content directly and retains the same equal flexible sides plus constrained center on wide layouts. PageBody still owns gutters; Host Sends retains its existing width token.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.viewport",
+      "qualityReference": "CatchViewport",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "No product visual change; retain compact and wide sliver geometry, page gutters and scroll behavior."
+      ],
+      "members": [
+        {
+          "symbol": "CatchViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns local width and bounded geometry through named box and sliver recipes."
+        },
+        {
+          "symbol": "CatchSliverContentWidth",
+          "disposition": "unify",
+          "target": "CatchViewport",
+          "preview": "not-applicable",
+          "rationale": "Readable sliver width is local viewport geometry, not a second page body. CatchViewport.sliverLane shares the sliver measurement path, passes compact content directly and retains the same equal flexible sides plus constrained center on wide layouts. PageBody still owns gutters; Host Sends retains its existing width token."
+        }
+      ]
     }
   ]
 }

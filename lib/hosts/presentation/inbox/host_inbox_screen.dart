@@ -156,9 +156,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
               onThreadSelected: (preview) =>
                   _openThread(preview, splitView: splitView),
             )
-          : CatchSliverContentWidth(
+          : CatchViewport.sliverLane(
               maxExtent: CatchLayout.hostMessagingSendsPageMaxExtent,
-              sliver: _HostCampaignWorkspaceSliver(
+              child: _HostCampaignWorkspaceSliver(
                 uidState: uidState,
                 uid: uid,
                 clubsState: clubsState,
