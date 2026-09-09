@@ -347,7 +347,10 @@ class AppShellSideNavigation extends StatelessWidget {
                       ),
                     ],
                     for (final item in items) ...[
-                      AppShellSideNavigationButton(
+                      CatchNavigationButton<int>.rail(
+                        key: ValueKey(
+                          'app_shell.navigation.destination.${item.id}',
+                        ),
                         item: item,
                         selected: item.id == active,
                         expanded: horizontalDestinations,
@@ -364,107 +367,6 @@ class AppShellSideNavigation extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-/// One selected, focusable, and badge-aware side-navigation destination.
-class AppShellSideNavigationButton extends StatelessWidget {
-  const AppShellSideNavigationButton({
-    super.key,
-    required this.item,
-    required this.selected,
-    required this.expanded,
-    required this.onTap,
-  });
-
-  final CatchTabBarItem<int> item;
-  final bool selected;
-  final bool expanded;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final color = selected ? t.ink : t.ink3;
-    final icon = CatchTabBarIcon(
-      icon: selected ? item.activeIcon ?? item.icon : item.icon,
-      color: color,
-      badgeCount: item.badgeCount,
-      child: selected
-          ? item.activeIconWidget ?? item.iconWidget
-          : item.iconWidget,
-    );
-    final label = Text(
-      item.label,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      textAlign: expanded ? TextAlign.start : TextAlign.center,
-      style: CatchTextStyles.buttonSm(context, color: color),
-    );
-    final content = expanded
-        ? Row(
-            children: [
-              icon,
-              const SizedBox(width: CatchSpacing.s3),
-              Expanded(child: label),
-            ],
-          )
-        : Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              icon,
-              const SizedBox(height: CatchSpacing.s1),
-              label,
-            ],
-          );
-    final button = Semantics(
-      key: ValueKey('app_shell.navigation.destination.${item.id}'),
-      container: true,
-      button: true,
-      selected: selected,
-      label: item.label,
-      value: item.semanticValue,
-      hint: item.semanticHint,
-      onLongPress: item.onLongPress,
-      child: ExcludeSemantics(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: expanded
-                ? CatchLayout.appShellSidebarItemMinHeight
-                : CatchLayout.appShellRailItemMinHeight,
-          ),
-          child: Material(
-            color: selected
-                ? t.ink.withValues(alpha: CatchOpacity.tabBarPillFill)
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(CatchRadius.md),
-            child: InkWell(
-              onTap: () {
-                catchSelectionHaptic();
-                onTap();
-              },
-              onLongPress: item.onLongPress,
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: expanded ? CatchSpacing.s3 : CatchSpacing.s1,
-                  vertical: CatchSpacing.s2,
-                ),
-                child: content,
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    return expanded
-        ? button
-        : Tooltip(
-            message: item.label,
-            excludeFromSemantics: true,
-            child: button,
-          );
   }
 }
 

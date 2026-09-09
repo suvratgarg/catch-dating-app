@@ -46,7 +46,16 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
               children: [
                 sideNavigation,
                 Expanded(
-                  child: CatchTabViewportScope(index: activeIndex, child: body),
+                  // A nested Navigator's modal barrier may discard preceding
+                  // semantics. Confine it to the page so it cannot hide the
+                  // persistent side-navigation sibling.
+                  child: Semantics(
+                    container: true,
+                    child: CatchTabViewportScope(
+                      index: activeIndex,
+                      child: body,
+                    ),
+                  ),
                 ),
               ],
             ),

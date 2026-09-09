@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "fc2bfabb3bae9dda120950c084669f974d40e78b7df9f2fc697f339cb76e76af",
+  "sourceDigest": "63189dc93df9c84cde5709fd1c72a0cdb71c70a319741d226ec263c20168fb9c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "fc2bfabb3bae9dda120950c084669f974d40e78b7df9f2fc697f339cb76e76af",
-    "contractDigest": "fc2bfabb3bae9dda120950c084669f974d40e78b7df9f2fc697f339cb76e76af"
+    "digest": "63189dc93df9c84cde5709fd1c72a0cdb71c70a319741d226ec263c20168fb9c",
+    "contractDigest": "63189dc93df9c84cde5709fd1c72a0cdb71c70a319741d226ec263c20168fb9c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "2a8685b81b892c1cf9e67d49e5814ab17aa808cbf307f3dfca71fcef4597fcd3",
+    "handoffRequestDigest": "52c912d3e4ac9e4d7e4432ce42e641cf6b8490646b4eac8924863d138c970266",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 76,
-    "publicClassCount": 255,
+    "publicClassCount": 254,
     "conceptCount": 68,
-    "memberCount": 169,
-    "membersPerConcept": 2.49,
+    "memberCount": 168,
+    "membersPerConcept": 2.47,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 68,
-      "member": 169,
+      "member": 168,
       "screen": 15
     },
     "collisionCount": 36,
@@ -438,9 +438,8 @@
       {
         "key": "catch.tab_bar",
         "symbols": [
+          "CatchNavigationButton",
           "CatchTabBar",
-          "CatchTabBarButton",
-          "CatchTabBarIcon",
           "CatchTabBarIndicator"
         ]
       },
@@ -577,7 +576,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Badge",
       "claudeAllowed": true,
-      "contractDigest": "6d8b8b14281eb88a6d6ae66e7f9d425030d9add16fb0e2bcebde0289185cef0d"
+      "contractDigest": "c561cc76d9fa5c3bbb2f4404ca106ea64ba480e276efcb3260831fb4728b9329"
     },
     {
       "contractId": "catch.ui_label",
@@ -2067,7 +2066,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TabDock",
       "claudeAllowed": true,
-      "contractDigest": "28586ec86521bdd3972321bdfd1314edb8172628b66e01f1f7583ca5dc2d6f3f"
+      "contractDigest": "240074cb50b40f4409a67db3845509cbaba26245835e89b82ca1435b6363548d"
     },
     {
       "contractId": "catch.bottom_dock",

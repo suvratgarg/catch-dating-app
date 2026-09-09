@@ -17,7 +17,8 @@ class CatchCountBadge extends StatelessWidget {
     required Widget this._child,
     this.alignment = Alignment.topRight,
     this.offset = const Offset(-2, 2),
-  }) : semanticsLabel = null;
+  }) : semanticsLabel = null,
+       _navigationIcon = null;
 
   const CatchCountBadge.label({
     super.key,
@@ -25,7 +26,23 @@ class CatchCountBadge extends StatelessWidget {
     this.semanticsLabel,
   }) : _child = null,
        alignment = Alignment.center,
-       offset = Offset.zero;
+       offset = Offset.zero,
+       _navigationIcon = null;
+
+  /// Icon-sized count overlay shared by bottom and side navigation.
+  const CatchCountBadge.navigationIcon({
+    super.key,
+    required IconData icon,
+    required Color color,
+    this.count = 0,
+    Widget? child,
+  }) : _navigationIcon = (icon: icon, color: color),
+       _child = child,
+       semanticsLabel = null,
+       alignment = Alignment.topRight,
+       offset = const Offset(-1, 2);
+
+  final ({IconData icon, Color color})? _navigationIcon;
 
   final int count;
   final String? semanticsLabel;
@@ -51,6 +68,25 @@ class CatchCountBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (_navigationIcon case final navigation?) {
+      return SizedBox(
+        width: CatchLayout.tabBarIconBoxExtent,
+        height: CatchLayout.tabBarIconBoxExtent,
+        child: CatchCountBadge(
+          count: count,
+          offset: offset,
+          child: Align(
+            child:
+                _child ??
+                Icon(
+                  navigation.icon,
+                  size: CatchLayout.tabBarIconSize,
+                  color: navigation.color,
+                ),
+          ),
+        ),
+      );
+    }
     final child = _child;
     if (count <= 0 && child != null) return child;
 

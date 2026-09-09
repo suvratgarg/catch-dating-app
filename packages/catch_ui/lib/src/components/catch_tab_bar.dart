@@ -2,7 +2,8 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_tab_bar_button.dart';
+import 'package:catch_ui/src/components/catch_navigation_button.dart';
+import 'package:catch_ui/src/components/catch_navigation_button_status.dart';
 import 'package:catch_ui/src/components/catch_tab_bar_indicator.dart';
 import 'package:catch_ui/src/components/catch_tab_bar_item.dart';
 import 'package:catch_ui/src/foundations/catch_adaptive_platform.dart';
@@ -178,18 +179,28 @@ class _CatchTabBarState<T> extends State<CatchTabBar<T>> {
                           top: 0,
                           width: geometry.itemRects[index].width,
                           height: CatchLayout.tabBarExtent,
-                          child: CatchTabBarButton<T>(
+                          child: CatchNavigationButton<T>.sharedIndicator(
                             key: ValueKey<Object>(
                               'catch_tab_bar.destination.${item.id}',
                             ),
                             item: item,
-                            selected: index == visualIndex,
-                            semanticSelected: index == activeIndex,
+                            status: switch ((
+                              index == activeIndex,
+                              index == visualIndex,
+                            )) {
+                              (true, true) =>
+                                CatchNavigationButtonStatus.selected,
+                              (false, true) =>
+                                CatchNavigationButtonStatus.preview,
+                              (true, false) =>
+                                CatchNavigationButtonStatus.retainedSelection,
+                              (false, false) =>
+                                CatchNavigationButtonStatus.unselected,
+                            },
                             showSelectedLabel:
                                 !compactDestinations &&
                                 index == activeIndex &&
                                 visualIndex == activeIndex,
-                            ownsIndicator: false,
                             onTap: !_enabled ? null : () => _handleTap(index),
                             onTapDown: !_enabled
                                 ? null

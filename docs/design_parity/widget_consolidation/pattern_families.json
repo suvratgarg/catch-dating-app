@@ -2470,6 +2470,62 @@
           "rationale": "Name the input target by the closed Button role; production direct-item composition remains forbidden by the existing seeded scanner."
         }
       ]
+    },
+    {
+      "id": "navigation-destination-button",
+      "title": "One destination button across navigation placements",
+      "intent": "Share navigation identity, badges and actions while retaining bottom and side layout contracts.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.tab_bar",
+      "qualityReference": "CatchNavigationButton",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve bottom pill, compact rail and expanded sidebar geometry, typography, selected glyphs and badge offsets.",
+        "Expose the side-navigation semantic tap action that was lost beneath ExcludeSemantics; pointer, keyboard, long-press and haptic behavior remain unchanged.",
+        "Keep side navigation in the emitted semantics tree by containing nested page modal barriers within their page; no geometry changes. Host shell tests assert real semantic nodes rather than widget properties."
+      ],
+      "members": [
+        {
+          "symbol": "CatchNavigationButton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Navigation is one destination-selection responsibility; named standalone, sharedIndicator and rail recipes express placement and indicator ownership."
+        },
+        {
+          "symbol": "CatchCountBadge",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "navigationIcon is only a sized glyph recipe over the canonical integer overlay; it owns no separate icon concept."
+        },
+        {
+          "symbol": "CatchTabBarIndicator",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Independent public anatomy paints the shared indicator while CatchTabBar owns its animated position and geometry."
+        },
+        {
+          "symbol": "CatchTabBarButton",
+          "disposition": "unify",
+          "target": "CatchNavigationButton",
+          "preview": "not-applicable",
+          "rationale": "Bottom navigation no longer claims a separate button responsibility; replace contradictory booleans with typed visual/committed status."
+        },
+        {
+          "symbol": "AppShellSideNavigationButton",
+          "disposition": "unify",
+          "target": "CatchNavigationButton",
+          "preview": "not-applicable",
+          "rationale": "Presentation-neutral side destination has no provider or route ownership; keep its compact and expanded renderers as the rail recipe."
+        },
+        {
+          "symbol": "CatchTabBarIcon",
+          "disposition": "unify",
+          "target": "CatchCountBadge",
+          "preview": "not-applicable",
+          "rationale": "Absorb the sized navigation glyph and existing count-overlay delegation into navigationIcon."
+        }
+      ]
     }
   ]
 }

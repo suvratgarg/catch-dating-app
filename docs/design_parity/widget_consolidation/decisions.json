@@ -7418,6 +7418,30 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:navigation-destination-button",
+      "patternFamilyId": "navigation-destination-button",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchNavigationButton",
+      "members": [
+        {
+          "name": "CatchTabBarButton",
+          "action": "absorb"
+        },
+        {
+          "name": "AppShellSideNavigationButton",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchTabBarIcon",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Owner-delegated semantic review combines presentation-neutral bottom and side destination buttons under one contract with named layout recipes, and absorbs their icon box into the existing count badge. Keep the parent-positioned indicator as public navigation anatomy. Repair missing rail semantic activation without changing paint.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

@@ -356,8 +356,35 @@ Widget catchCountBadgeContractStates(BuildContext context) {
       'standalone',
       'spoken-count',
       'tight-constraints',
+      'navigation-plain',
+      'navigation-badge',
+      'navigation-large-badge',
     ],
     children: [
+      _StateCard(
+        label: 'navigation icon badges',
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            CatchCountBadge.navigationIcon(
+              icon: Icons.explore_outlined,
+              color: CatchTokens.of(context).ink,
+            ),
+            const SizedBox(width: CatchSpacing.s4),
+            CatchCountBadge.navigationIcon(
+              icon: Icons.chat_bubble_outline,
+              color: CatchTokens.of(context).ink,
+              count: 7,
+            ),
+            const SizedBox(width: CatchSpacing.s4),
+            CatchCountBadge.navigationIcon(
+              icon: Icons.chat_bubble_outline,
+              color: CatchTokens.of(context).ink,
+              count: 104,
+            ),
+          ],
+        ),
+      ),
       _StateCard(
         label: 'spoken-count / localized unread semantics',
         child: _InlineWrap(
@@ -7799,12 +7826,12 @@ Widget catchTabDockContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchTabBarButton,
+  type: CatchNavigationButton,
   path: '[Core primitives]/Navigation',
 )
-Widget catchTabDockButtonContractStates(BuildContext context) {
+Widget catchNavigationButtonContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchTabBarButton',
+    title: 'CatchNavigationButton',
     contractId: 'catch.tab_bar.button',
     states: const [
       'selected',
@@ -7813,8 +7840,44 @@ Widget catchTabDockButtonContractStates(BuildContext context) {
       'pressed',
       'hovered',
       'focused',
+      'preview',
+      'retained-selection',
+      'rail-compact',
+      'rail-expanded',
     ],
     children: [
+      for (final status in [
+        CatchNavigationButtonStatus.preview,
+        CatchNavigationButtonStatus.retainedSelection,
+      ])
+        _StateCard(
+          label: status.name,
+          child: SizedBox(
+            width: WidgetbookPreviewLayout.compactItemWidth,
+            height: CatchLayout.tabBarExtent,
+            child: CatchNavigationButton<String>.sharedIndicator(
+              item: _contractTabBarItems[0],
+              status: status,
+              showSelectedLabel: false,
+              onTap: _noop,
+            ),
+          ),
+        ),
+      for (final expanded in [false, true])
+        _StateCard(
+          label: expanded ? 'rail-expanded' : 'rail-compact',
+          child: SizedBox(
+            width: expanded
+                ? WidgetbookPreviewLayout.fullWidthButtonWidth
+                : WidgetbookPreviewLayout.compactItemWidth,
+            child: CatchNavigationButton<String>.rail(
+              item: _contractTabBarItems[2],
+              selected: true,
+              expanded: expanded,
+              onTap: _noop,
+            ),
+          ),
+        ),
       _StateCard(
         label: 'button states',
         child: Row(
@@ -7822,7 +7885,7 @@ Widget catchTabDockButtonContractStates(BuildContext context) {
           children: [
             SizedBox(
               width: WidgetbookPreviewLayout.compactItemWidth,
-              child: CatchTabBarButton<String>(
+              child: CatchNavigationButton<String>(
                 item: _contractTabBarItems[0],
                 selected: true,
                 onTap: _noop,
@@ -7831,7 +7894,7 @@ Widget catchTabDockButtonContractStates(BuildContext context) {
             const SizedBox(width: CatchSpacing.s4),
             SizedBox(
               width: WidgetbookPreviewLayout.compactItemWidth,
-              child: CatchTabBarButton<String>(
+              child: CatchNavigationButton<String>(
                 item: _contractTabBarItems[1],
                 selected: false,
                 onTap: _noop,
@@ -7840,49 +7903,11 @@ Widget catchTabDockButtonContractStates(BuildContext context) {
             const SizedBox(width: CatchSpacing.s4),
             SizedBox(
               width: WidgetbookPreviewLayout.compactItemWidth,
-              child: CatchTabBarButton<String>(
+              child: CatchNavigationButton<String>(
                 item: _contractTabBarItems[2],
                 selected: true,
                 onTap: _noop,
               ),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchTabBarIcon,
-  path: '[Core primitives]/Navigation',
-)
-Widget catchTabDockIconContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return _ContractScreen(
-    title: 'CatchTabBarIcon',
-    contractId: 'catch.tab_bar.icon',
-    states: const ['plain', 'badge', 'large-badge'],
-    children: [
-      _StateCard(
-        label: 'icon badges',
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CatchTabBarIcon(icon: Icons.explore_outlined, color: t.ink),
-            const SizedBox(width: CatchSpacing.s4),
-            CatchTabBarIcon(
-              icon: Icons.chat_bubble_outline,
-              color: t.ink,
-              badgeCount: 7,
-            ),
-            const SizedBox(width: CatchSpacing.s4),
-            CatchTabBarIcon(
-              icon: Icons.chat_bubble_outline,
-              color: t.ink,
-              badgeCount: 104,
             ),
           ],
         ),

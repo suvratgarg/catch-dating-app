@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.20.0
+version: 1.21.0
 updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -440,6 +440,10 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   top bar through expanding `CatchTopBarSearch`, while a permanently visible
   `CatchSearchField.expanded` is reserved for a search-first browse toolbar.
   Feature-local pill groups do not substitute for peer-view tabs.
+  Destination buttons use `CatchNavigationButton`: bottom shared-indicator and
+  side-rail layouts are named recipes. Pointer previews never change committed
+  route semantics; rail buttons expose a screen-reader tap action. Icon counts
+  use `CatchCountBadge.navigationIcon` in both placements.
 - Pushed utility/list and identity chrome routes through
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
@@ -534,6 +538,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchFormRowList` sections. An existing surface may opt the complete section
   into on-blur commit while it awaits a reviewed product migration; individual
   row descriptors cannot mix policies or choose their own commit chrome.
+
 
 The API boundary is the first enforcement layer: duplicate placement variants
 are deleted rather than kept as aliases. Component contracts, Widgetbook

@@ -157,12 +157,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookComponent(
-        name: 'AppShellSideNavigationButton',
+        name: 'CatchNavigationButton',
         useCases: [
           _widgetbook.WidgetbookUseCase(
             name: 'Selected destination',
             builder: _widgetbook_workspace_shell_app_shell_use_cases
-                .appShellSideNavigationButtonState,
+                .appShellNavigationRailButtonState,
           ),
         ],
       ),
@@ -3381,6 +3381,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchNavigationButton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchNavigationButtonContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchPageIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3454,28 +3465,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchTabDockContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTabBarButton',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabDockButtonContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchTabBarIcon',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabDockIconContractStates,
               ),
             ],
           ),

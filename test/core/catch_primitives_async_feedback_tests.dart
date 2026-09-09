@@ -272,8 +272,9 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
       ),
     );
 
-    expect(find.byType(CatchTabBarButton<String>), findsNWidgets(2));
-    expect(find.byType(CatchTabBarIcon), findsNWidgets(2));
+    expect(find.byType(CatchNavigationButton<String>), findsNWidgets(2));
+    expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+    expect(find.byIcon(Icons.chat_bubble), findsOneWidget);
     expect(find.text('Home'), findsNothing);
     expect(find.text('Chats'), findsOneWidget);
     expect(find.text('99+'), findsOneWidget);

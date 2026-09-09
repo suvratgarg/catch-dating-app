@@ -131,14 +131,14 @@ Widget appShellSideNavigationState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Selected destination',
-  type: AppShellSideNavigationButton,
+  type: CatchNavigationButton,
   path: '[App shell]',
 )
-Widget appShellSideNavigationButtonState(BuildContext context) {
+Widget appShellNavigationRailButtonState(BuildContext context) {
   return _ShellCatalog(
-    title: 'AppShellSideNavigationButton',
-    contractId: 'component.app_shell.side_navigation_button',
-    child: AppShellSideNavigationButton(
+    title: 'CatchNavigationButton',
+    contractId: 'catch.tab_bar.button',
+    child: CatchNavigationButton<int>.rail(
       item: _hostNavigationPreviewItems.first,
       selected: true,
       expanded: true,

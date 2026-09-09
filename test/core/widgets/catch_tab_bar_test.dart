@@ -104,12 +104,14 @@ void main() {
       );
       expect(find.text('Events'), findsNothing);
       expect(
-        tester.widget<CatchTabBarButton<String>>(customers).semanticSelected,
+        tester
+            .widget<CatchNavigationButton<String>>(customers)
+            .semanticSelected,
         isFalse,
       );
       expect(
         tester
-            .widget<CatchTabBarButton<String>>(
+            .widget<CatchNavigationButton<String>>(
               find.byKey(
                 const ValueKey<Object>('catch_tab_bar.destination.events'),
               ),

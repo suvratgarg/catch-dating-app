@@ -304,7 +304,7 @@
           {
             "id": "catch.badge.count_badge",
             "symbol": "CatchCountBadge",
-            "summary": "Anchored or standalone integer marker with zero hiding, 99+ clamping and optional caller-resolved spoken copy. Forward the child constraints unchanged so adding a count cannot shrink its painted control or detach the marker.",
+            "summary": "Anchored or standalone integer marker with zero hiding, 99+ clamping and optional caller-resolved spoken copy. Forward the child constraints unchanged so adding a count cannot shrink its painted control or detach the marker. The navigationIcon recipe preserves the shared icon box, glyph sizing and badge clearance for bottom and side navigation.",
             "states": [
               "hidden",
               "count",
@@ -312,7 +312,10 @@
               "overflow-count",
               "standalone",
               "spoken-count",
-              "tight-constraints"
+              "tight-constraints",
+              "navigation-plain",
+              "navigation-badge",
+              "navigation-large-badge"
             ],
             "file": "packages/catch_ui/lib/src/components/catch_count_badge.dart",
             "governance": {
@@ -12243,20 +12246,33 @@
               "parentConceptId": "catch.tab_bar",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.tab_bar"
+            },
+            "level": "L3",
+            "roleNoun": "Indicator",
+            "naming": {
+              "useCase": "TabBar",
+              "comparedWith": [
+                "catch.tab_bar"
+              ],
+              "reason": "Paints the parent-positioned moving selection/contact indicator with a focus outline and reduced-motion timing. This is navigation anatomy; generic Surface owns no selection, movement or destination contract."
             }
           },
           {
             "id": "catch.tab_bar.button",
-            "symbol": "CatchTabBarButton",
-            "file": "packages/catch_ui/lib/src/components/catch_tab_bar_button.dart",
-            "summary": "Stable full-slot tab-bar button renderer with selected-label reveal, explicit contact/focus callbacks, and committed-selection semantics.",
+            "symbol": "CatchNavigationButton",
+            "file": "packages/catch_ui/lib/src/components/catch_navigation_button.dart",
+            "summary": "One destination button with standalone, sharedIndicator, and rail recipes. Typed preview status preserves committed route semantics; rail semantics expose activation explicitly.",
             "states": [
               "selected",
               "unselected",
               "badge",
               "pressed",
               "hovered",
-              "focused"
+              "focused",
+              "preview",
+              "retained-selection",
+              "rail-compact",
+              "rail-expanded"
             ],
             "governance": {
               "conceptRole": "member",
@@ -12264,24 +12280,16 @@
               "parentConceptId": "catch.tab_bar",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.tab_bar"
-            }
-          },
-          {
-            "id": "catch.tab_bar.icon",
-            "symbol": "CatchTabBarIcon",
-            "file": "packages/catch_ui/lib/src/components/catch_tab_bar_icon.dart",
-            "summary": "Vertically centered square tab-bar icon and count renderer with badge clearance.",
-            "states": [
-              "plain",
-              "badge",
-              "large-badge"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.tab_bar",
-              "parentConceptId": "catch.tab_bar",
-              "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.tab_bar"
+            },
+            "level": "L3",
+            "roleNoun": "Button",
+            "naming": {
+              "useCase": "Navigation",
+              "comparedWith": [
+                "catch.button",
+                "catch.tab_bar"
+              ],
+              "reason": "Selects a product navigation destination rather than executing a generic command. Bottom and side navigation share item binding, active glyphs, count badges and actions; their distinct geometry is expressed as named recipes, not competing components."
             }
           }
         ],
