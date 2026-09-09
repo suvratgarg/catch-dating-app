@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.101.0
+version: 1.102.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1143,6 +1143,29 @@ deadline/lease races, corrected reports, bounded source fanout, source failures
 and Firestore concurrency. The hooks and scheduler remain explicitly dormant.
 Staff notifications, Host controls and
 rehearsal adapters remain integration work; no provider effect is activated.
+
+The native checkpoint boundary now retains the exact group, saved stop and
+recorded departure revision. Its roster view keeps each original member, visit
+availability, arrival observation and independent event-visit disposition. Missing
+legacy disposition, assignment and closeout projections remain explicitly unknown;
+they do not become unresolved results or an absent request. Request deadlines,
+owner availability, reporter reassignment and closeout history have typed models
+with independent revisions. A closed request with explained departures remains a
+partial arrival report, and closeout eligibility does not grant manager authority.
+
+`EventAssistanceCheckpointController` owns one pending report per checkpoint and
+recorded departure. A report supplies the complete observation set; new observations
+must match the original visit, and removal of earlier observations requires a
+nonblank correction explanation. Previously observed members with changed visits
+remain visible and can be retained or corrected. Empty rosters become complete only
+after an explicit empty report. Uncertain retries retain the exact source hash,
+report and departure revisions, observation set, correction and operation ID across
+refresh and sheet closure. Account changes retire old state. Applied results must
+confirm the actor, report identity, timestamp and chosen observations; replays
+preserve newer corrections. Reads and writes use the generated callable DTOs.
+Native screen mounting, reporter reassignment and closeout commands, notifications
+and rehearsal adapters remain integration work. Reporting does not change physical
+attendance, group movement, membership, consent or event-visit accountability.
 
 ### Reviewed checkpoint closeout
 
