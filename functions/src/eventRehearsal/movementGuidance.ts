@@ -70,9 +70,17 @@ export function resolvePracticeGuidance(session: Session, actor: Actor,
       hash(d.target) === hash(record.departure.destination));
     if (!source.eventOpen || !source.runtimeLive || !destination ||
         record.departure.sourceHash !== source.sourceHash) return null;
+    // A configured entry rule can restrict a confirmed venue, never create
+    // movement or relax a restriction. Route/checkpoint targets stay exact.
+    const target = destination.target.kind === "fixedPlace" &&
+      destination.target.lateEntry === "allowed" &&
+      plan.policy.destination.kind === "fixedPlace" &&
+      plan.policy.destination.placeId === destination.target.placeId ?
+      {...destination.target, lateEntry: plan.policy.destination.lateEntry} :
+      destination.target;
     const guidance = {revision: record.progressRevision,
-      destination: destination.target,
-      materialKey: hash([source.sourceHash, destination.target]),
+      destination: target,
+      materialKey: hash([source.sourceHash, target]),
       text: destination.text, validUntil: source.endAt};
     return {plan: {...plan, departureConfirmed: true, guidance,
       ...(plan.laterChoices ? {laterChoices: plan.laterChoices.filter((c) =>

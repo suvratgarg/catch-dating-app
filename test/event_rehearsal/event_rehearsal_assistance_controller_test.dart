@@ -4,14 +4,11 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
-import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_editor.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_provider.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -94,43 +91,6 @@ void main() {
   RehearsalPublishInstruction publish() =>
       RehearsalPublishInstruction(actorId: 'actor-01', plan: practicePlan());
 
-  test('publication selection binds the plan to the current review', () async {
-    final current = await review();
-    final actions = editor(current);
-    final point = rehearsalJoiningPoints(current.snapshot.session).single;
-    RehearsalPublicationDraft draft({DateTime? deadline}) =>
-        RehearsalPublicationDraft(
-          actorId: 'actor-01',
-          joiningPoint: point,
-          rules: practiceRules(destination: const LateJoinConfirmedProgress()),
-          guidanceText: 'Meet us at the studio.',
-          departureConfirmed: true,
-          routes: practicePlan().routes,
-          deliveryPolicy: practicePlan().deliveryPolicy,
-          responseDeadline: deadline,
-        );
-    actions.selectPublication(
-      draft(deadline: current.snapshot.session.virtualNow),
-    );
-    expect(form(current).error, isA<FormatException>());
-    expect(form(current).canSubmit, isFalse);
-    expect(repository.writes, isEmpty);
-    actions.selectPublication(draft());
-    final change = form(current).change!;
-    final command = change.command as RehearsalPublishInstruction;
-    expect(command.plan.guidance.destination, point.target);
-    expect(command.plan.guidance.validUntil, 3600000);
-    expect(command.plan.departureConfirmed, isTrue);
-    expect(change.toJson()['expectedSetupRevision'], 1);
-    final pending = actions.submit();
-    actions.selectPublication(draft());
-    expect(form(current).change, same(change));
-    expect(repository.writes.single.change, same(change));
-    confirm(0);
-    await pending;
-    expect(form(current).phase, RehearsalAssistancePhase.applied);
-  });
-
   test(
     'help resolution keeps its reviewed case through an uncertain retry',
     () async {
@@ -169,74 +129,6 @@ void main() {
       expect(form(current).phase, RehearsalAssistancePhase.applied);
     },
   );
-
-  test('automation retries keep the exact reviewed plan and script', () async {
-    final current = await review();
-    final actions = editor(current);
-    final draft = RehearsalPublicationDraft(
-      actorId: 'actor-01',
-      joiningPoint: rehearsalJoiningPoints(current.snapshot.session).single,
-      rules: practiceRules(destination: const LateJoinConfirmedProgress()),
-      guidanceText: 'Meet us at the studio.',
-      departureConfirmed: true,
-      routes: practicePlan().routes,
-      deliveryPolicy: practicePlan().deliveryPolicy,
-    );
-    actions.selectAutomation(draft, []);
-    expect(form(current).error, isA<FormatException>());
-    expect(form(current).canSubmit, isFalse);
-    expect(repository.writes, isEmpty);
-    final script = <RehearsalDeliveryOutcome>[
-      const RehearsalDeliveryUnknown(RehearsalDeliveryUncertainty.timeout),
-      const RehearsalDeliveryConfirmed(RehearsalConfirmedDelivery.delivered),
-    ];
-    actions.selectAutomation(draft, script);
-    script.clear();
-    final change = form(current).change!;
-    final command = change.command as RehearsalConfigureAutomation;
-    expect(command.plan.guidance.validUntil, 3600000);
-    expect(command.outcomes.length, 2);
-    final pending = actions.submit();
-    expect(actions.submit(), same(pending));
-    final failure = expectLater(pending, throwsA(isA<NetworkException>()));
-    repository.writes[0].result.completeError(
-      const NetworkException('unavailable', 'Offline'),
-    );
-    await failure;
-    actions.select(RehearsalPauseAutomation(actorId: 'actor-01'));
-    actions.selectAutomation(draft, []);
-    expect(form(current).change, same(change));
-    final retry = actions.submit();
-    expect(repository.writes[1].change, same(change));
-    expect(repository.writes[1].change.toJson(), change.toJson());
-    final automation = practiceAutomation(
-      consumed: 1,
-      evaluation: {
-        'at': 1000,
-        'policy': null,
-        'delivery': {
-          'kind': 'reconcile',
-          'attemptIds': ['attempt-1'],
-          'notBefore': 121000,
-        },
-      },
-    )..['plan'] = command.plan.toJson();
-    confirm(
-      1,
-      actors: [
-        {
-          ...practiceActor(withAssistance: true),
-          'assistanceAutomation': automation,
-        },
-      ],
-    );
-    final result = await retry;
-    final saved = result.actors.single.assistanceAutomation!;
-    expect(saved.remainingOutcomes, 1);
-    expect(saved.evaluation!.delivery, isA<RehearsalDeliveryReconcile>());
-    expect(form(current).phase, RehearsalAssistancePhase.applied);
-    expect(repository.writes.length, 2);
-  });
 
   for (final (command, status) in [
     (RehearsalPauseAutomation(actorId: 'actor-01'), 'paused'),

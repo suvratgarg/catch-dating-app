@@ -6,13 +6,16 @@ import * as admin from "firebase-admin";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
 import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import {FakeFirestore} from "../operations/testFirestore";
-import {practiceSession, practicePlan} from "./assistanceTestFixtures";
+import {practiceSession, practicePlan, practiceDeparture} from
+  "./assistanceTestFixtures";
 import {buildRehearsalActors} from "./engine";
 import {applyPracticeHostCommand, applyPracticeAutomations,
   applyPracticeGuestReply} from "./assistanceTransactions";
 import {practiceMovementReview, preparePracticeMovementCommand} from
   "./movement";
 import {practiceMovementSource, Movement} from "./movementSource";
+import {resolvePracticeGuidance} from "./movementGuidance";
+import {operationContentHash as hash} from "../operations/durableActions";
 import {rehearsalMovements} from "./movementRecords";
 import {practiceMessageView, readPracticeMessage, PracticeMessage,
   rehearsalMessages} from "./assistanceRuntime";
@@ -262,4 +265,54 @@ test("Firestore departure retries publish once and later stops refresh guests",
       .where("sessionId", "==", id).get()).size, 4);
     assert.equal((await db.collection("eventAssistanceMessages")
       .where("intent.context.rehearsalId", "==", id).get()).empty, true);
+  });
+
+
+test("fixed entry rules restrict confirmed directions and preserve typed holds",
+  async () => {
+    for (const entry of ["allowed", "hostDecision", "closed"] as const) {
+      const id = "venue-policy-" + entry;
+      const session = practiceSession(1_000_000);
+      const fake = new FakeFirestore();
+      const db = fake as unknown as Firestore;
+      let actor = buildRehearsalActors(id, 2, 1, session.virtualNow)[0];
+      const authority = {organizer: organizer(), actorUid: "host-1"};
+      const base = practicePlan(session.virtualNow.toMillis());
+      const plan = {...base, policy: {...base.policy,
+        destination: {kind: "fixedPlace" as const, placeId: "meeting",
+          lateEntry: entry}}};
+      actor = await db.runTransaction((tx) => applyPracticeHostCommand(db, tx,
+        session, actor, {kind: "configureAutomation", actorId: actor.actorId,
+          plan, outcomes: [{kind: "delivered"}]}, authority));
+      assert.equal(actor.assistanceAutomation?.nextOutcomeIndex, 0);
+      assert.equal(resolvePracticeGuidance(session, actor, plan, new Map()),
+        null);
+      const {record, path} = practiceDeparture(session, id);
+      fake.write(path, {...record});
+      const departures = new Map([["event:whole", record]]);
+      const resolved = resolvePracticeGuidance(session, actor, plan,
+        departures)!;
+      assert.deepEqual(resolved.plan.guidance.destination,
+        plan.policy.destination);
+      assert.equal(resolved.plan.guidance.materialKey, hash([
+        record.departure.sourceHash, plan.policy.destination]));
+      assert.deepEqual(record.departure.destination,
+        {kind: "fixedPlace", placeId: "meeting", lateEntry: "allowed"});
+      [actor] = await db.runTransaction((tx) =>
+        applyPracticeAutomations(db, tx, session, [actor]));
+      const decision = actor.assistanceAutomation!.evaluation!.policy!;
+      assert.equal(decision.kind, entry === "allowed" ? "update" :
+        entry === "hostDecision" ? "hostDecision" : "expired");
+      if (decision.kind === "hostDecision") {
+        assert.equal(decision.reason, "entryDecision");
+      }
+      if (decision.kind === "expired") {
+        assert.equal(decision.reason, "lateEntryClosed");
+      }
+      assert.equal(actor.assistanceAutomation!.nextOutcomeIndex,
+        entry === "allowed" ? 1 : 0);
+      assert.equal(fake.entries().filter(([p]) =>
+        p.startsWith(rehearsalMessages + "/")).length,
+      entry === "allowed" ? 1 : 0);
+    }
   });

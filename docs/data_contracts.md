@@ -98,6 +98,20 @@ receipt checks. Configuration freezes the reviewed plan and script, including
 through an uncertain exact retry; no schema or live provider change is required
 for these native bindings.
 
+Native joining configuration consumes a current, account-bound movement review.
+It reuses the reviewed destination IDs and copy. Defaults permit the whole
+configured itinerary or pace-group checkpoint set; explicit policies can narrow
+that set and retain entry rules, response deadlines, message caps, cooldowns,
+route order and simulated outcomes. Configuration before a saved departure has
+an awaiting-departure preview and cannot publish directions. A confirmed target
+outside the policy is a distinct held preview. The legacy plan's configured
+copy and confirmation flag are never movement authority: the callable resolves
+actual saved progress. Fixed-place entry rules may restrict confirmed guidance
+without changing the recorded departure. Policy cutoff stays separate from the
+event-end guidance expiry. Selection and first submission require a current
+movement page; uncertain retries retain the selected command under the existing
+assistance editor lifecycle.
+
 `eventRehearsalCases` is a callable-only collection with correlated open and
 settled handling, reusing the live practical-request handling definitions.
 Case identity includes the rehearsal clock, synthetic actor and originating

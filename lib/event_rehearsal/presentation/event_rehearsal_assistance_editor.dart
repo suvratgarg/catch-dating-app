@@ -6,6 +6,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistan
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_provider.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -74,6 +75,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
   static final applyMutation = Mutation<EventRehearsalBootstrap>();
   Future<EventRehearsalBootstrap>? _inFlight;
   bool _revoked = false;
+  RehearsalMovementPage? _movementPage;
   void Function()? _releaseReview;
 
   @override
@@ -134,20 +136,46 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
 
   void select(RehearsalAssistanceCommand? command) => _select(() => command);
 
-  void selectPublication(RehearsalPublicationDraft draft) =>
-      _select(() => draft.prepare(review.snapshot));
+  void selectPublication(
+    RehearsalPublicationDraft draft,
+    RehearsalMovementPage movement,
+  ) => _select(() {
+    _requireMovement(draft, movement);
+    return draft.prepare(review.snapshot);
+  }, movement: movement);
 
   void selectAutomation(
     RehearsalPublicationDraft draft,
     List<RehearsalDeliveryOutcome> outcomes,
+    RehearsalMovementPage movement,
   ) => _select(() {
-    final publication = draft.prepare(review.snapshot);
-    return RehearsalConfigureAutomation(
-      actorId: publication.actorId,
-      plan: publication.plan,
-      outcomes: outcomes,
+    _requireMovement(draft, movement);
+    return draft.configure(review.snapshot, outcomes);
+  }, movement: movement);
+
+  void _requireMovement(
+    RehearsalPublicationDraft draft,
+    RehearsalMovementPage movement,
+  ) {
+    if (!identical(draft.movement, movement.snapshot)) {
+      throw rehearsalReviewExpired;
+    }
+    _requireMovementPage(movement);
+  }
+
+  void _requireMovementPage(RehearsalMovementPage movement) {
+    requireRehearsalReviewAccount(ref, movement.account);
+    final current = ref.read(
+      eventRehearsalMovementProvider(movement.snapshot.selection),
     );
-  });
+    if (!identical(movement.account, review.account) ||
+        !movement.isCurrent ||
+        current.isLoading ||
+        current.hasError ||
+        !identical(current.asData?.value, movement)) {
+      throw rehearsalReviewExpired;
+    }
+  }
 
   void selectHelpResolution(
     RehearsalOpenHelpCase request,
@@ -160,7 +188,10 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     ),
   );
 
-  void _select(RehearsalAssistanceCommand? Function() resolve) {
+  void _select(
+    RehearsalAssistanceCommand? Function() resolve, {
+    RehearsalMovementPage? movement,
+  }) {
     final form = _form;
     if (form == null || !form.canEdit) return;
     try {
@@ -188,9 +219,11 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
               command: command,
               clientActionId: _newActionId(),
             );
+      _movementPage = movement;
       state = RehearsalAssistanceForm._(review: review, change: change);
     } catch (error) {
       if (ref.mounted && !_revoked) {
+        _movementPage = null;
         state = RehearsalAssistanceForm._(
           review: review,
           error: error,
@@ -221,6 +254,10 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     }
     try {
       _requireCurrentReview();
+      if (form.phase == RehearsalAssistancePhase.choosing &&
+          _movementPage != null) {
+        _requireMovementPage(_movementPage!);
+      }
       final submitted = form._after(RehearsalAssistancePhase.submitting);
       // Retain uncertain intent across a dismissed review in this app session.
       _releaseReview ??= ref.keepAlive().close;
@@ -281,6 +318,14 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
         result: result,
       );
       _releasePendingReview();
+      if (_movementPage case final movement?) {
+        ref.invalidate(
+          eventRehearsalMovementForAccountProvider(
+            movement.snapshot.selection,
+            account: movement.account,
+          ),
+        );
+      }
       ref.invalidate(eventRehearsalProvider(review.snapshot.session.id));
       ref.invalidate(
         eventRehearsalAssistanceForAccountProvider(

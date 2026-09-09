@@ -5,163 +5,156 @@ import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
-import 'package:catch_dating_app/events/domain/event_itinerary.dart';
-import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
-/// A configured place for a Host to review. It is not a location report or a
-/// recommendation to intercept a moving group.
+/// A configured destination in an actual, generation-bound movement review.
+/// Selecting it chooses a policy scope; it cannot confirm a group's position.
 final class RehearsalJoiningPoint {
-  const RehearsalJoiningPoint._({
-    required this.sessionId,
-    required this.setupRevision,
-    required this.label,
-    required this.target,
-    this.groupLabel,
-  });
-  final String sessionId;
-  final int setupRevision;
-  final String label;
-  final String? groupLabel;
-  final AssistanceJoiningTarget target;
+  const RehearsalJoiningPoint._(this.review, this.destination);
+  final RehearsalMovementReview review;
+  final RehearsalMovementDestination destination;
+  String get label => destination.label;
+  String get text => destination.text;
+  AssistanceJoiningTarget get target => destination.target;
+  String get groupLabel =>
+      review.groups.singleWhere((g) => g.groupId == review.scope.groupId).label;
 }
 
 List<RehearsalJoiningPoint> rehearsalJoiningPoints(
-  EventRehearsalSession session,
-) {
-  final points = <RehearsalJoiningPoint>[];
-  void add(String label, AssistanceJoiningTarget target, [String? group]) {
-    points.add(
-      RehearsalJoiningPoint._(
-        sessionId: session.id,
-        setupRevision: session.setupRevision,
-        label: label,
-        target: target,
-        groupLabel: group,
-      ),
-    );
-  }
+  RehearsalMovementReview review,
+) => List.unmodifiable(
+  review.destinations.map((d) => RehearsalJoiningPoint._(review, d)),
+);
 
-  if (session.setup.locationName.trim().isNotEmpty) {
-    add(
-      session.setup.locationName,
-      const AssistanceFixedPlace(
-        placeId: 'venue',
-        lateEntry: AssistanceLateEntry.allowed,
-      ),
-    );
-  }
-  final movement = session.setup.movementSimulation;
-  if (movement == null) return List.unmodifiable(points);
-  // Timetable order is descriptive; it never confirms departure or position.
-  final stops =
-      movement.itinerary
-          .where(
-            (item) => {
-              EventItineraryKind.gather,
-              EventItineraryKind.stop,
-              EventItineraryKind.breakTime,
-              EventItineraryKind.finish,
-            }.contains(item.kind),
-          )
-          .toList()
-        ..sort((a, b) {
-          final order = a.offsetMinutes.compareTo(b.offsetMinutes);
-          return order != 0 ? order : a.id.compareTo(b.id);
-        });
-  if (stops.map((stop) => stop.id).toSet().length != stops.length) {
-    throw const FormatException(
-      'Practice joining points have duplicate identities.',
-    );
-  }
-  for (final stop in stops) {
-    add(
-      stop.title,
-      AssistanceItineraryStop(
-        itineraryId: 'practice-itinerary',
-        stopId: stop.id,
-      ),
-    );
-  }
-  final route = movement.routePlan;
-  if (route?.groupStrategy == RouteGroupStrategy.paceGroups) {
-    final groups = [...route!.paceGroups]
-      ..sort((a, b) {
-        final order = a.sortOrder.compareTo(b.sortOrder);
-        return order != 0 ? order : a.id.compareTo(b.id);
-      });
-    if (groups.map((group) => group.id).toSet().length != groups.length) {
-      throw const FormatException(
-        'Practice pace groups have duplicate identities.',
-      );
-    }
-    for (final group in groups) {
-      for (final stop in stops.where(
-        (item) => item.location != null || item.routeDistanceMeters != null,
-      )) {
-        add(
-          stop.title,
-          AssistanceGroupCheckpoint(
-            routeId: 'practice-route',
-            groupId: group.id,
-            checkpointId: stop.id,
-          ),
-          group.label,
-        );
-      }
-    }
-  }
-  return List.unmodifiable(points);
+/// A moving event defaults to its configured stops, a fixed event to its venue.
+/// Accepted group membership and the current departure remain separate facts.
+RehearsalJoiningPoint? rehearsalDefaultJoiningPoint(
+  RehearsalMovementReview review,
+) {
+  final points = rehearsalJoiningPoints(review);
+  final moving = points
+      .where((p) => p.target is! AssistanceFixedPlace)
+      .toList();
+  final choices = moving.isEmpty ? points : moving;
+  return choices
+          .where((p) => p.target == review.guidance?.destination)
+          .firstOrNull ??
+      choices.firstOrNull;
 }
 
-/// Host choices for one instruction. All authority and communication are
-/// synthetic. Guidance and departure are explicit; GPS and schedule never fill
-/// them in. The current review supplies actor scope, time and run generation.
+final class RehearsalLaterJoiningOption {
+  RehearsalLaterJoiningOption(this.point, {String? label})
+    : label = label ?? point.label {
+    // Hosts can supply a short button label without rewriting the destination.
+    AssistanceLaterJoiningChoice(label: this.label, target: point.target);
+  }
+  final RehearsalJoiningPoint point;
+  final String label;
+}
+
+sealed class RehearsalJoiningPreview {
+  const RehearsalJoiningPreview();
+}
+
+final class RehearsalJoiningAwaitingDeparture extends RehearsalJoiningPreview {
+  const RehearsalJoiningAwaitingDeparture._();
+}
+
+final class RehearsalJoiningOutsidePolicy extends RehearsalJoiningPreview {
+  const RehearsalJoiningOutsidePolicy._(this.currentDestination);
+  final RehearsalMovementDestination currentDestination;
+}
+
+final class RehearsalJoiningConfirmed extends RehearsalJoiningPreview {
+  const RehearsalJoiningConfirmed._(this.guidance);
+  final AssistanceJoiningGuidance guidance;
+  bool get entryPermitted => switch (guidance.destination) {
+    AssistanceFixedPlace(:final lateEntry) =>
+      lateEntry == AssistanceLateEntry.allowed,
+    AssistanceItineraryStop() || AssistanceGroupCheckpoint() => true,
+  };
+}
+
+/// Configurable recipe with source-derived destinations and copy. Waiting for a
+/// departure has no guidance preview and cannot be published as an instruction.
 final class RehearsalPublicationDraft {
   RehearsalPublicationDraft({
     required this.actorId,
     required this.joiningPoint,
     required this.rules,
-    required this.guidanceText,
-    required this.departureConfirmed,
     required List<AssistanceMessageRoute> routes,
     required this.deliveryPolicy,
     this.responseDeadline,
-    List<RehearsalJoiningPoint> laterPoints = const [],
+    List<RehearsalLaterJoiningOption> laterChoices = const [],
   }) : routes = List.unmodifiable(routes),
-       laterPoints = List.unmodifiable(laterPoints);
+       laterChoices = List.unmodifiable(laterChoices);
   final String actorId;
   final RehearsalJoiningPoint joiningPoint;
+  RehearsalMovementReview get movement => joiningPoint.review;
   final AssistanceLateJoinRules rules;
-  final String guidanceText;
-  final bool departureConfirmed;
   final List<AssistanceMessageRoute> routes;
   final AssistanceDeliveryPolicy deliveryPolicy;
   final DateTime? responseDeadline;
-  final List<RehearsalJoiningPoint> laterPoints;
+  final List<RehearsalLaterJoiningOption> laterChoices;
+
+  RehearsalJoiningPreview preview(EventRehearsalBootstrap snapshot) =>
+      _prepare(snapshot).preview;
 
   RehearsalPublishInstruction prepare(EventRehearsalBootstrap snapshot) {
+    final prepared = _prepare(snapshot);
+    if (prepared.preview case RehearsalJoiningConfirmed(
+      :final entryPermitted,
+    ) when entryPermitted) {
+      return RehearsalPublishInstruction(actorId: actorId, plan: prepared.plan);
+    }
+    throw const FormatException(
+      'Review confirmed movement and entry rules before publishing directions.',
+    );
+  }
+
+  RehearsalConfigureAutomation configure(
+    EventRehearsalBootstrap snapshot,
+    List<RehearsalDeliveryOutcome> outcomes,
+  ) => RehearsalConfigureAutomation(
+    actorId: actorId,
+    plan: _prepare(snapshot).plan,
+    outcomes: outcomes,
+  );
+
+  ({RehearsalAssistancePlan plan, RehearsalJoiningPreview preview}) _prepare(
+    EventRehearsalBootstrap snapshot,
+  ) {
     final session = snapshot.session;
-    final start = session.virtualStartedAt;
-    if (start == null ||
-        start.millisecondsSinceEpoch < 0 ||
-        session.setup.durationMinutes < 30 ||
-        session.setup.durationMinutes > 360 ||
-        session.virtualNow.isBefore(start) ||
-        ![
-          EventRehearsalStatus.running,
-          EventRehearsalStatus.paused,
-        ].contains(session.status)) {
+    if (rehearsalMovementScope(session, movement.scope.groupId) !=
+            movement.scope ||
+        session.runtimeRevision != movement.session.runtimeRevision ||
+        session.virtualNow != movement.session.virtualNow ||
+        session.status != movement.session.status ||
+        session.actionCount != movement.session.actionCount ||
+        !movement.eventOpen ||
+        !movement.runtimeLive ||
+        session.actionCount >= 500 ||
+        session.runtimeRevision >= 2147483647 ||
+        !snapshot.actors.any((a) => a.actorId == actorId)) {
       throw const FormatException(
-        'Load a started rehearsal with its virtual clock.',
+        'Load the current rehearsal and movement review.',
       );
     }
-    final now = session.virtualNow.millisecondsSinceEpoch;
-    final end =
-        start.millisecondsSinceEpoch + session.setup.durationMinutes * 60000;
+    final catalog = rehearsalJoiningPoints(movement);
+    for (final point in [joiningPoint, ...laterChoices.map((c) => c.point)]) {
+      if (!identical(point.review, movement) ||
+          !catalog.any((p) => p.destination == point.destination)) {
+        throw const FormatException(
+          'Choose destinations from this movement review.',
+        );
+      }
+    }
+    final now = movement.serverTime;
+    final end = movement.endAt;
     final cutoff = rules.cutoff;
     final until = cutoff is LateJoinAtTime ? min(end, cutoff.at) : end;
     final deadline = responseDeadline?.millisecondsSinceEpoch;
@@ -172,134 +165,160 @@ final class RehearsalPublicationDraft {
         'Review the remaining practice window and response deadline.',
       );
     }
-    if (!snapshot.actors.any((actor) => actor.actorId == actorId)) {
-      throw const FormatException('Choose a guest from this practice roster.');
-    }
-    final catalog = rehearsalJoiningPoints(session);
-    for (final point in [joiningPoint, ...laterPoints]) {
-      if (point.sessionId != session.id ||
-          point.setupRevision != session.setupRevision ||
-          !catalog.any(
-            (current) =>
-                current.target == point.target &&
-                current.label == point.label &&
-                current.groupLabel == point.groupLabel,
-          )) {
-        throw const FormatException(
-          'Review joining points from the current rehearsal setup.',
-        );
-      }
-    }
-    var target = joiningPoint.target;
-    final configured = rules.destination;
-    if (target is AssistanceFixedPlace && configured is LateJoinFixedPlace) {
-      target = AssistanceFixedPlace(
-        placeId: target.placeId,
-        lateEntry: AssistanceLateEntry.values.byName(configured.lateEntry.name),
-      );
-    }
-    final destinations = [target, ...laterPoints.map((point) => point.target)];
-    if (laterPoints.length > 17 ||
-        destinations.toSet().length != destinations.length) {
-      throw const FormatException('Choose distinct later joining points.');
-    }
-    final destination = configured is LateJoinConfirmedProgress
-        ? _resolveDestination(target, destinations)
-        : configured;
-    if (!destinations.every(destination.permits)) {
+    // A template scopes the whole configured itinerary/group, rather than just
+    // its first stop. An explicit policy retains the Host's narrower selection.
+    final policy = rules.destination is LateJoinConfirmedProgress
+        ? _destinationPolicy(joiningPoint.target, catalog)
+        : rules.destination;
+    final configured = catalog
+        .map((p) => _entryTarget(p.target, policy))
+        .toList();
+    if (!_policyMatchesCatalog(policy, configured) ||
+        !policy.permits(_entryTarget(joiningPoint.target, policy)) ||
+        laterChoices.length > 17 ||
+        laterChoices.map((c) => c.point.target).toSet().length !=
+            laterChoices.length ||
+        !laterChoices.every(
+          (c) => policy.permits(_entryTarget(c.point.target, policy)),
+        )) {
       throw const FormatException(
-        'The joining policy does not permit these points.',
+        'Review the permitted joining places and later choices.',
       );
     }
-    final resolvedRules = AssistanceLateJoinRules(
-      destination: destination,
+    final source = movement.guidance;
+    final target = _entryTarget(
+      source?.destination ?? joiningPoint.target,
+      policy,
+    );
+    final guide = AssistanceJoiningGuidance(
+      revision: source?.revision ?? movement.revision,
+      destination: target,
+      materialKey: _materialKey(movement.sourceHash, target),
+      text: source?.text ?? joiningPoint.text,
+      validUntil: end,
+    );
+    final RehearsalJoiningPreview preview;
+    if (source == null) {
+      preview = const RehearsalJoiningAwaitingDeparture._();
+    } else if (!policy.permits(target)) {
+      preview = RehearsalJoiningOutsidePolicy._(
+        movement.destinations.singleWhere(
+          (d) => d.target == source.destination,
+        ),
+      );
+    } else {
+      preview = RehearsalJoiningConfirmed._(guide);
+    }
+    final resolved = AssistanceLateJoinRules(
+      destination: policy,
       cutoff: cutoff,
       maxMessagesPerEpisode: rules.maxMessagesPerEpisode,
       minimumMinutesBetweenMessages: rules.minimumMinutesBetweenMessages,
       unanswered: rules.unanswered,
     );
-    final text = guidanceText.trim();
-    final materialHash = sha256Digest(
-      jsonEncode({
-        'target': target.toJson(),
-        'text': text,
-        'validUntil': until,
-      }),
-    );
-    final materialKey = 'practice:$materialHash';
-    return RehearsalPublishInstruction(
-      actorId: actorId,
+    return (
+      preview: preview,
       plan: RehearsalAssistancePlan(
-        rules: resolvedRules,
-        guidance: AssistanceJoiningGuidance(
-          revision: session.runtimeRevision + 1,
-          destination: target,
-          materialKey: materialKey,
-          text: text,
-          validUntil: until,
-        ),
-        departureConfirmed: departureConfirmed,
+        rules: resolved,
+        // The existing wire plan requires a configured copy/target even before
+        // departure. These fields are not movement authority; the backend replaces
+        // them from saved progress, and the waiting preview exposes no guidance.
+        guidance: guide,
+        departureConfirmed: source != null,
         responseDeadline: deadline,
         routes: routes,
         deliveryPolicy: deliveryPolicy,
-        laterChoices: laterPoints
+        laterChoices: laterChoices
             .map(
-              (point) => AssistanceLaterJoiningChoice(
-                label: point.label,
-                target: point.target,
+              (c) => AssistanceLaterJoiningChoice(
+                label: c.label,
+                target: _entryTarget(c.point.target, policy),
               ),
             )
-            .toList(growable: false),
+            .toList(),
       ),
     );
   }
 }
 
-LateJoinDestination _resolveDestination(
+AssistanceJoiningTarget _entryTarget(
   AssistanceJoiningTarget target,
-  List<AssistanceJoiningTarget> candidates,
+  LateJoinDestination policy,
 ) {
-  switch (target) {
-    case AssistanceFixedPlace(:final placeId, :final lateEntry):
-      return LateJoinFixedPlace(
-        placeId: placeId,
-        lateEntry: LateEntryRule.values.byName(lateEntry.name),
-      );
-    case AssistanceItineraryStop(:final itineraryId):
-      if (candidates.any(
-        (point) =>
-            point is! AssistanceItineraryStop ||
-            point.itineraryId != itineraryId,
-      )) {
-        throw const FormatException(
-          'Later stops must belong to the same itinerary.',
-        );
-      }
-      return LateJoinItinerary(
-        itineraryId: itineraryId,
-        permittedStopIds: candidates
-            .cast<AssistanceItineraryStop>()
-            .map((point) => point.stopId)
-            .toList(),
-      );
-    case AssistanceGroupCheckpoint(:final routeId, :final groupId):
-      if (candidates.any(
-        (point) =>
-            point is! AssistanceGroupCheckpoint ||
-            point.routeId != routeId ||
-            point.groupId != groupId,
-      )) {
-        throw const FormatException(
-          'Later checkpoints must belong to the same pace group.',
-        );
-      }
-      return LateJoinGroupCheckpoints(
-        routeId: routeId,
-        groupId: groupId,
-        permittedCheckpointIds: candidates
-            .cast<AssistanceGroupCheckpoint>()
-            .map((point) => point.checkpointId)
-            .toList(),
-      );
+  if (target is AssistanceFixedPlace &&
+      policy is LateJoinFixedPlace &&
+      target.placeId == policy.placeId &&
+      target.lateEntry == AssistanceLateEntry.allowed) {
+    return AssistanceFixedPlace(
+      placeId: target.placeId,
+      lateEntry: AssistanceLateEntry.values.byName(policy.lateEntry.name),
+    );
   }
+  return target;
 }
+
+String _materialKey(String sourceHash, AssistanceJoiningTarget target) {
+  final entries = target.toJson().entries.toList()
+    ..sort((a, b) => a.key.compareTo(b.key));
+  return sha256Digest(jsonEncode([sourceHash, Map.fromEntries(entries)]));
+}
+
+LateJoinDestination _destinationPolicy(
+  AssistanceJoiningTarget target,
+  List<RehearsalJoiningPoint> catalog,
+) => switch (target) {
+  AssistanceFixedPlace(:final placeId, :final lateEntry) => LateJoinFixedPlace(
+    placeId: placeId,
+    lateEntry: LateEntryRule.values.byName(lateEntry.name),
+  ),
+  AssistanceItineraryStop(:final itineraryId) => LateJoinItinerary(
+    itineraryId: itineraryId,
+    permittedStopIds: catalog
+        .map((p) => p.target)
+        .whereType<AssistanceItineraryStop>()
+        .where((p) => p.itineraryId == itineraryId)
+        .map((p) => p.stopId)
+        .toList(),
+  ),
+  AssistanceGroupCheckpoint(:final routeId, :final groupId) =>
+    LateJoinGroupCheckpoints(
+      routeId: routeId,
+      groupId: groupId,
+      permittedCheckpointIds: catalog
+          .map((p) => p.target)
+          .whereType<AssistanceGroupCheckpoint>()
+          .where((p) => p.routeId == routeId && p.groupId == groupId)
+          .map((p) => p.checkpointId)
+          .toList(),
+    ),
+};
+bool _policyMatchesCatalog(
+  LateJoinDestination policy,
+  List<AssistanceJoiningTarget> targets,
+) => switch (policy) {
+  LateJoinConfirmedProgress() => false,
+  LateJoinFixedPlace() => targets.any(policy.permits),
+  LateJoinItinerary(:final itineraryId, :final permittedStopIds) =>
+    permittedStopIds.every(
+      (id) => targets.any(
+        (t) =>
+            t is AssistanceItineraryStop &&
+            t.itineraryId == itineraryId &&
+            t.stopId == id,
+      ),
+    ),
+  LateJoinGroupCheckpoints(
+    :final routeId,
+    :final groupId,
+    :final permittedCheckpointIds,
+  ) =>
+    permittedCheckpointIds.every(
+      (id) => targets.any(
+        (t) =>
+            t is AssistanceGroupCheckpoint &&
+            t.routeId == routeId &&
+            t.groupId == groupId &&
+            t.checkpointId == id,
+      ),
+    ),
+};
