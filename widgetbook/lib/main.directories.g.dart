@@ -1394,16 +1394,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Media',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchDetailHeroBackdrop',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchDetailHeroBackdropCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchEventThumbnail',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1420,6 +1410,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchGradedImageCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchHeroImage',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchHeroImageCatalogStates,
               ),
             ],
           ),
@@ -3107,28 +3107,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchDetailHeroBackdrop',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchDetailHeroBackdropContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchDetailHeroFallback',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchDetailHeroFallbackContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchEventThumbnailActivityFallback',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3147,6 +3125,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchGradedImageContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchHeroImage',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchHeroImageContractStates,
               ),
             ],
           ),

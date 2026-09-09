@@ -437,7 +437,7 @@ class ClubHeroModule extends StatelessWidget {
                 clipBehavior: Clip.hardEdge,
                 child: SizedBox(
                   height: mediaHeight,
-                  child: CatchDetailHeroBackdrop(
+                  child: CatchHeroImage(
                     imageUrl: club.primaryClubPhotoUrl,
                     semanticLabel: context.l10n
                         .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(

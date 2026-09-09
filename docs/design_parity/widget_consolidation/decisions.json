@@ -7622,6 +7622,38 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:hero-image-and-fallback-recipes",
+      "patternFamilyId": "hero-image-and-fallback-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchHeroImage",
+      "members": [
+        {
+          "name": "CatchDetailHeroBackdrop",
+          "action": "rename"
+        },
+        {
+          "name": "CatchDetailHeroFallback",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchImageFallbackSurface",
+          "action": "keep"
+        },
+        {
+          "name": "CatchGradedImage",
+          "action": "keep"
+        },
+        {
+          "name": "CatchNetworkImage",
+          "action": "keep"
+        }
+      ],
+      "rationale": "The hero is an assembly over existing loading and grading operations. Its standalone no-photo renderer has no separate production caller or behavior and becomes the hero recipe of ImageFallbackSurface. Keep the neutral fallback recipe and source-loading contract. Repair the shared grade at its owner: equivalent per-stage color matrices retain opaque photo colors while preserving image alpha and preventing tint from painting neighboring content. The hero gallery distinguishes a real bundled photo from image failure.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

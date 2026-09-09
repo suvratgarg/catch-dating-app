@@ -2285,13 +2285,13 @@ Widget catchDistanceRingLabelCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchDetailHeroBackdrop,
+  type: CatchHeroImage,
   path: '[Core catalog]/Media',
 )
-Widget catchDetailHeroBackdropCatalogStates(BuildContext context) {
+Widget catchHeroImageCatalogStates(BuildContext context) {
   return const WidgetbookCatalogFrame(
-    title: 'CatchDetailHeroBackdrop',
-    catalogId: 'core.widgets.catch_detail_hero_backdrop',
+    title: 'CatchHeroImage',
+    catalogId: 'catch.detail_media',
     children: [
       _StateCard(
         label: 'fallback / no scrim',
@@ -2303,7 +2303,7 @@ Widget catchDetailHeroBackdropCatalogStates(BuildContext context) {
               height: WidgetbookPreviewLayout.compactCardHeight,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(CatchRadius.md)),
-                child: CatchDetailHeroBackdrop(),
+                child: CatchHeroImage(),
               ),
             ),
             SizedBox(
@@ -2311,7 +2311,7 @@ Widget catchDetailHeroBackdropCatalogStates(BuildContext context) {
               height: WidgetbookPreviewLayout.compactCardHeight,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(CatchRadius.md)),
-                child: CatchDetailHeroBackdrop(showScrim: false),
+                child: CatchHeroImage(showScrim: false),
               ),
             ),
           ],

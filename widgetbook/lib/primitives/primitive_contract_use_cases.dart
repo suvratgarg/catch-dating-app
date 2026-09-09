@@ -6646,7 +6646,7 @@ Widget catchNetworkImageFallbackContractStates(BuildContext context) {
   return _ContractScreen(
     title: 'CatchImageFallbackSurface',
     contractId: 'catch.network_image.fallback',
-    states: const ['default', 'custom-icon', 'custom-color'],
+    states: const ['default', 'custom-icon', 'custom-color', 'hero'],
     children: [
       const _StateCard(
         label: 'default',
@@ -6672,6 +6672,14 @@ Widget catchNetworkImageFallbackContractStates(BuildContext context) {
             backgroundColor: t.primarySoft,
             iconColor: t.primary,
           ),
+        ),
+      ),
+      const _StateCard(
+        label: 'hero',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.mediaPanelWidth,
+          height: WidgetbookPreviewLayout.mediaPanelHeight,
+          child: CatchImageFallbackSurface.hero(),
         ),
       ),
     ],
@@ -8802,22 +8810,33 @@ Widget catchGradedImageContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchDetailHeroBackdrop,
+  type: CatchHeroImage,
   path: '[Core primitives]/Media',
 )
-Widget catchDetailHeroBackdropContractStates(BuildContext context) {
+Widget catchHeroImageContractStates(BuildContext context) {
   return const _ContractScreen(
-    title: 'CatchDetailHeroBackdrop',
+    title: 'CatchHeroImage',
     contractId: 'catch.detail_media',
-    states: ['photo', 'fallback-gradient', 'scrim', 'no-scrim'],
+    states: ['photo', 'image-error', 'fallback-gradient', 'scrim', 'no-scrim'],
     children: [
       _StateCard(
         label: 'photo',
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediaPanelWidth,
           height: WidgetbookPreviewLayout.mediaPanelHeight,
-          child: CatchDetailHeroBackdrop(
-            imageUrl: 'https://example.invalid/catch-detail-photo.jpg',
+          child: CatchHeroImage(
+            imageUrl: 'assets/fixtures/club_hero_portrait.jpg',
+            semanticLabel: 'Event photo',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'image-error',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.mediaPanelWidth,
+          height: WidgetbookPreviewLayout.mediaPanelHeight,
+          child: CatchHeroImage(
+            imageUrl: 'assets/fixtures/missing-hero-photo.jpg',
             semanticLabel: 'Event photo',
           ),
         ),
@@ -8827,7 +8846,7 @@ Widget catchDetailHeroBackdropContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediaPanelWidth,
           height: WidgetbookPreviewLayout.mediaPanelHeight,
-          child: CatchDetailHeroBackdrop(),
+          child: CatchHeroImage(),
         ),
       ),
       _StateCard(
@@ -8835,7 +8854,7 @@ Widget catchDetailHeroBackdropContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediaPanelWidth,
           height: WidgetbookPreviewLayout.mediaPanelHeight,
-          child: CatchDetailHeroBackdrop(showScrim: true),
+          child: CatchHeroImage(showScrim: true),
         ),
       ),
       _StateCard(
@@ -8843,30 +8862,7 @@ Widget catchDetailHeroBackdropContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.mediaPanelWidth,
           height: WidgetbookPreviewLayout.mediaPanelHeight,
-          child: CatchDetailHeroBackdrop(showScrim: false),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchDetailHeroFallback,
-  path: '[Core primitives]/Media',
-)
-Widget catchDetailHeroFallbackContractStates(BuildContext context) {
-  return const _ContractScreen(
-    title: 'CatchDetailHeroFallback',
-    contractId: 'catch.detail_media.fallback',
-    states: ['gradient'],
-    children: [
-      _StateCard(
-        label: 'gradient',
-        child: SizedBox(
-          width: WidgetbookPreviewLayout.mediaPanelWidth,
-          height: WidgetbookPreviewLayout.mediaPanelHeight,
-          child: CatchDetailHeroFallback(),
+          child: CatchHeroImage(showScrim: false),
         ),
       ),
     ],

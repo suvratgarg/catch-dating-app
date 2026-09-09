@@ -1,7 +1,7 @@
 ---
 doc_id: ui_elevation_implementation
-version: 2.2.3
-updated: 2026-08-06
+version: 2.2.4
+updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # mechanical execution checklist for implementing agents
 ---
@@ -222,7 +222,7 @@ List<double> _saturationMatrix(double s) {
 then a `Positioned.fill(IgnorePointer(DecoratedBox(BoxDecoration(color: CatchGrade.warmth,
 backgroundBlendMode: BlendMode.multiply))))` ]. Expose an `enabled` flag (default true).
 **Apply at** the photo branches of: `lib/core/widgets/catch_event_thumbnail.dart`,
-`packages/catch_ui/lib/src/components/catch_detail_hero_backdrop.dart`, club cover image (`club_list_tile_parts/club_image.dart`),
+`packages/catch_ui/lib/src/components/catch_hero_image.dart`, club cover image (`club_list_tile_parts/club_image.dart`),
 profile photos (`lib/swipes/presentation/widgets/card_photo_section.dart`). Keep originals untouched.
 **DoD:** every displayed user photo shares one grade; a mixed feed reads as one family.
 

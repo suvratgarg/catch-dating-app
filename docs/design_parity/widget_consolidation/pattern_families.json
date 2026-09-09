@@ -2868,6 +2868,61 @@
           "rationale": "Full-body stacking, fade and pinned action clearance are a separate pattern, with the standard meta slot for contextual notices."
         }
       ]
+    },
+    {
+      "id": "hero-image-and-fallback-recipes",
+      "title": "Hero image and missing-image surface recipes",
+      "intent": "Keep image loading, photo grading and hero assembly distinct; fold the standalone branded hero fallback into the existing missing-image surface.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.detail_media",
+      "qualityReference": "CatchHeroImage",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve production image loading, grading, semantic labels, missing-image gradients and optional readability scrims. The neutral image-fallback surface retains its existing fill, icon and geometry.",
+        "Gallery names follow the reviewed roles. Consolidate the standalone fallback page into the existing surface recipes, add a real bundled photo specimen and retain image-error coverage separately.",
+        "Correct the existing shared grade alpha defect: preserve transparent and translucent image pixels and stop tint from painting over the surrounding page. Retain the same per-stage opaque photo color transforms and token calibration."
+      ],
+      "members": [
+        {
+          "symbol": "CatchHeroImage",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Assembles a graded image or branded missing-image surface with optional hero readability treatment; it delegates loading and grading to their existing owners."
+        },
+        {
+          "symbol": "CatchDetailHeroBackdrop",
+          "disposition": "unify",
+          "target": "CatchHeroImage",
+          "preview": "not-applicable",
+          "rationale": "Name the public image assembly by its Image role instead of an unregistered backdrop role."
+        },
+        {
+          "symbol": "CatchImageFallbackSurface",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Missing-image paint has neutral-glyph and branded hero recipes; neither performs image loading."
+        },
+        {
+          "symbol": "CatchDetailHeroFallback",
+          "disposition": "unify",
+          "target": "CatchImageFallbackSurface.hero",
+          "preview": "not-applicable",
+          "rationale": "A decorative no-photo variant with no independent production caller or behavior; preserve its exact gradient as a named recipe."
+        },
+        {
+          "symbol": "CatchNetworkImage",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Existing source-loading and decode/cache owner; hero assembly delegates this operation unchanged."
+        },
+        {
+          "symbol": "CatchGradedImage",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Existing non-destructive photo treatment owner; repair alpha preservation here for every caller while retaining opaque photo colors."
+        }
+      ]
     }
   ]
 }

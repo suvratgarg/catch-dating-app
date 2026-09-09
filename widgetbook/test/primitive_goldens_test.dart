@@ -101,7 +101,7 @@ void main() {
     expect(registered, greaterThan(0));
     expect(renderer.visited.length, registered);
     expect(renderer.visited.toSet().length, registered);
-    expect(coreGoldenIds, hasLength(303));
+    expect(coreGoldenIds, hasLength(302));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),
@@ -244,6 +244,10 @@ class _CatchGoldenRenderer implements WidgetbookGoldenRenderer {
             'widgetbook/$stem${scale == 1 ? '' : '@2.0'}',
             size: Size(440, preservesReference ? 1000 : 1400),
             textScale: scale,
+            precache:
+                id == 'Core primitives/Media/CatchHeroImage/Contract states'
+                ? const [AssetImage('assets/fixtures/club_hero_portrait.jpg')]
+                : const [],
             fitContentKey: preservesReference
                 ? null
                 : widgetbookCatalogContentKey,

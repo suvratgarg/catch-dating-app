@@ -10,12 +10,11 @@ import '../../test_pump_helpers.dart';
 const _catchGoldenRootKey = ValueKey<String>('catch-golden-root');
 const _maximumGoldenPageHeight = 3000.0;
 
-/// Decode an image fixture into the cache (no BuildContext needed). Done inside
-/// `runAsync` BEFORE the guarded pump loop so photo goldens paint without
-/// calling runAsync inside `runZonedGuarded` (which throws).
-Future<void> _warmImage(ImageProvider<Object> provider) {
+/// Decode a fixture before pumping. Asset image cache keys include the bundle,
+/// so preload through the same bundle used by both themed frames.
+Future<void> _warmImage(ImageProvider<Object> provider, AssetBundle bundle) {
   final completer = Completer<void>();
-  final stream = provider.resolve(ImageConfiguration.empty);
+  final stream = provider.resolve(ImageConfiguration(bundle: bundle));
   late final ImageStreamListener listener;
   void done() {
     stream.removeListener(listener);
@@ -24,7 +23,10 @@ Future<void> _warmImage(ImageProvider<Object> provider) {
 
   listener = ImageStreamListener(
     (image, sync) => done(),
-    onError: (error, stack) => done(),
+    onError: (error, stack) {
+      stream.removeListener(listener);
+      if (!completer.isCompleted) completer.completeError(error, stack);
+    },
   );
   stream.addListener(listener);
   return completer.future;
@@ -52,18 +54,21 @@ Future<void> matchCatchGolden(
   tester.view.physicalSize = size;
   addTearDown(tester.view.resetDevicePixelRatio);
   addTearDown(tester.view.resetPhysicalSize);
+  final assetBundle = _GoldenAssetBundle();
 
   if (precache.isNotEmpty) {
     await tester.runAsync(() async {
       for (final provider in precache) {
-        await _warmImage(provider);
+        await _warmImage(provider, assetBundle);
       }
     });
   }
 
   for (final brightness in Brightness.values) {
     tester.view.physicalSize = size;
-    await tester.pumpWidget(_frame(brightness, textScale, builder));
+    await tester.pumpWidget(
+      _frame(brightness, textScale, builder, assetBundle),
+    );
     await pumpFeatureUi(tester);
     if (fitContentKey != null || fitFirstScrollable) {
       final content = fitContentKey == null ? null : find.byKey(fitContentKey);
@@ -140,12 +145,17 @@ double _scrollableContentBottom(WidgetTester tester, Finder scrollable) {
       position.maxScrollExtent;
 }
 
-Widget _frame(Brightness brightness, double textScale, WidgetBuilder builder) {
+Widget _frame(
+  Brightness brightness,
+  double textScale,
+  WidgetBuilder builder,
+  AssetBundle assetBundle,
+) {
   return DefaultAssetBundle(
     // Paused implicit animations cannot transition inherited Material text
     // between themes. A fresh app tree also isolates route and control state.
     key: ValueKey(brightness),
-    bundle: _GoldenAssetBundle(),
+    bundle: assetBundle,
     child: MaterialApp(
       key: _catchGoldenRootKey,
       debugShowCheckedModeBanner: false,

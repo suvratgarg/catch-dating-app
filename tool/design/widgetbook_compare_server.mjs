@@ -1112,7 +1112,7 @@ function buildCandidates() {
       "CatchEventCard",
       "CatchEventThumbnail",
       "CatchGradedImage",
-      "CatchDetailHeroBackdrop",
+      "CatchHeroImage",
       "CatchActivityMapPin",
     ],
     priority: "P0",
@@ -1480,7 +1480,7 @@ function buildCandidates() {
       names: [
         "ClubHeroAppBar",
         "EventDetailHeroAppBar",
-        "CatchDetailHeroBackdrop",
+        "CatchHeroImage",
         "CatchHeroViewport",
       ],
     },

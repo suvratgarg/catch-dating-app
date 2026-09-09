@@ -128,7 +128,7 @@ class ClubShareArtwork extends StatelessWidget {
   Widget build(BuildContext context) {
     final photoUrl = club.primaryClubPhotoUrl;
     if (photoUrl != null && photoUrl.trim().isNotEmpty) {
-      return CatchDetailHeroBackdrop(
+      return CatchHeroImage(
         imageUrl: photoUrl,
         semanticLabel: context.l10n
             .clubsClubShareCardSemanticlabelNameCoverPhoto(name: club.name),

@@ -130,13 +130,13 @@ class CatchGradedImage extends StatelessWidget {
     final warmHighlight = _screenTintColor(grade.warmHighlight);
 
     // Desaturate + matte, then warm the shadows (multiply) and highlights
-    // (screen). ColorFilter.mode does not behave like a low-alpha CSS overlay,
-    // so tint strength is baked into the blend color by lerping from each
-    // blend mode's no-op color.
+    // (screen). Preserve the input alpha in every stage. Opaque blend-mode
+    // filters also turn transparent pixels into the tint, painting outside the
+    // image and over neighboring content when the layer is not clipped.
     Widget graded = ColorFiltered(
-      colorFilter: ColorFilter.mode(warmHighlight, BlendMode.screen),
+      colorFilter: ColorFilter.matrix(_warmMatrix(warmHighlight, screen: true)),
       child: ColorFiltered(
-        colorFilter: ColorFilter.mode(warmShadow, BlendMode.multiply),
+        colorFilter: ColorFilter.matrix(_warmMatrix(warmShadow, screen: false)),
         child: ColorFiltered(
           colorFilter: ColorFilter.matrix(grade.toMatrix()),
           child: child,
@@ -169,6 +169,37 @@ class CatchGradedImage extends StatelessWidget {
     final strength = color.a.clamp(0.0, 1.0).toDouble();
     // color-sweep:allow: theme-independent art blend endpoint is absolute black.
     return Color.lerp(Colors.black, color.withValues(alpha: 1), strength)!;
+  }
+
+  static List<double> _warmMatrix(Color color, {required bool screen}) {
+    // Match ColorFilter.mode's 8-bit tint conversion and retain each stage's
+    // clamping, so opaque photo colors keep their existing treatment.
+    final argb = color.toARGB32();
+    final red = ((argb >> 16) & 0xff) / 255;
+    final green = ((argb >> 8) & 0xff) / 255;
+    final blue = (argb & 0xff) / 255;
+    return [
+      screen ? 1 - red : red,
+      0,
+      0,
+      0,
+      screen ? red * 255 : 0,
+      0,
+      screen ? 1 - green : green,
+      0,
+      0,
+      screen ? green * 255 : 0,
+      0,
+      0,
+      screen ? 1 - blue : blue,
+      0,
+      screen ? blue * 255 : 0,
+      0,
+      0,
+      0,
+      1,
+      0,
+    ];
   }
 }
 

@@ -10694,7 +10694,10 @@
         "slots": [],
         "tokens": [
           "theme.light.color.surface",
-          "theme.light.color.ink3"
+          "theme.light.color.ink3",
+          "theme.light.color.accent",
+          "theme.light.color.ink",
+          "theme.light.color.primary"
         ],
         "dartRoles": [
           "Image.network",
@@ -10709,11 +10712,12 @@
             "id": "catch.network_image.fallback",
             "symbol": "CatchImageFallbackSurface",
             "file": "packages/catch_ui/lib/src/primitives/catch_image_fallback_surface.dart",
-            "summary": "Direct branded image fallback renderer used by network and asset image loading failures.",
+            "summary": "Missing-image paint with neutral-glyph and branded hero recipes; source loading and errors stay with the image owner.",
             "states": [
               "default",
               "custom-icon",
-              "custom-color"
+              "custom-color",
+              "hero"
             ],
             "governance": {
               "conceptRole": "member",
@@ -10729,7 +10733,7 @@
               "comparedWith": [
                 "catch.network_image"
               ],
-              "reason": "Owns only the placeholder fill and glyph when no usable image exists. The parent Image owns network/asset loading, cache sizing and failure detection."
+              "reason": "Owns placeholder paint when no usable image exists: the default recipe renders a neutral fill and glyph, while hero renders the existing branded gradient. The parent Image owns loading, cache sizing and failure detection."
             }
           }
         ],
@@ -10751,7 +10755,8 @@
         "allowedChildren": [],
         "notes": [
           "All remote images should route through this primitive for cache sizing and branded fallback behavior.",
-          "Clipping, aspect ratio, and circular/rounded framing remain caller-owned layout decisions."
+          "Clipping, aspect ratio, and circular/rounded framing remain caller-owned layout decisions.",
+          "Missing hero imagery uses CatchImageFallbackSurface.hero; reuse its branded gradient instead of another fallback Widget."
         ]
       },
       "governance": {
@@ -14238,7 +14243,7 @@
       "name": "CatchGradedImage",
       "status": "active",
       "kind": "primitive",
-      "summary": "Global display-time image grade that gives uploaded and generated imagery the shared Catch visual treatment without mutating source media.",
+      "summary": "Global display-time image grade that gives uploaded and generated imagery the shared Catch visual treatment without mutating source media. All filter stages preserve image alpha and leave surrounding content untouched.",
       "dart": {
         "symbol": "CatchGradedImage",
         "file": "packages/catch_ui/lib/src/primitives/catch_graded_image.dart",
@@ -14357,21 +14362,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchDetailHeroBackdrop",
+      "name": "CatchHeroImage",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical detail-page media backdrop state for photo-backed and branded-fallback heroes with optional scrim treatment.",
+      "summary": "Hero image assembly with shared source loading, photo grading, a branded missing-image surface and optional readability overlay.",
       "dart": {
-        "symbol": "CatchDetailHeroBackdrop",
-        "file": "packages/catch_ui/lib/src/components/catch_detail_hero_backdrop.dart",
+        "symbol": "CatchHeroImage",
+        "file": "packages/catch_ui/lib/src/components/catch_hero_image.dart",
         "constructors": [
-          "CatchDetailHeroBackdrop"
+          "CatchHeroImage"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/DetailMedia",
+          "componentName": "Catch/HeroImage",
           "componentUrl": null
         },
         "codeConnect": {
@@ -14380,7 +14385,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "DetailMedia",
+          "handoffName": "HeroImage",
           "allowed": true
         }
       },
@@ -14408,6 +14413,7 @@
         ],
         "states": [
           "photo",
+          "image-error",
           "fallback-gradient",
           "scrim",
           "no-scrim"
@@ -14420,28 +14426,13 @@
         ],
         "dartRoles": [
           "CatchGradedImage",
-          "CatchNetworkImage"
+          "CatchNetworkImage",
+          "CatchImageFallbackSurface"
         ],
         "goldens": [
           "media_overlay_family"
         ],
         "members": [
-          {
-            "id": "catch.detail_media.fallback",
-            "symbol": "CatchDetailHeroFallback",
-            "file": "packages/catch_ui/lib/src/components/catch_detail_hero_fallback.dart",
-            "summary": "Direct detail-hero fallback renderer for no-photo media states.",
-            "states": [
-              "gradient"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.detail_media",
-              "parentConceptId": "catch.detail_media",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.detail_media"
-            }
-          },
           {
             "id": "catch.detail_media.scrim",
             "symbol": "CatchMediaOverlay",
@@ -14511,7 +14502,17 @@
         "conceptId": "catch.detail_media"
       },
       "surfaces": {
-        "flutter": "CatchDetailHeroBackdrop"
+        "flutter": "CatchHeroImage"
+      },
+      "level": "L3",
+      "roleNoun": "Image",
+      "naming": {
+        "useCase": "Hero",
+        "comparedWith": [
+          "catch.network_image",
+          "catch.graded_image"
+        ],
+        "reason": "Assembles a photo or branded no-photo surface with optional hero readability treatment. NetworkImage owns loading and decode/cache sizing; GradedImage transforms supplied pixels. This composition delegates both operations and does not introduce another loader, grade or fallback renderer."
       }
     },
     {

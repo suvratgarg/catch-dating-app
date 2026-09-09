@@ -45,3 +45,4 @@ flutter:
 
   assets:
     - assets/branding/catch_icon.png
+    - assets/fixtures/club_hero_portrait.jpg

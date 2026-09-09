@@ -68,20 +68,14 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(pressed, ['retry', 'back', 'help']);
     expect(tester.takeException(), isNull);
   });
-  testWidgets('CatchDetailHeroBackdrop composes fallback and scrim renderers', (
+  testWidgets('CatchHeroImage composes fallback and scrim renderers', (
     tester,
   ) async {
     await tester.pumpWidget(
-      _wrap(
-        const SizedBox(
-          width: 220,
-          height: 140,
-          child: CatchDetailHeroBackdrop(),
-        ),
-      ),
+      _wrap(const SizedBox(width: 220, height: 140, child: CatchHeroImage())),
     );
 
-    expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
+    expect(find.byType(CatchImageFallbackSurface), findsOneWidget);
     expect(find.byType(CatchMediaOverlay), findsOneWidget);
 
     await tester.pumpWidget(
@@ -89,12 +83,12 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
         const SizedBox(
           width: 220,
           height: 140,
-          child: CatchDetailHeroBackdrop(showScrim: false),
+          child: CatchHeroImage(showScrim: false),
         ),
       ),
     );
 
-    expect(find.byType(CatchDetailHeroFallback), findsOneWidget);
+    expect(find.byType(CatchImageFallbackSurface), findsOneWidget);
     expect(find.byType(CatchMediaOverlay), findsNothing);
   });
 

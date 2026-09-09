@@ -1,11 +1,11 @@
-import 'package:catch_ui/src/components/catch_detail_hero_fallback.dart';
+import 'package:catch_ui/src/primitives/catch_image_fallback_surface.dart';
 import 'package:catch_ui/src/primitives/catch_graded_image.dart';
 import 'package:catch_ui/src/primitives/catch_network_image.dart';
 import 'package:catch_ui/src/primitives/catch_media_overlay.dart';
 import 'package:flutter/material.dart';
 
-class CatchDetailHeroBackdrop extends StatelessWidget {
-  const CatchDetailHeroBackdrop({
+class CatchHeroImage extends StatelessWidget {
+  const CatchHeroImage({
     super.key,
     this.imageUrl,
     this.semanticLabel,
@@ -31,11 +31,12 @@ class CatchDetailHeroBackdrop extends StatelessWidget {
             child: CatchNetworkImage(
               resolvedImageUrl!,
               semanticLabel: semanticLabel,
-              errorBuilder: (context, _, _) => const CatchDetailHeroFallback(),
+              errorBuilder: (context, _, _) =>
+                  const CatchImageFallbackSurface.hero(),
             ),
           )
         else
-          const CatchDetailHeroFallback(),
+          const CatchImageFallbackSurface.hero(),
         if (showScrim) const CatchMediaOverlay.detailHero(),
       ],
     );
