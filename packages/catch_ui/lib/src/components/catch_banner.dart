@@ -213,67 +213,24 @@ class CatchBanner extends StatelessWidget {
           ),
       ],
     ];
-    Widget contentBuilder(BuildContext context, BoxConstraints constraints) {
-      final stacked =
-          isStatus &&
-          (MediaQuery.textScalerOf(context).scale(1) >= 1.4 ||
-              constraints.maxWidth < CatchLayout.statusStripInlineMinWidth);
-      final statusActions = Wrap(
-        alignment: WrapAlignment.end,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: CatchSpacing.s1,
-        children: actionWidgets,
-      );
-      final row = Row(
-        crossAxisAlignment: isStatus
-            ? CrossAxisAlignment.center
-            : CrossAxisAlignment.start,
-        children: [
-          if (isStatus)
-            glyph
-          else
-            Padding(
-              padding: EdgeInsets.only(
-                top: isError ? CatchSpacing.s0 : CatchStroke.hairline,
-              ),
-              child: glyph,
-            ),
-          SizedBox(width: isStatus ? CatchSpacing.micro10 : CatchSpacing.s3),
-          Expanded(child: copy),
-          if (isStatus && !stacked && actionWidgets.isNotEmpty) ...[
-            const SizedBox(width: CatchSpacing.s2),
-            statusActions,
-          ] else if (!isStatus)
-            for (final action in actionWidgets) ...[
-              const SizedBox(width: CatchSpacing.s2),
-              action,
-            ],
+    final rowChildren = <Widget>[
+      if (isStatus)
+        glyph
+      else
+        Padding(
+          padding: EdgeInsets.only(
+            top: isError ? CatchSpacing.s0 : CatchStroke.hairline,
+          ),
+          child: glyph,
+        ),
+      SizedBox(width: isStatus ? CatchSpacing.micro10 : CatchSpacing.s3),
+      Expanded(child: copy),
+      if (!isStatus)
+        for (final action in actionWidgets) ...[
+          const SizedBox(width: CatchSpacing.s2),
+          action,
         ],
-      );
-      if (!isStatus) return row;
-      return ConstrainedBox(
-        constraints: const BoxConstraints(minHeight: CatchSpacing.s12),
-        child: stacked
-            ? Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  row,
-                  if (actionWidgets.isNotEmpty) ...[
-                    const SizedBox(height: CatchSpacing.s2),
-                    statusActions,
-                  ],
-                ],
-              )
-            : row,
-      );
-    }
-
-    // Only status bands need local width measurement. Inline recipes retain
-    // intrinsic sizing while using the same content renderer.
-    final content = isStatus
-        ? LayoutBuilder(builder: contentBuilder)
-        : contentBuilder(context, const BoxConstraints());
+    ];
     if (isStatus) {
       return Semantics(
         key: ValueKey('status_strip.${status.id}'),
@@ -295,7 +252,50 @@ class CatchBanner extends StatelessWidget {
               horizontal: CatchSpacing.screenPx,
               vertical: CatchSpacing.s2,
             ),
-            child: content,
+            // Status bands measure their own width. Inline recipes below
+            // keep intrinsic sizing without a LayoutBuilder.
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final stacked =
+                    MediaQuery.textScalerOf(context).scale(1) >= 1.4 ||
+                    constraints.maxWidth <
+                        CatchLayout.statusStripInlineMinWidth;
+                final statusActions = Wrap(
+                  alignment: WrapAlignment.end,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: CatchSpacing.s1,
+                  children: actionWidgets,
+                );
+                final row = Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    ...rowChildren,
+                    if (!stacked && actionWidgets.isNotEmpty) ...[
+                      const SizedBox(width: CatchSpacing.s2),
+                      statusActions,
+                    ],
+                  ],
+                );
+                return ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minHeight: CatchSpacing.s12,
+                  ),
+                  child: stacked
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            row,
+                            if (actionWidgets.isNotEmpty) ...[
+                              const SizedBox(height: CatchSpacing.s2),
+                              statusActions,
+                            ],
+                          ],
+                        )
+                      : row,
+                );
+              },
+            ),
           ),
         ),
       );
@@ -328,7 +328,10 @@ class CatchBanner extends StatelessWidget {
             )
           : null,
       borderRole: isNeutral ? CatchBorderRole.boundary : null,
-      child: content,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: rowChildren,
+      ),
     );
     return isError
         ? ColoredBox(color: colorScheme.surface, child: surface)
