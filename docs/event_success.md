@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.93.0
+version: 1.94.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1767,6 +1767,34 @@ and saves. Discovery remains stable during the page session; selected preference
 reads refresh while visible and pause during unresolved saves. Neither channel
 can authorize the other or grant marketing permission. Provider provisioning and
 live activation remain separate work.
+
+The native `EventSenderPreferenceController` now owns WhatsApp/RCS sender
+discovery, selected-sender review, earlier-sender withdrawal and exact retry.
+Its scope includes channel, event and attendee; authentication epochs also
+invalidate delayed results and callbacks across sign-out, auth errors or an
+A-to-B-to-A account change. `EventWhatsappPreferenceView` retains the displayed
+business number and sender/STOP hashes. `EventRcsPreferenceView` retains its
+event title and sender name. Both use the required server review hash and
+separate consent-copy versions; no channel can authorize another.
+
+Only the configured sender offers enrollment. Earlier senders are fetched on
+selection and permit withdrawal only. History loads in explicit bounded pages,
+including empty filtered pages with a continuation cursor. A changed configured
+sender across pages requires fresh discovery. Closed parsers reject foreign
+scope, private fields, invalid values and non-advancing or foreign-channel
+cursors. Applied responses must confirm the next revision and decision;
+withdrawal can return `notSet` for a replacement recipient while revoking the
+original binding. Exact replays display current server state. RCS can expire
+under a shortened event before its originally recorded consent expiry.
+
+Uncertain native saves retain the complete request even if the preference sheet
+is dismissed, until an exact retry resolves it or authentication invalidates the
+private state. Refresh and sender navigation cannot replace that request.
+Definite rejection requires fresh review. Generated request DTOs handle reads;
+canonical-schema tests verify the closed mutation unions. The controller and
+typed models are exported for route composition. Visible controls, guest route
+mounting, lifecycle refresh wiring, device verification and deployment remain
+pending; these bindings do not constitute an available Consumer consent flow.
 
 ### RCS authenticated callback boundary
 
