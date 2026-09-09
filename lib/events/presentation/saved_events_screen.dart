@@ -30,8 +30,12 @@ class SavedEventsScreen extends ConsumerWidget {
       backgroundColor: t.bg,
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.eventsSavedEventsScreenTitleSavedEvents,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standardSlivers(
         slivers: [

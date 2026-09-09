@@ -105,9 +105,14 @@ class _HostAutomationRuleEditorState
           title: widget.initialRule == null
               ? l.hostAutomationNew
               : l.hostAutomationEdit,
-          leadingType: CatchTopBarLeading.back,
-          onBack: _busy ? () {} : widget.onCancel,
-          divider: scrolledUnder,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+            onPressed: _busy ? () {} : widget.onCancel,
+          ),
+
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         bottomNavigationBar: CatchDockSurface.primary(
           label: l.hostAutomationSave,

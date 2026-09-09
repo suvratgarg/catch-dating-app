@@ -589,8 +589,8 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Event defaults');
     expect(topBar.subtitle, club.name);
-    expect(topBar.leadingType, CatchTopBarLeading.back);
-    expect(topBar.divider, isFalse);
+    expect(topBar.navigation.mode, CatchTopBarNavigationMode.back);
+    expect(topBar.emphasis, CatchTopBarEmphasis.plain);
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
     expect(
       find.ancestor(

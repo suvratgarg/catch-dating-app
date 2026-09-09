@@ -130,7 +130,7 @@ void runHostCreateEventLifecycleTests() {
     expect(topBar.title, hostManageEventTitle(event));
     expect(topBar.eyebrow, 'Event recap');
     expect(topBar.subtitle, isNull);
-    expect(topBar.titleWidget, isNull);
+    expect(topBar.body, isNull);
     expect(topBar.height, CatchLayout.browseHeaderHeight);
     expect(find.text('SETUP'), findsNothing);
     expect(find.text('GUESTS'), findsNothing);

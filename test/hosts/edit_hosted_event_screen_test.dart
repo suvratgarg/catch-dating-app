@@ -627,8 +627,8 @@ void main() {
     await tester.pump();
 
     expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).leadingType,
-      CatchTopBarLeading.none,
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).navigation.mode,
+      CatchTopBarNavigationMode.none,
     );
     expect(
       tester

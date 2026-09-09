@@ -52,7 +52,9 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
       backgroundColor: CatchTokens.of(context).bg,
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.swipesEventRecapScreenTitleEventRecap,
-        divider: scrolledUnder,
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
         leading: CatchIconAction.toolbar(
           icon: CatchIcons.closeRounded,
           tooltip: context.l10n.swipesEventRecapScreenTooltipCloseRecap,

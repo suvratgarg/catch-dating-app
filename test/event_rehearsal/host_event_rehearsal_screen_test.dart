@@ -31,7 +31,7 @@ void main() {
     expect(find.byType(CatchTopBar), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Dress rehearsal');
-    expect(topBar.titleWidget, isNull);
+    expect(topBar.body, isNull);
     final titleFinder = find.descendant(
       of: find.byType(CatchTopBar),
       matching: find.text('Dress rehearsal'),
@@ -95,7 +95,7 @@ void main() {
     expect(find.text('REHEARSAL'), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Courtyard practice');
-    expect(topBar.titleWidget, isNull);
+    expect(topBar.body, isNull);
     final titleFinder = find.descendant(
       of: find.byType(CatchTopBar),
       matching: find.text('Courtyard practice'),

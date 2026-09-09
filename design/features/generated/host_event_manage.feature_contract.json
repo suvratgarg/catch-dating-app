@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
   "sourceDigest": "sha256:c206ea8bb7432382d66fa43cfe27164991f4572fe8b275d56b46ba72832e35a6",
-  "resolvedDigest": "sha256:9e0beb10dc11cf23ae6eda1859c9edc083f01d49e099f10b9726dd5099b35cf3",
+  "resolvedDigest": "sha256:1023e707ce42e524f2d6cfa6cf8cd42b4ce184e71259d6aea1d1e5a686698d66",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -3547,7 +3547,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }
@@ -5417,7 +5420,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

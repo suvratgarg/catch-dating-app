@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
-  "resolvedDigest": "sha256:69610dcccebc05bd22050c01a8485b336e7818f986db8ea1bebb9577e33f081b",
+  "resolvedDigest": "sha256:ca20bdda71c1adc62f1b7ac4df21f8f4ce3b36e2a13fc4c879d43c56ddfd34f1",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1185,7 +1185,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

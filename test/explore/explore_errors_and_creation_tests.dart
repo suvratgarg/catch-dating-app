@@ -771,7 +771,7 @@ void _registerExploreErrorsAndCreationTests() {
         tester
             .widget<CatchStepHeader>(find.byType(CatchStepHeader))
             .leadingType,
-        CatchTopBarLeading.close,
+        CatchTopBarNavigationMode.close,
       );
       expect(
         tester

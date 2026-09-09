@@ -155,8 +155,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       backgroundColor: t.bg,
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: _calendarMonthLabel(topBarSelectedDate),
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
         actions: [
           CatchButton.text(
             label: context.l10n.eventsCalendarScreenLabelToday,

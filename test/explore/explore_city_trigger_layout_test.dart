@@ -72,7 +72,7 @@ void main() {
               );
             }
             final triggerRect = tester.getRect(find.byType(CityTrigger));
-            final headerRect = tester.getRect(find.byType(CatchScreenTopBar));
+            final headerRect = tester.getRect(find.byType(CatchTopBar));
             expect(labelRect.left, greaterThanOrEqualTo(triggerRect.left));
             expect(labelRect.right, lessThanOrEqualTo(triggerRect.right));
             expect(labelRect.top, greaterThanOrEqualTo(triggerRect.top));

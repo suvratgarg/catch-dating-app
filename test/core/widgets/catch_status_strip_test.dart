@@ -185,8 +185,8 @@ void main() {
       expect(tester.getTopLeft(find.byKey(_rehearsal)).dy, topBar.bottom);
       expect(tester.takeException(), isNull);
       expect(
-        tester.widget<CatchTopBar>(find.byType(CatchTopBar)).divider,
-        isTrue,
+        tester.widget<CatchTopBar>(find.byType(CatchTopBar)).emphasis,
+        CatchTopBarEmphasis.divided,
       );
     },
   );
@@ -375,7 +375,9 @@ Widget _app({
                       statuses: local,
                       topBarBuilder: (context, scrolled) => CatchTopBar(
                         title: 'Dress rehearsal',
-                        divider: scrolled,
+                        emphasis: (scrolled)
+                            ? CatchTopBarEmphasis.divided
+                            : CatchTopBarEmphasis.plain,
                       ),
                       body: CatchRouteBody.standardSlivers(
                         slivers: slivers,

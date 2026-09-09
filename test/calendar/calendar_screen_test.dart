@@ -105,7 +105,7 @@ void main() {
       final monthLabel = _monthYearLabel(event.startTime);
       expect(find.byType(CatchRouteScaffold), findsOneWidget);
       final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
-      expect(topBar.leadingType, CatchTopBarLeading.back);
+      expect(topBar.navigation.mode, CatchTopBarNavigationMode.back);
       expect(find.text(monthLabel), findsOneWidget);
       expect(
         tester.widget<Text>(find.text(monthLabel)).style?.fontFamily,

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:146da37ee696c103a01a459f36dbe7a33fbe4c65a1a87575dee16c1715955f4a",
-  "resolvedDigest": "sha256:1620e8643ee21de49f708c11678a542bca4fc39671f972f5b9e73be97841a03a",
+  "resolvedDigest": "sha256:cf53be764343662786bd81a4525321321cff9d9ef88b6be151d808d4c333012a",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -1260,7 +1260,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

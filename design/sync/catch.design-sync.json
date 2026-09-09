@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "7907e2063d6a291f60044eb03e69105c029c6e6a4f0741e076a0c0eaf38609f3",
+  "sourceDigest": "1c055ecce71f6cd515d151debbf6adcbe6de2cf55207863fdc614acf68cd312d",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "7907e2063d6a291f60044eb03e69105c029c6e6a4f0741e076a0c0eaf38609f3",
-    "contractDigest": "7907e2063d6a291f60044eb03e69105c029c6e6a4f0741e076a0c0eaf38609f3"
+    "digest": "1c055ecce71f6cd515d151debbf6adcbe6de2cf55207863fdc614acf68cd312d",
+    "contractDigest": "1c055ecce71f6cd515d151debbf6adcbe6de2cf55207863fdc614acf68cd312d"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "847bf2aae0a0d74dc489ac55cb4cf30a779c8ce0be3b159b431d33e9094d6e95",
+    "handoffRequestDigest": "8766ca9bec2367221738a3eb746158e7a166598ae62ff9caab739028a4b5f1d6",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -397,10 +397,10 @@
         "symbols": [
           "CatchCollapsedHeaderTitle",
           "CatchScreenHeader",
-          "CatchScreenTopBar",
           "CatchSliverHeader",
           "CatchTopBar",
           "CatchTopBarActionRow",
+          "CatchTopBarNavigation",
           "CatchTopBarPrimaryButton"
         ]
       },
@@ -1420,8 +1420,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 14,
-      "figmaExpectedPropertyDigest": "87cbbc281e957fcb32903779c4ee7e918b557201e820da8cf00345a90161d105",
+      "figmaExpectedPropertyCount": 15,
+      "figmaExpectedPropertyDigest": "7ee4694059651b3a3ef0192594976c94a2c5c6d22a4745215be8237551170d92",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1429,7 +1429,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "TopBar",
       "claudeAllowed": true,
-      "contractDigest": "e8403b6e67c7a0656d986766f66eb4fb6c5477f2ad6309cae4446c65d084ad24"
+      "contractDigest": "abdf63561d84dcdf8eb9bc0dad4299285778877e78e51d73d5d46ede19022af9"
     },
     {
       "contractId": "catch.privacy_badge",
@@ -1973,7 +1973,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "StepHeader",
       "claudeAllowed": true,
-      "contractDigest": "2a23740099bb124ab989fa0ee0f6225cce8ae9e9cd58319906c7527e07616c28"
+      "contractDigest": "6b9873cc3d5e65f303ca4f344ee5516e6d891969e0c9212f0156dca0f410a2b8"
     },
     {
       "contractId": "catch.tab_bar",

@@ -44,8 +44,12 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: routeTitle,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -65,8 +69,12 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: routeTitle,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchErrorState(
@@ -89,8 +97,12 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: routeTitle,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -110,8 +122,12 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: routeTitle,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -154,9 +170,13 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
           icon: CatchIcons.arrowBackIosNewRounded,
           onPressed: _leaveTeam,
         ),
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
-        bottom: CatchPageTabBar<HostTeamMode>.controlled(
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
+        footer: CatchPageTabBar<HostTeamMode>.controlled(
           controller: _tabController,
           options: [
             CatchOption(

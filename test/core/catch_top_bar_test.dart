@@ -16,8 +16,10 @@ void main() {
       _wrap(
         const CatchTopBar(
           title: 'Settings',
-          showBackButton: false,
-          divider: true,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
+          emphasis: CatchTopBarEmphasis.divided,
         ),
       ),
     );
@@ -54,8 +56,10 @@ void main() {
       _wrap(
         const CatchTopBar(
           title: 'Settings',
-          showBackButton: false,
-          surface: true,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
+          tone: CatchTopBarTone.surface,
         ),
       ),
     );
@@ -71,8 +75,10 @@ void main() {
       _wrap(
         const CatchTopBar(
           title: 'Aarav Shah',
-          titleRole: CatchTopBarTitleRole.identity,
-          showBackButton: false,
+          variant: CatchTopBarVariant.identity,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
         ),
       ),
     );
@@ -95,7 +101,9 @@ void main() {
         const CatchTopBar(
           title: 'Sunday Evening Run',
           eyebrow: 'Event preparation',
-          showBackButton: false,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
         ),
       ),
     );
@@ -124,7 +132,7 @@ void main() {
     );
   });
 
-  testWidgets('CatchScreenTopBar uses the root screen headline voice', (
+  testWidgets('CatchTopBar uses the root screen headline voice', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -132,7 +140,7 @@ void main() {
     );
 
     final titleContext = tester.element(find.text('Activity'));
-    expect(find.byType(CatchScreenTopBar), findsOneWidget);
+    expect(find.byType(CatchTopBar), findsOneWidget);
     expect(tester.getSize(find.byType(CatchTopBar)).height, 88);
     expect(
       tester.widget<Text>(find.text('Activity')).style,
@@ -153,8 +161,12 @@ void main() {
         home: CatchRouteScaffold(
           topBarBuilder: (context, scrolledUnder) => CatchTopBar(
             title: 'Payment history',
-            leadingType: CatchTopBarLeading.back,
-            divider: scrolledUnder,
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.back,
+            ),
+            emphasis: scrolledUnder
+                ? CatchTopBarEmphasis.divided
+                : CatchTopBarEmphasis.plain,
           ),
           body: CatchRouteBody.fullBleed(
             child: ListView.builder(
@@ -173,9 +185,7 @@ void main() {
     expect(_topBarBorder(tester).bottom.style, BorderStyle.solid);
   });
 
-  testWidgets('CatchScreenTopBar inherits the accessible text scale', (
-    tester,
-  ) async {
+  testWidgets('CatchTopBar inherits the accessible text scale', (tester) async {
     await tester.pumpWidget(_wrapScreenTopBar(title: 'Chats', textScale: 2));
 
     final titleContext = tester.element(find.text('Chats'));
@@ -186,7 +196,7 @@ void main() {
     );
   });
 
-  testWidgets('CatchScreenTopBar reflows actions below its large-text title', (
+  testWidgets('CatchTopBar reflows actions below its large-text title', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -221,7 +231,7 @@ void main() {
   });
 
   testWidgets(
-    'CatchScreenTopBar reserves two subtitle lines at large text with search',
+    'CatchTopBar reserves two subtitle lines at large text with search',
     (tester) async {
       await tester.pumpWidget(
         _wrapScreenTopBar(
@@ -285,8 +295,11 @@ void main() {
       _wrap(
         CatchTopBar(
           title: 'Profile',
-          showBackButton: true,
-          onBack: () => backTaps++,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+            onPressed: () => backTaps++,
+          ),
+
           actions: [
             CatchIconAction.toolbar(
               icon: CatchIcons.settingsOutlined,
@@ -321,7 +334,9 @@ void main() {
       _wrap(
         CatchTopBar(
           title: 'Home',
-          showBackButton: false,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
           actions: [
             CatchIconAction.toolbar(
               key: const ValueKey('top-action-share'),
@@ -504,7 +519,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         CatchTopBar(
-          titleWidget: const Row(
+          body: const Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               CircleAvatar(radius: 12, child: Text('A')),
@@ -512,7 +527,9 @@ void main() {
               Text('Aarav'),
             ],
           ),
-          showBackButton: false,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
           actions: [
             CatchButton.text(label: 'Save', onPressed: () => saved = true),
           ],
@@ -535,7 +552,9 @@ void main() {
       _wrapWithTextScale(
         CatchTopBar(
           title: 'Activity',
-          showBackButton: false,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
           actions: [CatchButton.text(label: 'Mark all read', onPressed: () {})],
         ),
         textScale: 2,
@@ -555,7 +574,9 @@ void main() {
         const CatchTopBar(
           title: 'Professional profile',
           subtitle: 'Active professional profile',
-          showBackButton: false,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
         ),
         textScale: 2,
       ),
@@ -575,7 +596,9 @@ void main() {
           title: 'Create event',
           subtitle: 'Add the details guests need before they book',
           kicker: 'Host event',
-          showBackButton: false,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
         ),
         textScale: 2,
       ),
@@ -602,12 +625,15 @@ void main() {
           title: 'Discover',
           subtitle: 'Tonight near you',
           kicker: 'Explore',
-          leadingType: CatchTopBarLeading.close,
-          onBack: () => closed = true,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.close,
+            onPressed: () => closed = true,
+          ),
+
           actions: [
             CatchButton.text(label: 'Done', onPressed: () => done = true),
           ],
-          surface: true,
+          tone: CatchTopBarTone.surface,
         ),
       ),
     );
@@ -696,8 +722,10 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         const CatchTopBar(
-          showBackButton: true,
-          leadingActionVariant: CatchIconActionVariant.plain,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+            variant: CatchIconActionVariant.plain,
+          ),
         ),
       ),
     );
@@ -723,8 +751,10 @@ void main() {
           child: Scaffold(
             appBar: CatchTopBar(
               title: 'Profile',
-              showBackButton: false,
-              bottom: const CatchPageTabBar<int>(
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.none,
+              ),
+              footer: const CatchPageTabBar<int>(
                 selected: 0,
                 options: [
                   CatchOption(value: 0, label: 'Profile'),
@@ -856,7 +886,7 @@ Widget _wrapScreenTopBar({
 }) {
   Widget home = Builder(
     builder: (context) => Scaffold(
-      appBar: CatchScreenTopBar(
+      appBar: CatchTopBar.screen(
         context: context,
         title: title,
         subtitle: subtitle,

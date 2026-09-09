@@ -145,9 +145,7 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(find.byType(NestedScrollView), findsOneWidget);
-      final topBar = tester.widget<CatchScreenTopBar>(
-        find.byType(CatchScreenTopBar),
-      );
+      final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
       expect(topBar.contentPadding, CatchInsets.primaryRailTitleBlock);
       final rail = find.byType(HostMessagingWorkspaceRail);
       final railBefore = tester.getRect(rail);

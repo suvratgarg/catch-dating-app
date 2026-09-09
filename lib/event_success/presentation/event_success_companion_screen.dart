@@ -94,7 +94,7 @@ class CompanionScaffold extends StatelessWidget {
         title: context
             .l10n
             .eventSuccessEventSuccessCompanionScreenTitleEventCompanion,
-        divider: true,
+        emphasis: CatchTopBarEmphasis.divided,
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: CatchIcons.arrowBackIosNewRounded,

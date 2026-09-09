@@ -212,15 +212,13 @@ void main() {
       );
 
       expect(find.text('Forms'), findsOneWidget);
-      final titleBar = tester.widget<CatchScreenTopBar>(
-        find.byType(CatchScreenTopBar),
-      );
+      final titleBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
       final expectedContentHeight =
           CatchIconAction.targetExtentFor(CatchIconAction.navSize) +
           CatchInsets.primaryRailTitleBlock.vertical;
       expect(titleBar.contentPadding, CatchInsets.primaryRailTitleBlock);
       expect(titleBar.applySafeArea, isFalse);
-      expect(titleBar.leadingType, CatchTopBarLeading.none);
+      expect(titleBar.navigation.mode, CatchTopBarNavigationMode.none);
       expect(titleBar.height, expectedContentHeight);
       expect(titleBar.height, lessThanOrEqualTo(CatchLayout.topBarHeight));
 

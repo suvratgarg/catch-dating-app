@@ -42,7 +42,9 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-          divider: scrolledUnder,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: const CatchRouteBody.standardViewport(
           child: HostRouteLoadingBody(padding: EdgeInsets.zero),
@@ -51,8 +53,12 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -71,8 +77,12 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title:
                   context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-              leadingType: CatchTopBarLeading.back,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: CatchRouteBody.standardViewport(
               child: CatchErrorState(
@@ -93,8 +103,12 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title:
                   context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-              leadingType: CatchTopBarLeading.back,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: CatchRouteBody.standardViewport(
               child: CatchErrorState(

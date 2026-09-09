@@ -70,8 +70,12 @@ class HostClubSpokeResolver extends ConsumerWidget {
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: title,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -88,8 +92,12 @@ class HostClubSpokeResolver extends ConsumerWidget {
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: title,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchErrorState(
@@ -112,8 +120,12 @@ class HostClubSpokeResolver extends ConsumerWidget {
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: title,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -129,8 +141,12 @@ class HostClubSpokeResolver extends ConsumerWidget {
           return CatchRouteScaffold(
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title: title,
-              leadingType: CatchTopBarLeading.back,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: CatchRouteBody.standardViewport(
               child: CatchLocalizedErrorState(
@@ -168,8 +184,12 @@ class HostClubSpokeScaffold extends StatelessWidget {
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: title,
         subtitle: club.name,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standardSections(
         sections: [CatchSectionListItem(child: child)],

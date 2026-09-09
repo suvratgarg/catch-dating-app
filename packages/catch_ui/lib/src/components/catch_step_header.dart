@@ -1,8 +1,10 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
+import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_top_bar.dart';
-import 'package:catch_ui/src/components/catch_top_bar_leading.dart';
+import 'package:catch_ui/src/components/catch_top_bar_mode.dart';
+import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
+import 'package:catch_ui/src/components/catch_top_bar_size.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +38,7 @@ class CatchStepHeader extends StatelessWidget {
   final int? total;
   final VoidCallback? onBack;
   final bool showBack;
-  final CatchTopBarLeading? leadingType;
+  final CatchTopBarNavigationMode? leadingType;
   final VoidCallback? onStepOverview;
   final String? stepOverviewSemanticsLabel;
   final Widget? trailing;
@@ -103,15 +105,20 @@ class CatchStepHeader extends StatelessWidget {
           title: title,
           subtitle: subtitle,
           kicker: kicker,
-          large: true,
-          leadingType:
-              leadingType ??
-              (showBack ? CatchTopBarLeading.back : CatchTopBarLeading.none),
-          onBack: onBack,
+          size: CatchTopBarSize.large,
+          navigation: CatchTopBarNavigation(
+            mode:
+                leadingType ??
+                (showBack
+                    ? CatchTopBarNavigationMode.back
+                    : CatchTopBarNavigationMode.none),
+            onPressed: onBack,
+          ),
+
           trailing: topRight,
           gutter: gutter,
           largeHeight: CatchLayout.stepHeaderTopBarHeight,
-          allowContentHeightExpansion: true,
+          mode: CatchTopBarMode.content,
         ),
         if (hasProgress)
           Padding(

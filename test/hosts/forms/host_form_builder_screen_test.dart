@@ -50,7 +50,7 @@ void main() {
     expect(find.text('Continue to publish'), findsNothing);
     expect(find.text('Form title'), findsNothing);
     final topBar = find.byType(CatchTopBar);
-    expect(tester.widget<CatchTopBar>(topBar).titleWidget, isNull);
+    expect(tester.widget<CatchTopBar>(topBar).body, isNull);
     final titleFinder = find.descendant(
       of: topBar,
       matching: find.text('Form'),

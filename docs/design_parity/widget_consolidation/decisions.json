@@ -7974,6 +7974,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:top-bar-recipes",
+      "patternFamilyId": "top-bar-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchTopBar",
+      "members": [
+        {
+          "name": "CatchTopBar",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScreenTopBar",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "One stateful renderer now owns compact, identity, root-title and primary-rail recipes. Typed navigation combines mode, appearance and callback; size, tone, emphasis, mode and typography variant replace overlapping flags. The unused custom-title supplemental-text flag is removed. Body/footer slots use the closed vocabulary and source checks require the actual constructor arguments.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

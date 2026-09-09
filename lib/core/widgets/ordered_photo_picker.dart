@@ -374,8 +374,12 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
         subtitle: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
           count: _photos.length,
         ),
-        leadingType: CatchTopBarLeading.close,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.close,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
         actions: widget.showDoneAction
             ? [
                 CatchButton.text(

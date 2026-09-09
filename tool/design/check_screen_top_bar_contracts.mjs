@@ -10,7 +10,7 @@ const architectureAdoptionPath =
 const screenChromeArchitectureId = "ARCH-SCREEN-CHROME-001";
 const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/gu;
 const routeTopBarBuilderPattern =
-  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchScreenTopBar|CatchTopBar(?:\.identity)?)/gu;
+  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchTopBar\.screen|CatchTopBar(?:\.identity)?)/gu;
 const canonicalRouteScaffoldPath =
   "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart";
 const canonicalScreenScaffoldPath =
@@ -23,15 +23,15 @@ const manualHeaderClassPattern =
 const screenChromeClassPattern =
   /\bclass\s+([_$A-Za-z][\w$]*(?:Screen|Scaffold|Header|TopBar|HeaderContent))\b/gu;
 const manualHeaderOwnerPattern =
-  /\b(CatchScreenHeader(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
+  /\b(CatchScreenHeader(?:\.block)?|CatchTopBar\.screen|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
 const canonicalRootOwners = new Set([
   "CatchScreenHeader",
   "CatchScreenHeader.block",
-  "CatchScreenTopBar",
+  "CatchTopBar.screen",
   "CatchRootScreenHeader.title",
 ]);
 const topBarActionOwnerPattern =
-  /\b(CatchScreenHeader(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
+  /\b(CatchScreenHeader(?:\.block)?|CatchTopBar\.screen|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
 const directPillActionPattern = /\bCatchButton(?:\.(?!text\b)[A-Za-z_$][\w$]*)?\s*\(/u;
 const rootTitleStylePattern = /\bCatchTextStyles\.headline[A-Za-z]*\s*\(/gu;
 const rootTextScaleOverridePattern =
@@ -39,7 +39,7 @@ const rootTextScaleOverridePattern =
 const rolePolicies = new Map([
   [
     "screen",
-    {expression: "CatchScreenTopBar", owner: "CatchScreenTopBar"},
+    {expression: "CatchTopBar.screen", owner: "CatchTopBar.screen"},
   ],
   ["compact", {expression: "CatchTopBar", owner: "CatchTopBar"}],
   [
@@ -58,7 +58,7 @@ const validSurfacePolicies = new Set(["CatchRouteScaffold"]);
 const validTitlePolicies = new Set(["sharedRoute", "routeOrIdentity"]);
 const canonicalWorkspaceOwners = new Set([
   "CatchTopBar",
-  "CatchScreenTopBar",
+  "CatchTopBar.screen",
 ]);
 const rawHeroExpressions = new Set([
   "SliverAppBar",
@@ -77,7 +77,7 @@ const manualHeaderRoleOwners = new Map([
     new Set([
       "CatchScreenHeader",
       "CatchScreenHeader.block",
-      "CatchScreenTopBar",
+      "CatchTopBar.screen",
       "CatchRootScreenHeader.title",
     ]),
   ],
@@ -667,7 +667,7 @@ function checkContract({root, contract, appBars, findings}) {
         path: contract.path,
         message:
           "Screen-title routes cannot override contentPadding or height; " +
-          "CatchScreenTopBar owns the approved zero-inset geometry.",
+          "CatchTopBar.screen owns the approved zero-inset geometry.",
       });
     }
   }
@@ -694,9 +694,7 @@ function checkContract({root, contract, appBars, findings}) {
     contract.owner === "CatchTopBar"
   ) {
     const customTitleBypasses = appBars.filter((appBar) =>
-      /\b(?:titleStyle|titleWidget|titleWidgetIncludesSupplementalText)\s*:/u.test(
-        appBar.value,
-      ),
+      ['titleStyle', 'body'].some((name) => topBarArgument(appBar.value, name) != null),
     );
     if (customTitleBypasses.length > 0) {
       findings.push({
@@ -710,9 +708,9 @@ function checkContract({root, contract, appBars, findings}) {
     }
 
     const routeTitleModeBypasses = appBars.filter((appBar) => {
-      const pinsCompactMode = /\blarge\s*:\s*false\b/u.test(appBar.value);
-      const declaresLargeMode = /\blarge\s*:/u.test(appBar.value);
-      const kickerInfersLargeMode = /\bkicker\s*:/u.test(appBar.value);
+      const pinsCompactMode = topBarArgument(appBar.value, 'size') === 'CatchTopBarSize.compact';
+      const declaresLargeMode = topBarArgument(appBar.value, 'size') != null;
+      const kickerInfersLargeMode = topBarArgument(appBar.value, 'kicker') != null;
       return (
         (declaresLargeMode && !pinsCompactMode) ||
         (kickerInfersLargeMode && !pinsCompactMode) ||
@@ -725,14 +723,14 @@ function checkContract({root, contract, appBars, findings}) {
         path: contract.path,
         message:
           "Compact route typography cannot enter CatchTopBar large mode. " +
-          "Workspace bars, and compact bars with a kicker, must pin large: false.",
+          "Workspace bars, and compact bars with a kicker, must select size: CatchTopBarSize.compact.",
       });
     }
 
     const titlePolicy = contract.titlePolicy ?? "sharedRoute";
     if (titlePolicy === "sharedRoute") {
       const identityOverrides = appBars.filter((appBar) =>
-        /\btitleRole\s*:/u.test(appBar.value),
+        topBarArgument(appBar.value, 'variant') != null,
       );
       if (identityOverrides.length > 0) {
         findings.push({
@@ -740,7 +738,7 @@ function checkContract({root, contract, appBars, findings}) {
           path: contract.path,
           message:
             "This route is registered for shared route-title typography. " +
-            "Any explicit titleRole requires a routeOrIdentity policy.",
+            "Any explicit typography variant requires a routeOrIdentity policy.",
         });
       }
     }
@@ -748,15 +746,11 @@ function checkContract({root, contract, appBars, findings}) {
     if (titlePolicy === "routeOrIdentity") {
       const missingIdentityRole = appBars.filter(
         (appBar) =>
-          !/\btitleRole\s*:[\s\S]*CatchTopBarTitleRole\.identity\b/u.test(
-            appBar.value,
-          ),
+          !/\bCatchTopBarVariant\.identity\b/u.test(topBarArgument(appBar.value, 'variant') ?? ''),
       );
       const missingRouteFallback = appBars.filter(
         (appBar) =>
-          !/\btitleRole\s*:[\s\S]*CatchTopBarTitleRole\.route\b/u.test(
-            appBar.value,
-          ),
+          !/\bCatchTopBarVariant\.route\b/u.test(topBarArgument(appBar.value, 'variant') ?? ''),
       );
       if (missingIdentityRole.length > 0) {
         findings.push({
@@ -764,7 +758,7 @@ function checkContract({root, contract, appBars, findings}) {
           path: contract.path,
           message:
             "A routeOrIdentity title policy must explicitly select " +
-            "CatchTopBarTitleRole.identity when user-authored identity content is present.",
+            "CatchTopBarVariant.identity when user-authored identity content is present.",
         });
       }
       if (missingRouteFallback.length > 0) {
@@ -773,7 +767,7 @@ function checkContract({root, contract, appBars, findings}) {
           path: contract.path,
           message:
             "A routeOrIdentity title policy must explicitly select " +
-            "CatchTopBarTitleRole.route while identity content is unavailable.",
+            "CatchTopBarVariant.route while identity content is unavailable.",
         });
       }
     }
@@ -782,8 +776,7 @@ function checkContract({root, contract, appBars, findings}) {
   if (contract.leading === "back") {
     const appBarsWithoutBack = appBars.filter(
       (appBar) =>
-        !/\bleadingType\s*:\s*CatchTopBarLeading\.back\b/u.test(appBar.value) &&
-        !/\bshowBackButton\s*:\s*true\b/u.test(appBar.value),
+        topBarNavigationMode(appBar.value) !== 'CatchTopBarNavigationMode.back',
     );
     if (appBarsWithoutBack.length > 0) {
       findings.push({
@@ -791,15 +784,15 @@ function checkContract({root, contract, appBars, findings}) {
         path: contract.path,
         message:
           "This pushed route requires an explicit back affordance; use " +
-          "leadingType: CatchTopBarLeading.back (or showBackButton: true).",
+          "navigation: CatchTopBarNavigation(mode: CatchTopBarNavigationMode.back).",
       });
     }
   }
   if (contract.leading === "backUnlessEmbedded") {
     const conditionalBackPattern =
-      /\bleadingType\s*:\s*[\w.]*embedded\s*\?\s*CatchTopBarLeading\.none\s*:\s*CatchTopBarLeading\.back\b/u;
+      /^[\w.]*embedded\s*\?\s*CatchTopBarNavigationMode\.none\s*:\s*CatchTopBarNavigationMode\.back$/u;
     const appBarsWithoutConditionalBack = appBars.filter(
-      (appBar) => !conditionalBackPattern.test(appBar.value),
+      (appBar) => !conditionalBackPattern.test(topBarNavigationMode(appBar.value) ?? ''),
     );
     if (appBarsWithoutConditionalBack.length > 0) {
       findings.push({
@@ -811,6 +804,18 @@ function checkContract({root, contract, appBars, findings}) {
       });
     }
   }
+}
+
+
+function topBarArgument(value, name) {
+  const start = value.indexOf('(');
+  return start < 0 ? null : readNamedArgument(readBalanced(value, start, '(', ')'), name);
+}
+
+function topBarNavigationMode(value) {
+  const navigation = topBarArgument(value, 'navigation');
+  if (navigation == null || !/^(?:const\s+)?CatchTopBarNavigation\s*\(/u.test(navigation)) return null;
+  return topBarArgument(navigation, 'mode');
 }
 
 function validateManifest(manifest, findings, manifestPath) {

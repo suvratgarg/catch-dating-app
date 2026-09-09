@@ -688,9 +688,11 @@ Widget topBarGeometryMatrix(BuildContext context) {
         label: 'Compact route',
         child: CatchTopBar(
           title: 'Event details',
-          allowContentHeightExpansion: true,
-          leadingType: CatchTopBarLeading.back,
-          onBack: _noop,
+          mode: CatchTopBarMode.content,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+            onPressed: _noop,
+          ),
         ),
       ),
       _topBarSpecimen(
@@ -700,7 +702,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
           kicker: 'HOST MODE',
           title: 'Upcoming events',
           subtitle: 'Review requests and keep the room balanced.',
-          allowContentHeightExpansion: true,
+          mode: CatchTopBarMode.content,
         ),
       ),
       _topBarSpecimen(
@@ -712,11 +714,11 @@ Widget topBarGeometryMatrix(BuildContext context) {
                 name: 'Taylor from Sunday Social',
               ),
           identityName: 'Taylor from Sunday Social',
-          allowContentHeightExpansion: true,
+          mode: CatchTopBarMode.content,
           identityPhotoUrl: null,
           onIdentityTap: _noop,
-          surface: true,
-          divider: true,
+          tone: CatchTopBarTone.surface,
+          emphasis: CatchTopBarEmphasis.divided,
           actions: [
             CatchActionMenu<String>(
               tooltip: 'Conversation actions',
@@ -740,7 +742,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
             'Use the search action to inspect the in-place width morph and title fade.',
         child: CatchTopBar(
           title: 'Explore',
-          allowContentHeightExpansion: true,
+          mode: CatchTopBarMode.content,
           search: CatchTopBarSearch(
             copy: catchSearchFieldCopy(context.l10n),
             value: '',
@@ -1132,8 +1134,12 @@ Widget _responsiveGeometryShell(
     body: CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: 'Event settings',
-        leadingType: CatchTopBarLeading.none,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.none,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.fullBleed(
         child: CatchSectionList.page(

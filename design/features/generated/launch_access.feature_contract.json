@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:bd6746da8d1ba1d695799cbedfb572015b899741fd7bdecdc32f35f1fabc9fba",
-  "resolvedDigest": "sha256:277db16d9a7b6f0e970c8a61149449981d5afb94ed9ba714c16809fdcaa7d34a",
+  "resolvedDigest": "sha256:6f03b6a04d17327165815610e41fc9cedf2003a63ccbc0cd5ad16f71c79a284c",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -980,7 +980,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

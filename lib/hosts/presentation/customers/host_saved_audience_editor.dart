@@ -32,11 +32,15 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
       loadingBuilder: (_) =>
           HostLoadingScreen(title: context.l10n.hostSavedAudiencesManage),
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
           context: context,
           title: context.l10n.hostSavedAudiencesManage,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -52,11 +56,15 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
             .firstOrNull;
         if (audience == null) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
               context: context,
               title: context.l10n.hostSavedAudiencesManage,
-              leadingType: CatchTopBarLeading.back,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: CatchRouteBody.standardViewport(
               child: CatchLocalizedErrorState(
@@ -134,13 +142,17 @@ class _HostSavedAudienceEditorFormState
       canPop: !_busy,
       child: CatchRouteScaffold(
         resizeToAvoidBottomInset: true,
-        topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
           context: context,
           title: editing
               ? context.l10n.hostAudienceEditGroup
               : context.l10n.hostSavedAudienceNew,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         bottomNavigationBar: CatchDockSurface.primary(
           label: editing

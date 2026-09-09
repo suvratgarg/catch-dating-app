@@ -99,8 +99,12 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
         subtitle: settings && editorValue != null
             ? _saveLabel(context, editorValue)
             : null,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
         actions: [
           if (view == HostFormWorkspaceView.questions && compact)
             CatchIconAction.toolbar(

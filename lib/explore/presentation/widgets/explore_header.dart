@@ -55,7 +55,7 @@ class ExploreBrowseHeaderContent extends StatelessWidget {
       return CatchScreenHeader.block(leading: cityPicker, title: chrome.title);
     }
 
-    return CatchScreenTopBar(
+    return CatchTopBar.screen(
       context: context,
       leading: cityPicker,
       title: chrome.title,
@@ -198,7 +198,7 @@ class _ExploreDiscoveryTopBar extends StatelessWidget {
     final mutedForeground = onDarkBackdrop ? darkTokens.darkMutedInk : null;
     final transparentControlFill = onDarkBackdrop ? Colors.transparent : null;
     final transparentControlRule = onDarkBackdrop ? Colors.transparent : null;
-    final topBar = CatchScreenTopBar(
+    final topBar = CatchTopBar.screen(
       context: context,
       leading: ExploreCityPicker(
         state: cityPickerState,

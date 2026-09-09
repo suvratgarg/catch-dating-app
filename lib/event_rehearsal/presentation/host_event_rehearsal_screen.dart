@@ -123,27 +123,31 @@ class _HostEventRehearsalScreenState
           ),
       ],
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        large: false,
+        size: CatchTopBarSize.compact,
         height: CatchTopBar.workspaceHeightFor(
           context: context,
           hasEyebrow: true,
           titleMaxLines: topBarTitleMaxLines,
         ),
-        allowContentHeightExpansion: true,
+        mode: CatchTopBarMode.content,
         contentCrossAxisAlignment: CrossAxisAlignment.start,
         eyebrow: context.l10n.hostEventRehearsalManageSubtitle,
         title:
             rehearsalAsync.asData?.value.session.setup.title ??
             context.l10n.hostEventRehearsalTitle,
         titleMaxLines: topBarTitleMaxLines,
-        leadingType: CatchTopBarLeading.back,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: CatchIcons.arrowBackIosNewRounded,
           onPressed: () =>
               _leaveRehearsal(rehearsalAsync.asData?.value.session),
         ),
-        divider: scrolledUnder,
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.fullBleed(
         child: SafeArea(

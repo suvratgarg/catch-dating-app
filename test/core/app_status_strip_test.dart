@@ -31,8 +31,12 @@ void main() {
           GoRoute(
             path: '/detail',
             builder: (context, state) => CatchRouteScaffold(
-              topBarBuilder: (context, scrolled) =>
-                  CatchTopBar(title: 'Detail', divider: scrolled),
+              topBarBuilder: (context, scrolled) => CatchTopBar(
+                title: 'Detail',
+                emphasis: (scrolled)
+                    ? CatchTopBarEmphasis.divided
+                    : CatchTopBarEmphasis.plain,
+              ),
               body: const CatchRouteBody.standard(
                 child: Text('Detail content'),
               ),

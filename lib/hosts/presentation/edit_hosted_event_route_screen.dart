@@ -29,7 +29,9 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
       HostEventEditRouteStatus.loading => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
-          divider: scrolledUnder,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: const CatchRouteBody.standardViewport(
           child: HostRouteLoadingBody(
@@ -41,8 +43,12 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
       HostEventEditRouteStatus.error => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -58,8 +64,12 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
       HostEventEditRouteStatus.notFound => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchErrorState(
@@ -75,8 +85,12 @@ class EditHostedEventRouteScreen extends ConsumerWidget {
       HostEventEditRouteStatus.unauthorized => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEditHostedEventRouteScreenTitleEditEvent,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchErrorState(

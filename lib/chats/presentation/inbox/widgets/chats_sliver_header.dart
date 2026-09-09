@@ -20,10 +20,7 @@ double chatsBrowseHeaderHeight({
   required bool hasHostFilter,
   required bool hasHeaderSubtitle,
 }) =>
-    CatchScreenTopBar.heightFor(
-      context: context,
-      hasSubtitle: hasHeaderSubtitle,
-    ) +
+    CatchTopBar.heightFor(context: context, hasSubtitle: hasHeaderSubtitle) +
     (hasHostFilter ? _hostInboxFilterHeight : 0);
 
 class ChatsBrowseHeader extends StatefulWidget {
@@ -98,17 +95,19 @@ class _ChatsBrowseHeaderState extends State<ChatsBrowseHeader> {
           : l10n.consumerSearchChatsAction,
     );
     final topBar = widget.compactForPrimaryRail
-        ? CatchScreenTopBar.primaryRail(
+        ? CatchTopBar.primaryRail(
             context: context,
             title: title,
             subtitle: subtitle,
             search: search,
           )
-        : CatchScreenTopBar(
+        : CatchTopBar.screen(
             context: context,
             title: title,
             subtitle: subtitle,
-            leadingType: CatchTopBarLeading.none,
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.none,
+            ),
             applySafeArea: false,
             search: search,
           );

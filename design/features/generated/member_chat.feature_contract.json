@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:29134dd066b5ed235fe7aff133f5b85282a068017daa584fd195baa697922e40",
-  "resolvedDigest": "sha256:eda18da2b892571b72b6705289c97edef98695cc2fdbc1a35b9620a060479686",
+  "resolvedDigest": "sha256:c5b34bd5b63fbd47047b1533994d38521b9bba0690a3d0a579ccc562596e6ba0",
   "feature": {
     "id": "feature.member_chat",
     "name": "Chat Thread",
@@ -1726,7 +1726,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }
@@ -4020,7 +4023,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

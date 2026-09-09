@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:b3476b11552825ae4fe0bd224a40a241d4eff4f7c92d6a37578107137af88d32",
-  "resolvedDigest": "sha256:99cea3c836082ee65c741b22b5072e8605c2921c7442f78ce3632bf0978d2c12",
+  "resolvedDigest": "sha256:ee722cec06478384187a93a0725c9b994d2f954d33ad1d86a9cef9f8d773ecc0",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -1849,7 +1849,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

@@ -26,8 +26,12 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
         title: context
             .l10n
             .launchAccessLaunchAccessApplicationScreenTitleApplyForAccess,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standard(
         child: CatchAsyncBoundary<String?>(

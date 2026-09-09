@@ -404,10 +404,14 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEditHostedEventScreenTitleEditEvent,
-          leadingType: mutation.isPending
-              ? CatchTopBarLeading.none
-              : CatchTopBarLeading.auto,
-          divider: scrolledUnder,
+          navigation: CatchTopBarNavigation(
+            mode: mutation.isPending
+                ? CatchTopBarNavigationMode.none
+                : CatchTopBarNavigationMode.auto,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standard(
           child: IgnorePointer(

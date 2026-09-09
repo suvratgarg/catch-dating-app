@@ -34,8 +34,10 @@ Widget scaledHeaderReservationStates(BuildContext context) =>
                 final CatchScaledPreferredSize header = nested
                     ? CatchTopBar(
                         title: 'Audience',
-                        leadingType: CatchTopBarLeading.none,
-                        bottom: rail,
+                        navigation: const CatchTopBarNavigation(
+                          mode: CatchTopBarNavigationMode.none,
+                        ),
+                        footer: rail,
                       )
                     : rail;
                 return CatchScreenScaffold.workspace(

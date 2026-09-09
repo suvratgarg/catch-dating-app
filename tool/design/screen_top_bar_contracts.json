@@ -19,14 +19,14 @@
       "branchKey": "keys.explore",
       "routeName": "Routes.exploreScreen.name",
       "surfaces": [
-        {"path": "lib/explore/presentation/widgets/explore_header.dart", "symbol": "_ExploreDiscoveryTopBar", "owner": "CatchScreenTopBar"}
+        {"path": "lib/explore/presentation/widgets/explore_header.dart", "symbol": "_ExploreDiscoveryTopBar", "owner": "CatchTopBar.screen"}
       ]
     },
     {
       "branchKey": "keys.chats",
       "routeName": "Routes.matchesListScreen.name",
       "surfaces": [
-        {"path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart", "symbol": "ChatsBrowseHeader", "owner": "CatchScreenTopBar"}
+        {"path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart", "symbol": "ChatsBrowseHeader", "owner": "CatchTopBar.screen"}
       ]
     },
     {
@@ -64,7 +64,7 @@
       "branchKey": "keys.hostInbox",
       "routeName": "Routes.hostInboxScreen.name",
       "surfaces": [
-        {"path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart", "symbol": "ChatsBrowseHeader", "owner": "CatchScreenTopBar"}
+        {"path": "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart", "symbol": "ChatsBrowseHeader", "owner": "CatchTopBar.screen"}
       ]
     },
     {
@@ -281,8 +281,8 @@
     {
       "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
       "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar",
+      "expression": "CatchTopBar.screen",
+      "owner": "CatchTopBar.screen",
       "surface": "CatchRouteScaffold",
       "leading": "back",
       "occurrences": 3
@@ -290,8 +290,8 @@
     {
       "path": "lib/hosts/presentation/customers/host_customer_editor.dart",
       "role": "screen",
-      "expression": "CatchScreenTopBar",
-      "owner": "CatchScreenTopBar",
+      "expression": "CatchTopBar.screen",
+      "owner": "CatchTopBar.screen",
       "surface": "CatchRouteScaffold",
       "leading": "back"
     },
@@ -454,7 +454,7 @@
       "path": "lib/explore/presentation/widgets/explore_header.dart",
       "symbol": "_ExploreDiscoveryTopBar",
       "role": "screen",
-      "owner": "CatchScreenTopBar",
+      "owner": "CatchTopBar.screen",
       "reason": "Explore discovery delegates its body-owned floating screen chrome to the canonical screen top bar."
     },
     {

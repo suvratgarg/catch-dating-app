@@ -484,7 +484,9 @@ void main() {
               child: CatchScreenScaffold.workspace(
                 appBar: CatchTopBar(
                   title: 'Workspace',
-                  leadingType: CatchTopBarLeading.none,
+                  navigation: const CatchTopBarNavigation(
+                    mode: CatchTopBarNavigationMode.none,
+                  ),
                   actions: [
                     for (var i = 0; i < 3; i++)
                       CatchIconAction.toolbar(

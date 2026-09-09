@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_public.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:712743d9c1ca230cfdb52a2366c0bccb239167eee7224eb1d1cc9f394fd79e89",
-  "resolvedDigest": "sha256:58a303aa2f76adae152ed64f4cc99dbd50948454d6da57d80908ddd131b6f44b",
+  "resolvedDigest": "sha256:f1f88c56375345edfa6a76c886278be0f6156365f16ce67737f35ec748c0c5c8",
   "feature": {
     "id": "feature.profile_public",
     "name": "Public Profile",
@@ -968,7 +968,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

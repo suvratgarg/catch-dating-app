@@ -464,7 +464,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     );
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-        large: false,
+        size: CatchTopBarSize.compact,
         title: screenState.eventTitle,
         eyebrow: topBarEyebrow,
         titleMaxLines: topBarTitleMaxLines,
@@ -473,7 +473,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
           hasEyebrow: true,
           titleMaxLines: topBarTitleMaxLines,
         ),
-        allowContentHeightExpansion: true,
+        mode: CatchTopBarMode.content,
         contentCrossAxisAlignment: CrossAxisAlignment.start,
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
@@ -487,7 +487,9 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
             onPressed: () => _setRosterOpen(true, screenState.phase),
           ),
         ],
-        divider: scrolledUnder,
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.fullBleed(
         child: HostEventRosterDrawer(

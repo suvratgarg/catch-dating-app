@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:bae638ec3b70fbf9e4f4fd3e6efd73945d1e2c543f65b8ab6cccf5dc6b333900",
-  "resolvedDigest": "sha256:f0e6249866dc0b25dcf987808552fb6ecafd6bd55fcda15699998d29ff133739",
+  "resolvedDigest": "sha256:70d26c620e3b99941c3f032a9952395de0416b396eeb98c9a556429c02d4be47",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4588,7 +4588,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

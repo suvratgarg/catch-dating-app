@@ -36,11 +36,15 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
     canPop: !_saving,
     child: CatchRouteScaffold(
       resizeToAvoidBottomInset: true,
-      topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
         context: context,
         title: context.l10n.hostCustomersAddTitle,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       bottomNavigationBar: CatchDockSurface.primary(
         label: context.l10n.hostCustomersAdd,

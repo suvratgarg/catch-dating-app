@@ -114,7 +114,9 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
         backgroundColor: t.bg,
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.swipesFiltersScreenTitleFilters,
-          divider: scrolledUnder,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
           leading: CatchIconAction.toolbar(
             icon: CatchIcons.closeRounded,
             tooltip: context.l10n.swipesFiltersScreenTooltipCloseFilters,

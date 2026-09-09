@@ -20,7 +20,9 @@ void main() {
             children: [
               CatchTopBar(
                 title: 'People',
-                leadingType: CatchTopBarLeading.none,
+                navigation: const CatchTopBarNavigation(
+                  mode: CatchTopBarNavigationMode.none,
+                ),
                 actions: [
                   CatchTopBarPrimaryButton(
                     label: 'Add person',

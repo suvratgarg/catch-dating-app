@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/account_settings.feature.json",
   "generatedFor": "2026-08-05",
   "sourceDigest": "sha256:303b25fbc307b84eb1a012446807bda3b0939a501847f786869cea3122e97904",
-  "resolvedDigest": "sha256:49196afb9bcf86aaea3663e4179e955c0d88002316b17d70bb6ebb73c4bd3446",
+  "resolvedDigest": "sha256:d8da06747ac14878eb11e4ff76d74432ad5eff3bcce1df05af72dd31d872049e",
   "feature": {
     "id": "feature.account_settings",
     "name": "Account Settings",
@@ -2152,7 +2152,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

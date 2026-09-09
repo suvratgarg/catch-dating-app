@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
-  "resolvedDigest": "sha256:c05eedf087ee7c10f8ce0801349eea930d46ec6ea09d569985a70929b965af2c",
+  "resolvedDigest": "sha256:f5551fde79630dd3454199acb71b026d1d20e4cdb581f922cf7b1540d9656ce7",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -877,7 +877,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

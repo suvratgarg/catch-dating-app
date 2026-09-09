@@ -208,7 +208,7 @@ void main() {
     await tester.pump();
 
     final pendingTopBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
-    expect(pendingTopBar.leadingType, CatchTopBarLeading.back);
+    expect(pendingTopBar.navigation.mode, CatchTopBarNavigationMode.back);
     expect((pendingTopBar.leading! as CatchIconAction).onPressed, isNull);
     expect(
       tester

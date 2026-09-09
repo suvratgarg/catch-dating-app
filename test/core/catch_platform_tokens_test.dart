@@ -68,9 +68,11 @@ void main() {
             home: const Scaffold(
               appBar: CatchTopBar(
                 title: 'Ananya Rao',
-                titleRole: CatchTopBarTitleRole.identity,
-                divider: true,
-                leadingType: CatchTopBarLeading.none,
+                variant: CatchTopBarVariant.identity,
+                emphasis: CatchTopBarEmphasis.divided,
+                navigation: CatchTopBarNavigation(
+                  mode: CatchTopBarNavigationMode.none,
+                ),
               ),
               body: SizedBox.shrink(),
             ),
@@ -102,7 +104,7 @@ void main() {
           home: const CatchScreenScaffold.workspace(
             appBar: CatchTopBar(
               title: 'Customers',
-              bottom: CatchPageTabBar<int>(
+              footer: CatchPageTabBar<int>(
                 selected: 0,
                 options: [
                   CatchOption(value: 0, label: 'Overview'),

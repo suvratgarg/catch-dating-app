@@ -67,7 +67,7 @@ final class CatchRootScreenHeader {
         padding: CatchInsets.primaryRailTitleBlock,
       );
     }
-    return CatchScreenTopBar.primaryRail(
+    return CatchTopBar.primaryRail(
       context: context,
       eyebrow: _eyebrow,
       title: _title!,

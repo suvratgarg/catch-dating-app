@@ -18,8 +18,12 @@ class HostMessagingSetupScreen extends ConsumerWidget {
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostSendsSettings,
-        divider: scrolledUnder,
-        leadingType: CatchTopBarLeading.back,
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
       ),
       body: CatchRouteBody.standardSections(
         sections: [

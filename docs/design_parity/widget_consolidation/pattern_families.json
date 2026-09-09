@@ -3534,6 +3534,34 @@
           "rationale": "Sliver output is a constructor of the same visible-state viewport."
         }
       ]
+    },
+    {
+      "id": "top-bar-recipes",
+      "title": "One top-bar renderer and explicit chrome policies",
+      "intent": "Root-title and primary-rail wrappers become named recipes of the route/identity top-bar owner; navigation and presentation axes are typed.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.top_bar",
+      "qualityReference": "CatchTopBar",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "Production root, route, identity and pinned-rail chrome retain their geometry and interactions. The contract gallery adds root-title recipes; catalog headers identify their canonical owner. The expanded large-text gallery uses two pages. Its small avatar-initials baseline refresh also occurs when rendering the original top-bar source; original and consolidated renderers match in the same catalog layout."
+      ],
+      "members": [
+        {
+          "symbol": "CatchTopBar",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "All title voices use the same navigation, action, search, boundary and preferred-size engine. Distinct root and pinned-rail geometry belongs to named constructors."
+        },
+        {
+          "symbol": "CatchScreenTopBar",
+          "disposition": "unify",
+          "target": "CatchTopBar.screen",
+          "preview": "not-applicable",
+          "rationale": "Absorb the existing wrapper into the engine while preserving scaled height and large-text action reflow; primaryRail remains a separate constructor."
+        }
+      ]
     }
   ]
 }

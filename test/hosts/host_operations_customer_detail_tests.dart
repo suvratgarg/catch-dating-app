@@ -78,8 +78,8 @@ void _registerHostOperationsCustomerDetailTests() {
       'Ananya Rao',
     );
     expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).titleRole,
-      CatchTopBarTitleRole.identity,
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).variant,
+      CatchTopBarVariant.identity,
     );
   });
 

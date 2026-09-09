@@ -88,7 +88,7 @@ void _registerExploreClubDetailTests() {
               builder: (context) => CustomScrollView(
                 slivers: CatchSliverHeader(
                   title: const SizedBox.shrink(),
-                  bottomHeight: CatchScreenTopBar.heightFor(context: context),
+                  bottomHeight: CatchTopBar.heightFor(context: context),
                   bottom: const ExploreBrowseHeaderContent(),
                 ).buildSlivers(context),
               ),

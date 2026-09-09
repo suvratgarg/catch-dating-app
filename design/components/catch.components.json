@@ -8365,8 +8365,8 @@
           "SliverAppBar"
         ],
         "replacementMap": {
-          "AppBar": "CatchTopBar or CatchScreenTopBar",
-          "CupertinoNavigationBar": "CatchTopBar or CatchScreenTopBar",
+          "AppBar": "CatchTopBar or CatchTopBar.screen",
+          "CupertinoNavigationBar": "CatchTopBar or CatchTopBar.screen",
           "SliverAppBar": "a registered media-hero sliver or CatchTopBar"
         },
         "steeringGroup": "control",
@@ -8383,12 +8383,15 @@
       "name": "CatchTopBar",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical app-bar primitive for semantic compact/large title chrome, back/close leading, trailing actions, expanding search, and an explicit divider input independent from surface selection.",
+      "summary": "One top-bar owner for compact route, identity, root-title and primary-rail chrome, with explicit navigation, size, background, boundary and height policies.",
       "dart": {
         "symbol": "CatchTopBar",
         "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
         "constructors": [
-          "CatchTopBar"
+          "CatchTopBar",
+          "CatchTopBar.identity",
+          "CatchTopBar.screen",
+          "CatchTopBar.primaryRail"
         ]
       },
       "design": {
@@ -8434,17 +8437,6 @@
             "dartType": "String?"
           },
           {
-            "name": "titleRole",
-            "type": "enum",
-            "required": false,
-            "default": "route",
-            "dartType": "CatchTopBarTitleRole",
-            "values": [
-              "route",
-              "identity"
-            ]
-          },
-          {
             "name": "titleMaxLines",
             "type": "number",
             "required": false,
@@ -8469,61 +8461,86 @@
             "dartType": "VoidCallback?"
           },
           {
-            "name": "leadingType",
+            "name": "size",
             "type": "enum",
             "required": false,
-            "default": "auto",
-            "dartType": "CatchTopBarLeading",
+            "default": "automatic",
+            "dartType": "CatchTopBarSize",
             "values": [
-              "auto",
-              "back",
-              "close",
-              "none"
+              "automatic",
+              "compact",
+              "large"
             ]
           },
           {
-            "name": "leadingActionVariant",
+            "name": "variant",
             "type": "enum",
             "required": false,
-            "default": "bordered",
-            "dartType": "CatchIconActionVariant",
+            "default": "route",
+            "dartType": "CatchTopBarVariant",
             "values": [
-              "bordered",
-              "float",
-              "plain"
+              "route",
+              "identity"
             ]
           },
           {
-            "name": "surface",
-            "type": "bool",
+            "name": "tone",
+            "type": "enum",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "default": "page",
+            "dartType": "CatchTopBarTone",
+            "values": [
+              "page",
+              "surface"
+            ]
           },
           {
-            "name": "divider",
-            "type": "bool",
+            "name": "emphasis",
+            "type": "enum",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "default": "plain",
+            "dartType": "CatchTopBarEmphasis",
+            "values": [
+              "plain",
+              "divided"
+            ]
           },
           {
-            "name": "actionIcon",
+            "name": "mode",
+            "type": "enum",
+            "required": false,
+            "default": "fixed",
+            "dartType": "CatchTopBarMode",
+            "values": [
+              "fixed",
+              "content"
+            ]
+          },
+          {
+            "name": "navigation",
             "type": "object",
             "required": false,
-            "dartType": "IconData?"
+            "dartType": "CatchTopBarNavigation"
           },
           {
-            "name": "searchValue",
-            "type": "string",
+            "name": "search",
+            "type": "object",
             "required": false,
-            "dartType": "String?"
+            "dartType": "CatchTopBarSearch?"
           },
           {
-            "name": "onSearch",
-            "type": "callback",
+            "name": "gutter",
+            "type": "bool",
             "required": false,
-            "dartType": "ValueChanged<String>?"
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "applySafeArea",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
           }
         ],
         "states": [
@@ -8536,19 +8553,30 @@
           "conversation-title",
           "surface",
           "divider",
-          "plain-actions"
+          "plain-actions",
+          "root-title",
+          "root-subtitle-actions",
+          "primary-rail"
         ],
         "slots": [
           {
-            "name": "titleWidget",
+            "name": "body",
             "kind": "optional-title-widget"
+          },
+          {
+            "name": "leading",
+            "kind": "optional-leading-widget"
           },
           {
             "name": "actions",
             "kind": "optional-action-list"
           },
           {
-            "name": "bottom",
+            "name": "trailing",
+            "kind": "optional-trailing-widget"
+          },
+          {
+            "name": "footer",
             "kind": "optional-preferred-size-widget"
           }
         ],
@@ -8565,7 +8593,7 @@
         ],
         "dartRoles": [
           "CatchScreenHeader",
-          "CatchScreenTopBar",
+          "CatchTopBar.screen",
           "CatchLayout.topBarHeight",
           "CatchLayout.topBarLargeHeight",
           "CatchIconAction.navSize",
@@ -8582,7 +8610,8 @@
           "CatchTopBarPrimaryButton",
           "CatchActionMenu",
           "CatchButton.text",
-          "CatchTopBarTabBar"
+          "CatchTopBarTabBar",
+          "CatchTopBarNavigation"
         ],
         "goldens": [],
         "members": [
@@ -8613,27 +8642,6 @@
                 "catch.top_bar"
               ],
               "reason": "Composes a screen title, kicker, subtitle, leading and action lanes that reflow at large text; a HeaderTitle only draws the title."
-            }
-          },
-          {
-            "id": "catch.top_bar.screen_top_bar",
-            "symbol": "CatchScreenTopBar",
-            "file": "packages/catch_ui/lib/src/components/catch_screen_top_bar.dart",
-            "summary": "Root-screen app-bar wrapper that composes CatchScreenHeader inside CatchTopBar while preserving actions, leading, safe area, padding, bottom, expanding search configuration, and natural two-line subtitle height at large text.",
-            "states": [
-              "root-title",
-              "with-subtitle",
-              "large-text-subtitle",
-              "with-search",
-              "with-leading",
-              "with-actions"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.top_bar",
-              "parentConceptId": "catch.top_bar",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.top_bar"
             }
           },
           {
@@ -8736,6 +8744,23 @@
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.top_bar"
             }
+          },
+          {
+            "id": "catch.top_bar.navigation",
+            "symbol": "CatchTopBarNavigation",
+            "file": "packages/catch_ui/lib/src/components/catch_top_bar_navigation.dart",
+            "summary": "Typed leading navigation mode, icon treatment and caller-owned destination callback.",
+            "states": [
+              "default",
+              "configured"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.top_bar",
+              "parentConceptId": "catch.top_bar",
+              "qualifier": "recipe",
+              "decisionRef": "pattern-family:top-bar-recipes"
+            }
           }
         ],
         "accessibility": {
@@ -8759,10 +8784,10 @@
         ],
         "notes": [
           "Use this primitive for route chrome before creating local AppBar variants.",
-          "Use CatchScreenHeader or CatchScreenTopBar for root screen headers that need the main tab Archivo title voice.",
+          "Use CatchScreenHeader or CatchTopBar.screen for root screen headers that need the main tab Archivo title voice.",
           "Generic compact and workspace route labels use CatchTextStyles.routeTitle; pass title, eyebrow or kicker, subtitle, and titleMaxLines instead of a local titleWidget or style.",
           "Title-case eyebrow copy uses the untracked CatchTextStyles.monoLabel role; uppercase kicker copy uses CatchKickerText. Workspace bars pin large: false so the route-title family cannot drift.",
-          "Use CatchTopBarTitleRole.identity only for a registered user-authored name; controls and identity names remain in the platform function family.",
+          "Use CatchTopBarVariant.identity only for a registered user-authored name; controls and identity names remain in the platform function family.",
           "Use CatchTopBarPrimaryButton when a root-screen primary action must compact from a labelled button to the canonical icon target; use CatchButton.text for native text actions, and never pass a pill-style CatchButton directly to an actions slot.",
           "Large mode is implied by a non-empty kicker unless explicitly overridden.",
           "Use CatchTopBar.identity for conversation or profile-backed app bars; missing identity taps are runtime availability, not a separate design variant.",
@@ -8787,6 +8812,11 @@
       },
       "surfaces": {
         "flutter": "CatchTopBar"
+      },
+      "level": "L3",
+      "roleNoun": "TopBar",
+      "naming": {
+        "useCase": ""
       }
     },
     {
@@ -12039,7 +12069,7 @@
             "name": "leadingType",
             "type": "enum",
             "required": false,
-            "dartType": "CatchTopBarLeading?",
+            "dartType": "CatchTopBarNavigationMode?",
             "values": [
               "auto",
               "back",
@@ -12104,7 +12134,7 @@
         ],
         "dartRoles": [
           "CatchTopBar",
-          "CatchTopBarLeading",
+          "CatchTopBarNavigationMode",
           "CatchButton.text",
           "CatchTextStyles.monoLabel",
           "CatchLayout.stepHeaderProgressHeight"

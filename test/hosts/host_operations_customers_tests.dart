@@ -549,7 +549,7 @@ void _registerHostOperationsCustomersTests() {
           matching: find.byType(CatchTopBar),
         ),
       );
-      expect(detailTopBar.leadingType, CatchTopBarLeading.none);
+      expect(detailTopBar.navigation.mode, CatchTopBarNavigationMode.none);
       expect(tester.takeException(), isNull);
     },
   );

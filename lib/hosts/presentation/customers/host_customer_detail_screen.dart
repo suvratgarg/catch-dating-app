@@ -82,14 +82,16 @@ class _HostCustomerDetailScreenState
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: displayName,
-        titleRole:
+        variant:
             detailState.value != null ||
                 (initialDisplayName?.isNotEmpty ?? false)
-            ? CatchTopBarTitleRole.identity
-            : CatchTopBarTitleRole.route,
-        leadingType: widget.embedded
-            ? CatchTopBarLeading.none
-            : CatchTopBarLeading.back,
+            ? CatchTopBarVariant.identity
+            : CatchTopBarVariant.route,
+        navigation: CatchTopBarNavigation(
+          mode: widget.embedded
+              ? CatchTopBarNavigationMode.none
+              : CatchTopBarNavigationMode.back,
+        ),
         actions: [
           if (detailState.value != null &&
               communicationPlanState
@@ -145,7 +147,9 @@ class _HostCustomerDetailScreenState
               }),
             ),
         ],
-        divider: scrolledUnder,
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standard(
         child: CatchAsyncBoundary<HostAudienceContactDetail>(

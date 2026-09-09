@@ -5613,6 +5613,9 @@ Widget catchTopBarContractStates(BuildContext context) {
       'surface',
       'divider',
       'plain-actions',
+      'root-title',
+      'root-subtitle-actions',
+      'primary-rail',
     ],
     children: [
       _StateCard(
@@ -5621,7 +5624,7 @@ Widget catchTopBarContractStates(BuildContext context) {
           child: CatchTopBar(
             title: 'Events',
             subtitle: 'Tonight nearby',
-            allowContentHeightExpansion: true,
+            mode: CatchTopBarMode.content,
           ),
         ),
       ),
@@ -5632,7 +5635,7 @@ Widget catchTopBarContractStates(BuildContext context) {
             kicker: 'HOST MODE',
             title: 'Upcoming events',
             subtitle: 'Review requests and keep the room balanced.',
-            allowContentHeightExpansion: true,
+            mode: CatchTopBarMode.content,
           ),
         ),
       ),
@@ -5641,9 +5644,11 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Event details',
-            allowContentHeightExpansion: true,
-            leadingType: CatchTopBarLeading.back,
-            onBack: _noop,
+            mode: CatchTopBarMode.content,
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.back,
+              onPressed: _noop,
+            ),
           ),
         ),
       ),
@@ -5652,10 +5657,13 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Form builder',
-            allowContentHeightExpansion: true,
-            leadingType: CatchTopBarLeading.back,
-            leadingActionVariant: CatchIconActionVariant.plain,
-            onBack: _noop,
+            mode: CatchTopBarMode.content,
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.back,
+              variant: CatchIconActionVariant.plain,
+              onPressed: _noop,
+            ),
+
             actions: [
               CatchButton.text(label: 'Preview', onPressed: _noop),
               CatchActionMenu<String>(
@@ -5674,7 +5682,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Chats',
-            allowContentHeightExpansion: true,
+            mode: CatchTopBarMode.content,
             actions: [
               CatchIconAction.toolbar(
                 icon: CatchIcons.moreHorizRounded,
@@ -5690,7 +5698,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Preview',
-            allowContentHeightExpansion: true,
+            mode: CatchTopBarMode.content,
             actions: [CatchButton.text(label: 'Done', onPressed: _noop)],
           ),
         ),
@@ -5701,7 +5709,7 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: _TopBarFrame(
           child: CatchTopBar(
             title: 'Clubs',
-            allowContentHeightExpansion: true,
+            mode: CatchTopBarMode.content,
             search: CatchTopBarSearch(
               copy: catchSearchFieldCopy(context.l10n),
               value: 'run',
@@ -5721,11 +5729,11 @@ Widget catchTopBarContractStates(BuildContext context) {
                   name: 'Taylor from Sunday Social',
                 ),
             identityName: 'Taylor from Sunday Social',
-            allowContentHeightExpansion: true,
+            mode: CatchTopBarMode.content,
             identityPhotoUrl: null,
             onIdentityTap: _noop,
-            surface: true,
-            divider: true,
+            tone: CatchTopBarTone.surface,
+            emphasis: CatchTopBarEmphasis.divided,
             actions: [
               CatchActionMenu<String>(
                 tooltip: 'Chat actions',
@@ -5760,8 +5768,8 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: const _TopBarFrame(
           child: CatchTopBar(
             title: 'Surface',
-            surface: true,
-            allowContentHeightExpansion: true,
+            tone: CatchTopBarTone.surface,
+            mode: CatchTopBarMode.content,
           ),
         ),
       ),
@@ -5770,8 +5778,47 @@ Widget catchTopBarContractStates(BuildContext context) {
         child: const _TopBarFrame(
           child: CatchTopBar(
             title: 'Divider',
-            divider: true,
-            allowContentHeightExpansion: true,
+            emphasis: CatchTopBarEmphasis.divided,
+            mode: CatchTopBarMode.content,
+          ),
+        ),
+      ),
+
+      _StateCard(
+        label: 'root-title',
+        child: _TopBarFrame(
+          child: Builder(
+            builder: (context) =>
+                CatchTopBar.screen(context: context, title: 'Your people'),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'root-subtitle-actions',
+        child: _TopBarFrame(
+          child: Builder(
+            builder: (context) => CatchTopBar.screen(
+              context: context,
+              title: 'Your people',
+              eyebrow: 'COMMUNITY',
+              subtitle: 'Keep your shared plans in view.',
+              actions: [
+                CatchIconAction.toolbar(
+                  icon: CatchIcons.moreHorizRounded,
+                  tooltip: 'More actions',
+                  onPressed: _noop,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'primary-rail',
+        child: _TopBarFrame(
+          child: Builder(
+            builder: (context) =>
+                CatchTopBar.primaryRail(context: context, title: 'People'),
           ),
         ),
       ),
@@ -7865,7 +7912,7 @@ Widget catchStepHeaderContractStates(BuildContext context) {
               context.l10n,
             ),
             title: 'Create event',
-            leadingType: CatchTopBarLeading.close,
+            leadingType: CatchTopBarNavigationMode.close,
             onBack: _noop,
           ),
         ),

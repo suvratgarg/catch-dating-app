@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.52.0
+version: 1.53.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -3054,10 +3054,15 @@ absence of an enforcement entry is drift.
 Every handwritten `Scaffold.appBar` is registered by exact file, role,
 expression, and canonical owner in
 `tool/design/screen_top_bar_contracts.json`. Root and root-like destinations
-use `CatchScreenTopBar`, compact detail/edit/utility routes use `CatchTopBar`,
-and avatar-backed identity routes use `CatchTopBar.identity`. Generic compact
+use `CatchTopBar.screen`, compact detail/edit/utility routes use `CatchTopBar`,
+and avatar-backed identity routes use `CatchTopBar.identity`. Root
+titles and pinned-rail titles use `.screen` and `.primaryRail`; all recipes
+share one stateful renderer. Navigation owns its mode, icon treatment and
+callback in `CatchTopBarNavigation`. Size, background tone, boundary emphasis,
+height mode and typography variant use closed axes; `body` supplies custom
+heading content and `footer` supplies a preferred-size companion. Generic compact
 route labels resolve through `CatchTextStyles.routeTitle`; a user-authored name
-must opt into `CatchTopBarTitleRole.identity` under a registered title policy.
+must opt into `CatchTopBarVariant.identity` under a registered title policy.
 A canonical call elsewhere in
 the file cannot bless helper-owned or raw chrome inside the actual `appBar`
 value.
@@ -3078,8 +3083,8 @@ owns surface color and the scroll-under divider. Loading, empty, error, and
 content branches retain the same title voice and back behavior instead of
 building competing scaffolds.
 
-`CatchTopBar.divider` is the only separator input. The surface flag changes
-background treatment only; it cannot silently opt into a border, and the
+`CatchTopBarEmphasis.divided` is the only separator input. The background
+role (`CatchTopBarTone`) changes paint only; it cannot silently opt into a border, and the
 retired `border` alias must not be reintroduced.
 
 Its closed `CatchRouteBody` API makes viewport behavior explicit:
@@ -3095,8 +3100,8 @@ The primitive owns the compact title role: `CatchTextStyles.routeTitle` is
 Archivo at 20/700/1.16, while the root `CatchScreenHeader` remains Archivo
 at the larger headline scale. Route and workspace screens pass semantic
 `title`, title-case `eyebrow` (untracked `monoLabel`) or uppercase `kicker`,
-`subtitle`, and `titleMaxLines` inputs; a feature-local `titleWidget` or raw
-title style is a contract failure. Workspace bars pin `large: false` so this
+`subtitle`, and `titleMaxLines` inputs; a feature-local `body` or raw
+title style is a contract failure. Workspace bars pin `size: CatchTopBarSize.compact` so this
 path cannot silently resolve back to `titleL`. Identity names remain a
 registered semantic exception in the platform function family, with an
 explicit route-title fallback while identity data is unavailable.
@@ -3110,9 +3115,9 @@ this boundary rather than copying `Scaffold(backgroundColor:, appBar:)` flags.
 
 Pushed routes that must always expose an exit declare `leading: "back"` in
 the same manifest entry. The gate then requires an explicit
-`CatchTopBarLeading.back` (or `showBackButton: true`) configuration, so a
+`CatchTopBarNavigation(mode: CatchTopBarNavigationMode.back)` configuration, so a
 correct primitive name cannot hide a navigation dead end. Screens that can be
-entered as a root deep link should also provide an `onBack` fallback to their
+entered as a root deep link should also provide a navigation `onPressed` fallback to their
 owning root destination.
 
 `node tool/run.mjs check design:screen-top-bar-contracts` walks all
@@ -3132,7 +3137,7 @@ The same gate consumes `tool/design/root_screen_composition_contracts.json` and
 must report every consumer and Host root-screen branch; a zero-root pass is
 invalid. That manifest classifies shell branches only. Exact title ownership is
 registered against the title primitive (`CatchRootScreenHeader.title`,
-`CatchScreenHeader.block`, or `CatchScreenTopBar`), never against the
+`CatchScreenHeader.block`, or `CatchTopBar.screen`), never against the
 layout scaffold that happens to carry it.
 
 Full-screen editors that must cover persistent shell navigation declare their
@@ -3983,7 +3988,6 @@ Widget build(BuildContext context) {
 Reference files:
 
 - `packages/catch_ui/lib/src/components/catch_top_bar.dart`
-- `packages/catch_ui/lib/src/components/catch_screen_top_bar.dart`
 - `packages/catch_ui/lib/src/components/catch_screen_header.dart`
 - `lib/dashboard/presentation/dashboard_home_screen.dart`
 - `lib/chats/presentation/inbox/widgets/chats_sliver_header.dart`
@@ -3996,13 +4000,13 @@ through `CatchScreenHeader`, which uses `CatchTextStyles.headline`
 (Archivo) for the primary title, optional mono kicker and supporting subtitle
 roles, and explicit leading/action slots. Sliver screens pass
 `CatchScreenHeader.block(...)` into `CatchSliverHeader.title`; app-bar
-screens use `CatchScreenTopBar(...)`, which wraps `CatchTopBar` while preserving
+screens use `CatchTopBar.screen(...)`, a named recipe of the same owner preserving
 search, leading, action, safe-area, and padding configuration.
 
-The app-bar wrapper's preferred size must reserve the same title, eyebrow,
+The screen recipe's preferred size must reserve the same title, eyebrow,
 subtitle, and action line counts that `CatchScreenHeader` renders. At a
 text scale of 1.5 or greater the supporting subtitle may use two lines, so
-`CatchScreenTopBar.heightFor` must budget two scaled supporting line heights.
+`CatchTopBar.heightFor` must budget two scaled supporting line heights.
 Keep this invariant in the shared primitive and its focused widget test rather
 than compensating with route-owned fixed heights.
 
@@ -4023,82 +4027,18 @@ utility screens. It shares the Archivo family but remains a separate compact
 hierarchy from the 32px root headline.
 
 ```dart
-const CatchScreenHeader.block({
-  required this.title,
-  this.kicker,
-  this.subtitle,
-  this.leading,
-  this.actions = const <Widget>[],
-  this.padding = CatchInsets.screenTitleBlock,
-  this.backgroundColor,
-}) : material = true;
-
-@override
-Widget build(BuildContext context) {
-  final t = CatchTokens.of(context);
-  final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-
-  return Row(
-    children: [
-      if (leading != null) ...[leading!, gapW12],
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (kicker != null) ...[
-              Text(
-                kicker!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.kicker(context, color: t.ink3),
-              ),
-              gapH2,
-            ],
-            Text(
-              title,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: CatchTextStyles.headline(context, color: t.ink),
-            ),
-            if (subtitle != null) ...[
-              const SizedBox(height: CatchGaps.headerTitleToSubtitle),
-            Text(
-              subtitle!,
-              maxLines: largeText ? 2 : 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.supporting(context, color: t.ink2),
-              ),
-            ],
-          ],
-        ),
-      ),
-      if (actions.isNotEmpty) ...[
-        gapW12,
-        Row(mainAxisSize: MainAxisSize.min, children: actions),
-      ],
-    ],
-  );
-}
-
-@override
-Widget build(BuildContext context) {
-  return CatchTopBar(
-    titleWidget: CatchScreenHeader(
-      title: title,
-      kicker: eyebrow,
-      subtitle: subtitle,
-    ),
-    large: false,
-    leading: leading,
-    leadingType: leadingType,
-    actions: actions,
-    contentPadding: contentPadding,
-    height: height,
-    searchValue: searchValue,
-    searchEnabled: searchEnabled,
-    onSearch: onSearch,
-  );
-}
+CatchTopBar.screen(
+  context: context,
+  title: title,
+  eyebrow: eyebrow,
+  subtitle: subtitle,
+  navigation: CatchTopBarNavigation(
+    mode: CatchTopBarNavigationMode.back,
+    onPressed: onBack,
+  ),
+  actions: actions,
+  search: search,
+)
 ```
 
 ### Exhibit ARCH-UI-STATE-001: Provider-Free Presentation State Model

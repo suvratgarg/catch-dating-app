@@ -956,17 +956,17 @@ Widget catchToggleInputCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchScreenTopBar,
+  type: CatchTopBar,
   path: '[Core catalog]/Navigation',
 )
-Widget catchScreenTopBarCatalogStates(BuildContext context) {
+Widget catchTopBarScreenCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchScreenTopBar',
-    catalogId: 'core.widgets.catch_screen_top_bar',
+    title: 'CatchTopBar',
+    catalogId: 'core.widgets.catch_top_bar_screen',
     children: [
       _StateCard(
         label: 'root title / subtitle / action',
-        child: CatchScreenTopBar(
+        child: CatchTopBar.screen(
           context: context,
           title: 'Chats',
           subtitle: 'Messages from your matches',
@@ -981,7 +981,7 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
       ),
       _StateCard(
         label: 'root search chrome',
-        child: CatchScreenTopBar(
+        child: CatchTopBar.screen(
           context: context,
           leading: CatchIconAction.toolbar(
             icon: CatchIcons.locationOnOutlined,
@@ -1019,9 +1019,11 @@ Widget catchPageTabBarAppBarStates(BuildContext context) {
           child: Builder(
             builder: (context) => CatchTopBar(
               title: 'Explore',
-              leadingType: CatchTopBarLeading.none,
-              surface: true,
-              bottom: CatchPageTabBar<int>.controlled(
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.none,
+              ),
+              tone: CatchTopBarTone.surface,
+              footer: CatchPageTabBar<int>.controlled(
                 controller: DefaultTabController.of(context),
                 options: const [
                   CatchOption(value: 0, label: 'Tonight'),
@@ -1051,9 +1053,12 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
         label: 'icon / text / menu',
         child: CatchTopBar(
           title: 'Event details',
-          leadingType: CatchTopBarLeading.back,
-          onBack: _noop,
-          surface: true,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+            onPressed: _noop,
+          ),
+
+          tone: CatchTopBarTone.surface,
           actions: [
             CatchIconAction.toolbar(
               icon: CatchIcons.savedOutlined,

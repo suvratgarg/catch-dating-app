@@ -24,8 +24,12 @@ class HostEventOperatorScreen extends ConsumerWidget {
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEventOperatorTitle,
-          divider: scrolledUnder,
-          leadingType: CatchTopBarLeading.back,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
         ),
         body: const CatchRouteBody.standardViewport(
           child: HostRouteLoadingBody(padding: EdgeInsets.zero),
@@ -34,8 +38,12 @@ class HostEventOperatorScreen extends ConsumerWidget {
       errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEventOperatorTitle,
-          divider: scrolledUnder,
-          leadingType: CatchTopBarLeading.back,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -51,8 +59,12 @@ class HostEventOperatorScreen extends ConsumerWidget {
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title: access.title,
               subtitle: context.l10n.hostsEventOperatorTitle,
-              divider: scrolledUnder,
-              leadingType: CatchTopBarLeading.back,
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
             ),
             body: CatchRouteBody.standardViewport(
               child: CatchErrorState(
@@ -68,8 +80,12 @@ class HostEventOperatorScreen extends ConsumerWidget {
           topBarBuilder: (context, scrolledUnder) => CatchTopBar(
             title: access.title,
             subtitle: context.l10n.hostsEventOperatorTitle,
-            divider: scrolledUnder,
-            leadingType: CatchTopBarLeading.back,
+            emphasis: scrolledUnder
+                ? CatchTopBarEmphasis.divided
+                : CatchTopBarEmphasis.plain,
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.back,
+            ),
           ),
           body: CatchRouteBody.standardSections(
             sections: [

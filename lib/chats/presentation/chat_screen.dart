@@ -309,10 +309,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         onIdentityTap: chatState.profileNavigationEnabled
             ? () => _openOtherProfile(chatState)
             : null,
-        leadingType: widget.embedded
-            ? CatchTopBarLeading.none
-            : CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: CatchTopBarNavigation(
+          mode: widget.embedded
+              ? CatchTopBarNavigationMode.none
+              : CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
         actions: [
           if (availableThreadActions.isNotEmpty)
             CatchActionMenu<ChatThreadAction>(

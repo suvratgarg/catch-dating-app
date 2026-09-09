@@ -105,7 +105,9 @@ void main() {
             identityName: 'Camille',
             identitySemanticLabel: 'Ouvrir le profil de Camille',
             onIdentityTap: interactive ? () => opened = true : null,
-            leadingType: CatchTopBarLeading.none,
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.none,
+            ),
           ),
         ),
       );

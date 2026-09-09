@@ -20,8 +20,12 @@ Widget routeBodyRoleStates(BuildContext context) => WidgetbookCatalogFrame(
           builder: (context) => CatchRouteScaffold(
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title: fullBleed ? 'Edge-owned route' : 'Standard route',
-              leadingType: CatchTopBarLeading.none,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.none,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: fullBleed
                 ? CatchRouteBody.fullBleed(

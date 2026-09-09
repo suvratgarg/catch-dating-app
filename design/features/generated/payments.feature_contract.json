@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:4984deb8b8cdb1ce216141e0e81a705626dd53ed2cfb4d30d73087abae332191",
+  "resolvedDigest": "sha256:497ec7c02a0750296a71e4f463720d2778f3c8cb2d23a1479391ab4ecfdad22a",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1504,7 +1504,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }
