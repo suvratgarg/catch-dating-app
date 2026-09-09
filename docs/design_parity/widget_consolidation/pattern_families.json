@@ -3562,6 +3562,34 @@
           "rationale": "Absorb the existing wrapper into the engine while preserving scaled height and large-text action reflow; primaryRail remains a separate constructor."
         }
       ]
+    },
+    {
+      "id": "numeric-range-input",
+      "title": "One numeric interval input",
+      "intent": "Name the ordered two-endpoint editing contract within the closed Input role; retain its existing canonical implementation.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.range_slider",
+      "qualityReference": "CatchRangeInput",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "Catalog headings identify RangeInput. Production track, thumb, labels, hit regions and semantics remain unchanged."
+      ],
+      "members": [
+        {
+          "symbol": "CatchRangeInput",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Range editing consumes an ordered numeric interval, unlike character entry and arbitrary choice-set selection. The existing implementation is the only production RangeSlider owner."
+        },
+        {
+          "symbol": "CatchRangeSlider",
+          "disposition": "unify",
+          "target": "CatchRangeInput",
+          "preview": "not-applicable",
+          "rationale": "Rename the existing implementation and all callers; no forwarding wrapper or second interval input remains."
+        }
+      ]
     }
   ]
 }

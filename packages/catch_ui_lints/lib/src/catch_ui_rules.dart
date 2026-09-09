@@ -1757,7 +1757,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
             (typeName == 'TextField' || typeName == 'TextFormField')) ||
         (_isCatchMenuImplementationPath && typeName == 'MenuAnchor') ||
         (_isCatchTextInputImplementationPath && typeName == 'TextField') ||
-        (_isCatchRangeSliderImplementationPath && typeName == 'RangeSlider') ||
+        (_isCatchRangeInputImplementationPath && typeName == 'RangeSlider') ||
         (_isCatchButtonImplementationPath && typeName == 'TextButton');
   }
 
@@ -2161,9 +2161,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     );
   }
 
-  bool get _isCatchRangeSliderImplementationPath {
+  bool get _isCatchRangeInputImplementationPath {
     return path.endsWith(
-      '/packages/catch_ui/lib/src/components/catch_range_slider.dart',
+      '/packages/catch_ui/lib/src/components/catch_range_input.dart',
     );
   }
 

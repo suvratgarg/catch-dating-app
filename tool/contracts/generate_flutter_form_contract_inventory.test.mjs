@@ -67,7 +67,7 @@ test("records top-level generated bindings without accepting nested arguments", 
 test("range sliders require both generated endpoint bindings", () => {
   const results = scanCatchFieldCalls({
     source: `
-      CatchRangeSlider(
+      CatchRangeInput(
         minimumContract: minimumContract,
         values: values,
         onChanged: onChanged,
@@ -117,13 +117,13 @@ test("inventory includes bound and unbound product callsites", () => {
         onChanged: onChanged,
         onSubmitted: onSubmitted,
       );
-      final range = CatchRangeSlider(
+      final range = CatchRangeInput(
         minimumContract: minContract,
         maximumContract: maxContract,
         values: values,
         onChanged: onChanged,
       );
-      final missingRange = CatchRangeSlider(
+      final missingRange = CatchRangeInput(
         minimumContract: minContract,
         values: values,
         onChanged: onChanged,

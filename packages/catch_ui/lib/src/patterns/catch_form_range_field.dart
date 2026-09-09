@@ -106,7 +106,7 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
       onOpenChanged: (_) => widget.scope.toggle(),
       isLoading: _saveState.saving,
       error: error == null ? null : widget.errorTextBuilder(context, error),
-      control: CatchRangeSlider(
+      control: CatchRangeInput(
         minimumContract: descriptor.contract,
         maximumContract: descriptor.contract,
         min: descriptor.sliderMin,

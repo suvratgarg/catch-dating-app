@@ -165,7 +165,7 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
         initiallyOpen: widget.initiallyOpen,
         enabled: widget.enabled,
         icon: CatchIcons.cakeOutlined,
-        control: CatchRangeSlider(
+        control: CatchRangeInput(
           key: const ValueKey('event-age-range-slider'),
           minimumContract: widget.minimumContract,
           maximumContract: widget.maximumContract,
@@ -176,7 +176,7 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
               EventAgeRangeField.maximumAge - EventAgeRangeField.minimumAge,
           minLabel: EventAgeRangeField.minimumAge.toString(),
           maxLabel: '${EventAgeRangeField.maximumAge}+',
-          semanticFormatterCallback: (value) => value.round().toString(),
+          semanticValueBuilder: (value) => value.round().toString(),
           onChanged: widget.enabled ? _handleChanged : null,
           onChangeEnd: widget.enabled ? _handleChangeEnd : null,
         ),

@@ -62,12 +62,12 @@ void _registerCatchPrimitivesCompositionTests() {
     );
   });
 
-  testWidgets('CatchRangeSlider hides tick marks while preserving divisions', (
+  testWidgets('CatchRangeInput hides tick marks while preserving divisions', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchRangeSlider(
+        CatchRangeInput(
           values: const RangeValues(18, 60),
           min: 18,
           max: 60,

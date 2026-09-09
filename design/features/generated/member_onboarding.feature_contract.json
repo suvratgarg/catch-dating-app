@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6dd188ec35d38b9518f53e6b5a9c07af49b1d16c01ecbd2f062b6ea52cb2dd8d",
-  "resolvedDigest": "sha256:394b71a69d92e4851df3f569b0682e660c3d2ae2063e58b1a07f38f1404fa469",
+  "resolvedDigest": "sha256:46a0f0be9dcbe18b52d1730f98b5f57ad06df0e41c7a9b8203a525550299a93c",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -2343,10 +2343,10 @@
             "id": "catch.range_slider",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchRangeSlider",
-              "file": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
+              "symbol": "CatchRangeInput",
+              "file": "packages/catch_ui/lib/src/components/catch_range_input.dart",
               "constructors": [
-                "CatchRangeSlider"
+                "CatchRangeInput"
               ]
             }
           },

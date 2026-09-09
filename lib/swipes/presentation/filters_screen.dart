@@ -267,7 +267,7 @@ class FiltersContent extends StatelessWidget {
                         ),
                       ),
                 ),
-                CatchRangeSlider(
+                CatchRangeInput(
                   key: SwipeKeys.ageRangeSlider,
                   minimumContract: CatchContractConstraints
                       .updateUserProfilePatchMinAgePreference,

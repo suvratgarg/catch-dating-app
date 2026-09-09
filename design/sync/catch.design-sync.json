@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "1c055ecce71f6cd515d151debbf6adcbe6de2cf55207863fdc614acf68cd312d",
+  "sourceDigest": "9a9642fd7b64b4f76886f41414fb6f35039a56f5070befb8c4e860fc0a8be40c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "1c055ecce71f6cd515d151debbf6adcbe6de2cf55207863fdc614acf68cd312d",
-    "contractDigest": "1c055ecce71f6cd515d151debbf6adcbe6de2cf55207863fdc614acf68cd312d"
+    "digest": "9a9642fd7b64b4f76886f41414fb6f35039a56f5070befb8c4e860fc0a8be40c",
+    "contractDigest": "9a9642fd7b64b4f76886f41414fb6f35039a56f5070befb8c4e860fc0a8be40c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "8766ca9bec2367221738a3eb746158e7a166598ae62ff9caab739028a4b5f1d6",
+    "handoffRequestDigest": "cfbd166a8edddcb2edd8750cdfd13a6f9c471418c0fd356cd40e57c84a0d4a6f",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1851,9 +1851,9 @@
       "contractId": "catch.range_slider",
       "conceptRole": "concept",
       "conceptId": "catch.range_slider",
-      "dartSymbol": "CatchRangeSlider",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
-      "figmaName": "Catch/RangeSlider",
+      "dartSymbol": "CatchRangeInput",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_range_input.dart",
+      "figmaName": "Catch/RangeInput",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},
@@ -1868,16 +1868,16 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "a4f3b8af791f48ba9fec804d22c52a5b45078c84da3019ae5030ccf6099c5cb2",
+      "figmaExpectedPropertyCount": 7,
+      "figmaExpectedPropertyDigest": "0b7cbf7104e4c72465cb4822bb1386a98a35d9ccb5d347ac4215ae909ac3bdb7",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "RangeSlider",
+      "claudeHandoffName": "RangeInput",
       "claudeAllowed": true,
-      "contractDigest": "3996ce6f5393589c2e8746e89de2b83314aa1f907e025be21ac7efc2243d8d85"
+      "contractDigest": "08e48a4eafc01064913119cbf96220725b77f37ac80f2975b65fee2b743bae96"
     },
     {
       "contractId": "catch.toggle",

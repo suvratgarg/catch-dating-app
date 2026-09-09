@@ -8160,7 +8160,7 @@
               "range",
               "height"
             ],
-            "migration": "Keep editor save orchestration in ProfileEditController. CatchField owns choice summaries, clearability policy, wrapped controls, steppers, action orientation, and focus transfer; CatchSection owns prompt-card perimeter and dividers; CatchRangeSlider remains the range control. Widgetbook covers the canonical field states and production profile compositions.",
+            "migration": "Keep editor save orchestration in ProfileEditController. CatchField owns choice summaries, clearability policy, wrapped controls, steppers, action orientation, and focus transfer; CatchSection owns prompt-card perimeter and dividers; CatchRangeInput remains the range control. Widgetbook covers the canonical field states and production profile compositions.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]
@@ -20649,7 +20649,7 @@
               "edited_preferences",
               "text_scale_2"
             ],
-            "migration": "FiltersContent exposes range display and changed callbacks through provider-free content state while preserving CatchRangeSlider treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
+            "migration": "FiltersContent exposes range display and changed callbacks through provider-free content state while preserving CatchRangeInput treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
             "previewIds": [
               "FiltersContent/Content states"
             ]

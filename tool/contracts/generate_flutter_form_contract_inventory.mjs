@@ -98,7 +98,7 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
       symbol: () => "choiceTile",
     },
     {
-      expression: /CatchRangeSlider\s*\(/g,
+      expression: /CatchRangeInput\s*\(/g,
       symbol: () => "rangeSlider",
     },
     {

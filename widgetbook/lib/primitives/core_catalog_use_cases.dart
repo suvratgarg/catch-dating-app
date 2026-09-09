@@ -452,9 +452,9 @@ Widget catchCodeInputCatalogStates(BuildContext context) {
   );
 }
 
-Widget catchRangeSliderCatalogStates(BuildContext context) {
+Widget catchRangeInputCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchRangeSlider',
+    title: 'CatchRangeInput',
     catalogId: 'core.widgets.catch_range_slider',
     children: const [
       _StateCard(label: 'interactive', child: _RangeSliderDemo()),
@@ -4270,7 +4270,7 @@ class _RangeSliderDemoState extends State<_RangeSliderDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchRangeSlider(
+    return CatchRangeInput(
       values: _values,
       min: 18,
       max: 60,
@@ -4278,7 +4278,7 @@ class _RangeSliderDemoState extends State<_RangeSliderDemo> {
       minLabel: '18',
       maxLabel: '60',
       onChanged: (values) => setState(() => _values = values),
-      semanticFormatterCallback: (value) => '${value.round()} years',
+      semanticValueBuilder: (value) => '${value.round()} years',
     );
   }
 }

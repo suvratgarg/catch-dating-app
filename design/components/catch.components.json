@@ -11584,26 +11584,26 @@
           "RangeSlider",
           "Slider"
         ],
-        "replacement": "CatchRangeSlider",
+        "replacement": "CatchRangeInput",
         "steeringGroup": "button",
         "steeringCode": "catch_no_raw_button_control",
         "probeSeed": "Slider(value: 0.5, onChanged: (_) {})"
       },
-      "name": "CatchRangeSlider",
+      "name": "CatchRangeInput",
       "status": "active",
       "kind": "primitive",
-      "summary": "Canonical dual-thumb range slider with Catch track, thumb, endpoint label, and semantic-value styling.",
+      "summary": "Canonical numeric interval input with two adjustable endpoints, contract-derived limits, tickless track, endpoint labels and caller-owned update/commit callbacks.",
       "dart": {
-        "symbol": "CatchRangeSlider",
-        "file": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
+        "symbol": "CatchRangeInput",
+        "file": "packages/catch_ui/lib/src/components/catch_range_input.dart",
         "constructors": [
-          "CatchRangeSlider"
+          "CatchRangeInput"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/RangeSlider",
+          "componentName": "Catch/RangeInput",
           "componentUrl": null
         },
         "codeConnect": {
@@ -11612,7 +11612,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "RangeSlider",
+          "handoffName": "RangeInput",
           "allowed": true
         }
       },
@@ -11634,15 +11634,15 @@
             "name": "min",
             "type": "number",
             "required": false,
-            "default": 0,
-            "dartType": "double"
+            "dartType": "double?",
+            "notes": "Uses the stricter lower bound of the endpoint contract and explicit minimum; falls back to 0 when neither exists."
           },
           {
             "name": "max",
             "type": "number",
             "required": false,
-            "default": 100,
-            "dartType": "double"
+            "dartType": "double?",
+            "notes": "Uses the stricter upper bound of the endpoint contract and explicit maximum; falls back to 100 when neither exists."
           },
           {
             "name": "divisions",
@@ -11663,10 +11663,35 @@
             "dartType": "String?"
           },
           {
-            "name": "semanticFormatterCallback",
+            "name": "semanticValueBuilder",
             "type": "callback",
             "required": false,
             "dartType": "SemanticFormatterCallback?"
+          },
+          {
+            "name": "onChangeEnd",
+            "type": "callback",
+            "required": false,
+            "dartType": "ValueChanged<RangeValues>?",
+            "notes": "Commits the final interval separately from per-drag draft updates."
+          },
+          {
+            "name": "minimumContract",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchContractFieldConstraints?"
+          },
+          {
+            "name": "maximumContract",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchContractFieldConstraints?"
+          },
+          {
+            "name": "contractExemption",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
           }
         ],
         "states": [
@@ -11725,7 +11750,17 @@
         "conceptId": "catch.range_slider"
       },
       "surfaces": {
-        "flutter": "CatchRangeSlider"
+        "flutter": "CatchRangeInput"
+      },
+      "level": "L3",
+      "roleNoun": "Input",
+      "naming": {
+        "useCase": "Range",
+        "comparedWith": [
+          "catch.chip.field",
+          "catch.field.text_input"
+        ],
+        "reason": "Edits two ordered numeric endpoints as one interval, with contract-derived bounds, step divisions and an end-of-drag commit seam. ChoiceInput selects arbitrary typed members of a supplied set; TextInput edits characters. Neither has the interval constraints or paired adjustment semantics of this input."
       }
     },
     {

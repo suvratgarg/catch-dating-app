@@ -7666,12 +7666,12 @@ Widget catchSearchFieldContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchRangeSlider,
+  type: CatchRangeInput,
   path: '[Core primitives]/Inputs',
 )
-Widget catchRangeSliderContractStates(BuildContext context) {
+Widget catchRangeInputContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchRangeSlider',
+    title: 'CatchRangeInput',
     contractId: 'catch.range_slider',
     states: const [
       'default',
@@ -7685,7 +7685,7 @@ Widget catchRangeSliderContractStates(BuildContext context) {
         label: 'default',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchRangeSlider(
+          child: CatchRangeInput(
             values: const RangeValues(20, 80),
             onChanged: (_) {},
           ),
@@ -7695,7 +7695,7 @@ Widget catchRangeSliderContractStates(BuildContext context) {
         label: 'with-endpoint-labels',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchRangeSlider(
+          child: CatchRangeInput(
             min: 1,
             max: 10,
             values: const RangeValues(2, 6),
@@ -7709,14 +7709,14 @@ Widget catchRangeSliderContractStates(BuildContext context) {
         label: 'disabled',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchRangeSlider(values: RangeValues(25, 75), onChanged: null),
+          child: CatchRangeInput(values: RangeValues(25, 75), onChanged: null),
         ),
       ),
       _StateCard(
         label: 'divided-tickless',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchRangeSlider(
+          child: CatchRangeInput(
             values: const RangeValues(3, 7),
             min: 0,
             max: 10,
@@ -7729,11 +7729,11 @@ Widget catchRangeSliderContractStates(BuildContext context) {
         label: 'semantic-values',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchRangeSlider(
+          child: CatchRangeInput(
             values: const RangeValues(18, 30),
             min: 18,
             max: 60,
-            semanticFormatterCallback: (value) => '${value.round()} years',
+            semanticValueBuilder: (value) => '${value.round()} years',
             onChanged: (_) {},
           ),
         ),

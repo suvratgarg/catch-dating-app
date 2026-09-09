@@ -111,7 +111,7 @@ export 'src/components/catch_picker_copy.dart';
 export 'src/components/catch_primary_rail.dart';
 export 'src/components/catch_privacy_badge.dart';
 export 'src/components/catch_progress_cue.dart';
-export 'src/components/catch_range_slider.dart';
+export 'src/components/catch_range_input.dart';
 export 'src/components/catch_record_row.dart';
 export 'src/components/catch_responsive_field_interaction_policy.dart';
 export 'src/components/catch_screen_header.dart';

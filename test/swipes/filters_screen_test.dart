@@ -156,7 +156,7 @@ void main() {
     expect(find.text('Event type'), findsNothing);
     expect(find.text('18 – 60+'), findsOneWidget);
     expect(find.byKey(SwipeKeys.ageRangeSlider), findsOneWidget);
-    expect(find.byType(CatchRangeSlider), findsOneWidget);
+    expect(find.byType(CatchRangeInput), findsOneWidget);
     expect(find.byType(CatchChip), findsNWidgets(Gender.values.length));
     expect(
       _chipSelected(
@@ -168,7 +168,7 @@ void main() {
 
     await tester.tap(find.byKey(SwipeKeys.genderFilterChip(Gender.man.name)));
     tester
-        .widget<CatchRangeSlider>(find.byKey(SwipeKeys.ageRangeSlider))
+        .widget<CatchRangeInput>(find.byKey(SwipeKeys.ageRangeSlider))
         .onChanged!(const RangeValues(20, 60));
     await tester.pump();
     expect(find.text('20 – 60+'), findsOneWidget);
@@ -259,7 +259,7 @@ void main() {
     );
     expect(
       tester
-          .widget<CatchRangeSlider>(find.byKey(SwipeKeys.ageRangeSlider))
+          .widget<CatchRangeInput>(find.byKey(SwipeKeys.ageRangeSlider))
           .onChanged,
       isNull,
     );

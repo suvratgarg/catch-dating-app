@@ -4,12 +4,13 @@ import 'package:catch_ui/src/components/catch_contract_field_policy.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
-/// Canonical Catch range slider.
+/// Edits an ordered numeric interval through two independently movable ends.
 ///
-/// Keep range slider styling here so feature screens do not need to remember
-/// theme patches like hiding tick marks.
-class CatchRangeSlider extends StatelessWidget {
-  const CatchRangeSlider({
+/// Owns contract-derived bounds, native range semantics and Catch track styling.
+/// Callers own draft updates and end-of-drag persistence; the surrounding Field
+/// owns labels, validation and save orchestration.
+class CatchRangeInput extends StatelessWidget {
+  const CatchRangeInput({
     super.key,
     required this.values,
     required this.onChanged,
@@ -22,7 +23,7 @@ class CatchRangeSlider extends StatelessWidget {
     this.divisions,
     this.minLabel,
     this.maxLabel,
-    this.semanticFormatterCallback,
+    this.semanticValueBuilder,
   });
 
   final RangeValues values;
@@ -36,7 +37,7 @@ class CatchRangeSlider extends StatelessWidget {
   final int? divisions;
   final String? minLabel;
   final String? maxLabel;
-  final SemanticFormatterCallback? semanticFormatterCallback;
+  final SemanticFormatterCallback? semanticValueBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +63,7 @@ class CatchRangeSlider extends StatelessWidget {
             : ((effectiveMax - effectiveMin) / contractStep).round());
     assert(
       values.start >= effectiveMin && values.end <= effectiveMax,
-      'CatchRangeSlider values must stay inside contract-derived bounds.',
+      'CatchRangeInput values must stay inside contract-derived bounds.',
     );
     final slider = SliderTheme(
       data: SliderTheme.of(context).copyWith(
@@ -95,7 +96,7 @@ class CatchRangeSlider extends StatelessWidget {
         max: effectiveMax,
         divisions: effectiveDivisions,
         values: values,
-        semanticFormatterCallback: semanticFormatterCallback,
+        semanticFormatterCallback: semanticValueBuilder,
         onChanged: onChanged,
         onChangeEnd: onChangeEnd,
       ),

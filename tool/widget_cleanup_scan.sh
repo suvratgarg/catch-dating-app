@@ -21,7 +21,7 @@ if [[ "${1:-}" == "--summary" && "${WIDGET_CLEANUP_SCAN_FORCE_FULL:-}" != "1" ]]
       "Raw Material/Cupertino button candidates that should use CatchButton") echo "raw_material_button_candidates" ;;
       "Raw text input candidates that should use CatchField.input or a field-specific primitive") echo "raw_text_input_candidates" ;;
       "Fixed-white pill CTA candidates that should use CatchButtonVariant.light") echo "fixed_white_pill_cta_candidates" ;;
-      "Raw range sliders that should use CatchRangeSlider") echo "raw_range_slider_candidates" ;;
+      "Raw range sliders that should use CatchRangeInput") echo "raw_range_slider_candidates" ;;
       "Raw +/- number steppers that should use CatchStepper") echo "raw_number_stepper_candidates" ;;
       "Feature tappables that may need semantic keys/tooltips") echo "feature_tappable_candidates" ;;
       "Literal SizedBox spacing candidates that should use gap constants or CatchSpacing") echo "literal_sized_box_spacing_candidates" ;;
@@ -241,13 +241,13 @@ scan_raw_text_inputs() {
 
 scan_raw_range_sliders() {
   echo
-  echo "==> Raw range sliders that should use CatchRangeSlider"
+  echo "==> Raw range sliders that should use CatchRangeInput"
   local output
   output="$(rg -n \
     "${common_globs[@]}" \
     '(^|[^A-Za-z])RangeSlider\(|SliderTheme\(' \
     lib/core lib/*/presentation \
-    --glob '!packages/catch_ui/lib/src/components/catch_range_slider.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_range_input.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then

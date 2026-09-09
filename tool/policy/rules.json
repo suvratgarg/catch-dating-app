@@ -562,7 +562,7 @@
         "lib/core/widgets/catch_chip*.dart",
         "packages/catch_ui/lib/src/components/catch_chip*.dart",
         "packages/catch_ui/lib/src/components/catch_option_*.dart",
-        "packages/catch_ui/lib/src/components/catch_range_slider.dart",
+        "packages/catch_ui/lib/src/components/catch_range_input.dart",
         "packages/catch_ui/lib/src/components/catch_toggle_input.dart",
         "lib/**/presentation/**",
         "test/core/forms/contract_alignment_test.dart",

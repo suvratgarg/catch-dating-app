@@ -238,7 +238,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                         ],
                       ),
                       gapH12,
-                      CatchRangeSlider(
+                      CatchRangeInput(
                         minimumContract: CatchContractConstraints
                             .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
                         maximumContract: CatchContractConstraints

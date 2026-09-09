@@ -7994,6 +7994,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:numeric-range-input",
+      "patternFamilyId": "numeric-range-input",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchRangeInput",
+      "members": [
+        {
+          "name": "CatchRangeInput",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRangeSlider",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Source review found one range implementation and no production single-value Slider. Ordered numeric endpoint editing differs from text editing and choice-set selection, so the Range use case remains explicit under Input. The native range renderer, schema limits and separate draft/commit callbacks are preserved; spoken-value formatting uses the builder vocabulary.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

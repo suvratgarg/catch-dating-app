@@ -451,7 +451,7 @@ void main() {
         tester,
         SizedBox(
           width: 300,
-          child: CatchRangeSlider(
+          child: CatchRangeInput(
             values: const RangeValues(20, 80),
             onChanged: (_) {},
           ),

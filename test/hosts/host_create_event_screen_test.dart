@@ -1354,14 +1354,14 @@ Future<void> _setEventAgeRange(
   int minAge,
   int maxAge,
 ) async {
-  final slider = tester.widget<CatchRangeSlider>(
+  final slider = tester.widget<CatchRangeInput>(
     find.byKey(const ValueKey('event-age-range-slider'), skipOffstage: false),
   );
   final values = RangeValues(minAge.toDouble(), maxAge.toDouble());
   slider.onChanged!(values);
   await tester.pump();
   tester
-      .widget<CatchRangeSlider>(
+      .widget<CatchRangeInput>(
         find.byKey(
           const ValueKey('event-age-range-slider'),
           skipOffstage: false,
