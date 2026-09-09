@@ -7502,6 +7502,34 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:person-identity-and-index-rows",
+      "patternFamilyId": "person-identity-and-index-rows",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchPersonRow",
+      "members": [
+        {
+          "name": "CatchHostRow",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchPersonChatLayout",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchPersonRosterLayout",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchPersonChatTrailing",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Source and consistent-context render review establish one person identity contract. Contact callbacks justify a recipe, while chat and roster bodies share title/context rendering inside the parent. Index selection and record facts retain independently reviewed Row use cases; restore IndexRow semantic activation.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

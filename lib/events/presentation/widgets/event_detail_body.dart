@@ -374,14 +374,16 @@ class EventDetailHostsSection extends StatelessWidget {
           title: context.l10n.eventsEventDetailBodyTitleHostedBy,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
-          child: CatchHostRow(
+          child: CatchPersonRow.contact(
+            data: CatchPersonRowData(
+              name: state.hostName!,
+              imageUrl: state.photoUrl,
+              metaLine: state.meta,
+            ),
             colors: ActivityPalette.resolve(
               context,
               event.activityKind,
             ).avatarColors,
-            name: state.hostName!,
-            imageUrl: state.photoUrl,
-            meta: state.meta,
             verified: state.verified,
             nameColor: style?.headingColor,
             metaColor: style?.bodyColor,

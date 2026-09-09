@@ -312,10 +312,10 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
       children: [
         CatchPersonRow.directory(
           data: CatchPersonRowData(name: displayName, seed: customer.contactId),
-          status: segmentLabel == null
+          trailing: segmentLabel == null
               ? null
               : CatchBadge.status(label: segmentLabel, tone: segmentTone),
-          metadata: Text(
+          meta: Text(
             [
               context.l10n.hostCustomersCompactEventCount(
                 count: customer.traits.attendedEventCount,
@@ -323,7 +323,7 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
             ].join(' · '),
             style: CatchTextStyles.supporting(context),
           ),
-          contextContent: showContacts
+          body: showContacts
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

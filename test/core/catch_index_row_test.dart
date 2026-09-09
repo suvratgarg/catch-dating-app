@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -8,47 +9,66 @@ void main() {
     tester,
   ) async {
     final semantics = tester.ensureSemantics();
-    var taps = 0;
+    try {
+      var taps = 0;
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: CatchIndexRow(
-            title: 'Running',
-            semanticLabel: 'Running events',
-            selected: true,
-            onTap: () => taps += 1,
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: CatchIndexRow(
+              title: 'Running',
+              semanticLabel: 'Running events',
+              selected: true,
+              onTap: () => taps += 1,
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    final semanticsWidget = tester.widget<Semantics>(
-      find
-          .descendant(
-            of: find.byType(CatchIndexRow),
-            matching: find.byType(Semantics),
-          )
-          .first,
-    );
-    expect(semanticsWidget.properties.label, 'Running events');
-    expect(semanticsWidget.properties.button, isTrue);
-    expect(semanticsWidget.properties.enabled, isTrue);
-    expect(semanticsWidget.properties.selected, isTrue);
-    final gesture = await tester.startGesture(
-      tester.getCenter(find.byType(CatchIndexRow)),
-    );
-    await tester.pump();
-    expect(find.byType(InkWell), findsNothing);
-    expect(
-      tester
-          .widget<ColoredBox>(find.byKey(CatchRowPressSurface.overlayKey))
-          .color,
-      isNot(Colors.transparent),
-    );
-    await gesture.up();
-    expect(taps, 1);
-    semantics.dispose();
+      final node = find.semantics.byLabel('Running events').evaluate().single;
+      expect(node.hasFlag(SemanticsFlag.isButton), isTrue);
+      expect(node.hasFlag(SemanticsFlag.isEnabled), isTrue);
+      expect(node.hasFlag(SemanticsFlag.isSelected), isTrue);
+      expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
+      tester.semantics.tap(find.semantics.byLabel('Running events'));
+      expect(taps, 1);
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(CatchIndexRow)),
+      );
+      await tester.pump();
+      expect(find.byType(InkWell), findsNothing);
+      expect(
+        tester
+            .widget<ColoredBox>(find.byKey(CatchRowPressSurface.overlayKey))
+            .color,
+        isNot(Colors.transparent),
+      );
+      await gesture.up();
+      expect(taps, 2);
+    } finally {
+      semantics.dispose();
+    }
+  });
+
+  testWidgets('a disabled index row keeps its label without a tap action', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(
+            body: CatchIndexRow(title: 'Coming soon', onTap: null),
+          ),
+        ),
+      );
+      final node = find.semantics.byLabel('Coming soon').evaluate().single;
+      expect(node.hasFlag(SemanticsFlag.isEnabled), isFalse);
+      expect(node.getSemanticsData().hasAction(SemanticsAction.tap), isFalse);
+    } finally {
+      semantics.dispose();
+    }
   });
 }

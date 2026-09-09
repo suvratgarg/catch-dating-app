@@ -1,8 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_avatar.dart';
-import 'package:catch_ui/src/components/catch_person_chat_layout.dart';
-import 'package:catch_ui/src/components/catch_person_chat_trailing.dart';
-import 'package:catch_ui/src/components/catch_person_roster_layout.dart';
+import 'package:catch_ui/src/components/catch_avatar_colors.dart';
+import 'package:catch_ui/src/components/catch_count_badge.dart';
+import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_person_row_copy.dart';
 import 'package:catch_ui/src/components/catch_person_row_data.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
@@ -10,6 +10,7 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
+import 'package:catch_ui/src/primitives/catch_status_indicator.dart';
 import 'package:flutter/material.dart';
 
 /// Flexible person row used in:
@@ -50,34 +51,72 @@ class CatchPersonRow extends StatelessWidget {
     this.dividerInset = CatchLayout.chatListDividerInset,
     this.showFreshBackground = true,
   }) : _directory = false,
-       metadata = null,
-       contextContent = null,
-       status = null;
+       meta = null,
+       body = null,
+       _contactConfig = null;
 
-  /// A natural-height directory identity with optional rich metadata, contextual
+  /// A natural-height directory identity with optional rich meta, contextual
   /// content, and a status badge. Parent sections own gutters and separators.
   const CatchPersonRow.directory({
     super.key,
     required this.data,
     this.onTap,
-    this.metadata,
-    this.contextContent,
-    this.status,
+    this.meta,
+    this.body,
+    this.trailing,
   }) : _directory = true,
        copy = null,
-       trailing = null,
        avatarSize = CatchRecordTokens.avatarExtent,
        padding = const EdgeInsets.symmetric(
          vertical: CatchRecordTokens.verticalPadding,
        ),
        divider = false,
        dividerInset = 0,
-       showFreshBackground = false;
+       showFreshBackground = false,
+       _contactConfig = null;
 
+  /// Compact identity with optional verification, message and navigation actions.
+  /// Affordances are derived from callbacks; message taps remain independent.
+  const CatchPersonRow.contact({
+    super.key,
+    required this.data,
+    required CatchAvatarColors colors,
+    bool verified = false,
+    this.divider = false,
+    this.onTap,
+    VoidCallback? onMessage,
+    String? messageTooltip,
+    Color? nameColor,
+    Color? metaColor,
+    Color? actionColor,
+  }) : assert(
+         onMessage == null ||
+             (messageTooltip != null && messageTooltip.length > 0),
+         'CatchPersonRow.contact requires messageTooltip for onMessage.',
+       ),
+       _directory = false,
+       copy = null,
+       trailing = null,
+       meta = null,
+       body = null,
+       avatarSize = CatchSpacing.s10,
+       padding = EdgeInsets.zero,
+       dividerInset = 0,
+       showFreshBackground = false,
+       _contactConfig = (
+         colors: colors,
+         verified: verified,
+         onMessage: onMessage,
+         messageTooltip: messageTooltip,
+         nameColor: nameColor,
+         metaColor: metaColor,
+         actionColor: actionColor,
+       );
+
+  final _ContactRowConfig? _contactConfig;
   final bool _directory;
-  final Widget? metadata;
-  final Widget? contextContent;
-  final Widget? status;
+  final Widget? meta;
+  final Widget? body;
 
   final CatchPersonRowData data;
 
@@ -96,6 +135,110 @@ class CatchPersonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    if (_contactConfig case final contact?) {
+      final colors = contact.colors;
+      final name = data.name;
+      final imageUrl = data.imageUrl;
+      final meta = data.metaLine;
+      final verified = contact.verified;
+      final onMessage = contact.onMessage;
+      final messageTooltip = contact.messageTooltip;
+      final nameColor = contact.nameColor;
+      final metaColor = contact.metaColor;
+      final actionColor = contact.actionColor;
+      final effectiveMetaColor = metaColor ?? t.ink3;
+      final effectiveActionColor = actionColor ?? t.primary;
+
+      final content = Padding(
+        padding: EdgeInsets.only(top: divider ? CatchSpacing.s3 : 0),
+        child: Row(
+          children: [
+            CatchAvatar(
+              name: name,
+              imageUrl: imageUrl,
+              size: avatarSize,
+              colors: colors,
+              variant: data.avatarShape,
+            ),
+            gapW12,
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.name(
+                            context,
+                            color: nameColor,
+                          ),
+                        ),
+                      ),
+                      if (verified) ...[
+                        const SizedBox(width: CatchSpacing.micro6),
+                        Icon(
+                          CatchIcons.sealCheck,
+                          size: CatchIcon.sm,
+                          color: colors.accent,
+                        ),
+                      ],
+                    ],
+                  ),
+                  if (meta != null && meta.isNotEmpty) ...[
+                    const SizedBox(height: CatchSpacing.s1),
+                    Text(
+                      meta,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: CatchTextStyles.monoLabel(
+                        context,
+                        color: effectiveMetaColor,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (onMessage != null) ...[
+              gapW8,
+              CatchIconAction(
+                onPressed: onMessage,
+                tooltip: messageTooltip,
+                variant: CatchIconActionVariant.plain,
+                active: true,
+                emphasis: CatchIconActionEmphasis.outline,
+                accent: effectiveActionColor,
+                child: Icon(CatchIcons.chatBubbleOutlineRounded),
+              ),
+            ],
+            if (onTap != null) ...[
+              gapW8,
+              Icon(
+                CatchIcons.chevronRightRounded,
+                size: CatchIcon.lg,
+                color: effectiveMetaColor,
+              ),
+            ],
+          ],
+        ),
+      );
+
+      final row = divider
+          ? DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border(top: BorderSide(color: t.line)),
+              ),
+              child: content,
+            )
+          : content;
+
+      return CatchRowPressSurface(onTap: onTap, child: row);
+    }
     if (_directory) {
       final stackStatus =
           MediaQuery.textScalerOf(context).scale(1) >=
@@ -133,7 +276,7 @@ class CatchPersonRow extends StatelessWidget {
                               style: CatchTextStyles.name(context),
                             ),
                           ),
-                          if (status != null && !stackStatus) ...[
+                          if (trailing != null && !stackStatus) ...[
                             const SizedBox(width: CatchSpacing.s2),
                             ConstrainedBox(
                               constraints: BoxConstraints(
@@ -141,29 +284,29 @@ class CatchPersonRow extends StatelessWidget {
                                     constraints.maxWidth *
                                     CatchRecordTokens.statusMaxWidthFraction,
                               ),
-                              child: status!,
+                              child: trailing!,
                             ),
                           ],
                         ],
                       ),
                     ),
-                    if (metadata != null) ...[
+                    if (meta != null) ...[
                       const SizedBox(height: CatchRecordTokens.titleGap),
                       DefaultTextStyle(
                         style: CatchTextStyles.supporting(context),
-                        child: metadata!,
+                        child: meta!,
                       ),
                     ],
-                    if (contextContent != null) ...[
+                    if (body != null) ...[
                       const SizedBox(height: CatchRecordTokens.titleGap),
                       DefaultTextStyle(
                         style: CatchTextStyles.recordContext(context),
-                        child: contextContent!,
+                        child: body!,
                       ),
                     ],
-                    if (status != null && stackStatus) ...[
+                    if (trailing != null && stackStatus) ...[
                       const SizedBox(height: CatchRecordTokens.bodyGap),
-                      status!,
+                      trailing!,
                     ],
                   ],
                 ),
@@ -184,10 +327,40 @@ class CatchPersonRow extends StatelessWidget {
       );
     }
     final isChatMode = data.lastMessage != null;
+    final hasUnread = data.unreadCount > 0;
+    final emphasized = hasUnread || data.isFresh || data.showFreshDot;
 
     final trailingContent =
         trailing ??
-        (isChatMode ? CatchPersonChatTrailing(data: data, copy: copy!) : null);
+        (isChatMode
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (data.timestamp != null)
+                    Text(
+                      data.timestamp!,
+                      style: CatchTextStyles.meta(
+                        context,
+                        color: emphasized ? t.primary : t.ink3,
+                      ),
+                    ),
+                  if (hasUnread) ...[
+                    const SizedBox(height: CatchSpacing.micro6),
+                    CatchCountBadge.label(
+                      count: data.unreadCount,
+                      semanticsLabel: copy!.unreadCountLabel(data.unreadCount),
+                    ),
+                  ] else if (data.showFreshDot) ...[
+                    const SizedBox(height: CatchSpacing.micro6),
+                    CatchStatusIndicator(
+                      size: CatchSpacing.s2,
+                      semanticsLabel: copy!.newMatchLabel,
+                    ),
+                  ],
+                ],
+              )
+            : null);
     final stackExplicitTrailing =
         trailing != null && MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     final identity = Row(
@@ -202,9 +375,72 @@ class CatchPersonRow extends StatelessWidget {
         ),
         gapW12,
         Expanded(
-          child: isChatMode
-              ? CatchPersonChatLayout(data: data, copy: copy!)
-              : CatchPersonRosterLayout(data: data),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                data.name,
+                style: isChatMode
+                    ? CatchTextStyles.fieldRowTitle(
+                        context,
+                        color: emphasized ? t.ink : t.ink2,
+                      )
+                    : CatchTextStyles.sectionTitle(context),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (!isChatMode && data.metaLine != null) ...[
+                gapH3,
+                Text(
+                  data.metaLine!,
+                  style: CatchTextStyles.supporting(context),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+              // Shared event context for chat and roster rows.
+              if (data.contextLine != null) ...[
+                gapH2,
+                Row(
+                  children: [
+                    Icon(
+                      CatchIcons.directionsRunRounded,
+                      size: CatchIcon.micro,
+                      color: t.ink3,
+                    ),
+                    gapW3,
+                    Expanded(
+                      child: Text(
+                        data.contextLine!,
+                        style: CatchTextStyles.supporting(context),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              if (isChatMode) ...[
+                gapH4,
+                Text(
+                  data.isTyping ? copy!.typingLabel : data.lastMessage!,
+                  style: CatchTextStyles.chatPreview(
+                    context,
+                    color: data.isTyping
+                        ? t.primary
+                        : data.showFreshDot
+                        ? t.primary
+                        : hasUnread
+                        ? t.ink
+                        : t.ink2,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ],
+          ),
         ),
       ],
     );
@@ -249,3 +485,13 @@ class CatchPersonRow extends StatelessWidget {
     return CatchRowPressSurface(onTap: onTap, child: row);
   }
 }
+
+typedef _ContactRowConfig = ({
+  CatchAvatarColors colors,
+  bool verified,
+  VoidCallback? onMessage,
+  String? messageTooltip,
+  Color? nameColor,
+  Color? metaColor,
+  Color? actionColor,
+});

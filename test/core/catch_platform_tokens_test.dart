@@ -155,13 +155,13 @@ void main() {
                                 name: 'Ananya Rao with a longer family name',
                               ),
                               onTap: () => opened = true,
-                              metadata: const Text(
+                              meta: const Text(
                                 '8 events · Last seen 18 June 2026',
                               ),
-                              contextContent: const Text(
+                              body: const Text(
                                 'Returning customer from the weekend event',
                               ),
-                              status: const CatchBadge.status(
+                              trailing: const CatchBadge.status(
                                 label: 'Needs identity review',
                                 tone: CatchBadgeTone.warning,
                               ),

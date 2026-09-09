@@ -1135,7 +1135,7 @@
               "symbol": "EventDetailHostsSection"
             },
             "currentOwner": "EventDetailBody",
-            "targetOwner": "registered host section plus host-card compound",
+            "targetOwner": "EventDetailHostsSection with CatchPersonRow.contact",
             "dependencies": [
               "catch.button",
               "catch.surface"
@@ -1149,9 +1149,9 @@
               "unverified"
             ],
             "previewIds": [
-              "CatchHostRow/Catalog states"
+              "CatchPersonRow/Contact states"
             ],
-            "migration": "Club lookup is route-owned and mapped through EventDetailHostState; remaining work is formal host-card component registration and broader section-state hardening."
+            "migration": "Club lookup is route-owned and mapped through EventDetailHostState; identity and contact actions mount the registered CatchPersonRow.contact recipe."
           },
           {
             "id": "section.event.who_is_going",

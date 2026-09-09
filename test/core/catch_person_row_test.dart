@@ -36,8 +36,6 @@ void main() {
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('You matched!'), findsOneWidget);
     expect(find.byType(CatchAvatar), findsOneWidget);
-    expect(find.byType(CatchPersonChatLayout), findsOneWidget);
-    expect(find.byType(CatchPersonChatTrailing), findsOneWidget);
     expect(find.byType(CatchStatusIndicator), findsOneWidget);
     expect(
       tester.widget<CatchAvatar>(find.byType(CatchAvatar)).borderWidth,
@@ -82,8 +80,6 @@ void main() {
 
     expect(avatar.borderWidth, CatchStroke.underline);
     expect(avatar.borderColor, tokens.primary);
-    expect(find.byType(CatchPersonChatLayout), findsOneWidget);
-    expect(find.byType(CatchPersonChatTrailing), findsOneWidget);
     expect(find.byType(CatchCountBadge), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(
@@ -174,8 +170,6 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.byType(CatchPersonRosterLayout), findsOneWidget);
-    expect(find.byType(CatchPersonChatLayout), findsNothing);
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('5:20 /km'), findsOneWidget);
     expect(find.text('Sundowner 5K'), findsOneWidget);

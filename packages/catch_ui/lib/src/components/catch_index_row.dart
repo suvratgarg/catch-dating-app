@@ -63,6 +63,7 @@ class CatchIndexRow extends StatelessWidget {
       enabled: onTap != null,
       selected: selected,
       label: semanticLabel ?? title,
+      onTap: onTap,
       child: ExcludeSemantics(child: content),
     );
   }

@@ -411,7 +411,7 @@ class _HostApplicationListFrame extends StatelessWidget {
               name: application.applicantDisplayName,
               seed: application.applicationId,
             ),
-            metadata: Text(
+            meta: Text(
               hostApplicationContextLabel(
                 context,
                 formId: application.formId,
@@ -421,11 +421,11 @@ class _HostApplicationListFrame extends StatelessWidget {
               ),
               style: CatchTextStyles.supporting(context),
             ),
-            contextContent: Text(
+            body: Text(
               '${_sourceLabel(context, application.sourceKind)} · ${DateFormat.yMMMd().format(application.submittedAt)}',
               style: CatchTextStyles.recordContext(context),
             ),
-            status: CatchBadge.status(
+            trailing: CatchBadge.status(
               label: hostApplicationStatusLabel(
                 context,
                 application.reviewStatus,

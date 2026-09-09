@@ -42,10 +42,10 @@ class HostCustomerRow extends StatelessWidget {
     return CatchPersonRow.directory(
       data: CatchPersonRowData(name: contact.displayName),
       onTap: onTap,
-      status: lifecycle == null
+      trailing: lifecycle == null
           ? null
           : CatchBadge.status(label: lifecycle.label, tone: lifecycle.tone),
-      metadata: Text.rich(
+      meta: Text.rich(
         TextSpan(
           children: [
             TextSpan(
@@ -63,7 +63,7 @@ class HostCustomerRow extends StatelessWidget {
         ),
         key: ValueKey('host-customer-activity-${contact.contactId}'),
       ),
-      contextContent: contact.whatsappAdminSuppressed
+      body: contact.whatsappAdminSuppressed
           ? Text(
               context.l10n.hostsHostAudienceContactConsentPaused,
               style: CatchTextStyles.recordContext(context),

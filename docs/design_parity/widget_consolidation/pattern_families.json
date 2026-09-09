@@ -2634,6 +2634,70 @@
           "rationale": "Zero production callers. Its segmented-progress alternative is not used by the production StepHeader and has no consumer to migrate."
         }
       ]
+    },
+    {
+      "id": "person-identity-and-index-rows",
+      "title": "Person identity recipes and directory selection rows",
+      "intent": "Keep one person identity contract with contact actions and shared chat/roster text; retain directory selection and record reading as distinct responsibilities.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.person_row",
+      "qualityReference": "CatchPersonRow",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve all existing contact, chat, roster and directory renderers, typography, avatar sizing, indicators, large-text trailing placement and row press bounds.",
+        "The expanded primary gallery includes formerly separate contact and missing chat-context, typing and long-roster states. Standalone anatomy galleries are retired.",
+        "Restore the IndexRow semantic tap action hidden by its explicit label; pointer rendering remains unchanged.",
+        "Repair the existing color-override contact fixture by putting primaryInk text on its matching primary surface; production color overrides remain unchanged."
+      ],
+      "members": [
+        {
+          "symbol": "CatchPersonRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One identity row supports useful contact and directory recipes; shared chat/roster text and status rendering belongs inside it."
+        },
+        {
+          "symbol": "CatchIndexRow",
+          "disposition": "repair",
+          "preview": "required",
+          "rationale": "A distinct selected directory command needs its semantic tap exposed alongside its resolved label and state."
+        },
+        {
+          "symbol": "CatchRecordRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Natural-height narrative facts and prose do not establish a person-identity or selectable-index contract."
+        },
+        {
+          "symbol": "CatchHostRow",
+          "disposition": "unify",
+          "target": "CatchPersonRow",
+          "preview": "not-applicable",
+          "rationale": "Its provider-free data and callbacks describe a compact person/contact recipe; the host label does not justify a second identity implementation."
+        },
+        {
+          "symbol": "CatchPersonChatLayout",
+          "disposition": "unify",
+          "target": "CatchPersonRow",
+          "preview": "not-applicable",
+          "rationale": "No independent production caller. Fold into the parent, share the name/context rendering and retain each state in the primary gallery."
+        },
+        {
+          "symbol": "CatchPersonRosterLayout",
+          "disposition": "unify",
+          "target": "CatchPersonRow",
+          "preview": "not-applicable",
+          "rationale": "No independent production caller. Fold into the parent, share the name/context rendering and retain each state in the primary gallery."
+        },
+        {
+          "symbol": "CatchPersonChatTrailing",
+          "disposition": "unify",
+          "target": "CatchPersonRow",
+          "preview": "not-applicable",
+          "rationale": "No independent production caller. Fold into the parent, share the name/context rendering and retain each state in the primary gallery."
+        }
+      ]
     }
   ]
 }

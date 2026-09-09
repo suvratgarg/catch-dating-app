@@ -741,12 +741,12 @@ class HostFormWorkspaceOverview extends ConsumerWidget {
                         context.l10n.hostFormResponsesAnonymous,
                     seed: response.responseId,
                   ),
-                  metadata: Text(
+                  meta: Text(
                     response.sourceLabel ??
                         context.l10n.hostFormResponseDirectSource,
                     style: CatchTextStyles.supporting(context),
                   ),
-                  contextContent: Text(
+                  body: Text(
                     AppTimeFormatters.compactRelativeTime(response.submittedAt),
                     style: CatchTextStyles.recordContext(context),
                   ),

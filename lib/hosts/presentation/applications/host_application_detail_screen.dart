@@ -104,7 +104,7 @@ class _HostApplicationDetailScreenState
                     name: application.applicantDisplayName,
                     seed: application.applicationId,
                   ),
-                  metadata: Text(
+                  meta: Text(
                     hostApplicationContextLabel(
                       context,
                       formId: application.formId,
@@ -114,13 +114,13 @@ class _HostApplicationDetailScreenState
                     ),
                     style: CatchTextStyles.supporting(context),
                   ),
-                  contextContent: Text(
+                  body: Text(
                     context.l10n.hostApplicationsSubmittedOn(
                       date: DateFormat.yMMMd().format(application.submittedAt),
                     ),
                     style: CatchTextStyles.recordContext(context),
                   ),
-                  status: CatchBadge.status(
+                  trailing: CatchBadge.status(
                     label: hostApplicationStatusLabel(
                       context,
                       application.reviewStatus,

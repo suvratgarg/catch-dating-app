@@ -2871,30 +2871,32 @@ Widget eventDetailMechanismListCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchHostRow,
+  name: 'Contact states',
+  type: CatchPersonRow,
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailHostCardCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchHostRow',
-    catalogId: 'core.widgets.catch_host_row',
+    title: 'CatchPersonRow.contact',
+    catalogId: 'catch.person_row',
     children: [
       _StateCard(
-        label: 'actions / no stats / dark surface',
+        label: 'actions / identity / color overrides',
         child: _InlineWrap(
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
-              child: CatchHostRow(
+              child: CatchPersonRow.contact(
+                data: const CatchPersonRowData(
+                  name: 'Sunday sea-face crew',
+                  metaLine: 'HOSTING SINCE FEB 2026 - BANDRA',
+                ),
                 colors: ActivityPalette.resolve(
                   context,
                   ActivityKind.socialRun,
                 ).avatarColors,
-                name: 'Sunday sea-face crew',
-                meta: 'HOSTING SINCE FEB 2026 - BANDRA',
                 onMessage: _noop,
                 messageTooltip: 'Message host',
                 onTap: _noop,
@@ -2902,29 +2904,38 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
-              child: CatchHostRow(
+              child: CatchPersonRow.contact(
+                data: const CatchPersonRowData(
+                  name: 'Catch supper club',
+                  metaLine: 'HOSTING SINCE MAR 2026',
+                ),
                 colors: ActivityPalette.resolve(
                   context,
                   ActivityKind.dinner,
                 ).avatarColors,
-                name: 'Catch supper club',
-                meta: 'HOSTING SINCE MAR 2026',
                 verified: false,
               ),
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
-              child: CatchHostRow(
-                colors: ActivityPalette.resolve(
-                  context,
-                  ActivityKind.pickleball,
-                ).avatarColors,
-                name: 'Courtside social',
-                meta: 'HOSTING SINCE JAN 2026 - REPLIES FAST',
-                nameColor: t.primaryInk,
-                metaColor: t.primaryInk.withValues(alpha: 0.72),
-                actionColor: t.primaryInk,
-                onTap: _noop,
+              child: CatchSurface(
+                backgroundColor: t.primary,
+                child: CatchPersonRow.contact(
+                  data: const CatchPersonRowData(
+                    name: 'Courtside social',
+                    metaLine: 'HOSTING SINCE JAN 2026 - REPLIES FAST',
+                  ),
+                  colors: ActivityPalette.resolve(
+                    context,
+                    ActivityKind.pickleball,
+                  ).avatarColors,
+                  nameColor: t.primaryInk,
+                  metaColor: t.primaryInk.withValues(
+                    alpha: CatchOpacity.eventHeroMutedInk,
+                  ),
+                  actionColor: t.primaryInk,
+                  onTap: _noop,
+                ),
               ),
             ),
           ],

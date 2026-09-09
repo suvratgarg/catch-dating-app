@@ -13822,13 +13822,14 @@
       "name": "CatchPersonRow",
       "status": "active",
       "kind": "composite",
-      "summary": "Identity rows for chat, rosters, and natural-height directories with rich metadata and adaptive status.",
+      "summary": "Canonical identity row with chat, roster, directory and contact recipes, caller-owned copy and independently actionable contact controls.",
       "dart": {
         "symbol": "CatchPersonRow",
         "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
         "constructors": [
           "CatchPersonRow",
-          "CatchPersonRow.directory"
+          "CatchPersonRow.directory",
+          "CatchPersonRow.contact"
         ]
       },
       "design": {
@@ -13874,22 +13875,74 @@
             "dartType": "VoidCallback"
           },
           {
-            "name": "metadata",
+            "name": "meta",
             "type": "widget",
             "required": false,
             "dartType": "Widget?"
           },
           {
-            "name": "contextContent",
+            "name": "body",
             "type": "widget",
             "required": false,
             "dartType": "Widget?"
           },
           {
-            "name": "status",
-            "type": "widget",
+            "name": "colors",
+            "type": "object",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "CatchAvatarColors",
+            "notes": "Contact recipe only."
+          },
+          {
+            "name": "verified",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "Contact recipe only."
+          },
+          {
+            "name": "divider",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "Contact recipe only."
+          },
+          {
+            "name": "onMessage",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?",
+            "notes": "Contact recipe only."
+          },
+          {
+            "name": "messageTooltip",
+            "type": "string",
+            "required": false,
+            "dartType": "String?",
+            "notes": "Contact recipe only."
+          },
+          {
+            "name": "nameColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?",
+            "notes": "Contact recipe only."
+          },
+          {
+            "name": "metaColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?",
+            "notes": "Contact recipe only."
+          },
+          {
+            "name": "actionColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?",
+            "notes": "Contact recipe only."
           }
         ],
         "states": [
@@ -13902,7 +13955,16 @@
           "divider",
           "long-copy",
           "directory",
-          "directory-large-text"
+          "directory-large-text",
+          "chat-context",
+          "chat-typing",
+          "roster-long-copy",
+          "contact-identity-only",
+          "contact-navigable",
+          "contact-message-enabled",
+          "contact-verified",
+          "contact-divider",
+          "contact-long-copy"
         ],
         "slots": [],
         "tokens": [
@@ -13919,7 +13981,9 @@
           "layout.recordAvatarExtent",
           "layout.recordLeadingGap",
           "layout.recordVerticalPadding",
-          "layout.recordTitleGap"
+          "layout.recordTitleGap",
+          "space.s10",
+          "theme.light.color.primary"
         ],
         "dartRoles": [
           "CatchPersonRowData",
@@ -13930,67 +13994,15 @@
           "CatchTextStyles.name",
           "CatchTextStyles.supporting",
           "CatchTextStyles.recordContext",
-          "CatchRecordTokens"
+          "CatchRecordTokens",
+          "CatchRowPressSurface",
+          "CatchIconAction",
+          "CatchAvatarColors",
+          "CatchCountBadge",
+          "CatchStatusIndicator"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.person_row.chat_layout",
-            "symbol": "CatchPersonChatLayout",
-            "file": "packages/catch_ui/lib/src/components/catch_person_chat_layout.dart",
-            "summary": "Direct chat-row layout renderer used by CatchPersonRow chat variants.",
-            "states": [
-              "default",
-              "context",
-              "typing",
-              "unread",
-              "long-copy"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.person_row",
-              "parentConceptId": "catch.person_row",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.person_row"
-            }
-          },
-          {
-            "id": "catch.person_row.chat_trailing",
-            "symbol": "CatchPersonChatTrailing",
-            "file": "packages/catch_ui/lib/src/components/catch_person_chat_trailing.dart",
-            "summary": "Direct chat-row trailing metadata renderer.",
-            "states": [
-              "timestamp",
-              "unread",
-              "new-dot"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.person_row",
-              "parentConceptId": "catch.person_row",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.person_row"
-            }
-          },
-          {
-            "id": "catch.person_row.roster_layout",
-            "symbol": "CatchPersonRosterLayout",
-            "file": "packages/catch_ui/lib/src/components/catch_person_roster_layout.dart",
-            "summary": "Direct roster-row layout renderer used by CatchPersonRow roster variants.",
-            "states": [
-              "meta",
-              "context",
-              "long-copy"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.person_row",
-              "parentConceptId": "catch.person_row",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.person_row"
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -14008,11 +14020,16 @@
       "handoff": {
         "allowedChildren": [
           "catch.person_avatar",
-          "catch.badge"
+          "catch.badge",
+          "catch.icon_button",
+          "catch.row_press_surface"
         ],
         "notes": [
-          "The default row constructor requires resolved chat and accessibility copy; directory rows have no fixed copy. Direct chat renderers receive the same copy bundle, and count/dot leaves receive resolved semantics labels.",
-          "Global product composition for people rows. Feature view models should map into CatchPersonRowData at the screen/list boundary rather than introducing row adapters."
+          "The default row requires caller-resolved chat and accessibility copy. Directory and contact recipes have no fixed copy; contact messaging requires a localized messageTooltip. Chat/roster text, context, timestamp and count/dot content render inside the same parent.",
+          "Global product composition for people rows. Feature view models should map into CatchPersonRowData at the screen/list boundary rather than introducing row adapters.",
+          "Supplying onTap automatically renders the navigation chevron; omitting onTap makes navigation chrome impossible.",
+          "Supplying onMessage automatically renders the message action and requires messageTooltip, so affordance and capability cannot drift.",
+          "Directory slots are meta, body and trailing. At large text, trailing status moves below supporting content. Contact colors apply to the avatar and verification mark together."
         ]
       },
       "governance": {
@@ -14030,6 +14047,16 @@
       },
       "surfaces": {
         "flutter": "CatchPersonRow"
+      },
+      "level": "L3",
+      "roleNoun": "Row",
+      "naming": {
+        "useCase": "Person",
+        "comparedWith": [
+          "catch.record_row",
+          "catch.index_row"
+        ],
+        "reason": "Presents identity through an avatar, name and contextual content. Chat, roster, directory and compact contact actions are recipes of that identity; IndexRow selects a directory category and RecordRow presents narrative facts without person identity."
       }
     },
     {
@@ -15824,166 +15851,6 @@
       }
     },
     {
-      "id": "catch.host_row",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
-      "name": "CatchHostRow",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Compact provider-free host or organizer identity row whose message and navigation affordances are derived directly from the available callbacks.",
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/HostRow",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "HostRow",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "colors",
-            "type": "object",
-            "required": true,
-            "dartType": "CatchAvatarColors"
-          },
-          {
-            "name": "name",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "imageUrl",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "meta",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          },
-          {
-            "name": "verified",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "divider",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "onTap",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
-          },
-          {
-            "name": "onMessage",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?"
-          },
-          {
-            "name": "messageTooltip",
-            "type": "string",
-            "required": false,
-            "dartType": "String?"
-          }
-        ],
-        "states": [
-          "identity-only",
-          "navigable",
-          "message-enabled",
-          "verified",
-          "divider",
-          "long-copy"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s1",
-          "space.s2",
-          "space.s3",
-          "space.s10",
-          "theme.light.color.ink",
-          "theme.light.color.ink3",
-          "theme.light.color.line",
-          "theme.light.color.primary"
-        ],
-        "dartRoles": [
-          "CatchAvatar",
-          "CatchRowPressSurface",
-          "CatchIconAction",
-          "CatchAvatarColors"
-        ],
-        "goldens": [],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.person_avatar",
-          "catch.icon_button",
-          "catch.row_press_surface"
-        ],
-        "notes": [
-          "Supplying onTap automatically renders the navigation chevron; omitting onTap makes navigation chrome impossible.",
-          "Supplying onMessage automatically renders the message action and requires messageTooltip, so affordance and capability cannot drift."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.host_row",
-        "publicApi": true,
-        "stateOwnership": "slot-state-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "internal-only",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.host_row"
-      },
-      "dart": {
-        "symbol": "CatchHostRow",
-        "file": "packages/catch_ui/lib/src/components/catch_host_row.dart",
-        "constructors": [
-          "CatchHostRow"
-        ]
-      },
-      "surfaces": {
-        "flutter": "CatchHostRow"
-      }
-    },
-    {
       "id": "catch.map_preview",
       "verification": {
         "vehicle": "widgetbook-contract",
@@ -16415,7 +16282,8 @@
           "catch.ui_label"
         ],
         "notes": [
-          "Use for quiet browse and directory indexes; richer selectable controls belong to CatchChoiceInput.segmented."
+          "Use for quiet browse and directory indexes; richer selectable controls belong to CatchChoiceInput.segmented.",
+          "The row owns one semantic tap action with its selected/enabled state and resolved label. Leading and trailing slots are passive adornments; independent controls belong in a row that preserves child actions."
         ]
       },
       "governance": {
@@ -16433,6 +16301,16 @@
       },
       "surfaces": {
         "flutter": "CatchIndexRow"
+      },
+      "level": "L3",
+      "roleNoun": "Row",
+      "naming": {
+        "useCase": "Index",
+        "comparedWith": [
+          "catch.person_row",
+          "catch.record_row"
+        ],
+        "reason": "A compact directory/category entry owns one selectable command, optional passive adornments and a hairline separator. PersonRow owns identity and contact/message states; RecordRow presents descriptive facts and prose."
       }
     },
     {

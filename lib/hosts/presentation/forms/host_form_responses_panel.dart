@@ -156,15 +156,15 @@ class _HostFormResponsesPanelState
                               context.l10n.hostFormResponsesAnonymous,
                           seed: response.responseId,
                         ),
-                        metadata: Text(
+                        meta: Text(
                           response.formTitle,
                           style: CatchTextStyles.supporting(context),
                         ),
-                        contextContent: Text(
+                        body: Text(
                           '${AppTimeFormatters.compactRelativeTime(response.submittedAt)} · ${response.sourceLabel ?? context.l10n.hostFormResponseDirectSource}',
                           style: CatchTextStyles.recordContext(context),
                         ),
-                        status: CatchBadge.status(
+                        trailing: CatchBadge.status(
                           label:
                               response.status ==
                                   HostFormResponseStatus.withdrawn

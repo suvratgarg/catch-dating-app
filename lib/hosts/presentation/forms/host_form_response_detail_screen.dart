@@ -351,15 +351,15 @@ class _ResponseIdentityHeader extends StatelessWidget {
           context.l10n.hostFormResponsesAnonymous,
       seed: detail.response.responseId,
     ),
-    metadata: Text(
+    meta: Text(
       detail.response.formTitle,
       style: CatchTextStyles.supporting(context),
     ),
-    contextContent: Text(
+    body: Text(
       '${context.l10n.hostAudienceResultsVersion(version: detail.response.version)} · ${AppTimeFormatters.dateTime(detail.response.submittedAt)}',
       style: CatchTextStyles.recordContext(context),
     ),
-    status: CatchBadge.status(
+    trailing: CatchBadge.status(
       key: const ValueKey('host-form-response-status'),
       label: detail.response.status == HostFormResponseStatus.submitted
           ? context.l10n.hostFormResponsesSubmitted
