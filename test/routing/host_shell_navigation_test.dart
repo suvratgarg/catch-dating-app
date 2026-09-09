@@ -1,4 +1,4 @@
-import 'dart:ui' show SemanticsAction, SemanticsFlag;
+import 'dart:ui' show SemanticsAction, Tristate;
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -583,11 +583,14 @@ void main() {
           final semantics = find.semantics
               .byLabel(label)
               .evaluate()
-              .where((node) => node.hasFlag(SemanticsFlag.isButton))
+              .where((node) => node.flagsCollection.isButton)
               .single;
           expect(semantics.label, label);
-          expect(semantics.hasFlag(SemanticsFlag.isButton), isTrue);
-          expect(semantics.hasFlag(SemanticsFlag.isSelected), index == 0);
+          expect(semantics.flagsCollection.isButton, isTrue);
+          expect(
+            semantics.flagsCollection.isSelected,
+            index == 0 ? Tristate.isTrue : Tristate.isFalse,
+          );
           expect(
             semantics.getSemanticsData().hasAction(SemanticsAction.tap),
             isTrue,
@@ -601,8 +604,9 @@ void main() {
               .byLabel('Events')
               .evaluate()
               .single
-              .hasFlag(SemanticsFlag.isSelected),
-          isTrue,
+              .flagsCollection
+              .isSelected,
+          Tristate.isTrue,
         );
       } else {
         expect(find.bySemanticsLabel(RegExp('Today')), findsOneWidget);

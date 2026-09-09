@@ -73,7 +73,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
           EventRecapMissingEvent() => CatchErrorState(
             title: context.l10n.swipesEventRecapScreenTitleEventNotFound,
             message: context.l10n.swipesEventRecapScreenMessageThisEventIsNo,
-            actions: [const CatchErrorBackButton()],
+            actions: const [CatchErrorBackButton()],
           ),
           EventRecapReady ready => EventRecapReadyBody(
             state: ready,

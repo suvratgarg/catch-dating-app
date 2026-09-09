@@ -643,7 +643,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const errorStateRequiresAction = LintCode(
     'catch_error_state_requires_action',
-    'Full-screen and sliver Catch error states must declare onRetry or secondaryAction so the user always has a recovery or exit path.',
+    'Full-screen and sliver Catch error states must declare onRetry or nonempty actions so the user always has a recovery or exit path.',
     severity: DiagnosticSeverity.WARNING,
   );
 
@@ -993,8 +993,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
             typeName == 'CatchLocalizedErrorState' ||
             typeName == 'CatchLocalizedErrorScaffold' ||
             typeName == 'CatchLocalizedSliverErrorState') &&
-        !_hasNamedArgument(node, 'onRetry') &&
-        !_hasNamedArgument(node, 'secondaryAction')) {
+        !_hasErrorRecovery(node)) {
       _reportAtNode(node, CatchUiLayoutRules.errorStateRequiresAction);
     }
 
@@ -1782,6 +1781,15 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return _namedArgument(node, name) != null;
   }
 
+  bool _hasErrorRecovery(InstanceCreationExpression node) {
+    final retry = _namedArgument(node, 'onRetry');
+    if (retry != null && retry is! NullLiteral) return true;
+    final actions = _namedArgument(node, 'actions');
+    return actions != null &&
+        actions is! NullLiteral &&
+        (actions is! ListLiteral || actions.elements.isNotEmpty);
+  }
+
   bool _namedArgumentSourceContains(
     InstanceCreationExpression node,
     String name,
@@ -2407,8 +2415,13 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
     final typeName = _constructorTypeName(node);
-    if (typeName == 'CatchLocalizedErrorBanner' &&
-        node.constructorName.name?.name == 'mutation') {
+    if ((typeName == 'CatchLocalizedErrorBanner' &&
+            node.constructorName.name?.name == 'mutation') ||
+        // Before resolution, explicit const named construction can be parsed
+        // as a prefixed type with no separate constructor-name node.
+        (node.constructorName.element == null &&
+            node.constructorName.toSource() ==
+                'CatchLocalizedErrorBanner.mutation')) {
       final mutation = _namedArgumentExpression(node, 'mutation');
       if (mutation != null) _addMutationExpression(mutation);
     }

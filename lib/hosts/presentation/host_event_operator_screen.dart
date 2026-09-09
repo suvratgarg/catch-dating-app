@@ -71,7 +71,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
                 title: context.l10n.hostsEventOperatorCancelledTitle,
                 message: context.l10n.hostsEventOperatorCancelledMessage,
                 icon: CatchIcons.eventBusyOutlined,
-                actions: [const CatchErrorBackButton()],
+                actions: const [CatchErrorBackButton()],
               ),
             ),
           );

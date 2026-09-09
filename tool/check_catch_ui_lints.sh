@@ -399,6 +399,22 @@ expect_code_count \
   "catch_no_shell_local_measurement" \
   1
 
+probe_path="$probe_root/lib/hosts/presentation/error_recovery_lint_probe.dart"
+stage_probe "canonical error recovery rejects empty actions" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+
+final missingRecovery = CatchErrorState(title: 'Error', message: 'Try again');
+final emptyRecovery = CatchErrorState(title: 'Error', message: 'Try again', actions: const []);
+final nullRecovery = CatchErrorState(title: 'Error', message: 'Try again', onRetry: null);
+final emptySliverRecovery = CatchSliverErrorState(title: 'Error', message: 'Try again', actions: const []);
+void recover() {}
+final retry = CatchErrorState(title: 'Error', message: 'Try again', onRetry: recover, retryLabel: 'Retry');
+final exit = CatchErrorState(title: 'Error', message: 'Try again', actions: [CatchButton.text(label: 'Back', onPressed: recover)]);
+final sliverExit = CatchSliverErrorState(title: 'Error', message: 'Try again', actions: [CatchButton.text(label: 'Back', onPressed: recover)]);
+DART
+expect_probe exact catch_error_state_requires_action 4
+
 probe_path="$probe_root/lib/hosts/presentation/host_async_state_lint_probe.dart"
 stage_probe "Host route-edge async-state violation" <<'DART'
 import 'package:catch_ui/catch_ui.dart';

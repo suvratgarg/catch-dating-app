@@ -33,7 +33,10 @@ void main() {
       );
 
       expect(find.byType(CatchTopBar), findsOneWidget);
-      expect(find.byType(CatchTopBar), findsNothing);
+      expect(
+        tester.widget<CatchTopBar>(find.byType(CatchTopBar)).variant,
+        CatchTopBarVariant.route,
+      );
       expect(find.text(currentPrompt.displayPrompt), findsOneWidget);
 
       const fieldKey = ValueKey('profile-photo-prompt-field');

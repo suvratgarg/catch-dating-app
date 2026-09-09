@@ -18,11 +18,10 @@ class CatchLocalizedErrorBanner extends StatelessWidget {
   /// Inline mutation failure; the caller retains watching and action ownership.
   const CatchLocalizedErrorBanner.mutation({
     super.key,
-    required MutationState<dynamic> mutation,
+    required MutationState<dynamic> this._mutation,
     AppErrorContext context = AppErrorContext.generic,
     this.onRetry,
   }) : _error = null,
-       _mutation = mutation,
        errorContext = context;
 
   final Object? _error;

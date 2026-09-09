@@ -51,10 +51,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: CatchTheme.dark,
-        home: Scaffold(
+        home: const Scaffold(
           body: MediaQuery(
-            data: const MediaQueryData(textScaler: TextScaler.linear(2)),
-            child: const SingleChildScrollView(
+            data: MediaQueryData(textScaler: TextScaler.linear(2)),
+            child: SingleChildScrollView(
               child: SizedBox(
                 width: 320,
                 child: CatchStepRowList(

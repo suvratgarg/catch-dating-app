@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
-import 'package:path/path.dart' as p;
 
 /// Syntax-only inventory of every constructor, including named/factory forms.
 /// No analysis context, plugin, package resolution or repository output writes.
@@ -12,25 +11,29 @@ Map<String, Object?> collectComponentApi({
   List<String>? files,
   bool includeFramework = true,
 }) {
+  final rootDirectory = Directory(repoRoot).absolute;
+  final rootUri = rootDirectory.uri;
   final paths =
       files ??
       [
         for (final root in ['packages/catch_ui/lib', 'lib/core/riverpod_ui'])
-          if (Directory(p.join(repoRoot, root)).existsSync())
+          if (Directory.fromUri(rootUri.resolve(root)).existsSync())
             for (final file in Directory(
-              p.join(repoRoot, root),
+              rootUri.resolve(root).toFilePath(),
             ).listSync(recursive: true, followLinks: false))
               if (file is File &&
                   file.path.endsWith('.dart') &&
                   !file.path.endsWith('.g.dart'))
-                p.relative(file.path, from: repoRoot),
+                file.path
+                    .substring(rootDirectory.path.length + 1)
+                    .replaceAll(Platform.pathSeparator, '/'),
       ];
   final classes = <Map<String, Object?>>[];
   final aliases = <Map<String, Object?>>[];
   final enums = <Map<String, Object?>>[];
   final failures = <String>[];
   for (final file in paths.toSet().toList()..sort()) {
-    final path = p.isAbsolute(file) ? file : p.join(repoRoot, file);
+    final path = rootUri.resolveUri(Uri.file(file)).toFilePath();
     final parsed = parseString(
       path: path,
       content: File(path).readAsStringSync(),
@@ -146,7 +149,9 @@ Map<String, Object?> collectComponentApi({
   }
   Map<String, Object?> framework = const {};
   if (includeFramework) {
-    final config = File(p.join(repoRoot, '.dart_tool/package_config.json'));
+    final config = File.fromUri(
+      rootUri.resolve('.dart_tool/package_config.json'),
+    );
     if (config.existsSync()) {
       final packages =
           (jsonDecode(config.readAsStringSync()) as Map)['packages'] as List;
@@ -232,7 +237,7 @@ void main(List<String> args) {
     if (i + 1 >= args.length) throw ArgumentError('Missing value: ${args[i]}');
     switch (args[i]) {
       case '--root':
-        root = p.absolute(args[++i]);
+        root = Directory(args[++i]).absolute.path;
       case '--files':
         files = args[++i].split(',');
       default:

@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'dart:ui' as ui;
 
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../../test_pump_helpers.dart';
 
 const _capture = ValueKey('hero-capture');
 const _photo = 'assets/branding/catch_icon.png';
@@ -59,7 +60,7 @@ void main() {
             stream.removeListener(listener);
           }
         });
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         expect(loaded, source == _photo);
         expect(
           tester.widget<CatchNetworkImage>(find.byType(CatchNetworkImage)).url,
@@ -83,7 +84,7 @@ void main() {
         final pixels = await tester.runAsync(() async {
           final image = await boundary.toImage();
           try {
-            return await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+            return await image.toByteData();
           } finally {
             image.dispose();
           }

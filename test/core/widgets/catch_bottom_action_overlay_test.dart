@@ -1,5 +1,3 @@
-import 'dart:ui' as ui;
-
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +42,7 @@ void main() {
       final pixels = await tester.runAsync(() async {
         final image = await boundary.toImage();
         try {
-          return await image.toByteData(format: ui.ImageByteFormat.rawRgba);
+          return await image.toByteData();
         } finally {
           image.dispose();
         }

@@ -28,10 +28,7 @@ void main() {
                     icon: CatchIcons.eventOutlined,
                     iconColor: CatchTokens.of(context).primary,
                   ),
-                  CatchIconTile.empty(
-                    icon: CatchIcons.search,
-                    variant: CatchIconTileVariant.plain,
-                  ),
+                  CatchIconTile.empty(icon: CatchIcons.search),
                   CatchIconTile.empty(
                     icon: CatchIcons.search,
                     variant: CatchIconTileVariant.bubble,

@@ -62,8 +62,8 @@ void main() {
       final avatars = find.byType(CatchAvatar).evaluate().toList();
       if (avatars.length > 1) {
         expect(
-          tester.getTopLeft(find.byType(CatchAvatar).at(1)).dx -
-              tester.getTopLeft(find.byType(CatchAvatar).first).dx,
+          tester.getTopLeft(find.widgetWithText(CatchAvatar, 'RS')).dx -
+              tester.getTopLeft(find.widgetWithText(CatchAvatar, 'AS')).dx,
           23,
         );
       }

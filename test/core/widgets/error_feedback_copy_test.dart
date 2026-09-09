@@ -180,10 +180,20 @@ void main() {
       expect(find.text('Réessayer'), findsNWidgets(2));
       expect(find.text('Try again'), findsNothing);
       expect(find.byType(CatchButton), findsNWidgets(2));
-      await tester.tap(find.text('Réessayer').first);
+      await tester.tap(
+        find.descendant(
+          of: find.widgetWithText(CatchBanner, 'Délai dépassé.'),
+          matching: find.text('Réessayer'),
+        ),
+      );
       expect(retries, 1);
       expect(permissionRecoveries, 0);
-      await tester.tap(find.text('Réessayer').last);
+      await tester.tap(
+        find.descendant(
+          of: find.widgetWithText(CatchBanner, 'Accès refusé.'),
+          matching: find.text('Réessayer'),
+        ),
+      );
       expect(permissionRecoveries, 1);
     },
   );

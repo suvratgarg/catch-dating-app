@@ -3,6 +3,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   for (final sample in [
     (value: 0.9, step: 0.005, expected: 0.905),
@@ -111,11 +113,11 @@ void main() {
     expect(increases, 2);
     update(() => enabled = false);
     await tester.pump();
-    await tester.pump(const Duration(seconds: 1));
+    await pumpFeatureUiFor(tester, const Duration(seconds: 1));
     expect(increases, 2);
     await gesture.up();
     await tester.pumpWidget(const SizedBox.shrink());
-    await tester.pump(const Duration(seconds: 1));
+    await pumpFeatureUiFor(tester, const Duration(seconds: 1));
     expect(increases, 2);
     expect(tester.takeException(), isNull);
   });

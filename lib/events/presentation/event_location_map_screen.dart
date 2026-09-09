@@ -87,7 +87,7 @@ class _EventLocationMapRouteScreenState
                   context.l10n.eventsEventLocationMapScreenTitleEventNotFound,
               message:
                   context.l10n.eventsEventLocationMapScreenMessageThisEventIsNo,
-              actions: [const CatchErrorBackButton()],
+              actions: const [CatchErrorBackButton()],
             ),
           );
         }

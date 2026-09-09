@@ -3,6 +3,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets('inline activity keeps its dimensions and fixed cadence', (
     tester,
@@ -50,7 +52,7 @@ void main() {
       color: Colors.blue,
     );
     await tester.pumpWidget(_wrap(dots));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     final identity = tester.state(find.byType(CatchLoadingIndicator));
     expect(find.byKey(const ValueKey('catch-field-spinner')), findsNothing);
     expect(tester.binding.hasScheduledFrame, isFalse);

@@ -1,4 +1,4 @@
-import 'dart:ui' show SemanticsAction, SemanticsFlag;
+import 'dart:ui' show SemanticsAction, Tristate;
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -33,7 +33,7 @@ void main() {
           final node = tester.getSemantics(
             find.byType(CatchNavigationButton<String>),
           );
-          expect(node.hasFlag(SemanticsFlag.isSelected), committed);
+          expect(node.flagsCollection.isSelected == Tristate.isTrue, committed);
           expect(
             node.getSemanticsData().hasAction(SemanticsAction.tap),
             isTrue,
@@ -83,7 +83,7 @@ void main() {
           expect(node.label, 'Inbox');
           expect(node.value, '104 unread messages');
           expect(node.hint, 'Hold for options');
-          expect(node.hasFlag(SemanticsFlag.isSelected), isTrue);
+          expect(node.flagsCollection.isSelected == Tristate.isTrue, isTrue);
           expect(
             node.getSemanticsData().hasAction(SemanticsAction.tap),
             isTrue,

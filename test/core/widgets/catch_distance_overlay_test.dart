@@ -1,8 +1,9 @@
+import 'dart:ui' show Tristate;
+
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -29,7 +30,6 @@ void main() {
               height: 180,
               child: Center(
                 child: CatchDistanceOverlay(
-                  size: 170,
                   fitAvailable: fitAvailable,
                   label: labelled ? '  2 km  ' : null,
                 ),
@@ -119,7 +119,7 @@ void main() {
           find.bySemanticsLabel('Distance filter'),
         );
         final data = node.getSemanticsData();
-        expect(data.hasFlag(SemanticsFlag.isButton), isTrue);
+        expect(data.flagsCollection.isButton, isTrue);
         expect(data.hasAction(SemanticsAction.tap), isTrue);
         expect(data.hint, 'Change the map radius');
         await tester.tap(surface);
@@ -147,8 +147,8 @@ void main() {
       final data = tester
           .getSemantics(find.bySemanticsLabel('3 km'))
           .getSemanticsData();
-      expect(data.hasFlag(SemanticsFlag.isButton), isFalse);
-      expect(data.hasFlag(SemanticsFlag.hasEnabledState), isFalse);
+      expect(data.flagsCollection.isButton, isFalse);
+      expect(data.flagsCollection.isEnabled != Tristate.none, isFalse);
       expect(data.hasAction(SemanticsAction.tap), isFalse);
       expect(_circle, findsNothing);
     } finally {

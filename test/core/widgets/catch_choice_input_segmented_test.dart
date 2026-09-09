@@ -2,6 +2,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
+
 String _value(String value) => value;
 Widget _app(Widget child) => MaterialApp(
   theme: CatchTheme.light,
@@ -34,7 +36,7 @@ void main() {
           CatchOption(value: 'x', label: 'Excluded'),
         ]),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('Excluded'), findsNothing);
       await tester.pumpWidget(
         input(const [
@@ -42,7 +44,7 @@ void main() {
           CatchOption(value: 'a', label: 'First'),
         ]),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('Second').hitTestable(), findsOneWidget);
       expect(find.text('First').hitTestable(), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -66,7 +68,7 @@ void main() {
         ),
       );
       await tester.pumpWidget(segmented());
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       final state = tester.state(find.byKey(key));
       await tester.tap(find.text('Second'));
       await tester.pumpWidget(
@@ -81,11 +83,11 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(tester.state(find.byKey(key)), same(state));
       await tester.tap(find.text('Second'));
       await tester.pumpWidget(segmented());
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(tester.state(find.byKey(key)), same(state));
       await tester.tap(find.text('Second'));
       expect(selected, [
@@ -130,7 +132,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       await tester.tap(find.text('All'));
       expect(received, isNull);
       expect(closes, 0);
@@ -157,7 +159,7 @@ void main() {
         ),
       );
       await tester.pumpWidget(segmented());
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('Everything').hitTestable(), findsOneWidget);
       await tester.pumpWidget(
         _app(
@@ -171,9 +173,9 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       await tester.pumpWidget(segmented());
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('Everything').hitTestable(), findsOneWidget);
       expect(tester.takeException(), isNull);
     },

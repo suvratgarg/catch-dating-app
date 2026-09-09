@@ -1,9 +1,13 @@
+import 'dart:ui' show CheckedState, Tristate;
+
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../test_pump_helpers.dart';
 
 Widget _app(Widget child, {double scale = 1}) => MaterialApp(
   theme: CatchTheme.light,
@@ -42,10 +46,10 @@ void main() {
         );
         var data = tester.getSemantics(find.byKey(key)).getSemanticsData();
         expect(data.label, 'Invite only\nUse the invitation code.');
-        expect(data.hasFlag(SemanticsFlag.hasCheckedState), isTrue);
-        expect(data.hasFlag(SemanticsFlag.isChecked), isFalse);
-        expect(data.hasFlag(SemanticsFlag.isInMutuallyExclusiveGroup), isTrue);
-        expect(data.hasFlag(SemanticsFlag.isEnabled), isTrue);
+        expect(data.flagsCollection.isChecked != CheckedState.none, isTrue);
+        expect(data.flagsCollection.isChecked == CheckedState.isTrue, isFalse);
+        expect(data.flagsCollection.isInMutuallyExclusiveGroup, isTrue);
+        expect(data.flagsCollection.isEnabled == Tristate.isTrue, isTrue);
         expect(find.bySemanticsLabel(data.label), findsOneWidget);
         await tester.sendKeyEvent(LogicalKeyboardKey.tab);
         await tester.pump();
@@ -58,10 +62,10 @@ void main() {
           selected = true;
           enabled = false;
         });
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         data = tester.getSemantics(find.byKey(key)).getSemanticsData();
-        expect(data.hasFlag(SemanticsFlag.isChecked), isTrue);
-        expect(data.hasFlag(SemanticsFlag.isEnabled), isFalse);
+        expect(data.flagsCollection.isChecked == CheckedState.isTrue, isTrue);
+        expect(data.flagsCollection.isEnabled == Tristate.isTrue, isFalse);
         expect(data.hasAction(SemanticsAction.tap), isFalse);
         await tester.tap(find.text('Use the invitation code.'));
         await tester.sendKeyEvent(LogicalKeyboardKey.space);
@@ -193,7 +197,7 @@ void main() {
         ),
       );
       Finder tile(int value) =>
-          find.byType(CatchChoiceTile).at(values.indexOf(value));
+          find.widgetWithText(CatchChoiceTile, 'Choice $value');
       final first = tester.state(tile(1));
       final second = tester.state(tile(2));
       await tester.tap(find.text('Choice 2'));

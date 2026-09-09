@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets('drawer preserves content order, gaps and metadata alignment', (
     tester,
@@ -78,7 +80,7 @@ void main() {
         ),
       );
       await pumpDrawer(true);
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       focus.requestFocus();
       await tester.pump();
       expect(focus.hasFocus, isTrue);
@@ -92,7 +94,7 @@ void main() {
       expect(_accessibilityLabels(tester), isNot(contains('Do work')));
       await tester.tapAt(target);
       expect(activations, 0);
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(find.text('Do work'), findsNothing);
       expect(tester.takeException(), isNull);
     } finally {

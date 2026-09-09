@@ -3,6 +3,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
+
 const _options = [
   CatchOption(value: 'people', label: 'People'),
   CatchOption(value: 'forms', label: 'Forms'),
@@ -34,15 +36,15 @@ void main() {
             ),
           ),
         );
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         final rule = find.byType(AnimatedPositioned);
         final first = tester.getRect(rule);
         controller.index = 1;
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         final last = tester.getRect(rule);
         controller.index = 0;
         controller.offset = .5;
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         final half = tester.getRect(rule);
         expect(half.left, closeTo((first.left + last.left) / 2, .01));
         expect(half.width, closeTo((first.width + last.width) / 2, .01));
@@ -63,7 +65,7 @@ void main() {
         expect(controller.index, 0);
         controller.offset = 0;
         await tester.tap(find.text('Forms'));
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         expect(controller.index, 1);
         expect(tester.getRect(rule), last);
       } finally {
@@ -87,12 +89,12 @@ void main() {
         ),
       );
       await tester.pumpWidget(bar(first));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       await tester.pumpWidget(bar(second));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       first.index = 1;
       await tester.tap(find.text('People'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(first.index, 1);
       expect(second.index, 0);
       await tester.pumpWidget(const SizedBox.shrink());
@@ -125,12 +127,12 @@ void main() {
             variant: variant,
           );
           await tester.pumpWidget(_wrap(value, scale: scale));
-          await tester.pumpAndSettle();
+          await pumpFeatureUi(tester);
           final valueRect = tester.getRect(
             find.byType(CatchPageTabBar<String>),
           );
           await tester.pumpWidget(_wrap(controlled, scale: scale));
-          await tester.pumpAndSettle();
+          await pumpFeatureUi(tester);
           final finder = find.byType(CatchPageTabBar<String>);
           expect(tester.getRect(finder), valueRect);
           expect(controlled.preferredSize, value.preferredSize);
@@ -165,9 +167,9 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       await tester.tap(find.text('Forms'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
       expect(controller.index, 0);
       expect(find.byTooltip('Unavailable'), findsOneWidget);
     },

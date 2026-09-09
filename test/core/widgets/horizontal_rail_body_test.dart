@@ -2,6 +2,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../test_pump_helpers.dart';
+
 void main() {
   for (final height in <double?>[80, null]) {
     testWidgets('rail height $height keeps item order and trailing action', (
@@ -127,7 +129,7 @@ void main() {
     expect(built.length, lessThan(20));
     expect(built, isNot(contains(999)));
     await tester.drag(find.byType(ListView), const Offset(-500, 0));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     expect(built.any((index) => index >= 5), isTrue);
     expect(built.length, lessThan(30));
   });

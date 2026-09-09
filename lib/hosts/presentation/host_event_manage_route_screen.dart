@@ -92,7 +92,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
                 message: context
                     .l10n
                     .hostsHostEventManageRouteScreenMessageThisHostedEventIs,
-                actions: [const CatchErrorBackButton()],
+                actions: const [CatchErrorBackButton()],
               ),
             ),
           );
@@ -119,7 +119,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
                     .l10n
                     .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
                 icon: CatchIcons.blockRounded,
-                actions: [const CatchErrorBackButton()],
+                actions: const [CatchErrorBackButton()],
               ),
             ),
           );

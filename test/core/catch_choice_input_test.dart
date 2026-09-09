@@ -1,9 +1,13 @@
+import 'dart:ui' show CheckedState, Tristate;
+
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import '../test_pump_helpers.dart';
 
 Widget _app(Widget child) => MaterialApp(
   theme: CatchTheme.light,
@@ -100,8 +104,15 @@ void main() {
           ),
         ),
       );
-      Finder choice(int value) =>
-          find.byType(CatchChip).at(values.indexOf(value));
+      Finder choice(int value) => find.descendant(
+        of: find.byWidgetPredicate(
+          (widget) =>
+              widget is KeyedSubtree &&
+              widget.key is ValueKey<int> &&
+              (widget.key! as ValueKey<int>).value == value,
+        ),
+        matching: find.byType(CatchChip),
+      );
       final firstState = tester.state(choice(1));
       final secondState = tester.state(choice(2));
       expect(find.text('Mumbai'), findsNWidgets(2));
@@ -145,10 +156,10 @@ void main() {
         );
         final state = tester.state(find.byKey(key));
         var data = tester.getSemantics(find.byKey(key)).getSemanticsData();
-        expect(data.hasFlag(SemanticsFlag.hasCheckedState), isTrue);
-        expect(data.hasFlag(SemanticsFlag.isChecked), isTrue);
-        expect(data.hasFlag(SemanticsFlag.isInMutuallyExclusiveGroup), isTrue);
-        expect(data.hasFlag(SemanticsFlag.hasSelectedState), isFalse);
+        expect(data.flagsCollection.isChecked != CheckedState.none, isTrue);
+        expect(data.flagsCollection.isChecked == CheckedState.isTrue, isTrue);
+        expect(data.flagsCollection.isInMutuallyExclusiveGroup, isTrue);
+        expect(data.flagsCollection.isSelected != Tristate.none, isFalse);
         expect(find.bySemanticsLabel('Morning'), findsOneWidget);
         await tester.sendKeyEvent(LogicalKeyboardKey.tab);
         await tester.pump();
@@ -159,14 +170,14 @@ void main() {
         await tester.pump();
         expect(tester.state(find.byKey(key)), same(state));
         data = tester.getSemantics(find.byKey(key)).getSemanticsData();
-        expect(data.hasFlag(SemanticsFlag.isInMutuallyExclusiveGroup), isFalse);
+        expect(data.flagsCollection.isInMutuallyExclusiveGroup, isFalse);
         final icon = tester.widget<Icon>(find.byIcon(CatchIcons.checkRounded));
         expect(icon.size, CatchFieldTokens.chipSelectedGlyphExtent);
         rebuild(() => enabled = false);
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
         data = tester.getSemantics(find.byKey(key)).getSemanticsData();
-        expect(data.hasFlag(SemanticsFlag.isChecked), isTrue);
-        expect(data.hasFlag(SemanticsFlag.isEnabled), isFalse);
+        expect(data.flagsCollection.isChecked == CheckedState.isTrue, isTrue);
+        expect(data.flagsCollection.isEnabled == Tristate.isTrue, isFalse);
         expect(data.hasAction(SemanticsAction.tap), isFalse);
         await tester.tap(find.byKey(key));
         await tester.sendKeyEvent(LogicalKeyboardKey.space);
