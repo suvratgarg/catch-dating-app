@@ -10,6 +10,7 @@ Map<String, Object?> collectComponentApi({
   required String repoRoot,
   List<String>? files,
   bool includeFramework = true,
+  bool aliasesOnly = false,
 }) {
   final rootDirectory = Directory(repoRoot).absolute;
   final rootUri = rootDirectory.uri;
@@ -54,6 +55,7 @@ Map<String, Object?> collectComponentApi({
     for (final declaration in parsed.unit.declarations) {
       switch (declaration) {
         case ClassDeclaration():
+          if (aliasesOnly) continue;
           final name = declaration.namePart.typeName.lexeme;
           if (declaration.namePart is PrimaryConstructorDeclaration) {
             failures.add(
@@ -114,6 +116,7 @@ Map<String, Object?> collectComponentApi({
             ],
           });
         case EnumDeclaration():
+          if (aliasesOnly) continue;
           enums.add({
             ...location(declaration),
             'name': declaration.namePart.typeName.lexeme,
@@ -145,6 +148,7 @@ Map<String, Object?> collectComponentApi({
             ],
           });
         case ClassTypeAlias():
+          if (aliasesOnly) continue;
           failures.add(
             '$file: class aliases require an explicit API collector '
             'update so inherited constructors cannot escape the inventory',
@@ -153,6 +157,7 @@ Map<String, Object?> collectComponentApi({
     }
   }
   Map<String, Object?> framework = const {};
+  Map<String, Object?> frameworkAliases = const {};
   if (includeFramework) {
     final config = File.fromUri(
       rootUri.resolve('.dart_tool/package_config.json'),
@@ -169,8 +174,7 @@ Map<String, Object?> collectComponentApi({
         final library = Uri.directory(
           packageRoot.toFilePath(),
         ).resolve(flutter['packageUri'] as String? ?? 'lib/').toFilePath();
-        // Read inherited parameter types and standard callback aliases from the
-        // installed SDK. Do not duplicate Flutter signatures in the checker.
+        // Read inherited parameter types from the installed SDK.
         framework = collectComponentApi(
           repoRoot: library,
           files: [
@@ -180,7 +184,50 @@ Map<String, Object?> collectComponentApi({
           includeFramework: false,
         );
         failures.addAll((framework['failures'] as List).cast<String>());
+        // Callback and builder typedefs are spread across Flutter libraries
+        // (for example FormFieldValidator and InputCounterWidgetBuilder).
+        // Read their syntax instead of maintaining a partial name allowlist.
+        // Other SDK classes are outside our constructor inventory and may use
+        // class-alias syntax; only collect typedefs in this additional pass.
+        final engine = packages
+            .cast<Map>()
+            .where((entry) => entry['name'] == 'sky_engine')
+            .firstOrNull;
+        final aliasLibraries = [library];
+        if (engine == null) {
+          failures.add('sky_engine package is missing from ${config.path}');
+        } else {
+          // Flutter re-exports dart:ui callbacks, including VoidCallback.
+          aliasLibraries.add(
+            Uri.directory(
+                  config.uri.resolve(engine['rootUri'] as String).toFilePath(),
+                )
+                .resolve(engine['packageUri'] as String? ?? 'lib/')
+                .resolve('ui/')
+                .toFilePath(),
+          );
+        }
+        frameworkAliases = collectComponentApi(
+          repoRoot: library,
+          files: [
+            for (final aliasLibrary in aliasLibraries)
+              for (final file in Directory(
+                aliasLibrary,
+              ).listSync(recursive: true))
+                if (file is File &&
+                    file.path.endsWith('.dart') &&
+                    file.readAsStringSync().contains('typedef '))
+                  file.path,
+          ],
+          includeFramework: false,
+          aliasesOnly: true,
+        );
+        failures.addAll((frameworkAliases['failures'] as List).cast<String>());
+      } else {
+        failures.add('Flutter package is missing from ${config.path}');
       }
+    } else {
+      failures.add('Package configuration is missing: ${config.path}');
     }
   }
   return {
@@ -188,7 +235,7 @@ Map<String, Object?> collectComponentApi({
     'aliases': aliases,
     'enums': enums,
     'externalClasses': framework['classes'] ?? const [],
-    'externalAliases': framework['aliases'] ?? const [],
+    'externalAliases': frameworkAliases['aliases'] ?? const [],
     'failures': failures,
   };
 }

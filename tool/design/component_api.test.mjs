@@ -60,6 +60,21 @@ class CatchInheritedScope extends InheritedWidget {
   const CatchInheritedScope({required super.child, super.key});
   @override bool updateShouldNotify(CatchInheritedScope oldWidget) => false;
 }
+class CatchFrameworkInput extends StatelessWidget {
+  const CatchFrameworkInput({required this.validator, required this.onValidate,
+    required this.counter, required this.counterBuilder,
+    required this.tapOutside, required this.onTapOutside,
+    required this.contextMenu, required this.contextMenuBuilder});
+  final FormFieldValidator<String> validator;
+  final FormFieldValidator<String> onValidate;
+  final InputCounterWidgetBuilder counter;
+  final InputCounterWidgetBuilder counterBuilder;
+  final TapRegionCallback tapOutside;
+  final TapRegionCallback onTapOutside;
+  final EditableTextContextMenuBuilder contextMenu;
+  final EditableTextContextMenuBuilder contextMenuBuilder;
+  @override Widget build(BuildContext context) => const SizedBox();
+}
 class CatchParentRow<T extends Widget> extends StatelessWidget {
   const CatchParentRow({required this.child});
   const CatchParentRow.content(this.child);
@@ -164,6 +179,21 @@ test("reads installed SDK inherited child signatures without copying them into p
   assert.ok(inventory.externalClasses.some((row) => row.name === "InheritedWidget"));
   assert.ok(inventory.externalAliases.some((row) => row.name === "ValueChanged"));
   assert.deepEqual(forSymbol("CatchInheritedScope"), []);
+});
+
+test("reads callback and builder aliases across installed Flutter libraries", () => {
+  for (const name of ["FormFieldValidator", "InputCounterWidgetBuilder", "TapRegionCallback", "EditableTextContextMenuBuilder"]) {
+    assert.ok(inventory.externalAliases.some((row) => row.name === name), name);
+  }
+  assert.deepEqual(forSymbol("CatchFrameworkInput").map((row) => [row.rule, row.parameter]), [
+    ["function", "validator"], ["builder", "counter"], ["callback", "tapOutside"], ["builder", "contextMenu"],
+  ]);
+});
+
+test("missing framework configuration fails instead of silently losing callback coverage", () => {
+  const result = spawnSync("dart", [...dartArguments, "--root", scratch, "--files", path.join(scratch, "fixture.dart")], {cwd: repo, encoding: "utf8"});
+  assert.equal(result.status, 1, result.stderr);
+  assert.ok(JSON.parse(result.stdout).failures.some((message) => message.includes("Package configuration is missing")));
 });
 
 test("follows named and positional super formals including generic parent substitutions", () => {

@@ -6,16 +6,6 @@ const widgetBases = new Set([
   "RenderObjectWidget", "SingleChildRenderObjectWidget", "MultiChildRenderObjectWidget",
   "LeafRenderObjectWidget", "ConsumerWidget", "ConsumerStatefulWidget",
 ]);
-const frameworkCallbacks = new Set([
-  "VoidCallback", "AsyncCallback", "ValueChanged", "ValueSetter", "AsyncValueSetter",
-  "GestureTapCallback", "GestureLongPressCallback", "GestureDragStartCallback",
-  "GestureDragUpdateCallback", "GestureDragEndCallback",
-]);
-const frameworkBuilders = new Set([
-  "WidgetBuilder", "TransitionBuilder", "IndexedWidgetBuilder", "NullableIndexedWidgetBuilder",
-  "LayoutWidgetBuilder", "OrientationWidgetBuilder", "ValueWidgetBuilder",
-  "AnimatedTransitionBuilder", "ValueGetter", "AsyncValueGetter",
-]);
 const baseName = (type) => type?.replace(/<.*>/su, "").replace(/[?\s]/gu, "").split(".").at(-1);
 const builderName = (name) => name === "builder" || /Builder$/u.test(name);
 const callbackName = (name) => /^on[A-Z]/u.test(name);
@@ -147,9 +137,6 @@ export function componentApiProblems(inventory) {
       if (hasWidget(result)) return "builder";
       return /^(?:void|Future<void>|FutureOr<void>)$/u.test(result) ? "callback" : "function";
     }
-    const name = baseName(type);
-    if (frameworkCallbacks.has(name)) return "callback";
-    if (frameworkBuilders.has(name)) return "builder";
     return hasWidget(type) ? "slot" : "value";
   }
   function hasWidget(type) {
