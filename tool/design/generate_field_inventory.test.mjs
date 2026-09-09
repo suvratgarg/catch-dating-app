@@ -84,6 +84,7 @@ test("extracts every current facade and semantic slot", () => {
     "containedFieldGroups",
     "contained",
     "plain",
+    "horizontal",
   ]);
   assert.deepEqual(extractCatchSectionContract(sectionSource).slots, [
     "title",

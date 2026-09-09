@@ -217,13 +217,13 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(removals, 2);
   });
 
-  testWidgets('CatchFormFieldLabel renders optional badge leaf', (
+  testWidgets('CatchFieldLabelText renders optional badge leaf', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchFormFieldLabel(
-          copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+        CatchFieldLabelText(
+          copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
           label: 'Instagram',
           isOptional: true,
         ),
@@ -408,7 +408,7 @@ void _registerCatchPrimitivesCompositionTests() {
       _wrap(
         StatefulBuilder(
           builder: (context, setState) => CatchChoiceInput<CityOption>.form(
-            copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+            copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
             label: 'City',
             values: defaultCityOptions,
             selected: selected,
@@ -435,7 +435,7 @@ void _registerCatchPrimitivesCompositionTests() {
         _wrap(
           StatefulBuilder(
             builder: (context, setState) => CatchChoiceInput<CityOption>.form(
-              copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+              copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
               label: 'City',
               values: defaultCityOptions,
               selected: selected,
@@ -462,7 +462,7 @@ void _registerCatchPrimitivesCompositionTests() {
       await tester.pumpWidget(
         _wrap(
           CatchChoiceInput<CityOption>.form(
-            copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+            copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
             label: 'City',
             values: defaultCityOptions,
             selected: const {},
@@ -487,7 +487,7 @@ void _registerCatchPrimitivesCompositionTests() {
       await tester.pumpWidget(
         _wrap(
           CatchChoiceInput<CityOption>.form(
-            copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+            copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
             label: 'Cities',
             values: defaultCityOptions.take(2).toList(),
             selected: {cityOptionByName('mumbai')!},
@@ -530,7 +530,7 @@ void _registerCatchPrimitivesCompositionTests() {
         _wrap(
           StatefulBuilder(
             builder: (context, setState) => CatchChoiceInput<CityOption>.form(
-              copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+              copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
               label: 'Cities',
               values: defaultCityOptions.take(2).toList(),
               selected: selected,

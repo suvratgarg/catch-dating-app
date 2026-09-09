@@ -237,7 +237,7 @@ class CatchFieldTextEntry extends StatelessWidget {
                 : null,
             floatingLabelStyle:
                 _useFloatingLabel(effectiveVariant, effectiveShowLabel)
-                ? CatchFieldValueContent.captionStyle(
+                ? CatchFieldContentRow.captionStyle(
                     context,
                     color: _fieldLabelColor(t, hasError: hasError),
                   )
@@ -359,7 +359,7 @@ class CatchFieldTextEntry extends StatelessWidget {
               );
 
         if (rowBody) {
-          final body = CatchFieldValueContent(
+          final body = CatchFieldContentRow.value(
             labelCopy: field.copy.label,
             titleMaxLines: field.titleMaxLines,
             isOptional: field.isOptional && field.showLabel,
@@ -376,11 +376,11 @@ class CatchFieldTextEntry extends StatelessWidget {
                 ? '${controller.text.characters.length} / ${field.maxLength}'
                 : null,
             status: hasError
-                ? CatchFieldValueContentStatus.error
+                ? CatchFieldContentRowStatus.error
                 : _active
-                ? CatchFieldValueContentStatus.active
-                : CatchFieldValueContentStatus.idle,
-            labelStyle: CatchFieldValueContent.captionStyle(
+                ? CatchFieldContentRowStatus.active
+                : CatchFieldContentRowStatus.idle,
+            labelStyle: CatchFieldContentRow.captionStyle(
               context,
               color: hasError
                   ? t.danger
@@ -388,7 +388,7 @@ class CatchFieldTextEntry extends StatelessWidget {
                   ? t.ink
                   : t.ink2,
             ),
-            valueWidget: Row(
+            body: Row(
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
               children: [
@@ -439,10 +439,10 @@ class CatchFieldTextEntry extends StatelessWidget {
           children: [
             if (effectiveShowLabel &&
                 !_useFloatingLabel(effectiveVariant, effectiveShowLabel)) ...[
-              CatchFormFieldLabel.inline(
+              CatchFieldLabelText.inline(
                 copy: field.copy.label,
                 label: _title ?? '',
-                style: CatchFieldValueContent.captionStyle(
+                style: CatchFieldContentRow.captionStyle(
                   context,
                   color: _fieldLabelColor(t, hasError: hasError),
                 ),
@@ -456,7 +456,12 @@ class CatchFieldTextEntry extends StatelessWidget {
               CatchFieldSupportRow(
                 text: supportText,
                 counter: counterText,
-                color: hasError ? t.danger : _supportColor(t),
+                color: hasError
+                    ? t.danger
+                    : CatchFieldSupportRow.resolveColor(
+                        context,
+                        field.helperTone,
+                      ),
                 showErrorIcon:
                     hasError && effectiveVariant != CatchFieldVariant.underline,
               ),
@@ -505,11 +510,6 @@ class CatchFieldTextEntry extends StatelessWidget {
       : _active
       ? t.ink
       : t.ink2;
-  Color _supportColor(CatchTokens t) => switch (field.helperTone) {
-    CatchFieldSupportTone.neutral => t.ink2,
-    CatchFieldSupportTone.brand => t.primary,
-    CatchFieldSupportTone.success => t.success,
-  };
 
   bool _useFloatingLabel(CatchFieldVariant variant, bool showLabel) {
     return field.floatingLabel &&

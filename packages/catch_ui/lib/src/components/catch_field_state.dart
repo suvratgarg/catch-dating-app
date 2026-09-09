@@ -111,8 +111,8 @@ class _CatchFieldState extends State<CatchField>
           helperText: widget.helperText,
           helperTone: widget.helperTone,
           status: _active
-              ? CatchFieldValueContentStatus.active
-              : CatchFieldValueContentStatus.idle,
+              ? CatchFieldContentRowStatus.active
+              : CatchFieldContentRowStatus.idle,
         );
       case _EditConfig _ when _usesUnderlineChrome:
         field = textEntry!;
@@ -127,7 +127,7 @@ class _CatchFieldState extends State<CatchField>
               size: CatchIcon.md,
               color: t.primary,
             ),
-            content: Text(
+            body: Text(
               _title ?? '',
               style: CatchTextStyles.fieldRowValue(
                 context,
@@ -382,7 +382,7 @@ class _CatchFieldState extends State<CatchField>
             final inlineAddAtRest =
                 error?.isNotEmpty != true && _inlineTextAddAtRest;
             final input = IgnorePointer(ignoring: !_isOpen, child: textEntry);
-            rowBody = CatchFieldValueContent(
+            rowBody = CatchFieldContentRow.value(
               labelCopy: widget.copy.label,
               titleMaxLines: widget.titleMaxLines,
               isOptional: widget.isOptional && widget.showLabel,
@@ -392,13 +392,13 @@ class _CatchFieldState extends State<CatchField>
               helperTone: widget.helperTone,
               headerTrailingReserve: _contentTrailingReserve,
               label: inlineAddAtRest ? null : _title,
-              valueWidget: input,
+              body: input,
               status: error?.isNotEmpty == true
-                  ? CatchFieldValueContentStatus.error
+                  ? CatchFieldContentRowStatus.error
                   : _active
-                  ? CatchFieldValueContentStatus.active
-                  : CatchFieldValueContentStatus.idle,
-              labelStyle: CatchFieldValueContent.captionStyle(
+                  ? CatchFieldContentRowStatus.active
+                  : CatchFieldContentRowStatus.idle,
+              labelStyle: CatchFieldContentRow.captionStyle(
                 context,
                 color: error?.isNotEmpty == true
                     ? t.danger
@@ -460,7 +460,7 @@ class _CatchFieldState extends State<CatchField>
             final error = _displayError?.trim();
             final hasValue = value != null && value.isNotEmpty;
 
-            rowBody = CatchFieldValueContent(
+            rowBody = CatchFieldContentRow.value(
               labelCopy: widget.copy.label,
               titleMaxLines: widget.titleMaxLines,
               isOptional: widget.isOptional && widget.showLabel,
@@ -482,14 +482,14 @@ class _CatchFieldState extends State<CatchField>
                   ? CatchFieldEmphasis.title
                   : CatchFieldEmphasis.body,
               mode: !_hasValue
-                  ? CatchFieldValueContentMode.placeholder
-                  : CatchFieldValueContentMode.value,
+                  ? CatchFieldContentRowMode.placeholder
+                  : CatchFieldContentRowMode.value,
               valueMaxLines: widget.bodyMaxLines,
               status: error?.isNotEmpty == true
-                  ? CatchFieldValueContentStatus.error
+                  ? CatchFieldContentRowStatus.error
                   : _active
-                  ? CatchFieldValueContentStatus.active
-                  : CatchFieldValueContentStatus.idle,
+                  ? CatchFieldContentRowStatus.active
+                  : CatchFieldContentRowStatus.idle,
             );
           }
           final rowContent = CatchFieldRow.standard(
@@ -512,7 +512,7 @@ class _CatchFieldState extends State<CatchField>
                 ? _expansionMotionDuration(context)
                 : Duration.zero,
             paddingCurve: CatchMotion.standardCurve,
-            content: rowBody,
+            body: rowBody,
           );
           final row = positionsTrailing && trailingSlot != null
               ? Stack(

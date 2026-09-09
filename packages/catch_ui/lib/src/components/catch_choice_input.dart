@@ -9,7 +9,7 @@ import 'package:catch_ui/src/components/catch_choice_tile.dart';
 import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
 import 'package:catch_ui/src/components/catch_contract_field_policy.dart';
 import 'package:catch_ui/src/components/catch_field_choice_picked_notification.dart';
-import 'package:catch_ui/src/components/catch_form_field_label.dart';
+import 'package:catch_ui/src/components/catch_field_label_text.dart';
 import 'package:catch_ui/src/components/catch_option.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
@@ -70,7 +70,7 @@ class CatchChoiceInput<T> extends StatefulWidget {
   const CatchChoiceInput.form({
     super.key,
     required String? label,
-    required CatchFormFieldLabelCopy copy,
+    required CatchFieldLabelTextCopy copy,
     required List<T> values,
     required String Function(T value) itemLabelBuilder,
     required Set<T> selected,
@@ -121,7 +121,7 @@ class CatchChoiceInput<T> extends StatefulWidget {
   final Key? Function(T value)? itemKeyBuilder;
   final ({
     String? label,
-    CatchFormFieldLabelCopy copy,
+    CatchFieldLabelTextCopy copy,
     bool isOptional,
     CatchContractFieldConstraints? contract,
     String Function(T value)? contractValueBuilder,
@@ -580,7 +580,7 @@ class _CatchChoiceInputState<T> extends State<CatchChoiceInput<T>> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (form.label case final label?) ...[
-              CatchFormFieldLabel(
+              CatchFieldLabelText(
                 copy: form.copy,
                 label: label,
                 isOptional: form.isOptional,

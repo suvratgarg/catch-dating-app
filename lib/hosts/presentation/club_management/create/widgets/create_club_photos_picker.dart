@@ -50,8 +50,8 @@ class CreateClubPhotosPicker extends StatelessWidget {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchFormFieldLabel(
-                  copy: catchFormFieldLabelCopy(context.l10n),
+                CatchFieldLabelText(
+                  copy: catchFieldLabelTextCopy(context.l10n),
                   label:
                       context.l10n.hostsCreateClubPhotosPickerLabelClubPhotos,
                   isOptional: true,
@@ -176,8 +176,8 @@ class CreateClubProfileImagePicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchFormFieldLabel(
-          copy: catchFormFieldLabelCopy(context.l10n),
+        CatchFieldLabelText(
+          copy: catchFieldLabelTextCopy(context.l10n),
           label: context.l10n.hostsCreateClubPhotosPickerLabelClubProfileImage,
           isOptional: true,
         ),

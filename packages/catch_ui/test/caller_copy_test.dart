@@ -36,7 +36,7 @@ void main() {
   ) async {
     final semantics = tester.ensureSemantics();
     try {
-      final copy = CatchFormFieldLabelCopy(
+      final copy = CatchFieldLabelTextCopy(
         optionalLabel: 'Facultatif',
         optionalSuffix: ' (facultatif)',
         optionalSemantics: (label) => '$label, facultatif',
@@ -48,7 +48,7 @@ void main() {
             home: Scaffold(
               body: MediaQuery(
                 data: MediaQueryData(textScaler: TextScaler.linear(scale)),
-                child: CatchFormFieldLabel(
+                child: CatchFieldLabelText(
                   label: 'Nom',
                   copy: copy,
                   isOptional: true,
@@ -62,7 +62,7 @@ void main() {
           scale == 1 ? findsOneWidget : findsNothing,
         );
         expect(
-          tester.getSemantics(find.byType(CatchFormFieldLabel)).label,
+          tester.getSemantics(find.byType(CatchFieldLabelText)).label,
           'Nom, facultatif',
         );
       }
@@ -70,7 +70,7 @@ void main() {
         MaterialApp(
           theme: CatchTheme.light,
           home: Scaffold(
-            body: CatchFormFieldLabel.inline(
+            body: CatchFieldLabelText.inline(
               label: 'Nom',
               copy: copy,
               isOptional: true,

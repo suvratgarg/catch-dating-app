@@ -7782,6 +7782,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:field-content-and-labels",
+      "patternFamilyId": "field-content-and-labels",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchFieldContentRow",
+      "members": [
+        {
+          "name": "CatchFieldValueContent",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFieldContentRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Title/description and caption/value are field-content hierarchies, not independent concepts. One const component with a named value constructor preserves both layouts and all custom body, optional, badge, counter, validation and trailing geometry. Label Text, outer FieldRow and FieldLanes keep explicit responsibility comparisons. The support palette moves to its existing support-row owner, and all old value-content and form-label classes and paths are removed.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

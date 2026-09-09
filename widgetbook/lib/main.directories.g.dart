@@ -75,8 +75,6 @@ import 'package:widgetbook_workspace/primitives/field_surface_use_cases.dart'
     as _widgetbook_workspace_primitives_field_surface_use_cases;
 import 'package:widgetbook_workspace/primitives/field_text_entry_use_cases.dart'
     as _widgetbook_workspace_primitives_field_text_entry_use_cases;
-import 'package:widgetbook_workspace/primitives/field_value_content_use_cases.dart'
-    as _widgetbook_workspace_primitives_field_value_content_use_cases;
 import 'package:widgetbook_workspace/primitives/form_descriptor_use_cases.dart'
     as _widgetbook_workspace_primitives_form_descriptor_use_cases;
 import 'package:widgetbook_workspace/primitives/form_protocol_use_cases.dart'
@@ -1155,12 +1153,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFormFieldLabel',
+            name: 'CatchFieldLabelText',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchFormFieldLabelCatalogStates,
+                    .catchFieldLabelTextCatalogStates,
               ),
             ],
           ),
@@ -2654,17 +2652,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_field_input_suffix_use_cases
                         .fieldInputSuffixStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldValueContent',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Label value and supporting states',
-                builder:
-                    _widgetbook_workspace_primitives_field_value_content_use_cases
-                        .fieldValueContentStates,
               ),
             ],
           ),

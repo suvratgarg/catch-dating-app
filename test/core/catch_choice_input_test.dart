@@ -10,7 +10,7 @@ Widget _app(Widget child) => MaterialApp(
   home: Scaffold(body: child),
 );
 
-CatchFormFieldLabelCopy get _copy => CatchFormFieldLabelCopy(
+CatchFieldLabelTextCopy get _copy => CatchFieldLabelTextCopy(
   optionalLabel: 'Optional',
   optionalSuffix: ' · Optional',
   optionalSemantics: (label) => '$label, optional',
@@ -232,7 +232,7 @@ void main() {
     expect(selected, {2});
     rebuild(() => showLabel = false);
     await tester.pump();
-    expect(find.byType(CatchFormFieldLabel), findsNothing);
+    expect(find.byType(CatchFieldLabelText), findsNothing);
     expect(selected, {2});
     expect(tester.takeException(), isNull);
   });

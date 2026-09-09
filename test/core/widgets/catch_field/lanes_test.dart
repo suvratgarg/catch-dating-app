@@ -69,7 +69,7 @@ void main() {
           title: 'Notes',
           body: 'Details',
           isOptional: true,
-          labelCopy: CatchFormFieldLabelCopy(
+          labelCopy: CatchFieldLabelTextCopy(
             optionalLabel: 'Facultatif',
             optionalSuffix: ' (facultatif)',
             optionalSemantics: (label) => '$label, facultatif',
@@ -851,7 +851,7 @@ void main() {
           title: 'Invite code',
           initialValue: 'RUNCLUB',
           helperText: 'Invite code is available.',
-          helperTone: CatchFieldSupportTone.success,
+          helperTone: CatchFieldSupportRowTone.success,
         ),
       ),
     );

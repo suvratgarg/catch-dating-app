@@ -68,7 +68,7 @@ typedef _EditConfig = ({
   VoidCallback? onTap,
   bool isOptional,
   String? helperText,
-  CatchFieldSupportTone helperTone,
+  CatchFieldSupportRowTone helperTone,
   bool focused,
   bool explicitSave,
   bool? open,
@@ -89,7 +89,7 @@ typedef _SelectConfig = ({
   bool showLabel,
   CatchFieldSize size,
   String? helperText,
-  CatchFieldSupportTone helperTone,
+  CatchFieldSupportRowTone helperTone,
 });
 
 typedef _ControlConfig = ({

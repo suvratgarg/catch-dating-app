@@ -1,4 +1,5 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_field_support_row_tone.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,19 @@ class CatchFieldSupportRow extends StatelessWidget {
   final Color color;
   final bool showErrorIcon;
   final EdgeInsetsGeometry padding;
+
+  /// Semantic support palette shared with native text and content-row renderers.
+  static Color resolveColor(
+    BuildContext context,
+    CatchFieldSupportRowTone tone,
+  ) {
+    final tokens = CatchTokens.of(context);
+    return switch (tone) {
+      CatchFieldSupportRowTone.neutral => tokens.ink2,
+      CatchFieldSupportRowTone.brand => tokens.primary,
+      CatchFieldSupportRowTone.success => tokens.success,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {

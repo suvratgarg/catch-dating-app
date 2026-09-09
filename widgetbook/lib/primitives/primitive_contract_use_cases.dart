@@ -2785,7 +2785,7 @@ Widget catchFieldContractStates(BuildContext context) {
           title: 'Invite note',
           placeholder: 'Add an invite note',
           helperText: 'Shown before guests request a spot.',
-          helperTone: CatchFieldSupportTone.brand,
+          helperTone: CatchFieldSupportRowTone.brand,
           focused: true,
         ),
       ),
@@ -2797,7 +2797,7 @@ Widget catchFieldContractStates(BuildContext context) {
           title: 'Invite code',
           initialValue: 'RUNCLUB',
           helperText: 'Invite code is available.',
-          helperTone: CatchFieldSupportTone.success,
+          helperTone: CatchFieldSupportRowTone.success,
           focused: true,
         ),
       ),
@@ -2899,14 +2899,25 @@ Widget catchFieldContractStates(BuildContext context) {
 )
 Widget catchFieldContentRowContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchFieldContentRow',
+    title: 'Field content',
     contractId: 'catch.field.content_row',
-    states: const ['title-body', 'optional', 'empty-body', 'two-three-clamp'],
+    states: const [
+      'title-body',
+      'optional',
+      'empty-body',
+      'two-three-clamp',
+      'value',
+      'placeholder',
+      'active',
+      'error',
+      'optional-badge',
+      'custom-value',
+    ],
     children: [
       _StateCard(
         label: 'title-body',
         child: CatchFieldContentRow(
-          labelCopy: catchFormFieldLabelCopy(context.l10n),
+          labelCopy: catchFieldLabelTextCopy(context.l10n),
 
           title: 'Weekend route update',
           body: 'The start point moved closer to the east gate.',
@@ -2915,7 +2926,7 @@ Widget catchFieldContentRowContractStates(BuildContext context) {
       _StateCard(
         label: 'optional',
         child: CatchFieldContentRow(
-          labelCopy: catchFormFieldLabelCopy(context.l10n),
+          labelCopy: catchFieldLabelTextCopy(context.l10n),
 
           title: 'Race notes',
           body: 'Shared with runners before the event.',
@@ -2925,7 +2936,7 @@ Widget catchFieldContentRowContractStates(BuildContext context) {
       _StateCard(
         label: 'empty-body',
         child: CatchFieldContentRow(
-          labelCopy: catchFormFieldLabelCopy(context.l10n),
+          labelCopy: catchFieldLabelTextCopy(context.l10n),
           title: 'Registration confirmed',
           body: '',
         ),
@@ -2935,12 +2946,74 @@ Widget catchFieldContentRowContractStates(BuildContext context) {
         child: SizedBox(
           width: WidgetbookPreviewLayout.fieldContentClampWidth,
           child: CatchFieldContentRow(
-            labelCopy: catchFormFieldLabelCopy(context.l10n),
+            labelCopy: catchFieldLabelTextCopy(context.l10n),
 
             title: 'A deliberately long title that reaches the second line',
             body:
                 'Supporting copy may use three complete lines before the field truncates the remainder.',
           ),
+        ),
+      ),
+      _StateCard(
+        label: 'value',
+        child: CatchFieldContentRow.value(
+          labelCopy: catchFieldLabelTextCopy(context.l10n),
+          label: 'Location',
+          value: 'City centre',
+        ),
+      ),
+      _StateCard(
+        label: 'placeholder / optional-badge',
+        child: CatchFieldContentRow.value(
+          labelCopy: catchFieldLabelTextCopy(context.l10n),
+          label: 'Display name',
+          value: 'Add your name',
+          mode: CatchFieldContentRowMode.placeholder,
+          isOptional: true,
+          badgeLabel: 'Private',
+        ),
+      ),
+      _StateCard(
+        label: 'error',
+        child: CatchFieldContentRow.value(
+          labelCopy: catchFieldLabelTextCopy(context.l10n),
+          label: 'Short introduction',
+          value: 'Tell us about yourself',
+          supportText: 'Use at least 20 characters.',
+          counterText: '12 / 140',
+          status: CatchFieldContentRowStatus.error,
+        ),
+      ),
+      _StateCard(
+        label: 'active / custom-value',
+        child: CatchFieldContentRow.value(
+          labelCopy: catchFieldLabelTextCopy(context.l10n),
+          label: 'Availability',
+          status: CatchFieldContentRowStatus.active,
+          headerTrailingReserve:
+              CatchFieldTokens.trailingGap +
+              CatchFieldTokens.disclosureGlyphExtent,
+          body: CatchChip.selectable(
+            label: 'Evenings',
+            selected: true,
+            onChanged: (_) {},
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'label emphasis / support tone',
+        child: CatchFieldContentRow.value(
+          labelCopy: catchFieldLabelTextCopy(context.l10n),
+          label: 'All set',
+          emphasis: CatchFieldEmphasis.title,
+          supportText: 'Your preferences are saved.',
+          helperTone: CatchFieldSupportRowTone.success,
+        ),
+      ),
+      _StateCard(
+        label: 'empty value content',
+        child: CatchFieldContentRow.value(
+          labelCopy: catchFieldLabelTextCopy(context.l10n),
         ),
       ),
     ],
@@ -3226,7 +3299,7 @@ Widget catchChoiceInputContractStates(BuildContext context) {
           autovalidateMode: AutovalidateMode.always,
           child: CatchChoiceInput<String>.form(
             label: 'Languages',
-            copy: catchFormFieldLabelCopy(context.l10n),
+            copy: catchFieldLabelTextCopy(context.l10n),
             values: values,
             itemLabelBuilder: (value) => value,
             selected: const {},
@@ -3242,7 +3315,7 @@ Widget catchChoiceInputContractStates(BuildContext context) {
         label: 'form · label supplied by surrounding content',
         child: CatchChoiceInput<String>.form(
           label: null,
-          copy: catchFormFieldLabelCopy(context.l10n),
+          copy: catchFieldLabelTextCopy(context.l10n),
           values: values,
           itemLabelBuilder: (value) => value,
           selected: const {'English'},
@@ -3524,7 +3597,7 @@ Widget catchFieldRowContractStates(BuildContext context) {
         label: 'standard',
         child: _FieldWidth(
           child: CatchFieldRow.standard(
-            content: Text('Plain row content', style: textStyle),
+            body: Text('Plain row content', style: textStyle),
           ),
         ),
       ),
@@ -3533,7 +3606,7 @@ Widget catchFieldRowContractStates(BuildContext context) {
         child: _FieldWidth(
           child: CatchFieldRow.standard(
             leading: Icon(CatchIcons.hosted, color: t.ink2),
-            content: Text('Leading icon row', style: textStyle),
+            body: Text('Leading icon row', style: textStyle),
           ),
         ),
       ),
@@ -3541,7 +3614,7 @@ Widget catchFieldRowContractStates(BuildContext context) {
         label: 'with-trailing',
         child: _FieldWidth(
           child: CatchFieldRow.standard(
-            content: Text('Trailing value row', style: textStyle),
+            body: Text('Trailing value row', style: textStyle),
             trailing: CatchFieldTrailing.valueText(text: 'Private'),
           ),
         ),
@@ -3551,7 +3624,7 @@ Widget catchFieldRowContractStates(BuildContext context) {
         child: _FieldWidth(
           child: CatchFieldRow.add(
             leading: Icon(CatchIcons.add, color: t.primary),
-            content: Text(
+            body: Text(
               'Add another time',
               style: CatchTextStyles.fieldRowTitle(context, color: t.primary),
             ),
@@ -3563,7 +3636,7 @@ Widget catchFieldRowContractStates(BuildContext context) {
         label: 'tappable',
         child: _FieldWidth(
           child: CatchFieldRow.standard(
-            content: Text('Tap target row', style: textStyle),
+            body: Text('Tap target row', style: textStyle),
             trailing: CatchFieldTrailing.fixedChevron(),
             onTap: _noop,
           ),

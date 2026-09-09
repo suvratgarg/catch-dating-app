@@ -464,44 +464,44 @@ Widget catchRangeSliderCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchFormFieldLabel,
+  type: CatchFieldLabelText,
   path: '[Core catalog]/Inputs',
 )
-Widget catchFormFieldLabelCatalogStates(BuildContext context) {
+Widget catchFieldLabelTextCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchFormFieldLabel',
-    catalogId: 'core.widgets.catch_form_field_label',
+    title: 'Field labels',
+    catalogId: 'catch.field.form_field_label',
     children: [
       _StateCard(
         label: 'required / optional / error / large',
         child: _InlineWrap(
           children: [
-            CatchFormFieldLabel(
-              copy: catchFormFieldLabelCopy(context.l10n),
+            CatchFieldLabelText(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: 'Name',
             ),
-            CatchFormFieldLabel(
-              copy: catchFormFieldLabelCopy(context.l10n),
+            CatchFieldLabelText(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: 'Note',
               isOptional: true,
             ),
-            CatchFormFieldLabel(
-              copy: catchFormFieldLabelCopy(context.l10n),
+            CatchFieldLabelText(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: 'Activity',
               hasError: true,
             ),
-            CatchFormFieldLabel(
-              copy: catchFormFieldLabelCopy(context.l10n),
+            CatchFieldLabelText(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: 'Host copy',
-              large: true,
+              size: CatchFieldLabelTextSize.lg,
             ),
           ],
         ),
       ),
       _StateCard(
         label: 'field inline optional suffix',
-        child: CatchFormFieldLabel.inline(
-          copy: catchFormFieldLabelCopy(context.l10n),
+        child: CatchFieldLabelText.inline(
+          copy: catchFieldLabelTextCopy(context.l10n),
           label: 'Religion',
           isOptional: true,
           style: CatchTextStyles.fieldRowTitle(context),
@@ -4334,7 +4334,7 @@ class _ChoiceInputFormDemoState extends State<_ChoiceInputFormDemo> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         CatchChoiceInput<_Choice>.form(
-          copy: catchFormFieldLabelCopy(context.l10n),
+          copy: catchFieldLabelTextCopy(context.l10n),
           label: 'Activities',
           values: _choices,
           selected: _multi,
@@ -4344,7 +4344,7 @@ class _ChoiceInputFormDemoState extends State<_ChoiceInputFormDemo> {
         ),
         gapH16,
         CatchChoiceInput<_Choice>.form(
-          copy: catchFormFieldLabelCopy(context.l10n),
+          copy: catchFieldLabelTextCopy(context.l10n),
           label: 'One vibe',
           values: _choices,
           selected: _single,

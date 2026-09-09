@@ -284,7 +284,7 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchChoiceInput<LaunchAccessRole>.form(
-              copy: catchFormFieldLabelCopy(context.l10n),
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelJoiningAs,
@@ -303,7 +303,7 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchChoiceInput<LaunchAccessEventType>.form(
-              copy: catchFormFieldLabelCopy(context.l10n),
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelEventsYouWouldShow,
@@ -326,7 +326,7 @@ class _LaunchAccessApplicationFormState
             ),
             gapH24,
             CatchChoiceInput<LaunchAccessAvailabilityWindow>.form(
-              copy: catchFormFieldLabelCopy(context.l10n),
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelBestTimes,

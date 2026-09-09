@@ -10,7 +10,7 @@
     "design/screens/catch.screens.json"
   ],
   "legacySymbols": [
-    "CatchFormFieldLabel",
+    "CatchFieldLabelText",
     "CatchSelectChip",
     "CatchChoiceInput.form",
     "CatchNumberStepper",
@@ -244,7 +244,7 @@
         {"file": "lib/auth/presentation/otp_page.dart", "symbol": "OtpPage"}
       ],
       "anchors": [
-        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "CatchFormFieldLabel", "expected": 1},
+        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "CatchFieldLabelText", "expected": 1},
         {"file": "lib/auth/presentation/otp_page.dart", "symbol": "CatchCodeInput", "expected": 2}
       ],
       "targetModes": ["CatchSection.fieldRows", "CatchField.control"],
@@ -280,7 +280,7 @@
       "id": "FIELD-SURFACE-EXCLUSION-CREATE-CLUB-PHOTOS",
       "reason": "The create-club photo widgets remain specialized children inside the completed CatchSection migration.",
       "anchors": [
-        {"file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart", "symbol": "CatchFormFieldLabel", "expected": 2}
+        {"file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart", "symbol": "CatchFieldLabelText", "expected": 2}
       ]
     },
     {

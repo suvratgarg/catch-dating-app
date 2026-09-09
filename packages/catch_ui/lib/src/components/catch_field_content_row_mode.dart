@@ -1,0 +1,1 @@
+enum CatchFieldContentRowMode { value, placeholder }

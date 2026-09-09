@@ -52,10 +52,10 @@ void main() {
         Scaffold(
           body: Column(
             children: [
-              CatchFormFieldLabel(
-                copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+              CatchFieldLabelText(
+                copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
                 label: 'Distance',
-                large: true,
+                size: CatchFieldLabelTextSize.lg,
               ),
               _TestPickerTile(
                 icon: CatchIcons.calendarTodayOutlined,

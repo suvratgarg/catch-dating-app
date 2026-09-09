@@ -1,0 +1,1 @@
+enum CatchFieldLabelTextSize { sm, lg }

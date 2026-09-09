@@ -48,7 +48,7 @@ const _copyConstructors = <String>{
   'CatchEmptyState',
   'CatchBanner',
   'CatchErrorState',
-  'CatchFormFieldLabel',
+  'CatchFieldLabelText',
   'CatchKickerText',
   'CatchNoticeData',
   'CatchPageHeader',

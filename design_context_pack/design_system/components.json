@@ -65,7 +65,8 @@
         "containedFieldRows",
         "containedFieldGroups",
         "contained",
-        "plain"
+        "plain",
+        "horizontal"
       ],
       "slots": [
         "title",
@@ -2957,7 +2958,7 @@
             "type": "enum",
             "required": false,
             "default": "neutral",
-            "dartType": "CatchFieldSupportTone",
+            "dartType": "CatchFieldSupportRowTone",
             "values": [
               "neutral",
               "brand",
@@ -3116,7 +3117,7 @@
           "CatchFieldGeometryScope",
           "CatchFieldVisibilityScope",
           "CatchElevation.fieldActive",
-          "CatchFormFieldLabel",
+          "CatchFieldLabelText",
           "CatchIcons.checkCircleFilled",
           "CatchIcons.fieldSpinner",
           "CatchIcons.fieldWarning",
@@ -3197,8 +3198,8 @@
           },
           {
             "id": "catch.field.form_field_label",
-            "symbol": "CatchFormFieldLabel",
-            "summary": "Field-label atom for required, optional, error, and large label states.",
+            "symbol": "CatchFieldLabelText",
+            "summary": "Field label and localized optional semantics; default and inline recipes share one Text role, with an explicit size axis.",
             "states": [
               "default",
               "optional",
@@ -3206,19 +3207,29 @@
               "error",
               "large"
             ],
-            "file": "packages/catch_ui/lib/src/components/catch_form_field_label.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_label_text.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "variant",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-content-and-labels"
+            },
+            "level": "L3",
+            "roleNoun": "Text",
+            "naming": {
+              "useCase": "FieldLabel",
+              "comparedWith": [
+                "catch.field",
+                "catch.typography.mono_label"
+              ],
+              "reason": "Owns a field label, optional qualifier and localized spoken description. The parent field owns editing and validation; MetadataText formats noninteractive secondary metadata without field optionality or required/error label semantics."
             }
           },
           {
             "id": "catch.field.row",
             "symbol": "CatchFieldRow",
-            "summary": "Public field-row anatomy member used by CatchField for leading, content, trailing, add, and tappable row states.",
+            "summary": "Public field-row anatomy with leading/body/trailing slots, add geometry and raw tap handling.",
             "states": [
               "standard",
               "with-leading",
@@ -3232,7 +3243,18 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-content-and-labels"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "Field",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.content_row",
+                "catch.field.support_row"
+              ],
+              "reason": "Arranges field leading, body and trailing slots and a raw row hit surface. ContentRow owns the label/value hierarchy inside the body, and FieldSupportRow owns validation beneath it; the parent field supplies interaction and the section owns geometry."
             }
           },
           {
@@ -3307,11 +3329,14 @@
             }
           },
           {
-            "id": "catch.field.value_content",
-            "symbol": "CatchFieldValueContent",
-            "file": "packages/catch_ui/lib/src/components/catch_field_value_content.dart",
-            "summary": "Field-owned label, value, badge, counter, and supporting-copy lanes with preserved caption and value extents, trailing reservations, optional semantics, and active/error text styling.",
+            "id": "catch.field.content_row",
+            "symbol": "CatchFieldContentRow",
+            "summary": "One field-content member with default title/description and named value hierarchies. Preserves natural-height text, caption/value extents, optional semantics, custom value body, trailing reservation, badges and support/counter feedback.",
             "states": [
+              "title-body",
+              "optional",
+              "empty-body",
+              "two-three-clamp",
               "value",
               "placeholder",
               "active",
@@ -3319,31 +3344,24 @@
               "optional-badge",
               "custom-value"
             ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
-            "id": "catch.field.content_row",
-            "symbol": "CatchFieldContentRow",
-            "summary": "Natural-height content lane with exact 14/600 title, 13/400 supporting copy, 3 px gap, and 2/3-line defaults. Optional-label copy is resolved by callers.",
-            "states": [
-              "title-body",
-              "optional",
-              "empty-body",
-              "two-three-clamp"
-            ],
             "file": "packages/catch_ui/lib/src/components/catch_field_content_row.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-content-and-labels"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "FieldContent",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.row",
+                "catch.field.support_row"
+              ],
+              "reason": "Owns the title/description or caption/value hierarchy within a field row; value content uses a named constructor with typed state and placeholder axes. FieldRow arranges leading/body/trailing slots without interpreting their text, while FieldSupportRow renders only root helper/error/counter content."
             }
           },
           {
@@ -3936,7 +3954,12 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-content-and-labels"
+            },
+            "level": "L3",
+            "roleNoun": "FieldLanes",
+            "naming": {
+              "useCase": ""
             }
           },
           {
@@ -7855,7 +7878,7 @@
         "dartRoles": [
           "CatchChip.choice",
           "CatchChoiceTile",
-          "CatchFormFieldLabel",
+          "CatchFieldLabelText",
           "CatchFieldChoicePickedNotification",
           "CatchTextStyles.labelL",
           "CatchTextStyles.monoLabel",

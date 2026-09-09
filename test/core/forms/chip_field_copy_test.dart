@@ -7,7 +7,7 @@ Widget _app(Widget child) => MaterialApp(
   home: Scaffold(body: child),
 );
 
-CatchFormFieldLabelCopy _copy(String optional) => CatchFormFieldLabelCopy(
+CatchFieldLabelTextCopy _copy(String optional) => CatchFieldLabelTextCopy(
   optionalLabel: optional,
   optionalSuffix: ' ($optional)',
   optionalSemantics: (label) => '$label, $optional',

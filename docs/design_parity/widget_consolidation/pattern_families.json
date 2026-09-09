@@ -3195,6 +3195,66 @@
           "rationale": "Migrate the list-owned renderer and catalog to the canonical field member; remove the old class and path."
         }
       ]
+    },
+    {
+      "id": "field-content-and-labels",
+      "title": "Field content hierarchies and row anatomy",
+      "intent": "Give the field one content owner with named text hierarchies, while retaining distinct label, row layout and composition-boundary responsibilities.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.field",
+      "qualityReference": "CatchFieldContentRow",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "No production visual change. Title/description and caption/value recipes preserve their typography, gaps, line limits, optional semantics and trailing reservation.",
+        "The label gallery identifies the surviving Text member. The single field-content contract gallery includes both hierarchies and replaces the separate value gallery; production content and field geometry are unchanged."
+      ],
+      "members": [
+        {
+          "symbol": "CatchFieldContentRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns the title/description or caption/value hierarchy within a field row; value content uses a named constructor with typed state and placeholder axes. FieldRow arranges leading/body/trailing slots without interpreting their text, while FieldSupportRow renders only root helper/error/counter content."
+        },
+        {
+          "symbol": "CatchFieldRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Arranges field leading, body and trailing slots and a raw row hit surface. ContentRow owns the label/value hierarchy inside the body, and FieldSupportRow owns validation beneath it; the parent field supplies interaction and the section owns geometry."
+        },
+        {
+          "symbol": "CatchFieldLabelText",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns a field label, optional qualifier and localized spoken description. The parent field owns editing and validation; MetadataText formats noninteractive secondary metadata without field optionality or required/error label semantics."
+        },
+        {
+          "symbol": "CatchFieldLanes",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Declares a field composition boundary without a titled section or additional surface; divided lanes own sibling separators and inherit the surrounding geometry."
+        },
+        {
+          "symbol": "CatchFieldSupportRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns baseline-aligned helper/error/counter output and the shared semantic support palette."
+        },
+        {
+          "symbol": "CatchFieldValueContent",
+          "disposition": "unify",
+          "target": "CatchFieldContentRow.value",
+          "preview": "not-applicable",
+          "rationale": "The value hierarchy is a named content recipe, with its existing typed status and placeholder axes."
+        },
+        {
+          "symbol": "CatchFormFieldLabel",
+          "disposition": "unify",
+          "target": "CatchFieldLabelText",
+          "preview": "not-applicable",
+          "rationale": "Keep optional/error/inline semantics under the field label Text responsibility; replace the third boolean with its Size axis."
+        }
+      ]
     }
   ]
 }

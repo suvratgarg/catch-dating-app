@@ -46,7 +46,7 @@ Widget fieldSurfaceStates(BuildContext context) {
               pressedOverlayKey: ValueKey((shape, label)),
               states: state,
               child: CatchFieldRow.standard(
-                content: CatchFieldValueContent(
+                body: CatchFieldContentRow.value(
                   labelCopy: copy.label,
                   label: label,
                   value: 'Field content',

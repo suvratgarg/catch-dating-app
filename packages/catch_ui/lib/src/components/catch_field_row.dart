@@ -2,10 +2,11 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:flutter/material.dart';
 
+/// Field row anatomy with leading, body and trailing lanes; the parent owns geometry.
 class CatchFieldRow extends StatelessWidget {
   const CatchFieldRow.standard({
     super.key,
-    required this.content,
+    required this.body,
     this.leading,
     this.trailing,
     this.onTap,
@@ -21,7 +22,7 @@ class CatchFieldRow extends StatelessWidget {
   const CatchFieldRow.add({
     super.key,
     required this.leading,
-    required this.content,
+    required this.body,
     this.onTap,
   }) : trailing = null,
        constraints = const BoxConstraints(),
@@ -39,10 +40,10 @@ class CatchFieldRow extends StatelessWidget {
   /// Render size of icons in the leading slot.
   static const double leadingSlotIconSize = CatchFieldTokens.leadingIconExtent;
 
-  /// Gap between the leading slot and the content lane.
+  /// Gap between the leading slot and the body lane.
   static const double leadingSlotGap = CatchFieldTokens.leadingGap;
 
-  /// Horizontal distance from the row's padded edge to where the content
+  /// Horizontal distance from the row's padded edge to where the body
   /// lane starts when a leading slot is present. Containers that draw
   /// text-lane-aligned dividers derive their indent from this instead of
   /// hardcoding it, so resizing the leading icon moves the dividers too.
@@ -55,7 +56,7 @@ class CatchFieldRow extends StatelessWidget {
     CatchFieldTokens.rowVerticalPadding,
   );
 
-  final Widget content;
+  final Widget body;
   final Widget? leading;
   final Widget? trailing;
   final VoidCallback? onTap;
@@ -79,9 +80,9 @@ class CatchFieldRow extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, rowConstraints) {
             // The trailing slot is intrinsic so trailing affordances pin to
-            // the row's trailing edge; the content lane owns all remaining
+            // the row's trailing edge; the body lane owns all remaining
             // width. Capping the slot at half the row keeps long trailing
-            // values from starving the content lane on narrow rows.
+            // values from starving the body lane on narrow rows.
             final trailingMaxWidth = rowConstraints.hasBoundedWidth
                 ? rowConstraints.maxWidth / 2
                 : double.infinity;
@@ -95,7 +96,7 @@ class CatchFieldRow extends StatelessWidget {
                   ),
                   SizedBox(width: leadingGap),
                 ],
-                Expanded(child: content),
+                Expanded(child: body),
                 if (trailing != null) ...[
                   SizedBox(width: trailingGap),
                   ConstrainedBox(

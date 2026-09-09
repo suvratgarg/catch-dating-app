@@ -218,8 +218,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             gutter: false,
           ),
           gapH28,
-          CatchFormFieldLabel(
-            copy: catchFormFieldLabelCopy(context.l10n),
+          CatchFieldLabelText(
+            copy: catchFieldLabelTextCopy(context.l10n),
             label: l10n.authPhoneFieldLabel,
           ),
           const SizedBox(height: CatchSpacing.s2),

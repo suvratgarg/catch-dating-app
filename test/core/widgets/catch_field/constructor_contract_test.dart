@@ -9,7 +9,7 @@ String lengthLabel(String text, int length) => '$text $length';
 void tap() {}
 void toggle(bool value) {}
 const copy = CatchFieldCopy(
-  label: CatchFormFieldLabelCopy(
+  label: CatchFieldLabelTextCopy(
     optionalLabel: 'Optional',
     optionalSuffix: ' Optional',
     optionalSemantics: label,

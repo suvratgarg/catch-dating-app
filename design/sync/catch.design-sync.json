@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "acbfad102237042fcd29c23a488d0b324bf9d6783e73d8c8ea02fe61590c8f1a",
+  "sourceDigest": "5cdf75c7b813c1216bbd513fae26652cc839fdaef8bf9311f827af5bb1939627",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "acbfad102237042fcd29c23a488d0b324bf9d6783e73d8c8ea02fe61590c8f1a",
-    "contractDigest": "acbfad102237042fcd29c23a488d0b324bf9d6783e73d8c8ea02fe61590c8f1a"
+    "digest": "5cdf75c7b813c1216bbd513fae26652cc839fdaef8bf9311f827af5bb1939627",
+    "contractDigest": "5cdf75c7b813c1216bbd513fae26652cc839fdaef8bf9311f827af5bb1939627"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "24dbb68e0be77f031135f254cc61b0a87cc1e598072ef42ec6513f5357c9eac1",
+    "handoffRequestDigest": "ccc5128d3bf0d23d94821c991ef2efaa8581deea008993bcfddc385bc75e21d1",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 73,
-    "publicClassCount": 234,
+    "publicClassCount": 233,
     "conceptCount": 65,
-    "memberCount": 151,
-    "membersPerConcept": 2.32,
+    "memberCount": 150,
+    "membersPerConcept": 2.31,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 151,
+      "member": 150,
       "screen": 15
     },
     "collisionCount": 31,
@@ -204,6 +204,7 @@
           "CatchFieldGeometryScope",
           "CatchFieldInteractionPlane",
           "CatchFieldInteractionPlaneScope",
+          "CatchFieldLabelText",
           "CatchFieldLanes",
           "CatchFieldRow",
           "CatchFieldSelectControl",
@@ -212,12 +213,10 @@
           "CatchFieldSurface",
           "CatchFieldTextEntry",
           "CatchFieldTrailing",
-          "CatchFieldValueContent",
           "CatchFieldVisibilityScope",
           "CatchFormChoiceField",
           "CatchFormChoiceRow",
           "CatchFormCustomRow",
-          "CatchFormFieldLabel",
           "CatchFormMultiChoiceRow",
           "CatchFormRangeField",
           "CatchFormRangeRow",
@@ -867,7 +866,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "6ec90aacb8647acd51d10dd6b46e65577b3faefaf8492f7ba95a246d6615fb41"
+      "contractDigest": "9e5aa93039070325df1ae82ed1400cfb5ee027554977f05cbcbb6e633a757102"
     },
     {
       "contractId": "catch.section",

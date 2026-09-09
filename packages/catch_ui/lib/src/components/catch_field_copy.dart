@@ -1,4 +1,4 @@
-import 'package:catch_ui/src/components/catch_form_field_label.dart';
+import 'package:catch_ui/src/components/catch_field_label_text.dart';
 import 'package:catch_ui/src/components/catch_form_validation_copy.dart';
 
 /// Caller-resolved labels, messages and formatters for every field recipe.
@@ -19,7 +19,7 @@ class CatchFieldCopy {
     required this.clearTooltip,
   });
 
-  final CatchFormFieldLabelCopy label;
+  final CatchFieldLabelTextCopy label;
   final CatchFormValidationCopy validation;
   final String cancelLabel;
   final String doneLabel;

@@ -1773,7 +1773,7 @@ function buildCandidates() {
       recommended: "catch.form_label",
       tags: ["forms", "typography"],
       names: [
-        "CatchFormFieldLabel",
+        "CatchFieldLabelText",
         "ControlLabel",
         "SetupSectionTitle",
       ],

@@ -1,11 +1,12 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_badge.dart';
+import 'package:catch_ui/src/components/catch_field_label_text_size.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
 
 /// Already-localized optional-field copy supplied by the caller.
-class CatchFormFieldLabelCopy {
-  const CatchFormFieldLabelCopy({
+class CatchFieldLabelTextCopy {
+  const CatchFieldLabelTextCopy({
     required this.optionalLabel,
     required this.optionalSuffix,
     required this.optionalSemantics,
@@ -16,19 +17,20 @@ class CatchFormFieldLabelCopy {
   final String Function(String label) optionalSemantics;
 }
 
-class CatchFormFieldLabel extends StatelessWidget {
-  const CatchFormFieldLabel({
+/// Field-owned visible label and localized optional accessibility description.
+class CatchFieldLabelText extends StatelessWidget {
+  const CatchFieldLabelText({
     super.key,
     required this.label,
     required this.copy,
     this.isOptional = false,
     this.hasError = false,
-    this.large = false,
+    this.size = CatchFieldLabelTextSize.sm,
   }) : inlineOptional = false,
        style = null,
        maxLines = 1;
 
-  const CatchFormFieldLabel.inline({
+  const CatchFieldLabelText.inline({
     super.key,
     required this.label,
     required this.copy,
@@ -37,13 +39,13 @@ class CatchFormFieldLabel extends StatelessWidget {
     this.hasError = false,
     this.maxLines = 1,
   }) : inlineOptional = true,
-       large = false;
+       size = CatchFieldLabelTextSize.sm;
 
   final String label;
-  final CatchFormFieldLabelCopy copy;
+  final CatchFieldLabelTextCopy copy;
   final bool isOptional;
   final bool hasError;
-  final bool large;
+  final CatchFieldLabelTextSize size;
   final bool inlineOptional;
   final TextStyle? style;
   final int maxLines;
@@ -53,7 +55,7 @@ class CatchFormFieldLabel extends StatelessWidget {
     final t = CatchTokens.of(context);
     final showOptionalBadge =
         isOptional && MediaQuery.textScalerOf(context).scale(1) < 1.5;
-    final labelStyle = large
+    final labelStyle = size == CatchFieldLabelTextSize.lg
         ? CatchTextStyles.labelL(context, color: hasError ? t.danger : t.ink2)
         // `.t-field-label` — 11.5 / w500 / ink3 (sentence case, not mono).
         : CatchTextStyles.fieldLabel(

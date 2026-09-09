@@ -133,10 +133,10 @@ mixin _CatchFieldProperties {
     final _ControlConfig config => config.helperText,
     _ => null,
   };
-  CatchFieldSupportTone get helperTone => switch (_config) {
+  CatchFieldSupportRowTone get helperTone => switch (_config) {
     final _EditConfig config => config.helperTone,
     final _SelectConfig config => config.helperTone,
-    _ => CatchFieldSupportTone.neutral,
+    _ => CatchFieldSupportRowTone.neutral,
   };
   String? get badgeLabel => _toggleConfig?.badgeLabel;
   CatchBadgeTone? get badgeTone => _toggleConfig?.badgeTone;

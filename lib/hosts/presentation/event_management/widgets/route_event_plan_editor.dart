@@ -236,7 +236,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       CatchFieldContentRow(
-                        labelCopy: catchFormFieldLabelCopy(context.l10n),
+                        labelCopy: catchFieldLabelTextCopy(context.l10n),
 
                         title: context.l10n.hostsRouteEventPlanPathTitle,
                         body: plan.path.length >= 2

@@ -1,14 +1,14 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_field_content_row.dart';
+import 'package:catch_ui/src/components/catch_field_content_row_mode.dart';
+import 'package:catch_ui/src/components/catch_field_content_row_status.dart';
 import 'package:catch_ui/src/components/catch_field_copy.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_gutter_ownership.dart';
 import 'package:catch_ui/src/components/catch_field_row.dart';
 import 'package:catch_ui/src/components/catch_field_size.dart';
-import 'package:catch_ui/src/components/catch_field_support_tone.dart';
+import 'package:catch_ui/src/components/catch_field_support_row_tone.dart';
 import 'package:catch_ui/src/components/catch_field_trailing.dart';
-import 'package:catch_ui/src/components/catch_field_value_content.dart';
-import 'package:catch_ui/src/components/catch_field_value_content_mode.dart';
-import 'package:catch_ui/src/components/catch_field_value_content_status.dart';
 import 'package:catch_ui/src/components/catch_menu.dart';
 import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
@@ -40,8 +40,8 @@ class CatchFieldSelectControl extends StatefulWidget {
     this.prefixIcon,
     this.error,
     this.helperText,
-    this.helperTone = CatchFieldSupportTone.neutral,
-    this.status = CatchFieldValueContentStatus.idle,
+    this.helperTone = CatchFieldSupportRowTone.neutral,
+    this.status = CatchFieldContentRowStatus.idle,
   });
 
   final CatchFieldCopy copy;
@@ -60,8 +60,8 @@ class CatchFieldSelectControl extends StatefulWidget {
   final Widget? prefixIcon;
   final String? error;
   final String? helperText;
-  final CatchFieldSupportTone helperTone;
-  final CatchFieldValueContentStatus status;
+  final CatchFieldSupportRowTone helperTone;
+  final CatchFieldContentRowStatus status;
 
   @override
   State<CatchFieldSelectControl> createState() =>
@@ -197,7 +197,7 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
                           ),
                           child: widget.prefixIcon!,
                         ),
-                  content: CatchFieldValueContent(
+                  body: CatchFieldContentRow.value(
                     labelCopy: widget.copy.label,
                     helperTone: widget.helperTone,
                     label: widget.showLabel ? widget.title?.trim() : null,
@@ -207,12 +207,12 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
                         widget.copy.selectPlaceholder(widget.title),
                     supportText: supportText,
                     status: hasError
-                        ? CatchFieldValueContentStatus.error
+                        ? CatchFieldContentRowStatus.error
                         : widget.status,
                     mode: label == null
-                        ? CatchFieldValueContentMode.placeholder
-                        : CatchFieldValueContentMode.value,
-                    labelStyle: CatchFieldValueContent.captionStyle(
+                        ? CatchFieldContentRowMode.placeholder
+                        : CatchFieldContentRowMode.value,
+                    labelStyle: CatchFieldContentRow.captionStyle(
                       context,
                       color: hasError ? t.danger : t.ink2,
                     ),

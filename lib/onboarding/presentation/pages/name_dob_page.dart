@@ -217,7 +217,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 suffixIcon: Icon(CatchIcons.verifiedRounded),
                 helperText:
                     context.l10n.onboardingNameDobPageHelpertextVerifiedViaOtp,
-                helperTone: CatchFieldSupportTone.success,
+                helperTone: CatchFieldSupportRowTone.success,
                 validator: state.validatePhoneNumber,
               ),
             ],

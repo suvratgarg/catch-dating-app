@@ -3,7 +3,7 @@ import 'package:catch_ui/catch_ui.dart';
 
 /// Resolves field grammar and actions at the app's localization boundary.
 CatchFieldCopy catchFieldCopy(AppLocalizations l10n) => CatchFieldCopy(
-  label: catchFormFieldLabelCopy(l10n),
+  label: catchFieldLabelTextCopy(l10n),
   validation: catchFormValidationCopy(l10n),
   cancelLabel: l10n.coreCatchFieldLabelCancel,
   doneLabel: l10n.coreCatchFieldLabelDone,
@@ -45,8 +45,8 @@ CatchFormValidationCopy catchFormValidationCopy(
 );
 
 /// Resolves optional-field copy at the app's localization boundary.
-CatchFormFieldLabelCopy catchFormFieldLabelCopy(AppLocalizations l10n) =>
-    CatchFormFieldLabelCopy(
+CatchFieldLabelTextCopy catchFieldLabelTextCopy(AppLocalizations l10n) =>
+    CatchFieldLabelTextCopy(
       optionalLabel: l10n.coreCatchFormFieldLabelTextOptional,
       optionalSuffix: l10n.coreCatchFieldTextOptionalSuffix,
       optionalSemantics: (label) =>

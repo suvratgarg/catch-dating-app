@@ -188,7 +188,7 @@ Widget _host(Widget child) => MaterialApp(
 );
 
 CatchFieldCopy _copy(String prefix) => CatchFieldCopy(
-  label: CatchFormFieldLabelCopy(
+  label: CatchFieldLabelTextCopy(
     optionalLabel: '$prefix optional',
     optionalSuffix: ' · $prefix optional',
     optionalSemantics: (label) => '$prefix optional $label',
