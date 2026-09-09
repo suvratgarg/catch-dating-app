@@ -120,7 +120,31 @@ final class CatchFormTextRow<P> extends CatchFormRowDescriptor<P> {
   R accept<R>(CatchFormRowVisitor<P, R> visitor) => visitor.text(this);
 }
 
-final class CatchFormSingleChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
+/// Shared presentation and draft protocol for typed choice descriptions.
+/// Single and multiple patch signatures remain separate in the final variants.
+sealed class CatchFormChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
+  const CatchFormChoiceRow({
+    required super.id,
+    required super.icon,
+    required super.label,
+  });
+
+  List<T> get values;
+  String Function(T value) get itemLabel;
+  String? get emptyValueText;
+  String? get helperText;
+  Color? Function(T item)? get itemAccent;
+  String Function(T value)? get contractValue;
+  bool get allowEmptySelection;
+  bool get showOptionalLabel;
+  CatchContractFieldConstraints? get contract;
+  bool get isAddAffordanceWhenEmpty;
+  bool get isMultiple;
+  Set<T> get selectedValues;
+  P patchForSelection(Set<T> selection);
+}
+
+final class CatchFormSingleChoiceRow<P, T> extends CatchFormChoiceRow<P, T> {
   const CatchFormSingleChoiceRow({
     required super.id,
     required super.icon,
@@ -139,18 +163,37 @@ final class CatchFormSingleChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
     this.contract,
   });
 
+  @override
   final List<T> values;
+  @override
   final String Function(T value) itemLabel;
   final T? value;
   final String? fieldName;
+  @override
   final String? emptyValueText;
+  @override
   final String? helperText;
+  @override
   final Color? Function(T item)? itemAccent;
+  @override
   final String Function(T value)? contractValue;
+  @override
   final bool allowEmptySelection;
+  @override
   final bool showOptionalLabel;
+  @override
   final CatchContractFieldConstraints? contract;
   final P Function(T? value) patchForValue;
+
+  @override
+  bool get isMultiple => false;
+  @override
+  bool get isAddAffordanceWhenEmpty => true;
+  @override
+  Set<T> get selectedValues => {?value};
+  @override
+  P patchForSelection(Set<T> selection) =>
+      patchForValue(selection.isEmpty ? null : selection.first);
 
   @override
   String get accordionKey => fieldName ?? id;
@@ -160,7 +203,7 @@ final class CatchFormSingleChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
       visitor.singleChoice<T>(this);
 }
 
-final class CatchFormMultiChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
+final class CatchFormMultiChoiceRow<P, T> extends CatchFormChoiceRow<P, T> {
   const CatchFormMultiChoiceRow({
     required super.id,
     required super.icon,
@@ -180,19 +223,37 @@ final class CatchFormMultiChoiceRow<P, T> extends CatchFormRowDescriptor<P> {
     this.contract,
   });
 
+  @override
   final List<T> values;
+  @override
   final String Function(T value) itemLabel;
   final List<T> selected;
   final String? fieldName;
+  @override
   final String? emptyValueText;
+  @override
   final String? helperText;
+  @override
   final Color? Function(T item)? itemAccent;
+  @override
   final String Function(T value)? contractValue;
+  @override
   final bool isAddAffordanceWhenEmpty;
+  @override
   final bool allowEmptySelection;
+  @override
   final bool showOptionalLabel;
+  @override
   final CatchContractFieldConstraints? contract;
   final P Function(List<T> values) patchForValues;
+
+  @override
+  bool get isMultiple => true;
+  @override
+  Set<T> get selectedValues => selected.toSet();
+  @override
+  P patchForSelection(Set<T> selection) =>
+      patchForValues(selection.toList(growable: false));
 
   @override
   String get accordionKey => fieldName ?? id;

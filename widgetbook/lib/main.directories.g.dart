@@ -1852,24 +1852,35 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Form rows',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFormMultiChoiceRowEditor<dynamic, dynamic>',
+            name: 'CatchFormChoiceField<dynamic, dynamic>',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Typed rows and commit modes',
                 builder:
                     _widgetbook_workspace_primitives_form_descriptor_use_cases
-                        .formMultiChoiceRowEditorStates,
+                        .formChoiceFieldStates,
               ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFormRangeRowEditor',
+            name: 'CatchFormChoiceRow<dynamic, dynamic>',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Typed rows and commit modes',
                 builder:
                     _widgetbook_workspace_primitives_form_descriptor_use_cases
-                        .formRangeRowEditorStates,
+                        .formChoiceRowStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchFormRangeField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Typed rows and commit modes',
+                builder:
+                    _widgetbook_workspace_primitives_form_descriptor_use_cases
+                        .formRangeFieldStates,
               ),
             ],
           ),
@@ -1907,24 +1918,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFormSingleChoiceRowEditor<dynamic, dynamic>',
+            name: 'CatchFormTextField',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Typed rows and commit modes',
                 builder:
                     _widgetbook_workspace_primitives_form_descriptor_use_cases
-                        .formSingleChoiceRowEditorStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFormTextRowEditor',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Typed rows and commit modes',
-                builder:
-                    _widgetbook_workspace_primitives_form_descriptor_use_cases
-                        .formTextRowEditorStates,
+                        .formTextFieldStates,
               ),
             ],
           ),
@@ -10129,22 +10129,22 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CatchFormMultiChoiceRowEditor<dynamic, dynamic>',
+                name: 'CatchFormChoiceField<dynamic, dynamic>',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Typed descriptor prototype',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .catchFormMultiChoiceRowEditorStates,
+                        .catchFormChoiceFieldStates,
                   ),
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CatchFormRangeRowEditor',
+                name: 'CatchFormRangeField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Typed descriptor prototype',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .catchFormRangeRowEditorStates,
+                        .catchFormRangeFieldStates,
                   ),
                 ],
               ),
@@ -10159,22 +10159,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CatchFormSingleChoiceRowEditor<dynamic, dynamic>',
+                name: 'CatchFormTextField',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Typed descriptor prototype',
                     builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .catchFormSingleChoiceRowEditorStates,
-                  ),
-                ],
-              ),
-              _widgetbook.WidgetbookComponent(
-                name: 'CatchFormTextRowEditor',
-                useCases: [
-                  _widgetbook.WidgetbookUseCase(
-                    name: 'Typed descriptor prototype',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
-                        .catchFormTextRowEditorStates,
+                        .catchFormTextFieldStates,
                   ),
                 ],
               ),

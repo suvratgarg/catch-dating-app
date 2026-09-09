@@ -4,4 +4,4 @@
 /// mix interaction models. Explicit confirmation is the default for new form
 /// sections; [onBlur] remains available for an existing surface that has not
 /// yet migrated its product behavior.
-enum CatchFormTextCommitMode { explicit, onBlur }
+enum CatchFormRowListMode { explicit, onBlur }

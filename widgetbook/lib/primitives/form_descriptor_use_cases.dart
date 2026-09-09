@@ -14,7 +14,7 @@ Widget formDescriptorStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Typed form descriptions',
   catalogId: 'catch.field.form_row_descriptor',
   children: [
-    for (final mode in CatchFormTextCommitMode.values)
+    for (final mode in CatchFormRowListMode.values)
       _FormDescriptorFields(mode: mode),
   ],
 );
@@ -28,40 +28,40 @@ Widget formRowListStates(BuildContext context) => formDescriptorStates(context);
 
 @widgetbook.UseCase(
   name: 'Typed rows and commit modes',
-  type: CatchFormTextRowEditor,
+  type: CatchFormTextField,
   path: '[Core patterns]/Form rows',
 )
-Widget formTextRowEditorStates(BuildContext context) =>
+Widget formTextFieldStates(BuildContext context) =>
     formDescriptorStates(context);
 
 @widgetbook.UseCase(
   name: 'Typed rows and commit modes',
-  type: CatchFormSingleChoiceRowEditor,
+  type: CatchFormChoiceField,
   path: '[Core patterns]/Form rows',
 )
-Widget formSingleChoiceRowEditorStates(BuildContext context) =>
+Widget formChoiceFieldStates(BuildContext context) =>
     formDescriptorStates(context);
 
 @widgetbook.UseCase(
   name: 'Typed rows and commit modes',
-  type: CatchFormMultiChoiceRowEditor,
+  type: CatchFormChoiceRow,
   path: '[Core patterns]/Form rows',
 )
-Widget formMultiChoiceRowEditorStates(BuildContext context) =>
+Widget formChoiceRowStates(BuildContext context) =>
     formDescriptorStates(context);
 
 @widgetbook.UseCase(
   name: 'Typed rows and commit modes',
-  type: CatchFormRangeRowEditor,
+  type: CatchFormRangeField,
   path: '[Core patterns]/Form rows',
 )
-Widget formRangeRowEditorStates(BuildContext context) =>
+Widget formRangeFieldStates(BuildContext context) =>
     formDescriptorStates(context);
 
 class _FormDescriptorFields extends StatefulWidget {
   const _FormDescriptorFields({required this.mode});
 
-  final CatchFormTextCommitMode mode;
+  final CatchFormRowListMode mode;
 
   @override
   State<_FormDescriptorFields> createState() => _FormDescriptorFieldsState();
@@ -83,7 +83,7 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
   @override
   Widget build(BuildContext context) => CatchFormRowList<(String, Object?)>(
     fieldCopy: catchFieldCopy(context.l10n),
-    title: widget.mode == CatchFormTextCommitMode.explicit
+    title: widget.mode == CatchFormRowListMode.explicit
         ? 'Explicit confirmation'
         : 'Save text on blur',
     accordion: _accordion,
@@ -147,7 +147,7 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
         ),
       ),
     ],
-    savePatch: (patch) async {
+    onSave: (patch) async {
       setState(() {
         switch (patch.$1) {
           case 'name':
@@ -162,6 +162,6 @@ class _FormDescriptorFieldsState extends State<_FormDescriptorFields> {
       });
       return true;
     },
-    errorText: (_, error) => error.toString(),
+    errorTextBuilder: (_, error) => error.toString(),
   );
 }

@@ -259,11 +259,11 @@ class _ProfileTabContentState extends ConsumerState<ProfileTabContent> {
             title: context.l10n.userProfileProfileTabTitleAboutYou,
             // Preserve the existing Consumer interaction until its product
             // migration to explicit confirmation is reviewed separately.
-            textCommitMode: CatchFormTextCommitMode.onBlur,
+            textCommitMode: CatchFormRowListMode.onBlur,
             rows: editState.aboutSectionRows,
             accordion: _fieldAccordion,
-            savePatch: _saveAboutPatch,
-            errorText: _profileSaveErrorText,
+            onSave: _saveAboutPatch,
+            errorTextBuilder: _profileSaveErrorText,
           ),
           CatchSection.fieldRows(
             title: context.l10n.userProfileProfileTabTitleRunning,

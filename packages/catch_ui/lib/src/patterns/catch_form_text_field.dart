@@ -5,24 +5,24 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/src/patterns/catch_form_row_list.dart';
 import 'package:flutter/material.dart';
 
-class CatchFormTextRowEditor<P> extends StatefulWidget {
-  const CatchFormTextRowEditor({
+/// Form-owned text draft, normalization and validation with list-owned commit policy.
+class CatchFormTextField<P> extends StatefulWidget {
+  const CatchFormTextField({
     super.key,
     required this.descriptor,
     required this.scope,
-    required this.errorText,
+    required this.errorTextBuilder,
   });
 
   final CatchFormTextRow<P> descriptor;
   final CatchFormRowScope<P> scope;
-  final CatchFormErrorText errorText;
+  final CatchFormErrorText errorTextBuilder;
 
   @override
-  State<CatchFormTextRowEditor<P>> createState() =>
-      _CatchFormTextRowEditorState<P>();
+  State<CatchFormTextField<P>> createState() => _CatchFormTextFieldState<P>();
 }
 
-class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
+class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
   late final TextEditingController _controller;
   final _saveState = CatchFormSaveState();
   Object? _lastCommittedValue;
@@ -30,7 +30,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
   bool _hasFocus = false;
 
   bool get _usesExplicitCommit =>
-      widget.scope.textCommitMode == CatchFormTextCommitMode.explicit;
+      widget.scope.textCommitMode == CatchFormRowListMode.explicit;
 
   @override
   void initState() {
@@ -40,7 +40,7 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
   }
 
   @override
-  void didUpdateWidget(CatchFormTextRowEditor<P> oldWidget) {
+  void didUpdateWidget(CatchFormTextField<P> oldWidget) {
     super.didUpdateWidget(oldWidget);
     final old = oldWidget.descriptor;
     final current = widget.descriptor;
@@ -151,7 +151,9 @@ class _CatchFormTextRowEditorState<P> extends State<CatchFormTextRowEditor<P>> {
     final saveError = _saveState.error;
     final error =
         _validationError ??
-        (saveError == null ? null : widget.errorText(context, saveError));
+        (saveError == null
+            ? null
+            : widget.errorTextBuilder(context, saveError));
     if (_usesExplicitCommit) {
       return CatchField.inputActions(
         copy: widget.scope.fieldCopy,

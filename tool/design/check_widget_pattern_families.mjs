@@ -345,7 +345,11 @@ function collectRequestedPreviewStates(registry) {
 export function parseWidgetbookSymbols(source) {
   const symbols = new Set();
   const pattern = /WidgetbookComponent\(\s*name:\s*'([^']+)'/gu;
-  for (const match of source.matchAll(pattern)) symbols.add(match[1]);
+  for (const match of source.matchAll(pattern)) {
+    // The generator prints instantiated type arguments for multi-generic APIs;
+    // registry identity belongs to the declaring class, not its type arguments.
+    symbols.add(match[1].replace(/<.*>$/u, ""));
+  }
   return symbols;
 }
 

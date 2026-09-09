@@ -11,26 +11,26 @@ class CatchFormRowList<P> extends StatefulWidget {
     required this.fieldCopy,
     super.key,
     required this.rows,
-    required this.savePatch,
-    required this.errorText,
+    required this.onSave,
+    required this.errorTextBuilder,
     this.accordion,
     this.title,
     this.count,
     this.trailing,
     this.footer,
-    this.textCommitMode = CatchFormTextCommitMode.explicit,
+    this.textCommitMode = CatchFormRowListMode.explicit,
   });
 
   final List<CatchFormRowDescriptor<P>> rows;
   final CatchFieldCopy fieldCopy;
-  final CatchFormSave<P> savePatch;
-  final CatchFormErrorText errorText;
+  final CatchFormSave<P> onSave;
+  final CatchFormErrorText errorTextBuilder;
   final CatchAccordionController? accordion;
   final String? title;
   final Object? count;
   final Widget? trailing;
   final Widget? footer;
-  final CatchFormTextCommitMode textCommitMode;
+  final CatchFormRowListMode textCommitMode;
 
   @override
   State<CatchFormRowList<P>> createState() => _CatchFormRowListState<P>();
@@ -95,11 +95,11 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
                   descriptor.maxLength! <= descriptor.contract!.maxLength!,
               'An explicit maxLength cannot exceed the schema contract.',
             );
-            return CatchFormTextRowEditor<P>(
+            return CatchFormTextField<P>(
               key: ValueKey('catch-form-text-${descriptor.id}'),
               descriptor: descriptor,
               scope: scope,
-              errorText: widget.errorText,
+              errorTextBuilder: widget.errorTextBuilder,
             );
           },
           singleChoice: <T>(CatchFormSingleChoiceRow<P, T> descriptor) {
@@ -108,11 +108,11 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
                   descriptor.contractValue != null,
               'Schema-enumerated single-choice rows require contractValue.',
             );
-            return CatchFormSingleChoiceRowEditor<P, T>(
+            return CatchFormChoiceField<P, T>.single(
               key: ValueKey('catch-form-single-choice-${descriptor.id}'),
               descriptor: descriptor,
               scope: scope,
-              errorText: widget.errorText,
+              errorTextBuilder: widget.errorTextBuilder,
             );
           },
           multiChoice: <T>(CatchFormMultiChoiceRow<P, T> descriptor) {
@@ -121,11 +121,11 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
                   descriptor.contractValue != null,
               'Schema-enumerated multi-choice rows require contractValue.',
             );
-            return CatchFormMultiChoiceRowEditor<P, T>(
+            return CatchFormChoiceField<P, T>.multiple(
               key: ValueKey('catch-form-multi-choice-${descriptor.id}'),
               descriptor: descriptor,
               scope: scope,
-              errorText: widget.errorText,
+              errorTextBuilder: widget.errorTextBuilder,
             );
           },
           range: (descriptor) {
@@ -139,11 +139,11 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
                   descriptor.sliderMax <= descriptor.contract!.maximum!,
               'The slider maximum cannot exceed the schema contract.',
             );
-            return CatchFormRangeRowEditor<P>(
+            return CatchFormRangeField<P>(
               key: ValueKey('catch-form-range-${descriptor.id}'),
               descriptor: descriptor,
               scope: scope,
-              errorText: widget.errorText,
+              errorTextBuilder: widget.errorTextBuilder,
             );
           },
           custom: (descriptor) => descriptor.build(context, scope),
@@ -159,7 +159,7 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
       isExpanded: _accordion.isExpanded(key),
       toggle: () => _accordion.toggle(key),
       collapse: _accordion.collapse,
-      save: widget.savePatch,
+      save: widget.onSave,
       textCommitMode: widget.textCommitMode,
     );
   }

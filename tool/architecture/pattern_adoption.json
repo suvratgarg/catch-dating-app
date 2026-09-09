@@ -1601,10 +1601,9 @@
       "prototypeFiles": [
         "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
         "packages/catch_ui/lib/src/patterns/catch_form_row_list.dart",
-        "packages/catch_ui/lib/src/patterns/catch_form_text_row_editor.dart",
-        "packages/catch_ui/lib/src/patterns/catch_form_single_choice_row_editor.dart",
-        "packages/catch_ui/lib/src/patterns/catch_form_multi_choice_row_editor.dart",
-        "packages/catch_ui/lib/src/patterns/catch_form_range_row_editor.dart",
+        "packages/catch_ui/lib/src/patterns/catch_form_text_field.dart",
+        "packages/catch_ui/lib/src/patterns/catch_form_choice_field.dart",
+        "packages/catch_ui/lib/src/patterns/catch_form_range_field.dart",
         "lib/user_profile/presentation/self_profile_edit_tab_state.dart",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
         "test/core/forms/catch_form_descriptors_test.dart",

@@ -1517,37 +1517,28 @@ Widget catchFormRowListStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Typed descriptor prototype',
-  type: CatchFormTextRowEditor,
+  type: CatchFormTextField,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
-Widget catchFormTextRowEditorStates(BuildContext context) {
+Widget catchFormTextFieldStates(BuildContext context) {
   return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
   name: 'Typed descriptor prototype',
-  type: CatchFormSingleChoiceRowEditor,
+  type: CatchFormChoiceField,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
-Widget catchFormSingleChoiceRowEditorStates(BuildContext context) {
+Widget catchFormChoiceFieldStates(BuildContext context) {
   return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
   name: 'Typed descriptor prototype',
-  type: CatchFormMultiChoiceRowEditor,
+  type: CatchFormRangeField,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
-Widget catchFormMultiChoiceRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview(context);
-}
-
-@widgetbook.UseCase(
-  name: 'Typed descriptor prototype',
-  type: CatchFormRangeRowEditor,
-  path: '[P1 product surfaces]/Profiles/Inline Editors',
-)
-Widget catchFormRangeRowEditorStates(BuildContext context) {
+Widget catchFormRangeFieldStates(BuildContext context) {
   return _catchFormDescriptorPreview(context);
 }
 
@@ -1620,8 +1611,8 @@ Widget _catchFormDescriptorPreview(BuildContext context) {
                     _WidgetbookFormPatch('pace', (min, max)),
               ),
             ],
-            savePatch: (_) async => true,
-            errorText: (_, error) => error.toString(),
+            onSave: (_) async => true,
+            errorTextBuilder: (_, error) => error.toString(),
           ),
         ),
       ),

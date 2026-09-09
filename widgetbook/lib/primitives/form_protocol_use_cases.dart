@@ -105,7 +105,7 @@ Widget formRowScopeStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Form row scope',
   catalogId: 'catch.field',
   children: [
-    for (final mode in CatchFormTextCommitMode.values)
+    for (final mode in CatchFormRowListMode.values)
       _FormRowScopeFields(mode: mode),
   ],
 );
@@ -113,7 +113,7 @@ Widget formRowScopeStates(BuildContext context) => WidgetbookCatalogFrame(
 class _FormRowScopeFields extends StatefulWidget {
   const _FormRowScopeFields({required this.mode});
 
-  final CatchFormTextCommitMode mode;
+  final CatchFormRowListMode mode;
 
   @override
   State<_FormRowScopeFields> createState() => _FormRowScopeFieldsState();
@@ -133,7 +133,7 @@ class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
   @override
   Widget build(BuildContext context) => CatchFormRowList<(String, String)>(
     fieldCopy: catchFieldCopy(context.l10n),
-    title: widget.mode == CatchFormTextCommitMode.explicit
+    title: widget.mode == CatchFormRowListMode.explicit
         ? 'Explicit confirmation'
         : 'Save on blur',
     accordion: _accordion,
@@ -156,7 +156,7 @@ class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
         patchForValue: (value) => ('city', value as String),
       ),
     ],
-    savePatch: (patch) async {
+    onSave: (patch) async {
       setState(() {
         if (patch.$1 == 'name') {
           _name = patch.$2;
@@ -166,7 +166,7 @@ class _FormRowScopeFieldsState extends State<_FormRowScopeFields> {
       });
       return true;
     },
-    errorText: (_, error) => error.toString(),
+    errorTextBuilder: (_, error) => error.toString(),
   );
 }
 

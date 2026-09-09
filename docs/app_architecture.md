@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.46.0
+version: 1.47.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -4242,7 +4242,7 @@ class CalendarEventSummary {
 Reference files:
 
 - `packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart`
-- `packages/catch_ui/lib/src/patterns/catch_form_row_list.dart` and the four `catch_form_*_row_editor.dart` owners
+- `packages/catch_ui/lib/src/patterns/catch_form_row_list.dart` and the `CatchFormTextField`, `CatchFormChoiceField` and `CatchFormRangeField` members
 - `lib/user_profile/presentation/self_profile_edit_tab_state.dart`
 - `lib/user_profile/presentation/widgets/profile_tab.dart`
 - `lib/hosts/presentation/host_operations/host_club_edit_tab.dart`
@@ -4264,10 +4264,17 @@ The descriptor family is shared, provider-free data. Its generic visitor retains
 each choice row's item type; the form list owns all row construction, schema
 assertions and editor keys inside `build`. Descriptors have no rendering methods.
 
+`CatchFormChoiceField.single` and `.multiple` share selection draft, save and
+error handling. `CatchFormTextField` retains text normalization and validation;
+`CatchFormRangeField` retains atomic range editing and follows changed
+caller values. These are public members of the field concept, constructed by
+the form list. The list accepts `onSave` and `errorTextBuilder`; persistence
+and localized error interpretation remain caller-owned.
+
 Text commit behavior is a form-section policy, not descriptor styling.
-`CatchFormRowList<P>` defaults to `CatchFormTextCommitMode.explicit`, which
+`CatchFormRowList<P>` defaults to `CatchFormRowListMode.explicit`, which
 renders the canonical staged editor and Cancel/Done actions for every text row.
-An existing section may select `CatchFormTextCommitMode.onBlur` as one explicit
+An existing section may select `CatchFormRowListMode.onBlur` as one explicit
 compatibility decision while its product behavior is migrated. Do not add a
 per-row boolean: sibling rows in one form section must not drift between commit
 models.
@@ -4296,11 +4303,11 @@ contract drift.
 ```dart
 CatchFormRowList<UpdateUserProfilePatch>(
   title: context.l10n.userProfileProfileTabTitleAboutYou,
-  textCommitMode: CatchFormTextCommitMode.onBlur,
+  textCommitMode: CatchFormRowListMode.onBlur,
   rows: editState.aboutSectionRows,
   accordion: _fieldAccordion,
-  savePatch: _saveAboutPatch,
-  errorText: _profileSaveErrorText,
+  onSave: _saveAboutPatch,
+  errorTextBuilder: _profileSaveErrorText,
 )
 ```
 

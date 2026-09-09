@@ -7762,6 +7762,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:form-field-draft-editing",
+      "patternFamilyId": "form-field-draft-editing",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchFormChoiceField",
+      "members": [
+        {
+          "name": "CatchFormSingleChoiceRowEditor",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFormMultiChoiceRowEditor",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Both choice editors duplicate the same draft/save/error lifecycle. Named single and multiple constructors preserve typed descriptor and patch signatures while sharing one renderer. Text and range editing retain distinct Field names and concrete responsibility comparisons. All four old editor classes are deleted. Three production form lists across two files keep their descriptors, keys, save delegates and commit policy. A reproduced stale range draft now follows changed authoritative values.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

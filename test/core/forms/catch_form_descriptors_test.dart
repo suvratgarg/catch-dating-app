@@ -50,11 +50,11 @@ void main() {
               ),
             ),
           ],
-          savePatch: (patch) {
+          onSave: (patch) {
             savedPatch = patch;
             return pendingSave.future;
           },
-          errorText: (_, error) => error.toString(),
+          errorTextBuilder: (_, error) => error.toString(),
         ),
       ),
     );
@@ -144,11 +144,11 @@ void main() {
               patchForValue: (value) => _Patch(value as String),
             ),
           ],
-          savePatch: (patch) async {
+          onSave: (patch) async {
             savedPatch = patch;
             return true;
           },
-          errorText: (_, error) => error.toString(),
+          errorTextBuilder: (_, error) => error.toString(),
         ),
       ),
     );
@@ -180,7 +180,7 @@ void main() {
       _wrap(
         CatchFormRowList<_Patch>(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
-          textCommitMode: CatchFormTextCommitMode.onBlur,
+          textCommitMode: CatchFormRowListMode.onBlur,
           rows: [
             CatchFormTextRow<_Patch>(
               validationCopy: catchFormValidationCopy(AppLocalizationsEn()),
@@ -191,11 +191,11 @@ void main() {
               patchForValue: (value) => _Patch(value as String),
             ),
           ],
-          savePatch: (patch) async {
+          onSave: (patch) async {
             savedPatch = patch;
             return true;
           },
-          errorText: (_, error) => error.toString(),
+          errorTextBuilder: (_, error) => error.toString(),
         ),
       ),
     );

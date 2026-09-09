@@ -3502,10 +3502,10 @@
             }
           },
           {
-            "id": "catch.field.form_text_row_editor",
-            "symbol": "CatchFormTextRowEditor",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_text_row_editor.dart",
-            "summary": "Text drafts and validation with explicit confirmation or on-blur saves.",
+            "id": "catch.field.form_text_field",
+            "symbol": "CatchFormTextField",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_text_field.dart",
+            "summary": "Text drafts, normalization and validation with list-owned explicit confirmation or on-blur saves.",
             "states": [
               "ready",
               "editing",
@@ -3517,14 +3517,25 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:form-field-draft-editing"
+            },
+            "level": "L4",
+            "roleNoun": "Field",
+            "naming": {
+              "useCase": "FormText",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.form_choice_field",
+                "catch.field.form_range_field"
+              ],
+              "reason": "Owns a form text draft, normalization and validation under the list-owned explicit or on-blur commit policy. The parent field owns native input and presentation; FormChoiceField edits typed selections and FormRangeField edits numeric bounds."
             }
           },
           {
-            "id": "catch.field.form_single_choice_row_editor",
-            "symbol": "CatchFormSingleChoiceRowEditor",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_single_choice_row_editor.dart",
-            "summary": "Typed single-selection drafts with explicit confirmation.",
+            "id": "catch.field.form_choice_field",
+            "symbol": "CatchFormChoiceField",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_choice_field.dart",
+            "summary": "Typed single or multiple choice drafts share one explicit-save lifecycle through named constructors.",
             "states": [
               "ready",
               "editing",
@@ -3536,14 +3547,25 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:form-field-draft-editing"
+            },
+            "level": "L4",
+            "roleNoun": "Field",
+            "naming": {
+              "useCase": "FormChoice",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.form_text_field",
+                "catch.field.form_range_field"
+              ],
+              "reason": "Coordinates typed selection drafts, cancellation and patch saves for the parent field concept. Single and multiple cardinality share one lifecycle through named constructors. Unlike FormTextField it has no text controller or parsing; unlike FormRangeField it edits discrete choices rather than two numeric bounds."
             }
           },
           {
-            "id": "catch.field.form_multi_choice_row_editor",
-            "symbol": "CatchFormMultiChoiceRowEditor",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_multi_choice_row_editor.dart",
-            "summary": "Typed multi-selection drafts with explicit confirmation.",
+            "id": "catch.field.form_range_field",
+            "symbol": "CatchFormRangeField",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_range_field.dart",
+            "summary": "Bounded range drafts follow authoritative values and commit one min/max patch.",
             "states": [
               "ready",
               "editing",
@@ -3555,26 +3577,18 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
-            "id": "catch.field.form_range_row_editor",
-            "symbol": "CatchFormRangeRowEditor",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_range_row_editor.dart",
-            "summary": "Bounded range drafts and explicit save feedback.",
-            "states": [
-              "ready",
-              "editing",
-              "saving",
-              "error"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:form-field-draft-editing"
+            },
+            "level": "L4",
+            "roleNoun": "Field",
+            "naming": {
+              "useCase": "FormRange",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.form_choice_field",
+                "catch.field.form_text_field"
+              ],
+              "reason": "Owns a bounded two-handle numeric draft, external value synchronization and an atomic min/max patch. The parent field supplies disclosure and action UI; FormChoiceField owns discrete choices and FormTextField owns text normalization and validation."
             }
           },
           {
@@ -3923,6 +3937,23 @@
               "parentConceptId": "catch.field",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.field"
+            }
+          },
+          {
+            "id": "catch.field.form_choice_row",
+            "symbol": "CatchFormChoiceRow",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
+            "summary": "Shared typed choice description protocol; final single and multiple variants retain their distinct patch signatures.",
+            "states": [
+              "single-choice",
+              "multiple-choice"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:form-field-draft-editing"
             }
           }
         ],

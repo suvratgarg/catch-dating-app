@@ -1,34 +1,49 @@
 import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/src/patterns/catch_form_row_list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-class CatchFormSingleChoiceRowEditor<P, T> extends StatefulWidget {
-  const CatchFormSingleChoiceRowEditor({
+/// Form-owned choice drafts, explicit commits and save feedback.
+/// Single and multiple selection share one lifecycle; descriptors retain types.
+class CatchFormChoiceField<P, T> extends StatefulWidget {
+  const CatchFormChoiceField.single({
     super.key,
-    required this.descriptor,
+    required CatchFormSingleChoiceRow<P, T> descriptor,
     required this.scope,
-    required this.errorText,
-  });
+    required this.errorTextBuilder,
+  }) : descriptor = descriptor;
 
-  final CatchFormSingleChoiceRow<P, T> descriptor;
+  const CatchFormChoiceField.multiple({
+    super.key,
+    required CatchFormMultiChoiceRow<P, T> descriptor,
+    required this.scope,
+    required this.errorTextBuilder,
+  }) : descriptor = descriptor;
+
+  final CatchFormChoiceRow<P, T> descriptor;
   final CatchFormRowScope<P> scope;
-  final CatchFormErrorText errorText;
+  final CatchFormErrorText errorTextBuilder;
 
   @override
-  State<CatchFormSingleChoiceRowEditor<P, T>> createState() =>
-      _CatchFormSingleChoiceRowEditorState<P, T>();
+  State<CatchFormChoiceField<P, T>> createState() =>
+      _CatchFormChoiceFieldState<P, T>();
 }
 
-class _CatchFormSingleChoiceRowEditorState<P, T>
-    extends State<CatchFormSingleChoiceRowEditor<P, T>> {
-  late T? _selected = widget.descriptor.value;
+class _CatchFormChoiceFieldState<P, T>
+    extends State<CatchFormChoiceField<P, T>> {
+  late Set<T> _selected = widget.descriptor.selectedValues;
   final _saveState = CatchFormSaveState();
 
   @override
-  void didUpdateWidget(CatchFormSingleChoiceRowEditor<P, T> oldWidget) {
+  void didUpdateWidget(CatchFormChoiceField<P, T> oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.descriptor.value != widget.descriptor.value) {
-      _selected = widget.descriptor.value;
+    if (oldWidget.descriptor.id != widget.descriptor.id ||
+        oldWidget.descriptor.isMultiple != widget.descriptor.isMultiple ||
+        !setEquals(
+          oldWidget.descriptor.selectedValues,
+          widget.descriptor.selectedValues,
+        )) {
+      _selected = widget.descriptor.selectedValues;
     }
   }
 
@@ -40,7 +55,7 @@ class _CatchFormSingleChoiceRowEditorState<P, T>
 
   void _cancel() {
     setState(() {
-      _selected = widget.descriptor.value;
+      _selected = widget.descriptor.selectedValues;
       _saveState.reset();
     });
     widget.scope.collapse();
@@ -48,14 +63,11 @@ class _CatchFormSingleChoiceRowEditorState<P, T>
 
   Future<void> _submit() async {
     if (_saveState.saving) return;
-    if (_selected == widget.descriptor.value) {
+    final current = widget.descriptor.selectedValues;
+    if (_selected.length == current.length && _selected.containsAll(current)) {
       _cancel();
       return;
     }
-    await _save(widget.descriptor.patchForValue(_selected));
-  }
-
-  Future<void> _save(P patch) async {
     setState(() {
       _saveState
         ..saving = true
@@ -63,7 +75,9 @@ class _CatchFormSingleChoiceRowEditorState<P, T>
         ..status = CatchFieldStatus.saving;
     });
     try {
-      final saved = await widget.scope.save(patch);
+      final saved = await widget.scope.save(
+        widget.descriptor.patchForSelection(_selected),
+      );
       if (!mounted) return;
       if (!saved) {
         setState(() {
@@ -94,7 +108,7 @@ class _CatchFormSingleChoiceRowEditorState<P, T>
   Widget build(BuildContext context) {
     final descriptor = widget.descriptor;
     final error = _saveState.error;
-    final addable = _selected == null;
+    final addable = _selected.isEmpty && descriptor.isAddAffordanceWhenEmpty;
     return CatchField<T>.choices(
       copy: widget.scope.fieldCopy,
       icon: descriptor.icon,
@@ -109,16 +123,17 @@ class _CatchFormSingleChoiceRowEditorState<P, T>
       onOpenChanged: (_) => widget.scope.toggle(),
       isLoading: _saveState.saving,
       status: _saveState.status,
-      error: error == null ? null : widget.errorText(context, error),
+      error: error == null ? null : widget.errorTextBuilder(context, error),
       values: descriptor.values,
       contract: descriptor.contract,
       contractValue: descriptor.contractValue,
       itemLabel: descriptor.itemLabel,
-      selected: {?_selected},
+      selected: _selected,
+      multi: descriptor.isMultiple,
       allowEmptySelection: descriptor.allowEmptySelection,
       onSelectionChanged: (selection) {
         setState(() {
-          _selected = selection.isEmpty ? null : selection.first;
+          _selected = selection;
           _saveState.reset();
         });
       },

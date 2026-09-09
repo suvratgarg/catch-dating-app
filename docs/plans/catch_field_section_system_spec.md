@@ -80,7 +80,7 @@ The first implementation from this review moves text commit behavior from
 `CatchFormTextRow` to `CatchFormRowList.textCommitMode`. Host Club Identity and
 Contact inherit the explicit default and delete six repeated arguments.
 Consumer Profile About You keeps its current behavior with one
-`CatchFormTextCommitMode.onBlur` list override, so the API improves without a
+`CatchFormRowListMode.onBlur` list override, so the API improves without a
 silent product migration or a call-site sweep. The mapper also drops nine
 unused visual pass-throughs; its constructor now exposes semantic section
 content and orchestration only, while `CatchSection.fieldRows` owns divider,

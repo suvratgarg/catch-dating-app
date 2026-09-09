@@ -2604,7 +2604,7 @@
               {
                 "name": "Optional Label",
                 "type": "TEXT",
-                "defaultValue": " · Optional",
+                "defaultValue": " \u00b7 Optional",
                 "sourceProps": [
                   "isOptional"
                 ]
@@ -2834,7 +2834,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
-            "notes": "Presentation and accessibility copy only; renders the inline ' · Optional' suffix and never controls whether a selection may be cleared."
+            "notes": "Presentation and accessibility copy only; renders the inline ' \u00b7 Optional' suffix and never controls whether a selection may be cleared."
           },
           {
             "name": "allowEmptySelection",
@@ -3502,10 +3502,10 @@
             }
           },
           {
-            "id": "catch.field.form_text_row_editor",
-            "symbol": "CatchFormTextRowEditor",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_text_row_editor.dart",
-            "summary": "Text drafts and validation with explicit confirmation or on-blur saves.",
+            "id": "catch.field.form_text_field",
+            "symbol": "CatchFormTextField",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_text_field.dart",
+            "summary": "Text drafts, normalization and validation with list-owned explicit confirmation or on-blur saves.",
             "states": [
               "ready",
               "editing",
@@ -3517,14 +3517,25 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:form-field-draft-editing"
+            },
+            "level": "L4",
+            "roleNoun": "Field",
+            "naming": {
+              "useCase": "FormText",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.form_choice_field",
+                "catch.field.form_range_field"
+              ],
+              "reason": "Owns a form text draft, normalization and validation under the list-owned explicit or on-blur commit policy. The parent field owns native input and presentation; FormChoiceField edits typed selections and FormRangeField edits numeric bounds."
             }
           },
           {
-            "id": "catch.field.form_single_choice_row_editor",
-            "symbol": "CatchFormSingleChoiceRowEditor",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_single_choice_row_editor.dart",
-            "summary": "Typed single-selection drafts with explicit confirmation.",
+            "id": "catch.field.form_choice_field",
+            "symbol": "CatchFormChoiceField",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_choice_field.dart",
+            "summary": "Typed single or multiple choice drafts share one explicit-save lifecycle through named constructors.",
             "states": [
               "ready",
               "editing",
@@ -3536,14 +3547,25 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:form-field-draft-editing"
+            },
+            "level": "L4",
+            "roleNoun": "Field",
+            "naming": {
+              "useCase": "FormChoice",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.form_text_field",
+                "catch.field.form_range_field"
+              ],
+              "reason": "Coordinates typed selection drafts, cancellation and patch saves for the parent field concept. Single and multiple cardinality share one lifecycle through named constructors. Unlike FormTextField it has no text controller or parsing; unlike FormRangeField it edits discrete choices rather than two numeric bounds."
             }
           },
           {
-            "id": "catch.field.form_multi_choice_row_editor",
-            "symbol": "CatchFormMultiChoiceRowEditor",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_multi_choice_row_editor.dart",
-            "summary": "Typed multi-selection drafts with explicit confirmation.",
+            "id": "catch.field.form_range_field",
+            "symbol": "CatchFormRangeField",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_range_field.dart",
+            "summary": "Bounded range drafts follow authoritative values and commit one min/max patch.",
             "states": [
               "ready",
               "editing",
@@ -3555,26 +3577,18 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
-            }
-          },
-          {
-            "id": "catch.field.form_range_row_editor",
-            "symbol": "CatchFormRangeRowEditor",
-            "file": "packages/catch_ui/lib/src/patterns/catch_form_range_row_editor.dart",
-            "summary": "Bounded range drafts and explicit save feedback.",
-            "states": [
-              "ready",
-              "editing",
-              "saving",
-              "error"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.field",
-              "parentConceptId": "catch.field",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:form-field-draft-editing"
+            },
+            "level": "L4",
+            "roleNoun": "Field",
+            "naming": {
+              "useCase": "FormRange",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.form_choice_field",
+                "catch.field.form_text_field"
+              ],
+              "reason": "Owns a bounded two-handle numeric draft, external value synchronization and an atomic min/max patch. The parent field supplies disclosure and action UI; FormChoiceField owns discrete choices and FormTextField owns text normalization and validation."
             }
           },
           {
@@ -3924,6 +3938,23 @@
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.field"
             }
+          },
+          {
+            "id": "catch.field.form_choice_row",
+            "symbol": "CatchFormChoiceRow",
+            "file": "packages/catch_ui/lib/src/patterns/catch_form_row_descriptor.dart",
+            "summary": "Shared typed choice description protocol; final single and multiple variants retain their distinct patch signatures.",
+            "states": [
+              "single-choice",
+              "multiple-choice"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:form-field-draft-editing"
+            }
           }
         ],
         "accessibility": {
@@ -3954,7 +3985,7 @@
           "Press feedback begins on header pointer down; disclosure ownership transfers once on pointer up. The full-row disclosure drawer is a sibling below that header, so nested chips, steppers, and commit buttons cannot trigger header press tint and retain complete hit/focus geometry. Coordinated pressed and active layers use one contextual silhouette: standalone and divided fields paint a rounded tint plus outline, while contained rows paint rectangular internal bands beneath one section-owned group clip. CatchFieldGeometryScope separately publishes content-gutter ownership, interaction bleed, and interaction-shape ownership; divided rows retain their tile overlap, while contained edge rows overlap the section's consumed border inset by exactly one hairline so both primitives paint one shared left/right edge. Explicit-save tap-away cancels on pointer up only when movement remains within touch slop, while drag/scroll leaves the field open and loading blocks Cancel or Escape. Ordinary inputs retain Flutter's shared EditableText tap group for affiliated actions and place the native cursor during the first gesture. A closed explicit-save input transfers native focus when its drawer reveal completes so keyboard viewport relayout cannot compete with disclosure motion; an editor built already open focuses immediately, and a direct input tap during reveal may still focus intentionally. Disclosure content stays mounted behind a clipped height-factor plus opacity reveal, uses CatchMotion.base, and becomes instantaneous when reduced motion is enabled.",
           "CatchField.content always owns title/supporting-copy typography. Its default body emphasis preserves the React handoff's top-aligned leading/trailing slots; callers may opt into title emphasis when a combined content block and trailing action should center together.",
           "Choice chips compose CatchChip.selectable in a full-width wrapping group with an 8 px gap between allocated targets. Labels wrap naturally and compact visuals can sit within larger platform hit boxes. Explicit-save choices preserve staged selection until Done; a single choice without a save bar closes after 180 ms. Steppers center fieldRowTitle values between platform-sized repeat targets while preserving the 16 px visual circle-to-value gap. Toggle tracks remain 44 by 26 px inside platform-sized targets and stay visible but disabled while saving.",
-          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' · '. An explicit body remains the compatibility override for custom formatting.",
+          "CatchField.choices owns collapsed choice summaries when body is omitted: selected values are filtered in source option order and joined with ' \u00b7 '. An explicit body remains the compatibility override for custom formatting.",
           "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchChoiceTile target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",

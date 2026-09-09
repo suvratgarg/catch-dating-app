@@ -74,11 +74,11 @@ void main() {
                   patchForValue: (value) => value as String,
                 ),
               ],
-              savePatch: (patch) async {
+              onSave: (patch) async {
                 saved = patch;
                 return true;
               },
-              errorText: (_, error) => error.toString(),
+              errorTextBuilder: (_, error) => error.toString(),
             );
           },
         ),
@@ -135,11 +135,11 @@ void main() {
                 patchForValues: (values) => values,
               ),
             ],
-            savePatch: (patch) async {
+            onSave: (patch) async {
               saved.add(patch);
               return true;
             },
-            errorText: (_, error) => error.toString(),
+            errorTextBuilder: (_, error) => error.toString(),
           ),
         ),
       );

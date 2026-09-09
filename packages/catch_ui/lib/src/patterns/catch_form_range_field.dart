@@ -2,30 +2,44 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/src/patterns/catch_form_row_list.dart';
 import 'package:flutter/material.dart';
 
-class CatchFormRangeRowEditor<P> extends StatefulWidget {
-  const CatchFormRangeRowEditor({
+/// Form-owned bounded range draft with explicit confirmation and patch saves.
+class CatchFormRangeField<P> extends StatefulWidget {
+  const CatchFormRangeField({
     super.key,
     required this.descriptor,
     required this.scope,
-    required this.errorText,
+    required this.errorTextBuilder,
   });
 
   final CatchFormRangeRow<P> descriptor;
   final CatchFormRowScope<P> scope;
-  final CatchFormErrorText errorText;
+  final CatchFormErrorText errorTextBuilder;
 
   @override
-  State<CatchFormRangeRowEditor<P>> createState() =>
-      _CatchFormRangeRowEditorState<P>();
+  State<CatchFormRangeField<P>> createState() => _CatchFormRangeFieldState<P>();
 }
 
-class _CatchFormRangeRowEditorState<P>
-    extends State<CatchFormRangeRowEditor<P>> {
+class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
   late RangeValues _range = RangeValues(
     widget.descriptor.currentMin.toDouble(),
     widget.descriptor.currentMax.toDouble(),
   );
   final _saveState = CatchFormSaveState();
+
+  @override
+  void didUpdateWidget(CatchFormRangeField<P> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final old = oldWidget.descriptor;
+    final current = widget.descriptor;
+    if (old.id != current.id ||
+        old.currentMin != current.currentMin ||
+        old.currentMax != current.currentMax) {
+      _range = RangeValues(
+        current.currentMin.toDouble(),
+        current.currentMax.toDouble(),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -45,6 +59,7 @@ class _CatchFormRangeRowEditorState<P>
   }
 
   Future<void> _submit() async {
+    if (_saveState.saving) return;
     final min = _range.start.round();
     final max = _range.end.round();
     if (min == widget.descriptor.currentMin &&
@@ -52,7 +67,11 @@ class _CatchFormRangeRowEditorState<P>
       _cancel();
       return;
     }
-    setState(() => _saveState.saving = true);
+    setState(() {
+      _saveState
+        ..saving = true
+        ..error = null;
+    });
     try {
       final saved = await widget.scope.save(
         widget.descriptor.patchForRange(min, max),
@@ -86,7 +105,7 @@ class _CatchFormRangeRowEditorState<P>
       open: widget.scope.isExpanded,
       onOpenChanged: (_) => widget.scope.toggle(),
       isLoading: _saveState.saving,
-      error: error == null ? null : widget.errorText(context, error),
+      error: error == null ? null : widget.errorTextBuilder(context, error),
       control: CatchRangeSlider(
         minimumContract: descriptor.contract,
         maximumContract: descriptor.contract,

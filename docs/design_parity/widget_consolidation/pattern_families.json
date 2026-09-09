@@ -303,7 +303,7 @@
           "selectedOption": "Enforce 44px outside the documented 40px app-bar navigation exception.",
           "options": [
             "Enforce 44px outside the documented 40px app-bar navigation exception.",
-            "Allow 36–40px wherever the visual circle is compact."
+            "Allow 36\u201340px wherever the visual circle is compact."
           ]
         },
         {
@@ -590,7 +590,7 @@
           "symbol": "CatchAsyncBoundary",
           "disposition": "canonical",
           "preview": "required",
-          "rationale": "The async-state-boundary review absorbs box and sliver state switching into one implementation while preserving this family’s distinct async concept."
+          "rationale": "The async-state-boundary review absorbs box and sliver state switching into one implementation while preserving this family\u2019s distinct async concept."
         }
       ]
     },
@@ -3125,6 +3125,74 @@
           "target": "CatchAsyncBoundary",
           "preview": "not-applicable",
           "rationale": "The sliver protocol changes builder output and default placement; it shares all state, timeout, and recovery logic through the sliver constructor."
+        }
+      ]
+    },
+    {
+      "id": "form-field-draft-editing",
+      "title": "Form draft editing and typed choice cardinality",
+      "intent": "Share choice-field drafts and save recovery while preserving text, discrete choice and atomic numeric range responsibilities.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.field",
+      "qualityReference": "CatchFormChoiceField",
+      "decisionSource": "owner-delegated:2026-09-09 semantic and rendered review",
+      "acceptedVisualDelta": [
+        "No production visual change. Named choice constructors share the existing CatchField.choices renderer. Text and range fields retain their existing body renderers.",
+        "A changed authoritative range now updates the existing slider; retry clears stale errors and duplicate range submissions are guarded."
+      ],
+      "members": [
+        {
+          "symbol": "CatchFormRowList",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns section composition, accordion lifetime, commit policy and caller save delegation."
+        },
+        {
+          "symbol": "CatchFormChoiceField",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Single and multiple choices share one draft, cancellation, pending, save-result and error lifecycle."
+        },
+        {
+          "symbol": "CatchFormTextField",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Native text draft normalization and validation remain a distinct form-field member."
+        },
+        {
+          "symbol": "CatchFormRangeField",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Bounded two-handle draft commits an atomic range and follows changed authoritative values."
+        },
+        {
+          "symbol": "CatchFormSingleChoiceRowEditor",
+          "disposition": "unify",
+          "target": "CatchFormChoiceField.single",
+          "preview": "not-applicable",
+          "rationale": "Migrate the list-owned renderer and catalog to the canonical field member; remove the old class and path."
+        },
+        {
+          "symbol": "CatchFormMultiChoiceRowEditor",
+          "disposition": "unify",
+          "target": "CatchFormChoiceField.multiple",
+          "preview": "not-applicable",
+          "rationale": "Migrate the list-owned renderer and catalog to the canonical field member; remove the old class and path."
+        },
+        {
+          "symbol": "CatchFormTextRowEditor",
+          "disposition": "unify",
+          "target": "CatchFormTextField",
+          "preview": "not-applicable",
+          "rationale": "Migrate the list-owned renderer and catalog to the canonical field member; remove the old class and path."
+        },
+        {
+          "symbol": "CatchFormRangeRowEditor",
+          "disposition": "unify",
+          "target": "CatchFormRangeField",
+          "preview": "not-applicable",
+          "rationale": "Migrate the list-owned renderer and catalog to the canonical field member; remove the old class and path."
         }
       ]
     }
