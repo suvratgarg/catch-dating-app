@@ -9,6 +9,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_featur
     show EventSuccessMetricPill, LiveStepRow;
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart'
     show CountdownBeatRail;
+import 'package:catch_dating_app/event_success/presentation/event_success_progress_status.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart'
     show HostOrganizerAvatar, HostOrganizerSwitcherSheet;
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -588,7 +589,7 @@ class _ProgressCueFamily extends StatelessWidget {
               for (final entry in steps.indexed)
                 LiveStepRow(
                   step: entry.$2,
-                  state: CatchProgressCueState.fromPosition(
+                  state: EventSuccessProgressStatus.fromPosition(
                     index: entry.$1,
                     currentIndex: 1,
                   ),

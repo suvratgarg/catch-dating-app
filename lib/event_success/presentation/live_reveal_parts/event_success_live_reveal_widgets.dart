@@ -422,7 +422,7 @@ class CountdownBeatRail extends StatelessWidget {
       for (final entry in items.indexed)
         (
           item: entry.$2,
-          state: CatchProgressCueState.fromPosition(
+          state: EventSuccessProgressStatus.fromPosition(
             index: entry.$1,
             currentIndex: currentIndex,
           ),
@@ -438,24 +438,24 @@ class CountdownBeatRail extends StatelessWidget {
               child: CatchSurface(
                 radius: CatchRadius.pill,
                 backgroundColor: switch (entry.$2.state) {
-                  CatchProgressCueState.current => t.gold.withValues(
+                  EventSuccessProgressStatus.current => t.gold.withValues(
                     alpha: CatchOpacity.revealBeatFillActive,
                   ),
-                  CatchProgressCueState.complete => t.success.withValues(
+                  EventSuccessProgressStatus.complete => t.success.withValues(
                     alpha: CatchOpacity.revealBeatFillInactive,
                   ),
-                  CatchProgressCueState.future => t.ink3.withValues(
+                  EventSuccessProgressStatus.future => t.ink3.withValues(
                     alpha: CatchOpacity.revealBeatFillInactive,
                   ),
                 },
                 borderColor: switch (entry.$2.state) {
-                  CatchProgressCueState.current => t.gold.withValues(
+                  EventSuccessProgressStatus.current => t.gold.withValues(
                     alpha: CatchOpacity.revealBeatBorderActive,
                   ),
-                  CatchProgressCueState.complete => t.success.withValues(
+                  EventSuccessProgressStatus.complete => t.success.withValues(
                     alpha: CatchOpacity.revealBeatBorderInactive,
                   ),
-                  CatchProgressCueState.future => t.ink3.withValues(
+                  EventSuccessProgressStatus.future => t.ink3.withValues(
                     alpha: CatchOpacity.revealBeatBorderInactive,
                   ),
                 },
@@ -464,14 +464,14 @@ class CountdownBeatRail extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      entry.$2.state == CatchProgressCueState.complete
+                      entry.$2.state == EventSuccessProgressStatus.complete
                           ? CatchIcons.checkCircleRounded
                           : entry.$2.item.icon,
                       size: CatchIcon.sm,
                       color: switch (entry.$2.state) {
-                        CatchProgressCueState.current => t.gold,
-                        CatchProgressCueState.complete => t.success,
-                        CatchProgressCueState.future => t.ink3,
+                        EventSuccessProgressStatus.current => t.gold,
+                        EventSuccessProgressStatus.complete => t.success,
+                        EventSuccessProgressStatus.future => t.ink3,
                       },
                     ),
                     gapW4,
@@ -484,9 +484,9 @@ class CountdownBeatRail extends StatelessWidget {
                         style: CatchTextStyles.labelS(
                           context,
                           color: switch (entry.$2.state) {
-                            CatchProgressCueState.current => t.gold,
-                            CatchProgressCueState.complete => t.success,
-                            CatchProgressCueState.future => t.ink3,
+                            EventSuccessProgressStatus.current => t.gold,
+                            EventSuccessProgressStatus.complete => t.success,
+                            EventSuccessProgressStatus.future => t.ink3,
                           },
                         ),
                       ),

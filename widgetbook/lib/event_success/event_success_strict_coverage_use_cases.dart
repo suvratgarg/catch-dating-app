@@ -17,6 +17,7 @@ import "package:catch_dating_app/event_success/presentation/event_success_featur
 import "package:catch_dating_app/event_success/presentation/event_success_hero_surface.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_host_screen.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart";
+import "package:catch_dating_app/event_success/presentation/event_success_progress_status.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_questionnaire_config_editor.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart";
 import "package:catch_dating_app/event_success/presentation/event_success_setup_body.dart";
@@ -1029,7 +1030,7 @@ Widget eventSuccessStrictLiveStepRow(BuildContext context) {
         for (final entry in steps.indexed)
           LiveStepRow(
             step: entry.$2,
-            state: CatchProgressCueState.fromPosition(
+            state: EventSuccessProgressStatus.fromPosition(
               index: entry.$1,
               currentIndex: 1,
             ),

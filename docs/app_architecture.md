@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.59.0
+version: 1.60.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -2377,7 +2377,9 @@ or implementation technique cannot justify a second shared implementation.
   Policy and resolved geometry stay distinct: only a contained section can
   establish a section clip, and gutter ownership does not imply a paint shape.
   Editorial display sizes are the `CatchTextStylesSize` axis of the typography
-  foundation.
+  foundation. Event Success countdown and run-of-show position state remains
+  feature-owned as `EventSuccessProgressStatus`; it has no shared component
+  owner and is not a Catch UI variant axis.
 - **Slots.** `leading`, `trailing`, `title`, `subtitle`, `kicker`, `meta`,
   `body`, `footer`, `actions`, `media`, `mediaOverlay`, `child`, `children`;
   builders end in `Builder`; callbacks start with `on`.

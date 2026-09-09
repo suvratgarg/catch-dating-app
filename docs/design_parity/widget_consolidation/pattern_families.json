@@ -442,10 +442,10 @@
     {
       "id": "progress-cues",
       "title": "Compact progress cues",
-      "intent": "Review ordered progress cues whose future, active, and complete states communicate sequence. Compact rails and expanded rows should share one state model without being forced into one layout. Domain progress thresholds remain adapter-owned; wizard bars, page dots, static countdown metadata, and Event Detail symbols remain separate.",
+      "intent": "Review ordered progress cues whose future, active, and complete states communicate sequence. Compact rails and expanded rows should share one state model without being forced into one layout. The Phase 4 caller census places that model in Event Success: both consumers belong to this feature, and no catch_ui component owns it. Domain progress thresholds remain adapter-owned; wizard bars, page dots, static countdown metadata, and Event Detail symbols remain separate.",
       "priority": "P1",
       "status": "implemented",
-      "targetContract": "CatchProgressCueState",
+      "targetContract": "EventSuccessProgressStatus",
       "qualityReference": "CountdownBeatRail",
       "decisionSource": "user-approved:2026-07-13",
       "acceptedVisualDelta": [

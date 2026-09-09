@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_feature_stat
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_progress_status.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_structure_config_editor.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -244,7 +245,7 @@ class EventSuccessLiveHostMode extends StatelessWidget {
             for (var i = 0; i < resolvedPlan.steps.length; i++)
               LiveStepRow(
                 step: resolvedPlan.steps[i],
-                state: CatchProgressCueState.fromPosition(
+                state: EventSuccessProgressStatus.fromPosition(
                   index: i,
                   currentIndex: resolvedPlan.activeStepIndex,
                 ),
@@ -693,15 +694,15 @@ class LiveStepRow extends StatelessWidget {
   const LiveStepRow({super.key, required this.step, required this.state});
 
   final EventRunOfShowStep step;
-  final CatchProgressCueState state;
+  final EventSuccessProgressStatus state;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final color = switch (state) {
-      CatchProgressCueState.current => t.gold,
-      CatchProgressCueState.complete => t.success,
-      CatchProgressCueState.future => t.ink3,
+      EventSuccessProgressStatus.current => t.gold,
+      EventSuccessProgressStatus.complete => t.success,
+      EventSuccessProgressStatus.future => t.ink3,
     };
 
     return Padding(
@@ -711,10 +712,11 @@ class LiveStepRow extends StatelessWidget {
         children: [
           Icon(
             switch (state) {
-              CatchProgressCueState.complete => CatchIcons.checkCircleRounded,
-              CatchProgressCueState.current =>
+              EventSuccessProgressStatus.complete =>
+                CatchIcons.checkCircleRounded,
+              EventSuccessProgressStatus.current =>
                 CatchIcons.radioButtonCheckedRounded,
-              CatchProgressCueState.future =>
+              EventSuccessProgressStatus.future =>
                 CatchIcons.radioButtonUncheckedRounded,
             },
             color: color,

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_progress_status.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -12,16 +13,16 @@ void main() {
     'progress cue state resolves complete, current, and future positions',
     () {
       expect(
-        CatchProgressCueState.fromPosition(index: 0, currentIndex: 1),
-        CatchProgressCueState.complete,
+        EventSuccessProgressStatus.fromPosition(index: 0, currentIndex: 1),
+        EventSuccessProgressStatus.complete,
       );
       expect(
-        CatchProgressCueState.fromPosition(index: 1, currentIndex: 1),
-        CatchProgressCueState.current,
+        EventSuccessProgressStatus.fromPosition(index: 1, currentIndex: 1),
+        EventSuccessProgressStatus.current,
       );
       expect(
-        CatchProgressCueState.fromPosition(index: 2, currentIndex: 1),
-        CatchProgressCueState.future,
+        EventSuccessProgressStatus.fromPosition(index: 2, currentIndex: 1),
+        EventSuccessProgressStatus.future,
       );
     },
   );
@@ -75,7 +76,7 @@ void main() {
               for (final entry in steps.indexed)
                 LiveStepRow(
                   step: entry.$2,
-                  state: CatchProgressCueState.fromPosition(
+                  state: EventSuccessProgressStatus.fromPosition(
                     index: entry.$1,
                     currentIndex: 1,
                   ),
