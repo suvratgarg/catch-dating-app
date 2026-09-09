@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.76.0
+version: 3.77.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -359,7 +359,7 @@ Widgetbook callers.
 | `CatchDivider` | `packages/catch_ui/lib/src/primitives/catch_divider.dart:6` | Semantic hairline divider primitive for section and field-row/list separators. Use `CatchDivider.section` for full-width section boundaries and `CatchDivider.fieldSection` for full-strength text-lane-inset separators within field sections. Use `CatchDivider.fieldRow` only for deliberately muted separators in ordinary repeated-row lists. `CatchSection.fieldRows` and `containedFieldRows` select `fieldSection` internally so their header and sibling-field rules share one color and stroke family. |
 | `CatchSectionSurface` | `packages/catch_ui/lib/src/components/catch_section_surface.dart` | Public section anatomy for one contained-group perimeter. The default recipe reflects descendant focus; `fieldRows` owns the group clip and explicit section states while children keep their own active treatment. Exported for package use and direct previews/tests; feature construction is rejected, so app callers use `CatchSection`. |
 | `EventActivityVisualSpec` / `EventActivityBackdrop` | `lib/core/widgets/event_activity_visuals.dart:17` | Mutable presentation schema for `ActivityKind` imagery. Centralizes activity label, icon, gradient palette, pattern, and browse-order choices so Explore cards, spotlight cards, thumbnails, browse tiles, and event detail headers do not fork color decisions. |
-| `CatchTicketHeroLayout` | `packages/catch_ui/lib/src/components/catch_ticket_hero_layout.dart:11` | Presentation-neutral adaptive ticket hero slots with a shared compact flag, visual-height clamp and fitted body. |
+| `CatchTicket.hero` | `packages/catch_ui/lib/src/components/catch_ticket.dart:11` | Canonical ticket hero recipe with media/body builders, one shared compact flag, a media-height clamp and fitted body. Owns the perforated divider; callers select its line color and retain outer paint and content. |
 | `CatchTicketDivider` | `packages/catch_ui/lib/src/components/catch_ticket_divider.dart:5` | Ticket perforation with configurable height, line color and notch radius. |
 | `CatchTicketShapeClipper` | `packages/catch_ui/lib/src/components/catch_ticket_shape_clipper.dart:5` | Notched ticket outline from explicit corner radius, notch geometry and notch center. |
 | `CatchTicketPerforationPainter` | `packages/catch_ui/lib/src/components/catch_ticket_perforation_painter.dart:4` | Dashed ticket perforation painter used by the shared divider and its direct catalog specimen. |

@@ -149,7 +149,7 @@ export 'src/components/catch_tab_bar.dart';
 export 'src/components/catch_tab_bar_indicator.dart';
 export 'src/components/catch_tab_bar_item.dart';
 export 'src/components/catch_ticket_divider.dart';
-export 'src/components/catch_ticket_hero_layout.dart';
+export 'src/components/catch_ticket.dart';
 export 'src/components/catch_ticket_perforation_painter.dart';
 export 'src/components/catch_ticket_shape_clipper.dart';
 export 'src/components/catch_timestamped_message_text.dart';

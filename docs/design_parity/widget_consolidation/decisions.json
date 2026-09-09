@@ -8054,6 +8054,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:canonical-ticket-hero",
+      "patternFamilyId": "canonical-ticket-hero",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchTicket",
+      "members": [
+        {
+          "name": "CatchTicket",
+          "action": "keep"
+        },
+        {
+          "name": "CatchTicketHeroLayout",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Use the most specific Ticket role for the sole ticket media/body assembly, with hero as a named recipe. Own the existing canonical perforation rather than exposing an arbitrary divider slot. Event Detail owns its domain content, spotlight colors, hero transition and outer surface; generic Viewport owns no ticket anatomy.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

@@ -17165,15 +17165,15 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchTicketHeroLayout",
+      "name": "CatchTicket",
       "status": "active",
       "kind": "composite",
       "summary": "Presentation-neutral ticket geometry: adaptive hero slots, perforation and a notched outline.",
       "dart": {
-        "symbol": "CatchTicketHeroLayout",
-        "file": "packages/catch_ui/lib/src/components/catch_ticket_hero_layout.dart",
+        "symbol": "CatchTicket",
+        "file": "packages/catch_ui/lib/src/components/catch_ticket.dart",
         "constructors": [
-          "CatchTicketHeroLayout"
+          "CatchTicket.hero"
         ]
       },
       "design": {
@@ -17195,22 +17195,22 @@
       "contract": {
         "props": [
           {
-            "name": "visualBuilder",
+            "name": "mediaBuilder",
             "type": "callback",
             "required": true,
-            "dartType": "CatchTicketHeroSectionBuilder"
-          },
-          {
-            "name": "divider",
-            "type": "widget",
-            "required": true,
-            "dartType": "Widget"
+            "dartType": "CatchTicketSectionBuilder"
           },
           {
             "name": "bodyBuilder",
             "type": "callback",
             "required": true,
-            "dartType": "CatchTicketHeroSectionBuilder"
+            "dartType": "CatchTicketSectionBuilder"
+          },
+          {
+            "name": "lineColor",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?"
           }
         ],
         "states": [
@@ -17219,8 +17219,7 @@
           "large-text"
         ],
         "slots": [
-          "visualBuilder",
-          "divider",
+          "mediaBuilder",
           "bodyBuilder"
         ],
         "tokens": [
@@ -17231,7 +17230,7 @@
           "theme.light.color.line2"
         ],
         "dartRoles": [
-          "CatchTicketHeroSectionBuilder",
+          "CatchTicketSectionBuilder",
           "CatchTicketDivider",
           "CatchTicketShapeClipper",
           "CatchTicketPerforationPainter",
@@ -17320,7 +17319,7 @@
         "allowedChildren": [],
         "notes": [
           "Ticket geometry is independent of event, organizer or booking models; callers own their visual and body content.",
-          "The hero layout supplies the same compact flag to both builders and retains the existing visual-height clamp and fitted body.",
+          "The hero recipe supplies the same compact flag to both builders and retains the existing media-height clamp and fitted body. It owns CatchTicketDivider; lineColor defaults to the theme line color.",
           "Use the notched outline and perforated divider as shape material inside feature-owned cards."
         ]
       },
@@ -17338,7 +17337,12 @@
         "conceptId": "catch.ticket"
       },
       "surfaces": {
-        "flutter": "CatchTicketHeroLayout"
+        "flutter": "CatchTicket"
+      },
+      "level": "L3",
+      "roleNoun": "Ticket",
+      "naming": {
+        "useCase": ""
       }
     },
     {

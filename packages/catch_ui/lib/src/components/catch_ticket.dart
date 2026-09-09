@@ -1,24 +1,25 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_ticket_divider.dart';
 import 'package:flutter/material.dart';
 
-typedef CatchTicketHeroSectionBuilder =
+typedef CatchTicketSectionBuilder =
     Widget Function(BuildContext context, bool compact);
 
-/// Canonical adaptive flight for a large ticket hero.
+/// Ticket material with a hero recipe for a bounded, collapsing surface.
 ///
-/// It owns the visual/body split and fitted body width so callers only
-/// provide semantic sections rather than measuring the collapsing hero box.
-class CatchTicketHeroLayout extends StatelessWidget {
-  const CatchTicketHeroLayout({
+/// Owns the media/body split, perforation and fitted body width. Both builders
+/// receive the same compact state; callers retain content and outer paint.
+class CatchTicket extends StatelessWidget {
+  const CatchTicket.hero({
     super.key,
-    required this.visualBuilder,
-    required this.divider,
+    required this.mediaBuilder,
+    this.lineColor,
     required this.bodyBuilder,
   });
 
-  final CatchTicketHeroSectionBuilder visualBuilder;
-  final Widget divider;
-  final CatchTicketHeroSectionBuilder bodyBuilder;
+  final CatchTicketSectionBuilder mediaBuilder;
+  final Color? lineColor;
+  final CatchTicketSectionBuilder bodyBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -57,9 +58,9 @@ class CatchTicketHeroLayout extends StatelessWidget {
           children: [
             SizedBox(
               height: visualHeight,
-              child: visualBuilder(context, compact),
+              child: mediaBuilder(context, compact),
             ),
-            divider,
+            CatchTicketDivider(lineColor: lineColor),
             Expanded(
               child: Padding(
                 padding: bodyPadding,

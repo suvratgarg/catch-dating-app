@@ -2365,7 +2365,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Entity material',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchTicketHeroLayout',
+            name: 'CatchTicket',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',

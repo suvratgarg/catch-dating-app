@@ -3646,6 +3646,34 @@
           "rationale": "Ticket describes a caller, not a separate time display contract. Rename the single renderer and all callers without an alias."
         }
       ]
+    },
+    {
+      "id": "canonical-ticket-hero",
+      "title": "Canonical ticket hero material",
+      "intent": "Use the Ticket role and one hero recipe for the existing adaptive media, perforation and body assembly.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.ticket",
+      "qualityReference": "CatchTicket",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "No visual change. Preserve the shared compact threshold, media-height clamp, body padding, fitted content and perforation colors."
+      ],
+      "members": [
+        {
+          "symbol": "CatchTicket",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The hero constructor assembles ticket anatomy. Generic Viewport selects or measures layout without owning ticket media proportions or perforation. Event cards and event-detail surfaces remain domain compositions supplying content and outer paint."
+        },
+        {
+          "symbol": "CatchTicketHeroLayout",
+          "disposition": "unify",
+          "target": "CatchTicket",
+          "preview": "not-applicable",
+          "rationale": "The existing renderer becomes the hero recipe on the canonical Ticket API. Both callers use CatchTicketDivider, so the recipe owns that anatomy and receives only its line color."
+        }
+      ]
     }
   ]
 }

@@ -5063,7 +5063,7 @@ Widget catchAnalyticsMetricContractStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchTicketHeroLayout,
+  type: CatchTicket,
   path: '[Core primitives]/Entity material',
 )
 Widget catchTicketContractStates(BuildContext context) {
@@ -5078,8 +5078,8 @@ Widget catchTicketContractStates(BuildContext context) {
           label: '${height.toInt()} px hero',
           child: WidgetbookViewportFrame.device(
             size: Size(340, height),
-            child: CatchTicketHeroLayout(
-              visualBuilder: (context, compact) => ColoredBox(
+            child: CatchTicket.hero(
+              mediaBuilder: (context, compact) => ColoredBox(
                 color: t.bg,
                 child: Center(
                   child: Text(
@@ -5088,7 +5088,6 @@ Widget catchTicketContractStates(BuildContext context) {
                   ),
                 ),
               ),
-              divider: const CatchTicketDivider(),
               bodyBuilder: (context, compact) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
