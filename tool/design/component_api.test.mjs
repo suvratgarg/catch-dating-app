@@ -75,6 +75,28 @@ class CatchGenericRow<T extends Widget> extends StatelessWidget {
   final T badSlot;
   @override Widget build(BuildContext context) => badSlot;
 }
+abstract interface class CatchRail implements PreferredSizeWidget {}
+abstract interface class CatchNestedRail implements CatchRail {}
+abstract interface class CatchPageOwner implements Widget {}
+abstract interface class CatchData {}
+class _PrivateWidget extends StatelessWidget {
+  @override Widget build(BuildContext context) => const SizedBox();
+}
+class CatchInterfaceRow extends StatelessWidget {
+  const CatchInterfaceRow({required this.primaryRail, required this.header,
+    required this.page, required this.wrapper, required this.actions,
+    required this.data});
+  final CatchRail primaryRail;
+  final CatchNestedRail header;
+  final CatchPageOwner page;
+  final _PrivateWidget wrapper;
+  final List<CatchNestedRail> actions;
+  final CatchData data;
+  @override Widget build(BuildContext context) => page;
+}
+abstract class CatchImplementedRow implements CatchNestedRail {
+  const CatchImplementedRow({required Widget badSlot});
+}
 class CatchGenericButton<T> extends StatelessWidget {
   const CatchGenericButton({required this.first, required this.second, required this.third});
   final T first;
@@ -151,6 +173,17 @@ test("follows named and positional super formals including generic parent substi
 
 test("a Widget generic bound keeps slot naming enforceable", () => {
   assert.deepEqual(forSymbol("CatchGenericRow").map((row) => [row.rule, row.parameter]), [["slot", "badSlot"]]);
+});
+
+test("follows direct and transitive Widget interfaces for typed slots", () => {
+  assert.deepEqual(inventory.classes.find((row) => row.name === "CatchNestedRail").interfaces, ["CatchRail"]);
+  assert.deepEqual(forSymbol("CatchInterfaceRow").map((row) => [row.rule, row.parameter]), [
+    ["slot", "primaryRail"], ["slot", "header"], ["slot", "page"], ["slot", "wrapper"],
+  ]);
+});
+
+test("checks constructors of classes that implement a Widget interface", () => {
+  assert.deepEqual(forSymbol("CatchImplementedRow").map((row) => [row.rule, row.parameter]), [["slot", "badSlot"]]);
 });
 
 test("dynamic parameters and recursive aliases fail closed", () => {

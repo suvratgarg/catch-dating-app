@@ -75,6 +75,11 @@ Map<String, Object?> collectComponentApi({
             ...location(declaration),
             'name': name,
             'base': declaration.extendsClause?.superclass.toSource(),
+            'interfaces': [
+              for (final interface
+                  in declaration.implementsClause?.interfaces ?? <NamedType>[])
+                interface.toSource(),
+            ],
             'fields': fields,
             'typeParameters': {
               for (final parameter

@@ -1,7 +1,7 @@
 import {componentAxes, widgetSlotNames} from "./component_naming.mjs";
 
 const widgetBases = new Set([
-  "Widget", "StatelessWidget", "StatefulWidget", "InheritedWidget",
+  "Widget", "PreferredSizeWidget", "StatelessWidget", "StatefulWidget", "InheritedWidget",
   "InheritedNotifier", "InheritedModel", "ProxyWidget", "ParentDataWidget",
   "RenderObjectWidget", "SingleChildRenderObjectWidget", "MultiChildRenderObjectWidget",
   "LeafRenderObjectWidget", "ConsumerWidget", "ConsumerStatefulWidget",
@@ -64,11 +64,15 @@ export function componentApiProblems(inventory) {
   function isWidget(row, visited = new Set()) {
     if (!row || visited.has(row)) return false;
     visited.add(row);
-    const parent = baseName(row.base);
-    return widgetBases.has(parent) || isWidget(classFor(parent, row.file), visited);
+    return [row.base, ...(row.interfaces ?? [])].some((type) => {
+      const parent = baseName(type);
+      return widgetBases.has(parent) || isWidget(classFor(parent, row.file), visited);
+    });
   }
   const widgets = classes.filter((row) => !row.name.startsWith("_") && isWidget(row));
-  const widgetNames = new Set([...widgetBases, "PreferredSizeWidget", ...widgets.map((row) => row.name)]);
+  const widgetNames = new Set([...widgetBases,
+    ...[...classes, ...(inventory.externalClasses ?? [])].filter((row) => isWidget(row)).map((row) => row.name),
+  ]);
 
   function expandAlias(type, file, visited = new Set()) {
     if (!type) return type;
