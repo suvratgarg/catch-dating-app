@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.55.0
+version: 1.56.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -2354,6 +2354,12 @@ or implementation technique cannot justify a second shared implementation.
 - **Variants.** Axes are enums named `<Component><Axis>` with axis vocabulary
   `Variant`, `Size`, `Tone`, `Emphasis`, `Status`, `Placement`, `Mode`. At
   most two booleans per public component constructor; a third forces an enum.
+  Field context options name their actual scope owner:
+  `CatchDividedFieldInteractionScopeMode` selects section interaction policy;
+  `CatchFieldGeometryScopeMode` assigns the content gutter; and
+  `CatchFieldGeometryScopeVariant` publishes the resolved paint silhouette.
+  Policy and resolved geometry stay distinct: only a contained section can
+  establish a section clip, and gutter ownership does not imply a paint shape.
 - **Slots.** `leading`, `trailing`, `title`, `subtitle`, `kicker`, `meta`,
   `body`, `footer`, `actions`, `media`, `mediaOverlay`, `child`, `children`;
   builders end in `Builder`; callbacks start with `on`.

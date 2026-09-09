@@ -174,7 +174,7 @@ class CatchUiLintProbe extends StatelessWidget {
         const CatchSectionList(children: [SizedBox.shrink()]),
         const CatchField.read(title: 'Outside section'),
         const CatchFieldGeometryScope(
-          gutterOwnership: CatchFieldGutterOwnership.container,
+          gutterOwnership: CatchFieldGeometryScopeMode.container,
           child: SizedBox.shrink(),
         ),
         CatchFieldInteractionPlaneScope.fromPadding(
@@ -189,7 +189,7 @@ class CatchUiLintProbe extends StatelessWidget {
           child: SizedBox.shrink(),
         ),
         const CatchFieldLanes.single(
-          gutterOwnership: CatchFieldGutterOwnership.container,
+          gutterOwnership: CatchFieldGeometryScopeMode.container,
           child: CatchField.read(title: 'Feature-owned gutter'),
         ),
         const CatchSection.fieldRows(

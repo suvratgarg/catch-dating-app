@@ -15,9 +15,9 @@ import '../preview_layout_contracts.dart';
 )
 Widget fieldSurfaceStates(BuildContext context) {
   const shapes = [
-    ('Rounded row', CatchFieldInteractionShape.roundedTile),
-    ('Inside a section', CatchFieldInteractionShape.sectionClipped),
-    ('Across the page', CatchFieldInteractionShape.fullBleedBand),
+    ('Rounded row', CatchFieldGeometryScopeVariant.roundedTile),
+    ('Inside a section', CatchFieldGeometryScopeVariant.sectionClipped),
+    ('Across the page', CatchFieldGeometryScopeVariant.fullBleedBand),
   ];
   const states = [
     ('Idle', <WidgetState>{}),
@@ -39,7 +39,7 @@ Widget fieldSurfaceStates(BuildContext context) {
         Text(label, style: CatchTextStyles.headline(context)),
         for (final (label, state) in states)
           CatchFieldGeometryScope(
-            gutterOwnership: CatchFieldGutterOwnership.field,
+            gutterOwnership: CatchFieldGeometryScopeMode.field,
             interactionShape: shape,
             interactionOutsets: EdgeInsets.zero,
             child: CatchFieldSurface(

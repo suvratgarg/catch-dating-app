@@ -71,7 +71,8 @@ void _registerSectionInteractionTests() {
                 pb: 0,
                 child: CatchSection.fieldRows(
                   first: true,
-                  interaction: CatchDividedFieldInteraction.roundedTile,
+                  interaction:
+                      CatchDividedFieldInteractionScopeMode.roundedTile,
                   children: [
                     CatchField.nav(
                       copy: catchFieldCopy(AppLocalizationsEn()),

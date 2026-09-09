@@ -115,7 +115,7 @@ Widget fieldGeometryStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Field geometry',
   catalogId: 'catch.field.geometry_scope',
   children: [
-    for (final gutter in CatchFieldGutterOwnership.values) ...[
+    for (final gutter in CatchFieldGeometryScopeMode.values) ...[
       Text('${gutter.name} gutter', style: CatchTextStyles.bodyM(context)),
       CatchFieldGeometryScope(
         gutterOwnership: gutter,
@@ -126,14 +126,14 @@ Widget fieldGeometryStates(BuildContext context) => WidgetbookCatalogFrame(
         ),
       ),
     ],
-    for (final shape in CatchFieldInteractionShape.values) ...[
+    for (final shape in CatchFieldGeometryScopeVariant.values) ...[
       Text(shape.name, style: CatchTextStyles.bodyM(context)),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
         child: CatchFieldInteractionPlaneScope(
           outsets: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
           child: CatchFieldGeometryScope(
-            gutterOwnership: CatchFieldGutterOwnership.container,
+            gutterOwnership: CatchFieldGeometryScopeMode.container,
             interactionShape: shape,
             child: _openField(context),
           ),
@@ -163,7 +163,7 @@ Widget fieldInteractionPlaneStates(BuildContext context) =>
             child: CatchFieldInteractionPlaneScope(
               outsets: EdgeInsets.symmetric(horizontal: outset),
               child: CatchSection.fieldRows(
-                interaction: CatchDividedFieldInteraction.fullBleed,
+                interaction: CatchDividedFieldInteractionScopeMode.fullBleed,
                 children: [_openField(context)],
               ),
             ),
@@ -182,7 +182,8 @@ Widget dividedFieldInteractionStates(BuildContext context) =>
       title: 'Divided section policy',
       catalogId: 'catch.field.divided_interaction_scope',
       children: [
-        for (final interaction in CatchDividedFieldInteraction.values) ...[
+        for (final interaction
+            in CatchDividedFieldInteractionScopeMode.values) ...[
           Text(interaction.name, style: CatchTextStyles.bodyM(context)),
           CatchPageBody.screen(
             variant: CatchPageBodyVariant.fixed,

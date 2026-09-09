@@ -3115,7 +3115,7 @@
               "comparedWith": [
                 "catch.field"
               ],
-              "reason": "Publishes gutter ownership, local interaction shape and explicit horizontal outsets. Page-plane outsets and responsive section policy are separate inherited inputs consumed when resolving this geometry."
+              "reason": "Publishes CatchFieldGeometryScopeMode gutter ownership, CatchFieldGeometryScopeVariant resolved interaction shape and explicit horizontal outsets. Page-plane outsets and responsive section policy remain independent inputs; a section clip can only be established by the containing section."
             }
           },
           {
@@ -3827,7 +3827,7 @@
               "comparedWith": [
                 "catch.field"
               ],
-              "reason": "Publishes responsive divided-section policy before per-field geometry resolves its tile or band shape. It does not own gutter dimensions, obstruction or rendering."
+              "reason": "Publishes CatchDividedFieldInteractionScopeMode as the responsive divided-section policy before field geometry resolves a tile or band. Its two policies cannot request a section-owned clip and do not imply gutter dimensions, obstruction or rendering."
             }
           },
           {
@@ -4150,7 +4150,7 @@
             "name": "interaction",
             "type": "enum",
             "required": false,
-            "dartType": "CatchDividedFieldInteraction?",
+            "dartType": "CatchDividedFieldInteractionScopeMode?",
             "notes": "Optional section-level override for divided field rows. Omission inherits the responsive page policy; individual fields cannot choose their own geometry.",
             "values": [
               "fullBleed",

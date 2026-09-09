@@ -9,7 +9,7 @@ extension _CatchFieldEdit on _CatchFieldState {
   EdgeInsets get _rowPadding {
     final containerOwnsGutter =
         CatchFieldGeometryScope.gutterOwnershipOf(context) ==
-        CatchFieldGutterOwnership.container;
+        CatchFieldGeometryScopeMode.container;
     if (_compactTextEntry) {
       return containerOwnsGutter
           ? EdgeInsets.zero

@@ -1,9 +1,9 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_divided_field_interaction.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.dart';
+import 'package:catch_ui/src/components/catch_divided_field_interaction_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
-import 'package:catch_ui/src/components/catch_field_gutter_ownership.dart';
-import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
+import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
+import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_horizontal_scroll_view.dart';
 import 'package:catch_ui/src/components/catch_section_field_group.dart';
 import 'package:catch_ui/src/components/catch_section_header.dart';
@@ -78,7 +78,7 @@ class CatchSection extends StatelessWidget {
     bool lead = false,
     bool first = false,
     this.footer,
-    CatchDividedFieldInteraction? interaction,
+    CatchDividedFieldInteractionScopeMode? interaction,
     this.children,
     this.child,
   }) : assert(child != null || children != null),
@@ -381,7 +381,7 @@ class CatchSection extends StatelessWidget {
       CatchSectionHeaderPlacement.outside;
   List<CatchSectionFieldGroup>? get fieldGroups =>
       _containedFieldRowsConfig?.groups;
-  CatchDividedFieldInteraction? get dividedFieldInteraction =>
+  CatchDividedFieldInteractionScopeMode? get dividedFieldInteraction =>
       _fieldRowsConfig?.interaction;
 
   @override
@@ -475,16 +475,16 @@ class CatchSection extends StatelessWidget {
               variant: dividerVariant,
             ),
           CatchFieldGeometryScope(
-            gutterOwnership: CatchFieldGutterOwnership.container,
+            gutterOwnership: CatchFieldGeometryScopeMode.container,
             interactionShape: fieldRows
                 ? (dividedFieldInteraction ??
                               CatchDividedFieldInteractionScope.interactionOf(
                                 context,
                               )) ==
-                          CatchDividedFieldInteraction.fullBleed
-                      ? CatchFieldInteractionShape.fullBleedBand
-                      : CatchFieldInteractionShape.roundedTile
-                : CatchFieldInteractionShape.roundedTile,
+                          CatchDividedFieldInteractionScopeMode.fullBleed
+                      ? CatchFieldGeometryScopeVariant.fullBleedBand
+                      : CatchFieldGeometryScopeVariant.roundedTile
+                : CatchFieldGeometryScopeVariant.roundedTile,
             child: body,
           ),
         ],
@@ -681,8 +681,8 @@ class CatchSection extends StatelessWidget {
       } else {
         final surface = CatchFieldGeometryScope(
           gutterOwnership: fieldRows
-              ? CatchFieldGutterOwnership.field
-              : CatchFieldGutterOwnership.container,
+              ? CatchFieldGeometryScopeMode.field
+              : CatchFieldGeometryScopeMode.container,
           child: fieldRows
               ? CatchSectionSurface.fieldRows(
                   padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),

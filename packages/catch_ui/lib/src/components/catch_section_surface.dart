@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
-import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
+import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/widgets.dart';
 
@@ -82,7 +82,7 @@ class _CatchSectionSurfaceState extends State<CatchSectionSurface> {
         // This surface owns one rounded clip for the complete row group.
         // Descendant press, focus, edit, and disclosure chrome therefore stays
         // rectangular and receives only the external corners it touches.
-        interactionShape: CatchFieldInteractionShape.sectionClipped,
+        interactionShape: CatchFieldGeometryScopeVariant.sectionClipped,
         child: widget.child,
       );
       final sectionRadius = BorderRadius.circular(

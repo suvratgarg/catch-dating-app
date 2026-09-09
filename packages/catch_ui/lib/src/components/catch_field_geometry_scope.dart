@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_field_gutter_ownership.dart';
+import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
+import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_field_interaction_plane_scope.dart';
-import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
 import 'package:flutter/widgets.dart';
 
 /// Ambient contract for field-row content and interaction geometry.
@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 /// By default a `CatchField` row insets itself horizontally so it can sit
 /// directly on a background or inside an unpadded surface. A container that
 /// owns the horizontal gutter itself (e.g. `CatchSection.divided`) publishes
-/// [CatchFieldGutterOwnership.container], and every field row below it drops
+/// [CatchFieldGeometryScopeMode.container], and every field row below it drops
 /// its own horizontal inset so content, trailing affordances, and
 /// container-drawn dividers all share the container's edges.
 ///
@@ -25,30 +25,32 @@ class CatchFieldGeometryScope extends InheritedWidget {
     super.key,
     required this.gutterOwnership,
     this.interactionOutsets,
-    this.interactionShape = CatchFieldInteractionShape.roundedTile,
+    this.interactionShape = CatchFieldGeometryScopeVariant.roundedTile,
     required super.child,
   });
 
-  final CatchFieldGutterOwnership gutterOwnership;
+  final CatchFieldGeometryScopeMode gutterOwnership;
   final EdgeInsets? interactionOutsets;
-  final CatchFieldInteractionShape interactionShape;
+  final CatchFieldGeometryScopeVariant interactionShape;
 
-  static CatchFieldGutterOwnership gutterOwnershipOf(BuildContext context) =>
+  static CatchFieldGeometryScopeMode gutterOwnershipOf(BuildContext context) =>
       context
           .dependOnInheritedWidgetOfExactType<CatchFieldGeometryScope>()
           ?.gutterOwnership ??
-      CatchFieldGutterOwnership.field;
+      CatchFieldGeometryScopeMode.field;
 
   /// The inherited shape, retaining absence so a lane can use page policy.
-  static CatchFieldInteractionShape? maybeInteractionShapeOf(
+  static CatchFieldGeometryScopeVariant? maybeInteractionShapeOf(
     BuildContext context,
   ) => context
       .dependOnInheritedWidgetOfExactType<CatchFieldGeometryScope>()
       ?.interactionShape;
 
-  static CatchFieldInteractionShape interactionShapeOf(BuildContext context) =>
+  static CatchFieldGeometryScopeVariant interactionShapeOf(
+    BuildContext context,
+  ) =>
       maybeInteractionShapeOf(context) ??
-      CatchFieldInteractionShape.roundedTile;
+      CatchFieldGeometryScopeVariant.roundedTile;
 
   /// Explicit outsets only; descendant lanes must not freeze a resolved default.
   static EdgeInsets? explicitInteractionOutsetsOf(BuildContext context) =>
@@ -62,12 +64,11 @@ class CatchFieldGeometryScope extends InheritedWidget {
     final explicitOutsets = scope?.interactionOutsets;
     if (explicitOutsets != null) return explicitOutsets;
     return switch (scope?.interactionShape) {
-      CatchFieldInteractionShape.fullBleedBand =>
+      CatchFieldGeometryScopeVariant.fullBleedBand =>
         CatchFieldInteractionPlaneScope.outsetsOf(context),
-      CatchFieldInteractionShape.sectionClipped => const EdgeInsets.symmetric(
-        horizontal: CatchStroke.hairline,
-      ),
-      CatchFieldInteractionShape.roundedTile => const EdgeInsets.symmetric(
+      CatchFieldGeometryScopeVariant.sectionClipped =>
+        const EdgeInsets.symmetric(horizontal: CatchStroke.hairline),
+      CatchFieldGeometryScopeVariant.roundedTile => const EdgeInsets.symmetric(
         horizontal: CatchFieldTokens.dividedRowBleed,
       ),
       null => EdgeInsets.zero,

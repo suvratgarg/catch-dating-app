@@ -3926,7 +3926,7 @@ Widget catchSectionContractStates(BuildContext context) {
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: CatchSection.fieldRows(
               title: 'Notifications',
-              interaction: CatchDividedFieldInteraction.fullBleed,
+              interaction: CatchDividedFieldInteractionScopeMode.fullBleed,
               children: [
                 CatchField.nav(
                   copy: catchFieldCopy(context.l10n),
@@ -3950,7 +3950,7 @@ Widget catchSectionContractStates(BuildContext context) {
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: CatchSection.fieldRows(
               title: 'Notifications',
-              interaction: CatchDividedFieldInteraction.roundedTile,
+              interaction: CatchDividedFieldInteractionScopeMode.roundedTile,
               children: [
                 CatchField.nav(
                   copy: catchFieldCopy(context.l10n),
@@ -3974,7 +3974,7 @@ Widget catchSectionContractStates(BuildContext context) {
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: CatchSection.fieldRows(
               title: 'Profile',
-              interaction: CatchDividedFieldInteraction.fullBleed,
+              interaction: CatchDividedFieldInteractionScopeMode.fullBleed,
               children: [
                 CatchField.input(
                   copy: catchFieldCopy(context.l10n),

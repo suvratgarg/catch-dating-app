@@ -284,7 +284,7 @@ Widget _keyboardFocusTreatmentSample(
           CatchSection.fieldRows(
             title: 'Notifications',
             first: true,
-            interaction: CatchDividedFieldInteraction.fullBleed,
+            interaction: CatchDividedFieldInteractionScopeMode.fullBleed,
             children: [
               CatchField.nav(
                 copy: catchFieldCopy(context.l10n),
@@ -511,8 +511,8 @@ Widget _mixedDividedSection(
     title: 'Notifications',
     first: true,
     interaction: fullWidthBand
-        ? CatchDividedFieldInteraction.fullBleed
-        : CatchDividedFieldInteraction.roundedTile,
+        ? CatchDividedFieldInteractionScopeMode.fullBleed
+        : CatchDividedFieldInteractionScopeMode.roundedTile,
     children: [timingField, deliveryField],
   );
 }

@@ -1,4 +1,4 @@
-import 'package:catch_ui/src/components/catch_divided_field_interaction.dart';
+import 'package:catch_ui/src/components/catch_divided_field_interaction_scope_mode.dart';
 import 'package:flutter/foundation.dart';
 
 /// Responsive defaults for divided field-section interaction.
@@ -9,10 +9,10 @@ import 'package:flutter/foundation.dart';
 @immutable
 class CatchResponsiveFieldInteractionPolicy {
   const CatchResponsiveFieldInteractionPolicy({
-    this.singleColumn = CatchDividedFieldInteraction.fullBleed,
-    this.splitPane = CatchDividedFieldInteraction.roundedTile,
+    this.singleColumn = CatchDividedFieldInteractionScopeMode.fullBleed,
+    this.splitPane = CatchDividedFieldInteractionScopeMode.roundedTile,
   });
 
-  final CatchDividedFieldInteraction singleColumn;
-  final CatchDividedFieldInteraction splitPane;
+  final CatchDividedFieldInteractionScopeMode singleColumn;
+  final CatchDividedFieldInteractionScopeMode splitPane;
 }

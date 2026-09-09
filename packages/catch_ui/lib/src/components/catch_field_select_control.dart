@@ -4,7 +4,7 @@ import 'package:catch_ui/src/components/catch_field_content_row_mode.dart';
 import 'package:catch_ui/src/components/catch_field_content_row_status.dart';
 import 'package:catch_ui/src/components/catch_field_copy.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
-import 'package:catch_ui/src/components/catch_field_gutter_ownership.dart';
+import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_row.dart';
 import 'package:catch_ui/src/components/catch_field_size.dart';
 import 'package:catch_ui/src/components/catch_field_support_row_tone.dart';
@@ -101,7 +101,7 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
         : BoxConstraints(minHeight: CatchControlMetrics.minHeight(controlSize));
     final containerOwnsGutter =
         CatchFieldGeometryScope.gutterOwnershipOf(context) ==
-        CatchFieldGutterOwnership.container;
+        CatchFieldGeometryScopeMode.container;
     final rowPadding = containerOwnsGutter
         ? const EdgeInsets.symmetric(
             vertical: CatchFieldTokens.rowVerticalPadding,

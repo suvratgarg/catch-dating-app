@@ -31,7 +31,7 @@ typedef _DividedFieldRowsSectionConfig = ({
   Color? leadAccent,
   bool lead,
   bool first,
-  CatchDividedFieldInteraction? interaction,
+  CatchDividedFieldInteractionScopeMode? interaction,
 });
 
 typedef _ContainedFieldRowsSectionConfig = ({

@@ -1,8 +1,8 @@
-import 'package:catch_ui/src/components/catch_divided_field_interaction.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.dart';
+import 'package:catch_ui/src/components/catch_divided_field_interaction_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
-import 'package:catch_ui/src/components/catch_field_gutter_ownership.dart';
-import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
+import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
+import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:flutter/material.dart';
 
@@ -48,16 +48,16 @@ class CatchFieldLanes extends StatelessWidget {
           );
     if (rowChildren.isEmpty) return content;
     return CatchFieldGeometryScope(
-      gutterOwnership: CatchFieldGutterOwnership.container,
+      gutterOwnership: CatchFieldGeometryScopeMode.container,
       interactionOutsets: CatchFieldGeometryScope.explicitInteractionOutsetsOf(
         context,
       ),
       interactionShape:
           CatchFieldGeometryScope.maybeInteractionShapeOf(context) ??
           (CatchDividedFieldInteractionScope.interactionOf(context) ==
-                  CatchDividedFieldInteraction.fullBleed
-              ? CatchFieldInteractionShape.fullBleedBand
-              : CatchFieldInteractionShape.roundedTile),
+                  CatchDividedFieldInteractionScopeMode.fullBleed
+              ? CatchFieldGeometryScopeVariant.fullBleedBand
+              : CatchFieldGeometryScopeVariant.roundedTile),
       child: content,
     );
   }

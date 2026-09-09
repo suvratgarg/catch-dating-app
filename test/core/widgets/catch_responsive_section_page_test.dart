@@ -190,7 +190,7 @@ void main() {
               mode: CatchSectionListMode.adaptiveTwoColumn,
               fieldInteractionPolicy:
                   const CatchResponsiveFieldInteractionPolicy(
-                    splitPane: CatchDividedFieldInteraction.fullBleed,
+                    splitPane: CatchDividedFieldInteractionScopeMode.fullBleed,
                   ),
               items: [
                 CatchSectionListItem(

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.80.0
+version: 3.81.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -157,9 +157,9 @@ Widgetbook callers.
 | `CatchFieldInteractionPlaneScope` | `packages/catch_ui/lib/src/components/catch_field_interaction_plane_scope.dart:8` | Publishes page or lane paint outsets for full-bleed field interaction. |
 | `CatchDividedFieldInteractionScope` | `packages/catch_ui/lib/src/components/catch_divided_field_interaction_scope.dart:5` | Publishes the section-wide divided field interaction policy. |
 | `CatchResponsiveFieldInteractionPolicy` | `packages/catch_ui/lib/src/components/catch_responsive_field_interaction_policy.dart:10` | Typed single-column and split-pane interaction defaults. |
-| `CatchFieldGutterOwnership` | `packages/catch_ui/lib/src/components/catch_field_gutter_ownership.dart` | Field-owned or container-owned horizontal content inset. |
-| `CatchDividedFieldInteraction` | `packages/catch_ui/lib/src/components/catch_divided_field_interaction.dart` | Full-bleed or rounded-tile treatment for one divided section. |
-| `CatchFieldInteractionShape` | `packages/catch_ui/lib/src/components/catch_field_interaction_shape.dart` | Rounded tile, section clip, or full-bleed band corner ownership. |
+| `CatchFieldGeometryScopeMode` | `packages/catch_ui/lib/src/components/catch_field_geometry_scope_mode.dart` | Field-owned or container-owned horizontal content inset. |
+| `CatchDividedFieldInteractionScopeMode` | `packages/catch_ui/lib/src/components/catch_divided_field_interaction_scope_mode.dart` | Full-bleed or rounded-tile treatment for one divided section. |
+| `CatchFieldGeometryScopeVariant` | `packages/catch_ui/lib/src/components/catch_field_geometry_scope_variant.dart` | Rounded tile, section clip, or full-bleed band corner ownership. |
 | `CatchField.content` | `packages/catch_ui/lib/src/components/catch_field.dart` | Natural-height informational content-row constructor. It maps the React handoff's title/body semantics to exact 14/600/1.35 title and 13/400/1.45 supporting copy, separated by 3 px and clamped to 2/3 lines by default, without changing legacy Flutter rows where `body` is the primary value. An empty supporting body omits the gap. |
 | `CatchFieldCopy` | `packages/catch_ui/lib/src/components/catch_field_copy.dart` | Caller-resolved field action labels, status announcements, optional-label and validation copy, plus empty-value, selection and clear-tooltip formatters. Locale-specific grammar remains in the app presentation adapter. |
 | `CatchFieldStatus` | `packages/catch_ui/lib/src/components/catch_field_status.dart` | Save-state vocabulary shared by field callers and the status renderer. |

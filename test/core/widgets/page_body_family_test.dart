@@ -7,7 +7,7 @@ void main() {
     tester,
   ) async {
     EdgeInsets? outsets;
-    CatchDividedFieldInteraction? interaction;
+    CatchDividedFieldInteractionScopeMode? interaction;
     final reader = Builder(
       builder: (context) {
         outsets = CatchFieldInteractionPlaneScope.outsetsOf(context);
@@ -15,45 +15,44 @@ void main() {
         return const SizedBox();
       },
     );
-    Future<void> pump(TextDirection direction, double start) =>
-        tester.pumpWidget(
-          MaterialApp(
-            home: Directionality(
-              textDirection: direction,
-              child: CatchFieldInteractionPlaneScope(
-                outsets: const EdgeInsets.only(left: 4, right: 6),
-                child: CatchDividedFieldInteractionScope(
-                  interaction: CatchDividedFieldInteraction.roundedTile,
-                  child: CatchPageBody(
-                    padding: EdgeInsetsDirectional.only(start: start, end: 17),
-                    child: CatchPageBody.formStep(
-                      padding: const EdgeInsetsDirectional.only(
-                        start: 3,
-                        end: 5,
-                      ),
-                      child: reader,
-                    ),
-                  ),
+    Future<void> pump(
+      TextDirection direction,
+      double start,
+    ) => tester.pumpWidget(
+      MaterialApp(
+        home: Directionality(
+          textDirection: direction,
+          child: CatchFieldInteractionPlaneScope(
+            outsets: const EdgeInsets.only(left: 4, right: 6),
+            child: CatchDividedFieldInteractionScope(
+              interaction: CatchDividedFieldInteractionScopeMode.roundedTile,
+              child: CatchPageBody(
+                padding: EdgeInsetsDirectional.only(start: start, end: 17),
+                child: CatchPageBody.formStep(
+                  padding: const EdgeInsetsDirectional.only(start: 3, end: 5),
+                  child: reader,
                 ),
               ),
             ),
           ),
-        );
+        ),
+      ),
+    );
 
     await pump(TextDirection.rtl, 11);
     expect(outsets, const EdgeInsets.only(left: 26, right: 20));
-    expect(interaction, CatchDividedFieldInteraction.roundedTile);
+    expect(interaction, CatchDividedFieldInteractionScopeMode.roundedTile);
     await pump(TextDirection.ltr, 11);
     expect(outsets, const EdgeInsets.only(left: 18, right: 28));
     await pump(TextDirection.ltr, 21);
     expect(outsets, const EdgeInsets.only(left: 28, right: 28));
-    expect(interaction, CatchDividedFieldInteraction.roundedTile);
+    expect(interaction, CatchDividedFieldInteractionScopeMode.roundedTile);
   });
 
   testWidgets(
     'page geometry supplies a default only without inherited policy',
     (tester) async {
-      CatchDividedFieldInteraction? interaction;
+      CatchDividedFieldInteractionScopeMode? interaction;
       await tester.pumpWidget(
         MaterialApp(
           home: CatchPageBody(
@@ -68,7 +67,7 @@ void main() {
           ),
         ),
       );
-      expect(interaction, CatchDividedFieldInteraction.fullBleed);
+      expect(interaction, CatchDividedFieldInteractionScopeMode.fullBleed);
     },
   );
 

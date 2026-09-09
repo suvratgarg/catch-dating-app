@@ -1,5 +1,5 @@
-import 'package:catch_ui/src/components/catch_divided_field_interaction.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.dart';
+import 'package:catch_ui/src/components/catch_divided_field_interaction_scope_mode.dart';
 import 'package:flutter/widgets.dart';
 
 /// Internal page/lane paint extent published by semantic body primitives.
@@ -34,7 +34,7 @@ class CatchFieldInteractionPlaneScope extends InheritedWidget {
       child:
           CatchDividedFieldInteractionScope.maybeInteractionOf(context) == null
           ? CatchDividedFieldInteractionScope(
-              interaction: CatchDividedFieldInteraction.fullBleed,
+              interaction: CatchDividedFieldInteractionScopeMode.fullBleed,
               child: child,
             )
           : child,

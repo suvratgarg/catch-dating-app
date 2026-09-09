@@ -151,7 +151,7 @@ void main() {
         SizedBox(
           width: 360,
           child: CatchFieldGeometryScope(
-            gutterOwnership: CatchFieldGutterOwnership.container,
+            gutterOwnership: CatchFieldGeometryScopeMode.container,
             child: CatchField.read(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Notifications',
