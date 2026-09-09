@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_divider_geometry.dart';
-import 'package:catch_ui/src/components/catch_section_body_mode.dart';
+import 'package:catch_ui/src/components/catch_section_row_list_mode.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:flutter/material.dart';
 
@@ -10,12 +10,12 @@ import 'package:flutter/material.dart';
 ///
 /// Product callers use the named `CatchSection` constructors. A direct child
 /// owns its composition; a child list receives the section's separator policy.
-class CatchSectionBody extends StatelessWidget {
-  const CatchSectionBody({
+class CatchSectionRowList extends StatelessWidget {
+  const CatchSectionRowList({
     super.key,
     this.children = const [],
     this.child,
-    this.mode = CatchSectionBodyMode.content,
+    this.mode = CatchSectionRowListMode.content,
     this.dividerIndent,
     this.dividerVariant = CatchDividerVariant.fieldRow,
     this.showInternalDividers = true,
@@ -23,7 +23,7 @@ class CatchSectionBody extends StatelessWidget {
 
   final List<Widget> children;
   final Widget? child;
-  final CatchSectionBodyMode mode;
+  final CatchSectionRowListMode mode;
   final double? dividerIndent;
   final CatchDividerVariant dividerVariant;
   final bool showInternalDividers;
@@ -33,7 +33,7 @@ class CatchSectionBody extends StatelessWidget {
     final directChild = child;
     if (directChild != null) return directChild;
     if (children.isEmpty) return const SizedBox.shrink();
-    if (mode == CatchSectionBodyMode.content) {
+    if (mode == CatchSectionRowListMode.content) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -56,7 +56,7 @@ class CatchSectionBody extends StatelessWidget {
         ],
       );
     }
-    final contained = mode == CatchSectionBodyMode.containedFields;
+    final contained = mode == CatchSectionRowListMode.containedFields;
     final directFields = children
         .whereType<CatchFieldDividerGeometry>()
         .toList();

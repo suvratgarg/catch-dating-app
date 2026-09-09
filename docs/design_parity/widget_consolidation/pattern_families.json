@@ -3674,6 +3674,34 @@
           "rationale": "The existing renderer becomes the hero recipe on the canonical Ticket API. Both callers use CatchTicketDivider, so the recipe owns that anatomy and receives only its line color."
         }
       ]
+    },
+    {
+      "id": "section-row-list-anatomy",
+      "title": "Section-owned row and separator layout",
+      "intent": "Name the existing section anatomy by its row-list responsibility while retaining one separator renderer.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.section",
+      "qualityReference": "CatchSectionRowList",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "No visual change. Preserve content and field separator placement, direct-field inference, adapter fallback, empty lists and direct-child precedence."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSectionRowList",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The parent Section composes this row-stack anatomy and retains headers, perimeter and field interaction scope. Editing/save orchestration and numbered instruction rendering belong to the distinct FormRowList and StepRowList."
+        },
+        {
+          "symbol": "CatchSectionBody",
+          "disposition": "unify",
+          "target": "CatchSectionRowList",
+          "preview": "not-applicable",
+          "rationale": "Replace the vague Body role with the reviewed Section RowList identity. The renderer and all enum modes remain unchanged."
+        }
+      ]
     }
   ]
 }

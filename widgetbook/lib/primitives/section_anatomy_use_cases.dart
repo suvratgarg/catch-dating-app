@@ -48,18 +48,18 @@ Widget sectionKickerStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Content and field separator modes',
-  type: CatchSectionBody,
+  type: CatchSectionRowList,
   path: '[Core primitives]/Sections',
 )
-Widget sectionBodyStates(BuildContext context) => WidgetbookCatalogFrame(
+Widget sectionRowListStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Section child layouts',
   catalogId: 'catch.section.body',
   children: [
-    for (final mode in CatchSectionBodyMode.values) ...[
+    for (final mode in CatchSectionRowListMode.values) ...[
       Text(mode.name, style: CatchTextStyles.bodyM(context)),
-      CatchSectionBody(
+      CatchSectionRowList(
         mode: mode,
-        dividerVariant: mode == CatchSectionBodyMode.content
+        dividerVariant: mode == CatchSectionRowListMode.content
             ? CatchDividerVariant.fieldRow
             : CatchDividerVariant.fieldSection,
         children: [
@@ -77,8 +77,8 @@ Widget sectionBodyStates(BuildContext context) => WidgetbookCatalogFrame(
         ],
       ),
     ],
-    CatchSectionBody(
-      mode: CatchSectionBodyMode.dividedFields,
+    CatchSectionRowList(
+      mode: CatchSectionRowListMode.dividedFields,
       children: [
         for (final label in ['Adapter row', 'Fallback text lane'])
           Padding(
@@ -87,20 +87,20 @@ Widget sectionBodyStates(BuildContext context) => WidgetbookCatalogFrame(
           ),
       ],
     ),
-    CatchSectionBody(
+    CatchSectionRowList(
       showInternalDividers: false,
       children: [
         for (final label in ['Unseparated content', 'Second item'])
           Text(label, style: CatchTextStyles.bodyM(context)),
       ],
     ),
-    CatchSectionBody(
+    CatchSectionRowList(
       child: Text(
         'Caller-owned direct child',
         style: CatchTextStyles.bodyM(context),
       ),
     ),
-    const CatchSectionBody(),
+    const CatchSectionRowList(),
   ],
 );
 

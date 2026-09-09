@@ -8074,6 +8074,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:section-row-list-anatomy",
+      "patternFamilyId": "section-row-list-anatomy",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSectionRowList",
+      "members": [
+        {
+          "name": "CatchSectionRowList",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSectionBody",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Section composes the sole row stack and divider-placement renderer; this is anatomy rather than a competing Section. The RowList role describes its output. FormRowList coordinates typed editing and saves; StepRowList renders numbered instructions. Preserve all section geometry, direct-child precedence and enum modes.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

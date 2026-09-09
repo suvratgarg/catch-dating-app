@@ -3588,17 +3588,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSectionBody',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Content and field separator modes',
-                builder:
-                    _widgetbook_workspace_primitives_section_anatomy_use_cases
-                        .sectionBodyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchSectionHeader',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3629,6 +3618,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchSectionSliverStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSectionRowList',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Content and field separator modes',
+                builder:
+                    _widgetbook_workspace_primitives_section_anatomy_use_cases
+                        .sectionRowListStates,
               ),
             ],
           ),

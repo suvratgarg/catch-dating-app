@@ -5,11 +5,11 @@ import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_gutter_ownership.dart';
 import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
 import 'package:catch_ui/src/components/catch_horizontal_scroll_view.dart';
-import 'package:catch_ui/src/components/catch_section_body.dart';
-import 'package:catch_ui/src/components/catch_section_body_mode.dart';
 import 'package:catch_ui/src/components/catch_section_field_group.dart';
 import 'package:catch_ui/src/components/catch_section_header.dart';
 import 'package:catch_ui/src/components/catch_section_header_placement.dart';
+import 'package:catch_ui/src/components/catch_section_row_list.dart';
+import 'package:catch_ui/src/components/catch_section_row_list_mode.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
@@ -431,11 +431,11 @@ class CatchSection extends StatelessWidget {
     final hasCount = displayCount != null && displayCount.isNotEmpty;
     final hasHeader = hasTitle || hasCount || sectionTrailing != null;
     final bodyMode = !fieldRows
-        ? CatchSectionBodyMode.content
+        ? CatchSectionRowListMode.content
         : variant == _CatchSectionVariant.contained
-        ? CatchSectionBodyMode.containedFields
-        : CatchSectionBodyMode.dividedFields;
-    final body = CatchSectionBody(
+        ? CatchSectionRowListMode.containedFields
+        : CatchSectionRowListMode.dividedFields;
+    final body = CatchSectionRowList(
       mode: bodyMode,
       dividerIndent: dividerIndent,
       dividerVariant: internalDividerVariant,
@@ -576,7 +576,7 @@ class CatchSection extends StatelessWidget {
                         ],
                       ),
                     ),
-                    CatchSectionBody(
+                    CatchSectionRowList(
                       mode: bodyMode,
                       dividerIndent: dividerIndent,
                       dividerVariant: internalDividerVariant,

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.77.0
+version: 3.78.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -382,7 +382,7 @@ Widgetbook callers.
 | `CatchNotice` | `packages/catch_ui/lib/src/components/catch_notice.dart` | Reusable floating notice primitive configured through `CatchNoticeData`: title/message, public icon, optional canonical circular person avatar, semantic tone or theme-derived accent, optional action and dismiss control with required caller-resolved `dismissLabel`. Person identity takes precedence over the icon. Feature adapters own copy/identity; the renderer owns geometry and typography, complete text reflow, measured action placement and canonical icon-action dismissal. Use for ambient app status/events, not inline form errors. |
 | `CatchSectionHeader` | `packages/catch_ui/lib/src/components/catch_section_header.dart:4` | Lightweight section header with sentence-case styling by default, optional heavy weight, and opt-in uppercase for intentional metadata/eyebrow labels. Prefer `CatchSection` for carded content sections. |
 | `CatchSectionKicker` | `packages/catch_ui/lib/src/components/catch_section_kicker.dart` | Section-owned heading, count and trailing action lane. Preserves heading semantics and moves the trailing action below the heading at large text scales. Product callers use the named `CatchSection` constructors. |
-| `CatchSectionBody` | `packages/catch_ui/lib/src/components/catch_section_body.dart` | Section-owned child layout with content or field separator placement. Direct fields expose numeric text-lane geometry through `CatchFieldDividerGeometry`; adapter rows retain the existing fallback. Product callers use the named `CatchSection` constructors. |
+| `CatchSectionRowList` | `packages/catch_ui/lib/src/components/catch_section_row_list.dart` | Section-owned row stack with content or field separator placement; distinct from form editing and numbered instructional steps. Direct fields expose numeric text-lane geometry through `CatchFieldDividerGeometry`; adapter rows retain the existing fallback. Product callers use the named `CatchSection` constructors. |
 | `CatchBottomSheetGrabber` | `packages/catch_ui/lib/src/primitives/catch_bottom_sheet_grabber.dart:4` | Small drag handle/grabber bar shown at the top of bottom sheets and draggable sheet shells. Supports caller-owned width/height while keeping tokenized color and radius. |
 | `showCatchBottomSheet` | `packages/catch_ui/lib/src/components/catch_sheet.dart:11` | App-level bottom-sheet presenter. Defaults to `useRootNavigator: true`, transparent background, safe-area handling, and scroll-controlled sizing so drawers render above floating shell chrome while keeping feature sheets on shared Catch presentation rules. |
 | `CatchPersonRow` | `packages/catch_ui/lib/src/components/catch_person_row.dart` | Canonical person identity for chat/roster rows, natural-height `.directory` content and compact `.contact` actions. Directory slots use `meta`, `body` and `trailing`; contact affordances derive from navigation/message callbacks. The parent owns its shared text/context and timestamp/count rendering. |

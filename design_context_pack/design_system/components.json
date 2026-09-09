@@ -4549,8 +4549,8 @@
         "members": [
           {
             "id": "catch.section.body",
-            "symbol": "CatchSectionBody",
-            "file": "packages/catch_ui/lib/src/components/catch_section_body.dart",
+            "symbol": "CatchSectionRowList",
+            "file": "packages/catch_ui/lib/src/components/catch_section_row_list.dart",
             "summary": "Section child stack with content, divided-field and contained-field separator placement. Direct field geometry supplies exact text-lane insets; unknown adapters preserve the canonical fallback. Header and surface chrome remain Section-owned.",
             "states": [
               "content",
@@ -4567,6 +4567,17 @@
               "parentConceptId": "catch.section",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "RowList",
+            "naming": {
+              "useCase": "Section",
+              "comparedWith": [
+                "catch.section",
+                "catch.field.form_row_list",
+                "catch.journey_steps"
+              ],
+              "reason": "Section anatomy stacks supplied rows and owns separator placement, including direct-field text-lane alignment and adapter fallback. It does not edit values, coordinate saves or present numbered instructions. The parent Section owns headers, perimeter and field interaction geometry; FormRowList and StepRowList own their distinct editing and instructional contracts."
             }
           },
           {
