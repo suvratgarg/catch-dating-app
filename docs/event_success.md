@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.99.0
+version: 1.100.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1237,6 +1237,28 @@ duty and basic staff identity, not full phone numbers or the event guest roster.
 The duty permission map now authorizes progress, departure, membership and
 accountability and checkpoint commands. Delegated staff controls and receipt
 retention remain implementation work. Group duties alone do not grant the existing event-wide live-location publishing permission.
+
+The native group-staff boundary now supplies an explicit phone lookup, verified
+account review and typed assign/remove decisions. Lookup requires a country code;
+provider labels show only the last four digits. The view separates the selected
+recorded duty from current authority and exposes event-wide operator expiry
+independently. Expired, revoked and changed-group records can be reviewed for
+removal without being treated as active duties. Pacer is offered only for a saved
+pace group; assignment expiry is checked locally against the reviewed time and
+rechecked by the server against event closeout and staff limits.
+
+`EventAssistanceGroupStaffController` owns one pending decision per group and
+verified staff UID. The full phone lookup, expected UID, source hash, staff revision,
+actor and request ID remain frozen for an uncertain retry across lookup refresh
+and sheet closure within the app session. A later phone lookup cannot silently
+retarget that decision. Account transitions retire old reviews and pending state;
+late results cannot restore them. Applied results must confirm the selected duty
+and preserve still-valid event-wide operator access. Replays display the latest
+duty record rather than restoring an older assignment. Successful writes invalidate
+staff lookups because all duties for a person share the same staff revision.
+The read uses a generated callable DTO; the nested assign/remove write union has
+a handwritten typed adapter checked against the generated canonical schema.
+Native setup screen mounting and delegated live controls remain integration work.
 
 ### Typed accountability commands
 
