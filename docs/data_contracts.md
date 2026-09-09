@@ -62,6 +62,18 @@ deadline fence each mutation. New actors initialize participation explicitly;
 legacy actors do not fabricate it. Reset removes the actor state. No new live
 collection, guest response field or direct client-write permission is introduced.
 
+The native rehearsal membership controller owns one pending decision per
+synthetic actor and clock generation, with account-specific mutation state.
+It exposes only the reviewed actions and receiving Hosts, then freezes the
+selected command through submission, uncertain outcomes, closure and refresh.
+First submissions require the current membership row and its authenticated
+reviewer; retries preserve the original generation, source, revisions and action
+id. Parsed responses still require the matching parent receipt and membership
+result. A later replay preserves subsequent membership and participation.
+Definitive conflicts require a fresh review; rate limits retain an already
+uncertain command. Sign-out, account changes and authentication errors revoke
+pending UI state, including while its sheet is closed.
+
 `controlEventRehearsal` requires `expectedSetupRevision` for assistance and movement commands,
 alongside the runtime revision and immutable client action id. Reset increments
 the setup revision and reuses runtime revisions from zero. The handler checks
