@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_copy.dart';
@@ -34,145 +34,143 @@ class _HostEventRehearsalStartScreenState
   @override
   Widget build(BuildContext context) {
     final mutation = ref.watch(EventRehearsalController.createMutation);
-    return CatchMutationErrorListener(
-      mutation: EventRehearsalController.createMutation,
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [EventRehearsalController.createMutation],
       errorContext: AppErrorContext.event,
-      child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          title: context.l10n.hostEventRehearsalTitle,
-          showBackButton: true,
-          divider: scrolledUnder,
-        ),
-        body: CatchRouteBody.standardSections(
-          sections: [
-            CatchResponsiveSectionItem(
-              child: CatchSection.plain(
-                padding: EdgeInsets.zero,
-                child: CatchBanner(
-                  title: context.l10n.hostEventRehearsalTitle,
-                  message: context.l10n.hostEventRehearsalPracticeBanner,
-                  icon: CatchIcons.scienceOutlined,
-                ),
+    );
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        title: context.l10n.hostEventRehearsalTitle,
+        showBackButton: true,
+        divider: scrolledUnder,
+      ),
+      body: CatchRouteBody.standardSections(
+        sections: [
+          CatchResponsiveSectionItem(
+            child: CatchSection.plain(
+              padding: EdgeInsets.zero,
+              child: CatchBanner(
+                title: context.l10n.hostEventRehearsalTitle,
+                message: context.l10n.hostEventRehearsalPracticeBanner,
+                icon: CatchIcons.scienceOutlined,
               ),
             ),
-            CatchResponsiveSectionItem(
-              child: CatchSection.plain(
-                padding: EdgeInsets.zero,
-                child: Text(
-                  context.l10n.hostEventRehearsalStartSubtitle,
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
+          ),
+          CatchResponsiveSectionItem(
+            child: CatchSection.plain(
+              padding: EdgeInsets.zero,
+              child: Text(
+                context.l10n.hostEventRehearsalStartSubtitle,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
-            CatchResponsiveSectionItem(
-              child: CatchSection.fieldRows(
-                first: true,
-                children: [
-                  CatchField.read(
-                    copy: catchFieldCopy(context.l10n),
-                    title: widget.sourceEventId == null
-                        ? context.l10n.hostEventRehearsalSourceSample
-                        : context.l10n.hostEventRehearsalSourceEvent,
-                    body: context.l10n.hostEventRehearsalExpiry,
-                    icon: CatchIcons.eventAvailable,
-                  ),
-                  CatchMenu<EventRehearsalScenario>.anchored(
-                    items: [
-                      for (final scenario in EventRehearsalScenario.values)
-                        CatchMenuItem<EventRehearsalScenario>(
-                          value: scenario,
-                          label: eventRehearsalScenarioTitle(
-                            context.l10n,
-                            scenario,
-                          ),
-                          sublabel: eventRehearsalScenarioBody(
-                            context.l10n,
-                            scenario,
-                          ),
-                          selected: scenario == _scenario,
-                          variant: CatchMenuItemVariant.choice,
-                        ),
-                    ],
-                    onSelected: (scenario, _) {
-                      setState(() {
-                        _scenario = scenario;
-                        _actorCount = scenario.defaultActorCount;
-                      });
-                    },
-                    builder: (context, controller, _) => CatchFieldLanes.single(
-                      child: CatchField.nav(
-                        copy: catchFieldCopy(context.l10n),
-                        title: context.l10n.hostEventRehearsalScenario,
-                        valueText: eventRehearsalScenarioTitle(
+          ),
+          CatchResponsiveSectionItem(
+            child: CatchSection.fieldRows(
+              first: true,
+              children: [
+                CatchField.read(
+                  copy: catchFieldCopy(context.l10n),
+                  title: widget.sourceEventId == null
+                      ? context.l10n.hostEventRehearsalSourceSample
+                      : context.l10n.hostEventRehearsalSourceEvent,
+                  body: context.l10n.hostEventRehearsalExpiry,
+                  icon: CatchIcons.eventAvailable,
+                ),
+                CatchMenu<EventRehearsalScenario>.anchored(
+                  items: [
+                    for (final scenario in EventRehearsalScenario.values)
+                      CatchMenuItem<EventRehearsalScenario>(
+                        value: scenario,
+                        label: eventRehearsalScenarioTitle(
                           context.l10n,
-                          _scenario,
+                          scenario,
                         ),
-                        body: eventRehearsalScenarioBody(
+                        sublabel: eventRehearsalScenarioBody(
                           context.l10n,
-                          _scenario,
+                          scenario,
                         ),
-                        onTap: controller.isOpen
-                            ? controller.close
-                            : controller.open,
+                        selected: scenario == _scenario,
+                        variant: CatchMenuItemVariant.choice,
                       ),
+                  ],
+                  onSelected: (scenario, _) {
+                    setState(() {
+                      _scenario = scenario;
+                      _actorCount = scenario.defaultActorCount;
+                    });
+                  },
+                  builder: (context, controller, _) => CatchFieldLanes.single(
+                    child: CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
+                      title: context.l10n.hostEventRehearsalScenario,
+                      valueText: eventRehearsalScenarioTitle(
+                        context.l10n,
+                        _scenario,
+                      ),
+                      body: eventRehearsalScenarioBody(context.l10n, _scenario),
+                      onTap: controller.isOpen
+                          ? controller.close
+                          : controller.open,
                     ),
                   ),
-                  CatchMenu<int>.anchored(
-                    items: [
-                      for (final count in const [
-                        8,
-                        12,
-                        14,
-                        15,
-                        16,
-                        18,
-                        24,
-                        32,
-                        50,
-                      ])
-                        CatchMenuItem<int>(
-                          value: count,
-                          label: context.l10n.hostEventRehearsalActorCount(
-                            count: count,
-                          ),
-                          selected: count == _actorCount,
-                          variant: CatchMenuItemVariant.choice,
+                ),
+                CatchMenu<int>.anchored(
+                  items: [
+                    for (final count in const [
+                      8,
+                      12,
+                      14,
+                      15,
+                      16,
+                      18,
+                      24,
+                      32,
+                      50,
+                    ])
+                      CatchMenuItem<int>(
+                        value: count,
+                        label: context.l10n.hostEventRehearsalActorCount(
+                          count: count,
                         ),
-                    ],
-                    onSelected: (count, _) =>
-                        setState(() => _actorCount = count),
-                    builder: (context, controller, _) => CatchFieldLanes.single(
-                      child: CatchField.nav(
-                        copy: catchFieldCopy(context.l10n),
-                        title: context.l10n.hostEventRehearsalActorCount(
-                          count: _actorCount,
-                        ),
-                        body: context.l10n.hostEventRehearsalActorCountBody,
-                        onTap: controller.isOpen
-                            ? controller.close
-                            : controller.open,
+                        selected: count == _actorCount,
+                        variant: CatchMenuItemVariant.choice,
                       ),
+                  ],
+                  onSelected: (count, _) => setState(() => _actorCount = count),
+                  builder: (context, controller, _) => CatchFieldLanes.single(
+                    child: CatchField.nav(
+                      copy: catchFieldCopy(context.l10n),
+                      title: context.l10n.hostEventRehearsalActorCount(
+                        count: _actorCount,
+                      ),
+                      body: context.l10n.hostEventRehearsalActorCountBody,
+                      onTap: controller.isOpen
+                          ? controller.close
+                          : controller.open,
                     ),
                   ),
-                ],
-              ),
-            ),
-            CatchResponsiveSectionItem(
-              child: CatchSection.plain(
-                padding: EdgeInsets.zero,
-                child: CatchButton(
-                  label: context.l10n.hostEventRehearsalCreate,
-                  fullWidth: true,
-                  status: (mutation.isPending)
-                      ? CatchButtonStatus.loading
-                      : CatchButtonStatus.idle,
-                  leading: Icon(CatchIcons.playArrowRounded),
-                  onPressed: mutation.isPending ? null : _create,
                 ),
+              ],
+            ),
+          ),
+          CatchResponsiveSectionItem(
+            child: CatchSection.plain(
+              padding: EdgeInsets.zero,
+              child: CatchButton(
+                label: context.l10n.hostEventRehearsalCreate,
+                fullWidth: true,
+                status: (mutation.isPending)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
+                leading: Icon(CatchIcons.playArrowRounded),
+                onPressed: mutation.isPending ? null : _create,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

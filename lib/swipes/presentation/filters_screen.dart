@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
@@ -70,7 +70,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             );
       });
     } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
+      // listenToCatchMutationErrors owns user-facing error display.
     }
   }
 
@@ -103,99 +103,101 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
       }
     });
 
-    return CatchMutationErrorListener(
-      mutation: FiltersController.saveFiltersMutation,
-      child: PopScope(
-        canPop: !saving,
-        child: CatchRouteScaffold(
-          backgroundColor: t.bg,
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-            title: context.l10n.swipesFiltersScreenTitleFilters,
-            divider: scrolledUnder,
-            leading: CatchIconAction.toolbar(
-              icon: CatchIcons.closeRounded,
-              tooltip: context.l10n.swipesFiltersScreenTooltipCloseFilters,
-              onPressed: saving ? null : () => context.pop(),
-            ),
-            actions: [
-              CatchButton.text(
-                key: SwipeKeys.resetFiltersButton,
-                label: context.l10n.swipesFiltersScreenLabelReset,
-                onPressed: onReset,
-              ),
-            ],
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [FiltersController.saveFiltersMutation],
+    );
+    return PopScope(
+      canPop: !saving,
+      child: CatchRouteScaffold(
+        backgroundColor: t.bg,
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.swipesFiltersScreenTitleFilters,
+          divider: scrolledUnder,
+          leading: CatchIconAction.toolbar(
+            icon: CatchIcons.closeRounded,
+            tooltip: context.l10n.swipesFiltersScreenTooltipCloseFilters,
+            onPressed: saving ? null : () => context.pop(),
           ),
-          bottomNavigationBar: profileAsync.isLoading
-              ? CatchDockSurface(
-                  includeSafeArea: false,
-                  padding: CatchInsets.formActionDock,
-                  child: CatchSkeleton.box(
-                    width: double.infinity,
-                    height: CatchLayout.buttonLgHeight,
-                    radius: CatchRadius.pill,
-                  ),
-                )
-              : preferencesState == null
-              ? null
-              : CatchDockSurface(
-                  includeSafeArea: false,
-                  padding: CatchInsets.formActionDock,
-                  child: CatchButton(
-                    key: SwipeKeys.applyFiltersButton,
-                    label: context.l10n.swipesFiltersScreenLabelApplyFilters,
-                    onPressed: preferencesState.applyEnabled
-                        ? () => _save(preferencesState)
-                        : null,
-                    status: (saving)
-                        ? CatchButtonStatus.loading
-                        : CatchButtonStatus.idle,
-                    fullWidth: true,
-                  ),
-                ),
-          body: CatchRouteBody.standard(
-            child: profileAsync.when(
-              loading: () => const FiltersContentSkeleton._route(),
-              error: (error, _) => CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.profile,
-                onRetry: () => ref.invalidate(watchUserProfileProvider),
-              ),
-              data: (user) {
-                if (user == null) {
-                  return CatchStateViewport(
-                    accountForBottomOverlay: false,
-                    child: CatchEmptyState(
-                      icon: CatchIcons.personOffOutlined,
-                      title: context
-                          .l10n
-                          .userProfileProfileScreenTitleProfileNotAvailable,
-                      message: context
-                          .l10n
-                          .userProfileProfileScreenMessageFinishOnboardingOrSign,
-                      actions: [
-                        CatchButton(
-                          label: context.l10n.sharedActionTryAgain,
-                          onPressed: () =>
-                              ref.invalidate(watchUserProfileProvider),
-                          leading: Icon(CatchIcons.refreshRounded),
-                        ),
-                      ],
-                    ),
-                  );
-                }
-                final state = preferencesState!;
-                return FiltersContent._routeFromState(
-                  state: state.content,
-                  onAgeRangeChanged: (values) =>
-                      setState(() => _draftAgeRange = values),
-                  onGenderToggled: (gender) => setState(() {
-                    final next = {...state.content.interestedIn};
-                    if (!next.add(gender)) next.remove(gender);
-                    _draftInterestedIn = next;
-                  }),
-                );
-              },
+          actions: [
+            CatchButton.text(
+              key: SwipeKeys.resetFiltersButton,
+              label: context.l10n.swipesFiltersScreenLabelReset,
+              onPressed: onReset,
             ),
+          ],
+        ),
+        bottomNavigationBar: profileAsync.isLoading
+            ? CatchDockSurface(
+                includeSafeArea: false,
+                padding: CatchInsets.formActionDock,
+                child: CatchSkeleton.box(
+                  width: double.infinity,
+                  height: CatchLayout.buttonLgHeight,
+                  radius: CatchRadius.pill,
+                ),
+              )
+            : preferencesState == null
+            ? null
+            : CatchDockSurface(
+                includeSafeArea: false,
+                padding: CatchInsets.formActionDock,
+                child: CatchButton(
+                  key: SwipeKeys.applyFiltersButton,
+                  label: context.l10n.swipesFiltersScreenLabelApplyFilters,
+                  onPressed: preferencesState.applyEnabled
+                      ? () => _save(preferencesState)
+                      : null,
+                  status: (saving)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
+                  fullWidth: true,
+                ),
+              ),
+        body: CatchRouteBody.standard(
+          child: profileAsync.when(
+            loading: () => const FiltersContentSkeleton._route(),
+            error: (error, _) => CatchLocalizedErrorState(
+              error,
+              context: AppErrorContext.profile,
+              onRetry: () => ref.invalidate(watchUserProfileProvider),
+            ),
+            data: (user) {
+              if (user == null) {
+                return CatchStateViewport(
+                  accountForBottomOverlay: false,
+                  child: CatchEmptyState(
+                    icon: CatchIcons.personOffOutlined,
+                    title: context
+                        .l10n
+                        .userProfileProfileScreenTitleProfileNotAvailable,
+                    message: context
+                        .l10n
+                        .userProfileProfileScreenMessageFinishOnboardingOrSign,
+                    actions: [
+                      CatchButton(
+                        label: context.l10n.sharedActionTryAgain,
+                        onPressed: () =>
+                            ref.invalidate(watchUserProfileProvider),
+                        leading: Icon(CatchIcons.refreshRounded),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              final state = preferencesState!;
+              return FiltersContent._routeFromState(
+                state: state.content,
+                onAgeRangeChanged: (values) =>
+                    setState(() => _draftAgeRange = values),
+                onGenderToggled: (gender) => setState(() {
+                  final next = {...state.content.interestedIn};
+                  if (!next.add(gender)) next.remove(gender);
+                  _draftInterestedIn = next;
+                }),
+              );
+            },
           ),
         ),
       ),

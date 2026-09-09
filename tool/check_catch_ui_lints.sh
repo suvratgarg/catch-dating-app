@@ -545,7 +545,7 @@ expect_code_count \
 
 stage_probe "mutation pending per-mutation clean case" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -569,12 +569,14 @@ class CatchUiMutationProbe extends ConsumerWidget {
     if (saveMutation.hasError) {
       return Text('Failed', style: CatchTextStyles.supporting(context));
     }
-    return CatchMutationErrorListener(
-      mutation: deleteMutationHandle,
-      child: Text(
-        deleteMutation.isPending ? 'Deleting' : 'Ready',
-        style: CatchTextStyles.supporting(context),
-      ),
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [deleteMutationHandle],
+    );
+    return Text(
+      deleteMutation.isPending ? 'Deleting' : 'Ready',
+      style: CatchTextStyles.supporting(context),
     );
   }
 }

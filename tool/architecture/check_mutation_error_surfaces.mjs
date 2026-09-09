@@ -112,23 +112,15 @@ function coveredMutationSurfaces(source, mutationVariables) {
     ) {
       addCoveredVariable({variableName, mutationVariables, variables, expressions});
     }
-    if (
-      new RegExp(
-        `\\b(?:CatchMutationErrorListeners?|CatchLocalizedErrorBanner\\.mutation)\\s*\\([\\s\\S]*?\\bmutation(?:s)?\\s*:\\s*(?:\\[[\\s\\S]*?)?${escaped}\\b`,
-        "u",
-      ).test(source)
-    ) {
-      addCoveredVariable({variableName, mutationVariables, variables, expressions});
-    }
   }
 
   for (const match of source.matchAll(
-    /\b(?:CatchMutationErrorListener|CatchLocalizedErrorBanner\.mutation)\s*\([\s\S]*?\bmutation\s*:\s*([^,\)\]]+)/gmu,
+    /\bCatchLocalizedErrorBanner\.mutation\s*\([\s\S]*?\bmutation\s*:\s*([^,\)\]]+)/gmu,
   )) {
-    expressions.add(canonicalMutationExpression(match[1]));
+    addCoveredExpressionList(match[1], {mutationVariables, variables, expressions});
   }
   for (const match of source.matchAll(
-    /\bCatchMutationErrorListeners\s*\([\s\S]*?\bmutations\s*:\s*\[([\s\S]*?)\]/gmu,
+    /\blistenToCatchMutationErrors\s*\([^;]*?\bmutations\s*:\s*\[([\s\S]*?)\]/gmu,
   )) {
     addCoveredExpressionList(match[1], {mutationVariables, variables, expressions});
   }
@@ -292,7 +284,7 @@ function printHelp() {
 
 Scans production lib/**/*.dart build methods. Any watched mutation whose
 isPending state is read must also expose a matching mutation error surface, such
-as CatchMutationErrorListener, CatchLocalizedErrorBanner.mutation, mutationErrorMessage, or
+as listenToCatchMutationErrors, CatchLocalizedErrorBanner.mutation, mutationErrorMessage, or
 a direct hasError branch for that same mutation.`);
 }
 

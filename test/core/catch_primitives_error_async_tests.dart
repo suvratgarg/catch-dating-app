@@ -644,7 +644,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     expect(retryCount, 1);
   });
 
-  testWidgets('CatchMutationErrorListeners handles multiple mutations', (
+  testWidgets('shared subscription handles multiple mutation failures', (
     tester,
   ) async {
     final saveMutation = Mutation<void>();
@@ -656,9 +656,13 @@ void _registerCatchPrimitivesErrorAsyncTests() {
           theme: AppTheme.light,
           home: Scaffold(
             body: Consumer(
-              builder: (context, ref, _) => CatchMutationErrorListeners(
-                mutations: [saveMutation, deleteMutation],
-                child: Column(
+              builder: (context, ref, _) {
+                listenToCatchMutationErrors(
+                  context,
+                  ref,
+                  mutations: [saveMutation, deleteMutation],
+                );
+                return Column(
                   children: [
                     TextButton(
                       onPressed: () async {
@@ -681,8 +685,8 @@ void _registerCatchPrimitivesErrorAsyncTests() {
                       child: const Text('Delete'),
                     ),
                   ],
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),

@@ -3038,6 +3038,49 @@
           "rationale": "Provider-free persistent feedback renderer with caller-resolved copy and actions; it owns neither error classification nor mutation subscription."
         }
       ]
+    },
+    {
+      "id": "mutation-error-subscriptions",
+      "title": "Transient mutation error subscriptions",
+      "intent": "Replace visual pass-through wrappers with one build-scoped subscription function; publish through the existing error snackbar boundary while preserving keyed action ownership.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.banner",
+      "qualityReference": "listenToCatchMutationErrors",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve all caller child trees, conditional subscription branches, mutation handles and error contexts. One shared function subscribes once per distinct handle and publishes only pending-to-error transitions through showCatchErrorSnackBar.",
+        "Honor the architecture rule that explicit recovery remains available even when exception metadata cannot infer retry eligibility. Absent callbacks create no action.",
+        "Combine the former single/multiple listener demos into the existing error-feedback gallery alongside persistent banners; the same production publisher and mutation subscriptions drive the interactive controls."
+      ],
+      "members": [
+        {
+          "symbol": "listenToCatchMutationErrors",
+          "disposition": "canonical",
+          "preview": "not-applicable",
+          "rationale": "Nonvisual build-scoped subscription API, exercised by real provider transitions in the error-feedback gallery and mutation_error_subscription_test. It has no independent Widget rendering contract."
+        },
+        {
+          "symbol": "CatchMutationErrorListener",
+          "disposition": "unify",
+          "target": "listenToCatchMutationErrors",
+          "preview": "not-applicable",
+          "rationale": "Passes its child through unchanged and duplicates subscription behavior. All callers already own a WidgetRef; register the same scoped handle in the same build branch."
+        },
+        {
+          "symbol": "CatchMutationErrorListeners",
+          "disposition": "unify",
+          "target": "listenToCatchMutationErrors",
+          "preview": "not-applicable",
+          "rationale": "The plural wrapper duplicates the single listener body. A list of distinct handles is one subscription operation, not another visual component."
+        },
+        {
+          "symbol": "showCatchErrorSnackBar",
+          "disposition": "canonical",
+          "preview": "not-applicable",
+          "rationale": "Existing app error mapping and transient publisher; preserve explicit caller recovery in this shared boundary."
+        }
+      ]
     }
   ]
 }

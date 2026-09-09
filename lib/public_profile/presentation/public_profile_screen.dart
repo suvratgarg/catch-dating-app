@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -110,74 +110,72 @@ class PublicProfileScreen extends ConsumerWidget {
       }
     });
 
-    return CatchMutationErrorListener(
-      mutation: PublicProfileController.blockUserMutation,
-      child: CatchMutationErrorListener(
-        mutation: PublicProfileController.reportUserMutation,
-        child: CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-            title: screenState.title(context.l10n),
-            leadingType: CatchTopBarLeading.back,
-            titleRole: profile == null
-                ? CatchTopBarTitleRole.route
-                : CatchTopBarTitleRole.identity,
-            divider: scrolledUnder,
-            actions: [
-              if (screenState.showSafetyActions)
-                CatchActionMenu<String>(
-                  tooltip: context
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [
+        PublicProfileController.blockUserMutation,
+        PublicProfileController.reportUserMutation,
+      ],
+    );
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        title: screenState.title(context.l10n),
+        leadingType: CatchTopBarLeading.back,
+        titleRole: profile == null
+            ? CatchTopBarTitleRole.route
+            : CatchTopBarTitleRole.identity,
+        divider: scrolledUnder,
+        actions: [
+          if (screenState.showSafetyActions)
+            CatchActionMenu<String>(
+              tooltip: context
+                  .l10n
+                  .publicProfilePublicProfileScreenTooltipProfileActions,
+              enabled: screenState.enableSafetyActions,
+              onSelected: (value) {
+                if (value ==
+                    context
+                        .l10n
+                        .publicProfilePublicProfileScreenVisiblecopyReport) {
+                  report(profile!);
+                } else if (value ==
+                    context
+                        .l10n
+                        .publicProfilePublicProfileScreenVisiblecopyBlock) {
+                  confirmBlock(profile!);
+                }
+              },
+              items: [
+                CatchActionMenuItem(
+                  value: context
                       .l10n
-                      .publicProfilePublicProfileScreenTooltipProfileActions,
-                  enabled: screenState.enableSafetyActions,
-                  onSelected: (value) {
-                    if (value ==
-                        context
-                            .l10n
-                            .publicProfilePublicProfileScreenVisiblecopyReport) {
-                      report(profile!);
-                    } else if (value ==
-                        context
-                            .l10n
-                            .publicProfilePublicProfileScreenVisiblecopyBlock) {
-                      confirmBlock(profile!);
-                    }
-                  },
-                  items: [
-                    CatchActionMenuItem(
-                      value: context
-                          .l10n
-                          .publicProfilePublicProfileScreenVisiblecopyReport,
-                      label: context
-                          .l10n
-                          .publicProfilePublicProfileScreenLabelReport,
-                      icon: CatchIcons.flagOutlined,
-                    ),
-                    CatchActionMenuItem(
-                      value: context
-                          .l10n
-                          .publicProfilePublicProfileScreenVisiblecopyBlock,
-                      label: context
-                          .l10n
-                          .publicProfilePublicProfileScreenLabelBlock,
-                      icon: CatchIcons.blockRounded,
-                      isDestructive: true,
-                    ),
-                  ],
+                      .publicProfilePublicProfileScreenVisiblecopyReport,
+                  label:
+                      context.l10n.publicProfilePublicProfileScreenLabelReport,
+                  icon: CatchIcons.flagOutlined,
                 ),
-            ],
-          ),
-          body: CatchRouteBody.fullBleed(
-            child: PublicProfileScreenBody(
-              state: screenState,
-              onRetry:
-                  screenState.retryIntent ==
-                      PublicProfileRetryIntent.reloadProfile
-                  ? () => ref.invalidate(
-                      watchPublicProfileProvider(screenState.uid),
-                    )
-                  : null,
+                CatchActionMenuItem(
+                  value: context
+                      .l10n
+                      .publicProfilePublicProfileScreenVisiblecopyBlock,
+                  label:
+                      context.l10n.publicProfilePublicProfileScreenLabelBlock,
+                  icon: CatchIcons.blockRounded,
+                  isDestructive: true,
+                ),
+              ],
             ),
-          ),
+        ],
+      ),
+      body: CatchRouteBody.fullBleed(
+        child: PublicProfileScreenBody(
+          state: screenState,
+          onRetry:
+              screenState.retryIntent == PublicProfileRetryIntent.reloadProfile
+              ? () =>
+                    ref.invalidate(watchPublicProfileProvider(screenState.uid))
+              : null,
         ),
       ),
     );

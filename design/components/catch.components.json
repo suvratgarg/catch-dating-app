@@ -2087,7 +2087,8 @@
           "showCatchErrorSnackBar",
           "CatchBannerTone",
           "CatchBannerVariant",
-          "CatchSurface"
+          "CatchSurface",
+          "listenToCatchMutationErrors"
         ],
         "goldens": [
           "banner_family"
@@ -2123,42 +2124,6 @@
               ],
               "reason": "Maps app errors and active-locale recovery copy into the provider-free banner. The mutation constructor only selects the error state from caller-watched mutations; both recipes share one mapping and renderer."
             }
-          },
-          {
-            "id": "catch.banner.mutation_listener",
-            "symbol": "CatchMutationErrorListener",
-            "file": "lib/core/riverpod_ui/catch_mutation_error_listener.dart",
-            "summary": "Transient snackbar boundary for one mutation's pending-to-error transition.",
-            "states": [
-              "single-mutation",
-              "pending-to-error",
-              "child-pass-through"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.banner",
-              "parentConceptId": "catch.banner",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.banner"
-            }
-          },
-          {
-            "id": "catch.banner.mutation_listeners",
-            "symbol": "CatchMutationErrorListeners",
-            "file": "lib/core/riverpod_ui/catch_mutation_error_listeners.dart",
-            "summary": "Transient snackbar boundary for several mutations that should share one error-feedback policy.",
-            "states": [
-              "multiple-mutations",
-              "pending-to-error",
-              "child-pass-through"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.banner",
-              "parentConceptId": "catch.banner",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.banner"
-            }
           }
         ],
         "accessibility": {
@@ -2185,7 +2150,7 @@
           "Use CatchBanner.error and CatchBanner.errorWithRetry for compact inline failures. Callers own copy, error mapping and retry eligibility.",
           "CatchNotice owns transient, dismissible or openable notification delivery; its lifecycle and person/action contract are distinct from persistent page feedback.",
           "Use CatchErrorState for data-load branches that replace content.",
-          "Use the mutation listener members for transient snackbar policy, not for visual layout."
+          "Use listenToCatchMutationErrors during the owning Consumer build for transient failure subscriptions; showCatchErrorSnackBar maps and publishes the error. Neither operation defines another visual component."
         ]
       },
       "governance": {
@@ -15411,7 +15376,7 @@
           "Both actions use CatchIconAction.defaultSize; composer call sites cannot supply independent image/send geometry.",
           "Empty text disables Send automatically; callbacks describe capability, not draft validity.",
           "Text-send and image-upload pending states disable only their relevant action and do not disable or defocus the editor.",
-          "Upload failures remain route-owned transient feedback through CatchMutationErrorListeners; do not add feature-local inline error chrome."
+          "Upload failures remain route-owned transient feedback through listenToCatchMutationErrors; do not add feature-local inline error chrome."
         ]
       },
       "governance": {

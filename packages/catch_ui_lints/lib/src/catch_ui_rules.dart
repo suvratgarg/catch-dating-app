@@ -2408,19 +2408,10 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
     final typeName = _constructorTypeName(node);
-    if (typeName == 'CatchMutationErrorBanner' ||
-        typeName == 'CatchMutationErrorListener') {
+    if (typeName == 'CatchLocalizedErrorBanner' &&
+        node.constructorName.name?.name == 'mutation') {
       final mutation = _namedArgumentExpression(node, 'mutation');
       if (mutation != null) _addMutationExpression(mutation);
-    } else if (typeName == 'CatchMutationErrorListeners') {
-      final mutations = _namedArgumentExpression(node, 'mutations');
-      if (mutations is ListLiteral) {
-        for (final element in mutations.elements) {
-          if (element is Expression) _addMutationExpression(element);
-        }
-      } else if (mutations != null) {
-        _addMutationExpression(mutations);
-      }
     }
 
     super.visitInstanceCreationExpression(node);
@@ -2428,6 +2419,17 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
 
   @override
   void visitMethodInvocation(MethodInvocation node) {
+    // Unresolved syntax represents implicit named construction as a method call.
+    if (node.target?.toSource() == 'CatchLocalizedErrorBanner' &&
+        node.methodName.name == 'mutation') {
+      for (final argument in node.argumentList.arguments) {
+        if (argument is NamedExpression &&
+            argument.name.label.name == 'mutation') {
+          _addMutationExpression(argument.expression);
+        }
+      }
+    }
+
     if (node.methodName.name == 'mutationErrorMessage' &&
         node.argumentList.arguments.isNotEmpty) {
       final argument = node.argumentList.arguments.first;
@@ -2437,7 +2439,14 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
       _addMutationExpression(expression);
     }
 
-    if (_isMutationErrorHelperName(node.methodName.name)) {
+    if (node.methodName.name == 'listenToCatchMutationErrors') {
+      for (final argument in node.argumentList.arguments) {
+        if (argument is NamedExpression &&
+            argument.name.label.name == 'mutations') {
+          _addMutationExpressionsFromArgument(argument);
+        }
+      }
+    } else if (_isMutationErrorHelperName(node.methodName.name)) {
       for (final argument in node.argumentList.arguments) {
         _addMutationExpressionsFromArgument(argument);
       }

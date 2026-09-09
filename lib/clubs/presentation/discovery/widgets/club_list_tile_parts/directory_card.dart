@@ -154,25 +154,27 @@ class MembershipTrailingController extends ConsumerWidget {
       );
     }
 
-    return CatchMutationErrorListener(
-      mutation: joinMutation,
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [joinMutation],
       errorContext: AppErrorContext.club,
-      child: MembershipTrailing(
-        isJoined: false,
-        isPending: joinMutationState.isPending,
-        onJoinPressed: () {
-          if (actionState == ExploreOrganizerMembershipActionState.signInGate) {
-            context.go(
-              Uri(
-                path: Routes.authScreen.path,
-                queryParameters: {'from': '/organizers/$clubId'},
-              ).toString(),
-            );
-            return;
-          }
-          joinClub();
-        },
-      ),
+    );
+    return MembershipTrailing(
+      isJoined: false,
+      isPending: joinMutationState.isPending,
+      onJoinPressed: () {
+        if (actionState == ExploreOrganizerMembershipActionState.signInGate) {
+          context.go(
+            Uri(
+              path: Routes.authScreen.path,
+              queryParameters: {'from': '/organizers/$clubId'},
+            ).toString(),
+          );
+          return;
+        }
+        joinClub();
+      },
     );
   }
 }

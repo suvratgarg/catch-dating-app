@@ -4,7 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/dashboard/presentation/notification_route_util.dart';
 import 'package:catch_dating_app/dashboard/presentation/notifications_list_state.dart';
@@ -45,76 +45,78 @@ class _ActivityScreenState extends ConsumerState<ActivityScreen> {
       markAllReadPending: markAllReadMutation.isPending,
     );
 
-    return CatchMutationErrorListener(
-      mutation: ActivityController.markAllReadMutation,
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [ActivityController.markAllReadMutation],
       errorContext: AppErrorContext.dashboard,
-      child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          title: context.l10n.dashboardActivityScreenTitleActivity,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
-          actions: [
-            if (state.showMarkAllReadAction)
-              CatchButton.text(
-                label: state.markAllReadLabel(context.l10n),
-                onPressed: state.canMarkAllRead
-                    ? () => unawaited(
-                        _markAllRead(
-                          uid: state.uid!,
-                          notifications: state.unreadNotifications,
-                        ),
-                      )
-                    : null,
+    );
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        title: context.l10n.dashboardActivityScreenTitleActivity,
+        leadingType: CatchTopBarLeading.back,
+        divider: scrolledUnder,
+        actions: [
+          if (state.showMarkAllReadAction)
+            CatchButton.text(
+              label: state.markAllReadLabel(context.l10n),
+              onPressed: state.canMarkAllRead
+                  ? () => unawaited(
+                      _markAllRead(
+                        uid: state.uid!,
+                        notifications: state.unreadNotifications,
+                      ),
+                    )
+                  : null,
+            ),
+        ],
+      ),
+      body: CatchRouteBody.standard(
+        child: CatchAsyncValueView<String?>(
+          value: uidAsync,
+          errorContext: AppErrorContext.auth,
+          onRetry: () => ref.invalidate(uidProvider),
+          loadingBuilder: (_) => const ActivityScreenLoading(),
+          errorBuilderWithRetry: (context, error, _, onRetry) =>
+              ActivityScreenBody(
+                state: NotificationsAccessError(error: error),
+                onRetry: onRetry,
+                onOpenRoute: _openNotificationRoute,
               ),
-          ],
-        ),
-        body: CatchRouteBody.standard(
-          child: CatchAsyncValueView<String?>(
-            value: uidAsync,
-            errorContext: AppErrorContext.auth,
-            onRetry: () => ref.invalidate(uidProvider),
-            loadingBuilder: (_) => const ActivityScreenLoading(),
-            errorBuilderWithRetry: (context, error, _, onRetry) =>
-                ActivityScreenBody(
-                  state: NotificationsAccessError(error: error),
-                  onRetry: onRetry,
-                  onOpenRoute: _openNotificationRoute,
-                ),
-            builder: (context, uid) {
-              if (uid == null) {
-                return const CatchResponsiveSectionLayout(
-                  sections: [
-                    CatchResponsiveSectionItem(child: ActivitySignedOutState()),
-                  ],
-                );
-              }
-              return CatchAsyncValueView<List<ActivityNotification>>(
-                value:
-                    notificationsAsync ??
-                    const AsyncLoading<List<ActivityNotification>>(),
-                loadingBuilder: (_) => const ActivityScreenLoading(),
+          builder: (context, uid) {
+            if (uid == null) {
+              return const CatchResponsiveSectionLayout(
+                sections: [
+                  CatchResponsiveSectionItem(child: ActivitySignedOutState()),
+                ],
+              );
+            }
+            return CatchAsyncValueView<List<ActivityNotification>>(
+              value:
+                  notificationsAsync ??
+                  const AsyncLoading<List<ActivityNotification>>(),
+              loadingBuilder: (_) => const ActivityScreenLoading(),
+              onRetry: () =>
+                  ref.invalidate(watchActivityNotificationsProvider(uid)),
+              errorBuilder: (context, error, _) => ActivityScreenBody(
+                state: NotificationsActivityError(uid: uid, error: error),
                 onRetry: () =>
                     ref.invalidate(watchActivityNotificationsProvider(uid)),
-                errorBuilder: (context, error, _) => ActivityScreenBody(
-                  state: NotificationsActivityError(uid: uid, error: error),
-                  onRetry: () =>
-                      ref.invalidate(watchActivityNotificationsProvider(uid)),
-                  onOpenRoute: _openNotificationRoute,
-                ),
-                builder: (context, _) => ActivityScreenBody(
-                  state: state,
-                  onRetry: state.uid == null
-                      ? null
-                      : () {
-                          ref.invalidate(
-                            watchActivityNotificationsProvider(state.uid!),
-                          );
-                        },
-                  onOpenRoute: _openNotificationRoute,
-                ),
-              );
-            },
-          ),
+                onOpenRoute: _openNotificationRoute,
+              ),
+              builder: (context, _) => ActivityScreenBody(
+                state: state,
+                onRetry: state.uid == null
+                    ? null
+                    : () {
+                        ref.invalidate(
+                          watchActivityNotificationsProvider(state.uid!),
+                        );
+                      },
+                onOpenRoute: _openNotificationRoute,
+              ),
+            );
+          },
         ),
       ),
     );

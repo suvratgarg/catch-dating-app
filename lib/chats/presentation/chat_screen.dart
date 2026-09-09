@@ -22,8 +22,8 @@ import 'package:catch_dating_app/chats/presentation/widgets/suvbot_action_bar.da
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -287,8 +287,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       );
     }
 
-    return CatchMutationErrorListeners(
-      errorContext: AppErrorContext.chat,
+    listenToCatchMutationErrors(
+      context,
+      ref,
       mutations: [
         ChatController.sendMessageMutation,
         ChatController.sendImageMutation,
@@ -296,114 +297,113 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         ChatController.blockUserMutation,
         SuvbotController.requestMutation,
       ],
-      child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar.identity(
-          identitySemanticLabel: context.l10n
-              .coreCatchTopBarLabelViewNameProfile(name: chatState.name),
-          identityName: chatState.name,
-          identityPhotoUrl: chatState.photoUrl,
-          onIdentityTap: chatState.profileNavigationEnabled
-              ? () => _openOtherProfile(chatState)
-              : null,
-          leadingType: widget.embedded
-              ? CatchTopBarLeading.none
-              : CatchTopBarLeading.back,
-          divider: scrolledUnder,
-          actions: [
-            if (availableThreadActions.isNotEmpty)
-              CatchActionMenu<ChatThreadAction>(
-                tooltip: context.l10n.chatsChatScreenTooltipChatActions,
-                onSelected: (action) => unawaited(
-                  _threadActionController.runThreadAction(
-                    action: action,
-                    chatState: chatState,
-                    messages: routeState.messages,
-                    uid: routeState.uid,
-                    event: routeState.event,
-                    share: routeState.share,
-                    ui: _threadActionUi(),
-                  ),
+      errorContext: AppErrorContext.chat,
+    );
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.identity(
+        identitySemanticLabel: context.l10n.coreCatchTopBarLabelViewNameProfile(
+          name: chatState.name,
+        ),
+        identityName: chatState.name,
+        identityPhotoUrl: chatState.photoUrl,
+        onIdentityTap: chatState.profileNavigationEnabled
+            ? () => _openOtherProfile(chatState)
+            : null,
+        leadingType: widget.embedded
+            ? CatchTopBarLeading.none
+            : CatchTopBarLeading.back,
+        divider: scrolledUnder,
+        actions: [
+          if (availableThreadActions.isNotEmpty)
+            CatchActionMenu<ChatThreadAction>(
+              tooltip: context.l10n.chatsChatScreenTooltipChatActions,
+              onSelected: (action) => unawaited(
+                _threadActionController.runThreadAction(
+                  action: action,
+                  chatState: chatState,
+                  messages: routeState.messages,
+                  uid: routeState.uid,
+                  event: routeState.event,
+                  share: routeState.share,
+                  ui: _threadActionUi(),
                 ),
-                items: availableThreadActions
-                    .map((action) => _threadActionMenuItem(context, action))
-                    .toList(),
+              ),
+              items: availableThreadActions
+                  .map((action) => _threadActionMenuItem(context, action))
+                  .toList(),
+            ),
+        ],
+      ),
+      body: CatchRouteBody.fullBleed(
+        child: Column(
+          children: [
+            if (routeState.showEventContextHeader)
+              ChatEventContextHeader(
+                event: routeState.event,
+                conversationContext: conversationContext,
+              ),
+            Expanded(
+              child: authError != null
+                  ? CatchLocalizedErrorState(
+                      authError,
+                      context: AppErrorContext.auth,
+                      onRetry: () => ref.invalidate(uidProvider),
+                    )
+                  : routeError == null
+                  ? ChatMessageList(
+                      messagesAsync: _asyncValue(
+                        routeState.displayMessagesAsync,
+                      ),
+                      currentUid: routeState.uid,
+                      event: routeState.event,
+                      otherName: chatState.messageOtherName,
+                      conversationContext: conversationContext,
+                      scrollController: _scrollCoordinator.scrollController,
+                      onRetry: chatState.messagesRetryIntent == null
+                          ? null
+                          : () => _retryController.run(
+                              chatState.messagesRetryIntent!,
+                            ),
+                    )
+                  : CatchErrorState(
+                      title:
+                          context.l10n.chatsChatScreenTitleMessagesUnavailable,
+                      message: appErrorMessage(
+                        routeError.error,
+                        l10n: context.l10n,
+                        context: AppErrorContext.chat,
+                      ),
+                      icon: CatchIcons.chatBubbleOutlineRounded,
+                      onRetry: () =>
+                          _retryController.run(routeError.retryIntent),
+                      retryLabel: context
+                          .l10n
+                          .chatsChatScreenCatcherrorstateReloadMessages,
+                    ),
+            ),
+            if (routeState.showSuvbotActionBar)
+              SuvbotActionBar(
+                actions: _asyncValue(routeState.suvbotActionsAsync),
+                pending: routeState.suvbotPending,
+                onAction: _runSuvbotAction,
+                onTextAction: _runSuvbotTextAction,
+                onRetry: () => _retryController.run(
+                  chatState.suvbotActionsRetryIntent ??
+                      HostChatRetryIntent.reloadSuvbotActions,
+                ),
+              ),
+            if (routeState.showComposer)
+              ChatInputBar(
+                controller: _textController,
+                sending: routeState.sendMessagePending,
+                onSend: chatState.composerDisabledReason == null ? _send : null,
+                onSendImage: chatState.composerDisabledReason == null
+                    ? _sendImage
+                    : null,
+                disabledReason: chatState.composerDisabledReason,
+                sendingImage: routeState.sendImagePending,
               ),
           ],
-        ),
-        body: CatchRouteBody.fullBleed(
-          child: Column(
-            children: [
-              if (routeState.showEventContextHeader)
-                ChatEventContextHeader(
-                  event: routeState.event,
-                  conversationContext: conversationContext,
-                ),
-              Expanded(
-                child: authError != null
-                    ? CatchLocalizedErrorState(
-                        authError,
-                        context: AppErrorContext.auth,
-                        onRetry: () => ref.invalidate(uidProvider),
-                      )
-                    : routeError == null
-                    ? ChatMessageList(
-                        messagesAsync: _asyncValue(
-                          routeState.displayMessagesAsync,
-                        ),
-                        currentUid: routeState.uid,
-                        event: routeState.event,
-                        otherName: chatState.messageOtherName,
-                        conversationContext: conversationContext,
-                        scrollController: _scrollCoordinator.scrollController,
-                        onRetry: chatState.messagesRetryIntent == null
-                            ? null
-                            : () => _retryController.run(
-                                chatState.messagesRetryIntent!,
-                              ),
-                      )
-                    : CatchErrorState(
-                        title: context
-                            .l10n
-                            .chatsChatScreenTitleMessagesUnavailable,
-                        message: appErrorMessage(
-                          routeError.error,
-                          l10n: context.l10n,
-                          context: AppErrorContext.chat,
-                        ),
-                        icon: CatchIcons.chatBubbleOutlineRounded,
-                        onRetry: () =>
-                            _retryController.run(routeError.retryIntent),
-                        retryLabel: context
-                            .l10n
-                            .chatsChatScreenCatcherrorstateReloadMessages,
-                      ),
-              ),
-              if (routeState.showSuvbotActionBar)
-                SuvbotActionBar(
-                  actions: _asyncValue(routeState.suvbotActionsAsync),
-                  pending: routeState.suvbotPending,
-                  onAction: _runSuvbotAction,
-                  onTextAction: _runSuvbotTextAction,
-                  onRetry: () => _retryController.run(
-                    chatState.suvbotActionsRetryIntent ??
-                        HostChatRetryIntent.reloadSuvbotActions,
-                  ),
-                ),
-              if (routeState.showComposer)
-                ChatInputBar(
-                  controller: _textController,
-                  sending: routeState.sendMessagePending,
-                  onSend: chatState.composerDisabledReason == null
-                      ? _send
-                      : null,
-                  onSendImage: chatState.composerDisabledReason == null
-                      ? _sendImage
-                      : null,
-                  disabledReason: chatState.composerDisabledReason,
-                  sendingImage: routeState.sendImagePending,
-                ),
-            ],
-          ),
         ),
       ),
     );

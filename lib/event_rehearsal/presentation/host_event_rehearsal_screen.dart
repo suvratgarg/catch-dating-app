@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
@@ -80,7 +80,9 @@ class _HostEventRehearsalScreenState
     final topBarTitleMaxLines = MediaQuery.textScalerOf(context).scale(1) >= 1.4
         ? 3
         : 1;
-    return CatchMutationErrorListeners(
+    listenToCatchMutationErrors(
+      context,
+      ref,
       mutations: [
         EventRehearsalController.setupMutation,
         EventRehearsalController.controlMutation,
@@ -93,170 +95,167 @@ class _HostEventRehearsalScreenState
         EventRehearsalController.shareMutation,
       ],
       errorContext: AppErrorContext.event,
-      child: CatchRouteScaffold(
-        statuses: [
-          if (rehearsalAsync.asData?.value case final rehearsal?)
-            CatchStatusStripData(
-              id: 'rehearsal.${rehearsal.session.id}',
-              label: context.l10n.hostEventRehearsalBadge,
-              message: context.l10n.hostEventRehearsalSyntheticGuests,
-              icon: CatchIcons.groupsOutlined,
-              color: CatchTokens.of(context).danger,
-              actions: [
-                CatchStatusStripAction(
-                  label: context.l10n.hostEventRehearsalClockPill(
-                    time: DateFormat.jm(
-                      Localizations.localeOf(context).toLanguageTag(),
-                    ).format(rehearsal.session.virtualNow),
-                  ),
-                  onPressed: () => _showRunControls(rehearsal, busy),
+    );
+    return CatchRouteScaffold(
+      statuses: [
+        if (rehearsalAsync.asData?.value case final rehearsal?)
+          CatchStatusStripData(
+            id: 'rehearsal.${rehearsal.session.id}',
+            label: context.l10n.hostEventRehearsalBadge,
+            message: context.l10n.hostEventRehearsalSyntheticGuests,
+            icon: CatchIcons.groupsOutlined,
+            color: CatchTokens.of(context).danger,
+            actions: [
+              CatchStatusStripAction(
+                label: context.l10n.hostEventRehearsalClockPill(
+                  time: DateFormat.jm(
+                    Localizations.localeOf(context).toLanguageTag(),
+                  ).format(rehearsal.session.virtualNow),
                 ),
-                CatchStatusStripAction(
-                  label: context.l10n.hostEventRehearsalPracticeTools,
-                  icon: CatchIcons.more,
-                  onPressed: () => _showPracticeTools(rehearsal, busy),
-                ),
-              ],
-            ),
-        ],
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          large: false,
-          height: CatchTopBar.workspaceHeightFor(
-            context: context,
-            hasEyebrow: true,
-            titleMaxLines: topBarTitleMaxLines,
-          ),
-          allowContentHeightExpansion: true,
-          contentCrossAxisAlignment: CrossAxisAlignment.start,
-          eyebrow: context.l10n.hostEventRehearsalManageSubtitle,
-          title:
-              rehearsalAsync.asData?.value.session.setup.title ??
-              context.l10n.hostEventRehearsalTitle,
-          titleMaxLines: topBarTitleMaxLines,
-          leadingType: CatchTopBarLeading.back,
-          leading: CatchIconAction.toolbar(
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            icon: CatchIcons.arrowBackIosNewRounded,
-            onPressed: () =>
-                _leaveRehearsal(rehearsalAsync.asData?.value.session),
-          ),
-          divider: scrolledUnder,
-        ),
-        body: CatchRouteBody.fullBleed(
-          child: SafeArea(
-            top: false,
-            bottom: false,
-            child: CatchAsyncValueView<EventRehearsalBootstrap>(
-              value: rehearsalAsync,
-              onRetry: () =>
-                  ref.invalidate(eventRehearsalProvider(widget.sessionId)),
-              initialLoadTimeout: null,
-              loadingBuilder: (_) =>
-                  const CatchPageBody(child: CatchSkeleton.rows(count: 9)),
-              errorBuilder: (_, error, _) => CatchPageBody(
-                child: CatchLocalizedErrorState(
-                  error,
-                  context: AppErrorContext.event,
-                  onRetry: () =>
-                      ref.invalidate(eventRehearsalProvider(widget.sessionId)),
-                ),
+                onPressed: () => _showRunControls(rehearsal, busy),
               ),
-              builder: (context, rehearsal) {
-                final runtime = buildEventRehearsalRuntimeProjection(
-                  rehearsal,
-                  practiceGuestLabel:
-                      context.l10n.hostEventRehearsalPracticeGuest,
-                  latePracticeGuestLabel:
-                      context.l10n.hostEventRehearsalLatePracticeGuest,
-                );
-                final coachTask = _buildCoachTask(context, rehearsal);
-                _syncCoachTask(coachTask);
-                return Column(
-                  children: [
-                    Expanded(
-                      child: EventSuccessHostPanel(
-                        key: ValueKey(
-                          'rehearsal-runtime-${rehearsal.session.id}',
-                        ),
-                        event: runtime.event,
-                        plan: runtime.plan,
-                        planIsPersisted: true,
-                        spatialLayout: runtime.layout,
-                        spatialLayoutState:
-                            EventSuccessSpatialLayoutState.ready(
-                              runtime.layout,
-                            ),
-                        roster: runtime.roster,
-                        assignments: runtime.assignments,
-                        assignmentParticipantProfiles: runtime.profiles,
-                        presenceSummary: runtime.presence,
-                        initialTab: switch (rehearsal.session.status) {
-                          EventRehearsalStatus.draft ||
-                          EventRehearsalStatus.ready =>
-                            EventSuccessHostTab.setup,
-                          EventRehearsalStatus.running ||
-                          EventRehearsalStatus.paused =>
-                            EventSuccessHostTab.live,
-                          EventRehearsalStatus.complete ||
-                          EventRehearsalStatus.expired =>
-                            EventSuccessHostTab.report,
-                        },
-                        showTabs: false,
-                        compactLiveControls: true,
-                        initialLiveWorkspace: coachTask.workspace,
-                        initialSpatialSelectionUid: coachTask.actorId,
-                        referenceNow: rehearsal.session.virtualNow,
-                        exclusionReferenceNow: rehearsal.session.virtualNow,
-                        liveActionState: EventSuccessLiveActionState(
-                          isChangingStep: controlMutation.isPending,
-                          isCompleting: controlMutation.isPending,
-                        ),
-                        onOpenGuests: () => _showPracticeTools(rehearsal, busy),
-                        onSetLiveStep: (stepIndex) =>
-                            _setCanonicalLiveStep(rehearsal.session, stepIndex),
-                        onCompleteLiveGuide: (_) => _control(
-                          rehearsal.session,
-                          EventRehearsalControlAction.complete,
-                          null,
-                        ),
-                        onResolveLateArrival: (actorId) => _injectBehavior(
-                          rehearsal.session,
-                          actorId,
-                          EventRehearsalBehavior.arrive,
-                        ),
-                        onPreviewSpatial: (assignment) =>
-                            _previewSpatial(runtime, rehearsal, assignment),
-                        onReassignSpatial: (assignment, unitId, scope) =>
-                            _controlSpatial(
-                              rehearsal.session,
-                              assignment.uid,
-                              EventRehearsalSpatialAction.reassign,
-                              destinationUnitId: unitId,
-                              scope: _rehearsalSpatialScope(scope),
-                            ),
-                        onConfirmSpatial: (assignment) => _controlSpatial(
-                          rehearsal.session,
-                          assignment.uid,
-                          EventRehearsalSpatialAction.confirmPosition,
-                        ),
-                        onReleaseSpatial: (assignment) => _controlSpatial(
-                          rehearsal.session,
-                          assignment.uid,
-                          EventRehearsalSpatialAction.releasePinned,
-                        ),
+              CatchStatusStripAction(
+                label: context.l10n.hostEventRehearsalPracticeTools,
+                icon: CatchIcons.more,
+                onPressed: () => _showPracticeTools(rehearsal, busy),
+              ),
+            ],
+          ),
+      ],
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        large: false,
+        height: CatchTopBar.workspaceHeightFor(
+          context: context,
+          hasEyebrow: true,
+          titleMaxLines: topBarTitleMaxLines,
+        ),
+        allowContentHeightExpansion: true,
+        contentCrossAxisAlignment: CrossAxisAlignment.start,
+        eyebrow: context.l10n.hostEventRehearsalManageSubtitle,
+        title:
+            rehearsalAsync.asData?.value.session.setup.title ??
+            context.l10n.hostEventRehearsalTitle,
+        titleMaxLines: topBarTitleMaxLines,
+        leadingType: CatchTopBarLeading.back,
+        leading: CatchIconAction.toolbar(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          icon: CatchIcons.arrowBackIosNewRounded,
+          onPressed: () =>
+              _leaveRehearsal(rehearsalAsync.asData?.value.session),
+        ),
+        divider: scrolledUnder,
+      ),
+      body: CatchRouteBody.fullBleed(
+        child: SafeArea(
+          top: false,
+          bottom: false,
+          child: CatchAsyncValueView<EventRehearsalBootstrap>(
+            value: rehearsalAsync,
+            onRetry: () =>
+                ref.invalidate(eventRehearsalProvider(widget.sessionId)),
+            initialLoadTimeout: null,
+            loadingBuilder: (_) =>
+                const CatchPageBody(child: CatchSkeleton.rows(count: 9)),
+            errorBuilder: (_, error, _) => CatchPageBody(
+              child: CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.event,
+                onRetry: () =>
+                    ref.invalidate(eventRehearsalProvider(widget.sessionId)),
+              ),
+            ),
+            builder: (context, rehearsal) {
+              final runtime = buildEventRehearsalRuntimeProjection(
+                rehearsal,
+                practiceGuestLabel:
+                    context.l10n.hostEventRehearsalPracticeGuest,
+                latePracticeGuestLabel:
+                    context.l10n.hostEventRehearsalLatePracticeGuest,
+              );
+              final coachTask = _buildCoachTask(context, rehearsal);
+              _syncCoachTask(coachTask);
+              return Column(
+                children: [
+                  Expanded(
+                    child: EventSuccessHostPanel(
+                      key: ValueKey(
+                        'rehearsal-runtime-${rehearsal.session.id}',
+                      ),
+                      event: runtime.event,
+                      plan: runtime.plan,
+                      planIsPersisted: true,
+                      spatialLayout: runtime.layout,
+                      spatialLayoutState: EventSuccessSpatialLayoutState.ready(
+                        runtime.layout,
+                      ),
+                      roster: runtime.roster,
+                      assignments: runtime.assignments,
+                      assignmentParticipantProfiles: runtime.profiles,
+                      presenceSummary: runtime.presence,
+                      initialTab: switch (rehearsal.session.status) {
+                        EventRehearsalStatus.draft ||
+                        EventRehearsalStatus.ready => EventSuccessHostTab.setup,
+                        EventRehearsalStatus.running ||
+                        EventRehearsalStatus.paused => EventSuccessHostTab.live,
+                        EventRehearsalStatus.complete ||
+                        EventRehearsalStatus.expired =>
+                          EventSuccessHostTab.report,
+                      },
+                      showTabs: false,
+                      compactLiveControls: true,
+                      initialLiveWorkspace: coachTask.workspace,
+                      initialSpatialSelectionUid: coachTask.actorId,
+                      referenceNow: rehearsal.session.virtualNow,
+                      exclusionReferenceNow: rehearsal.session.virtualNow,
+                      liveActionState: EventSuccessLiveActionState(
+                        isChangingStep: controlMutation.isPending,
+                        isCompleting: controlMutation.isPending,
+                      ),
+                      onOpenGuests: () => _showPracticeTools(rehearsal, busy),
+                      onSetLiveStep: (stepIndex) =>
+                          _setCanonicalLiveStep(rehearsal.session, stepIndex),
+                      onCompleteLiveGuide: (_) => _control(
+                        rehearsal.session,
+                        EventRehearsalControlAction.complete,
+                        null,
+                      ),
+                      onResolveLateArrival: (actorId) => _injectBehavior(
+                        rehearsal.session,
+                        actorId,
+                        EventRehearsalBehavior.arrive,
+                      ),
+                      onPreviewSpatial: (assignment) =>
+                          _previewSpatial(runtime, rehearsal, assignment),
+                      onReassignSpatial: (assignment, unitId, scope) =>
+                          _controlSpatial(
+                            rehearsal.session,
+                            assignment.uid,
+                            EventRehearsalSpatialAction.reassign,
+                            destinationUnitId: unitId,
+                            scope: _rehearsalSpatialScope(scope),
+                          ),
+                      onConfirmSpatial: (assignment) => _controlSpatial(
+                        rehearsal.session,
+                        assignment.uid,
+                        EventRehearsalSpatialAction.confirmPosition,
+                      ),
+                      onReleaseSpatial: (assignment) => _controlSpatial(
+                        rehearsal.session,
+                        assignment.uid,
+                        EventRehearsalSpatialAction.releasePinned,
                       ),
                     ),
-                    _RehearsalCoachDock(
-                      task: coachTask,
-                      collapsed: _coachCollapsed,
-                      onWhy: () => _showCoachWhy(rehearsal),
-                      onToggle: () =>
-                          setState(() => _coachCollapsed = !_coachCollapsed),
-                    ),
-                  ],
-                );
-              },
-            ),
+                  ),
+                  _RehearsalCoachDock(
+                    task: coachTask,
+                    collapsed: _coachCollapsed,
+                    onWhy: () => _showCoachWhy(rehearsal),
+                    onToggle: () =>
+                        setState(() => _coachCollapsed = !_coachCollapsed),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),

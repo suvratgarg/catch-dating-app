@@ -8,7 +8,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.d
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';

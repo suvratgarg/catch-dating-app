@@ -4,8 +4,8 @@ import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart'
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
@@ -69,7 +69,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       );
     } catch (_) {
       hadError = true;
-      // CatchMutationErrorListener owns user-facing error display.
+      // listenToCatchMutationErrors owns user-facing error display.
     }
 
     if (!mounted) return;
@@ -97,7 +97,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             .requestAccountDeletion(),
       );
     } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
+      // listenToCatchMutationErrors owns user-facing error display.
     }
   }
 
@@ -110,7 +110,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         (tx) async => tx.get(authSessionControllerProvider.notifier).signOut(),
       );
     } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
+      // listenToCatchMutationErrors owns user-facing error display.
     }
   }
 
@@ -217,427 +217,415 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       }
     });
 
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [
+        AuthSessionController.signOutMutation,
+        SettingsController.savePreferenceMutation,
+        SettingsController.requestAccountDeletionMutation,
+        SettingsController.unblockUserMutation,
+      ],
+    );
     return PopScope(
       canPop: !operationPending,
-      child: CatchMutationErrorListeners(
-        mutations: [
-          AuthSessionController.signOutMutation,
-          SettingsController.savePreferenceMutation,
-          SettingsController.requestAccountDeletionMutation,
-          SettingsController.unblockUserMutation,
-        ],
-        child: CatchRouteScaffold(
-          topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-            title: context.l10n.safetySettingsScreenTitleSettings,
-            leadingType: CatchTopBarLeading.back,
-            leading: operationPending
-                ? CatchIconAction.toolbar(
-                    icon: CatchIcons.arrowBackIosNewRounded,
-                    tooltip: MaterialLocalizations.of(
-                      context,
-                    ).backButtonTooltip,
-                  )
-                : null,
-            divider: scrolledUnder,
-          ),
-          body: CatchRouteBody.standardConstrained(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CatchSection.fieldRows(
-                  first: true,
-                  title: context.l10n.safetySettingsScreenTitleAccount,
-                  footer: AccountProfileStatus(
-                    profile: state.profile,
-                    onRetry: operationPending
-                        ? null
-                        : () => ref.invalidate(watchUserProfileProvider),
+      child: CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+          title: context.l10n.safetySettingsScreenTitleSettings,
+          leadingType: CatchTopBarLeading.back,
+          leading: operationPending
+              ? CatchIconAction.toolbar(
+                  icon: CatchIcons.arrowBackIosNewRounded,
+                  tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                )
+              : null,
+          divider: scrolledUnder,
+        ),
+        body: CatchRouteBody.standardConstrained(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CatchSection.fieldRows(
+                first: true,
+                title: context.l10n.safetySettingsScreenTitleAccount,
+                footer: AccountProfileStatus(
+                  profile: state.profile,
+                  onRetry: operationPending
+                      ? null
+                      : () => ref.invalidate(watchUserProfileProvider),
+                ),
+                children: [
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.safetySettingsScreenTitlePhoneNumber,
+                    valueText: state.profile.phoneNumber,
+                    icon: CatchIcons.phoneOutlined,
                   ),
-                  children: [
-                    CatchField.read(
-                      copy: catchFieldCopy(context.l10n),
-                      title: context.l10n.safetySettingsScreenTitlePhoneNumber,
-                      valueText: state.profile.phoneNumber,
-                      icon: CatchIcons.phoneOutlined,
-                    ),
-                    CatchField.read(
-                      copy: catchFieldCopy(context.l10n),
-                      title: context.l10n.safetySettingsScreenTitleEmail,
-                      valueText: state.profile.email,
-                      icon: CatchIcons.emailOutlined,
-                    ),
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.safetySettingsScreenTitleEmail,
+                    valueText: state.profile.email,
+                    icon: CatchIcons.emailOutlined,
+                  ),
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.reviewHistoryRow,
+                    title: context.l10n.safetySettingsScreenTitleReviewHistory,
+                    valueText:
+                        context.l10n.safetySettingsScreenBodyEventsYouReviewed,
+                    icon: CatchIcons.rateReviewOutlined,
+                    onTap: operationPending
+                        ? null
+                        : () => context.pushNamed(
+                            Routes.reviewsHistoryScreen.name,
+                          ),
+                  ),
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.paymentHistoryRow,
+                    title: context.l10n.safetySettingsScreenTitlePaymentHistory,
+                    valueText: context
+                        .l10n
+                        .safetySettingsScreenBodyBookingsAndReceipts,
+                    icon: CatchIcons.receiptLongOutlined,
+                    onTap: operationPending
+                        ? null
+                        : () => context.pushNamed(
+                            Routes.paymentHistoryScreen.name,
+                          ),
+                  ),
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.hostAppRow,
+                    title: context.l10n.safetySettingsScreenTitleCatchHost,
+                    valueText: context
+                        .l10n
+                        .safetySettingsScreenBodyManageEventsAndClubs,
+                    icon: CatchIcons.workOutlineRounded,
+                    action:
+                        _pendingExternalLink ==
+                            _SettingsExternalLinkAction.hostApp
+                        ? const SizedBox.square(
+                            dimension: CatchIcon.control,
+                            child: CatchLoadingIndicator(),
+                          )
+                        : null,
+                    onTap: operationPending ? null : _openHostApp,
+                  ),
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.launchAccessRow,
+                    title: context
+                        .l10n
+                        .launchAccessLaunchAccessApplicationScreenTextJoinTheNextCity,
+                    valueText: context
+                        .l10n
+                        .launchAccessLaunchAccessApplicationScreenTextTellUsWhereYou,
+                    icon: CatchIcons.locationCityOutlined,
+                    onTap: operationPending
+                        ? null
+                        : () =>
+                              context.pushNamed(Routes.launchAccessScreen.name),
+                  ),
+                ],
+              ),
+              CatchSection.fieldRows(
+                title: context.l10n.safetySettingsScreenTitleNotifications,
+                children: [
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.newCatchesSwitch,
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchPrefsNewCatches,
+                    title:
+                        context.l10n.safetySettingsScreenTitlePushNotifications,
+                    icon: CatchIcons.favoriteOutline,
+                    value: state.preferences.newCatches,
+                    onChanged: operationPending
+                        ? null
+                        : (value) => _savePref(
+                            preference: SettingsPreference.newCatches,
+                            value: value,
+                          ),
+                  ),
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.crossPathsInvitationsSwitch,
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchPrefsCrossPathsInvitations,
+                    title: context
+                        .l10n
+                        .safetySettingsScreenTitleCrossPathsInvitations,
+                    icon: CatchIcons.personSearchOutlined,
+                    value: state.preferences.crossPathsInvitations,
+                    onChanged: operationPending
+                        ? null
+                        : (value) => _savePref(
+                            preference:
+                                SettingsPreference.crossPathsInvitations,
+                            value: value,
+                          ),
+                  ),
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.messagesSwitch,
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchPrefsMessages,
+                    title: context.l10n.safetySettingsScreenTitleMessages,
+                    icon: CatchIcons.chatBubbleOutlineRounded,
+                    value: state.preferences.messages,
+                    onChanged: operationPending
+                        ? null
+                        : (value) => _savePref(
+                            preference: SettingsPreference.messages,
+                            value: value,
+                          ),
+                  ),
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.eventRemindersSwitch,
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchPrefsEventReminders,
+                    title: context.l10n.safetySettingsScreenTitleEventReminders,
+                    icon: CatchIcons.directionsRunOutlined,
+                    value: state.preferences.eventReminders,
+                    onChanged: operationPending
+                        ? null
+                        : (value) => _savePref(
+                            preference: SettingsPreference.eventReminders,
+                            value: value,
+                          ),
+                  ),
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.eventStatusUpdatesSwitch,
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchPrefsRunStatusUpdates,
+                    title: context
+                        .l10n
+                        .safetySettingsScreenTitleEventChangesAndCancellations,
+                    icon: CatchIcons.eventRepeatOutlined,
+                    value: state.preferences.eventStatusUpdates,
+                    onChanged: operationPending
+                        ? null
+                        : (value) => _savePref(
+                            preference: SettingsPreference.eventStatusUpdates,
+                            value: value,
+                          ),
+                  ),
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.clubUpdatesSwitch,
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchPrefsClubUpdates,
+                    title:
+                        context.l10n.safetySettingsScreenTitleClubAnnouncements,
+                    icon: CatchIcons.notificationsActiveOutlined,
+                    value: state.preferences.clubUpdates,
+                    onChanged: operationPending
+                        ? null
+                        : (value) => _savePref(
+                            preference: SettingsPreference.clubUpdates,
+                            value: value,
+                          ),
+                  ),
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.weeklyDigestSwitch,
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchPrefsWeeklyDigest,
+                    title: context.l10n.safetySettingsScreenTitleEmailUpdates,
+                    icon: CatchIcons.markEmailReadOutlined,
+                    value: state.preferences.weeklyDigest,
+                    onChanged: operationPending
+                        ? null
+                        : (value) => _savePref(
+                            preference: SettingsPreference.weeklyDigest,
+                            value: value,
+                          ),
+                  ),
+                ],
+              ),
+              CatchSection.fieldRows(
+                title: context.l10n.safetySettingsScreenTitlePrivacySafety,
+                footer: BlockedAccountsSection(
+                  state: state.blockedAccounts,
+                  unblocking: state.mutations.unblocking,
+                  enabled: !operationPending,
+                  onRetry: operationPending
+                      ? null
+                      : () => ref.invalidate(watchBlockedUsersProvider),
+                  onUnblock: _unblockUser,
+                ),
+                children: [
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.showInCrossPathsSwitch,
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchPrefsShowInCrossPaths,
+                    title:
+                        context.l10n.safetySettingsScreenTitleShowInCrossPaths,
+                    body: context.l10n.safetySettingsScreenBodyShowInCrossPaths,
+                    icon: CatchIcons.favoriteBorderRounded,
+                    value: state.preferences.showInCrossPaths,
+                    onChanged: operationPending
+                        ? null
+                        : (value) => _savePref(
+                            preference: SettingsPreference.showInCrossPaths,
+                            value: value,
+                          ),
+                  ),
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.safetySettingsScreenTitleBlockedUsers,
+                    valueText: state.blockedAccounts.count?.toString(),
+                    icon: CatchIcons.shieldOutlined,
+                  ),
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.safetySettingsScreenTitleWhoCanSeeYou,
+                    valueText:
+                        context.l10n.safetySettingsScreenBodyRunnersOnMyEvents,
+                    icon: CatchIcons.visibilityOutlined,
+                  ),
+                  CatchField.toggle(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.showOnMapSwitch,
+                    contract: CatchContractConstraints
+                        .updateUserProfilePatchPrefsShowOnMap,
+                    title: context.l10n.safetySettingsScreenTitleShowMeOnMap,
+                    icon: CatchIcons.mapOutlined,
+                    value: state.preferences.showOnMap,
+                    onChanged: operationPending
+                        ? null
+                        : (value) => _savePref(
+                            preference: SettingsPreference.showOnMap,
+                            value: value,
+                          ),
+                  ),
+                  if (AppConfig.privacyPolicyUrl case final uri?)
                     CatchField.nav(
                       copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.reviewHistoryRow,
+                      key: SettingsKeys.privacyPolicyRow,
                       title:
-                          context.l10n.safetySettingsScreenTitleReviewHistory,
-                      valueText: context
-                          .l10n
-                          .safetySettingsScreenBodyEventsYouReviewed,
-                      icon: CatchIcons.rateReviewOutlined,
-                      onTap: operationPending
-                          ? null
-                          : () => context.pushNamed(
-                              Routes.reviewsHistoryScreen.name,
-                            ),
-                    ),
-                    CatchField.nav(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.paymentHistoryRow,
-                      title:
-                          context.l10n.safetySettingsScreenTitlePaymentHistory,
-                      valueText: context
-                          .l10n
-                          .safetySettingsScreenBodyBookingsAndReceipts,
-                      icon: CatchIcons.receiptLongOutlined,
-                      onTap: operationPending
-                          ? null
-                          : () => context.pushNamed(
-                              Routes.paymentHistoryScreen.name,
-                            ),
-                    ),
-                    CatchField.nav(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.hostAppRow,
-                      title: context.l10n.safetySettingsScreenTitleCatchHost,
-                      valueText: context
-                          .l10n
-                          .safetySettingsScreenBodyManageEventsAndClubs,
-                      icon: CatchIcons.workOutlineRounded,
+                          context.l10n.safetySettingsScreenTitlePrivacyPolicy,
+                      icon: CatchIcons.lockOutline,
                       action:
                           _pendingExternalLink ==
-                              _SettingsExternalLinkAction.hostApp
+                              _SettingsExternalLinkAction.privacyPolicy
                           ? const SizedBox.square(
                               dimension: CatchIcon.control,
                               child: CatchLoadingIndicator(),
                             )
                           : null,
-                      onTap: operationPending ? null : _openHostApp,
-                    ),
-                    CatchField.nav(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.launchAccessRow,
-                      title: context
-                          .l10n
-                          .launchAccessLaunchAccessApplicationScreenTextJoinTheNextCity,
-                      valueText: context
-                          .l10n
-                          .launchAccessLaunchAccessApplicationScreenTextTellUsWhereYou,
-                      icon: CatchIcons.locationCityOutlined,
                       onTap: operationPending
                           ? null
-                          : () => context.pushNamed(
-                              Routes.launchAccessScreen.name,
+                          : () => _openExternal(
+                              _SettingsExternalLinkAction.privacyPolicy,
+                              uri,
                             ),
                     ),
-                  ],
-                ),
-                CatchSection.fieldRows(
-                  title: context.l10n.safetySettingsScreenTitleNotifications,
-                  children: [
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.newCatchesSwitch,
-                      contract: CatchContractConstraints
-                          .updateUserProfilePatchPrefsNewCatches,
-                      title: context
-                          .l10n
-                          .safetySettingsScreenTitlePushNotifications,
-                      icon: CatchIcons.favoriteOutline,
-                      value: state.preferences.newCatches,
-                      onChanged: operationPending
-                          ? null
-                          : (value) => _savePref(
-                              preference: SettingsPreference.newCatches,
-                              value: value,
-                            ),
-                    ),
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.crossPathsInvitationsSwitch,
-                      contract: CatchContractConstraints
-                          .updateUserProfilePatchPrefsCrossPathsInvitations,
-                      title: context
-                          .l10n
-                          .safetySettingsScreenTitleCrossPathsInvitations,
-                      icon: CatchIcons.personSearchOutlined,
-                      value: state.preferences.crossPathsInvitations,
-                      onChanged: operationPending
-                          ? null
-                          : (value) => _savePref(
-                              preference:
-                                  SettingsPreference.crossPathsInvitations,
-                              value: value,
-                            ),
-                    ),
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.messagesSwitch,
-                      contract: CatchContractConstraints
-                          .updateUserProfilePatchPrefsMessages,
-                      title: context.l10n.safetySettingsScreenTitleMessages,
-                      icon: CatchIcons.chatBubbleOutlineRounded,
-                      value: state.preferences.messages,
-                      onChanged: operationPending
-                          ? null
-                          : (value) => _savePref(
-                              preference: SettingsPreference.messages,
-                              value: value,
-                            ),
-                    ),
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.eventRemindersSwitch,
-                      contract: CatchContractConstraints
-                          .updateUserProfilePatchPrefsEventReminders,
-                      title:
-                          context.l10n.safetySettingsScreenTitleEventReminders,
-                      icon: CatchIcons.directionsRunOutlined,
-                      value: state.preferences.eventReminders,
-                      onChanged: operationPending
-                          ? null
-                          : (value) => _savePref(
-                              preference: SettingsPreference.eventReminders,
-                              value: value,
-                            ),
-                    ),
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.eventStatusUpdatesSwitch,
-                      contract: CatchContractConstraints
-                          .updateUserProfilePatchPrefsRunStatusUpdates,
-                      title: context
-                          .l10n
-                          .safetySettingsScreenTitleEventChangesAndCancellations,
-                      icon: CatchIcons.eventRepeatOutlined,
-                      value: state.preferences.eventStatusUpdates,
-                      onChanged: operationPending
-                          ? null
-                          : (value) => _savePref(
-                              preference: SettingsPreference.eventStatusUpdates,
-                              value: value,
-                            ),
-                    ),
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.clubUpdatesSwitch,
-                      contract: CatchContractConstraints
-                          .updateUserProfilePatchPrefsClubUpdates,
-                      title: context
-                          .l10n
-                          .safetySettingsScreenTitleClubAnnouncements,
-                      icon: CatchIcons.notificationsActiveOutlined,
-                      value: state.preferences.clubUpdates,
-                      onChanged: operationPending
-                          ? null
-                          : (value) => _savePref(
-                              preference: SettingsPreference.clubUpdates,
-                              value: value,
-                            ),
-                    ),
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.weeklyDigestSwitch,
-                      contract: CatchContractConstraints
-                          .updateUserProfilePatchPrefsWeeklyDigest,
-                      title: context.l10n.safetySettingsScreenTitleEmailUpdates,
-                      icon: CatchIcons.markEmailReadOutlined,
-                      value: state.preferences.weeklyDigest,
-                      onChanged: operationPending
-                          ? null
-                          : (value) => _savePref(
-                              preference: SettingsPreference.weeklyDigest,
-                              value: value,
-                            ),
-                    ),
-                  ],
-                ),
-                CatchSection.fieldRows(
-                  title: context.l10n.safetySettingsScreenTitlePrivacySafety,
-                  footer: BlockedAccountsSection(
-                    state: state.blockedAccounts,
-                    unblocking: state.mutations.unblocking,
-                    enabled: !operationPending,
-                    onRetry: operationPending
-                        ? null
-                        : () => ref.invalidate(watchBlockedUsersProvider),
-                    onUnblock: _unblockUser,
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.deleteAccountRow,
+                    title: context
+                        .l10n
+                        .safetySettingsScreenTitleDeleteAccount658588,
+                    icon: CatchIcons.deleteOutline,
+                    tone: CatchFieldTone.danger,
+                    action: state.mutations.deletingAccount
+                        ? const SizedBox.square(
+                            dimension: CatchIcon.control,
+                            child: CatchLoadingIndicator(),
+                          )
+                        : null,
+                    onTap: operationPending ? null : _confirmDeleteAccount,
                   ),
-                  children: [
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.showInCrossPathsSwitch,
-                      contract: CatchContractConstraints
-                          .updateUserProfilePatchPrefsShowInCrossPaths,
-                      title: context
-                          .l10n
-                          .safetySettingsScreenTitleShowInCrossPaths,
-                      body:
-                          context.l10n.safetySettingsScreenBodyShowInCrossPaths,
-                      icon: CatchIcons.favoriteBorderRounded,
-                      value: state.preferences.showInCrossPaths,
-                      onChanged: operationPending
-                          ? null
-                          : (value) => _savePref(
-                              preference: SettingsPreference.showInCrossPaths,
-                              value: value,
-                            ),
-                    ),
-                    CatchField.read(
-                      copy: catchFieldCopy(context.l10n),
-                      title: context.l10n.safetySettingsScreenTitleBlockedUsers,
-                      valueText: state.blockedAccounts.count?.toString(),
-                      icon: CatchIcons.shieldOutlined,
-                    ),
-                    CatchField.read(
-                      copy: catchFieldCopy(context.l10n),
-                      title: context.l10n.safetySettingsScreenTitleWhoCanSeeYou,
-                      valueText: context
-                          .l10n
-                          .safetySettingsScreenBodyRunnersOnMyEvents,
-                      icon: CatchIcons.visibilityOutlined,
-                    ),
-                    CatchField.toggle(
-                      copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.showOnMapSwitch,
-                      contract: CatchContractConstraints
-                          .updateUserProfilePatchPrefsShowOnMap,
-                      title: context.l10n.safetySettingsScreenTitleShowMeOnMap,
-                      icon: CatchIcons.mapOutlined,
-                      value: state.preferences.showOnMap,
-                      onChanged: operationPending
-                          ? null
-                          : (value) => _savePref(
-                              preference: SettingsPreference.showOnMap,
-                              value: value,
-                            ),
-                    ),
-                    if (AppConfig.privacyPolicyUrl case final uri?)
-                      CatchField.nav(
-                        copy: catchFieldCopy(context.l10n),
-                        key: SettingsKeys.privacyPolicyRow,
-                        title:
-                            context.l10n.safetySettingsScreenTitlePrivacyPolicy,
-                        icon: CatchIcons.lockOutline,
-                        action:
-                            _pendingExternalLink ==
-                                _SettingsExternalLinkAction.privacyPolicy
-                            ? const SizedBox.square(
-                                dimension: CatchIcon.control,
-                                child: CatchLoadingIndicator(),
-                              )
-                            : null,
-                        onTap: operationPending
-                            ? null
-                            : () => _openExternal(
-                                _SettingsExternalLinkAction.privacyPolicy,
-                                uri,
-                              ),
-                      ),
+                ],
+              ),
+              CatchSection.fieldRows(
+                title: context.l10n.safetySettingsScreenTitleAbout,
+                children: [
+                  if (AppConfig.helpUrl case final uri?)
                     CatchField.nav(
                       copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.deleteAccountRow,
-                      title: context
-                          .l10n
-                          .safetySettingsScreenTitleDeleteAccount658588,
-                      icon: CatchIcons.deleteOutline,
-                      tone: CatchFieldTone.danger,
-                      action: state.mutations.deletingAccount
+                      key: SettingsKeys.helpSupportRow,
+                      title: context.l10n.safetySettingsScreenTitleHelpSupport,
+                      valueText: context.l10n.safetySettingsScreenBodyContactUs,
+                      icon: CatchIcons.helpOutline,
+                      action:
+                          _pendingExternalLink ==
+                              _SettingsExternalLinkAction.helpSupport
                           ? const SizedBox.square(
                               dimension: CatchIcon.control,
                               child: CatchLoadingIndicator(),
                             )
                           : null,
-                      onTap: operationPending ? null : _confirmDeleteAccount,
+                      onTap: operationPending
+                          ? null
+                          : () => _openExternal(
+                              _SettingsExternalLinkAction.helpSupport,
+                              uri,
+                            ),
                     ),
-                  ],
-                ),
-                CatchSection.fieldRows(
-                  title: context.l10n.safetySettingsScreenTitleAbout,
-                  children: [
-                    if (AppConfig.helpUrl case final uri?)
-                      CatchField.nav(
-                        copy: catchFieldCopy(context.l10n),
-                        key: SettingsKeys.helpSupportRow,
-                        title:
-                            context.l10n.safetySettingsScreenTitleHelpSupport,
-                        valueText:
-                            context.l10n.safetySettingsScreenBodyContactUs,
-                        icon: CatchIcons.helpOutline,
-                        action:
-                            _pendingExternalLink ==
-                                _SettingsExternalLinkAction.helpSupport
-                            ? const SizedBox.square(
-                                dimension: CatchIcon.control,
-                                child: CatchLoadingIndicator(),
-                              )
-                            : null,
-                        onTap: operationPending
-                            ? null
-                            : () => _openExternal(
-                                _SettingsExternalLinkAction.helpSupport,
-                                uri,
-                              ),
-                      ),
-                    if (AppConfig.termsUrl case final uri?)
-                      CatchField.nav(
-                        copy: catchFieldCopy(context.l10n),
-                        key: SettingsKeys.termsRow,
-                        title: context.l10n.safetySettingsScreenTitleTerms,
-                        valueText: context.l10n.safetySettingsScreenBodyLegal,
-                        icon: CatchIcons.descriptionOutlined,
-                        action:
-                            _pendingExternalLink ==
-                                _SettingsExternalLinkAction.terms
-                            ? const SizedBox.square(
-                                dimension: CatchIcon.control,
-                                child: CatchLoadingIndicator(),
-                              )
-                            : null,
-                        onTap: operationPending
-                            ? null
-                            : () => _openExternal(
-                                _SettingsExternalLinkAction.terms,
-                                uri,
-                              ),
-                      ),
-                    CatchField.read(
-                      copy: catchFieldCopy(context.l10n),
-                      title: context.l10n.safetySettingsScreenTitleVersion,
-                      valueText: version,
-                      icon: CatchIcons.infoOutline,
-                    ),
-                  ],
-                ),
-                CatchSection.fieldRows(
-                  children: [
+                  if (AppConfig.termsUrl case final uri?)
                     CatchField.nav(
                       copy: catchFieldCopy(context.l10n),
-                      key: SettingsKeys.signOutRow,
-                      title: context.l10n.safetySettingsScreenTitleLogOut,
-                      icon: CatchIcons.logoutRounded,
-                      tone: CatchFieldTone.danger,
-                      action: state.mutations.signingOut
+                      key: SettingsKeys.termsRow,
+                      title: context.l10n.safetySettingsScreenTitleTerms,
+                      valueText: context.l10n.safetySettingsScreenBodyLegal,
+                      icon: CatchIcons.descriptionOutlined,
+                      action:
+                          _pendingExternalLink ==
+                              _SettingsExternalLinkAction.terms
                           ? const SizedBox.square(
                               dimension: CatchIcon.control,
                               child: CatchLoadingIndicator(),
                             )
                           : null,
-                      onTap: operationPending ? null : _signOut,
+                      onTap: operationPending
+                          ? null
+                          : () => _openExternal(
+                              _SettingsExternalLinkAction.terms,
+                              uri,
+                            ),
                     ),
-                  ],
-                ),
-                gapH20,
-                Center(
-                  child: Text(
-                    context.l10n.safetySettingsScreenTextVersionMade(
-                      version: version,
-                    ),
-                    style: CatchTextStyles.statusLabel(context, color: t.ink3),
+                  CatchField.read(
+                    copy: catchFieldCopy(context.l10n),
+                    title: context.l10n.safetySettingsScreenTitleVersion,
+                    valueText: version,
+                    icon: CatchIcons.infoOutline,
                   ),
+                ],
+              ),
+              CatchSection.fieldRows(
+                children: [
+                  CatchField.nav(
+                    copy: catchFieldCopy(context.l10n),
+                    key: SettingsKeys.signOutRow,
+                    title: context.l10n.safetySettingsScreenTitleLogOut,
+                    icon: CatchIcons.logoutRounded,
+                    tone: CatchFieldTone.danger,
+                    action: state.mutations.signingOut
+                        ? const SizedBox.square(
+                            dimension: CatchIcon.control,
+                            child: CatchLoadingIndicator(),
+                          )
+                        : null,
+                    onTap: operationPending ? null : _signOut,
+                  ),
+                ],
+              ),
+              gapH20,
+              Center(
+                child: Text(
+                  context.l10n.safetySettingsScreenTextVersionMade(
+                    version: version,
+                  ),
+                  style: CatchTextStyles.statusLabel(context, color: t.ink3),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

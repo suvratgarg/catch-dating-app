@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.63.0
+version: 3.64.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -388,9 +388,8 @@ Widgetbook callers.
 | `CatchBanner` | `packages/catch_ui/lib/src/components/catch_banner.dart` | Persistent inline feedback with semantic tones and caller-owned actions. `.error` and `.errorWithRetry` use the same renderer; retry copy and callback come from callers. Geometry and button styling remain package-owned. |
 | `CatchLocalizedErrorBanner` | `lib/core/riverpod_ui/catch_localized_error_banner.dart` | App error-to-copy adapter with default error and `.mutation` state recipes. Resolves copy from the active locale and preserves explicit recovery callbacks. The mutation recipe renders only errors and retains caller-owned subscriptions. |
 | `showCatchSnackBar` | `packages/catch_ui/lib/src/components/catch_snack_bar.dart` | Canonical transient-feedback publisher with caller-owned message and action. The exact file owns raw framework snackbar construction/publication. |
+| `listenToCatchMutationErrors` | `lib/core/riverpod_ui/catch_error_snack_bar.dart` | Nonvisual Consumer-build subscription operation. Preserves keyed handles and owning branches, deduplicates handles, and publishes pending-to-error transitions through the canonical snackbar. |
 | `showCatchErrorSnackBar` | `lib/core/riverpod_ui/catch_error_snack_bar.dart` | App error mapping and localized retry policy translated onto the shared snackbar publisher. |
-| `CatchMutationErrorListener` | `lib/core/riverpod_ui/catch_mutation_error_listener.dart` | Snackbar boundary for one Riverpod mutation pending-to-error transition. |
-| `CatchMutationErrorListeners` | `lib/core/riverpod_ui/catch_mutation_error_listeners.dart` | Snackbar boundary for several mutations sharing one transient error channel. |
 | `CatchNoticeOverlay` | `lib/core/riverpod_ui/catch_notice_overlay.dart` | One app-level overlay above the router, enforced by `catch_notice_host_is_app_owned`. Owns safe-area entry/resting geometry, bounded priority/FIFO display, replacement timers, tap/swipe dismissal, F6/Shift+F6 focus transfer without autofocus, accessibility and reduced motion. Ordinary and arrival notices share interaction-aware expiry; the layer supplies the Tooltip overlay ancestor. Persistent offline/rehearsal context remains in `CatchStatusStrip` below the primary tabs. |
 | `ForegroundNotificationListener` | `lib/notifications/presentation/foreground_notification_listener.dart` | App-level feature adapter, not a visual primitive. Converts session-validated arrivals to configurable `CatchNoticeData.arrival`, derives Host/Consumer conversation navigation locally and suppresses active-conversation notices. SDK subscriptions remain in `FcmService`. |
 | `CatchStatusStrip` | `packages/catch_ui/lib/src/components/catch_status_strip.dart` | Durable offline/rehearsal bands. Owns common icon, wrapping label/detail, semantic color and responsive action lanes; only screen layouts construct it. |

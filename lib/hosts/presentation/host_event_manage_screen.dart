@@ -9,9 +9,9 @@ import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart'
     show EventAdmissionFormat;
@@ -456,52 +456,54 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     final topBarTitleMaxLines = MediaQuery.textScalerOf(context).scale(1) >= 1.4
         ? 3
         : 1;
-    return CatchMutationErrorListener(
-      mutation: HostEventManageController.sharePrivateLinkMutation,
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [HostEventManageController.sharePrivateLinkMutation],
       errorContext: AppErrorContext.event,
-      child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          large: false,
-          title: screenState.eventTitle,
-          eyebrow: topBarEyebrow,
+    );
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        large: false,
+        title: screenState.eventTitle,
+        eyebrow: topBarEyebrow,
+        titleMaxLines: topBarTitleMaxLines,
+        height: CatchTopBar.workspaceHeightFor(
+          context: context,
+          hasEyebrow: true,
           titleMaxLines: topBarTitleMaxLines,
-          height: CatchTopBar.workspaceHeightFor(
-            context: context,
-            hasEyebrow: true,
-            titleMaxLines: topBarTitleMaxLines,
-          ),
-          allowContentHeightExpansion: true,
-          contentCrossAxisAlignment: CrossAxisAlignment.start,
-          leading: CatchIconAction.toolbar(
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            icon: CatchIcons.arrowBackIosNewRounded,
-            onPressed: onBackToSuccess,
-          ),
-          actions: [
-            CatchTopBarPrimaryButton(
-              label: context.l10n.hostsHostEventRosterDrawerTitle,
-              icon: CatchIcons.groupsRounded,
-              onPressed: () => _setRosterOpen(true, screenState.phase),
-            ),
-          ],
-          divider: scrolledUnder,
         ),
-        body: CatchRouteBody.fullBleed(
-          child: HostEventRosterDrawer(
-            open: _rosterOpen,
-            bookedCount: bookedCount,
-            showHandle: false,
-            onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
-            onMessageGuests: () => _openEventMessages(club, event),
-            bodyMaxWidth: screenState.phase == HostEventWorkspacePhase.runtime
-                ? CatchLayout.hostEventLiveWorkspaceMaxContentWidth
-                : CatchLayout.maxContentWidth,
-            body: workspaceBody,
-            roster: ListView(
-              key: const ValueKey<String>('host_event_roster_drawer.scroll'),
-              padding: CatchInsets.pageBody,
-              children: rosterChildren,
-            ),
+        allowContentHeightExpansion: true,
+        contentCrossAxisAlignment: CrossAxisAlignment.start,
+        leading: CatchIconAction.toolbar(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          icon: CatchIcons.arrowBackIosNewRounded,
+          onPressed: onBackToSuccess,
+        ),
+        actions: [
+          CatchTopBarPrimaryButton(
+            label: context.l10n.hostsHostEventRosterDrawerTitle,
+            icon: CatchIcons.groupsRounded,
+            onPressed: () => _setRosterOpen(true, screenState.phase),
+          ),
+        ],
+        divider: scrolledUnder,
+      ),
+      body: CatchRouteBody.fullBleed(
+        child: HostEventRosterDrawer(
+          open: _rosterOpen,
+          bookedCount: bookedCount,
+          showHandle: false,
+          onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
+          onMessageGuests: () => _openEventMessages(club, event),
+          bodyMaxWidth: screenState.phase == HostEventWorkspacePhase.runtime
+              ? CatchLayout.hostEventLiveWorkspaceMaxContentWidth
+              : CatchLayout.maxContentWidth,
+          body: workspaceBody,
+          roster: ListView(
+            key: const ValueKey<String>('host_event_roster_drawer.scroll'),
+            padding: CatchInsets.pageBody,
+            children: rosterChildren,
           ),
         ),
       ),

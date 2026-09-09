@@ -18,8 +18,8 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -137,51 +137,53 @@ class ClubDetailScreen extends ConsumerWidget {
         );
       }
 
-      return CatchMutationErrorListeners(
+      listenToCatchMutationErrors(
+        context,
+        ref,
         mutations: [
           ClubMembershipController.joinMutation,
           ClubMembershipController.leaveMutation,
           ClubMembershipController.pushNotificationsMutation,
           ClubHostContactController.startConversationMutation,
         ],
-        child: CatchScreenScaffold.workspace(
-          body: ClubDetailBody(
-            state: bodyState,
-            onShareClub: (buttonContext, club) => showClubShareCardSheet(
-              buttonContext,
-              club: club,
-              share: ref.read(externalShareControllerProvider),
-            ),
-            onEventSelected: (event) => context.pushNamed(
-              _eventDetailRouteName(bodyState.eventRouteTarget),
-              pathParameters: {
-                context.l10n.clubsClubDetailScreenBodyClubid: bodyState.club.id,
-                context.l10n.clubsClubDetailScreenBodyEventid: event.id,
-              },
-              extra: event,
-            ),
-            onViewHostProfile: (hostUid) => context.pushNamed(
-              Routes.publicProfileScreen.name,
-              pathParameters: {
-                context.l10n.clubsClubDetailScreenBodyUid: hostUid,
-              },
-            ),
-            onMessageHost: (buttonContext, host) =>
-                messageHost(buttonContext, bodyState.club, host),
-            onContactSelected: openClubContact,
+      );
+      return CatchScreenScaffold.workspace(
+        body: ClubDetailBody(
+          state: bodyState,
+          onShareClub: (buttonContext, club) => showClubShareCardSheet(
+            buttonContext,
+            club: club,
+            share: ref.read(externalShareControllerProvider),
           ),
-          bottomNavigationBar: switch (bodyState.dockState) {
-            null => null,
-            final state => ClubMembershipDock(
-              club: state.club,
-              isMember: state.isMember,
-              isAuthenticated: state.isAuthenticated,
-              isMutating: state.isMutating,
-              pushNotificationsEnabled: state.pushNotificationsEnabled,
-              isPushMutating: state.isPushMutating,
-            ),
-          },
+          onEventSelected: (event) => context.pushNamed(
+            _eventDetailRouteName(bodyState.eventRouteTarget),
+            pathParameters: {
+              context.l10n.clubsClubDetailScreenBodyClubid: bodyState.club.id,
+              context.l10n.clubsClubDetailScreenBodyEventid: event.id,
+            },
+            extra: event,
+          ),
+          onViewHostProfile: (hostUid) => context.pushNamed(
+            Routes.publicProfileScreen.name,
+            pathParameters: {
+              context.l10n.clubsClubDetailScreenBodyUid: hostUid,
+            },
+          ),
+          onMessageHost: (buttonContext, host) =>
+              messageHost(buttonContext, bodyState.club, host),
+          onContactSelected: openClubContact,
         ),
+        bottomNavigationBar: switch (bodyState.dockState) {
+          null => null,
+          final state => ClubMembershipDock(
+            club: state.club,
+            isMember: state.isMember,
+            isAuthenticated: state.isAuthenticated,
+            isMutating: state.isMutating,
+            pushNotificationsEnabled: state.pushNotificationsEnabled,
+            isPushMutating: state.isPushMutating,
+          ),
+        },
       );
     }
 

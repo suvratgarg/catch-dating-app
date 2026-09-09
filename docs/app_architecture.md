@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.44.0
+version: 1.45.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -207,7 +207,7 @@ window in `docs/migrations/clubs_to_organizers.md`.
 7. The old project context names some pre-migration error files. The current
    error owner is this document; app-facing errors must use the
    `CatchErrorState` family, `CatchLocalizedErrorBanner.mutation`,
-   `CatchMutationErrorListener(s)`, or `showCatchErrorSnackBar` as appropriate.
+   `listenToCatchMutationErrors`, or `showCatchErrorSnackBar` as appropriate.
 
 8. Private helper widgets are not an acceptable long-term destination for
    reusable UI. A widget must be public and catalogable, merged into a canonical
@@ -1359,7 +1359,7 @@ empty, retry, stale data, and mutation failure are handled.
 | Section-level load | Section widget or view model | `CatchErrorState` in inline/compact mode, section skeleton, section retry |
 | Empty success | Screen/body/section | `CatchEmptyState`, `CatchSliverEmptyState`, or a domain-specific empty widget, never an error primitive |
 | Mutation/action pending | Controller mutation + UI affordance | disabled control, spinner, optimistic state when intentional |
-| Mutation/action failure | Screen or section | `CatchLocalizedErrorBanner.mutation`, `CatchMutationErrorListener(s)`, or `showCatchErrorSnackBar` |
+| Mutation/action failure | Screen or section | `CatchLocalizedErrorBanner.mutation`, `listenToCatchMutationErrors`, or `showCatchErrorSnackBar` |
 | Form validation | Form/controller/domain validator | field error text or inline form banner |
 | Optional enrichment failure | Repository/view model | keep primary UI alive, log through error context when useful |
 | Platform/plugin failure | Service/repository/controller seam | typed app error, snackbar/banner if user action failed |
@@ -1448,8 +1448,11 @@ delivery channels:
 - `CatchLocalizedErrorBanner.mutation` is the persistent Riverpod mutation recipe
   on the app-localized banner. Callers retain the mutation subscription; the
   recipe renders only its error state through the same copy/recovery boundary.
-- `CatchMutationErrorListener` and `CatchMutationErrorListeners` are transient
-  snackbar boundaries for one or many mutations.
+- `listenToCatchMutationErrors` subscribes during the owning Consumer build,
+  in the branch that owns the action. It preserves keyed mutation handles,
+  subscribes once per distinct handle, and publishes only pending-to-error
+  transitions. Riverpod cancels the subscriptions when that branch or widget
+  leaves; rebuilds never replay an existing failure.
 - `showCatchErrorSnackBar` is the canonical transient action failure surface.
 - `CatchFrameworkErrorView` is separate and only for `ErrorWidget.builder` /
   framework build/render crashes.
@@ -1592,7 +1595,7 @@ Rules:
   `CatchLocalizedErrorState` when the input is an app error object.
 - Persistent mutation/form failures use `CatchLocalizedErrorBanner` or
   `CatchLocalizedErrorBanner.mutation`.
-- Transient action failures use `CatchMutationErrorListener(s)` or
+- Transient action failures use `listenToCatchMutationErrors` or
   `showCatchErrorSnackBar`.
 - Flutter framework/build/layout crashes use `CatchFrameworkErrorView`, not the
   normal app-facing error family.
@@ -1639,14 +1642,16 @@ return Column(
 );
 ```
 
-For transient errors, wrap the screen or section:
+For transient errors, subscribe in the owning Consumer build branch:
 
 ```dart
-CatchMutationErrorListener(
-  mutation: EventBookingController.joinMutation,
-  errorContext: AppErrorContext.events,
-  child: EventDetailBody(...),
+listenToCatchMutationErrors(
+  context,
+  ref,
+  mutations: [EventBookingController.joinMutation],
+  errorContext: AppErrorContext.event,
 );
+return EventDetailBody(...);
 ```
 
 Use try/catch in controllers only for adding useful context, rollback, converting
@@ -1807,9 +1812,9 @@ Candidate patterns:
 | Frontend scanner | `tool/audit/frontend_error_candidates.dart` |
 | Branded error surfaces | `packages/catch_ui/lib/src/components/catch_error_state.dart` |
 | Branded error snackbar | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
-| Error banner | `packages/catch_ui/lib/src/components/catch_error_banner.dart` |
+| Error banner | `packages/catch_ui/lib/src/components/catch_banner.dart` |
 | Mutation helpers | `lib/core/riverpod_ui/mutation_error_util.dart` |
-| Mutation snackbar listener | `lib/core/riverpod_ui/catch_mutation_error_listener.dart` |
+| Mutation subscriptions and error snackbar publication | `lib/core/riverpod_ui/catch_error_snack_bar.dart` |
 | Global error handlers | `lib/main.dart` |
 
 ## Controller And View-Model Contract
@@ -3824,89 +3829,91 @@ Widget build(BuildContext context) {
       ),
     );
 
-    return CatchMutationErrorListener(
-      mutation: EventDetailController.toggleSavedEventMutation,
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [EventDetailController.toggleSavedEventMutation],
       errorContext: AppErrorContext.event,
-      child: Scaffold(
-        backgroundColor: style.pageBackground,
-        body: EventDetailBody(
+    );
+    return Scaffold(
+      backgroundColor: style.pageBackground,
+      body: EventDetailBody(
+        event: vm.event,
+        userProfile: vm.userProfile,
+        clubId: widget.clubId,
+        reviews: vm.reviews,
+        isAuthenticated: vm.isAuthenticated,
+        sectionVisibility: sectionVisibility,
+        isSaved: vm.isSaved,
+        participation: vm.participation,
+        savePending: saveMutation.isPending,
+        surfaceStyle: style,
+        onBack: () => Navigator.of(context).pop(),
+        onShare: shareEvent,
+        showAddToCalendar: _canAddEventToCalendar(
           event: vm.event,
-          userProfile: vm.userProfile,
-          clubId: widget.clubId,
-          reviews: vm.reviews,
-          isAuthenticated: vm.isAuthenticated,
-          sectionVisibility: sectionVisibility,
-          isSaved: vm.isSaved,
           participation: vm.participation,
-          savePending: saveMutation.isPending,
-          surfaceStyle: style,
-          onBack: () => Navigator.of(context).pop(),
-          onShare: shareEvent,
-          showAddToCalendar: _canAddEventToCalendar(
-            event: vm.event,
-            participation: vm.participation,
-            isHost: sectionVisibility.renderSocialAsHost,
-            now: now,
-          ),
-          onAddToCalendar: (buttonContext) =>
-              unawaited(_addEventToCalendar(buttonContext, vm.event, calendar)),
-          onToggleSaved: () => _toggleSavedEvent(
-            context,
-            ref,
-            event: vm.event,
-            clubId: widget.clubId,
-            userProfile: vm.userProfile,
-            isAuthenticated: vm.isAuthenticated,
-            isSaved: vm.isSaved,
-          ),
-          companionState: companionState,
-          hostState: hostState,
-          socialState: socialState,
-          onLocationTap: vm.event.hasExactStartingPoint
-              ? () => context.pushNamed(
-                  Routes.eventLocationMapScreen.name,
-                  pathParameters: {'eventId': vm.event.id},
-                )
-              : null,
-          onOpenCompanion: () => context.pushNamed(
-            Routes.eventSuccessCompanionScreen.name,
-            pathParameters: {'clubId': widget.clubId, 'eventId': vm.event.id},
-            extra: vm.event,
-          ),
-          onRetryCompanion: () =>
-              ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
-          onViewClub: (clubId) => context.pushNamed(
-            Routes.clubDetailScreen.name,
-            pathParameters: {'clubId': clubId},
-          ),
-          onMessageHost: (clubId, hostUid) => unawaited(
-            _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
-          ),
-          onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
-          inviteCode: widget.inviteCode,
-          inviteLinkId: widget.inviteLinkId,
+          isHost: sectionVisibility.renderSocialAsHost,
           now: now,
-          presentationMode: widget.presentationMode,
-          heroTag: widget.heroTag,
         ),
-        bottomNavigationBar: _eventDetailBottomNavigationBar(
+        onAddToCalendar: (buttonContext) =>
+            unawaited(_addEventToCalendar(buttonContext, vm.event, calendar)),
+        onToggleSaved: () => _toggleSavedEvent(
+          context,
+          ref,
           event: vm.event,
-          userProfile: vm.userProfile,
           clubId: widget.clubId,
+          userProfile: vm.userProfile,
           isAuthenticated: vm.isAuthenticated,
-          participation: vm.participation,
+          isSaved: vm.isSaved,
+        ),
+        companionState: companionState,
+        hostState: hostState,
+        socialState: socialState,
+        onLocationTap: vm.event.hasExactStartingPoint
+            ? () => context.pushNamed(
+                Routes.eventLocationMapScreen.name,
+                pathParameters: {'eventId': vm.event.id},
+              )
+            : null,
+        onOpenCompanion: () => context.pushNamed(
+          Routes.eventSuccessCompanionScreen.name,
+          pathParameters: {'clubId': widget.clubId, 'eventId': vm.event.id},
+          extra: vm.event,
+        ),
+        onRetryCompanion: () =>
+            ref.invalidate(watchEventSuccessPlanProvider(vm.event.id)),
+        onViewClub: (clubId) => context.pushNamed(
+          Routes.clubDetailScreen.name,
+          pathParameters: {'clubId': clubId},
+        ),
+        onMessageHost: (clubId, hostUid) => unawaited(
+          _messageHost(context, ref, clubId: clubId, hostUid: hostUid),
+        ),
+        onRetryHosts: () => ref.invalidate(fetchClubProvider(widget.clubId)),
+        inviteCode: widget.inviteCode,
+        inviteLinkId: widget.inviteLinkId,
+        now: now,
+        presentationMode: widget.presentationMode,
+        heroTag: widget.heroTag,
+      ),
+      bottomNavigationBar: _eventDetailBottomNavigationBar(
+        event: vm.event,
+        userProfile: vm.userProfile,
+        clubId: widget.clubId,
+        isAuthenticated: vm.isAuthenticated,
+        participation: vm.participation,
+        inviteCode: widget.inviteCode,
+        inviteLinkId: widget.inviteLinkId,
+        now: now,
+        darkSurface: isSpotlightDark,
+        sectionVisibility: sectionVisibility,
+        onGuestBook: () => _openEventSignIn(
+          context,
+          clubId: widget.clubId,
+          eventId: vm.event.id,
           inviteCode: widget.inviteCode,
           inviteLinkId: widget.inviteLinkId,
-          now: now,
-          darkSurface: isSpotlightDark,
-          sectionVisibility: sectionVisibility,
-          onGuestBook: () => _openEventSignIn(
-            context,
-            clubId: widget.clubId,
-            eventId: vm.event.id,
-            inviteCode: widget.inviteCode,
-            inviteLinkId: widget.inviteLinkId,
-          ),
         ),
       ),
     );

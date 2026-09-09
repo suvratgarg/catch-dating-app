@@ -12,8 +12,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_sliver.dart'
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
@@ -1784,9 +1782,12 @@ Widget catchInlineErrorStateCatalogStates(BuildContext context) {
   path: '[Core catalog]/Feedback',
 )
 Widget catchBannerErrorRecipes(BuildContext context) {
+  final saveMutation = Mutation<void>();
+  final deleteMutation = Mutation<void>();
+
   return WidgetbookCatalogFrame(
-    title: 'Mutation error banner',
-    catalogId: 'core.widgets.catch_banner',
+    title: 'Error feedback',
+    catalogId: 'catch.banner',
     children: [
       _StateCard(
         label: 'persistent inline error',
@@ -1800,6 +1801,56 @@ Widget catchBannerErrorRecipes(BuildContext context) {
               onRetry: _noop,
             ),
           ],
+        ),
+      ),
+      _StateCard(
+        label: 'transient action failure',
+        child: Builder(
+          builder: (context) => CatchButton(
+            label: 'Show action error',
+            leading: Icon(CatchIcons.errorOutlineRounded),
+            onPressed: () => showCatchErrorSnackBar(
+              context,
+              Exception('Share sheet is unavailable right now.'),
+              onRetry: _noop,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'mutation subscriptions',
+        child: Consumer(
+          builder: (context, ref, _) {
+            listenToCatchMutationErrors(
+              context,
+              ref,
+              mutations: [saveMutation, deleteMutation],
+            );
+            return _InlineWrap(
+              children: [
+                CatchButton(
+                  label: 'Fail save',
+                  onPressed: () => unawaited(
+                    saveMutation
+                        .run(ref, (_) async => throw StateError('Save failed'))
+                        .catchError((_) {}),
+                  ),
+                ),
+                CatchButton(
+                  label: 'Fail delete',
+                  variant: CatchButtonVariant.danger,
+                  onPressed: () => unawaited(
+                    deleteMutation
+                        .run(
+                          ref,
+                          (_) async => throw StateError('Delete failed'),
+                        )
+                        .catchError((_) {}),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     ],
@@ -1875,82 +1926,6 @@ Widget catchBannerCatalogStates(BuildContext context) {
               tone: CatchBannerTone.neutral,
             ),
           ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMutationErrorListener,
-  path: '[Core catalog]/Feedback',
-)
-Widget catchMutationErrorListenerCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'Action error snackbar',
-    catalogId: 'core.widgets.catch_mutation_error_listener',
-    children: [
-      _StateCard(
-        label: 'transient action failure',
-        child: Builder(
-          builder: (context) => CatchButton(
-            label: 'Show action error',
-            leading: Icon(CatchIcons.errorOutlineRounded),
-            onPressed: () => showCatchErrorSnackBar(
-              context,
-              Exception('Share sheet is unavailable right now.'),
-              onRetry: _noop,
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMutationErrorListeners,
-  path: '[Core catalog]/Feedback',
-)
-Widget catchMutationErrorListenersCatalogStates(BuildContext context) {
-  final saveMutation = Mutation<void>();
-  final deleteMutation = Mutation<void>();
-  return WidgetbookCatalogFrame(
-    title: 'CatchMutationErrorListeners',
-    catalogId: 'core.widgets.catch_mutation_error_listeners',
-    children: [
-      _StateCard(
-        label: 'multiple snackbar boundaries',
-        child: Consumer(
-          builder: (context, ref, _) => CatchMutationErrorListeners(
-            mutations: [saveMutation, deleteMutation],
-            child: _InlineWrap(
-              children: [
-                CatchButton(
-                  label: 'Fail save',
-                  onPressed: () => unawaited(
-                    saveMutation
-                        .run(ref, (_) async => throw StateError('Save failed'))
-                        .catchError((_) {}),
-                  ),
-                ),
-                CatchButton(
-                  label: 'Fail delete',
-                  variant: CatchButtonVariant.danger,
-                  onPressed: () => unawaited(
-                    deleteMutation
-                        .run(
-                          ref,
-                          (_) async => throw StateError('Delete failed'),
-                        )
-                        .catchError((_) {}),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     ],

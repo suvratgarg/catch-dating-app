@@ -136,86 +136,86 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final editableProfile = actions.profileForEdit;
     if (editableProfile != null) _syncProfileControllers(editableProfile);
 
-    return CatchMutationErrorListeners(
+    listenToCatchMutationErrors(
+      context,
+      ref,
       mutations: [
         HostProfileController.ensureProfileMutation,
         HostProfileController.saveProfileMutation,
       ],
       errorContext: AppErrorContext.profile,
-      child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          title: routeTitle,
-          subtitle: club.name,
-          leading: CatchIconAction.toolbar(
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            icon: CatchIcons.arrowBackIosNewRounded,
-            onPressed: _leaveTeam,
-          ),
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
-          bottom: CatchPageTabBar<HostTeamMode>.controlled(
-            controller: _tabController,
-            options: [
-              CatchOption(
-                value: HostTeamMode.edit,
-                label: context.l10n.hostsHostClubTeamScreenLabelEdit,
-              ),
-              CatchOption(
-                value: HostTeamMode.preview,
-                label: context.l10n.hostsHostClubTeamScreenLabelPreview,
-              ),
-            ],
-          ),
+    );
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        title: routeTitle,
+        subtitle: club.name,
+        leading: CatchIconAction.toolbar(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          icon: CatchIcons.arrowBackIosNewRounded,
+          onPressed: _leaveTeam,
         ),
-        body: CatchRouteBody.paged(
+        leadingType: CatchTopBarLeading.back,
+        divider: scrolledUnder,
+        bottom: CatchPageTabBar<HostTeamMode>.controlled(
           controller: _tabController,
-          pages: [
-            CatchRouteBody.standardConstrained(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  HostTeamProfileSection(
-                    state: state.profile,
-                    editMode: actions.editMode,
-                    creatingProfile: actions.creatingProfile,
-                    onRetry: () =>
-                        ref.invalidate(watchHostProfileProvider(uid)),
-                    onCreateProfile: actions.canCreateProfile
-                        ? () => unawaited(_createHostProfile())
-                        : null,
-                    displayNameController: _displayNameController,
-                    roleTitleController: _roleTitleController,
-                    bioController: _bioController,
-                    savingProfile: saveMutation.isPending,
-                    onSaveProfile:
-                        actions.canEditProfile && !saveMutation.isPending
-                        ? _saveProfile
-                        : null,
-                  ),
-                  HostTeamManagementSection(
-                    club: club,
-                    currentUid: uid,
-                    canManage: club.isOwnedBy(uid),
-                  ),
-                  HostTeamHostedClubsSection(
-                    actions: actions,
-                    state: state.clubs,
-                    onRetry: () =>
-                        ref.invalidate(_hostClubsForUserProvider(uid)),
-                    onOpenClub: _openHostedClub,
-                  ),
-                ],
-              ),
+          options: [
+            CatchOption(
+              value: HostTeamMode.edit,
+              label: context.l10n.hostsHostClubTeamScreenLabelEdit,
             ),
-            CatchRouteBody.standardConstrained(
-              child: HostTeamProfessionalProfilePreview(
-                state: state.profile,
-                clubs: clubs,
-                onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
-              ),
+            CatchOption(
+              value: HostTeamMode.preview,
+              label: context.l10n.hostsHostClubTeamScreenLabelPreview,
             ),
           ],
         ),
+      ),
+      body: CatchRouteBody.paged(
+        controller: _tabController,
+        pages: [
+          CatchRouteBody.standardConstrained(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                HostTeamProfileSection(
+                  state: state.profile,
+                  editMode: actions.editMode,
+                  creatingProfile: actions.creatingProfile,
+                  onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
+                  onCreateProfile: actions.canCreateProfile
+                      ? () => unawaited(_createHostProfile())
+                      : null,
+                  displayNameController: _displayNameController,
+                  roleTitleController: _roleTitleController,
+                  bioController: _bioController,
+                  savingProfile: saveMutation.isPending,
+                  onSaveProfile:
+                      actions.canEditProfile && !saveMutation.isPending
+                      ? _saveProfile
+                      : null,
+                ),
+                HostTeamManagementSection(
+                  club: club,
+                  currentUid: uid,
+                  canManage: club.isOwnedBy(uid),
+                ),
+                HostTeamHostedClubsSection(
+                  actions: actions,
+                  state: state.clubs,
+                  onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+                  onOpenClub: _openHostedClub,
+                ),
+              ],
+            ),
+          ),
+          CatchRouteBody.standardConstrained(
+            child: HostTeamProfessionalProfilePreview(
+              state: state.profile,
+              clubs: clubs,
+              onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -252,7 +252,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
             ),
       );
     } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
+      // listenToCatchMutationErrors owns user-facing error display.
       return false;
     }
     if (!mounted) return true;
@@ -271,7 +271,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
             tx.get(hostProfileControllerProvider.notifier).ensureProfile(),
       );
     } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
+      // listenToCatchMutationErrors owns user-facing error display.
       return;
     }
     if (!mounted) return;

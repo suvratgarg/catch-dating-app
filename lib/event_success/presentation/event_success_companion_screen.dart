@@ -8,8 +8,8 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/event_success_moment_presentations.g.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
@@ -641,7 +641,9 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     // Surface companion action failures (feedback, wingman, opt-outs, first
     // hello, match clues). These run as fire-and-forget mutations from the
     // cards, so without these listeners a failed write would be silent.
-    return CatchMutationErrorListeners(
+    listenToCatchMutationErrors(
+      context,
+      ref,
       mutations: [
         EventSuccessController.feedbackMutation,
         EventSuccessController.compatibilityResponseMutation,
@@ -652,158 +654,158 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         EventSuccessController.microPodsOptOutMutation,
         EventSuccessController.guidedRotationsOptOutMutation,
       ],
-      child: EventSuccessCompanionScreen(
-        event: event,
-        plan: plan,
-        spatialLayout: spatialLayoutAsync.asData?.value,
-        userProfile: profile,
-        participation: participation,
-        wingmanRequestCandidates: routeState.wingmanRequestCandidates,
-        wingmanRequest: routeState.wingmanRequest,
-        compatibilityResponse: routeState.compatibilityResponse,
-        existingFeedback: routeState.feedback,
-        assignment: assignment,
-        assignmentPeerProfiles:
-            peersAsync.asData?.value ?? const <PublicProfile>[],
-        assignmentPeersLoading: peersAsync.isLoading,
-        microPodsOptedOut: routeState.microPodsOptedOut,
-        rotationAssignment: rotationAssignment,
-        standings: routeState.standings,
-        rotationPeerProfiles:
-            rotationPeersAsync.asData?.value ?? const <PublicProfile>[],
-        rotationPeersLoading: rotationPeersAsync.isLoading,
-        guidedRotationsOptedOut: routeState.guidedRotationsOptedOut,
-        lateArrivalResolution: lateArrivalResolutionAsync.asData?.value,
-        arrivalMission: routeState.activeArrivalMission,
-        now: routeState.referenceNow!,
-        compatibilityActionState: CompatibilityQuestionnaireActionState(
-          isSaving: compatibilityMutation.isPending,
-          error: compatibilityMutation.hasError
-              ? (compatibilityMutation as MutationError).error
-              : null,
-        ),
-        firstHelloActionState: FirstHelloActionState(
-          startPending: firstHelloStartMutation.isPending,
-          completePending: firstHelloCompleteMutation.isPending,
-          skipPending: selfCheckInMutation.isPending,
-        ),
-        selfCheckInActionState: SelfCheckInActionState(
-          isCheckingIn: selfCheckInMutation.isPending,
-        ),
-        isSavingMicroPodsOptOut: microPodsOptOutMutation.isPending,
-        isSavingGuidedRotationsOptOut: guidedRotationsOptOutMutation.isPending,
-        wingmanActionState: WingmanRequestActionState(
-          isSaving: wingmanRequestMutation.isPending,
-        ),
-        feedbackActionState: EventSuccessFeedbackActionState(
-          isSaving: feedbackMutation.isPending,
-        ),
-        onStartArrivalMission: () async {
-          final venueSessionToken = await showCatchBottomSheet<String>(
-            context: context,
-            builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
-          );
-          if (venueSessionToken == null || !context.mounted) return;
-          await EventSuccessController.firstHelloStartMutation.run(
-            ref,
-            (tx) => tx
-                .get(eventSuccessControllerProvider.notifier)
-                .startFirstHelloMission(
-                  event: event,
-                  venueSessionToken: venueSessionToken,
-                ),
-          );
-        },
-        onCompleteArrivalMission: (mission, answerId) async {
-          await EventSuccessController.firstHelloCompleteMutation.run(
-            ref,
-            (tx) => tx
-                .get(eventSuccessControllerProvider.notifier)
-                .completeFirstHelloMission(
-                  event: event,
-                  mission: mission,
-                  answerId: answerId,
-                ),
-          );
-        },
-        onSkipArrivalMission: () async {
-          final venueSessionToken = await showCatchBottomSheet<String>(
-            context: context,
-            builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
-          );
-          if (venueSessionToken == null || !context.mounted) return;
-          await EventBookingController.selfCheckInMutation.run(
-            ref,
-            (tx) => tx
-                .get(eventBookingControllerProvider.notifier)
-                .selfCheckIn(
-                  eventId: event.id,
-                  venueSessionToken: venueSessionToken,
-                ),
-          );
-        },
-        onSetMicroPodsIncluded: (include) {
-          EventSuccessController.microPodsOptOutMutation.run(
-            ref,
-            (tx) => tx
-                .get(eventSuccessControllerProvider.notifier)
-                .setMicroPodsOptOut(event: event, optedOut: !include),
-          );
-        },
-        onSetGuidedRotationsIncluded: (include) {
-          EventSuccessController.guidedRotationsOptOutMutation.run(
-            ref,
-            (tx) => tx
-                .get(eventSuccessControllerProvider.notifier)
-                .setGuidedRotationsOptOut(event: event, optedOut: !include),
-          );
-        },
-        onSaveWingmanRequest: (target, note) async {
-          await EventSuccessController.wingmanRequestMutation.run(
-            ref,
-            (tx) => tx
-                .get(eventSuccessControllerProvider.notifier)
-                .saveWingmanRequest(event: event, target: target, note: note),
-          );
-        },
-        onWithdrawWingmanRequest: () async {
-          await EventSuccessController.wingmanRequestMutation.run(
-            ref,
-            (tx) => tx
-                .get(eventSuccessControllerProvider.notifier)
-                .withdrawWingmanRequest(event: event),
-          );
-        },
-        onSubmitFeedback: (feedback) async {
-          await EventSuccessController.feedbackMutation.run(
-            ref,
-            (tx) => tx
-                .get(eventSuccessControllerProvider.notifier)
-                .submitFeedback(feedback),
-          );
-        },
-        onSelfCheckIn: (venueSessionToken) async {
-          unawaited(
-            ref
-                .read(eventSuccessLiveEffectsControllerProvider)
-                .play(EventSuccessLiveEffectKind.liveEntry),
-          );
-          await EventBookingController.selfCheckInMutation.run(
-            ref,
-            (tx) => tx
-                .get(eventBookingControllerProvider.notifier)
-                .selfCheckIn(
-                  eventId: event.id,
-                  venueSessionToken: venueSessionToken,
-                ),
-          );
-        },
-        onPlayLiveEffect: (kind) =>
-            ref.read(eventSuccessLiveEffectsControllerProvider).play(kind),
-        onPlayAmbientBed: (bed) => ref
-            .read(eventSuccessLiveEffectsControllerProvider)
-            .playAmbientBed(bed),
+    );
+    return EventSuccessCompanionScreen(
+      event: event,
+      plan: plan,
+      spatialLayout: spatialLayoutAsync.asData?.value,
+      userProfile: profile,
+      participation: participation,
+      wingmanRequestCandidates: routeState.wingmanRequestCandidates,
+      wingmanRequest: routeState.wingmanRequest,
+      compatibilityResponse: routeState.compatibilityResponse,
+      existingFeedback: routeState.feedback,
+      assignment: assignment,
+      assignmentPeerProfiles:
+          peersAsync.asData?.value ?? const <PublicProfile>[],
+      assignmentPeersLoading: peersAsync.isLoading,
+      microPodsOptedOut: routeState.microPodsOptedOut,
+      rotationAssignment: rotationAssignment,
+      standings: routeState.standings,
+      rotationPeerProfiles:
+          rotationPeersAsync.asData?.value ?? const <PublicProfile>[],
+      rotationPeersLoading: rotationPeersAsync.isLoading,
+      guidedRotationsOptedOut: routeState.guidedRotationsOptedOut,
+      lateArrivalResolution: lateArrivalResolutionAsync.asData?.value,
+      arrivalMission: routeState.activeArrivalMission,
+      now: routeState.referenceNow!,
+      compatibilityActionState: CompatibilityQuestionnaireActionState(
+        isSaving: compatibilityMutation.isPending,
+        error: compatibilityMutation.hasError
+            ? (compatibilityMutation as MutationError).error
+            : null,
       ),
+      firstHelloActionState: FirstHelloActionState(
+        startPending: firstHelloStartMutation.isPending,
+        completePending: firstHelloCompleteMutation.isPending,
+        skipPending: selfCheckInMutation.isPending,
+      ),
+      selfCheckInActionState: SelfCheckInActionState(
+        isCheckingIn: selfCheckInMutation.isPending,
+      ),
+      isSavingMicroPodsOptOut: microPodsOptOutMutation.isPending,
+      isSavingGuidedRotationsOptOut: guidedRotationsOptOutMutation.isPending,
+      wingmanActionState: WingmanRequestActionState(
+        isSaving: wingmanRequestMutation.isPending,
+      ),
+      feedbackActionState: EventSuccessFeedbackActionState(
+        isSaving: feedbackMutation.isPending,
+      ),
+      onStartArrivalMission: () async {
+        final venueSessionToken = await showCatchBottomSheet<String>(
+          context: context,
+          builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
+        );
+        if (venueSessionToken == null || !context.mounted) return;
+        await EventSuccessController.firstHelloStartMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .startFirstHelloMission(
+                event: event,
+                venueSessionToken: venueSessionToken,
+              ),
+        );
+      },
+      onCompleteArrivalMission: (mission, answerId) async {
+        await EventSuccessController.firstHelloCompleteMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .completeFirstHelloMission(
+                event: event,
+                mission: mission,
+                answerId: answerId,
+              ),
+        );
+      },
+      onSkipArrivalMission: () async {
+        final venueSessionToken = await showCatchBottomSheet<String>(
+          context: context,
+          builder: (context) => EventCheckInQrScannerSheet(eventId: event.id),
+        );
+        if (venueSessionToken == null || !context.mounted) return;
+        await EventBookingController.selfCheckInMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventBookingControllerProvider.notifier)
+              .selfCheckIn(
+                eventId: event.id,
+                venueSessionToken: venueSessionToken,
+              ),
+        );
+      },
+      onSetMicroPodsIncluded: (include) {
+        EventSuccessController.microPodsOptOutMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .setMicroPodsOptOut(event: event, optedOut: !include),
+        );
+      },
+      onSetGuidedRotationsIncluded: (include) {
+        EventSuccessController.guidedRotationsOptOutMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .setGuidedRotationsOptOut(event: event, optedOut: !include),
+        );
+      },
+      onSaveWingmanRequest: (target, note) async {
+        await EventSuccessController.wingmanRequestMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .saveWingmanRequest(event: event, target: target, note: note),
+        );
+      },
+      onWithdrawWingmanRequest: () async {
+        await EventSuccessController.wingmanRequestMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .withdrawWingmanRequest(event: event),
+        );
+      },
+      onSubmitFeedback: (feedback) async {
+        await EventSuccessController.feedbackMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventSuccessControllerProvider.notifier)
+              .submitFeedback(feedback),
+        );
+      },
+      onSelfCheckIn: (venueSessionToken) async {
+        unawaited(
+          ref
+              .read(eventSuccessLiveEffectsControllerProvider)
+              .play(EventSuccessLiveEffectKind.liveEntry),
+        );
+        await EventBookingController.selfCheckInMutation.run(
+          ref,
+          (tx) => tx
+              .get(eventBookingControllerProvider.notifier)
+              .selfCheckIn(
+                eventId: event.id,
+                venueSessionToken: venueSessionToken,
+              ),
+        );
+      },
+      onPlayLiveEffect: (kind) =>
+          ref.read(eventSuccessLiveEffectsControllerProvider).play(kind),
+      onPlayAmbientBed: (bed) => ref
+          .read(eventSuccessLiveEffectsControllerProvider)
+          .playAmbientBed(bed),
     );
   }
 }

@@ -104,10 +104,8 @@ test("scanFile allows a listener for the matching pending mutation", () => {
       "    final Mutation<void> save = ref.watch(EventDetailController.saveMutation);",
       "    final Mutation<void> delete = ref.watch(EventDetailController.deleteMutation);",
       "    if (save.hasError) return const Text('Failed');",
-      "    return CatchMutationErrorListener(",
-      "      mutation: EventDetailController.deleteMutation,",
-      "      child: Text(delete.isPending ? 'Deleting' : 'Ready'),",
-      "    );",
+      "    listenToCatchMutationErrors(context, ref, mutations: [EventDetailController.deleteMutation]);",
+      "    return Text(delete.isPending ? 'Deleting' : 'Ready');",
       "  }",
       "}",
     ].join("\n"),
@@ -161,10 +159,8 @@ test("scanFile normalizes multiline watch expressions with trailing commas", () 
       "    final Mutation<void> save = ref.watch(",
       "      EventDetailController.saveMutation,",
       "    );",
-      "    return CatchMutationErrorListener(",
-      "      mutation: EventDetailController.saveMutation,",
-      "      child: Text(save.isPending ? 'Saving' : 'Ready'),",
-      "    );",
+      "    listenToCatchMutationErrors(context, ref, mutations: [EventDetailController.saveMutation]);",
+      "    return Text(save.isPending ? 'Saving' : 'Ready');",
       "  }",
       "}",
     ].join("\n"),
@@ -272,3 +268,43 @@ for (const [surface, expected] of [
     assert.equal(findings.length, expected);
   });
 }
+
+for (const [handles, expected] of [
+  ["handle", 0],
+  ["other", 1],
+  ["other, handle", 0],
+  ["EventController.saveMutation('other')", 1],
+]) {
+  test(`subscription covers only its matching handle: ${handles}`, () => {
+    const findings = scanFile({
+      relativePath: "lib/events/presentation/event_editor.dart",
+      source: `import 'package:flutter_riverpod/experimental/mutation.dart';
+      class EventEditor extends ConsumerWidget {
+        Widget build(BuildContext context, WidgetRef ref) {
+          final handle = EventController.saveMutation('event');
+          final MutationState<void> save = ref.watch(handle);
+          listenToCatchMutationErrors(context, ref, mutations: [${handles}]);
+          return Text(save.isPending ? 'Saving' : 'Ready');
+        }
+      }`,
+    });
+    assert.equal(findings.length, expected);
+  });
+}
+
+test("subscription named argument order does not change matching", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_editor.dart",
+    source: `import 'package:flutter_riverpod/experimental/mutation.dart';
+    class EventEditor extends ConsumerWidget {
+      Widget build(BuildContext context, WidgetRef ref) {
+        final save = ref.watch(EventController.saveMutation);
+        listenToCatchMutationErrors(context, ref,
+          errorContext: AppErrorContext.event,
+          mutations: [EventController.saveMutation]);
+        return Text(save.isPending ? 'Saving' : 'Ready');
+      }
+    }`,
+  });
+  assert.deepEqual(findings, []);
+});

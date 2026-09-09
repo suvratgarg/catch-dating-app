@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.12.0
-updated: 2026-09-08
+version: 1.13.0
+updated: 2026-09-09
 owner: app_architecture
 status: active
 ---
@@ -374,8 +374,8 @@ packages/catch_ui/lib/
 
 Riverpod-consuming adapters stay in the app package under
 `lib/core/riverpod_ui/` (moved from `core/widgets`): `CatchAsyncValueView`,
-`CatchAsyncValueSliver`, `CatchMutationErrorBanner`,
-`CatchMutationErrorListener(s)`, `mutation_error_util`, `CatchNotice`'s
+`CatchAsyncValueSliver`, `CatchLocalizedErrorBanner.mutation`,
+`listenToCatchMutationErrors`, `mutation_error_util`, `CatchNotice`'s
 provider factory. They are thin translations onto `catch_ui` surfaces
 (`CatchAsyncState`, `CatchErrorState`), which is what they already are.
 

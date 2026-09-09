@@ -7718,6 +7718,30 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:mutation-error-subscriptions",
+      "patternFamilyId": "mutation-error-subscriptions",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "listenToCatchMutationErrors",
+      "members": [
+        {
+          "name": "CatchMutationErrorListener",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchMutationErrorListeners",
+          "action": "absorb"
+        },
+        {
+          "name": "showCatchErrorSnackBar",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Both Widgets only subscribe and return their child. One nonvisual build-scoped operation preserves keyed handles, conditional branches and error context across 18 production wrapper calls. Deduplicate repeated handles; publish only pending-to-error transitions through the existing snackbar owner. Preserve explicit recovery callbacks, and combine the two retired previews into the error-feedback gallery.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

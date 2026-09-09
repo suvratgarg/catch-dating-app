@@ -1645,7 +1645,7 @@
           "id": "join_leave_failed",
           "kind": "mutation",
           "status": "captured",
-          "source": "CatchMutationErrorListener wraps join, leave, push-notification, and start-conversation mutations.",
+          "source": "listenToCatchMutationErrors subscribes to join, leave, push-notification, and start-conversation mutations in the owning build branch.",
           "captureIds": [
             "club_detail_mutation_error"
           ],
@@ -10682,7 +10682,7 @@
           "id": "sign_out_action",
           "kind": "mutation",
           "status": "captured",
-          "source": "Top-bar sign-out action delegates to AuthSessionController.signOutMutation and surfaces failure through CatchMutationErrorListener.",
+          "source": "Top-bar sign-out action delegates to AuthSessionController.signOutMutation and surfaces failure through listenToCatchMutationErrors.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -17464,7 +17464,7 @@
           "id": "mutation_error_listener",
           "kind": "mutation",
           "status": "captured",
-          "source": "_ChatMutationListeners wraps send, image, report, block, and Suvbot mutation failures in the shared CatchMutationErrorListeners boundary with chat error context. Focused Host Chat tests verify report/block failure feedback.",
+          "source": "The chat build subscribes to send, image, report, block, and Suvbot mutation failures through listenToCatchMutationErrors with chat error context. Focused Host Chat tests verify report/block failure feedback.",
           "nextAction": "Add send/image-specific failure captures only if host conversations retain image attachment support.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -20388,7 +20388,7 @@
         {
           "id": "filters_save_error",
           "status": "captured",
-          "notes": "Route-level save failure seeded through FiltersController.saveFiltersMutation and CatchMutationErrorListener."
+          "notes": "Route-level save failure seeded through FiltersController.saveFiltersMutation and listenToCatchMutationErrors."
         },
         {
           "id": "filters_text_scale_2",
@@ -20519,7 +20519,7 @@
           "id": "save_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "CatchMutationErrorListener surfaces save failures from FiltersController.saveFiltersMutation.",
+          "source": "listenToCatchMutationErrors surfaces save failures from FiltersController.saveFiltersMutation.",
           "captureIds": [
             "filters_save_error"
           ],
@@ -25812,7 +25812,7 @@
           "id": "host_event_rehearsal_mutation",
           "kind": "mutation",
           "status": "implemented",
-          "source": "EventRehearsalController mutation families and CatchMutationErrorListeners",
+          "source": "EventRehearsalController mutation families and listenToCatchMutationErrors",
           "tests": ["test/event_rehearsal/host_event_rehearsal_screen_test.dart"],
           "nextAction": "Preserve bounded idempotency and stale-revision recovery for all controls."
         }
