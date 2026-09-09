@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.87.0
+version: 1.88.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -337,7 +337,27 @@ check-in timestamp precision, independently of the attendance revision), event
 closure changes and changed cited guest intention supersede earlier decisions.
 A fresh review is required before a new decision can commit.
 
-This backend boundary is not yet connected to the native Host roster or recap.
+The native `EventAttendanceDispositionRepository` now reads and submits through
+these callables with generated request DTOs. Its domain has separate sealed
+unreviewed, recorded, cleared, source-changed and superseded states; private
+constructors preserve server-reviewed evidence. The parser rejects foreign
+scope, malformed values, contradictory availability, future evidence and
+inconsistent receipts. The prepared command freezes both revisions, source
+hash, actor expectation and decision. A later replay correction stays
+separate from the original operation revision.
+
+`EventAttendanceDisposition` binds each guest review to the shared uninterrupted
+authenticated session, hides previous values while loading and exposes backend
+failures without inventing attendance. `EventAttendanceDispositionEditor`
+starts without a choice, validates the selected evidence/reason, shares one
+future across duplicate taps and retains the exact command after uncertainty.
+Source conflicts require a fresh review. Sign-out, auth errors or an account
+switch permanently revoke the old form, including after the same UID returns;
+late responses cannot restore it. An in-flight submission retains its owner
+until the result is reconciled. Success refreshes only that guest's closeout
+review, without optimistic attendance or report updates.
+
+Host roster and recap UI integration remain pending.
 Existing report no-show counts retain their current semantics until their
 separate aggregation and UI integration use this explicit decision model.
 

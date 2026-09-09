@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.88.0
+version: 1.89.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -117,7 +117,12 @@ changes. Exact receipts preserve the original operation revision separately
 from current projected disposition. Old decisions are hidden for replacement
 identities or explicitly superseded for changed facts. These documents do not
 replace `eventAttendees`, infer attendance, update event totals or alter report
-aggregates. Native roster and report integration remain separate work.
+aggregates. Native readers preserve each disposition/closure/evidence variant
+and reject cross-field contradictions as well as schema-invalid values. They
+use generated request DTOs, retain the reviewed source and revisions for exact
+retries, and distinguish an operation's receipt revision from the latest view.
+No schema or generated contract change is needed for this native binding.
+Roster and report UI integration remain separate work.
 
 ### Event Assistance Transaction Boundary
 
