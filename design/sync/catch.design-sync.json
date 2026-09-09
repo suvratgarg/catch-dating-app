@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "63189dc93df9c84cde5709fd1c72a0cdb71c70a319741d226ec263c20168fb9c",
+  "sourceDigest": "266e2470f4e516692b0ed96948c1b0abcaf7c056a1d6b0365baca2b9c1767e46",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "63189dc93df9c84cde5709fd1c72a0cdb71c70a319741d226ec263c20168fb9c",
-    "contractDigest": "63189dc93df9c84cde5709fd1c72a0cdb71c70a319741d226ec263c20168fb9c"
+    "digest": "266e2470f4e516692b0ed96948c1b0abcaf7c056a1d6b0365baca2b9c1767e46",
+    "contractDigest": "266e2470f4e516692b0ed96948c1b0abcaf7c056a1d6b0365baca2b9c1767e46"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "52c912d3e4ac9e4d7e4432ce42e641cf6b8490646b4eac8924863d138c970266",
+    "handoffRequestDigest": "39036347f6421225ce4e0b8e946e90473c060b8cb7bc2a1161972155f7e7979a",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 76,
-    "publicClassCount": 254,
+    "publicClassCount": 251,
     "conceptCount": 68,
-    "memberCount": 168,
-    "membersPerConcept": 2.47,
+    "memberCount": 165,
+    "membersPerConcept": 2.43,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 68,
-      "member": 168,
+      "member": 165,
       "screen": 15
     },
     "collisionCount": 36,
@@ -380,15 +380,12 @@
           "CatchCountText",
           "CatchDaySectionHeader",
           "CatchDivider",
-          "CatchHorizontalRail",
-          "CatchHorizontalRailBody",
-          "CatchHorizontalRailItem",
+          "CatchHorizontalScrollView",
           "CatchSection",
           "CatchSectionBody",
           "CatchSectionHeader",
           "CatchSectionHeaderTitle",
-          "CatchSectionSurface",
-          "CatchVerticalSection"
+          "CatchSectionSurface"
         ]
       },
       {
@@ -937,8 +934,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 16,
-      "figmaExpectedPropertyDigest": "7f1c66d51136fa809e672d09a68031d0119739bba9d751c263ca5af801bf296f",
+      "figmaExpectedPropertyCount": 21,
+      "figmaExpectedPropertyDigest": "a6b846b6bdca4e5ecbfb417b907bac1f8ec966e737a1540d298188483bd2def3",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -946,7 +943,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Section",
       "claudeAllowed": true,
-      "contractDigest": "c31b13ea8c14c7b9e866b92fc8274e53a335ed3f26c974a427c3662ce614e155"
+      "contractDigest": "5450412e56a62246ca2fc15924672c8e920aa666db519acc8f3766446519b9b0"
     },
     {
       "contractId": "catch.skeleton",

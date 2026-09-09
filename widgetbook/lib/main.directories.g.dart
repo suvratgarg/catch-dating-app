@@ -1719,12 +1719,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchHorizontalRail',
+            name: 'CatchSection',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Horizontal collection',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchHorizontalRailCatalogStates,
+                    .catchSectionHorizontalCatalogStates,
               ),
             ],
           ),
@@ -1735,16 +1735,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchSectionHeaderCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchVerticalSection',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchVerticalSectionCatalogStates,
               ),
             ],
           ),
@@ -3751,22 +3741,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchHorizontalRailBody',
+            name: 'CatchHorizontalScrollView',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Bounded and intrinsic rails',
                 builder: _widgetbook_workspace_primitives_rail_use_cases
-                    .horizontalRailBodyStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchHorizontalRailItem',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Item widths and trailing slots',
-                builder: _widgetbook_workspace_primitives_rail_use_cases
-                    .horizontalRailItemStates,
+                    .horizontalScrollViewStates,
               ),
             ],
           ),

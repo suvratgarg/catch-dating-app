@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
   "sourceDigest": "sha256:904895b385aed5d80a01c05000d85e20de0e55da75c6d8b318c67a80a38236d4",
-  "resolvedDigest": "sha256:2495ad3fd176207bbfe02d62a749a9a135ca100ff203c9606c85a27c561370f8",
+  "resolvedDigest": "sha256:786e67eea82dfa88cfa236373d349645296a001888f3055175124287a8c7cddf",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -5271,7 +5271,8 @@
                 "CatchSection.containedFieldRows",
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
-                "CatchSection.plain"
+                "CatchSection.plain",
+                "CatchSection.horizontal"
               ]
             }
           },

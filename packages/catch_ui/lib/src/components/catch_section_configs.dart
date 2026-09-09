@@ -60,3 +60,15 @@ typedef _PlainSectionConfig = ({
   EdgeInsetsGeometry? padding,
   bool showInternalDividers,
 });
+
+typedef _HorizontalSectionConfig = ({
+  _SectionCommonConfig common,
+  int itemCount,
+  IndexedWidgetBuilder itemBuilder,
+  double? height,
+  double spacing,
+  CatchRailItemWidth? itemWidth,
+  bool showDivider,
+  EdgeInsets headerPadding,
+  EdgeInsetsGeometry listPadding,
+});

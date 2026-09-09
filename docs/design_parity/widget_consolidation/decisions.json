@@ -7442,6 +7442,34 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:horizontal-section-collection",
+      "patternFamilyId": "horizontal-section-collection",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSection",
+      "members": [
+        {
+          "name": "CatchHorizontalRail",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchHorizontalRailBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchHorizontalRailItem",
+          "action": "delete"
+        },
+        {
+          "name": "CatchVerticalSection",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Owner-delegated source review found a horizontal section recipe, a useful scroll viewport, a trivial private-to-family item selector and a vertical alternative with zero production callers. Consolidate the recipe under Section, retain the viewport with deterministic naming and delete the redundant identities.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

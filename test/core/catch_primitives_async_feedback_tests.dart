@@ -355,7 +355,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(compactWidths[1], closeTo(compactWidths[2], 0.5));
   });
 
-  testWidgets('CatchHorizontalRail is embedded and chromeless by default', (
+  testWidgets('CatchSection.horizontal is embedded and chromeless by default', (
     tester,
   ) async {
     const railKey = ValueKey('embedded-rail');
@@ -365,7 +365,7 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
         SizedBox(
           key: railKey,
           width: 360,
-          child: CatchHorizontalRail(
+          child: CatchSection.horizontal(
             title: 'Recommended',
             itemCount: 1,
             itemBuilder: (context, index) =>
@@ -382,39 +382,40 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byType(CatchDivider), findsNothing);
   });
 
-  testWidgets('CatchHorizontalRail fullBleed owns rail gutters and divider', (
-    tester,
-  ) async {
-    const railKey = ValueKey('full-bleed-rail');
+  testWidgets(
+    'CatchSection.horizontal fullBleed owns rail gutters and divider',
+    (tester) async {
+      const railKey = ValueKey('full-bleed-rail');
 
-    await tester.pumpWidget(
-      _wrap(
-        SizedBox(
-          key: railKey,
-          width: 360,
-          child: CatchHorizontalRail(
-            title: 'Recommended',
-            itemCount: 1,
-            fullBleed: true,
-            itemBuilder: (context, index) =>
-                const SizedBox(width: 48, height: 48, child: Text('Item 1')),
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            key: railKey,
+            width: 360,
+            child: CatchSection.horizontal(
+              title: 'Recommended',
+              itemCount: 1,
+              fullBleed: true,
+              itemBuilder: (context, index) =>
+                  const SizedBox(width: 48, height: 48, child: Text('Item 1')),
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    final railLeft = tester.getTopLeft(find.byKey(railKey)).dx;
+      final railLeft = tester.getTopLeft(find.byKey(railKey)).dx;
 
-    expect(
-      tester.getTopLeft(find.text('Recommended')).dx - railLeft,
-      CatchSpacing.screenPx,
-    );
-    expect(
-      tester.getTopLeft(find.text('Item 1')).dx - railLeft,
-      CatchSpacing.screenPx,
-    );
-    expect(find.byType(CatchDivider), findsOneWidget);
-  });
+      expect(
+        tester.getTopLeft(find.text('Recommended')).dx - railLeft,
+        CatchSpacing.screenPx,
+      );
+      expect(
+        tester.getTopLeft(find.text('Item 1')).dx - railLeft,
+        CatchSpacing.screenPx,
+      );
+      expect(find.byType(CatchDivider), findsOneWidget);
+    },
+  );
 
   testWidgets('CatchScreenBody owns the scrolling page gutter', (tester) async {
     await tester.pumpWidget(

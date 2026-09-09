@@ -3672,6 +3672,11 @@ Widget catchSectionContractStates(BuildContext context) {
       'lead-accent',
       'contained-focused',
       'contained-error',
+      'horizontal-embedded',
+      'horizontal-full-bleed',
+      'horizontal-intrinsic',
+      'horizontal-fractional',
+      'horizontal-footer',
     ],
     children: [
       _StateCard(
@@ -4140,6 +4145,45 @@ Widget catchSectionContractStates(BuildContext context) {
         child: CatchSection.plain(
           title: 'Inline note',
           child: Text('Plain sections keep title rhythm without a container.'),
+        ),
+      ),
+
+      for (final fullBleed in [false, true])
+        _StateCard(
+          label: fullBleed ? 'horizontal-full-bleed' : 'horizontal-embedded',
+          child: CatchSection.horizontal(
+            title: 'Recommended',
+            fullBleed: fullBleed,
+            itemCount: 3,
+            height: WidgetbookPreviewLayout.catalogRailHeight,
+            itemBuilder: (context, index) => CatchSurface.card(
+              width: WidgetbookPreviewLayout.catalogCardWidth,
+              child: Text(
+                'Card ${index + 1}',
+                style: CatchTextStyles.labelM(context),
+              ),
+            ),
+          ),
+        ),
+      _StateCard(
+        label:
+            'horizontal-intrinsic / horizontal-fractional / horizontal-footer',
+        child: CatchSection.horizontal(
+          title: 'Your clubs',
+          height: null,
+          itemCount: 2,
+          itemWidth: const CatchRailItemWidth.fractional(
+            fraction: 0.75,
+            min: 160,
+            max: 260,
+          ),
+          itemBuilder: (context, index) => CatchSurface.card(
+            child: Text(
+              'Club ${index + 1}',
+              style: CatchTextStyles.labelM(context),
+            ),
+          ),
+          footer: CatchButton(label: 'More', onPressed: _noop),
         ),
       ),
     ],

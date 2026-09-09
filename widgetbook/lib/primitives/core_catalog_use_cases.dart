@@ -3523,63 +3523,46 @@ Widget catchShareCardFooterCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchHorizontalRail,
+  name: 'Horizontal collection',
+  type: CatchSection,
   path: '[Core catalog]/Sections',
 )
-Widget catchHorizontalRailCatalogStates(BuildContext context) {
+Widget catchSectionHorizontalCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchHorizontalRail',
-    catalogId: 'core.widgets.catch_horizontal_rail',
+    title: 'CatchSection.horizontal',
+    catalogId: 'catch.section',
     children: [
       _StateCard(
         label: 'embedded rail',
-        child: CatchHorizontalRail(
+        child: CatchSection.horizontal(
           title: 'Recommended',
           itemCount: 4,
           height: WidgetbookPreviewLayout.catalogRailHeight,
           itemBuilder: (context, index) => CatchSurface.card(
             width: WidgetbookPreviewLayout.catalogCardWidth,
-            child: Text('Card ${index + 1}'),
+            child: Text(
+              'Card ${index + 1}',
+              style: CatchTextStyles.labelM(context),
+            ),
           ),
-          trailing: CatchButton(label: 'More', onPressed: _noop),
+          footer: CatchButton(label: 'More', onPressed: _noop),
         ),
       ),
       _StateCard(
         label: 'full-bleed rail',
-        child: CatchHorizontalRail(
+        child: CatchSection.horizontal(
           title: 'Recommended',
           itemCount: 4,
           fullBleed: true,
           height: WidgetbookPreviewLayout.catalogRailHeight,
           itemBuilder: (context, index) => CatchSurface.card(
             width: WidgetbookPreviewLayout.catalogCardWidth,
-            child: Text('Card ${index + 1}'),
+            child: Text(
+              'Card ${index + 1}',
+              style: CatchTextStyles.labelM(context),
+            ),
           ),
-          trailing: CatchButton(label: 'More', onPressed: _noop),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchVerticalSection,
-  path: '[Core catalog]/Sections',
-)
-Widget catchVerticalSectionCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchVerticalSection',
-    catalogId: 'core.widgets.catch_vertical_section',
-    children: [
-      _StateCard(
-        label: 'embedded list',
-        child: CatchVerticalSection(
-          title: 'Today',
-          itemCount: 3,
-          itemBuilder: (context, index) =>
-              CatchSurface.card(child: Text('List item ${index + 1}')),
+          footer: CatchButton(label: 'More', onPressed: _noop),
         ),
       ),
     ],

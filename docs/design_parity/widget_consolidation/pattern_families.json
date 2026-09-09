@@ -2526,6 +2526,61 @@
           "rationale": "Absorb the sized navigation glyph and existing count-overlay delegation into navigationIcon."
         }
       ]
+    },
+    {
+      "id": "horizontal-section-collection",
+      "title": "Horizontal collections use the section contract",
+      "intent": "Keep one section API with a horizontal recipe and a public scroll viewport; remove slot-selection and unused vertical duplicates.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.section",
+      "qualityReference": "CatchSection",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve production title typography, embedded/full-bleed gutters, dividers, lazy bounded lists, intrinsic-height rows and fixed/fractional item widths.",
+        "The obsolete vertical renderer has no production callers; retire its catalog preview and baselines rather than preserve a second section API.",
+        "Preview sample cards now resolve the theme label style explicitly so their sample text is readable in both themes; production card renderers are unchanged."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSection",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "A titled horizontal collection is a named section recipe, not another grouping concept."
+        },
+        {
+          "symbol": "CatchHorizontalScrollView",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Retain public section viewport anatomy with one width policy and footer slot; header and chrome stay parent-owned."
+        },
+        {
+          "symbol": "CatchHorizontalRail",
+          "disposition": "unify",
+          "target": "CatchSection",
+          "preview": "not-applicable",
+          "rationale": "Absorb its title, gutters and divider into horizontal; preserve caller-neutral layout parameters."
+        },
+        {
+          "symbol": "CatchHorizontalRailBody",
+          "disposition": "unify",
+          "target": "CatchHorizontalScrollView",
+          "preview": "not-applicable",
+          "rationale": "Name the actual horizontal scrolling responsibility with the closed ScrollView role."
+        },
+        {
+          "symbol": "CatchHorizontalRailItem",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "No external production consumer; select content/footer and constrain width inside each actual item builder."
+        },
+        {
+          "symbol": "CatchVerticalSection",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "No production consumers; duplicates the existing section grouping responsibility and adds an embedded shrink-wrapped list."
+        }
+      ]
     }
   ]
 }

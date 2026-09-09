@@ -1788,7 +1788,6 @@ function buildCandidates() {
       tags: ["sections", "layout"],
       names: [
         "CatchSection",
-        "CatchVerticalSection",
         "ActivitySection",
         "HostSettingsSection",
         "HostAnalyticsSection",
@@ -1921,10 +1920,11 @@ function buildCandidates() {
       title: "Horizontal rail family",
       reason:
         "Horizontal rails should share scroll padding, item spacing, snap/overflow affordances, and section header behavior.",
-      recommended: "catch.horizontal_rail",
+      recommended: "catch.section",
       tags: ["rail", "layout"],
       names: [
-        "CatchHorizontalRail",
+        "CatchHorizontalScrollView",
+        "CatchSection",
         "DashboardClubsRail",
         "EventFocusRail",
         "ExplorePeekRailContent",

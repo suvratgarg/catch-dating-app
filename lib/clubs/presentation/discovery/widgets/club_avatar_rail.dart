@@ -24,7 +24,7 @@ class ClubAvatarRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchHorizontalRail(
+    return CatchSection.horizontal(
       title: context.l10n.clubsClubAvatarRailTitleYourClubs,
       height: null,
       spacing: CatchSpacing.micro14,

@@ -4,6 +4,7 @@ import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.da
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
 import 'package:catch_ui/src/components/catch_field_gutter_ownership.dart';
 import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
+import 'package:catch_ui/src/components/catch_horizontal_scroll_view.dart';
 import 'package:catch_ui/src/components/catch_section_body.dart';
 import 'package:catch_ui/src/components/catch_section_body_mode.dart';
 import 'package:catch_ui/src/components/catch_section_field_group.dart';
@@ -65,7 +66,8 @@ class CatchSection extends StatelessWidget {
        _fieldRowsConfig = null,
        _containedFieldRowsConfig = null,
        _containedConfig = null,
-       _plainConfig = null;
+       _plainConfig = null,
+       _horizontalConfig = null;
 
   const CatchSection.fieldRows({
     super.key,
@@ -97,7 +99,8 @@ class CatchSection extends StatelessWidget {
        ),
        _containedFieldRowsConfig = null,
        _containedConfig = null,
-       _plainConfig = null;
+       _plainConfig = null,
+       _horizontalConfig = null;
 
   /// Contained FieldSection variant from the form-field handoff. Unlike the
   /// generic card constructor, this surface clips field rows, owns a 1px
@@ -138,7 +141,8 @@ class CatchSection extends StatelessWidget {
          headerPlacement: headerPlacement,
        ),
        _containedConfig = null,
-       _plainConfig = null;
+       _plainConfig = null,
+       _horizontalConfig = null;
 
   /// One outlined collection containing one or more labelled field groups.
   ///
@@ -172,7 +176,8 @@ class CatchSection extends StatelessWidget {
          headerPlacement: CatchSectionHeaderPlacement.inside,
        ),
        _containedConfig = null,
-       _plainConfig = null;
+       _plainConfig = null,
+       _horizontalConfig = null;
 
   const CatchSection.contained({
     super.key,
@@ -217,7 +222,8 @@ class CatchSection extends StatelessWidget {
          focused: focused,
          hasError: hasError,
        ),
-       _plainConfig = null;
+       _plainConfig = null,
+       _horizontalConfig = null;
 
   const CatchSection.plain({
     super.key,
@@ -248,6 +254,52 @@ class CatchSection extends StatelessWidget {
          ),
          padding: padding,
          showInternalDividers: showInternalDividers,
+       ),
+       _horizontalConfig = null;
+
+  /// A titled horizontal collection, embedded or with page-owned gutters.
+  /// [footer] is the final scrollable item, such as a "More" action.
+  const CatchSection.horizontal({
+    super.key,
+    required String title,
+    required int itemCount,
+    required IndexedWidgetBuilder itemBuilder,
+    this.footer,
+    bool fullBleed = false,
+    bool? showDivider,
+    double? height = CatchLayout.horizontalRailHeight,
+    double spacing = CatchSpacing.s3,
+    CatchRailItemWidth? itemWidth,
+    EdgeInsets? headerPadding,
+    EdgeInsetsGeometry? listPadding,
+  }) : trailing = null,
+       children = null,
+       child = null,
+       _dividedConfig = null,
+       _fieldRowsConfig = null,
+       _containedFieldRowsConfig = null,
+       _containedConfig = null,
+       _plainConfig = null,
+       _horizontalConfig = (
+         common: (
+           title: title,
+           subtitle: null,
+           count: null,
+           titleColor: null,
+           bodyGap: 0,
+         ),
+         itemCount: itemCount,
+         itemBuilder: itemBuilder,
+         height: height,
+         spacing: spacing,
+         itemWidth: itemWidth,
+         showDivider: showDivider ?? fullBleed,
+         headerPadding:
+             headerPadding ??
+             (fullBleed ? CatchInsets.sectionHeader : EdgeInsets.zero),
+         listPadding:
+             listPadding ??
+             (fullBleed ? CatchInsets.pageHorizontal : EdgeInsets.zero),
        );
 
   final _DividedSectionConfig? _dividedConfig;
@@ -255,8 +307,10 @@ class CatchSection extends StatelessWidget {
   final _ContainedFieldRowsSectionConfig? _containedFieldRowsConfig;
   final _ContainedSectionConfig? _containedConfig;
   final _PlainSectionConfig? _plainConfig;
+  final _HorizontalSectionConfig? _horizontalConfig;
 
   _SectionCommonConfig get _common =>
+      _horizontalConfig?.common ??
       _dividedConfig?.common ??
       _fieldRowsConfig?.common ??
       _containedFieldRowsConfig?.common ??
@@ -332,6 +386,33 @@ class CatchSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (_horizontalConfig case final rail?) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchSectionHeader(
+            title: title!,
+            heavy: true,
+            padding: rail.headerPadding,
+          ),
+          CatchHorizontalScrollView(
+            itemCount: rail.itemCount,
+            itemBuilder: rail.itemBuilder,
+            footer: footer,
+            height: rail.height,
+            spacing: rail.spacing,
+            listPadding: rail.listPadding,
+            itemWidth: rail.itemWidth,
+          ),
+          if (rail.showDivider)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: CatchSpacing.screenPx),
+              child: CatchDivider.section(),
+            ),
+        ],
+      );
+    }
     final groups = fieldGroups;
     assert(
       groups == null ||
