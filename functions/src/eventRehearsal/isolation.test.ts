@@ -24,7 +24,7 @@ test("rehearsal backend contains no live-domain collection seam", () => {
   const source = ["engine.ts", "handlers.ts", "assistanceMessages.ts",
     "assistanceRuntime.ts", "assistanceTransactions.ts",
     "assistanceAutomation.ts", "assistanceCases.ts", "movement.ts",
-    "movementRecords.ts", "movementSource.ts"]
+    "movementRecords.ts", "movementSource.ts", "movementGuidance.ts"]
     .map((file) =>
       readFileSync(resolve(process.cwd(), "src/eventRehearsal", file), "utf8")
     ).join("\n");

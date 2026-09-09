@@ -12,7 +12,8 @@ import {validateEventRehearsalBootstrapCallableResponse} from
   "../shared/generated/validators/eventRehearsalBootstrapOutput";
 import {FakeFirestore} from "../operations/testFirestore";
 import {buildRehearsalActors} from "./engine";
-import {practiceSession, practicePlan} from "./assistanceTestFixtures";
+import {practiceSession, practicePlan,
+  practiceDeparture} from "./assistanceTestFixtures";
 import {preparePracticeHelp, rehearsalCases, practiceHelpProjection} from
   "./assistanceCases";
 import {applyPracticeHostCommand, applyPracticeGuestReply} from
@@ -36,6 +37,8 @@ async function harness() {
   const session = practiceSession();
   let actor = buildRehearsalActors("practice-help", 2, 1,
     session.virtualNow)[0];
+  const departure = practiceDeparture(session, "practice-help");
+  fake.write(departure.path, {...departure.record});
   const org = organizer();
   fake.write("organizers/" + session.organizerId,
     org as unknown as Record<string, unknown>);

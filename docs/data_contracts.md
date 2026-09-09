@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.101.0
+version: 1.102.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -62,13 +62,13 @@ deadline fence each mutation. New actors initialize participation explicitly;
 legacy actors do not fabricate it. Reset removes the actor state. No new live
 collection, guest response field or direct client-write permission is introduced.
 
-`controlEventRehearsal` requires `expectedSetupRevision` for assistance commands,
+`controlEventRehearsal` requires `expectedSetupRevision` for assistance and movement commands,
 alongside the runtime revision and immutable client action id. Reset increments
 the setup revision and reuses runtime revisions from zero. The handler checks
 the reviewed generation before replaying a receipt and again inside the
 transaction, preventing an old pending instruction from publishing into the
 new run. Other existing lifecycle controls retain their previous payload;
-this additional required field applies to assistance only. Native typed
+this additional required field applies to assistance and movement. Native typed
 commands serialize the reviewed generation and also verify it in the result.
 
 Host rehearsal bootstrap also exposes the stored `virtualStartedAtMillis`.
@@ -946,6 +946,16 @@ clock and group, order by progress revision, and use a 26-record lookahead for
 25-result pages. An explicitly selected older revision does not become current
 progress. Reset and expiry delete movement children with the other practice state.
 
+
+`eventRehearsalMessages.movementBinding` contains the confirmed group ID,
+progress revision and source hash, all bound into message identity. It is optional
+only for historical reads; new publication derives it from saved movement. The
+legacy plan confirmation/copy fields are not movement authority. Current source
+and accepted membership fence delivery, guest instructions and responses. A latest
+record query per selected group is bounded at one; projection rechecks the session
+generation/runtime revision before using it. Pending departures feed automation
+inside their parent transaction, so no intermediate unconfirmed send is possible.
+Native configuration still needs to present this source-derived recipe explicitly.
 
 A rehearsal membership's optional `assignmentRevision` records the last placement,
 accepted transfer or removal; proposal-only decisions preserve it. Group-checkpoint

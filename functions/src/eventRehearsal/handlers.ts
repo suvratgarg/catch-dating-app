@@ -1,3 +1,4 @@
+import {readPracticeDepartures, PracticeDepartures} from "./movementGuidance";
 import type {GetEventRehearsalMovementCallablePayload as MovementInput} from
   "../shared/generated/getEventRehearsalMovementCallablePayload";
 import type {EventRehearsalMovementCallableResponse as MovementReview} from
@@ -361,11 +362,21 @@ export async function controlEventRehearsalHandler(
           requireDoc<EventRehearsalActorDocument>(doc,
             "EventRehearsalActorDocument")), command,
         {organizer, actorUid: uid}, data.clientActionId);
+      const nextActors = commit.confirmedDeparture ?
+        await applyPracticeAutomations(db, tx,
+          {...session, runtimeRevision: session.runtimeRevision + 1},
+          actorSnaps.docs.map((doc) =>
+            requireDoc<EventRehearsalActorDocument>(doc,
+              "EventRehearsalActorDocument")), commit.confirmedDeparture) : [];
       const now = admin.firestore.Timestamp.now();
       if (session.expiresAt.toMillis() <= now.toMillis()) {
         throw new HttpsError("not-found", "This dress rehearsal has expired.");
       }
-      commit();
+      commit.commit();
+      for (const actor of nextActors) {
+        tx.set(db.collection(actors).doc(actorDocumentId(data.sessionId,
+          actor.actorId)), actor);
+      }
       tx.update(sessionRef, {runtimeRevision: session.runtimeRevision + 1,
         actionCount: session.actionCount + 1, updatedAt: now});
       tx.create(actionRef, actionDocument({sessionId: data.sessionId,
@@ -802,8 +813,7 @@ export async function getEventRehearsalGuestBootstrapHandler(
   ).update({lastSeenAt: admin.firestore.Timestamp.now()});
   const actor = requireDoc<EventRehearsalActorDocument>(actorSnap,
     "EventRehearsalActorDocument");
-  return rehearsalGuestProjection(resolved.session, actor, view.slotToken,
-    await actorPracticeMessage(db, resolved.session, actor));
+  return guestMessageProjection(db, resolved.session, actor, view.slotToken);
 }
 
 /** Applies a guest action only to the slot's synthetic actor. */
@@ -928,8 +938,7 @@ export async function submitEventRehearsalGuestActionHandler(
     .doc(actorDocumentId(resolved.id, actorId)).get();
   const actor = requireDoc<EventRehearsalActorDocument>(actorSnap,
     "EventRehearsalActorDocument");
-  return rehearsalGuestProjection(latest, actor, data.slotToken,
-    await actorPracticeMessage(db, latest, actor));
+  return guestMessageProjection(db, latest, actor, data.slotToken);
 }
 
 /** Completes a rehearsal through the Host-control lifecycle invariant. */
@@ -1328,6 +1337,8 @@ async function hostProjection(
     return id ? [readPracticeMessage(messageValues.get(
       practiceMessageDocumentId(sessionId, id)), session, actor)] : [];
   });
+  const departures = await projectionDepartures(db, sessionId, session,
+    currentMessages.map((m) => m.plan));
   const deliveryReviews = practiceDeliveryReviews(sessionId, session,
     actorValues, currentMessages, organizer, requireAuth(request));
   const movementReview = movementScope ? await hostMovementReview(db,
@@ -1395,7 +1406,7 @@ async function hostProjection(
         ...(actor.assistance ? {assistance: actor.assistance,
           assistanceDelivery: practiceDeliveryView(message),
           assistanceMessage: practiceMessageView(session, actor,
-            message)} : {}),
+            message, departures)} : {}),
       };
     }).sort((a, b) => a.actorId.localeCompare(b.actorId)),
     actions: actionSnaps.docs.map((doc) => {
@@ -1421,7 +1432,8 @@ export function rehearsalGuestProjection(
   session: EventRehearsalDocument,
   actor: EventRehearsalActorDocument,
   slotToken: string,
-  message: PracticeMessage | null = null
+  message: PracticeMessage | null = null,
+  departures: PracticeDepartures = new Map(),
 ): EventRehearsalGuestBootstrapCallableResponse {
   const movementSimulation = rehearsalMovementProjection(session);
   return {
@@ -1451,9 +1463,39 @@ export function rehearsalGuestProjection(
       helpRequested: actor.helpRequested,
       promptCompleted: actor.promptCompleted,
       ...(actor.assistance ? {assistance: actor.assistance,
-        assistanceMessage: practiceMessageView(session, actor, message)} : {}),
+        assistanceMessage: practiceMessageView(session, actor, message,
+          departures)} : {}),
     },
   };
+}
+
+async function projectionDepartures(db: Firestore, sessionId: string,
+  session: EventRehearsalDocument, plans: readonly PracticeMessage["plan"][]) {
+  if (!plans.length) return new Map();
+  return db.runTransaction(async (tx) => {
+    const current = requireSession(await tx.get(db.collection(sessions)
+      .doc(sessionId)));
+    if (current.setupRevision !== session.setupRevision ||
+        current.runtimeRevision !== session.runtimeRevision) {
+      throw new HttpsError("aborted",
+        "Practice changed while reading directions.");
+    }
+    const departures = await readPracticeDepartures(db, tx, sessionId,
+      current, plans);
+    if (current.expiresAt.toMillis() <= Date.now()) {
+      throw new HttpsError("not-found", "This dress rehearsal has expired.");
+    }
+    return departures;
+  });
+}
+async function guestMessageProjection(db: Firestore,
+  session: EventRehearsalDocument, actor: EventRehearsalActorDocument,
+  slotToken: string) {
+  const message = await actorPracticeMessage(db, session, actor);
+  const departures = await projectionDepartures(db, actor.sessionId, session,
+    message ? [message.plan] : []);
+  return rehearsalGuestProjection(session, actor, slotToken, message,
+    departures);
 }
 
 /** Derives deterministic route progress from the virtual rehearsal clock. */

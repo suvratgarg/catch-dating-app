@@ -14,7 +14,8 @@ import {validateEventRehearsalBootstrapCallableResponse} from
   "../shared/generated/validators/eventRehearsalBootstrapOutput";
 import {FakeFirestore} from "../operations/testFirestore";
 import {buildRehearsalActors} from "./engine";
-import {practiceSession, practicePlan} from "./assistanceTestFixtures";
+import {practiceSession, practicePlan, practiceDeparture,
+  savePracticeDeparture} from "./assistanceTestFixtures";
 import {applyPracticeHostCommand, applyPracticeGuestReply,
   applyPracticeAutomations, PracticeCommand} from "./assistanceTransactions";
 import {practiceDeliveryReview, practiceDeliveryReviews} from
@@ -40,6 +41,8 @@ function harness() {
   const org = organizer();
   let actor = buildRehearsalActors("practice-delivery", 2, 1,
     session.virtualNow)[0];
+  const departure = practiceDeparture(session, "practice-delivery");
+  fake.write(departure.path, {...departure.record});
   const actorRef = db.collection("eventRehearsalActors")
     .doc(actor.sessionId + "_" + actor.actorId);
   const host = async (command: WithoutActor<PracticeCommand>,
@@ -84,6 +87,7 @@ function harness() {
       session.virtualNow.toMillis() + 60000);
   };
   return {fake, db, session, org, host, message, allMessages, review, repair,
+    departures: () => new Map([["event:whole", departure.record]]),
     evaluate, reply, configure, advance, actor: () => actor,
     setActor: (value: typeof actor) => {
       actor = value;
@@ -117,7 +121,7 @@ test("manual practice handling stops fallback and preserves guest replies",
     assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 1);
     assert.equal(h.review().deliveryStatus, "failed");
     assert.equal(practiceMessageView(h.session, h.actor(),
-      h.message())?.canRespond, true);
+      h.message(), h.departures())?.canRespond, true);
     await h.reply("on-my-way");
     assert.equal(h.actor().assistance?.intention.kind, "onMyWay");
     assert.equal(h.actor().status, "expected");
@@ -233,6 +237,10 @@ test("interrupted handoffs roll back and later instructions own new handling",
     h.advance(); await h.evaluate();
     assert.equal(h.message().record.attempts.length, 1);
     assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 0);
+    h.session.setup.locationName = "Next venue";
+    const moved = practiceDeparture(h.session, h.actor().sessionId,
+      "meeting", "event:whole", 2);
+    h.fake.write(moved.path, {...moved.record});
     const changedPlan = {...original.plan, guidance: {...original.plan.guidance,
       revision: 2, materialKey: "venue-2", text: "Join at the next stop."}};
     await h.host({kind: "configureAutomation", plan: changedPlan,
@@ -325,6 +333,7 @@ test("Firestore fences practice handoffs, retries, replies and reset", {
       .doc(id + "_" + actor.actorId), actor);
   }
   await batch.commit();
+  await savePracticeDeparture(db, session, id);
   const request = (data: unknown, uid = "host-1") => ({data,
     auth: {uid, token: {}}}) as Parameters<typeof control>[0];
   let current = await bootstrap(request({sessionId: id}));

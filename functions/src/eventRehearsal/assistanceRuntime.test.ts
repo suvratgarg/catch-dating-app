@@ -9,10 +9,11 @@ import {buildRehearsalActors, applyRehearsalBehavior} from "./engine";
 import {applyPracticeHostCommand, applyPracticeGuestReply,
   applyPracticeAutomations,
   PracticeCommand} from "./assistanceTransactions";
-import {PracticeMessage, practiceMessageView,
+import {PracticeMessage, practiceMessageView, practiceContext,
   readPracticeMessage, rehearsalMessages} from "./assistanceRuntime";
 
-import {practiceSession, practicePlan} from "./assistanceTestFixtures";
+import {practiceSession, practicePlan, practiceDeparture,
+  savePracticeDeparture} from "./assistanceTestFixtures";
 
 test("Host assistance requires a bounded setup generation", () => {
   const data = {sessionId: "practice-1", expectedRevision: 1,
@@ -43,6 +44,8 @@ function setup() {
   const session = practiceSession();
   let actor = buildRehearsalActors("practice-1", 2, 1,
     session.virtualNow)[0];
+  const departure = practiceDeparture(session, "practice-1");
+  fake.write(departure.path, {...departure.record});
   const actorRef = db.collection("eventRehearsalActors").doc(
     "practice-1_actor-1");
   const host = async (command: WithoutActor<PracticeCommand>) => {
@@ -81,7 +84,17 @@ function setup() {
     });
     return actor;
   };
+  const departures = () => new Map(fake.entries().filter(([p]) =>
+    p.startsWith("eventRehearsalMovements/"))
+    .map(([, v]) => ["event:whole", v as unknown as
+      ReturnType<typeof practiceDeparture>["record"]]));
+  const confirm = (stopId = "meeting", revision = 1) => {
+    const d = practiceDeparture(session, "practice-1", stopId,
+      "event:whole", revision);
+    fake.write(d.path, {...d.record});
+  };
   return {fake, session, host, message, reply, advance, evaluate,
+    departures, confirm,
     actor: () => actor, resetActor: () => {
       actor = buildRehearsalActors("practice-1", 2, 1, session.virtualNow)[0];
     }, behavior: (behavior: "arrive" | "leaveEarly") => {
@@ -95,21 +108,28 @@ test(
       const h = setup();
       const plan = practicePlan(h.session.virtualNow.toMillis());
       if (kind === "itineraryStop") {
-        plan.policy.destination = {kind, itineraryId: "crawl",
+        plan.policy.destination = {kind,
+          itineraryId: practiceContext(h.session, h.actor()).virtualEventId +
+          ":itinerary",
           permittedStopIds: ["bar"]};
-        plan.guidance.destination = {kind, itineraryId: "crawl", stopId: "bar"};
+        plan.guidance.destination = {kind,
+          itineraryId: practiceContext(h.session, h.actor()).virtualEventId +
+          ":itinerary", stopId: "bar"};
       }
+      if (kind === "itineraryStop") h.confirm("bar");
       await h.host({kind: "publish", plan});
       const message = h.message();
       assert.equal(message.record.intent.context.mode, "rehearsal");
       assert.equal(message.plan.guidance.destination.kind, kind);
       assert.equal(h.actor().status, "expected");
-      const view = practiceMessageView(h.session, h.actor(), message)!;
+      const view = practiceMessageView(h.session, h.actor(), message,
+        h.departures())!;
       assert.equal(view.canRespond, true);
       assert.equal("plan" in view, false);
       assert.equal("attempts" in view, false);
       assert.deepEqual(h.fake.entries().map(([p]) => p.split("/")[0]).sort(),
-        ["eventRehearsalActors", "eventRehearsalMessages"]);
+        ["eventRehearsalActors", "eventRehearsalMessages",
+          "eventRehearsalMovements"]);
     }
   });
 
@@ -148,14 +168,16 @@ test("instruction refresh survives an outreach cap without sending again",
     await h.host({kind: "dispatch", messageId: h.message().record.messageId,
       outcome: {kind: "delivered"}});
     h.advance(10);
+    h.session.setup.locationName = "Updated entrance"; h.confirm("meeting", 2);
     const changed = {...plan, guidance: {...plan.guidance, revision: 2,
       materialKey: "venue-2", text: "Meet at the updated entrance."}};
     await h.host({kind: "publish", plan: changed});
     await h.host({kind: "dispatch", messageId: h.message().record.messageId,
       outcome: {kind: "delivered"}});
     assert.equal(h.message().record.attempts.length, 0);
-    assert.equal(practiceMessageView(h.session, h.actor(), h.message())?.text,
-      changed.guidance.text);
+    assert.equal(practiceMessageView(h.session, h.actor(), h.message(),
+      h.departures())?.text,
+    "Join us at Updated entrance.");
     await h.reply("on-my-way");
     assert.equal(h.actor().assistance?.intention.kind, "onMyWay");
   });
@@ -171,7 +193,7 @@ test(
       if (change === "arrive") h.behavior("arrive");
       else h.advance(2);
       assert.equal(practiceMessageView(h.session, h.actor(),
-        h.message())?.canRespond, false);
+        h.message(), h.departures())?.canRespond, false);
       await assert.rejects(h.reply("on-my-way"), {code: "failed-precondition"});
       assert.equal(h.message().record.response, null);
     }
@@ -192,7 +214,7 @@ test(
       assert.equal(h.actor().helpRequested, choice === "need-help");
       assert.equal(h.message().record.response?.choiceId, choice);
       assert.equal(practiceMessageView(h.session, h.actor(),
-        h.message())?.canRespond, false);
+        h.message(), h.departures())?.canRespond, false);
       const before = h.fake.entries();
       await h.reply(choice);
       assert.deepEqual(h.fake.entries(), before);
@@ -204,13 +226,20 @@ test(
 test("join-later keeps the chosen stop", async () => {
   const h = setup();
   const plan = practicePlan(h.session.virtualNow.toMillis());
-  plan.policy.destination = {kind: "itineraryStop", itineraryId: "crawl",
+  plan.policy.destination = {kind: "itineraryStop",
+    itineraryId: practiceContext(h.session, h.actor()).virtualEventId +
+          ":itinerary",
     permittedStopIds: ["first", "second"]};
-  plan.guidance.destination = {kind: "itineraryStop", itineraryId: "crawl",
+  plan.guidance.destination = {kind: "itineraryStop",
+    itineraryId: practiceContext(h.session, h.actor()).virtualEventId +
+          ":itinerary",
     stopId: "first"};
-  const target = {kind: "itineraryStop" as const, itineraryId: "crawl",
+  const target = {kind: "itineraryStop" as const,
+    itineraryId: practiceContext(h.session, h.actor()).virtualEventId +
+          ":itinerary",
     stopId: "second"};
   plan.laterChoices = [{label: "Join at the second stop", target}];
+  h.confirm("first");
   await h.host({kind: "publish", plan});
   const choice = h.message().record.intent.choices.find((c) =>
     c.label === "Join at the second stop")!;
@@ -221,6 +250,7 @@ test("join-later keeps the chosen stop", async () => {
   await assert.rejects(h.host({kind: "publish", plan}),
     {code: "failed-precondition"});
   h.advance(30);
+  h.confirm("second", 2);
   await h.host({kind: "publish", plan: {...plan, guidance: {...plan.guidance,
     revision: 2, materialKey: "second-stop", destination: target,
     text: "We have reached the second stop."}}});
@@ -249,6 +279,7 @@ test("a reset epoch ignores messages left by an older run", async () => {
   h.session.setupRevision += 1;
   // Real reset rebuilds the roster as well as advancing the clock generation.
   h.resetActor();
+  h.confirm();
   await h.host({kind: "publish", plan});
   assert.notEqual(h.message().record.messageId, old);
   await h.reply("on-my-way");
@@ -260,11 +291,14 @@ test(
     for (const mode of ["arrive", "leaveEarly", "unconfirmed"] as const) {
       const h = setup();
       const plan = practicePlan(h.session.virtualNow.toMillis());
-      if (mode === "unconfirmed") plan.departureConfirmed = false;
-      else h.behavior(mode);
+      if (mode === "unconfirmed") {
+        h.fake.remove(
+          practiceDeparture(h.session, "practice-1").path);
+      } else h.behavior(mode);
       await assert.rejects(h.host({kind: "publish", plan}),
         {code: "failed-precondition"});
-      assert.equal(h.fake.entries().length, 0);
+      assert.equal(h.fake.entries().filter(([p]) =>
+        !p.startsWith("eventRehearsalMovements/")).length, 0);
     }
   });
 
@@ -315,6 +349,7 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
   const actors = buildRehearsalActors(id, 2, 1, session.virtualNow);
   await db.collection("organizers").doc(session.organizerId).set(organizer);
   await sessionRef.set(session);
+  await savePracticeDeparture(db, session, id);
   for (const actor of actors) {
     await db.collection("eventRehearsalActors")
       .doc(id + "_" + actor.actorId).set(actor);
@@ -399,6 +434,7 @@ test("Firestore serializes Host rehearsal commands, guest replies and reset", {
   assert.equal((await db.collection(rehearsalMessages)
     .where("sessionId", "==", id).get()).empty, true);
   assert.equal((await sessionRef.get()).data()!.actionCount, 0);
+  await savePracticeDeparture(db, afterReset as typeof session, id);
   const newRun = await controlEventRehearsalHandler(request({...publish,
     expectedSetupRevision: afterReset.setupRevision,
     clientActionId: randomUUID()}));
@@ -483,13 +519,15 @@ test("pause retains the script cursor; manual publish pauses it", async () => {
   assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 1);
   await h.host({kind: "resumeAutomation"});
   assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 2);
+  h.session.setup.locationName = "Next stop"; h.confirm("meeting", 2);
   const revised = {...plan, guidance: {...plan.guidance, revision: 2,
     materialKey: "second-stop", text: "Meet us at the next stop."}};
-  await h.host({kind: "publish", plan: revised});
+  await h.host({kind: "publish", plan: {...revised, policy: {...revised.policy,
+    maxMessagesPerEpisode: 2}}});
   assert.equal(h.actor().assistanceAutomation?.status, "paused");
   h.advance(10);
   await h.evaluate();
-  assert.equal(h.message().plan.guidance.materialKey, "second-stop");
+  assert.equal(h.message().plan.guidance.text, "Join us at Next stop.");
   assert.equal(h.message().record.attempts.length, 0);
   await assert.rejects(h.host({kind: "resumeAutomation"}),
     {code: "failed-precondition"});
@@ -499,6 +537,7 @@ test("held plans, caps and exhausted scripts cannot invent simulated sends",
   async () => {
     const h = setup();
     const plan = practicePlan(h.session.virtualNow.toMillis());
+    h.fake.remove(practiceDeparture(h.session, "practice-1").path);
     await h.host({kind: "configureAutomation", plan: {...plan,
       departureConfirmed: false}, outcomes: [{kind: "delivered"}]});
     h.advance(10);
@@ -507,6 +546,7 @@ test("held plans, caps and exhausted scripts cannot invent simulated sends",
     assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 0);
     assert.deepEqual(h.actor().assistanceAutomation?.evaluation?.policy,
       {kind: "wait", reason: "departureUnconfirmed"});
+    h.confirm();
     await h.host({kind: "configureAutomation", plan: {...plan,
       policy: {...plan.policy, maxMessagesPerEpisode: 0}},
     outcomes: [{kind: "delivered"}]});
@@ -526,6 +566,7 @@ test("reconfigured instructions retain the episode cooldown", async () => {
   await h.host({kind: "configureAutomation", plan,
     outcomes: [{kind: "delivered"}]});
   const old = h.message();
+  h.session.setup.locationName = "Next stop"; h.confirm("meeting", 2);
   const revised = {...plan, guidance: {...plan.guidance, revision: 2,
     materialKey: "second-stop", text: "Meet at the next stop."}};
   await h.host({kind: "configureAutomation", plan: revised,
@@ -553,7 +594,7 @@ test("deadlines, completion and reset hold automation", async () => {
   assert.equal(h.actor().assistanceAutomation?.evaluation?.policy?.kind,
     "hostDecision");
   assert.equal(practiceMessageView(h.session, h.actor(),
-    h.message())?.canRespond, false);
+    h.message(), h.departures())?.canRespond, false);
   h.session.status = "complete";
   await h.evaluate();
   assert.equal(h.actor().assistanceAutomation?.evaluation?.policy?.kind,
@@ -573,7 +614,8 @@ test("failed commits preserve script and attempt history", async () => {
   h.fake.failNextCommit = true;
   await assert.rejects(h.host(command), /transaction interruption/u);
   assert.equal(h.actor().assistanceAutomation, undefined);
-  assert.equal(h.fake.entries().length, 0);
+  assert.equal(h.fake.entries().filter(([p]) =>
+    !p.startsWith("eventRehearsalMovements/")).length, 0);
   await h.host(command);
   assert.equal(h.actor().assistanceAutomation?.nextOutcomeIndex, 1);
   assert.equal(h.message().record.attempts.length, 1);
@@ -633,6 +675,7 @@ test("Firestore automates a 50-guest rehearsal in the existing callables", {
         evaluation: null}});
   }
   await batch.commit();
+  await savePracticeDeparture(db, session, id);
   const request = (data: unknown) => ({data,
     auth: {uid: "host-1", token: {}}}) as
     Parameters<typeof controlEventRehearsalHandler>[0];

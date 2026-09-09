@@ -154,8 +154,9 @@ export async function preparePracticeMovementCommand(db: Firestore,
         roster: members ? {members, selectionHash: review.roster.sourceHash} :
           null, checkpointRequest: checkpointRequest ?? null}, report: null},
     source);
-    return () => tx.create(db.collection(rehearsalMovements).doc(
-      practiceMovementId(source, progressRevision)), value);
+    return {confirmedDeparture: value, commit: () => tx.create(
+      db.collection(rehearsalMovements).doc(
+        practiceMovementId(source, progressRevision)), value)};
   }
   const record = records.selected;
   const checkpoint = review.checkpoint;
@@ -172,8 +173,9 @@ export async function preparePracticeMovementCommand(db: Firestore,
     reportedBy: authority.actorUid,
     reportedAt: source.now};
   parsePracticeMovement({...record, report}, source);
-  return () => tx.update(db.collection(rehearsalMovements).doc(
-    practiceMovementId(source, record.progressRevision)), {report});
+  return {confirmedDeparture: null, commit: () => tx.update(
+    db.collection(rehearsalMovements).doc(
+      practiceMovementId(source, record.progressRevision)), {report})};
 }
 
 function requireAuthority(authority: PracticeCaseAuthority) {

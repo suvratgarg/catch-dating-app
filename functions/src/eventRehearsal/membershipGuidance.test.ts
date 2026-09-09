@@ -8,23 +8,28 @@ import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import type {Decision} from
   "../eventSuccess/operations/membershipDecisions";
 import {FakeFirestore} from "../operations/testFirestore";
-import {practiceSession, practicePlan} from "./assistanceTestFixtures";
+import {practiceSession, practicePlan, practiceDeparture,
+  savePracticeDeparture} from "./assistanceTestFixtures";
 import {buildRehearsalActors, applyRehearsalBehavior} from "./engine";
 import {practiceMembershipView, transferPracticeMembership} from "./membership";
 import {publishPracticeMessage, dispatchPracticeMessage, practiceMessageView,
   practiceFacts, readPracticeMessage, practiceMessageDocumentId,
-  rehearsalMessages, PracticeMessage} from "./assistanceRuntime";
+  rehearsalMessages, PracticeMessage,
+  practiceContext} from "./assistanceRuntime";
 import {configurePracticeAutomation, evaluatePracticeAutomation} from
   "./assistanceAutomation";
 import {applyPracticeGuestReply} from "./assistanceTransactions";
 
 function harness(now = 1_000_000, id = "practice-guidance") {
   const session = practiceSession(now);
-  session.setup.movementSimulation = {itinerary: [], livePositions: [],
+  session.setup.movementSimulation = {
+    itinerary: session.setup.movementSimulation!.itinerary, livePositions: [],
     lateArrivalGuidance: null, routePlan: {version: 2, movementMode: "run",
       routeShape: "loop", groupStrategy: "paceGroups",
       stopCadence: "hostedStops", stopKinds: ["regroup"],
       roleKinds: ["pacer", "sweep"],
+      path: [{latitude: 22.7, longitude: 75.8},
+        {latitude: 22.71, longitude: 75.81}],
       paceGroups: ["easy", "fast"].map((id, sortOrder) =>
         ({id, label: id, sortOrder}))}};
   const fixture = JSON.parse(readFileSync(
@@ -37,13 +42,20 @@ function harness(now = 1_000_000, id = "practice-guidance") {
     unknown as OrganizerDocument;
   let actor = buildRehearsalActors(id, 2, 1,
     session.virtualNow)[0];
+  const saved = [practiceDeparture(session, id),
+    practiceDeparture(session, id, "water", "easy"),
+    practiceDeparture(session, id, "water", "fast")];
+  const departures = () => new Map(saved.map((d) =>
+    [d.record.groupId, d.record]));
   const messages: PracticeMessage[] = [];
   const plan = (groupId = "easy") => ({...practicePlan(now),
     policy: {...practicePlan(now).policy, destination: {
-      kind: "groupCheckpoint" as const, routeId: "run", groupId,
+      kind: "groupCheckpoint" as const, routeId: practiceContext(session,
+        actor).virtualEventId + ":route", groupId,
       permittedCheckpointIds: ["water"]}},
     guidance: {...practicePlan(now).guidance, destination: {
-      kind: "groupCheckpoint" as const, routeId: "run", groupId,
+      kind: "groupCheckpoint" as const, routeId: practiceContext(session,
+        actor).virtualEventId + ":route", groupId,
       checkpointId: "water"}}});
   const move = (decision: Decision = {kind: "place", groupId: "easy"},
     actorUid = "host-1") => {
@@ -57,7 +69,8 @@ function harness(now = 1_000_000, id = "practice-guidance") {
     randomUUID());
   };
   const publish = (value = plan()) => {
-    const result = publishPracticeMessage(session, actor, value, messages);
+    const result = publishPracticeMessage(session, actor, value, messages,
+      departures());
     actor = result.actor;
     if (!result.exists) messages.push(result.message);
     return result.message;
@@ -65,6 +78,7 @@ function harness(now = 1_000_000, id = "practice-guidance") {
   const propose = () => move({kind: "propose", from: "easy", to: "fast",
     receivingOperatorId: "host-2", expiresAtMillis: now + 10000});
   return {session, organizer, plan, move, publish, propose, messages,
+    departures, saved,
     actor: () => actor, setActor: (value: typeof actor) => actor = value};
 }
 
@@ -74,13 +88,14 @@ test("group directions require an explicit accepted current membership", () => {
   h.move();
   const message = h.publish();
   assert.equal(message.membershipBinding?.groupId, "easy");
-  assert.equal(practiceMessageView(h.session, h.actor(), message)?.canRespond,
-    true);
+  assert.equal(practiceMessageView(h.session, h.actor(), message,
+    h.departures())?.canRespond,
+  true);
   assert.throws(() => h.publish(h.plan("fast")), /outreach is held/u);
   assert.equal(h.actor().status, "expected");
   assert.equal(h.actor().visit?.checkedInAtMillis, null);
   assert.equal("membershipBinding" in practiceMessageView(h.session,
-    h.actor(), message)!, false);
+    h.actor(), message, h.departures())!, false);
 });
 
 test("proposal, rejection and cancellation preserve the original directions",
@@ -94,10 +109,12 @@ test("proposal, rejection and cancellation preserve the original directions",
         decision === "reject" ? "host-2" : "host-1");
       }
       assert.equal(h.actor().groupMembership?.assignmentRevision, 1);
-      assert.equal(practiceMessageView(h.session, h.actor(), message)
+      assert.equal(practiceMessageView(h.session, h.actor(), message,
+        h.departures())
         ?.canRespond, true);
       assert.equal(dispatchPracticeMessage(h.session, h.actor(), message,
-        h.messages, {kind: "delivered"}).decision.kind, "dispatch");
+        h.messages, {kind: "delivered"}, h.departures()).decision.kind,
+      "dispatch");
     }
   });
 
@@ -107,32 +124,37 @@ test("acceptance hides old directions and stops delivery and reply gates",
     const message = h.publish(); h.propose();
     h.move({kind: "accept",
       transferId: h.actor().groupMembership!.transfer!.transferId}, "host-2");
-    assert.equal(practiceMessageView(h.session, h.actor(), message), null);
+    assert.equal(practiceMessageView(h.session, h.actor(), message,
+      h.departures()), null);
     assert.equal(practiceFacts(h.session, h.actor(), message, h.messages,
-      true).gate.kind, "stop");
+      true, h.departures()).gate.kind, "stop");
     const result = dispatchPracticeMessage(h.session, h.actor(), message,
-      h.messages, {kind: "delivered"});
+      h.messages, {kind: "delivered"}, h.departures());
     assert.equal(result.decision.kind, "stop");
     assert.equal(result.record.attempts.length, 0);
     assert.equal(readPracticeMessage(message, h.session, h.actor()), message);
     const fresh = h.publish(h.plan("fast"));
     assert.notEqual(fresh.record.messageId, message.record.messageId);
-    assert.equal(practiceMessageView(h.session, h.actor(), fresh)?.canRespond,
-      true);
+    assert.equal(practiceMessageView(h.session, h.actor(), fresh,
+      h.departures())?.canRespond,
+    true);
   });
 
 test("same-instant removal and replacement cannot revive an old instruction",
   () => {
     const h = harness(); h.move();
     const message = h.publish(); h.move({kind: "leave"});
-    assert.equal(practiceMessageView(h.session, h.actor(), message), null);
+    assert.equal(practiceMessageView(h.session, h.actor(), message,
+      h.departures()), null);
     h.move();
     assert.equal(h.actor().groupMembership?.assignmentRevision, 3);
-    assert.equal(practiceMessageView(h.session, h.actor(), message), null);
+    assert.equal(practiceMessageView(h.session, h.actor(), message,
+      h.departures()), null);
     const fresh = h.publish();
     assert.notEqual(fresh.record.messageId, message.record.messageId);
-    assert.equal(practiceMessageView(h.session, h.actor(), fresh)?.canRespond,
-      true);
+    assert.equal(practiceMessageView(h.session, h.actor(), fresh,
+      h.departures())?.canRespond,
+    true);
   });
 
 test("re-entry, changed group source and missing proof retire group directions",
@@ -157,10 +179,13 @@ test("re-entry, changed group source and missing proof retire group directions",
             groupSourceHash: "0".repeat(64)}}};
       } else {
         record = {...message}; delete record.membershipBinding;
+        delete record.movementBinding;
       }
-      assert.equal(practiceMessageView(h.session, actor, record), null);
-      assert.equal(practiceFacts(h.session, actor, record, [record]).gate.kind,
-        "stop");
+      assert.equal(practiceMessageView(h.session, actor, record,
+        h.departures()), null);
+      assert.equal(practiceFacts(h.session, actor, record, [record], false,
+        h.departures()).gate.kind,
+      "stop");
       assert.equal(readPracticeMessage(record, h.session, actor), record);
     }
     assert.throws(() => readPracticeMessage({...message, membershipBinding: {
@@ -173,15 +198,17 @@ test("automation waits for membership and never consumes a stale-group attempt",
     const h = harness();
     let result = configurePracticeAutomation(h.session, h.actor(), h.plan(),
       [{kind: "failed", classification: "technical"}, {kind: "delivered"}],
-      []);
+      [], h.departures());
     assert.equal(result.messages.length, 0);
     assert.deepEqual(result.actor.assistanceAutomation?.evaluation?.policy,
       {kind: "wait", reason: "guidanceUnavailable"});
     h.setActor(result.actor); h.move();
-    result = evaluatePracticeAutomation(h.session, h.actor(), []);
+    result = evaluatePracticeAutomation(h.session, h.actor(), [],
+      h.departures());
     assert.equal(result.actor.assistanceAutomation?.nextOutcomeIndex, 1);
     h.setActor(result.actor); h.move({kind: "leave"});
-    result = evaluatePracticeAutomation(h.session, h.actor(), result.messages);
+    result = evaluatePracticeAutomation(h.session, h.actor(), result.messages,
+      h.departures());
     assert.equal(result.actor.assistanceAutomation?.nextOutcomeIndex, 1);
     assert.equal(result.messages[0].record.attempts.length, 1);
     assert.deepEqual(result.actor.assistanceAutomation?.evaluation?.policy,
@@ -192,10 +219,10 @@ test("whole-event venue guidance remains usable without group assignment",
   () => {
     const h = harness();
     const message = publishPracticeMessage(h.session, h.actor(),
-      practicePlan(h.session.virtualNow.toMillis()), []);
+      practicePlan(h.session.virtualNow.toMillis()), [], h.departures());
     assert.equal(message.message.membershipBinding, undefined);
     assert.equal(practiceMessageView(h.session, message.actor,
-      message.message)?.canRespond, true);
+      message.message, h.departures())?.canRespond, true);
   });
 
 test("old replies cannot restore intention after removal and replacement",
@@ -204,6 +231,7 @@ test("old replies cannot restore intention after removal and replacement",
     const message = h.publish();
     const fake = new FakeFirestore();
     const db = fake as unknown as Firestore;
+    for (const d of h.saved) fake.write(d.path, {...d.record});
     fake.write(rehearsalMessages + "/" + practiceMessageDocumentId(
       h.actor().sessionId, message.record.messageId), message);
     const submission = {messageId: message.record.messageId, intentRevision: 1,
@@ -255,6 +283,9 @@ test("Firestore group messages follow handover in Host and guest projections", {
     createdAt: h.session.createdAt, lastSeenAt: h.session.createdAt,
     expiresAt: h.session.expiresAt});
   await batch.commit();
+  await savePracticeDeparture(db, h.session, id);
+  await savePracticeDeparture(db, h.session, id, "water", "easy");
+  await savePracticeDeparture(db, h.session, id, "water", "fast");
   const request = (data: unknown, uid = "host-1") =>
     ({data, auth: {uid, token: {}}}) as Parameters<typeof control>[0];
   let current = await bootstrap(request({sessionId: id}));

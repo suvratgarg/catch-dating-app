@@ -145,4 +145,12 @@ export type EventRehearsalMessageDocument = {
     groupSourceHash: string;
     assignmentRevision: number;
   };
+  /**
+   * Server-derived confirmed departure proof. Historical messages without this proof remain evidence only.
+   */
+  movementBinding?: {
+    groupId: string;
+    progressRevision: number;
+    sourceHash: string;
+  };
 };

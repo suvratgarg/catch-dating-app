@@ -1,3 +1,5 @@
+import {PracticeDepartures, resolvePracticeGuidance,
+  practiceGuidanceMaterial} from "./movementGuidance";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventRehearsalDocument as Session,
   EventRehearsalActorDocument as Actor} from
@@ -48,7 +50,8 @@ export function practiceMessageDocumentId(sessionId: string,
 export function practiceInput(session: Session, actor: Actor,
   plan: PracticePlan,
   records: readonly PracticeMessage[],
-  current?: PracticeMessage): LateJoinInput {
+  current?: PracticeMessage,
+  departures: PracticeDepartures = new Map()): LateJoinInput {
   const context = practiceContext(session, actor);
   const now = session.virtualNow.toMillis();
   const history = projectLateJoinMessageHistory({context,
@@ -60,9 +63,10 @@ export function practiceInput(session: Session, actor: Actor,
   }
   const end = session.virtualStartedAt.toMillis() +
     session.setup.durationMinutes * 60000;
+  const confirmed = resolvePracticeGuidance(session, actor, plan, departures);
   return parseLateJoinInput({context, eventId: context.virtualEventId,
     eventOpen: ["running", "paused"].includes(session.status) && now < end,
-    departureConfirmed: plan.departureConfirmed, now,
+    departureConfirmed: !!confirmed, now,
     setting: {kind: "enabled", authority: "executeWithinPolicy",
       policyVersion: "rehearsal:v1"}, policy: plan.policy,
     guest: {attendeeId: actor.actorId,
@@ -78,9 +82,11 @@ export function practiceInput(session: Session, actor: Actor,
           revision: session.runtimeRevision, observedAt: now, source: "host"},
       intention: practiceState(actor).intention,
       deliveryEligibility: "eligible"},
-    guidance: practiceGuidanceIsCurrent(session, actor, plan, current) ?
-      {kind: "known", value: plan.guidance,
-        revision: plan.guidance.revision, observedAt: now, source: "host"} :
+    guidance: practiceGuidanceIsCurrent(session, actor, plan, current,
+      departures) ?
+      {kind: "known", value: confirmed!.plan.guidance,
+        revision: confirmed!.plan.guidance.revision,
+        observedAt: now, source: "host"} :
       {kind: "unknown", reason: "sourceUnavailable"},
     ...history.facts,
     ...(plan.responseDeadline === null ? {} :
@@ -89,7 +95,17 @@ export function practiceInput(session: Session, actor: Actor,
 
 /** Historical records stay readable; only current acceptance authorizes use. */
 export function practiceGuidanceIsCurrent(session: Session, actor: Actor,
-  plan: PracticePlan, message?: PracticeMessage): boolean {
+  plan: PracticePlan, message?: PracticeMessage,
+  departures: PracticeDepartures = new Map()): boolean {
+  const confirmed = resolvePracticeGuidance(session, actor, plan, departures);
+  if (!confirmed) return false;
+  if (message && (!message.movementBinding ||
+      message.movementBinding.groupId !== confirmed.binding.groupId ||
+      message.movementBinding.sourceHash !== confirmed.binding.sourceHash ||
+      message.movementBinding.progressRevision >
+        confirmed.binding.progressRevision ||
+      practiceGuidanceMaterial(message.plan) !==
+        practiceGuidanceMaterial(confirmed.plan))) return false;
   const binding = practiceGuidanceBinding(session, actor,
     plan.guidance.destination);
   if (binding === null) return false;
@@ -101,9 +117,10 @@ export function practiceGuidanceIsCurrent(session: Session, actor: Actor,
 
 function boundIntentId(intent: ReturnType<typeof parseMessageIntent>,
   plan: PracticePlan,
-  binding: NonNullable<PracticeMessage["membershipBinding"]>) {
+  binding: PracticeMessage["membershipBinding"],
+  movement?: PracticeMessage["movementBinding"]) {
   return "message:" + hash([{...intent, intentId: "", createdAt: 0},
-    plan, binding]);
+    plan, binding ?? null, ...(movement ? [movement] : [])]);
 }
 
 export function readPracticeMessage(value: unknown, session: Session,
@@ -140,16 +157,26 @@ export function readPracticeMessage(value: unknown, session: Session,
       hash(intent.deliveryPolicy) !== hash(value.plan.deliveryPolicy)) {
     fail("Practice message material changed.");
   }
+  const movement = value.movementBinding;
+  if (movement && (movement.groupId !==
+      (intent.guidance.destination.kind === "groupCheckpoint" ?
+        intent.guidance.destination.groupId : "event:whole") ||
+      movement.progressRevision !== intent.guidance.revision ||
+      intent.intentId !== boundIntentId(intent, value.plan,
+        value.membershipBinding, movement))) {
+    fail("Practice movement binding changed.");
+  }
   const binding = value.membershipBinding;
   if (binding && (intent.guidance.destination.kind !== "groupCheckpoint" ||
       binding.groupId !== intent.guidance.destination.groupId ||
-      intent.intentId !== boundIntentId(intent, value.plan, binding))) {
+      intent.intentId !== boundIntentId(intent, value.plan, binding,
+        movement))) {
     fail("Practice membership binding changed.");
   }
   return value;
 }
 
-/** Publish a practice message only from an explicit Host-reviewed plan. */
+/** Validate the reviewed policy and recipe window. Movement is server-owned. */
 export function requirePracticePlan(session: Session, plan: PracticePlan) {
   const now = session.virtualNow.toMillis();
   const end = session.virtualStartedAt.toMillis() +
@@ -164,10 +191,15 @@ export function requirePracticePlan(session: Session, plan: PracticePlan) {
 }
 
 export function publishPracticeMessage(session: Session, actor: Actor,
-  plan: PracticePlan, history: readonly PracticeMessage[]) {
+  plan: PracticePlan, history: readonly PracticeMessage[],
+  departures: PracticeDepartures = new Map()) {
+  const confirmed = resolvePracticeGuidance(session, actor, plan, departures);
+  if (!confirmed) fail("Practice outreach is held: departureNotConfirmed");
+  plan = confirmed.plan;
   requirePracticePlan(session, plan);
   const now = session.virtualNow.toMillis();
-  const input = practiceInput(session, actor, plan, history);
+  const input = practiceInput(session, actor, plan, history, undefined,
+    departures);
   const prepared = prepareRehearsalLateJoin(input, practiceContext(session,
     actor), {
     occurrenceId: "lateJoin", permittedRoutes: plan.routes,
@@ -181,13 +213,12 @@ export function publishPracticeMessage(session: Session, actor: Actor,
   const membershipBinding = practiceGuidanceBinding(session, actor,
     plan.guidance.destination);
   if (membershipBinding === null) fail("Practice group needs review.");
-  const intent = parseMessageIntent({...base, intentId: membershipBinding ?
-    boundIntentId(base, plan, membershipBinding) : "message:" +
-      hash([{...base, createdAt: 0}, plan])});
+  const intent = parseMessageIntent({...base, intentId:
+    boundIntentId(base, plan, membershipBinding, confirmed.binding)});
   const record = newMessageRecord(intent, now);
   const existing = history.find((m) => m.record.messageId === record.messageId);
   const message = readPracticeMessage(existing ?? {sessionId: actor.sessionId,
-    actorId: actor.actorId, plan, record,
+    actorId: actor.actorId, plan, record, movementBinding: confirmed.binding,
     ...(membershipBinding ? {membershipBinding} : {})}, session, actor);
   return {message, exists: Boolean(existing), actor: {...actor,
     assistance: {...practiceState(actor), latestMessageId: record.messageId}}};
@@ -198,10 +229,11 @@ export function publishPracticeMessage(session: Session, actor: Actor,
  */
 export function practiceFacts(session: Session, actor: Actor,
   message: PracticeMessage, history: readonly PracticeMessage[],
-  forReply = false):
+  forReply = false, departures: PracticeDepartures = new Map()):
   OutboxFacts {
   readPracticeMessage(message, session, actor);
-  const input = practiceInput(session, actor, message.plan, history, message);
+  const input = practiceInput(session, actor, message.plan, history, message,
+    departures);
   const decision = evaluateLateJoin(input);
   const current = practiceState(actor).latestMessageId ===
     message.record.messageId;
@@ -229,13 +261,15 @@ export function practiceDeliveryDecision(message: PracticeMessage,
 
 export function dispatchPracticeMessage(session: Session, actor: Actor,
   message: PracticeMessage, history: readonly PracticeMessage[],
-  outcome: RehearsalMessageOutcome) {
+  outcome: RehearsalMessageOutcome,
+  departures: PracticeDepartures = new Map()) {
   readPracticeMessage(message, session, actor);
   if (message.handoff) {
     return {record: message.record,
       decision: {kind: "stop" as const, reason: "hostStopped" as const}};
   }
-  const facts = practiceFacts(session, actor, message, history);
+  const facts = practiceFacts(session, actor, message, history, false,
+    departures);
   const now = session.virtualNow.toMillis();
   const decision = practiceDeliveryDecision(message, facts, now);
   if (decision.kind !== "dispatch") return {record: message.record, decision};
@@ -244,10 +278,12 @@ export function dispatchPracticeMessage(session: Session, actor: Actor,
 }
 
 export function practiceMessageView(session: Session, actor: Actor,
-  message: PracticeMessage | null) {
+  message: PracticeMessage | null,
+  departures: PracticeDepartures = new Map()) {
   if (!message) return null;
   readPracticeMessage(message, session, actor);
-  if (!practiceGuidanceIsCurrent(session, actor, message.plan, message)) {
+  if (!practiceGuidanceIsCurrent(session, actor, message.plan, message,
+    departures)) {
     return null;
   }
   const {record} = message;

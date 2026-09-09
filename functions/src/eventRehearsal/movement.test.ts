@@ -52,7 +52,7 @@ function harness(now = Date.now(), id = randomUUID()) {
     await db.runTransaction(async (tx) => {
       const commit = await preparePracticeMovementCommand(db, tx, id, session,
         actors, command, authority, randomUUID());
-      commit();
+      commit.commit();
     });
     session.runtimeRevision++; session.actionCount++;
   };

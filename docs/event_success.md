@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.109.0
+version: 1.110.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1011,9 +1011,23 @@ discrepancy and revoked-owner states remain visible after event completion.
 Completion permits reports, but not new departures. Reports never change attendance,
 participation, membership, movement or return-sweep accountability.
 
-Native movement controllers/screen composition, reporter reassignment, explicit
-checkpoint closeout and joining-message automation from these recorded departures
-remain integration work. Delegated rehearsal group duties are also still required.
+Saved departures now drive rehearsal joining instructions. Publication, scripted
+attempts, Host/guest projection and replies re-read the latest departure in the
+selected group. Client-authored directions and the legacy departure flag cannot
+confirm movement. The server derives text and targets from the frozen source;
+later-stop choices must exist in that source. Each new message binds the confirmed
+progress revision and source hash. Old unbound messages remain delivery evidence.
+
+Confirming a departure reevaluates enabled assistance in the same transaction as
+the parent action, actor changes and messages. A new destination refreshes the guest
+page while complete history retains cooldown and episode caps. Reconfirming the
+same destination preserves the current automated message and script cursor. Current
+accepted membership still gates subgroup directions; virtual time and GPS never
+substitute for a departure. A source change or reset withholds stale instructions.
+
+Native recipe/configuration and movement controllers/screen composition, reporter
+reassignment and explicit checkpoint closeout remain integration work. Delegated
+rehearsal group duties are also still required.
 
 
 `movementDecisions.ts` owns the shared, side-effect-free departure and
@@ -1519,9 +1533,8 @@ and replies withhold directions when acceptance is missing, historical or change
 Old unbound group messages remain readable as delivery evidence but cannot supply
 instructions or accept replies. A duplicate response never reapplies its intention
 or help effect. Whole-event venue and itinerary directions need no subgroup.
-A new accepted group requires a reviewed matching plan. Joining-message automation
-still needs to consume the recorded departure rather than its manually reviewed
-departure flag.
+A new accepted group requires a reviewed matching plan and a saved departure for
+that group. The private movement binding complements accepted-membership proof.
 
 `getEventAssistanceMembership` and `transferEventAssistanceGroup` own one
 accepted moving-group membership per guest, independently of physical attendance,

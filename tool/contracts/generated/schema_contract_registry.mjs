@@ -116207,6 +116207,33 @@ export const eventRehearsalMessageDocumentSchema = {
       },
       "description": "Server-derived accepted-group proof for a group checkpoint instruction. Unbound historical group messages remain evidence only.",
       "x-catch-ownership": "server-only"
+    },
+    "movementBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "groupId",
+        "progressRevision",
+        "sourceHash"
+      ],
+      "properties": {
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "description": "Server-derived confirmed departure proof. Historical messages without this proof remain evidence only.",
+      "x-catch-ownership": "server-only"
     }
   },
   "allOf": [

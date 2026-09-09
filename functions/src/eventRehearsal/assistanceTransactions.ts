@@ -1,3 +1,5 @@
+import {readPracticeDepartures, practiceRecipeKey} from "./movementGuidance";
+import type {Movement} from "./movementSource";
 import {resolvePracticeAccountability} from "./accountability";
 import {transferPracticeMembership} from "./membership";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
@@ -76,7 +78,12 @@ function persistMessages(db: Firestore, tx: Transaction, session: Session,
 
 /** All actor histories are read before any writes in the parent transaction. */
 export async function applyPracticeAutomations(db: Firestore, tx: Transaction,
-  session: Session, actors: readonly Actor[]): Promise<Actor[]> {
+  session: Session, actors: readonly Actor[],
+  pending?: Movement | null): Promise<Actor[]> {
+  const plans = actors.flatMap((a) => a.assistanceAutomation ?
+    [a.assistanceAutomation.plan] : []);
+  const departures = actors.length ? await readPracticeDepartures(db, tx,
+    actors[0].sessionId, session, plans, pending) : new Map();
   const changes = await Promise.all(actors.map(async (actor) => {
     if (actor.assistanceAutomation?.status !== "enabled") {
       return {before: [], result: {actor, messages: []}};
@@ -84,7 +91,7 @@ export async function applyPracticeAutomations(db: Firestore, tx: Transaction,
     try {
       const before = await readHistory(db, tx, session, actor);
       return {before, result: evaluatePracticeAutomation(session, actor,
-        before)};
+        before, departures)};
     } catch (error) {
       if (!(error instanceof PracticeHistoryUnavailable)) throw error;
       return {before: [],
@@ -141,6 +148,11 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
     return pausePracticeAutomation(session, actor);
   }
   const history = await readHistory(db, tx, session, actor);
+  const departures = await readPracticeDepartures(db, tx, actor.sessionId,
+    session, [...history.map((m) => m.plan),
+      ...("plan" in command ? [command.plan] : []),
+      ...(
+        actor.assistanceAutomation ? [actor.assistanceAutomation.plan] : [])]);
   let next: PracticeAutomationResult;
   if (command.kind === "repairDelivery") {
     if (!authority?.operationId) {
@@ -155,10 +167,10 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
     const updated = repairPracticeDelivery(session, actor, message, command,
       authority.organizer, authority.actorUid, authority.operationId);
     next = evaluatePracticeAutomation(session, actor,
-      history.map((m) => m === message ? updated : m));
+      history.map((m) => m === message ? updated : m), departures);
   } else if (command.kind === "configureAutomation") {
     next = configurePracticeAutomation(session, actor, command.plan,
-      command.outcomes, history);
+      command.outcomes, history, departures);
   } else if (command.kind === "resumeAutomation") {
     if (!actor.assistanceAutomation) {
       throw new HttpsError("failed-precondition",
@@ -167,16 +179,17 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
     const current = history.find((m) => m.record.messageId ===
       practiceState(actor).latestMessageId);
     if (current &&
-        hash(current.plan) !== hash(actor.assistanceAutomation.plan)) {
+        practiceRecipeKey(current.plan) !==
+          practiceRecipeKey(actor.assistanceAutomation.plan)) {
       throw new HttpsError("failed-precondition",
         "Review the practice plan before resuming automation.");
     }
     next = evaluatePracticeAutomation(session, {...actor,
       assistanceAutomation: {...actor.assistanceAutomation,
-        status: "enabled"}}, history);
+        status: "enabled"}}, history, departures);
   } else if (command.kind === "publish") {
     const published = publishPracticeMessage(session, actor, command.plan,
-      history);
+      history, departures);
     next = {actor: pausePracticeAutomation(session, published.actor),
       messages: published.exists ? history : [...history, published.message]};
   } else {
@@ -189,7 +202,7 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
     const context = practiceContext(session, actor);
     const now = session.virtualNow.toMillis();
     const result = command.kind === "dispatch" ? dispatchPracticeMessage(
-      session, actor, message, history, command.outcome) :
+      session, actor, message, history, command.outcome, departures) :
       recordRehearsalMessageOutcome({context, record: message.record,
         now, attemptId: command.attemptId, outcome: command.outcome});
     const messages = history.map((m) => m === message ?
@@ -197,7 +210,7 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
         session, actor) : m);
     next = command.kind === "dispatch" ?
       {actor: pausePracticeAutomation(session, actor), messages} :
-      evaluatePracticeAutomation(session, actor, messages);
+      evaluatePracticeAutomation(session, actor, messages, departures);
   }
   persistMessages(db, tx, session, next.actor, history, next.messages);
   return next.actor;
@@ -216,7 +229,12 @@ export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
     throw new HttpsError("not-found",
       "Practice message not found.");
   }
-  if (!practiceGuidanceIsCurrent(session, actor, message.plan, message)) {
+  const departures = await readPracticeDepartures(db, tx, actor.sessionId,
+    session, [message.plan,
+      ...(
+        actor.assistanceAutomation ? [actor.assistanceAutomation.plan] : [])]);
+  if (!practiceGuidanceIsCurrent(session, actor, message.plan, message,
+    departures)) {
     throw new HttpsError("failed-precondition",
       "Practice group directions need review.");
   }
@@ -231,7 +249,8 @@ export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
     submission: {intentId: message.record.intent.intentId,
       intentRevision: submission.intentRevision, choiceId: submission.choiceId,
       requestId: submission.requestId},
-    gate: practiceFacts(session, actor, message, history, true).gate});
+    gate: practiceFacts(session, actor, message, history, true,
+      departures).gate});
   if (result.result.kind === "rejected") {
     throw new HttpsError("failed-precondition",
       "Practice response rejected: " + result.result.reason);
@@ -260,7 +279,7 @@ export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
     readPracticeMessage({...message, record: result.record},
       session, actor) : m);
   const next = evaluatePracticeAutomation(session,
-    help?.actor ?? changedActor, messages);
+    help?.actor ?? changedActor, messages, departures);
   persistMessages(db, tx, session, next.actor, history, next.messages);
   help?.commit();
   return next.actor;

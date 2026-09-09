@@ -3766,6 +3766,33 @@ const schemaEventRehearsalMessageDocumentSchema = <String, Object?>{
       'description': 'Server-derived accepted-group proof for a group checkpoint instruction. Unbound historical group messages remain evidence only.',
       'x-catch-ownership': 'server-only',
     },
+    'movementBinding': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'groupId',
+        'progressRevision',
+        'sourceHash',
+      ],
+      'properties': <String, Object?>{
+        'groupId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'progressRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 1,
+          'maximum': 500,
+        },
+        'sourceHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+      },
+      'description': 'Server-derived confirmed departure proof. Historical messages without this proof remain evidence only.',
+      'x-catch-ownership': 'server-only',
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
