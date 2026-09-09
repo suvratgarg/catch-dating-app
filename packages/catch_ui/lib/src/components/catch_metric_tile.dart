@@ -19,7 +19,7 @@ class CatchMetricTile extends StatelessWidget {
   const CatchMetricTile({
     super.key,
     this.icon,
-    String? this._value,
+    this._value,
     required String this._label,
     this.highlight = false,
     this.center = false,

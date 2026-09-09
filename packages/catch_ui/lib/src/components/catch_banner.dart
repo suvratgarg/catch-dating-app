@@ -98,7 +98,7 @@ class CatchBanner extends StatelessWidget {
     this.onRetry,
     this.retryLabel,
     this.statuses = const [],
-    CatchBannerStatus? this._status,
+    this._status,
   });
 
   static const _errorPadding = EdgeInsets.symmetric(

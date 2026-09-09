@@ -8,7 +8,7 @@ class CatchHeroViewport extends StatelessWidget {
     super.key,
     required Object this._tag,
     required this.child,
-    HeroFlightShuttleBuilder? this._flightShuttleBuilder,
+    this._flightShuttleBuilder,
   }) : _ticketPrefix = null,
        _ticketId = null;
 
