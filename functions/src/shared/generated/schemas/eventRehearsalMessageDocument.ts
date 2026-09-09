@@ -3731,6 +3731,38 @@ export const eventRehearsalMessageDocumentSchema: Record<string, unknown> = {
         }
       },
       "x-catch-ownership": "server-only"
+    },
+    "membershipBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "episodeId",
+        "groupId",
+        "groupSourceHash",
+        "assignmentRevision"
+      ],
+      "properties": {
+        "episodeId": {
+          "type": "string",
+          "pattern": "^episode:[a-f0-9]{64}$"
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "groupSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Server-derived accepted-group proof for a group checkpoint instruction. Unbound historical group messages remain evidence only.",
+      "x-catch-ownership": "server-only"
     }
   },
   "allOf": [

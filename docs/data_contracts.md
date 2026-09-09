@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.99.0
+version: 1.100.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -935,6 +935,15 @@ history query includes session, actor and clock generation. Reset invalidates
 that generation and deletes messages; cleanup drains bounded batches so older
 remnants cannot survive a page limit. The Host projection additionally exposes
 simulated attempts; the guest projection excludes delivery internals.
+
+A rehearsal membership's optional `assignmentRevision` records the last placement,
+accepted transfer or removal; proposal-only decisions preserve it. Group-checkpoint
+messages have a server-derived `membershipBinding` containing that revision, the
+participation episode, group ID and source hash. The proof is bound into message
+identity. Missing legacy proof or changed acceptance prevents instructions,
+delivery and reply effects while preserving historical receipts. Guest projections
+never expose this private proof. Exact response retries cannot reapply old effects.
+
 
 ### Event Success Moment Presentation Contract
 

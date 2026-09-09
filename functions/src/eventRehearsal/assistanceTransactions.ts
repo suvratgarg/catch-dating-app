@@ -14,6 +14,7 @@ import {recordRehearsalMessageOutcome,
   respondToRehearsalMessage} from "./assistanceMessages";
 import {practiceContext, practiceEpisode, practiceFacts,
   practiceMessageDocumentId, practiceState, publishPracticeMessage,
+  practiceGuidanceIsCurrent,
   readPracticeMessage, rehearsalMessages, PracticeMessage,
   PracticeHistoryUnavailable, dispatchPracticeMessage} from
   "./assistanceRuntime";
@@ -114,8 +115,12 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
       throw new HttpsError("permission-denied",
         "Current Host authority and operation identity are required.");
     }
-    return transferPracticeMembership(session, actor, command, authority,
-      authority.operationId);
+    const changed = transferPracticeMembership(session, actor, command,
+      authority, authority.operationId);
+    // Refresh reviewed automation in the same transaction as the handover.
+    // Invalid history can hold assistance without rolling back membership.
+    const [next] = await applyPracticeAutomations(db, tx, session, [changed]);
+    return next;
   }
   if (command.kind === "resolveAccountability") {
     if (!authority) {
@@ -211,6 +216,10 @@ export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
     throw new HttpsError("not-found",
       "Practice message not found.");
   }
+  if (!practiceGuidanceIsCurrent(session, actor, message.plan, message)) {
+    throw new HttpsError("failed-precondition",
+      "Practice group directions need review.");
+  }
   const context = practiceContext(session, actor);
   const result = respondToRehearsalMessage({context, record: message.record,
     now: session.virtualNow.toMillis(),
@@ -227,6 +236,8 @@ export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
     throw new HttpsError("failed-precondition",
       "Practice response rejected: " + result.result.reason);
   }
+  // A duplicate response is evidence, never another application of its effect.
+  if (result.result.kind === "replayed") return actor;
   const effect = result.result.response.value;
   if (effect.kind !== "joinIntent" && effect.kind !== "requestHelp") {
     throw new HttpsError("failed-precondition",

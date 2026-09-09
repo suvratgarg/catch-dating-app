@@ -19,6 +19,12 @@ import {parseMessageIntent} from "../eventSuccess/operations/messageProtocol";
 import {dispatchRehearsalMessage, prepareRehearsalLateJoin,
   RehearsalMessageOutcome} from "./assistanceMessages";
 
+import {practiceContext, practiceEpisode, practiceState} from
+  "./assistanceIdentity";
+import {practiceGuidanceBinding} from "./membershipSource";
+export {practiceContext, practiceEpisode, practiceState} from
+  "./assistanceIdentity";
+
 export type {PracticeMessage};
 export type PracticePlan = PracticeMessage["plan"];
 export class PracticeHistoryUnavailable extends HttpsError {
@@ -27,19 +33,6 @@ export class PracticeHistoryUnavailable extends HttpsError {
   }
 }
 export const rehearsalMessages = "eventRehearsalMessages";
-export const practiceState = (actor: Actor): NonNullable<Actor["assistance"]> =>
-  actor.assistance ?? {intention: {kind: "unknown"}, latestMessageId: null};
-
-export function practiceContext(session: Session,
-  actor: Pick<Actor, "sessionId">) {
-  return {mode: "rehearsal" as const, rehearsalId: actor.sessionId,
-    virtualEventId: "practice:" + hash(actor.sessionId),
-    clockId: "clock:" + hash([actor.sessionId,
-      session.virtualStartedAt.toMillis(), session.setupRevision])};
-}
-export function practiceEpisode(session: Session, actor: Actor) {
-  return "episode:" + hash([practiceContext(session, actor), actor.actorId]);
-}
 export function practiceMessageDocumentId(sessionId: string,
   messageId: string) {
   if (!/^[A-Za-z0-9_-]+$/u.test(sessionId) ||
@@ -85,11 +78,32 @@ export function practiceInput(session: Session, actor: Actor,
           revision: session.runtimeRevision, observedAt: now, source: "host"},
       intention: practiceState(actor).intention,
       deliveryEligibility: "eligible"},
-    guidance: {kind: "known", value: plan.guidance,
-      revision: plan.guidance.revision, observedAt: now, source: "host"},
+    guidance: practiceGuidanceIsCurrent(session, actor, plan, current) ?
+      {kind: "known", value: plan.guidance,
+        revision: plan.guidance.revision, observedAt: now, source: "host"} :
+      {kind: "unknown", reason: "sourceUnavailable"},
     ...history.facts,
     ...(plan.responseDeadline === null ? {} :
       {responseDeadline: plan.responseDeadline})});
+}
+
+/** Historical records stay readable; only current acceptance authorizes use. */
+export function practiceGuidanceIsCurrent(session: Session, actor: Actor,
+  plan: PracticePlan, message?: PracticeMessage): boolean {
+  const binding = practiceGuidanceBinding(session, actor,
+    plan.guidance.destination);
+  if (binding === null) return false;
+  if (!message) return true;
+  return binding === undefined ? message.membershipBinding === undefined :
+    !!message.membershipBinding &&
+      hash(binding) === hash(message.membershipBinding);
+}
+
+function boundIntentId(intent: ReturnType<typeof parseMessageIntent>,
+  plan: PracticePlan,
+  binding: NonNullable<PracticeMessage["membershipBinding"]>) {
+  return "message:" + hash([{...intent, intentId: "", createdAt: 0},
+    plan, binding]);
 }
 
 export function readPracticeMessage(value: unknown, session: Session,
@@ -126,6 +140,12 @@ export function readPracticeMessage(value: unknown, session: Session,
       hash(intent.deliveryPolicy) !== hash(value.plan.deliveryPolicy)) {
     fail("Practice message material changed.");
   }
+  const binding = value.membershipBinding;
+  if (binding && (intent.guidance.destination.kind !== "groupCheckpoint" ||
+      binding.groupId !== intent.guidance.destination.groupId ||
+      intent.intentId !== boundIntentId(intent, value.plan, binding))) {
+    fail("Practice membership binding changed.");
+  }
   return value;
 }
 
@@ -158,12 +178,17 @@ export function publishPracticeMessage(session: Session, actor: Actor,
     fail("Practice outreach is held: " + prepared.decision.kind);
   }
   const base = prepared.message.intent;
-  const intent = parseMessageIntent({...base, intentId: "message:" +
-    hash([{...base, createdAt: 0}, plan])});
+  const membershipBinding = practiceGuidanceBinding(session, actor,
+    plan.guidance.destination);
+  if (membershipBinding === null) fail("Practice group needs review.");
+  const intent = parseMessageIntent({...base, intentId: membershipBinding ?
+    boundIntentId(base, plan, membershipBinding) : "message:" +
+      hash([{...base, createdAt: 0}, plan])});
   const record = newMessageRecord(intent, now);
   const existing = history.find((m) => m.record.messageId === record.messageId);
   const message = readPracticeMessage(existing ?? {sessionId: actor.sessionId,
-    actorId: actor.actorId, plan, record}, session, actor);
+    actorId: actor.actorId, plan, record,
+    ...(membershipBinding ? {membershipBinding} : {})}, session, actor);
   return {message, exists: Boolean(existing), actor: {...actor,
     assistance: {...practiceState(actor), latestMessageId: record.messageId}}};
 }
@@ -222,6 +247,9 @@ export function practiceMessageView(session: Session, actor: Actor,
   message: PracticeMessage | null) {
   if (!message) return null;
   readPracticeMessage(message, session, actor);
+  if (!practiceGuidanceIsCurrent(session, actor, message.plan, message)) {
+    return null;
+  }
   const {record} = message;
   if (record.intent.kind !== "joiningUpdate") {
     fail("Invalid practice message kind.");

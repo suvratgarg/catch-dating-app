@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.107.0
+version: 1.108.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1475,8 +1475,21 @@ does not expose group audit data to guest pages or write live memberships. Nativ
 readers and commands reuse `AssistanceMembershipFacts` and the shared membership
 decision validation/confirmation logic. The ordinary assistance editor cannot
 submit group changes; a dedicated pending-command controller and runtime screen
-composition remain integration work. Rehearsal joining guidance still needs to
-consume accepted membership, alongside the departure and checkpoint adapters.
+composition remain integration work. Departure and checkpoint adapters are also
+still required.
+
+Group-checkpoint practice messages now bind the accepted assignment, group source
+and participation episode. The server derives this proof when publishing; Host
+plans cannot supply it. Proposal, rejection, cancellation and expiry preserve the
+accepted assignment revision. Placement, acceptance and removal advance it, even
+at the same virtual instant. Publication, automation, dispatch, guest projection
+and replies withhold directions when acceptance is missing, historical or changed.
+Old unbound group messages remain readable as delivery evidence but cannot supply
+instructions or accept replies. A duplicate response never reapplies its intention
+or help effect. Whole-event venue and itinerary directions need no subgroup.
+A new accepted group requires a reviewed matching plan; the remaining departure
+adapter will supply confirmed movement context instead of inferring it from time
+or simulated GPS.
 
 `getEventAssistanceMembership` and `transferEventAssistanceGroup` own one
 accepted moving-group membership per guest, independently of physical attendance,

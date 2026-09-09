@@ -114210,6 +114210,38 @@ export const eventRehearsalMessageDocumentSchema = {
         }
       },
       "x-catch-ownership": "server-only"
+    },
+    "membershipBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "episodeId",
+        "groupId",
+        "groupSourceHash",
+        "assignmentRevision"
+      ],
+      "properties": {
+        "episodeId": {
+          "type": "string",
+          "pattern": "^episode:[a-f0-9]{64}$"
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "groupSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Server-derived accepted-group proof for a group checkpoint instruction. Unbound historical group messages remain evidence only.",
+      "x-catch-ownership": "server-only"
     }
   },
   "allOf": [
@@ -116219,6 +116251,12 @@ export const eventRehearsalActorDocumentSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "Membership revision of the last placement, accepted transfer or removal. Proposals preserve it; absent legacy evidence cannot authorize group directions."
         }
       },
       "x-catch-ownership": "callable-owned"

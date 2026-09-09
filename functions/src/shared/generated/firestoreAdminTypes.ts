@@ -8357,6 +8357,15 @@ export interface EventRehearsalMessageDocument {
     at: number;
     operationId: string;
   };
+  /**
+   * Server-derived accepted-group proof for a group checkpoint instruction. Unbound historical group messages remain evidence only.
+   */
+  membershipBinding?: {
+    episodeId: string;
+    groupId: string;
+    groupSourceHash: string;
+    assignmentRevision: number;
+  };
 }
 
 /**
@@ -8800,6 +8809,10 @@ export interface EventRehearsalActorDocument {
       | null;
     createdAt: number;
     updatedAt: number;
+    /**
+     * Membership revision of the last placement, accepted transfer or removal. Proposals preserve it; absent legacy evidence cannot authorize group directions.
+     */
+    assignmentRevision?: number;
   };
 }
 

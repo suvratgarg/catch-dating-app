@@ -90,20 +90,14 @@ function setup() {
 }
 
 test(
-  "practice outreach supports venues, stops and pace groups", async () => {
-    for (const kind of ["fixedPlace", "itineraryStop",
-      "groupCheckpoint"] as const) {
+  "practice outreach supports venues and whole-event stops", async () => {
+    for (const kind of ["fixedPlace", "itineraryStop"] as const) {
       const h = setup();
       const plan = practicePlan(h.session.virtualNow.toMillis());
       if (kind === "itineraryStop") {
         plan.policy.destination = {kind, itineraryId: "crawl",
           permittedStopIds: ["bar"]};
         plan.guidance.destination = {kind, itineraryId: "crawl", stopId: "bar"};
-      } else if (kind === "groupCheckpoint") {
-        plan.policy.destination = {kind, routeId: "run", groupId: "slow",
-          permittedCheckpointIds: ["water"]};
-        plan.guidance.destination = {kind, routeId: "run", groupId: "slow",
-          checkpointId: "water"};
       }
       await h.host({kind: "publish", plan});
       const message = h.message();

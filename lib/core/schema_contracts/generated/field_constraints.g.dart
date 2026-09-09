@@ -30373,6 +30373,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalActorDocumentGroupMembershipAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.assignmentRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalActorDocumentGroupMembershipClockId = CatchContractFieldConstraints(
     path: 'eventRehearsalActorDocument.groupMembership.clockId',
     required: true,
@@ -33611,6 +33618,36 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMessageDocumentMembershipBindingAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.membershipBinding.assignmentRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMessageDocumentMembershipBindingEpisodeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.membershipBinding.episodeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^episode:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMessageDocumentMembershipBindingGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.membershipBinding.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMessageDocumentMembershipBindingGroupSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.membershipBinding.groupSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRehearsalMessageDocumentPlanDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
@@ -89220,6 +89257,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActorDocument.groupMembership.accepted.groupId': eventRehearsalActorDocumentGroupMembershipAcceptedGroupId,
     'eventRehearsalActorDocument.groupMembership.accepted.groupSourceHash': eventRehearsalActorDocumentGroupMembershipAcceptedGroupSourceHash,
     'eventRehearsalActorDocument.groupMembership.accepted.responsibleOperatorId': eventRehearsalActorDocumentGroupMembershipAcceptedResponsibleOperatorId,
+    'eventRehearsalActorDocument.groupMembership.assignmentRevision': eventRehearsalActorDocumentGroupMembershipAssignmentRevision,
     'eventRehearsalActorDocument.groupMembership.clockId': eventRehearsalActorDocumentGroupMembershipClockId,
     'eventRehearsalActorDocument.groupMembership.createdAt': eventRehearsalActorDocumentGroupMembershipCreatedAt,
     'eventRehearsalActorDocument.groupMembership.episodeId': eventRehearsalActorDocumentGroupMembershipEpisodeId,
@@ -89665,6 +89703,10 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMessageDocument.handoff.actorUid': eventRehearsalMessageDocumentHandoffActorUid,
     'eventRehearsalMessageDocument.handoff.at': eventRehearsalMessageDocumentHandoffAt,
     'eventRehearsalMessageDocument.handoff.operationId': eventRehearsalMessageDocumentHandoffOperationId,
+    'eventRehearsalMessageDocument.membershipBinding.assignmentRevision': eventRehearsalMessageDocumentMembershipBindingAssignmentRevision,
+    'eventRehearsalMessageDocument.membershipBinding.episodeId': eventRehearsalMessageDocumentMembershipBindingEpisodeId,
+    'eventRehearsalMessageDocument.membershipBinding.groupId': eventRehearsalMessageDocumentMembershipBindingGroupId,
+    'eventRehearsalMessageDocument.membershipBinding.groupSourceHash': eventRehearsalMessageDocumentMembershipBindingGroupSourceHash,
     'eventRehearsalMessageDocument.plan.deliveryPolicy.maxAttempts': eventRehearsalMessageDocumentPlanDeliveryPolicyMaxAttempts,
     'eventRehearsalMessageDocument.plan.deliveryPolicy.maxAttemptsPerRoute': eventRehearsalMessageDocumentPlanDeliveryPolicyMaxAttemptsPerRoute,
     'eventRehearsalMessageDocument.plan.deliveryPolicy.minimumRetrySeconds': eventRehearsalMessageDocumentPlanDeliveryPolicyMinimumRetrySeconds,

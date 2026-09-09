@@ -35,6 +35,36 @@
     "handoff": {
       "$ref": "../shared/event_assistance_delivery_review.schema.json#/definitions/Handoff",
       "x-catch-ownership": "server-only"
+    },
+    "membershipBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "episodeId",
+        "groupId",
+        "groupSourceHash",
+        "assignmentRevision"
+      ],
+      "properties": {
+        "episodeId": {
+          "type": "string",
+          "pattern": "^episode:[a-f0-9]{64}$"
+        },
+        "groupId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "groupSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Server-derived accepted-group proof for a group checkpoint instruction. Unbound historical group messages remain evidence only.",
+      "x-catch-ownership": "server-only"
     }
   },
   "allOf": [

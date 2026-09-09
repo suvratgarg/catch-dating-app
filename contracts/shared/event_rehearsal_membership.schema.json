@@ -66,6 +66,12 @@
         },
         "updatedAt": {
           "$ref": "event_assistance_membership.schema.json#/definitions/Membership/properties/updatedAt"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "Membership revision of the last placement, accepted transfer or removal. Proposals preserve it; absent legacy evidence cannot authorize group directions."
         }
       }
     },

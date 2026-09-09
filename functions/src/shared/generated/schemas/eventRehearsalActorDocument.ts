@@ -1986,6 +1986,12 @@ export const eventRehearsalActorDocumentSchema: Record<string, unknown> = {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "Membership revision of the last placement, accepted transfer or removal. Proposals preserve it; absent legacy evidence cannot authorize group directions."
         }
       },
       "x-catch-ownership": "callable-owned"

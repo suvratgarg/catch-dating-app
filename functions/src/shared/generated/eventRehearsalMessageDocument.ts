@@ -136,4 +136,13 @@ export type EventRehearsalMessageDocument = {
     at: number;
     operationId: string;
   };
+  /**
+   * Server-derived accepted-group proof for a group checkpoint instruction. Unbound historical group messages remain evidence only.
+   */
+  membershipBinding?: {
+    episodeId: string;
+    groupId: string;
+    groupSourceHash: string;
+    assignmentRevision: number;
+  };
 };
