@@ -10791,21 +10791,22 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchDistanceRing",
+      "name": "CatchDistanceOverlay",
       "status": "active",
-      "kind": "primitive",
-      "summary": "Map-adjacent radius ring with an optional readable control-role edge label and accessible label action.",
+      "kind": "composite",
+      "summary": "Map radius annotation with fixed or available-space ring geometry, a wrapping label bounded to the ring width, and a shared label-only recipe for native geographic circles.",
       "dart": {
-        "symbol": "CatchDistanceRing",
-        "file": "packages/catch_ui/lib/src/components/catch_distance_ring.dart",
+        "symbol": "CatchDistanceOverlay",
+        "file": "packages/catch_ui/lib/src/components/catch_distance_overlay.dart",
         "constructors": [
-          "CatchDistanceRing"
+          "CatchDistanceOverlay",
+          "CatchDistanceOverlay.label"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/DistanceRing",
+          "componentName": "Catch/DistanceOverlay",
           "componentUrl": null
         },
         "codeConnect": {
@@ -10814,7 +10815,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "DistanceRing",
+          "handoffName": "DistanceOverlay",
           "allowed": true
         }
       },
@@ -10837,6 +10838,24 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?"
+          },
+          {
+            "name": "fitAvailable",
+            "type": "bool",
+            "required": false,
+            "dartType": "bool"
+          },
+          {
+            "name": "semanticLabel",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
+          },
+          {
+            "name": "semanticHint",
+            "type": "string",
+            "required": false,
+            "dartType": "String?"
           }
         ],
         "states": [
@@ -10863,43 +10882,7 @@
           "CatchSurface"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.distance_ring.label",
-            "symbol": "CatchDistanceRingLabel",
-            "summary": "Natural-casing, naturally wrapping control-role edge label shared by static and native geographic rings. CatchSurface supplies keyboard and press feedback; explicit semantic labels preserve activation and the target reserves the platform minimum.",
-            "states": [
-              "label",
-              "tappable"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_distance_ring_label.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.distance_ring",
-              "parentConceptId": "catch.distance_ring",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.distance_ring"
-            }
-          },
-          {
-            "id": "catch.distance_ring.viewport",
-            "symbol": "CatchDistanceRingViewport",
-            "file": "packages/catch_ui/lib/src/components/catch_distance_ring_viewport.dart",
-            "summary": "Resolved-diameter geometry and label overhang, owned separately from available-size negotiation and the label surface.",
-            "states": [
-              "ring-only",
-              "edge-label",
-              "tappable-label"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.distance_ring",
-              "parentConceptId": "catch.distance_ring",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.distance_ring"
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -10918,11 +10901,13 @@
         "allowedChildren": [],
         "notes": [
           "Use for Flutter-rendered radius visuals; native map overlays remain platform-specific but should match this visual grammar.",
-          "Preserve caller-provided label casing and readable control typography; do not recreate the former tiny uppercase mono treatment."
+          "Preserve caller-provided label casing and readable control typography; do not recreate the former tiny uppercase mono treatment.",
+          "Use CatchDistanceOverlay.label when native geographic geometry owns the circle and projects its label. Both recipes share one label renderer; passive labels are annotations, not disabled actions.",
+          "Ring labels wrap within the resolved diameter at large text sizes; label-only annotations respect their map caller's width constraints."
         ]
       },
       "governance": {
-        "role": "atom",
+        "role": "composition",
         "canonicalFamily": "catch.distance_ring",
         "publicApi": true,
         "stateOwnership": "local-ui-only",
@@ -10935,7 +10920,17 @@
         "conceptId": "catch.distance_ring"
       },
       "surfaces": {
-        "flutter": "CatchDistanceRing"
+        "flutter": "CatchDistanceOverlay"
+      },
+      "level": "L3",
+      "roleNoun": "Overlay",
+      "naming": {
+        "useCase": "Distance",
+        "comparedWith": [
+          "catch.detail_media.scrim",
+          "catch.bottom_action.overlay"
+        ],
+        "reason": "Annotates a map radius and its edge label. MediaOverlay only paints photo readability; BottomActionOverlay measures page actions and body clearance. Native maps own geographic circle geometry and use the label recipe. The label shares CatchSurface interaction, but remains a passive annotation when no action is supplied; a general Button owns command hierarchy and disabled/busy states."
       }
     },
     {

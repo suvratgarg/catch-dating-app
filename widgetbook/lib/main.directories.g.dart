@@ -780,12 +780,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchDistanceRingLabel',
+            name: 'CatchDistanceOverlay',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchDistanceRingLabelCatalogStates,
+                    .catchDistanceOverlayLabelCatalogStates,
               ),
             ],
           ),
@@ -2242,24 +2242,19 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchDistanceRing',
+            name: 'CatchDistanceOverlay',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchDistanceRingContractStates,
+                        .catchDistanceOverlayContractStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchDistanceRingViewport',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Fixed diameter and edge label',
                 builder:
                     _widgetbook_workspace_primitives_distance_ring_use_cases
-                        .distanceRingViewportStates,
+                        .distanceOverlayGeometryStates,
               ),
             ],
           ),

@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "4d66433fa596e13ef056df102249bc6b97508715e604fe3f23ce7f7d963aef50",
+  "sourceDigest": "8f4afa7af31fa2f840a494b7d4c966ffc0276048bd57e1adb3ea6604d064e3dc",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "4d66433fa596e13ef056df102249bc6b97508715e604fe3f23ce7f7d963aef50",
-    "contractDigest": "4d66433fa596e13ef056df102249bc6b97508715e604fe3f23ce7f7d963aef50"
+    "digest": "8f4afa7af31fa2f840a494b7d4c966ffc0276048bd57e1adb3ea6604d064e3dc",
+    "contractDigest": "8f4afa7af31fa2f840a494b7d4c966ffc0276048bd57e1adb3ea6604d064e3dc"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "535447d7a4b6407c8c2bbf7c2200c3c9da4e98e0bf4c9e1e63dc5a5bf2e114a7",
+    "handoffRequestDigest": "ea59a666c5d735bf6a44c5d7b81151588006919d0fd16fe771e9498218f27019",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,18 +83,18 @@
   },
   "metrics": {
     "contractCount": 73,
-    "publicClassCount": 240,
+    "publicClassCount": 238,
     "conceptCount": 65,
-    "memberCount": 157,
-    "membersPerConcept": 2.42,
+    "memberCount": 155,
+    "membersPerConcept": 2.38,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 157,
+      "member": 155,
       "screen": 15
     },
-    "collisionCount": 33,
+    "collisionCount": 32,
     "collisions": [
       {
         "key": "catch.async_value",
@@ -161,14 +161,6 @@
         "symbols": [
           "CatchHeroImage",
           "CatchMediaOverlay"
-        ]
-      },
-      {
-        "key": "catch.distance_ring",
-        "symbols": [
-          "CatchDistanceRing",
-          "CatchDistanceRingLabel",
-          "CatchDistanceRingViewport"
         ]
       },
       {
@@ -1755,9 +1747,9 @@
       "contractId": "catch.distance_ring",
       "conceptRole": "concept",
       "conceptId": "catch.distance_ring",
-      "dartSymbol": "CatchDistanceRing",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_distance_ring.dart",
-      "figmaName": "Catch/DistanceRing",
+      "dartSymbol": "CatchDistanceOverlay",
+      "dartFile": "packages/catch_ui/lib/src/components/catch_distance_overlay.dart",
+      "figmaName": "Catch/DistanceOverlay",
       "figmaPropertyProjectionMode": "inferred",
       "figmaReviewStatePolicy": "variant",
       "figmaPropertySources": {},
@@ -1772,16 +1764,16 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 3,
-      "figmaExpectedPropertyDigest": "47718bf78904b0a53006f866954b53e4319cf1f82203db80db8d9b7157bca47e",
+      "figmaExpectedPropertyCount": 6,
+      "figmaExpectedPropertyDigest": "aec20761eecc0b0b9ba6ad3a6042bd5606c6e32fecf4cf65e644577a40e56d77",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
       "codeConnectStatus": "planned",
       "codeConnectTemplate": null,
-      "claudeHandoffName": "DistanceRing",
+      "claudeHandoffName": "DistanceOverlay",
       "claudeAllowed": true,
-      "contractDigest": "299924414dd375e3a59f4470303391c18d919b5397be41af89b87265412f0e30"
+      "contractDigest": "6c2d30d9fa4cc988eb44751adec5f691b47c4638d65ed33f6e4a3dc523f89983"
     },
     {
       "contractId": "catch.code_input",

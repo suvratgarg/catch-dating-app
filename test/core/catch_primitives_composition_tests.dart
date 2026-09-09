@@ -756,13 +756,13 @@ void _registerCatchPrimitivesCompositionTests() {
     },
   );
 
-  testWidgets('CatchDistanceRing renders tappable map radius label', (
+  testWidgets('CatchDistanceOverlay renders tappable map radius label', (
     tester,
   ) async {
     var taps = 0;
 
     await tester.pumpWidget(
-      _wrap(CatchDistanceRing(label: 'WITHIN 3 KM', onTap: () => taps++)),
+      _wrap(CatchDistanceOverlay(label: 'WITHIN 3 KM', onTap: () => taps++)),
     );
 
     expect(find.text('WITHIN 3 KM'), findsOneWidget);
@@ -773,13 +773,13 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(taps, 1);
   });
 
-  testWidgets('CatchDistanceRingLabel is reusable over native maps', (
+  testWidgets('CatchDistanceOverlay is reusable over native maps', (
     tester,
   ) async {
     var taps = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchDistanceRingLabel(
+        CatchDistanceOverlay.label(
           label: 'Within 5 km · tap to change',
           onTap: () => taps += 1,
         ),

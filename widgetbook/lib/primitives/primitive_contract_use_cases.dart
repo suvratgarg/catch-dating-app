@@ -6688,12 +6688,12 @@ Widget catchNetworkImageFallbackContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchDistanceRing,
+  type: CatchDistanceOverlay,
   path: '[Core primitives]/Activity',
 )
-Widget catchDistanceRingContractStates(BuildContext context) {
+Widget catchDistanceOverlayContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchDistanceRing',
+    title: 'CatchDistanceOverlay',
     contractId: 'catch.distance_ring',
     states: const [
       'ring-only',
@@ -6703,24 +6703,24 @@ Widget catchDistanceRingContractStates(BuildContext context) {
       'long-label',
     ],
     children: [
-      const _StateCard(label: 'ring-only', child: CatchDistanceRing()),
+      const _StateCard(label: 'ring-only', child: CatchDistanceOverlay()),
       const _StateCard(
         label: 'with-label',
-        child: CatchDistanceRing(label: '2 km'),
+        child: CatchDistanceOverlay(label: '2 km'),
       ),
       _StateCard(
         label: 'tappable-label',
-        child: CatchDistanceRing(label: '3 km', onTap: _noop),
+        child: CatchDistanceOverlay(label: '3 km', onTap: _noop),
       ),
       const _StateCard(
         label: 'custom-size',
-        child: CatchDistanceRing(size: 132, label: '5 km'),
+        child: CatchDistanceOverlay(size: 132, label: '5 km'),
       ),
       const _StateCard(
         label: 'long-label',
         child: SizedBox(
           width: WidgetbookPreviewLayout.distanceRingLongLabelWidth,
-          child: CatchDistanceRing(label: 'within walking distance'),
+          child: CatchDistanceOverlay(label: 'within walking distance'),
         ),
       ),
     ],

@@ -2242,40 +2242,22 @@ Widget catchActivityMapPinCatalogStates(BuildContext context) {
   );
 }
 
-Widget catchDistanceRingCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchDistanceRing',
-    catalogId: 'core.widgets.catch_distance_ring',
-    children: [
-      _StateCard(
-        label: 'ring / tappable label',
-        child: _InlineWrap(
-          children: [
-            const CatchDistanceRing(size: 96),
-            CatchDistanceRing(size: 132, label: '2 km', onTap: _noop),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchDistanceRingLabel,
+  type: CatchDistanceOverlay,
   path: '[Core catalog]/Activity',
 )
-Widget catchDistanceRingLabelCatalogStates(BuildContext context) {
+Widget catchDistanceOverlayLabelCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchDistanceRingLabel',
-    catalogId: 'core.widgets.catch_distance_ring_label',
+    title: 'CatchDistanceOverlay.label',
+    catalogId: 'catch.distance_ring',
     children: [
       _StateCard(
         label: 'resting / tappable',
         child: _InlineWrap(
           children: [
-            const CatchDistanceRingLabel(label: '3 km'),
-            CatchDistanceRingLabel(label: '5 km', onTap: _noop),
+            const CatchDistanceOverlay.label(label: '3 km'),
+            CatchDistanceOverlay.label(label: '5 km', onTap: _noop),
           ],
         ),
       ),

@@ -771,7 +771,7 @@ void _registerExploreMapTests() {
       find.text(_l10n.exploreExploreMapScreenValueAnyDistance),
       findsOneWidget,
     );
-    expect(find.byType(CatchDistanceRing), findsNothing);
+    expect(find.byType(CatchDistanceOverlay), findsNothing);
 
     await tester.tap(find.text('Distance'));
     await tester.pump();
@@ -913,7 +913,7 @@ void _registerExploreMapTests() {
 
       expect(find.text('No events within 1 km'), findsOneWidget);
       expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
-      expect(find.byType(CatchDistanceRing), findsOneWidget);
+      expect(find.byType(CatchDistanceOverlay), findsOneWidget);
       expect(find.text('Expand to 3 km'), findsOneWidget);
 
       await tester.tap(find.text('Expand to 3 km'));
@@ -945,7 +945,7 @@ void _registerExploreMapTests() {
         container.read(exploreFiltersProvider).distanceFilter,
         ExploreDistanceFilter.any,
       );
-      expect(find.byType(CatchDistanceRing), findsNothing);
+      expect(find.byType(CatchDistanceOverlay), findsNothing);
       expect(
         find.bySemanticsLabel('Select Recovery Pin Point'),
         findsOneWidget,

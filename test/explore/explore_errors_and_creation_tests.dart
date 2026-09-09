@@ -53,7 +53,7 @@ void _registerExploreErrorsAndCreationTests() {
       container.read(exploreFiltersProvider).distanceFilter,
       ExploreDistanceFilter.any,
     );
-    expect(find.byType(CatchDistanceRing), findsNothing);
+    expect(find.byType(CatchDistanceOverlay), findsNothing);
     expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
     expect(find.bySemanticsLabel('Select Carter Road'), findsOneWidget);
   });

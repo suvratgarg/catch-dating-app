@@ -7654,6 +7654,30 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:distance-overlay-and-label-recipe",
+      "patternFamilyId": "distance-overlay-and-label-recipe",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchDistanceOverlay",
+      "members": [
+        {
+          "name": "CatchDistanceRing",
+          "action": "rename"
+        },
+        {
+          "name": "CatchDistanceRingViewport",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchDistanceRingLabel",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "One distance annotation combines the fitted and fixed ring paths, with a shared label-only recipe for native geographic circles. The label retains its passive annotation state and optional action, so it does not acquire general button command, disabled or busy behavior. CatchSurface continues to own interaction and paint. Native circle projection and app callbacks stay unchanged. Correct long-label clipping by constraining the ring annotation to its resolved diameter and allowing natural text reflow.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

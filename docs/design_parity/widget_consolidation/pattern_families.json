@@ -2923,6 +2923,49 @@
           "rationale": "Existing non-destructive photo treatment owner; repair alpha preservation here for every caller while retaining opaque photo colors."
         }
       ]
+    },
+    {
+      "id": "distance-overlay-and-label-recipe",
+      "title": "Map radius geometry and edge annotation",
+      "intent": "One map-radius overlay owns fixed/fitted ring geometry and one label renderer; native maps use its label recipe with platform-owned geographic projection.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.distance_ring",
+      "qualityReference": "CatchDistanceOverlay",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve ring diameter, available-space fitting, label overhang, translucent fill, control typography, natural casing and platform minimum targets. Preserve passive versus tappable semantics, keyboard activation and projected native placement.",
+        "Gallery headings and identity follow the Overlay role, and the geometry gallery adds an available-space fitting specimen. Correct the existing long-label overflow by wrapping the edge annotation within the resolved ring diameter; preserve short-label geometry and all native geographic projection."
+      ],
+      "members": [
+        {
+          "symbol": "CatchDistanceOverlay",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One map annotation contract with ring and label-only recipes; geographic projection and radius values stay with callers."
+        },
+        {
+          "symbol": "CatchDistanceRing",
+          "disposition": "unify",
+          "target": "CatchDistanceOverlay",
+          "preview": "not-applicable",
+          "rationale": "The existing fitting wrapper and fixed renderer have one responsibility; use the closed Overlay role and keep size negotiation in that owner."
+        },
+        {
+          "symbol": "CatchDistanceRingViewport",
+          "disposition": "unify",
+          "target": "CatchDistanceOverlay",
+          "preview": "not-applicable",
+          "rationale": "Fixed diameter is the existing default geometry, not an independently consumed production API. Fold it into the radius owner."
+        },
+        {
+          "symbol": "CatchDistanceRingLabel",
+          "disposition": "unify",
+          "target": "CatchDistanceOverlay.label",
+          "preview": "not-applicable",
+          "rationale": "The same passive or tappable edge annotation is needed with a Flutter circle and with a native geographic circle; share one renderer as a named recipe."
+        }
+      ]
     }
   ]
 }

@@ -47,7 +47,7 @@ void main() {
       label: 'Go',
       onPressed: activate,
     ),
-    'distance label': (activate) => CatchDistanceRingLabel(
+    'distance label': (activate) => CatchDistanceOverlay.label(
       key: _controlKey,
       label: '3 km',
       onTap: activate,

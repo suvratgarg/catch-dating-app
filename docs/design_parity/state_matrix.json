@@ -1795,7 +1795,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "Distance-ring capture seeds user location plus an active distance filter in the neutral fixture; native runtime uses a geographic circle and projected CatchDistanceRingLabel."
+              "notes": "Distance-ring capture seeds user location plus an active distance filter in the neutral fixture; native runtime uses a geographic circle and projected CatchDistanceOverlay.label."
             },
             {
               "id": "no_exact_pins",
