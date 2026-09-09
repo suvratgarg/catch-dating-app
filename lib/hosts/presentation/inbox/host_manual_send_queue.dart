@@ -238,10 +238,10 @@ class _HostManualSendTaskSheetState
   bool _busy = false;
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostManualSendTaskTitle(name: _task.displayName),
     subtitle: context.l10n.hostManualSendTaskSubtitle,
-    action: CatchButton(
+    footer: CatchButton(
       key: const ValueKey('host-manual-send-mark-sent'),
       label: context.l10n.hostManualSendTaskMarkSent,
       status: (_busy) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
@@ -355,7 +355,7 @@ class _HostManualSendReplanSheet extends StatelessWidget {
   final Map<String, HostManualSendTaskReplanResult> results;
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostManualSendReplanTitle,
     subtitle: context.l10n.hostManualSendReplanSubtitle,
     child: CatchSection.fieldRows(

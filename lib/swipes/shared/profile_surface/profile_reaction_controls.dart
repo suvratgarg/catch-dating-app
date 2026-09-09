@@ -144,14 +144,14 @@ class _ProfileReactionCommentSheetState
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.swipesProfileReactionControlsTitleStartWithLabel(
         label: widget.target.label,
       ),
       subtitle:
           context.l10n.swipesProfileReactionControlsSubtitleSendACommentWith,
       keyboardSafe: true,
-      action: Row(
+      footer: Row(
         children: [
           CatchButton.text(
             label: context.l10n.swipesProfileReactionControlsLabelCancel,

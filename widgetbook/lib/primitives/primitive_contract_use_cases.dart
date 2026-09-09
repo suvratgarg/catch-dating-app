@@ -7473,7 +7473,7 @@ Widget catchStepHeaderContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchBottomSheetScaffold,
+  type: CatchSheet,
   path: '[Core primitives]/Sheets and footers',
 )
 Widget catchSheetContractStates(BuildContext context) {
@@ -7492,7 +7492,7 @@ Widget catchSheetContractStates(BuildContext context) {
     children: [
       const _StateCard(
         label: 'plain',
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: 'Invite guests',
           subtitle: 'Share this event with people who fit the format.',
           child: CatchSurface.tinted(child: Text('Invites close at 6 PM.')),
@@ -7500,7 +7500,7 @@ Widget catchSheetContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'branded',
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           glyph: CatchIcons.sparkle,
           title: 'Good fit',
           subtitle: 'Guests will see this before joining.',
@@ -7509,7 +7509,7 @@ Widget catchSheetContractStates(BuildContext context) {
       ),
       const _StateCard(
         label: 'badge',
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: 'Invite guests',
           badge: 'Host',
           child: Text('Host-only invite controls.'),
@@ -7517,9 +7517,9 @@ Widget catchSheetContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'action',
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: 'Invite guests',
-          action: CatchButton(
+          footer: CatchButton(
             label: 'Copy invite link',
             fullWidth: true,
             onPressed: _noop,
@@ -7529,7 +7529,7 @@ Widget catchSheetContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'keyboard-safe',
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: 'Arrival note',
           keyboardSafe: true,
           child: CatchField.input(
@@ -7541,7 +7541,7 @@ Widget catchSheetContractStates(BuildContext context) {
       ),
       const _StateCard(
         label: 'without-grabber',
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: 'Embedded sheet',
           grabber: false,
           child: Text('Used when a parent already owns the grab handle.'),
@@ -7551,9 +7551,9 @@ Widget catchSheetContractStates(BuildContext context) {
         label: 'scrollable',
         child: SizedBox(
           height: WidgetbookPreviewLayout.stateViewportHeight,
-          child: CatchBottomSheetScaffold(
+          child: CatchSheet(
             title: 'Review answers',
-            scrollable: true,
+            mode: CatchSheetMode.scrollable,
             child: Column(
               children: [
                 for (var i = 0; i < 12; i++)

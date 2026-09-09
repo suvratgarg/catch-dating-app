@@ -27,7 +27,7 @@ class HostEventEntrySheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       key: const ValueKey<String>('host-event-entry-sheet'),
       title: context.l10n.hostsHostEventsListLabelNewEvent,
       subtitle:

@@ -168,7 +168,7 @@ class ReviewsPreviewSection extends StatelessWidget {
   void _showAllReviews(BuildContext context) {
     showCatchBottomSheet<void>(
       context: context,
-      builder: (sheetContext) => CatchBottomSheetScaffold(
+      builder: (sheetContext) => CatchSheet(
         title: context.l10n.reviewsReviewsSectionTitleAllReviewsLength(
           length: reviews.length,
         ),
@@ -518,12 +518,12 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
       }
     });
 
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: widget.review.ownerResponse == null
           ? context.l10n.reviewsReviewsSectionTitleRespondToReview
           : context.l10n.reviewsReviewsSectionTitleEditResponse,
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         key: ReviewKeys.submitOwnerResponseButton,
         label: context.l10n.reviewsReviewsSectionLabelSaveResponse,
         onPressed: !canSubmit || mutation.isPending ? null : _submit,

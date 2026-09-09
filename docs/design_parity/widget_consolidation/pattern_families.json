@@ -2735,6 +2735,41 @@
           "rationale": "Slotted form content uses the default body/action constructor; its frame duplicates confirmation."
         }
       ]
+    },
+    {
+      "id": "sheet-content-and-scroll-ownership",
+      "title": "Sheet content and scroll ownership",
+      "intent": "One sheet surface owns header, body, footer and terminal safe region; choose who owns scrolling explicitly.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.sheet",
+      "qualityReference": "CatchSheet",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve sheet paint, header geometry, body/footer spacing, terminal safe region and modal routing. Delegate surface paint to the shared Surface primitive.",
+        "Retire the draggable-shell catalog preview: source inventory finds zero production consumers. Rename gallery component identities without changing their visible content."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSheet",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One L3 sheet contract with explicit whole-sheet or body-owned scrolling."
+        },
+        {
+          "symbol": "CatchBottomSheetScaffold",
+          "disposition": "unify",
+          "target": "CatchSheet",
+          "preview": "not-applicable",
+          "rationale": "The implementation is a sheet surface, not a page scaffold. Use the canonical role and replace the third boolean with a scroll-ownership mode."
+        },
+        {
+          "symbol": "CatchDraggableSheetShell",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "Zero production callers; this extra surface and handle renderer has no independent consumer contract."
+        }
+      ]
     }
   ]
 }

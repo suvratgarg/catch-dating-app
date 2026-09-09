@@ -728,14 +728,14 @@ class _HostOperationalRosterPanelState
       } else {
         await showCatchBottomSheet<void>(
           context: context,
-          builder: (context) => CatchBottomSheetScaffold(
+          builder: (context) => CatchSheet(
             title: context.l10n.hostsOperationalRosterImportPartialTitle,
             subtitle: context.l10n.hostsOperationalRosterImportPartialBody(
               created: result.createdCount,
               updated: result.updatedCount,
               count: result.errors.length,
             ),
-            action: CatchButton(
+            footer: CatchButton(
               label: context.l10n.hostsOperationalRosterImportResultDone,
               fullWidth: true,
               onPressed: () => Navigator.of(context).pop(),
@@ -1402,11 +1402,11 @@ class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
   @override
   Widget build(BuildContext context) {
     final apiKey = _apiKeyController.text.trim();
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterProviderConnectTitle,
       subtitle: context.l10n.hostsOperationalRosterProviderConnectBody,
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsOperationalRosterProviderChooseEvent,
         onPressed: _loading ? null : _verifyAndChoose,
         status: (_loading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
@@ -1483,7 +1483,7 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterProviderChooseEventTitle,
       subtitle: context.l10n.hostsOperationalRosterProviderChooseEventBody(
         calendar: choices.calendarName,
@@ -1553,11 +1553,11 @@ class _HostRosterHandoffSheet extends StatelessWidget {
     final emailAlias = instructions.emailAlias;
     final whatsappNumber = instructions.whatsappNumber;
     final whatsappMessage = instructions.whatsappMessage;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterForwardTitle,
       subtitle: context.l10n.hostsOperationalRosterForwardSubtitle,
       glyph: CatchIcons.alternateEmailOutlined,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsOperationalRosterForwardDone,
         onPressed: () => Navigator.of(context).pop(),
         fullWidth: true,
@@ -1856,10 +1856,10 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
         mapped.rows.isNotEmpty &&
         !mapped.hasBlockingMappingIssue &&
         !invalidFallback;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterImportTitle,
       subtitle: context.l10n.hostsOperationalRosterImportSubtitle,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsOperationalRosterImportAction(
           count: mapped.rows.length,
         ),
@@ -2117,11 +2117,11 @@ class _HostManualAttendeeSheetState extends State<_HostManualAttendeeSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterManualTitle,
       subtitle: context.l10n.hostsOperationalRosterManualSubtitle,
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsOperationalRosterManualSave,
         onPressed: _submit,
         fullWidth: true,

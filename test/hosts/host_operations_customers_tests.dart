@@ -614,7 +614,7 @@ void _registerHostOperationsCustomersTests() {
     );
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
-    expect(find.byType(CatchBottomSheetScaffold), findsNothing);
+    expect(find.byType(CatchSheet), findsNothing);
     expect(
       find.byKey(const ValueKey('host-add-customer-details')),
       findsOneWidget,

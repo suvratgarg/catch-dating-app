@@ -83,14 +83,14 @@ class HostPaymentAccountCard extends StatelessWidget {
       ),
       builder: (sheetContext) {
         final sheetTokens = CatchTokens.of(sheetContext);
-        return CatchBottomSheetScaffold(
+        return CatchSheet(
           title: context.l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
           subtitle: isRazorpay
               ? context
                     .l10n
                     .hostsHostPaymentAccountCardSubtitlePoweredByRazorpay
               : context.l10n.hostsHostPaymentAccountCardSubtitlePoweredByStripe,
-          action: CatchButton(
+          footer: CatchButton(
             label: isRazorpay
                 ? context
                       .l10n
@@ -543,11 +543,11 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     const gap = SizedBox(height: CatchSpacing.s3);
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       keyboardSafe: true,
       title: l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
       subtitle: l10n.hostsHostPaymentAccountCardSubtitlePoweredByRazorpay,
-      action: CatchButton(
+      footer: CatchButton(
         label: l10n.hostsHostPaymentAccountCardLabelSubmitRazorpay,
         fullWidth: true,
         status: (widget.pending)

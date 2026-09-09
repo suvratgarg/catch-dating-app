@@ -3379,38 +3379,6 @@ Widget catchBottomSheetGrabberCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchDraggableSheetShell,
-  path: '[Core catalog]/Sheets and footers',
-)
-Widget catchDraggableSheetShellCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchDraggableSheetShell',
-    catalogId: 'core.widgets.catch_draggable_sheet_shell',
-    children: [
-      _StateCard(
-        label: 'persistent shell',
-        child: SizedBox(
-          height: WidgetbookPreviewLayout.routeViewportHeight,
-          child: CatchDraggableSheetShell(
-            child: ListView(
-              padding: const EdgeInsets.all(CatchSpacing.s4),
-              children: const [
-                CatchSurface.card(
-                  child: Text('Persistent map/list sheet content'),
-                ),
-                SizedBox(height: CatchSpacing.s3),
-                CatchSurface.card(child: Text('Second row')),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
   type: CatchShareCardSheet,
   path: '[Core catalog]/Sheets and footers',
 )

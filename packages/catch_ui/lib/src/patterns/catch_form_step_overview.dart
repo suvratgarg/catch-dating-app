@@ -11,7 +11,7 @@ Future<int?> showCatchFormStepOverview({
 }) {
   return showCatchBottomSheet<int>(
     context: context,
-    builder: (context) => CatchBottomSheetScaffold(
+    builder: (context) => CatchSheet(
       title: title,
       subtitle: subtitle,
       child: CatchFormStepOverview(

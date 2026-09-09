@@ -239,10 +239,10 @@ class ExploreFilterSheet extends StatelessWidget {
           l10n: context.l10n,
         );
 
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.exploreExploreFilterRailTitleExploreFilters,
       subtitle: context.l10n.exploreExploreFilterRailSubtitleNarrowTheMapAnd,
-      action: Row(
+      footer: Row(
         children: [
           if (sheetState.activeCount > 0) ...[
             Expanded(

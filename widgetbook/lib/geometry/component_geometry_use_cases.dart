@@ -930,7 +930,7 @@ Widget menuGeometryMatrix(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Geometry matrix',
-  type: CatchBottomSheetScaffold,
+  type: CatchSheet,
   path: '[Geometry system]',
 )
 Widget modalGeometryMatrix(BuildContext context) {
@@ -958,10 +958,10 @@ Widget modalGeometryMatrix(BuildContext context) {
               onPressed: () => showCatchBottomSheet<void>(
                 context: context,
                 useRootNavigator: false,
-                builder: (_) => CatchBottomSheetScaffold(
+                builder: (_) => CatchSheet(
                   title: 'Invite guests',
                   subtitle: 'Share this event with people who fit the format.',
-                  action: CatchButton(
+                  footer: CatchButton(
                     label: 'Copy invite link',
                     fullWidth: true,
                     onPressed: _noop,
@@ -996,11 +996,11 @@ Widget modalGeometryMatrix(BuildContext context) {
         label: 'Sheet composition',
         child: SizedBox(
           width: _phoneWidth,
-          child: CatchBottomSheetScaffold(
+          child: CatchSheet(
             title: 'Arrival note',
             subtitle: 'Tell guests where to meet.',
             keyboardSafe: true,
-            action: CatchButton(
+            footer: CatchButton(
               label: 'Save note',
               fullWidth: true,
               onPressed: _noop,

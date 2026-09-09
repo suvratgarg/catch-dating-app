@@ -102,7 +102,7 @@ class _HostWhatsappThreadSheetState
   @override
   Widget build(BuildContext context) => FutureBuilder<HostWhatsappThreadDetail>(
     future: _thread,
-    builder: (context, snapshot) => CatchBottomSheetScaffold(
+    builder: (context, snapshot) => CatchSheet(
       title:
           snapshot.data?.displayName ?? context.l10n.hostInboxWhatsappChannel,
       subtitle: context.l10n.hostInboxWhatsappChannel,

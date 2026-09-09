@@ -144,7 +144,7 @@ class _EventSuccessLayoutAuthorSheetState
     final minCapacity = capacityContract.minimum ?? 1;
     final maxCapacity = capacityContract.maximum ?? 1000;
     final maxColumns = (gridContract.maximum ?? 199) + 1;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsEventSuccessStepRoomLayoutAuthorTitle,
       subtitle: context.l10n.hostsEventSuccessStepRoomLayoutAuthorSubtitle,
       keyboardSafe: true,

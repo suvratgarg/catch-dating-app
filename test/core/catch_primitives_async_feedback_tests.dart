@@ -770,17 +770,15 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.text('Browse events'), findsOneWidget);
   });
 
-  testWidgets('CatchBottomSheetScaffold renders the handoff plain sheet', (
-    tester,
-  ) async {
+  testWidgets('CatchSheet renders the handoff plain sheet', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        CatchBottomSheetScaffold(
+        CatchSheet(
           title: 'Filters',
           subtitle: 'Tune what shows up first.',
           badge: '2',
           badgeTone: CatchBadgeTone.gold,
-          action: CatchButton(label: 'Apply', onPressed: () {}),
+          footer: CatchButton(label: 'Apply', onPressed: () {}),
           child: const Text('Sheet body'),
         ),
       ),
@@ -810,12 +808,10 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.text('Apply'), findsOneWidget);
   });
 
-  testWidgets('CatchBottomSheetScaffold renders the branded sheet header', (
-    tester,
-  ) async {
+  testWidgets('CatchSheet renders the branded sheet header', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        CatchBottomSheetScaffold(
+        CatchSheet(
           title: 'Set up payouts',
           subtitle: 'Powered by Stripe',
           glyph: CatchIcons.hostBadge,
@@ -852,108 +848,98 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.text('Stripe body'), findsOneWidget);
   });
 
-  testWidgets(
-    'CatchBottomSheetScaffold reserves device inset plus terminal gap',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          const MediaQuery(
-            data: MediaQueryData(viewPadding: EdgeInsets.only(bottom: 34)),
-            child: CatchBottomSheetScaffold(
-              grabber: false,
-              child: Text('Sheet body'),
-            ),
+  testWidgets('CatchSheet reserves device inset plus terminal gap', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const MediaQuery(
+          data: MediaQueryData(viewPadding: EdgeInsets.only(bottom: 34)),
+          child: CatchSheet(grabber: false, child: Text('Sheet body')),
+        ),
+      ),
+    );
+
+    expect(
+      _bottomSheetContentPadding(tester),
+      const EdgeInsets.fromLTRB(
+        CatchLayout.sheetHorizontalPadding,
+        CatchLayout.sheetTopPadding,
+        CatchLayout.sheetHorizontalPadding,
+        34 + CatchLayout.sheetBottomSafeAreaGap,
+      ),
+    );
+  });
+
+  testWidgets('CatchSheet keeps the visual minimum without an inset', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const MediaQuery(
+          data: MediaQueryData(),
+          child: CatchSheet(grabber: false, child: Text('Sheet body')),
+        ),
+      ),
+    );
+
+    expect(
+      _bottomSheetContentPadding(tester).bottom,
+      CatchLayout.sheetBottomPadding,
+    );
+  });
+
+  testWidgets('CatchSheet uses keyboard obstruction when requested', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const MediaQuery(
+          data: MediaQueryData(
+            viewPadding: EdgeInsets.only(bottom: 34),
+            viewInsets: EdgeInsets.only(bottom: 300),
+          ),
+          child: CatchSheet(
+            grabber: false,
+            keyboardSafe: true,
+            child: Text('Sheet body'),
           ),
         ),
-      );
+      ),
+    );
 
-      expect(
-        _bottomSheetContentPadding(tester),
-        const EdgeInsets.fromLTRB(
-          CatchLayout.sheetHorizontalPadding,
-          CatchLayout.sheetTopPadding,
-          CatchLayout.sheetHorizontalPadding,
-          34 + CatchLayout.sheetBottomSafeAreaGap,
-        ),
-      );
-    },
-  );
+    expect(
+      _bottomSheetContentPadding(tester).bottom,
+      300 + CatchLayout.sheetBottomSafeAreaGap,
+    );
+  });
 
-  testWidgets(
-    'CatchBottomSheetScaffold keeps the visual minimum without an inset',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          const MediaQuery(
-            data: MediaQueryData(),
-            child: CatchBottomSheetScaffold(
-              grabber: false,
-              child: Text('Sheet body'),
-            ),
+  testWidgets('CatchSheet enforces terminal space with custom padding', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const MediaQuery(
+          data: MediaQueryData(viewPadding: EdgeInsets.only(bottom: 34)),
+          child: CatchSheet(
+            grabber: false,
+            padding: EdgeInsetsDirectional.fromSTEB(12, 8, 20, 0),
+            child: Text('Sheet body'),
           ),
         ),
-      );
+      ),
+    );
 
-      expect(
-        _bottomSheetContentPadding(tester).bottom,
-        CatchLayout.sheetBottomPadding,
-      );
-    },
-  );
-
-  testWidgets(
-    'CatchBottomSheetScaffold uses keyboard obstruction when requested',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          const MediaQuery(
-            data: MediaQueryData(
-              viewPadding: EdgeInsets.only(bottom: 34),
-              viewInsets: EdgeInsets.only(bottom: 300),
-            ),
-            child: CatchBottomSheetScaffold(
-              grabber: false,
-              keyboardSafe: true,
-              child: Text('Sheet body'),
-            ),
-          ),
-        ),
-      );
-
-      expect(
-        _bottomSheetContentPadding(tester).bottom,
-        300 + CatchLayout.sheetBottomSafeAreaGap,
-      );
-    },
-  );
-
-  testWidgets(
-    'CatchBottomSheetScaffold enforces terminal space with custom padding',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          const MediaQuery(
-            data: MediaQueryData(viewPadding: EdgeInsets.only(bottom: 34)),
-            child: CatchBottomSheetScaffold(
-              grabber: false,
-              padding: EdgeInsetsDirectional.fromSTEB(12, 8, 20, 0),
-              child: Text('Sheet body'),
-            ),
-          ),
-        ),
-      );
-
-      expect(
-        _bottomSheetContentPadding(tester),
-        const EdgeInsets.fromLTRB(
-          12,
-          8,
-          20,
-          34 + CatchLayout.sheetBottomSafeAreaGap,
-        ),
-      );
-    },
-  );
+    expect(
+      _bottomSheetContentPadding(tester),
+      const EdgeInsets.fromLTRB(
+        12,
+        8,
+        20,
+        34 + CatchLayout.sheetBottomSafeAreaGap,
+      ),
+    );
+  });
 
   testWidgets(
     'CatchSurface disables chrome animation when reduced motion is on',

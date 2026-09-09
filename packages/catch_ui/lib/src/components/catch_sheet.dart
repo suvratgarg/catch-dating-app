@@ -5,6 +5,7 @@ import 'package:catch_ui/src/components/catch_badge.dart';
 import 'package:catch_ui/src/components/catch_sheet_header.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:catch_ui/src/primitives/catch_sheet_drag_indicator.dart';
+import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 Future<T?> showCatchBottomSheet<T>({
@@ -41,27 +42,31 @@ Future<T?> showCatchBottomSheet<T>({
   );
 }
 
-class CatchBottomSheetScaffold extends StatelessWidget {
-  const CatchBottomSheetScaffold({
+/// Whether the sheet delegates scrolling to its body or owns it for all content.
+enum CatchSheetMode { content, scrollable }
+
+/// Canonical sheet surface, header and terminal safe region.
+class CatchSheet extends StatelessWidget {
+  const CatchSheet({
     super.key,
     required this.child,
     this.title,
     this.subtitle,
-    this.action,
+    this.footer,
     this.glyph,
     this.badge,
     this.badgeTone = CatchBadgeTone.neutral,
     this.trailing,
     this.grabber = true,
     this.keyboardSafe = false,
-    this.scrollable = false,
+    this.mode = CatchSheetMode.content,
     this.padding,
   });
 
   final String? title;
   final String? subtitle;
   final Widget child;
-  final Widget? action;
+  final Widget? footer;
   final IconData? glyph;
   final String? badge;
   final CatchBadgeTone badgeTone;
@@ -72,17 +77,16 @@ class CatchBottomSheetScaffold extends StatelessWidget {
   final bool keyboardSafe;
 
   /// Scrolls the whole sheet when its natural content exceeds the viewport.
-  final bool scrollable;
+  final CatchSheetMode mode;
 
   /// Requested content insets.
   ///
   /// Top and horizontal values are applied as supplied. Bottom may request more
-  /// space, but cannot remove the scaffold-owned terminal safe region.
+  /// space, but cannot remove the sheet-owned terminal safe region.
   final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final mediaQuery = MediaQuery.maybeOf(context);
     final viewPaddingBottom = mediaQuery?.viewPadding.bottom ?? 0.0;
     final keyboardInsetBottom = keyboardSafe
@@ -110,16 +114,14 @@ class CatchBottomSheetScaffold extends StatelessWidget {
     final hasHeader =
         (title?.isNotEmpty ?? false) || glyph != null || right != null;
 
-    final content = DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(CatchLayout.sheetTopRadius),
-          topRight: Radius.circular(CatchLayout.sheetTopRadius),
-          bottomLeft: Radius.circular(CatchLayout.sheetBottomRadius),
-          bottomRight: Radius.circular(CatchLayout.sheetBottomRadius),
-        ),
-        boxShadow: CatchElevation.overlay,
+    final content = CatchSurface(
+      emphasis: CatchSurfaceEmphasis.floating,
+      duration: Duration.zero,
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(CatchLayout.sheetTopRadius),
+        topRight: Radius.circular(CatchLayout.sheetTopRadius),
+        bottomLeft: Radius.circular(CatchLayout.sheetBottomRadius),
+        bottomRight: Radius.circular(CatchLayout.sheetBottomRadius),
       ),
       child: Padding(
         key: const ValueKey<String>('catch-bottom-sheet-content-padding'),
@@ -148,11 +150,13 @@ class CatchBottomSheetScaffold extends StatelessWidget {
             if (hasHeader)
               const SizedBox(height: CatchLayout.sheetHeaderBodyGap),
             child,
-            if (action != null) ...[gapH16, action!],
+            if (footer != null) ...[gapH16, footer!],
           ],
         ),
       ),
     );
-    return scrollable ? SingleChildScrollView(child: content) : content;
+    return mode == CatchSheetMode.scrollable
+        ? SingleChildScrollView(child: content)
+        : content;
   }
 }

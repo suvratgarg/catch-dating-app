@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:a3b825a11576f56d9ce4c8a4272ab777213e9b0b8e57b8ef6415483e67b52773",
+  "resolvedDigest": "sha256:4984deb8b8cdb1ce216141e0e81a705626dd53ed2cfb4d30d73087abae332191",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1429,10 +1429,10 @@
             "id": "catch.sheet",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchBottomSheetScaffold",
-              "file": "packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart",
+              "symbol": "CatchSheet",
+              "file": "packages/catch_ui/lib/src/components/catch_sheet.dart",
               "constructors": [
-                "CatchBottomSheetScaffold"
+                "CatchSheet"
               ]
             }
           },

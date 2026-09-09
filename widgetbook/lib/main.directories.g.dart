@@ -1779,16 +1779,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchDraggableSheetShell',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchDraggableSheetShellCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchShareCardFooter',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3854,7 +3844,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sheets and footers',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchBottomSheetScaffold',
+            name: 'CatchSheet',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
@@ -5425,16 +5415,6 @@ final directories = <_widgetbook.WidgetbookNode>[
     name: 'Geometry system',
     children: [
       _widgetbook.WidgetbookComponent(
-        name: 'CatchBottomSheetScaffold',
-        useCases: [
-          _widgetbook.WidgetbookUseCase(
-            name: 'Geometry matrix',
-            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
-                .modalGeometryMatrix,
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookComponent(
         name: 'CatchButton',
         useCases: [
           _widgetbook.WidgetbookUseCase(
@@ -5476,6 +5456,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Responsive page contexts',
             builder: _widgetbook_workspace_geometry_component_geometry_use_cases
                 .responsivePageContextMatrix,
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookComponent(
+        name: 'CatchSheet',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'Geometry matrix',
+            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+                .modalGeometryMatrix,
           ),
         ],
       ),

@@ -6057,15 +6057,15 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchBottomSheetScaffold",
+      "name": "CatchSheet",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical sheet-shell family for rounded bottom-sheet surfaces, grabber handles, draggable persistent shells, and share-card sheet presentation.",
+      "summary": "Canonical sheet surface with header, body, footer and an owned terminal safe region; whole-sheet scrolling is explicit.",
       "dart": {
-        "symbol": "CatchBottomSheetScaffold",
-        "file": "packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart",
+        "symbol": "CatchSheet",
+        "file": "packages/catch_ui/lib/src/components/catch_sheet.dart",
         "constructors": [
-          "CatchBottomSheetScaffold"
+          "CatchSheet"
         ]
       },
       "design": {
@@ -6105,7 +6105,7 @@
             "dartType": "String?"
           },
           {
-            "name": "action",
+            "name": "footer",
             "type": "widget",
             "required": false,
             "dartType": "Widget?"
@@ -6143,11 +6143,38 @@
             "dartType": "bool"
           },
           {
-            "name": "scrollable",
-            "type": "bool",
+            "name": "mode",
+            "type": "enum",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "default": "content",
+            "dartType": "CatchSheetMode",
+            "values": [
+              "content",
+              "scrollable"
+            ]
+          },
+          {
+            "name": "badgeTone",
+            "type": "enum",
+            "required": false,
+            "default": "neutral",
+            "dartType": "CatchBadgeTone",
+            "values": [
+              "neutral",
+              "brand",
+              "success",
+              "warning",
+              "danger",
+              "gold",
+              "affinity"
+            ]
+          },
+          {
+            "name": "padding",
+            "type": "object",
+            "required": false,
+            "dartType": "EdgeInsetsGeometry?",
+            "notes": "Bottom padding cannot undercut the sheet-owned terminal safe region."
           }
         ],
         "states": [
@@ -6170,9 +6197,17 @@
             ]
           },
           {
-            "name": "action",
-            "kind": "sheet-action",
+            "name": "footer",
+            "kind": "sheet-footer",
             "allowedComponents": [
+              "catch.button"
+            ]
+          },
+          {
+            "name": "trailing",
+            "kind": "header-trailing",
+            "allowedComponents": [
+              "catch.badge",
               "catch.button"
             ]
           }
@@ -6191,7 +6226,6 @@
         ],
         "dartRoles": [
           "CatchSheetDragIndicator",
-          "CatchDraggableSheetShell",
           "CatchShareCardSheet",
           "CatchBadge",
           "CatchButton",
@@ -6234,7 +6268,7 @@
             "id": "catch.sheet.grabber",
             "symbol": "CatchSheetDragIndicator",
             "file": "packages/catch_ui/lib/src/primitives/catch_sheet_drag_indicator.dart",
-            "summary": "Centered sheet drag affordance used by bottom-sheet and draggable-sheet shells.",
+            "summary": "Centered passive drag affordance for the owning sheet surface.",
             "states": [
               "default",
               "wide",
@@ -6255,26 +6289,6 @@
                 "catch.sheet"
               ],
               "reason": "A passive drag affordance cues sheet interaction. The containing Sheet owns drag behavior, dismissal, content and semantics."
-            }
-          },
-          {
-            "id": "catch.sheet.draggable_shell",
-            "symbol": "CatchDraggableSheetShell",
-            "file": "packages/catch_ui/lib/src/components/catch_draggable_sheet_shell.dart",
-            "summary": "Persistent draggable sheet shell with optional handle, top radius, and raised shadow.",
-            "states": [
-              "with-handle",
-              "without-handle",
-              "with-shadow",
-              "without-shadow",
-              "custom-radius"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.sheet",
-              "parentConceptId": "catch.sheet",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.sheet"
             }
           },
           {
@@ -6402,7 +6416,13 @@
         "conceptId": "catch.sheet"
       },
       "surfaces": {
-        "flutter": "CatchBottomSheetScaffold"
+        "flutter": "CatchSheet"
+      },
+      "level": "L3",
+      "roleNoun": "Sheet",
+      "naming": {
+        "useCase": "",
+        "reason": "One sheet surface owns header, body, footer and terminal clearance. Content mode delegates scrolling to the body; scrollable mode moves the whole content and footer together. Wheel selection and captured-card sharing remain complementary sheet members with different interaction contracts."
       }
     },
     {

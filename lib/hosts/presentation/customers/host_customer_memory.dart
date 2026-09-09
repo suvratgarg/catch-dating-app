@@ -213,7 +213,7 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: widget.note == null
         ? context.l10n.hostCustomersAddNote
         : context.l10n.hostCustomersEditNote,
@@ -328,7 +328,7 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostCustomersTagSheetTitle,
     subtitle: context.l10n.hostCustomersTagSheetSubtitle,
     child: SingleChildScrollView(

@@ -1809,11 +1809,11 @@ String _runOfShowBeatLabel(
 Future<void> _showControlRoomFallback(BuildContext context) {
   return showCatchBottomSheet<void>(
     context: context,
-    builder: (sheetContext) => CatchBottomSheetScaffold(
+    builder: (sheetContext) => CatchSheet(
       title: context.l10n.eventSuccessControlRoomFallbackTitle,
       subtitle: context.l10n.eventSuccessControlRoomFallbackSubtitle,
       glyph: CatchIcons.helpOutlineRounded,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.eventSuccessControlRoomFallbackDone,
         onPressed: () => Navigator.of(sheetContext).pop(),
         fullWidth: true,

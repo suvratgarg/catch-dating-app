@@ -150,10 +150,10 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsDraftPickerSheetTitleResumeADraft,
       subtitle: context.l10n.hostsDraftPickerSheetSubtitlePickUpWhereYou,
-      action: widget.onStartFresh == null
+      footer: widget.onStartFresh == null
           ? null
           : CatchButton(
               label: context.l10n.hostsDraftPickerSheetLabelStartAFreshEvent,

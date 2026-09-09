@@ -254,9 +254,9 @@ class _HostFormResponsesPanelState
     final selected = await showCatchBottomSheet<String>(
       context: context,
       builder: (sheetContext) => Consumer(
-        builder: (context, ref, _) => CatchBottomSheetScaffold(
+        builder: (context, ref, _) => CatchSheet(
           title: context.l10n.hostAudienceChooseForm,
-          scrollable: true,
+          mode: CatchSheetMode.scrollable,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

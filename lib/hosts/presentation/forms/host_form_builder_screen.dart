@@ -409,13 +409,13 @@ class _HostFormBuilderScreenState extends ConsumerState<HostFormBuilderScreen> {
     );
     final shouldPublish = await showCatchBottomSheet<bool>(
       context: context,
-      builder: (sheetContext) => CatchBottomSheetScaffold(
-        scrollable: true,
+      builder: (sheetContext) => CatchSheet(
+        mode: CatchSheetMode.scrollable,
         title: state.editor.form.status == HostFormLifecycleStatus.published
             ? context.l10n.hostFormReviewChangesTitle
             : context.l10n.hostFormReviewPublishTitle,
         subtitle: context.l10n.hostFormReviewPublishSubtitle,
-        action: Column(
+        footer: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CatchButton(
@@ -1241,7 +1241,7 @@ Future<void> _showSectionEditorSheet(
       final currentSectionIndex = liveSectionIndex < 0
           ? sectionIndex
           : liveSectionIndex;
-      return CatchBottomSheetScaffold(
+      return CatchSheet(
         title: context.l10n.hostFormEditSection,
         subtitle: context.l10n.hostFormQuestionCount(
           count: currentSection.questions.length,
@@ -2465,7 +2465,7 @@ Future<void> _showQuestionTypePicker(
       .toList(growable: false);
   final kind = await showCatchBottomSheet<HostFormQuestionKind>(
     context: context,
-    builder: (sheetContext) => CatchBottomSheetScaffold(
+    builder: (sheetContext) => CatchSheet(
       title: context.l10n.hostFormChooseQuestionType,
       subtitle: context.l10n.hostFormChooseQuestionTypeHelp,
       child: ConstrainedBox(
@@ -2770,10 +2770,10 @@ Future<void> _showLogicRuleBuilder(
                 )) &&
             (!questionAction || targetQuestionId != null) &&
             (!sectionAction || targetSectionId != null);
-        return CatchBottomSheetScaffold(
+        return CatchSheet(
           title: context.l10n.hostFormAddRule,
           keyboardSafe: true,
-          action: CatchButton(
+          footer: CatchButton(
             label: context.l10n.hostFormRuleSave,
             fullWidth: true,
             onPressed: !canSave

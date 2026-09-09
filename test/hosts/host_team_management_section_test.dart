@@ -55,7 +55,7 @@ void main() {
     await tester.tap(addHostRow);
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchBottomSheetScaffold), findsOneWidget);
+    expect(find.byType(CatchSheet), findsOneWidget);
     expect(find.text('Add host'), findsWidgets);
     expect(
       find.text('Enter the phone number on their Catch profile.'),

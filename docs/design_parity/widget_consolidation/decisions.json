@@ -7550,6 +7550,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:sheet-content-and-scroll-ownership",
+      "patternFamilyId": "sheet-content-and-scroll-ownership",
+      "decision": "keep-distinct-and-retire-unused",
+      "canonicalSymbol": "CatchSheet",
+      "members": [
+        {
+          "name": "CatchBottomSheetScaffold",
+          "action": "rename"
+        },
+        {
+          "name": "CatchDraggableSheetShell",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Owner-delegated source and rendered-state review establish one sheet surface with two scroll-ownership modes. Preserve all production callers and paint through CatchSurface, rename action to footer, and remove the extra draggable shell with zero production callers. Focused tests assert reachable actions, rendered keyboard clearance and a single body-owned scroll viewport.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

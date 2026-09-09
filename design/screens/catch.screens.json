@@ -8523,7 +8523,7 @@
           "id": "report_sheet",
           "kind": "mutation",
           "status": "captured",
-          "source": "Profile overflow Report action opens a CatchBottomSheetScaffold with shared CatchSettingsRow reason choices.",
+          "source": "Profile overflow Report action opens a CatchSheet with shared CatchSettingsRow reason choices.",
           "tests": [
             "test/public_profile/public_profile_screen_test.dart"
           ],
@@ -25289,7 +25289,7 @@
           "id": "detail_sheet",
           "kind": "populated",
           "status": "captured",
-          "source": "Tapping a payment tile opens CatchBottomSheetScaffold receipt details with payment/order/event ids and date rows.",
+          "source": "Tapping a payment tile opens CatchSheet receipt details with payment/order/event ids and date rows.",
           "captureIds": [
             "payment_history_receipt_sheet",
             "payment_history_failed_signup_receipt_sheet"

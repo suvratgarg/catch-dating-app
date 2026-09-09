@@ -213,7 +213,7 @@ class HostCustomerFilterSheet extends StatelessWidget {
         MediaQuery.sizeOf(context).height * CatchLayout.sheetMaxHeightFraction;
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: maxHeight),
-      child: CatchBottomSheetScaffold(
+      child: CatchSheet(
         title: context.l10n.hostCustomersFilterSheetTitle,
         subtitle: context.l10n.hostCustomersFilterSheetSubtitle,
         child: Flexible(

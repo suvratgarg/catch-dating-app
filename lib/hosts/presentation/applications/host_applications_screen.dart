@@ -344,10 +344,10 @@ class _HostApplicationImportSheet extends StatelessWidget {
   final HostApplicationImportDraft draft;
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostApplicationsImportTitle,
     subtitle: context.l10n.hostApplicationsImportSubtitle,
-    action: CatchButton(
+    footer: CatchButton(
       label: context.l10n.hostApplicationsImportAction(
         count: draft.rows.length,
       ),

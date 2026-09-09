@@ -713,7 +713,7 @@ class HostCustomerRevenueBreakdown extends StatelessWidget {
   final ValueChanged<String> onOpenEvent;
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostCustomersDetailRevenue,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

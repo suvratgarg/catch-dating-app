@@ -255,11 +255,11 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsEventStaffGrantTitle,
       subtitle: context.l10n.hostsEventStaffGrantSubtitle,
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsEventStaffGrantAction,
         fullWidth: true,
         onPressed: _submit,

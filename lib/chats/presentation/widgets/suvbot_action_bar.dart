@@ -298,7 +298,7 @@ Future<void> _showResetSheet(
     context: context,
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: context.l10n.chatsSuvbotActionBarTitleResetDemoState,
           subtitle:
               context.l10n.chatsSuvbotActionBarSubtitleTheseActionsOnlyTouch,

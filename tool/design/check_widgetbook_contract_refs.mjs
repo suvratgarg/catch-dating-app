@@ -53,7 +53,7 @@ const requiredFoundationSpecimens = [
 ];
 const requiredGeometrySpecimens = [
   {
-    component: "CatchBottomSheetScaffold",
+    component: "CatchSheet",
     builder: "modalGeometryMatrix",
     sourcePath: widgetbookGeometryPath,
   },

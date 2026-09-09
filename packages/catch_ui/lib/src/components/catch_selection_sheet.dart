@@ -1,8 +1,8 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_bottom_sheet_scaffold.dart';
 import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/components/catch_menu_row.dart';
 import 'package:catch_ui/src/components/catch_selection_menu_item.dart';
+import 'package:catch_ui/src/components/catch_sheet.dart';
 import 'package:catch_ui/src/foundations/catch_transitions.dart';
 import 'package:flutter/material.dart';
 
@@ -27,7 +27,7 @@ class CatchSelectionSheet<T> extends StatelessWidget {
         MediaQuery.sizeOf(context).height * CatchLayout.sheetMaxHeightFraction;
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: maxHeight),
-      child: CatchBottomSheetScaffold(
+      child: CatchSheet(
         title: title,
         subtitle: subtitle,
         child: Flexible(

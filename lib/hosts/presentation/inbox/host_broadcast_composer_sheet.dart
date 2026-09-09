@@ -131,7 +131,7 @@ class _HostBroadcastComposerSheetState
     return SafeArea(
       top: false,
       child: SingleChildScrollView(
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: context.l10n.hostsHostBroadcastComposerSheetTitleNewBroadcast,
           subtitle: widget.event.title,
           keyboardSafe: true,

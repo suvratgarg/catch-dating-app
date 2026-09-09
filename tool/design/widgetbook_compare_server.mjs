@@ -1156,7 +1156,7 @@ function buildCandidates() {
     "CatchNotice",
     "CatchSkeleton",
     "CatchPersonRow",
-    "CatchBottomSheetScaffold",
+    "CatchSheet",
     "CatchStepper",
     "CatchKickerText",
     "CatchSearchField",
@@ -1976,8 +1976,7 @@ function buildCandidates() {
       recommended: "catch.bottom_sheet",
       tags: ["sheet", "modal"],
       names: [
-        "CatchBottomSheetScaffold",
-        "CatchDraggableSheetShell",
+        "CatchSheet",
         "DraftPickerSheet",
         "BookingConflictSheet",
         "MatchTesterSheet",

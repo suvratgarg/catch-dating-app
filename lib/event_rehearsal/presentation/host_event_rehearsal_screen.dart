@@ -292,7 +292,7 @@ class _HostEventRehearsalScreenState
   Future<void> _showRunControls(EventRehearsalBootstrap rehearsal, bool busy) =>
       showCatchBottomSheet<void>(
         context: context,
-        builder: (sheetContext) => CatchBottomSheetScaffold(
+        builder: (sheetContext) => CatchSheet(
           title: context.l10n.hostEventRehearsalRunTitle,
           subtitle: context.l10n.hostEventRehearsalRunSheetBody,
           badge: context.l10n.hostEventRehearsalBadge,
@@ -311,7 +311,7 @@ class _HostEventRehearsalScreenState
     bool busy,
   ) => showCatchBottomSheet<void>(
     context: context,
-    builder: (sheetContext) => CatchBottomSheetScaffold(
+    builder: (sheetContext) => CatchSheet(
       title: context.l10n.hostEventRehearsalPracticeTools,
       subtitle: context.l10n.hostEventRehearsalPracticeToolsBody,
       glyph: CatchIcons.scienceOutlined,

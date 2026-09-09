@@ -278,7 +278,7 @@ class PublicProfileReportSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n
           .publicProfilePublicProfileScreenTitleReportProfilename(
             profileName: profileName,

@@ -155,7 +155,7 @@ class ExploreCityPickerSheet extends StatelessWidget {
 
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: maxHeight),
-      child: CatchBottomSheetScaffold(
+      child: CatchSheet(
         title: context.l10n.exploreExploreCityPickerTextCity,
         trailing: Icon(
           CatchIcons.locationOnOutlined,

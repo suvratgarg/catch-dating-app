@@ -61,7 +61,7 @@ class _HostContactMergeReviewSheetState
   }
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostCustomersMergeReviewTitle,
     subtitle: context.l10n.hostCustomersMergeReviewHelp,
     child: ConstrainedBox(

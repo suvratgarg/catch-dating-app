@@ -338,7 +338,7 @@ class PaymentReceiptSheet extends StatelessWidget {
     return SafeArea(
       bottom: false,
       child: SingleChildScrollView(
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: eventTitle,
           padding: CatchInsets.pageBody.copyWith(
             top: CatchSpacing.s3,

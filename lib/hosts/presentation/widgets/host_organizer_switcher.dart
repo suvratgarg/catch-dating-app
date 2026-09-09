@@ -64,7 +64,7 @@ class HostOrganizerSwitcherSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       key: const ValueKey<String>('host-organizer-switcher-sheet'),
       title: context.l10n.hostsHostTodayTooltipSwitchClub,
       child: CatchSurface(

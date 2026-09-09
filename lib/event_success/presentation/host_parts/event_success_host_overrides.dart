@@ -224,12 +224,12 @@ class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
   Widget build(BuildContext context) {
     final validationError = _validationError;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.eventSuccessEventSuccessHostOverridesTitleEditGroups,
       subtitle: context
           .l10n
           .eventSuccessEventSuccessHostOverridesSubtitleHostOverride,
-      action: Column(
+      footer: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[
@@ -933,13 +933,13 @@ class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
   Widget build(BuildContext context) {
     final validationError = _validationError;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title:
           context.l10n.eventSuccessEventSuccessHostOverridesTitleEditRotations,
       subtitle: context
           .l10n
           .eventSuccessEventSuccessHostOverridesSubtitleHostOverride,
-      action: Column(
+      footer: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[

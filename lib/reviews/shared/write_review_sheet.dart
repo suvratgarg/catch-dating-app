@@ -144,7 +144,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
 
     return PopScope(
       canPop: !submitting,
-      child: CatchBottomSheetScaffold(
+      child: CatchSheet(
         title: _isEdit
             ? context.l10n.reviewsWriteReviewSheetTitleEditReview
             : context.l10n.reviewsWriteReviewSheetTitleWriteAReview,
@@ -155,7 +155,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
           CatchSpacing.s4,
           CatchSpacing.s4 + MediaQuery.viewInsetsOf(context).bottom,
         ),
-        action: Column(
+        footer: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (_isEdit) ...[

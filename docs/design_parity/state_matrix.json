@@ -4550,7 +4550,7 @@
               "tests": [
                 "test/public_profile/public_profile_screen_test.dart"
               ],
-              "notes": "public_profile_report_sheet captures the extracted PublicProfileReportSheet with shared CatchBottomSheetScaffold and CatchField reason choices.",
+              "notes": "public_profile_report_sheet captures the extracted PublicProfileReportSheet with shared CatchSheet and CatchField reason choices.",
               "previewIds": [
                 "PublicProfileScreen/Safety action states"
               ],
@@ -12450,7 +12450,7 @@
               "tests": [
                 "test/payments/payment_history_screen_test.dart"
               ],
-              "notes": "Tapping a payment tile opens CatchBottomSheetScaffold receipt details with payment/order/event ids and date rows; route captures now cover standard and failed sign-up receipt variants.",
+              "notes": "Tapping a payment tile opens CatchSheet receipt details with payment/order/event ids and date rows; route captures now cover standard and failed sign-up receipt variants.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states",
                 "PaymentReceiptSheet/Receipt states"

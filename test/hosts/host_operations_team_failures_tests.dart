@@ -531,7 +531,7 @@ void _registerHostOperationsTeamFailuresTests() {
     );
 
     expect(find.text('Active professional profile'), findsOneWidget);
-    expect(find.byType(CatchBottomSheetScaffold), findsNothing);
+    expect(find.byType(CatchSheet), findsNothing);
     expect(find.text('BIO'), findsNothing);
 
     expect(find.text('Save profile'), findsNothing);
@@ -541,7 +541,7 @@ void _registerHostOperationsTeamFailuresTests() {
       value: 'Updated Host',
     );
 
-    expect(find.byType(CatchBottomSheetScaffold), findsNothing);
+    expect(find.byType(CatchSheet), findsNothing);
     expect(repository.savedDisplayName, 'Updated Host');
     expect(repository.savedRoleTitle, 'Founder');
     expect(repository.savedBio, 'Runs easy miles.');
@@ -583,7 +583,7 @@ void _registerHostOperationsTeamFailuresTests() {
         value: 'Updated Host',
       );
 
-      expect(find.byType(CatchBottomSheetScaffold), findsNothing);
+      expect(find.byType(CatchSheet), findsNothing);
       expect(find.widgetWithText(CatchField, 'Display name'), findsOneWidget);
       expect(
         find.text('Something went wrong. Please try again.'),

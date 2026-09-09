@@ -34,7 +34,7 @@ class _HostSaveAudienceSheetState extends ConsumerState<HostSaveAudienceSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostSavedAudienceSaveTitle,
     subtitle: context.l10n.hostSavedAudienceSaveBody,
     keyboardSafe: true,
