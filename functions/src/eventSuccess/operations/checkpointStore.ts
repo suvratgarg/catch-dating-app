@@ -12,6 +12,7 @@ import {requireGroupPermission, denied} from "./groupStaffAuthority";
 import {invalidSource} from "./groupProgressSource";
 import {readCheckpoint} from "./checkpointReader";
 import {runAssistanceTransaction} from "./transactionCallback";
+import {prepareCheckpointObservation} from "./movementDecisions";
 import {CHECKPOINTS, CHECKPOINT_RECEIPTS, checkpointIdentity,
   checkpointAvailability, checkpointSourceHash, checkpointResponse,
   checkpointConflict, parseCheckpointReport, Response, Scope, Report} from
@@ -86,30 +87,12 @@ export class EventCheckpointStore {
         }
         return checkpointResponse("replayed", s, original.revision);
       }
-      if (input.expectedSourceHash !== checkpointSourceHash(s) ||
-          payload.expectedCheckpointRevision !== (s.report?.revision ?? 0)) {
-        throw checkpointConflict();
-      }
-      const availability = checkpointAvailability(s);
-      if (availability.kind !== "ready") {
-        throw new HttpsError("failed-precondition",
-          "This departure has no current checkpoint roster.");
-      }
-      const accountedFor = [...payload.accountedFor].sort();
-      const prior = new Set(s.report?.accountedFor ?? []);
-      for (const id of accountedFor) {
-        const member = availability.members.find((m) => m.attendeeId === id);
-        if (!member || !prior.has(id) && member.visit.kind !== "current") {
-          throw new HttpsError("failed-precondition",
-            "New observations must match a guest's original departure visit.");
-        }
-      }
-      const correctionReason = payload.correctionReason?.trim() ?? null;
-      if ([...prior].some((id) => !accountedFor.includes(id)) &&
-          !correctionReason) {
-        throw new HttpsError("failed-precondition",
-          "Explain why a previously recorded guest is being removed.");
-      }
+      const {accountedFor, correctionReason} = prepareCheckpointObservation({
+        sourceHash: checkpointSourceHash(s),
+        revision: s.report?.revision ?? 0,
+        availability: checkpointAvailability(s),
+        previouslyAccountedFor: s.report?.accountedFor ?? [],
+      }, payload, input.expectedSourceHash);
       const report: Report = {schemaVersion: 1,
         reportId: checkpointIdentity(scope), ...scope,
         rosterId: s.roster!.rosterId,

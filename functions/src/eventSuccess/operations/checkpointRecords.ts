@@ -1,4 +1,3 @@
-import {HttpsError} from "firebase-functions/v2/https";
 import {operationContentHash} from "../../operations/durableActions";
 import type {EventAssistanceCheckpointDocument as Report} from
   "../../shared/generated/eventAssistanceCheckpointDocument";
@@ -169,7 +168,5 @@ export function checkpointResponse(outcome: Response["outcome"],
   }
   return value;
 }
-export function checkpointConflict() {
-  return new HttpsError("aborted",
-    "Checkpoint report changed. Refresh and retry.");
-}
+export {checkpointObservationConflict as checkpointConflict} from
+  "./movementDecisions";

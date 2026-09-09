@@ -32,6 +32,8 @@ import {GROUP_PROGRESS, readGroupProgressState} from "./groupProgressReader";
 import {authorizeCheckpointRequest, assertCheckpointRequestDeadline} from
   "./checkpointRequest";
 import {prepareCheckpointWorkEnqueue} from "./checkpointWorkEnqueue";
+import {prepareDepartureDecision, departureConflict as conflict} from
+  "./movementDecisions";
 export {GROUP_PROGRESS} from "./groupProgressReader";
 export const PROGRESS_RECEIPTS = "eventAssistanceProgressReceipts";
 
@@ -85,30 +87,9 @@ export class EventGroupProgressStore {
             receipt.createdAt > state.now) throw conflict();
         return response("replayed", state, receipt.revision);
       }
-      if (command.payload.expectedProgressRevision !==
-          (state.progress?.revision ?? 0) ||
-          input.expectedSourceHash !== state.source.sourceHash) {
-        throw conflict();
-      }
-      if (!state.source.eventOpen || !state.source.runtimeLive) {
-        throw new HttpsError("failed-precondition",
-          "Start the event before confirming departure.");
-      }
-      const target = state.source.destinations.find((d) =>
-        operationContentHash(d.target) ===
-          operationContentHash(command.payload.destination));
-      if (!target) {
-        throw new HttpsError("failed-precondition",
-          "Choose a destination from the current event setup.");
-      }
-      const selection = command.payload.departureRoster;
-      const checkpointRequest = command.payload.checkpointRequest;
-      if (checkpointRequest && (!selection ||
-          (target.target.kind !== "itineraryStop" &&
-            target.target.kind !== "groupCheckpoint"))) {
-        throw new HttpsError("failed-precondition",
-          "A checkpoint request needs a selected departure roster and stop.");
-      }
+      const {target, selection, checkpointRequest} = prepareDepartureDecision({
+        ...state.source, revision: state.progress?.revision ?? 0,
+      }, command.payload, input.expectedSourceHash);
       const roster = selection ? await readDepartureRoster(this.db, tx,
         state, selection.attendeeIds) : null;
       const ownerValidUntil = checkpointRequest ?
@@ -223,9 +204,4 @@ function response(outcome: Response["outcome"], state: {
     throw invalidSource();
   }
   return value;
-}
-
-function conflict(): HttpsError {
-  return new HttpsError("aborted",
-    "Group progress changed. Refresh and retry.");
 }

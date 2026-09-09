@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.105.0
+version: 1.106.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -983,6 +983,18 @@ history, granting consent or invoking a provider. See
 [resumable roster enrollment](operations_platform.md#resumable-roster-enrollment).
 
 ### Confirmed group progress
+
+`movementDecisions.ts` owns the shared, side-effect-free departure and
+checkpoint-observation rules. Its payloads come from the canonical typed command
+union and accept source/visit reviews without a persistence or execution-mode
+dependency. Live stores call these rules inside their existing transactions,
+after authorization and exact-receipt handling. Source reads, current membership,
+reporter access, deadlines, durable work and writes retain their existing owners.
+The rules preserve missing versus explicitly empty departure rosters and require
+original-visit proof for new checkpoint observations; a return-sweep outcome is
+independent. Removing prior observations requires an explanation. Rehearsal
+departure/checkpoint persistence and callable adapters remain the next integration
+step; sharing these rules does not activate them.
 
 `getEventAssistanceGroupProgress` and `confirmEventAssistanceDeparture` provide
 the first live command boundary for the typed workflow. The read projects
