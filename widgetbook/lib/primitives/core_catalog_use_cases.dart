@@ -726,10 +726,10 @@ Widget catchSliverPageBodyCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchScrollTerminalPadding,
+  type: CatchScrollTerminalGap,
   path: '[Core catalog]/Layout',
 )
-Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
+Widget catchScrollTerminalGapCatalogStates(BuildContext context) {
   const safeBottom = CatchSpacing.s5;
   const previewMediaQuery = MediaQueryData(
     padding: EdgeInsets.only(bottom: safeBottom),
@@ -744,7 +744,7 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
           color: t.primary.withValues(alpha: 0.12),
           child: const SizedBox(
             width: double.infinity,
-            child: CatchScrollTerminalPadding(),
+            child: CatchScrollTerminalGap(),
           ),
         ),
         Positioned.fill(
@@ -780,8 +780,8 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
   }
 
   return WidgetbookCatalogFrame(
-    title: 'CatchScrollTerminalPadding',
-    catalogId: 'catch.scroll_terminal_padding',
+    title: 'Terminal scroll space',
+    catalogId: 'catch.screen_body.scroll_terminal_gap',
     children: [
       _StateCard(
         label: 'floating / anchored / no shell',
@@ -1646,14 +1646,14 @@ Widget catchSliverErrorStateCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
+  name: 'Box optical center',
   type: CatchStateViewport,
   path: '[Core catalog]/Feedback',
 )
 Widget catchStateViewportCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchStateViewport',
-    catalogId: 'core.widgets.catch_state_viewport',
+    title: 'Box state viewport',
+    catalogId: 'catch.empty_state.state_viewport',
     children: [
       _StateCard(
         label: 'box body / floating-shell optical center',
@@ -1678,14 +1678,14 @@ Widget catchStateViewportCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchSliverStateViewport,
+  name: 'Sliver optical center',
+  type: CatchStateViewport,
   path: '[Core catalog]/Feedback',
 )
-Widget catchSliverStateViewportCatalogStates(BuildContext context) {
+Widget catchStateViewportSliverCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchSliverStateViewport',
-    catalogId: 'core.widgets.catch_sliver_state_viewport',
+    title: 'Sliver state viewport',
+    catalogId: 'catch.empty_state.state_viewport',
     children: [
       _StateCard(
         label: 'floating-shell optical center',
@@ -1697,7 +1697,7 @@ Widget catchSliverStateViewportCatalogStates(BuildContext context) {
             bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: CustomScrollView(
               slivers: [
-                CatchSliverStateViewport(
+                CatchStateViewport.sliver(
                   child: CatchEmptyState(
                     icon: CatchIcons.calendarTodayOutlined,
                     title: 'No upcoming events',

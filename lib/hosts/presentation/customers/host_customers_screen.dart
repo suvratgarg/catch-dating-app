@@ -154,7 +154,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-customers-route-state'),
         slivers: const [
-          CatchSliverStateViewport(
+          CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],
@@ -197,7 +197,7 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-customers-route-state'),
         slivers: const [
-          CatchSliverStateViewport(
+          CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],

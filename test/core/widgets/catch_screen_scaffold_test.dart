@@ -22,7 +22,7 @@ void main() {
     expect(body.top - header.bottom, CatchInsets.pageBody.top);
     expect(body.left, CatchInsets.pageBody.left);
     expect(body.width, 400 - CatchInsets.pageBody.horizontal);
-    expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
+    expect(find.byType(CatchScrollTerminalGap), findsOneWidget);
   });
 
   testWidgets('root full-bleed body delegates no local page inset', (

@@ -28,7 +28,7 @@ class HostClubsScreen extends ConsumerWidget {
           'host-organizer-auth-route-state',
         ),
         slivers: const [
-          CatchSliverStateViewport(
+          CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],
@@ -78,7 +78,7 @@ class HostClubsScreen extends ConsumerWidget {
               'host-organizer-data-route-state',
             ),
             slivers: const [
-              CatchSliverStateViewport(
+              CatchStateViewport.sliver(
                 child: HostRouteLoadingBody(padding: EdgeInsets.zero),
               ),
             ],

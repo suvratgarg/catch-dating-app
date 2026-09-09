@@ -2,7 +2,7 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_page_owner.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
+import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/primitives/catch_pager_focus_viewport.dart';
 import 'package:flutter/material.dart';
 
@@ -199,7 +199,7 @@ class _CatchRootScreenPageScrollViewState
                 children: widget.slivers,
               ),
               if (widget.includeTerminalPadding)
-                const CatchSliverTerminalPadding(),
+                const CatchScrollTerminalGap.sliver(),
             ],
           );
           final onRefresh = widget.onRefresh;

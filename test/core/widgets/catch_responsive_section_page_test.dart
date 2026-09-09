@@ -284,7 +284,7 @@ void main() {
 
     expect(find.text('obstruction:88.0'), findsOneWidget);
     expect(
-      tester.getSize(find.byType(CatchScrollTerminalPadding)).height,
+      tester.getSize(find.byType(CatchScrollTerminalGap)).height,
       88 + CatchSpacing.screenPb,
     );
 

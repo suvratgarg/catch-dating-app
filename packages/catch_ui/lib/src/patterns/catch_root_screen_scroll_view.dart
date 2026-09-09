@@ -14,7 +14,7 @@ import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_top_edge.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
+import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +130,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
             maxContentExtent: maxContentExtent,
             children: slivers!,
           ),
-          const CatchSliverTerminalPadding(),
+          const CatchScrollTerminalGap.sliver(),
         ],
       );
     } else {

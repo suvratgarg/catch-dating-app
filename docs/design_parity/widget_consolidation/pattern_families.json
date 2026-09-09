@@ -3486,6 +3486,54 @@
           "rationale": "Absorb the same body, scroll or scope responsibility into its canonical owner and remove the redundant Widget."
         }
       ]
+    },
+    {
+      "id": "terminal-viewport-recipes",
+      "title": "Terminal scroll space and state viewport recipes",
+      "intent": "One canonical API per obstruction responsibility, with box and sliver output as named recipes.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.screen_body",
+      "qualityReference": "CatchScrollTerminalGap",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "Production clearance and optical placement remain unchanged; catalog names identify the canonical box and sliver recipes."
+      ],
+      "members": [
+        {
+          "symbol": "CatchScrollTerminalGap",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Terminal blank space is a Gap; one calculation serves box and sliver scroll owners."
+        },
+        {
+          "symbol": "CatchStateViewport",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Terminal state placement owns shell obstruction independently from responsive viewport selection; named sliver construction shares the box geometry."
+        },
+        {
+          "symbol": "CatchScrollTerminalPadding",
+          "disposition": "unify",
+          "target": "CatchScrollTerminalGap",
+          "preview": "not-applicable",
+          "rationale": "Rename the clearance spacer by its responsibility and keep one renderer."
+        },
+        {
+          "symbol": "CatchSliverTerminalPadding",
+          "disposition": "unify",
+          "target": "CatchScrollTerminalGap.sliver",
+          "preview": "not-applicable",
+          "rationale": "Sliver output is a constructor of the same clearance owner."
+        },
+        {
+          "symbol": "CatchSliverStateViewport",
+          "disposition": "unify",
+          "target": "CatchStateViewport.sliver",
+          "preview": "not-applicable",
+          "rationale": "Sliver output is a constructor of the same visible-state viewport."
+        }
+      ]
     }
   ]
 }

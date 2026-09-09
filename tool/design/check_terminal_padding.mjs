@@ -40,7 +40,7 @@ export function checkTerminalPadding({root = repoRoot} = {}) {
           path: relative(root, absolutePath),
           line: lineNumberAt(source, match.index),
           message:
-            "Use CatchScrollTerminalPadding or CatchSliverTerminalPadding " +
+            "Use CatchScrollTerminalGap or CatchScrollTerminalGap.sliver " +
             "instead of hand-rolled device-bottom clearance.",
         });
       }

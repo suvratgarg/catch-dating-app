@@ -92,7 +92,7 @@ class CatchesHubStateView extends ConsumerWidget {
           context: AppErrorContext.event,
           onRetry: () => ref.invalidate(watchAttendedEventsProvider(uid)),
         ),
-      CatchesHubEmpty() => CatchSliverStateViewport(
+      CatchesHubEmpty() => CatchStateViewport.sliver(
         child: CatchesHubEmptyState(
           onFindEvent: () => context.go(Routes.exploreScreen.path),
         ),

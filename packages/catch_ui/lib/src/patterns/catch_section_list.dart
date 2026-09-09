@@ -6,7 +6,7 @@ import 'package:catch_ui/src/components/catch_field_interaction_plane_scope.dart
 import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_responsive_field_interaction_policy.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
-import 'package:catch_ui/src/patterns/catch_scroll_terminal_padding.dart';
+import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_item.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_mode.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_placement.dart';
@@ -199,7 +199,7 @@ class CatchSectionList extends StatelessWidget {
                 columnGap: layout.columnGap,
                 fieldInteractionPolicy: layout.fieldInteractionPolicy,
               ),
-              CatchScrollTerminalPadding(extra: page.terminalExtra),
+              CatchScrollTerminalGap(extra: page.terminalExtra),
             ],
           ),
         ),

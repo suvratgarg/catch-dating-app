@@ -225,7 +225,7 @@ void _registerHostOperationsStateEventsTests() {
     expect(find.byType(HostLoadingScreen), findsNothing);
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.text('Organizer'), findsOneWidget);
     expect(find.text('Edit'), findsOneWidget);
     expect(find.text('Insights'), findsOneWidget);

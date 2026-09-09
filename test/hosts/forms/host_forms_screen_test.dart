@@ -91,7 +91,7 @@ void main() {
       );
       _expectFormsAudienceStateOwner(tester, selected: view);
       expect(find.byType(HostRouteLoadingBody), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpFormsRouteState(
         tester,
@@ -131,7 +131,7 @@ void main() {
       );
       _expectFormsAudienceStateOwner(tester, selected: view);
       expect(find.byType(HostRouteLoadingBody), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpFormsRouteState(
         tester,

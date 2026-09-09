@@ -13,7 +13,7 @@ void _registerHostOperationsClubWorkspaceTests() {
           findsOneWidget,
         );
         expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-        expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+        expect(find.byType(CatchStateViewport), findsOneWidget);
         expect(find.byType(CatchErrorScaffold), findsNothing);
         expect(find.byType(HostLoadingScreen), findsNothing);
         expect(find.byType(CatchRouteScaffold), findsNothing);
@@ -89,7 +89,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
       expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
       expect(find.byType(CatchSliverEmptyState), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
       expect(find.byKey(const ValueKey('host-club-tab-rail')), findsOneWidget);
       expect(find.text('Organizer'), findsOneWidget);
       expect(find.text('No hosted organizers yet'), findsOneWidget);
@@ -109,7 +109,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.byType(CatchErrorScaffold), findsNothing);
     expect(find.text('Today'), findsOneWidget);
     expect(find.text('Sign in required'), findsOneWidget);
@@ -126,7 +126,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.byType(CatchErrorScaffold), findsNothing);
     expect(find.text('Today'), findsOneWidget);
   });
@@ -248,7 +248,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
       expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
       expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
       expect(find.text('Saket Run Club'), findsNothing);
       expect(
         find.ancestor(
@@ -379,7 +379,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.byType(CatchErrorScaffold), findsNothing);
     expect(find.text('Events'), findsOneWidget);
     expect(find.text('Sign in required'), findsOneWidget);
@@ -396,7 +396,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.byType(CatchErrorScaffold), findsNothing);
     expect(find.text('Events'), findsOneWidget);
   });
@@ -420,7 +420,7 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('No upcoming events'), findsOneWidget);
     final emptyState = find.byType(CatchEmptyState);
     final content = find.byType(CatchEmptyState);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(
       find.ancestor(of: emptyState, matching: find.byType(Center)),
       findsNothing,

@@ -176,7 +176,7 @@ void main() {
   });
 
   testWidgets(
-    'CatchSliverTerminalPadding uses the larger device safe area outside shell',
+    'CatchScrollTerminalGap uses the larger device safe area outside shell',
     (tester) async {
       const terminalPaddingKey = Key('terminal-padding');
 
@@ -193,7 +193,7 @@ void main() {
               bottom: false,
               child: CustomScrollView(
                 slivers: [
-                  CatchSliverTerminalPadding(
+                  CatchScrollTerminalGap.sliver(
                     key: terminalPaddingKey,
                     extra: 10,
                   ),
@@ -216,7 +216,7 @@ void main() {
   );
 
   testWidgets(
-    'CatchScrollTerminalPadding uses raw floating shell inset plus extra',
+    'CatchScrollTerminalGap uses raw floating shell inset plus extra',
     (tester) async {
       const terminalPaddingKey = Key('box-terminal-padding');
 
@@ -233,10 +233,7 @@ void main() {
               index: appShellHomeTabIndex,
               bottomOverlayInset: 102,
               bottomBarPlacement: CatchTabViewportScopePlacement.floating,
-              child: CatchScrollTerminalPadding(
-                key: terminalPaddingKey,
-                extra: 10,
-              ),
+              child: CatchScrollTerminalGap(key: terminalPaddingKey, extra: 10),
             ),
           ),
         ),
@@ -253,7 +250,7 @@ void main() {
     },
   );
 
-  testWidgets('CatchScrollTerminalPadding uses extra only in anchored shell', (
+  testWidgets('CatchScrollTerminalGap uses extra only in anchored shell', (
     tester,
   ) async {
     const terminalPaddingKey = Key('anchored-terminal-padding');
@@ -269,10 +266,7 @@ void main() {
           child: CatchTabViewportScope(
             index: appShellHomeTabIndex,
             bottomBarPlacement: CatchTabViewportScopePlacement.anchored,
-            child: CatchScrollTerminalPadding(
-              key: terminalPaddingKey,
-              extra: 10,
-            ),
+            child: CatchScrollTerminalGap(key: terminalPaddingKey, extra: 10),
           ),
         ),
       ),
@@ -289,7 +283,7 @@ void main() {
   });
 
   testWidgets(
-    'CatchScrollTerminalPadding preserves safe area when shell has no bar',
+    'CatchScrollTerminalGap preserves safe area when shell has no bar',
     (tester) async {
       const terminalPaddingKey = Key('no-bar-terminal-padding');
 
@@ -304,10 +298,7 @@ void main() {
             ),
             child: CatchTabViewportScope(
               index: appShellHomeTabIndex,
-              child: CatchScrollTerminalPadding(
-                key: terminalPaddingKey,
-                extra: 10,
-              ),
+              child: CatchScrollTerminalGap(key: terminalPaddingKey, extra: 10),
             ),
           ),
         ),

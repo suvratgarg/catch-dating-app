@@ -492,7 +492,7 @@
         },
         {
           "path": "packages/catch_ui/lib/src/patterns/catch_sliver_error_state.dart",
-          "role": "canonical sliver error placement adapter sharing CatchSliverStateViewport geometry with empty states",
+          "role": "canonical sliver error placement adapter sharing CatchStateViewport.sliver geometry with empty states",
           "providerFree": true,
           "status": "aligned"
         },

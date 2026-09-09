@@ -1,6 +1,6 @@
 import 'package:catch_ui/src/components/catch_error_state.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_state_viewport.dart';
+import 'package:catch_ui/src/patterns/catch_state_viewport.dart';
 import 'package:flutter/material.dart';
 
 class CatchSliverErrorState extends StatelessWidget {
@@ -40,7 +40,7 @@ class CatchSliverErrorState extends StatelessWidget {
     );
 
     if (fillRemaining) {
-      return CatchSliverStateViewport(child: child);
+      return CatchStateViewport.sliver(child: child);
     }
 
     return SliverToBoxAdapter(child: child);

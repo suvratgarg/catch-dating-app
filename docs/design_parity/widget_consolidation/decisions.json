@@ -7942,6 +7942,38 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:terminal-viewport-recipes",
+      "patternFamilyId": "terminal-viewport-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchScrollTerminalGap",
+      "members": [
+        {
+          "name": "CatchScrollTerminalGap",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStateViewport",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScrollTerminalPadding",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSliverTerminalPadding",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSliverStateViewport",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Unify box/sliver wrappers into one terminal gap and one state viewport. Both consume the same existing tab obstruction contract without conflating trailing scroll clearance with visible-area placement. Remove the three superseded Widget files and migrate direct previews and callers.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

@@ -12,7 +12,7 @@ import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
 import 'package:catch_ui/src/patterns/catch_section_list.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_item.dart';
 import 'package:catch_ui/src/patterns/catch_section_list_mode.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
+import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
 import 'package:flutter/material.dart';
 
@@ -335,7 +335,7 @@ final class CatchRouteBody {
           maxContentExtent: _maxContentExtent,
           children: _slivers!,
         ),
-        if (_includeTerminalPadding) const CatchSliverTerminalPadding(),
+        if (_includeTerminalPadding) const CatchScrollTerminalGap.sliver(),
       ],
     );
     if (_onRefresh != null) {

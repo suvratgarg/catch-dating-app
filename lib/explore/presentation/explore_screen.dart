@@ -502,7 +502,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 promoteFeaturedItem: showFeaturedCover,
               ),
             ExploreScreenBodyKind.empty => [
-              CatchSliverStateViewport(
+              CatchStateViewport.sliver(
                 child: ExploreScreenEmptyState(
                   state: bodyState.emptyState!,
                   onClearSearch: () =>

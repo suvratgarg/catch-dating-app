@@ -267,7 +267,7 @@ void main() {
             ),
             child: CatchAdaptiveTabScaffold(
               activeIndex: appShellHomeTabIndex,
-              body: CatchScrollTerminalPadding(key: terminalKey, extra: 10),
+              body: CatchScrollTerminalGap(key: terminalKey, extra: 10),
             ),
           ),
         ),
@@ -650,7 +650,9 @@ void main() {
       ProviderScope(
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const Scaffold(body: CatchNoticeOverlay(child: SizedBox.expand())),
+          home: const Scaffold(
+            body: CatchNoticeOverlay(child: SizedBox.expand()),
+          ),
         ),
       ),
     );

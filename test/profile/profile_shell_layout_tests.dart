@@ -341,7 +341,7 @@ void _registerProfileShellLayoutTests() {
             find.byKey(const PageStorageKey<String>('profile-edit-tab-scroll')),
           )
           .slivers
-          .whereType<CatchSliverTerminalPadding>(),
+          .whereType<CatchScrollTerminalGap>(),
       hasLength(1),
     );
 
@@ -365,7 +365,7 @@ void _registerProfileShellLayoutTests() {
             ),
           )
           .slivers
-          .whereType<CatchSliverTerminalPadding>(),
+          .whereType<CatchScrollTerminalGap>(),
       isEmpty,
     );
 
@@ -389,7 +389,7 @@ void _registerProfileShellLayoutTests() {
             ),
           )
           .slivers
-          .whereType<CatchSliverTerminalPadding>(),
+          .whereType<CatchScrollTerminalGap>(),
       hasLength(1),
     );
   });

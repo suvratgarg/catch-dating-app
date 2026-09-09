@@ -21,7 +21,7 @@ test("flags hand-rolled safe-area bottom padding in product code", () => {
       path: "lib/payments/bad.dart",
       line: 1,
       message:
-        "Use CatchScrollTerminalPadding or CatchSliverTerminalPadding instead of hand-rolled device-bottom clearance.",
+        "Use CatchScrollTerminalGap or CatchScrollTerminalGap.sliver instead of hand-rolled device-bottom clearance.",
     },
   ]);
 });

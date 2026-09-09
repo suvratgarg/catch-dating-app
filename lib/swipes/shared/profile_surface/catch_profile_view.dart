@@ -86,7 +86,7 @@ class CatchProfileView extends StatelessWidget {
               ),
               sliver: SliverList.list(children: _body(context, activity)),
             ),
-            if (includeTerminalPadding) const CatchSliverTerminalPadding(),
+            if (includeTerminalPadding) const CatchScrollTerminalGap.sliver(),
           ],
         ),
       ),

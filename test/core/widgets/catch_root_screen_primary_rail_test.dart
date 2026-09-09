@@ -103,13 +103,13 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(_wrap());
-    expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
+    expect(find.byType(CatchScrollTerminalGap), findsOneWidget);
 
     await tester.pumpWidget(_wrap(bodyLayout: CatchPageBodyMode.fullBleed));
-    expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
+    expect(find.byType(CatchScrollTerminalGap), findsOneWidget);
 
     await tester.pumpWidget(_wrapEmbeddedViewport());
-    expect(find.byType(CatchSliverTerminalPadding), findsNothing);
+    expect(find.byType(CatchScrollTerminalGap), findsNothing);
   });
 
   test('root primary-rail geometry uses the approved compact rhythm', () {

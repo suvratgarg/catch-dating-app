@@ -1467,8 +1467,10 @@
             "id": "catch.empty_state.state_viewport",
             "symbol": "CatchStateViewport",
             "file": "packages/catch_ui/lib/src/patterns/catch_state_viewport.dart",
-            "summary": "Box placement that accounts for the inherited bottom obstruction when centering terminal content.",
+            "summary": "Box and sliver terminal-state placement subtract the same inherited bottom obstruction; sliver fill preserves bounded, non-intrinsic child layout.",
             "states": [
+              "box-body",
+              "sliver-body",
               "without-overlay",
               "floating-overlay",
               "overlay-opt-out"
@@ -1478,25 +1480,17 @@
               "conceptId": "catch.empty_state",
               "parentConceptId": "catch.empty_state",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.empty_state"
-            }
-          },
-          {
-            "id": "catch.empty_state.sliver_state_viewport",
-            "symbol": "CatchSliverStateViewport",
-            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_state_viewport.dart",
-            "summary": "Sliver placement for terminal content with the same bottom-obstruction geometry and bounded scroll-body constraints.",
-            "states": [
-              "without-overlay",
-              "floating-overlay",
-              "overlay-opt-out"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.empty_state",
-              "parentConceptId": "catch.empty_state",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.empty_state"
+              "decisionRef": "pattern-family:terminal-viewport-recipes"
+            },
+            "level": "L4",
+            "roleNoun": "Viewport",
+            "naming": {
+              "useCase": "State",
+              "comparedWith": [
+                "catch.empty_state",
+                "catch.viewport"
+              ],
+              "reason": "The empty-state parent owns content; CatchViewport selects responsive content from measured geometry. This member adjusts the visible area for terminal empty/error content around inherited floating-shell obstruction. Box and sliver output share one calculation and use named constructors; neither rendering protocol establishes a separate identity."
             }
           },
           {
@@ -9476,13 +9470,17 @@
             }
           },
           {
-            "id": "catch.screen_body.scroll_terminal_padding",
-            "symbol": "CatchScrollTerminalPadding",
-            "file": "packages/catch_ui/lib/src/patterns/catch_scroll_terminal_padding.dart",
-            "summary": "Box-native terminal clearance for anchored, floating and absent navigation, with explicit safe-area policy.",
+            "id": "catch.screen_body.scroll_terminal_gap",
+            "symbol": "CatchScrollTerminalGap",
+            "file": "packages/catch_ui/lib/src/patterns/catch_scroll_terminal_gap.dart",
+            "summary": "Box and sliver terminal space includes caller breathing room and shell or device obstruction, with explicit safe-area opt-out.",
             "states": [
+              "box-body",
+              "sliver-body",
               "safe-area",
               "floating-navigation",
+              "anchored-navigation",
+              "no-navigation",
               "explicit-extra"
             ],
             "governance": {
@@ -9490,25 +9488,16 @@
               "conceptId": "catch.screen_body",
               "parentConceptId": "catch.screen_body",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
-            }
-          },
-          {
-            "id": "catch.screen_body.sliver_terminal_padding",
-            "symbol": "CatchSliverTerminalPadding",
-            "file": "packages/catch_ui/lib/src/patterns/catch_sliver_terminal_padding.dart",
-            "summary": "Sliver-native terminal clearance delegating to the same box geometry contract.",
-            "states": [
-              "safe-area",
-              "floating-navigation",
-              "explicit-extra"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.screen_body",
-              "parentConceptId": "catch.screen_body",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.screen_body"
+              "decisionRef": "pattern-family:terminal-viewport-recipes"
+            },
+            "level": "L4",
+            "roleNoun": "Gap",
+            "naming": {
+              "useCase": "ScrollTerminal",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "The page-body parent pads content and publishes field geometry. This member is the final empty space in a scroll body, computed from navigation obstruction and device safe area. It contains no child and therefore uses Gap; box/sliver output and explicit extra space are recipes of this one responsibility."
             }
           },
           {
@@ -9928,7 +9917,7 @@
           "CatchGaps.section",
           "CatchResponsiveFieldInteractionPolicy",
           "CatchPageBody.screen",
-          "CatchScrollTerminalPadding"
+          "CatchScrollTerminalGap"
         ],
         "goldens": [],
         "members": [

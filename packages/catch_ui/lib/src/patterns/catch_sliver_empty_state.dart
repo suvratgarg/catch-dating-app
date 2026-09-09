@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_empty_state.dart';
 import 'package:catch_ui/src/components/catch_empty_state_variant.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_state_viewport.dart';
+import 'package:catch_ui/src/patterns/catch_state_viewport.dart';
 import 'package:catch_ui/src/primitives/catch_icon_tile.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +38,7 @@ class CatchSliverEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSliverStateViewport(
+    return CatchStateViewport.sliver(
       accountForBottomOverlay: accountForBottomOverlay,
       child: CatchEmptyState(
         icon: icon,

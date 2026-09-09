@@ -21,7 +21,7 @@ void _registerHostOperationsCustomersTests() {
       );
       _expectAudienceStateOwner(tester, selected: view);
       expect(find.byType(HostRouteLoadingBody), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpHostScreen(
         tester,
@@ -70,7 +70,7 @@ void _registerHostOperationsCustomersTests() {
       );
       _expectAudienceStateOwner(tester, selected: view);
       expect(find.byType(HostRouteLoadingBody), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpHostScreen(
         tester,

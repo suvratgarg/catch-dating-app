@@ -123,7 +123,7 @@ class CreateEventLoadingFooter extends StatelessWidget {
               ],
             ),
           ),
-          const CatchScrollTerminalPadding(extra: CatchSpacing.s3),
+          const CatchScrollTerminalGap(extra: CatchSpacing.s3),
         ],
       ),
     );

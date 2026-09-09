@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "45d57df520e93892a3dd33196f4bc0fc16443ce555c20874c965c97fd4ad6a87",
+  "sourceDigest": "7907e2063d6a291f60044eb03e69105c029c6e6a4f0741e076a0c0eaf38609f3",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "45d57df520e93892a3dd33196f4bc0fc16443ce555c20874c965c97fd4ad6a87",
-    "contractDigest": "45d57df520e93892a3dd33196f4bc0fc16443ce555c20874c965c97fd4ad6a87"
+    "digest": "7907e2063d6a291f60044eb03e69105c029c6e6a4f0741e076a0c0eaf38609f3",
+    "contractDigest": "7907e2063d6a291f60044eb03e69105c029c6e6a4f0741e076a0c0eaf38609f3"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "a36bb464dc62055b9e0b4850869863791d0fd841c958d20f46580e64af463f13",
+    "handoffRequestDigest": "847bf2aae0a0d74dc489ac55cb4cf30a779c8ce0be3b159b431d33e9094d6e95",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -83,15 +83,15 @@
   },
   "metrics": {
     "contractCount": 73,
-    "publicClassCount": 222,
+    "publicClassCount": 220,
     "conceptCount": 65,
-    "memberCount": 139,
-    "membersPerConcept": 2.14,
+    "memberCount": 137,
+    "membersPerConcept": 2.11,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
       "concept": 65,
-      "member": 139,
+      "member": 137,
       "screen": 15
     },
     "collisionCount": 31,
@@ -158,7 +158,6 @@
         "symbols": [
           "CatchEmptyState",
           "CatchSliverEmptyState",
-          "CatchSliverStateViewport",
           "CatchStateViewport"
         ]
       },
@@ -322,10 +321,9 @@
           "CatchRouteBody",
           "CatchRouteScaffold",
           "CatchScreenScaffold",
-          "CatchScrollTerminalPadding",
+          "CatchScrollTerminalGap",
           "CatchScrollView",
           "CatchSliverContentWidth",
-          "CatchSliverTerminalPadding",
           "CatchTabViewportScope"
         ]
       },
@@ -645,7 +643,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "EmptyState",
       "claudeAllowed": true,
-      "contractDigest": "b5ff35095323059bf5e4ab40dab8457e33d4f914e04c6d53915dcdac7a317f0b"
+      "contractDigest": "46532c7882016477c5fa41e5d83235d5981ec6a67bf1a124e6a630abb1362469"
     },
     {
       "contractId": "catch.error_state",
@@ -1527,7 +1525,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PageBody",
       "claudeAllowed": true,
-      "contractDigest": "ee59f01b41cab092f120ca54efa608d56ec28c312245062c793d856f22494cef"
+      "contractDigest": "77a82f821581cc97ae04b0d42f2241bd0ffbb24068b1d5a28186e8065129c6c9"
     },
     {
       "contractId": "catch.section_stack",

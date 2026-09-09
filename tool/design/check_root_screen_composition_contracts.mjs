@@ -139,7 +139,7 @@ function checkStateViewportOwnership({root, findings}) {
         code: "raw-sliver-state-viewport",
         path: relativePath,
         message:
-          "Empty and error slivers must use CatchSliverStateViewport, " +
+          "Empty and error slivers must use CatchStateViewport.sliver, " +
           "CatchSliverEmptyState, or CatchSliverErrorState so shell overlay " +
           "geometry is applied consistently.",
       });

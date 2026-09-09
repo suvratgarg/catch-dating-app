@@ -422,7 +422,7 @@ class PaymentReceiptSheet extends StatelessWidget {
                     ),
                   ),
                 ],
-                const CatchScrollTerminalPadding(),
+                const CatchScrollTerminalGap(),
               ],
             ),
           ),

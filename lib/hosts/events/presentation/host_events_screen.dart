@@ -68,7 +68,7 @@ class HostEventsScreen extends ConsumerWidget {
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
         slivers: const [
-          CatchSliverStateViewport(
+          CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],

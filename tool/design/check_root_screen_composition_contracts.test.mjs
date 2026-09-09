@@ -8,7 +8,7 @@ import {checkRootScreenCompositionContracts} from "./check_root_screen_compositi
 test("accepts a registered adaptive shell branch", () => {
   const root = fixtureRoot({
     ownerSource:
-      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
+      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchScrollTerminalGap.sliver()]));",
   });
   const result = checkRootScreenCompositionContracts({root});
   assert.deepEqual(result.findings, []);
@@ -21,7 +21,7 @@ test("rejects the superseded parallel tabbed-root API", () => {
         bottom: false,
         child: CustomScrollView(
           slivers: [
-            CatchSliverTerminalPadding(),
+            CatchScrollTerminalGap.sliver(),
             SliverToBoxAdapter(child: CatchTabbedScreenScaffold()),
           ],
         ),
@@ -39,7 +39,7 @@ test("rejects the superseded parallel tabbed-root API", () => {
 test("accepts lifecycle-owned StatefulShellBranch key member access", () => {
   const root = fixtureRoot({
     ownerSource:
-      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
+      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchScrollTerminalGap.sliver()]));",
     routerBranchKey: "keys.home",
   });
   const result = checkRootScreenCompositionContracts({root});
@@ -49,7 +49,7 @@ test("accepts lifecycle-owned StatefulShellBranch key member access", () => {
 test("flags a shell that bypasses the shared adaptive scaffold", () => {
   const root = fixtureRoot({
     ownerSource:
-      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
+      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchScrollTerminalGap.sliver()]));",
     shellSource: "return Scaffold(body: navigationShell);",
   });
   const result = checkRootScreenCompositionContracts({root});
@@ -66,7 +66,7 @@ test("flags a shell that bypasses the shared adaptive scaffold", () => {
 test("flags a new StatefulShellBranch until it is registered", () => {
   const root = fixtureRoot({
     ownerSource:
-      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
+      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchScrollTerminalGap.sliver()]));",
     extraRouterSource: `
       StatefulShellBranch(
         navigatorKey: _newShellKey,
@@ -87,7 +87,7 @@ test("flags a new StatefulShellBranch until it is registered", () => {
 test("flags a raw SliverFillRemaining empty state in presentation code", () => {
   const root = fixtureRoot({
     ownerSource:
-      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchSliverTerminalPadding()]));",
+      "SafeArea(bottom: false, child: CustomScrollView(slivers: [CatchScrollTerminalGap.sliver()]));",
     stateSource: `
       SliverFillRemaining(
         child: CatchEmptyState(title: "Nothing here"),

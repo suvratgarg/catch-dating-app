@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.51.0
+version: 1.52.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -584,6 +584,10 @@ scrolls overflow. Field paint extents come from
 `CatchFieldInteractionPlaneScope.fromPadding`, preserving inherited interaction
 policy and accumulating directional insets. Features use the semantic body
 owner rather than publishing field geometry directly.
+`CatchScrollTerminalGap` owns terminal clearance, with `.sliver` for a sliver
+scroll owner. `CatchStateViewport` owns the visible area for empty/error
+placement, also with `.sliver`; both protocols share one obstruction policy.
+The state viewport does not select responsive layouts or own state content.
 
 Screen-level padding belongs at the screen/body boundary, not scattered across
 unrelated child widgets. Use `CatchInsets`, `CatchGaps`, `CatchPageBody`,
@@ -769,7 +773,7 @@ Root-screen overlays that still coexist with the floating tab bar should use
 `CatchTabViewportScope.bottomOverlayClearanceOf(context, minimum: ...)`; feature
 code should not recompute the tab-bar height, safe-area subtraction, or platform
 floating inset. Root scroll views without tab chrome should end with a semantic
-terminal sliver such as `CatchSliverTerminalPadding` instead of hard-coded
+terminal sliver such as `CatchScrollTerminalGap.sliver` instead of hard-coded
 bottom spacers. When a route uses this terminal sliver inside a `SafeArea`, the
 screen-level `SafeArea` must leave `bottom: false` so the device bottom inset
 remains visible to the sliver and becomes scrollable clearance.
@@ -779,8 +783,8 @@ remains visible to the sliver and becomes scrollable clearance.
 consumes it; `anchored` means the scaffold already reduced the body viewport,
 so only the requested breathing room is added; `none` (and routes outside a
 shell) falls back to the larger of the device padding and view padding. Product
-screens consume that contract through `CatchScrollTerminalPadding` or
-`CatchSliverTerminalPadding`; they never read safe-area bottom values directly.
+screens consume that contract through `CatchScrollTerminalGap` or
+`CatchScrollTerminalGap.sliver`; they never read safe-area bottom values directly.
 
 Software-keyboard visibility is defined by `MediaQuery.viewInsets.bottom > 0`,
 not by focus. While that inset is nonzero, bottom navigation is omitted, the
@@ -816,8 +820,8 @@ CatchAdaptiveTabScaffold(
 
 Side navigation consumes horizontal layout space and therefore publishes
 `CatchTabViewportScopePlacement.none` with zero bottom obstruction. Root scroll
-owners continue to use `CatchScrollTerminalPadding` or
-`CatchSliverTerminalPadding`; they never special-case tablet or desktop
+owners continue to use `CatchScrollTerminalGap` or
+`CatchScrollTerminalGap.sliver`; they never special-case tablet or desktop
 navigation. `AppShellNavigationBar` remains the sole destination adapter, so
 labels, selected icons, unread badges, semantics, haptics, and `goBranch`
 behavior cannot drift among bottom, rail, and sidebar chrome.
@@ -1163,7 +1167,7 @@ Sliver rules:
 - Use `SliverList.builder`, `SliverList.separated`, or `SliverGrid` for
   repeated content that can grow.
 - Avoid a vertical `ListView` or large `Column` inside `SliverToBoxAdapter`.
-- Use `CatchSliverStateViewport`, `CatchSliverEmptyState`, or
+- Use `CatchStateViewport.sliver`, `CatchSliverEmptyState`, or
   `CatchSliverErrorState` for centered sliver empty/error states. They preserve
   responsive overflow and subtract the floating shell's published bottom
   obstruction from the optical center through the same `CatchStateViewport`

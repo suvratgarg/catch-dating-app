@@ -148,7 +148,7 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
                 ],
               ),
             ),
-            if (includeTerminalPadding) const CatchSliverTerminalPadding(),
+            if (includeTerminalPadding) const CatchScrollTerminalGap.sliver(),
           ],
         ),
       ),

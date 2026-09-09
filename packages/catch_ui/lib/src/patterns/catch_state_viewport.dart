@@ -1,30 +1,44 @@
 import 'package:catch_ui/src/patterns/catch_tab_viewport_scope.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-/// Box-native viewport for terminal empty and error states.
+/// Removes the floating shell obstruction from terminal-state placement.
 ///
-/// A floating app-shell tab bar overlays the scaffold body instead of reducing
-/// its constraints. Centering directly in the body therefore lands below the
-/// optical center of the visible region. This primitive owns that shell
-/// geometry once for both empty and error content.
+/// The caller owns empty/error content and its alignment. Box and sliver
+/// recipes share the same visible viewport; the sliver recipe fills the
+/// remaining scroll extent without requesting intrinsic child dimensions.
 class CatchStateViewport extends StatelessWidget {
   const CatchStateViewport({
     super.key,
     required this.child,
     this.accountForBottomOverlay = true,
-  });
+  }) : _sliver = false;
+
+  const CatchStateViewport.sliver({
+    super.key,
+    required this.child,
+    this.accountForBottomOverlay = true,
+  }) : _sliver = true;
 
   final Widget child;
   final bool accountForBottomOverlay;
+  final bool _sliver;
 
   @override
   Widget build(BuildContext context) {
     final bottomOverlayInset = accountForBottomOverlay
         ? CatchTabViewportScope.bottomOverlayInsetOf(context)
         : 0.0;
-    return Padding(
+    final body = Padding(
       padding: EdgeInsets.only(bottom: bottomOverlayInset),
       child: child,
     );
+    return _sliver
+        ? SliverFillRemaining(
+            // State content uses LayoutBuilder and cannot provide intrinsics.
+            // ignore: avoid_redundant_argument_values
+            hasScrollBody: true,
+            child: body,
+          )
+        : body;
   }
 }

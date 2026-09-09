@@ -110,7 +110,7 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
       HostTodayRouteStatus.loading => CatchRootScreenScaffold.standard(
         header: HostTodayHeader(now: _clockNow),
         slivers: const [
-          CatchSliverStateViewport(
+          CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],

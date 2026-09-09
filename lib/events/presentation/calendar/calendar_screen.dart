@@ -143,7 +143,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 onEventSelected: (event) => _openEventDetail(context, event),
                 onRetryClubNames: () => ref.invalidate(clubNameLookupProvider),
               ),
-              const CatchSliverTerminalPadding(),
+              const CatchScrollTerminalGap.sliver(),
             ],
           ),
         );
@@ -307,7 +307,7 @@ class CalendarAgendaSliverSection extends StatelessWidget {
       CalendarAgendaClubNamesLoadingState(:final skeletonCount) =>
         EventAgendaSliverSkeleton(count: skeletonCount),
       CalendarAgendaClubNamesErrorState(:final error) =>
-        CatchSliverStateViewport(
+        CatchStateViewport.sliver(
           accountForBottomOverlay: false,
           child: CatchLocalizedErrorState(
             error,

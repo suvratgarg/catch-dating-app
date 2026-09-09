@@ -256,13 +256,13 @@ Widget sliverScreenBodyStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Extra and shell-aware terminal space',
-  type: CatchSliverTerminalPadding,
+  type: CatchScrollTerminalGap,
   path: '[Core patterns]/Section layout',
 )
 Widget sliverTerminalPaddingStates(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Sliver terminal space',
-      catalogId: 'catch.screen_body.sliver_terminal_padding',
+      catalogId: 'catch.screen_body.scroll_terminal_gap',
       children: [
         for (final includeShell in [false, true]) ...[
           Text(
@@ -291,7 +291,7 @@ Widget sliverTerminalPaddingStates(BuildContext context) =>
                       ),
                     ),
                   ),
-                  CatchSliverTerminalPadding(
+                  CatchScrollTerminalGap.sliver(
                     extra: 32,
                     includeSafeArea: includeShell,
                   ),

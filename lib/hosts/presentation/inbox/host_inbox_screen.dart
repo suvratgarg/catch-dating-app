@@ -551,7 +551,7 @@ class _HostNoOrganizerSliver extends StatelessWidget {
   const _HostNoOrganizerSliver();
 
   @override
-  Widget build(BuildContext context) => CatchSliverStateViewport(
+  Widget build(BuildContext context) => CatchStateViewport.sliver(
     child: CatchEmptyState(
       icon: CatchIcons.groupsOutlined,
       title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
@@ -564,7 +564,7 @@ class _HostAuthRequiredSliver extends StatelessWidget {
   const _HostAuthRequiredSliver();
 
   @override
-  Widget build(BuildContext context) => CatchSliverStateViewport(
+  Widget build(BuildContext context) => CatchStateViewport.sliver(
     child: CatchEmptyState(
       icon: CatchIcons.lockOutlineRounded,
       title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
@@ -864,7 +864,7 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
             ),
           ),
         if (workspace.threads.isEmpty && whatsappThreads.isEmpty)
-          CatchSliverStateViewport(
+          CatchStateViewport.sliver(
             child: workspace.query.isNotEmpty && workspace.hasUnfilteredThreads
                 ? const ChatsEmptyState.noHostSearchResults()
                 : workspace.isGeneral

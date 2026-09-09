@@ -45,7 +45,7 @@ class ExploreList extends ConsumerWidget {
       ),
       AsyncData(:final value) =>
         value.isEmpty
-            ? CatchSliverStateViewport(
+            ? CatchStateViewport.sliver(
                 child: ExploreListEmptyState(
                   cityLabel: city.label,
                   hasSearch: query.isNotEmpty,

@@ -1073,22 +1073,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchSliverStateViewport',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchSliverStateViewportCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchStateViewport',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Box optical center',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchStateViewportCatalogStates,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Sliver optical center',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchStateViewportSliverCatalogStates,
               ),
             ],
           ),
@@ -1208,12 +1203,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchScrollTerminalPadding',
+            name: 'CatchScrollTerminalGap',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchScrollTerminalPaddingCatalogStates,
+                    .catchScrollTerminalGapCatalogStates,
               ),
             ],
           ),
@@ -2004,6 +1999,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchScrollTerminalGap',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Extra and shell-aware terminal space',
+                builder:
+                    _widgetbook_workspace_primitives_section_layout_use_cases
+                        .sliverTerminalPaddingStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchSectionList',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2017,17 +2023,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_section_layout_use_cases
                         .responsiveSectionPageStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchSliverTerminalPadding',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Extra and shell-aware terminal space',
-                builder:
-                    _widgetbook_workspace_primitives_section_layout_use_cases
-                        .sliverTerminalPaddingStates,
               ),
             ],
           ),
