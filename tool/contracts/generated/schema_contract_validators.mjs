@@ -56,6 +56,8 @@ import {
   setEventAssistanceGroupStaffCallablePayloadSchema,
   eventAssistanceGroupStaffCallableResponseSchema,
   eventAssistanceStaffReceiptDocumentSchema,
+  getEventAttendanceReportCallablePayloadSchema,
+  eventAttendanceReportCallableResponseSchema,
   getEventAttendanceDispositionCallablePayloadSchema,
   recordEventNoShowCallablePayloadSchema,
   eventAttendanceDispositionCallableResponseSchema,
@@ -734,6 +736,8 @@ export const validateGetEventAssistanceGroupStaffCallablePayload = ajv.compile(g
 export const validateSetEventAssistanceGroupStaffCallablePayload = ajv.compile(setEventAssistanceGroupStaffCallablePayloadSchema);
 export const validateEventAssistanceGroupStaffCallableResponse = ajv.compile(eventAssistanceGroupStaffCallableResponseSchema);
 export const validateEventAssistanceStaffReceiptDocument = ajv.compile(eventAssistanceStaffReceiptDocumentSchema);
+export const validateGetEventAttendanceReportCallablePayload = ajv.compile(getEventAttendanceReportCallablePayloadSchema);
+export const validateEventAttendanceReportCallableResponse = ajv.compile(eventAttendanceReportCallableResponseSchema);
 export const validateGetEventAttendanceDispositionCallablePayload = ajv.compile(getEventAttendanceDispositionCallablePayloadSchema);
 export const validateRecordEventNoShowCallablePayload = ajv.compile(recordEventNoShowCallablePayloadSchema);
 export const validateEventAttendanceDispositionCallableResponse = ajv.compile(eventAttendanceDispositionCallableResponseSchema);

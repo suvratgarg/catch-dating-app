@@ -116,6 +116,7 @@ export 'callables/get_event_assistance_setting_callable_request.g.dart';
 export 'callables/get_event_assistance_sms_preference_callable_request.g.dart';
 export 'callables/get_event_assistance_sms_withdrawal_callable_request.g.dart';
 export 'callables/get_event_attendance_disposition_callable_request.g.dart';
+export 'callables/get_event_attendance_report_callable_request.g.dart';
 export 'callables/get_event_invite_link_token_callable_request.g.dart';
 export 'callables/get_event_rcs_preference_callable_request.g.dart';
 export 'callables/get_event_rcs_withdrawal_callable_request.g.dart';

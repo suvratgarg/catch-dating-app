@@ -45,7 +45,8 @@ function millis(value: unknown): number {
 }
 
 /** A running event stays open when it overruns its planned end time. */
-export function attendanceClosure(source: DispositionSource): View["closure"] {
+export function attendanceClosure(
+  source: Pick<DispositionSource, "event" | "plan" | "now">): View["closure"] {
   const {event, plan, now} = source;
   if (event.status === "cancelled") return {kind: "cancelled"};
   if (plan?.status === "complete") {

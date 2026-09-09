@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.88.0
+version: 1.89.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -356,6 +356,27 @@ switch permanently revoke the old form, including after the same UID returns;
 late responses cannot restore it. An in-flight submission retains its owner
 until the result is reconciled. Success refreshes only that guest's closeout
 review, without optimistic attendance or report updates.
+
+`getEventAttendanceReport` projects the current unified `eventAttendees` roster
+through the same authority, source-validation and disposition policy as the
+individual review. Its explicit SDK read-only transaction reads event, manager
+membership, runtime plan, roster, guest evidence and decisions in one snapshot.
+No Consumer booking or linked profile is required. Each roster id has exactly
+one classification: attended, recorded no-show with its evidence kind,
+unresolved with its review reason, or not expected with its admission or event
+cancellation reason. Physical attendance takes precedence; a cleared or
+superseded annotation never establishes attendance or a new no-show.
+
+Counts and compact member classifications cover the same snapshot. An empty
+roster is explicitly `emptyRoster`. `completeRoster` means every canonical Host
+roster row was read, not that every guest has been reviewed or that another
+system has finished importing. Reads are bounded at 1,000 members, with overflow
+or any invalid source failing the whole request rather than returning partial
+totals. The source hash includes exact event/plan creation and timestamp
+evidence plus all member review hashes. Member ids let the Host UI open a fresh
+individual closeout review; the aggregate grants no mutation authority. The
+callable is App-Check-protected, current-manager-only and limited to ten reads
+per minute. It neither writes report caches nor changes scorecard semantics.
 
 Host roster and recap UI integration remain pending.
 Existing report no-show counts retain their current semantics until their

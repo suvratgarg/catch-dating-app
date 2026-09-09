@@ -58,6 +58,8 @@ export {validateGetEventAssistanceGroupStaffCallablePayload} from "./validators/
 export {validateSetEventAssistanceGroupStaffCallablePayload} from "./validators/setEventAssistanceGroupStaffInput";
 export {validateEventAssistanceGroupStaffCallableResponse} from "./validators/eventAssistanceGroupStaffOutput";
 export {validateEventAssistanceStaffReceiptDocument} from "./validators/eventAssistanceStaffReceiptDocument";
+export {validateGetEventAttendanceReportCallablePayload} from "./validators/getEventAttendanceReportInput";
+export {validateEventAttendanceReportCallableResponse} from "./validators/eventAttendanceReportOutput";
 export {validateGetEventAttendanceDispositionCallablePayload} from "./validators/getEventAttendanceDispositionInput";
 export {validateRecordEventNoShowCallablePayload} from "./validators/recordEventNoShowInput";
 export {validateEventAttendanceDispositionCallableResponse} from "./validators/eventAttendanceDispositionOutput";

@@ -539,6 +539,7 @@ export {getEventAssistanceParticipation, setEventAssistanceParticipation} from
   "./eventSuccess/operations/participationHandlers";
 export {getEventAttendanceDisposition, recordEventNoShow} from
   "./events/attendanceDispositionHandlers";
+export {getEventAttendanceReport} from "./events/attendanceReportHandlers";
 export {getEventAssistanceAccountability,
   resolveEventAssistanceAccountability} from
   "./eventSuccess/operations/accountabilityHandlers";

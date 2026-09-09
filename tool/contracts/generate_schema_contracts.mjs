@@ -223,6 +223,16 @@ const schemaSpecs = [
   },
 
   {
+    "name": "GetEventAttendanceReportCallablePayload",
+    "source": "callables/get_event_attendance_report_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAttendanceReportCallablePayload.ts"
+  },
+  {
+    "name": "EventAttendanceReportCallableResponse",
+    "source": "callable_responses/event_attendance_report_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAttendanceReportCallableResponse.ts"
+  },
+  {
     "name": "GetEventAttendanceDispositionCallablePayload",
     "source": "callables/get_event_attendance_disposition_payload.schema.json",
     "typeOutput": "functions/src/shared/generated/getEventAttendanceDispositionCallablePayload.ts"

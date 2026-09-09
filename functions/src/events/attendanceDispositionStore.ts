@@ -1,22 +1,12 @@
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash as hash} from "../operations/durableActions";
-import {isOrganizerManager} from "../shared/organizerHosts";
-import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import type {EventAttendanceDispositionDocument as Record} from
   "../shared/generated/eventAttendanceDispositionDocument";
 import type {EventAttendanceDispositionCallableResponse as Response} from
   "../shared/generated/eventAttendanceDispositionCallableResponse";
 import type {GetEventAttendanceDispositionCallablePayload as Scope} from
   "../shared/generated/getEventAttendanceDispositionCallablePayload";
-import {validateEventDocument} from
-  "../shared/generated/validators/eventDocument";
-import {validateEventAttendeeDocument} from
-  "../shared/generated/validators/eventAttendeeDocument";
-import {validateOrganizerDocument} from
-  "../shared/generated/validators/organizerDocument";
-import {validateEventSuccessPlanDocument} from
-  "../shared/generated/validators/eventSuccessPlanDocument";
 import {validateGetEventAttendanceDispositionCallablePayload} from
   "../shared/generated/validators/getEventAttendanceDispositionInput";
 import {validateRecordEventNoShowCallablePayload} from
@@ -31,16 +21,17 @@ import {runAssistanceTransaction as transact} from
   "../eventSuccess/operations/transactionCallback";
 import {assertCommandContext, assertCommandRole} from
   "../eventSuccess/operations/commands";
-import {guestCollections, guestIdentity, parseGuest,
-  guestSourceFactsFromSnapshots} from "../eventSuccess/operations/guestRecords";
+import {guestCollections, guestIdentity} from
+  "../eventSuccess/operations/guestRecords";
 import {invalidSource} from "../eventSuccess/operations/groupProgressSource";
 import {attendanceBinding, DispositionSource, dispositionConflict as conflict,
   dispositionIdentity, dispositionReceiptIdentity, dispositionView,
   requireDispositionDecision, sourceIdentity} from
   "./attendanceDispositionPolicy";
 
-export const dispositionCollections = {records: "eventAttendanceDispositions",
-  receipts: "eventAttendanceDispositionReceipts"} as const;
+import {attendanceEventAuthority, attendanceDispositionStateFromSnapshots,
+  dispositionCollections} from "./attendanceDispositionReader";
+export {dispositionCollections} from "./attendanceDispositionReader";
 
 /** Closeout annotations; check-in remains with the attendance owner. */
 export class EventAttendanceDispositionStore {
@@ -140,44 +131,10 @@ export class EventAttendanceDispositionStore {
       this.db.collection("eventSuccessPlans").doc(context.eventId),
       this.db.collection(guestCollections.guests).doc(guestId),
       this.db.collection(dispositionCollections.records).doc(id));
-    const event = eventSnap.data();
-    const attendee = attendeeSnap.data();
-    const organizer = organizerSnap.data();
-    const plan = planSnap.data() ?? null;
-    if (!validateEventDocument(event) ||
-        event.organizerId !== context.organizerId ||
-        !validateEventAttendeeDocument(attendee) ||
-        attendee.eventId !== context.eventId ||
-        attendee.organizerId !== context.organizerId ||
-        !validateOrganizerDocument(organizer) ||
-        (plan !== null && (!validateEventSuccessPlanDocument(plan) ||
-          plan.eventId !== context.eventId ||
-          (plan.organizerId ?? plan.clubId) !== context.organizerId))) {
-      throw invalidSource();
-    }
-    if (!isOrganizerManager(organizer as unknown as OrganizerDocument,
-      actorUid)) {
-      throw new HttpsError("permission-denied",
-        "Only an organizer manager can review attendance closeout.");
-    }
-    const facts = guestSourceFactsFromSnapshots(context, attendeeId,
-      eventSnap, attendeeSnap);
-    const now = this.clock();
-    if (!Number.isSafeInteger(now) || now < 0) throw invalidSource();
-    const guest = guestSnap.exists ? parseGuest(guestSnap.data()) : null;
-    if (guest && (guest.guestId !== guestId || guest.updatedAt > now)) {
-      throw invalidSource();
-    }
-    const record = recordSnap.data() ?? null;
-    if (record !== null &&
-        (!validateEventAttendanceDispositionDocument(record) ||
-          record.dispositionId !== id || record.attendeeId !== attendeeId ||
-          hash(record.context) !== hash(context) || record.recordedAt > now)) {
-      throw invalidSource();
-    }
-    const source: DispositionSource = {context, attendeeId, event, attendee,
-      plan, planGeneration: planSnap.createTime, guest, facts, now};
-    return {id, source, record};
+    const authority = attendanceEventAuthority(actorUid, context, eventSnap,
+      organizerSnap, planSnap);
+    return attendanceDispositionStateFromSnapshots(authority, attendeeSnap,
+      guestSnap, recordSnap, this.clock());
   }
 }
 

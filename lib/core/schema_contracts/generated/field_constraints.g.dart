@@ -23625,6 +23625,206 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const eventAttendanceReportCallableResponseViewClosureCompletedAt = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.closure.completedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceReportCallableResponseViewClosureEndedAt = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.closure.endedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceReportCallableResponseViewClosureKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.closure.kind',
+    required: true,
+  );
+
+  static const eventAttendanceReportCallableResponseViewContextEventId = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceReportCallableResponseViewContextMode = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendanceReportCallableResponseViewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsAttended = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.attended',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsNotExpectedCancelled = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.notExpected.cancelled',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsNotExpectedEventCancelled = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.notExpected.eventCancelled',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsNotExpectedInvited = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.notExpected.invited',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsNotExpectedWaitlisted = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.notExpected.waitlisted',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsRecordedNoShowGuestDeclined = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.recordedNoShow.guestDeclined',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsRecordedNoShowHostConfirmed = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.recordedNoShow.hostConfirmed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsUnresolvedCleared = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.unresolved.cleared',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsUnresolvedSourceChanged = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.unresolved.sourceChanged',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsUnresolvedSuperseded = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.unresolved.superseded',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCountsUnresolvedUnreviewed = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.counts.unresolved.unreviewed',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewCoverage = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.coverage',
+    required: true,
+    enumValues: <String>['emptyRoster', 'completeRoster'],
+  );
+
+  static const eventAttendanceReportCallableResponseViewMembers = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.members',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewMembersItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.members.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceReportCallableResponseViewMembersItemsClassificationEvidence = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.members.items.classification.evidence',
+    required: true,
+    enumValues: <String>['hostConfirmed', 'guestDeclined'],
+  );
+
+  static const eventAttendanceReportCallableResponseViewMembersItemsClassificationKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.members.items.classification.kind',
+    required: true,
+  );
+
+  static const eventAttendanceReportCallableResponseViewMembersItemsClassificationReason = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.members.items.classification.reason',
+    required: true,
+    enumValues: <String>['invited', 'waitlisted', 'cancelled', 'eventCancelled'],
+  );
+
+  static const eventAttendanceReportCallableResponseViewRosterCount = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.rosterCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAttendanceReportCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceReportCallableResponseViewSource = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.source',
+    required: true,
+  );
+
+  static const eventAttendanceReportCallableResponseViewSourceHash = CatchContractFieldConstraints(
+    path: 'eventAttendanceReportCallableResponse.view.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAttendeeAttendanceReceiptDocumentAcceptedRevision = CatchContractFieldConstraints(
     path: 'eventAttendeeAttendanceReceiptDocument.acceptedRevision',
     required: true,
@@ -42127,6 +42327,29 @@ abstract final class CatchContractConstraints {
 
   static const getEventAttendanceDispositionCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
     path: 'getEventAttendanceDispositionCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAttendanceReportCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAttendanceReportCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAttendanceReportCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAttendanceReportCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAttendanceReportCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAttendanceReportCallablePayload.context.organizerId',
     maxLength: 2000,
     minLength: 1,
     required: true,
@@ -86901,6 +87124,33 @@ abstract final class CatchContractConstraints {
     'eventAttendanceDispositionReceiptDocument.requestHash': eventAttendanceDispositionReceiptDocumentRequestHash,
     'eventAttendanceDispositionReceiptDocument.revision': eventAttendanceDispositionReceiptDocumentRevision,
     'eventAttendanceDispositionReceiptDocument.sourceIdentityHash': eventAttendanceDispositionReceiptDocumentSourceIdentityHash,
+    'eventAttendanceReportCallableResponse.view.closure.completedAt': eventAttendanceReportCallableResponseViewClosureCompletedAt,
+    'eventAttendanceReportCallableResponse.view.closure.endedAt': eventAttendanceReportCallableResponseViewClosureEndedAt,
+    'eventAttendanceReportCallableResponse.view.closure.kind': eventAttendanceReportCallableResponseViewClosureKind,
+    'eventAttendanceReportCallableResponse.view.context.eventId': eventAttendanceReportCallableResponseViewContextEventId,
+    'eventAttendanceReportCallableResponse.view.context.mode': eventAttendanceReportCallableResponseViewContextMode,
+    'eventAttendanceReportCallableResponse.view.context.organizerId': eventAttendanceReportCallableResponseViewContextOrganizerId,
+    'eventAttendanceReportCallableResponse.view.counts.attended': eventAttendanceReportCallableResponseViewCountsAttended,
+    'eventAttendanceReportCallableResponse.view.counts.notExpected.cancelled': eventAttendanceReportCallableResponseViewCountsNotExpectedCancelled,
+    'eventAttendanceReportCallableResponse.view.counts.notExpected.eventCancelled': eventAttendanceReportCallableResponseViewCountsNotExpectedEventCancelled,
+    'eventAttendanceReportCallableResponse.view.counts.notExpected.invited': eventAttendanceReportCallableResponseViewCountsNotExpectedInvited,
+    'eventAttendanceReportCallableResponse.view.counts.notExpected.waitlisted': eventAttendanceReportCallableResponseViewCountsNotExpectedWaitlisted,
+    'eventAttendanceReportCallableResponse.view.counts.recordedNoShow.guestDeclined': eventAttendanceReportCallableResponseViewCountsRecordedNoShowGuestDeclined,
+    'eventAttendanceReportCallableResponse.view.counts.recordedNoShow.hostConfirmed': eventAttendanceReportCallableResponseViewCountsRecordedNoShowHostConfirmed,
+    'eventAttendanceReportCallableResponse.view.counts.unresolved.cleared': eventAttendanceReportCallableResponseViewCountsUnresolvedCleared,
+    'eventAttendanceReportCallableResponse.view.counts.unresolved.sourceChanged': eventAttendanceReportCallableResponseViewCountsUnresolvedSourceChanged,
+    'eventAttendanceReportCallableResponse.view.counts.unresolved.superseded': eventAttendanceReportCallableResponseViewCountsUnresolvedSuperseded,
+    'eventAttendanceReportCallableResponse.view.counts.unresolved.unreviewed': eventAttendanceReportCallableResponseViewCountsUnresolvedUnreviewed,
+    'eventAttendanceReportCallableResponse.view.coverage': eventAttendanceReportCallableResponseViewCoverage,
+    'eventAttendanceReportCallableResponse.view.members': eventAttendanceReportCallableResponseViewMembers,
+    'eventAttendanceReportCallableResponse.view.members.items.attendeeId': eventAttendanceReportCallableResponseViewMembersItemsAttendeeId,
+    'eventAttendanceReportCallableResponse.view.members.items.classification.evidence': eventAttendanceReportCallableResponseViewMembersItemsClassificationEvidence,
+    'eventAttendanceReportCallableResponse.view.members.items.classification.kind': eventAttendanceReportCallableResponseViewMembersItemsClassificationKind,
+    'eventAttendanceReportCallableResponse.view.members.items.classification.reason': eventAttendanceReportCallableResponseViewMembersItemsClassificationReason,
+    'eventAttendanceReportCallableResponse.view.rosterCount': eventAttendanceReportCallableResponseViewRosterCount,
+    'eventAttendanceReportCallableResponse.view.serverTime': eventAttendanceReportCallableResponseViewServerTime,
+    'eventAttendanceReportCallableResponse.view.source': eventAttendanceReportCallableResponseViewSource,
+    'eventAttendanceReportCallableResponse.view.sourceHash': eventAttendanceReportCallableResponseViewSourceHash,
     'eventAttendeeAttendanceReceiptDocument.acceptedRevision': eventAttendeeAttendanceReceiptDocumentAcceptedRevision,
     'eventAttendeeAttendanceReceiptDocument.actorUid': eventAttendeeAttendanceReceiptDocumentActorUid,
     'eventAttendeeAttendanceReceiptDocument.attendeeId': eventAttendeeAttendanceReceiptDocumentAttendeeId,
@@ -89404,6 +89654,9 @@ abstract final class CatchContractConstraints {
     'getEventAttendanceDispositionCallablePayload.context.eventId': getEventAttendanceDispositionCallablePayloadContextEventId,
     'getEventAttendanceDispositionCallablePayload.context.mode': getEventAttendanceDispositionCallablePayloadContextMode,
     'getEventAttendanceDispositionCallablePayload.context.organizerId': getEventAttendanceDispositionCallablePayloadContextOrganizerId,
+    'getEventAttendanceReportCallablePayload.context.eventId': getEventAttendanceReportCallablePayloadContextEventId,
+    'getEventAttendanceReportCallablePayload.context.mode': getEventAttendanceReportCallablePayloadContextMode,
+    'getEventAttendanceReportCallablePayload.context.organizerId': getEventAttendanceReportCallablePayloadContextOrganizerId,
     'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
     'getEventRcsPreferenceCallablePayload.attendeeId': getEventRcsPreferenceCallablePayloadAttendeeId,

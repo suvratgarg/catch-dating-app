@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.89.0
+version: 1.90.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -122,6 +122,14 @@ and reject cross-field contradictions as well as schema-invalid values. They
 use generated request DTOs, retain the reviewed source and revisions for exact
 retries, and distinguish an operation's receipt revision from the latest view.
 No schema or generated contract change is needed for this native binding.
+The same shared schema now defines `getEventAttendanceReport` and its closed
+attendance classification/count projection. The current unified Host roster
+is read in a single SDK read-only snapshot with the same per-guest validation
+and decision policy. Imported or unlinked rows are included. Empty roster,
+unresolved review reasons, explicit recording evidence and non-admission are
+preserved; counts and compact member ids cover all canonical rows together.
+Overflow beyond 1,000 rows or malformed source evidence fails the request.
+The aggregate cannot submit a decision or update legacy scorecard caches.
 Roster and report UI integration remain separate work.
 
 ### Event Assistance Transaction Boundary
