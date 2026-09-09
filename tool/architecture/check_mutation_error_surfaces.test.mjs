@@ -248,3 +248,27 @@ function writeFile(root, relativePath, source) {
   fs.mkdirSync(path.dirname(file), {recursive: true});
   fs.writeFileSync(file, source);
 }
+
+for (const [surface, expected] of [
+  ["CatchLocalizedErrorBanner.mutation(mutation: save)", 0],
+  ["CatchLocalizedErrorBanner.mutation(mutation: other)", 1],
+  ["CatchLocalizedErrorBanner(error)", 1],
+  ["CatchLocalizedErrorBanner.mutation(mutation: EventController.saveMutation)", 0],
+]) {
+  test(`named mutation recipe covers only its matching input: ${surface}`, () => {
+    const findings = scanFile({
+      relativePath: "lib/events/presentation/event_editor.dart",
+      source: `import 'package:flutter_riverpod/experimental/mutation.dart';
+      class EventEditor extends ConsumerWidget {
+        Widget build(BuildContext context, WidgetRef ref) {
+          final save = ref.watch(EventController.saveMutation);
+          return Column(children: [
+            Text(save.isPending ? 'Saving' : 'Ready'),
+            ${surface},
+          ]);
+        }
+      }`,
+    });
+    assert.equal(findings.length, expected);
+  });
+}

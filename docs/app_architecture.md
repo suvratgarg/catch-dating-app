@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.43.0
+version: 1.44.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -206,7 +206,7 @@ window in `docs/migrations/clubs_to_organizers.md`.
 
 7. The old project context names some pre-migration error files. The current
    error owner is this document; app-facing errors must use the
-   `CatchErrorState` family, `CatchMutationErrorBanner`,
+   `CatchErrorState` family, `CatchLocalizedErrorBanner.mutation`,
    `CatchMutationErrorListener(s)`, or `showCatchErrorSnackBar` as appropriate.
 
 8. Private helper widgets are not an acceptable long-term destination for
@@ -1359,7 +1359,7 @@ empty, retry, stale data, and mutation failure are handled.
 | Section-level load | Section widget or view model | `CatchErrorState` in inline/compact mode, section skeleton, section retry |
 | Empty success | Screen/body/section | `CatchEmptyState`, `CatchSliverEmptyState`, or a domain-specific empty widget, never an error primitive |
 | Mutation/action pending | Controller mutation + UI affordance | disabled control, spinner, optimistic state when intentional |
-| Mutation/action failure | Screen or section | `CatchMutationErrorBanner`, `CatchMutationErrorListener(s)`, or `showCatchErrorSnackBar` |
+| Mutation/action failure | Screen or section | `CatchLocalizedErrorBanner.mutation`, `CatchMutationErrorListener(s)`, or `showCatchErrorSnackBar` |
 | Form validation | Form/controller/domain validator | field error text or inline form banner |
 | Optional enrichment failure | Repository/view model | keep primary UI alive, log through error context when useful |
 | Platform/plugin failure | Service/repository/controller seam | typed app error, snackbar/banner if user action failed |
@@ -1445,7 +1445,9 @@ delivery channels:
 - `CatchErrorBackButton` is the canonical route-exit action when retry would
   be dishonest or impossible.
 - `CatchBanner.error` is the persistent inline mutation/form error channel.
-- `CatchMutationErrorBanner` is the persistent Riverpod mutation adapter.
+- `CatchLocalizedErrorBanner.mutation` is the persistent Riverpod mutation recipe
+  on the app-localized banner. Callers retain the mutation subscription; the
+  recipe renders only its error state through the same copy/recovery boundary.
 - `CatchMutationErrorListener` and `CatchMutationErrorListeners` are transient
   snackbar boundaries for one or many mutations.
 - `showCatchErrorSnackBar` is the canonical transient action failure surface.
@@ -1566,7 +1568,7 @@ Surface rules:
 | `CatchErrorScaffold` | Root screen/tab cannot load | Title/message/retry from descriptor; never raw exception text. |
 | `CatchSliverErrorState` | Sliver-native load failure | Same descriptor, sliver-compatible layout. |
 | `CatchErrorState` in inline/compact mode | Section/card-level failure | Compact descriptor copy and retry when retryable. |
-| `CatchLocalizedErrorBanner` / `CatchMutationErrorBanner` | Persistent form/mutation failure | No retry unless action exists; avoid duplicating field validation. |
+| `CatchLocalizedErrorBanner` / `.mutation` | Persistent form/mutation failure | Preserve explicit recovery; no retry unless action exists; avoid duplicating field validation. |
 | `showCatchErrorSnackBar` | Transient action failure | Descriptor message and retry action if the failed action can safely rerun. |
 | Field validation error | Per-field invalid input | Specific field copy, not snackbar or generic exception. |
 | `CatchFrameworkErrorView` | Flutter build/render failure | Minimal fallback; diagnostic details only in debug/reporting. |
@@ -1589,7 +1591,7 @@ Rules:
 - Section errors use `CatchErrorState` with an inline or compact mode. Use
   `CatchLocalizedErrorState` when the input is an app error object.
 - Persistent mutation/form failures use `CatchLocalizedErrorBanner` or
-  `CatchMutationErrorBanner`.
+  `CatchLocalizedErrorBanner.mutation`.
 - Transient action failures use `CatchMutationErrorListener(s)` or
   `showCatchErrorSnackBar`.
 - Flutter framework/build/layout crashes use `CatchFrameworkErrorView`, not the
@@ -1625,7 +1627,7 @@ final joinMutation = ref.watch(EventBookingController.joinMutation);
 return Column(
   children: [
     if (joinMutation.hasError)
-      CatchMutationErrorBanner(mutation: joinMutation),
+      CatchLocalizedErrorBanner.mutation(mutation: joinMutation),
     CatchButton(
       isLoading: joinMutation.isPending,
       onPressed: () => Mutation.run(

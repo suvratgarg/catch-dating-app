@@ -12,7 +12,6 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_sliver.dart'
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
@@ -1809,17 +1808,17 @@ Widget catchBannerErrorRecipes(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchMutationErrorBanner,
+  type: CatchLocalizedErrorBanner,
   path: '[Core catalog]/Feedback',
 )
-Widget catchMutationErrorBannerCatalogStates(BuildContext context) {
+Widget catchLocalizedErrorBannerMutationStates(BuildContext context) {
   final mutation = Mutation<void>();
   return WidgetbookCatalogFrame(
-    title: 'CatchMutationErrorBanner',
-    catalogId: 'core.widgets.catch_mutation_error_banner',
+    title: 'Mutation error banner',
+    catalogId: 'catch.banner.localized',
     children: [
       _StateCard(
-        label: 'persistent mutation error',
+        label: 'mutation state',
         child: Consumer(
           builder: (context, ref, _) {
             final state = ref.watch(mutation);
@@ -1836,7 +1835,10 @@ Widget catchMutationErrorBannerCatalogStates(BuildContext context) {
                   ),
                 ),
                 gapH12,
-                CatchMutationErrorBanner(mutation: state, onRetry: _noop),
+                CatchLocalizedErrorBanner.mutation(
+                  mutation: state,
+                  onRetry: _noop,
+                ),
               ],
             );
           },

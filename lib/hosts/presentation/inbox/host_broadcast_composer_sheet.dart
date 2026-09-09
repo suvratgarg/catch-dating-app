@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -244,9 +244,9 @@ class _HostBroadcastComposerSheetState
               ],
               if (mutation.hasError) ...[
                 gapH12,
-                CatchMutationErrorBanner(
+                CatchLocalizedErrorBanner.mutation(
                   mutation: mutation,
-                  errorContext: AppErrorContext.event,
+                  context: AppErrorContext.event,
                   onRetry: enabled ? _send : null,
                 ),
               ],

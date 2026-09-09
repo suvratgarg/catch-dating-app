@@ -114,7 +114,7 @@ function coveredMutationSurfaces(source, mutationVariables) {
     }
     if (
       new RegExp(
-        `\\bCatchMutationError(?:Banner|Listener)s?\\s*\\([\\s\\S]*?\\bmutation(?:s)?\\s*:\\s*(?:\\[[\\s\\S]*?)?${escaped}\\b`,
+        `\\b(?:CatchMutationErrorListeners?|CatchLocalizedErrorBanner\\.mutation)\\s*\\([\\s\\S]*?\\bmutation(?:s)?\\s*:\\s*(?:\\[[\\s\\S]*?)?${escaped}\\b`,
         "u",
       ).test(source)
     ) {
@@ -123,7 +123,7 @@ function coveredMutationSurfaces(source, mutationVariables) {
   }
 
   for (const match of source.matchAll(
-    /\bCatchMutationError(?:Banner|Listener)\s*\([\s\S]*?\bmutation\s*:\s*([^,\)\]]+)/gmu,
+    /\b(?:CatchMutationErrorListener|CatchLocalizedErrorBanner\.mutation)\s*\([\s\S]*?\bmutation\s*:\s*([^,\)\]]+)/gmu,
   )) {
     expressions.add(canonicalMutationExpression(match[1]));
   }
@@ -292,7 +292,7 @@ function printHelp() {
 
 Scans production lib/**/*.dart build methods. Any watched mutation whose
 isPending state is read must also expose a matching mutation error surface, such
-as CatchMutationErrorListener, CatchMutationErrorBanner, mutationErrorMessage, or
+as CatchMutationErrorListener, CatchLocalizedErrorBanner.mutation, mutationErrorMessage, or
 a direct hasError branch for that same mutation.`);
 }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
@@ -5,11 +7,63 @@ import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../test_pump_helpers.dart';
 
 void main() {
+  testWidgets('mutation recipe tracks state and retains explicit recovery', (
+    tester,
+  ) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+    final mutation = Mutation<void>();
+    var recoveries = 0;
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: CatchTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: Consumer(
+              builder: (context, ref, _) => CatchLocalizedErrorBanner.mutation(
+                mutation: ref.watch(mutation),
+                onRetry: () => recoveries++,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.byType(CatchBanner), findsNothing);
+    final completion = Completer<void>();
+    final pending = mutation
+        .run(container, (_) => completion.future)
+        .catchError((_) {});
+    await tester.pump();
+    expect(container.read(mutation).isPending, isTrue);
+    expect(find.byType(CatchBanner), findsNothing);
+    completion.completeError(const PermissionException('Raw diagnostic.'));
+    await pending;
+    await tester.pump();
+    expect(find.byType(CatchBanner), findsOneWidget);
+    expect(find.text('Raw diagnostic.'), findsNothing);
+    await tester.tap(find.text('Try again'));
+    expect(recoveries, 1);
+    await mutation.run(container, (_) async {});
+    await tester.pump();
+    expect(container.read(mutation).isSuccess, isTrue);
+    expect(find.byType(CatchBanner), findsNothing);
+    mutation.reset(container);
+    await tester.pump();
+    expect(container.read(mutation).isIdle, isTrue);
+    expect(find.byType(CatchBanner), findsNothing);
+  });
+
   testWidgets('message actions and reduced motion share the banner boundary', (
     tester,
   ) async {
@@ -86,48 +140,53 @@ void main() {
     expect(retries, 1);
   });
 
-  testWidgets('app error mapping follows locale and preserves retry policy', (
-    tester,
-  ) async {
-    var retries = 0;
-    final banners = Column(
-      children: [
-        CatchLocalizedErrorBanner(
-          const NetworkException('timeout', 'Transport diagnostic.'),
-          onRetry: () => retries++,
-        ),
-        CatchLocalizedErrorBanner(
-          const PermissionException('Permission diagnostic.'),
-          onRetry: () => retries++,
-        ),
-      ],
-    );
-    Widget frame(Locale locale) => MaterialApp(
-      theme: CatchTheme.light,
-      locale: locale,
-      supportedLocales: const [Locale('en'), Locale('fr')],
-      localizationsDelegates: const [
-        _ErrorCopyDelegate(),
-        ...AppLocalizations.localizationsDelegates,
-      ],
-      home: Scaffold(body: banners),
-    );
+  testWidgets(
+    'app error mapping follows locale and preserves explicit recovery',
+    (tester) async {
+      var retries = 0;
+      var permissionRecoveries = 0;
+      final banners = Column(
+        children: [
+          CatchLocalizedErrorBanner(
+            const NetworkException('timeout', 'Transport diagnostic.'),
+            onRetry: () => retries++,
+          ),
+          CatchLocalizedErrorBanner(
+            const PermissionException('Permission diagnostic.'),
+            onRetry: () => permissionRecoveries++,
+          ),
+        ],
+      );
+      Widget frame(Locale locale) => MaterialApp(
+        theme: CatchTheme.light,
+        locale: locale,
+        supportedLocales: const [Locale('en'), Locale('fr')],
+        localizationsDelegates: const [
+          _ErrorCopyDelegate(),
+          ...AppLocalizations.localizationsDelegates,
+        ],
+        home: Scaffold(body: banners),
+      );
 
-    await tester.pumpWidget(frame(const Locale('en')));
-    await pumpUntilFound(tester, find.text('Try again'));
-    expect(find.text('Try again'), findsOneWidget);
+      await tester.pumpWidget(frame(const Locale('en')));
+      await pumpUntilFound(tester, find.text('Try again'));
+      expect(find.text('Try again'), findsNWidgets(2));
 
-    // Reuse the same banner instances: localization must be read at build time.
-    await tester.pumpWidget(frame(const Locale('fr')));
-    await pumpUntilFound(tester, find.text('Réessayer'));
-    expect(find.text('Délai dépassé.'), findsOneWidget);
-    expect(find.text('Accès refusé.'), findsOneWidget);
-    expect(find.text('Réessayer'), findsOneWidget);
-    expect(find.text('Try again'), findsNothing);
-    expect(find.byType(CatchButton), findsOneWidget);
-    await tester.tap(find.text('Réessayer'));
-    expect(retries, 1);
-  });
+      // Reuse the same banner instances: localization must be read at build time.
+      await tester.pumpWidget(frame(const Locale('fr')));
+      await pumpUntilFound(tester, find.text('Réessayer'));
+      expect(find.text('Délai dépassé.'), findsOneWidget);
+      expect(find.text('Accès refusé.'), findsOneWidget);
+      expect(find.text('Réessayer'), findsNWidgets(2));
+      expect(find.text('Try again'), findsNothing);
+      expect(find.byType(CatchButton), findsNWidgets(2));
+      await tester.tap(find.text('Réessayer').first);
+      expect(retries, 1);
+      expect(permissionRecoveries, 0);
+      await tester.tap(find.text('Réessayer').last);
+      expect(permissionRecoveries, 1);
+    },
+  );
 }
 
 class _ErrorCopyDelegate extends LocalizationsDelegate<AppLocalizations> {

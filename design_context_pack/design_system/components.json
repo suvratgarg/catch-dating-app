@@ -2094,40 +2094,34 @@
         ],
         "members": [
           {
-            "id": "catch.banner.mutation",
-            "symbol": "CatchMutationErrorBanner",
-            "file": "lib/core/riverpod_ui/catch_mutation_error_banner.dart",
-            "summary": "Persistent inline mutation-error adapter that renders CatchBanner.error when a MutationState has an error.",
-            "states": [
-              "hidden",
-              "visible",
-              "with-retry"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.banner",
-              "parentConceptId": "catch.banner",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.banner"
-            }
-          },
-          {
             "id": "catch.banner.localized",
             "symbol": "CatchLocalizedErrorBanner",
             "file": "lib/core/riverpod_ui/catch_localized_error_banner.dart",
-            "summary": "App-localized error mapping and retry eligibility, rendered by the provider-free banner with caller-resolved copy.",
+            "summary": "App-localized persistent error mapping and explicit recovery, with a mutation recipe that hides idle/pending/success states. Shared CatchBanner owns paint and actions.",
             "states": [
               "mapped-error",
-              "retryable-with-action",
-              "retryable-without-action",
-              "nonretryable"
+              "with-recovery",
+              "without-recovery",
+              "mutation-idle",
+              "mutation-pending",
+              "mutation-error",
+              "mutation-success"
             ],
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.banner",
               "parentConceptId": "catch.banner",
               "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.banner"
+              "decisionRef": "pattern-family:localized-error-banner-mutation-recipe"
+            },
+            "level": "L4a",
+            "roleNoun": "Banner",
+            "naming": {
+              "useCase": "LocalizedError",
+              "comparedWith": [
+                "catch.banner"
+              ],
+              "reason": "Maps app errors and active-locale recovery copy into the provider-free banner. The mutation constructor only selects the error state from caller-watched mutations; both recipes share one mapping and renderer."
             }
           },
           {

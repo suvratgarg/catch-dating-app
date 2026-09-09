@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.62.0
+version: 3.63.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -385,9 +385,8 @@ Widgetbook callers.
 | `CatchChoiceButton<T>` | `packages/catch_ui/lib/src/components/catch_choice_button.dart` | Segmented choice-input anatomy with selected/disabled/spoken-label semantics, scaled targets and label anchors for the shared underline. Production callers mount `CatchChoiceInput.segmented`. |
 | `CatchChoiceInput<T>` | `packages/catch_ui/lib/src/components/catch_choice_input.dart` | Canonical group selection with compact chips, `.described` explanatory tiles, `.segmented` inline/summary options and `.form` validation. Segmented choices retain selected semantics and pager underline geometry; checked choices retain checked semantics. Null callbacks disable the input; typed values, clearability and optional-label copy remain distinct. Group identity uses values while caller keys stay on individual targets; the enclosing Field retains commit and disclosure ownership. |
 | `CatchDetailRow` | `lib/core/widgets/catch_detail_row.dart:5` | Compact label/value row for detail and payment-history sheets. Uses supporting text roles, fixed label lane, and expanded value copy so dense read-only metadata aligns without a new local table layout. |
-| `CatchErrorBanner` | `packages/catch_ui/lib/src/components/catch_error_banner.dart` | Persistent inline error visuals. The default constructor accepts a message; `withRetry` requires a caller-resolved retry label and callback. Geometry and button styling remain package-owned. |
-| `CatchLocalizedErrorBanner` | `lib/core/riverpod_ui/catch_localized_error_banner.dart` | App error-to-copy adapter that preserves retry eligibility and resolves the banner retry label from the active app locale. |
-| `CatchMutationErrorBanner` | `lib/core/riverpod_ui/catch_mutation_error_banner.dart` | Riverpod mutation-state adapter. Renders nothing outside error state and delegates mapped failures to `CatchLocalizedErrorBanner`. |
+| `CatchBanner` | `packages/catch_ui/lib/src/components/catch_banner.dart` | Persistent inline feedback with semantic tones and caller-owned actions. `.error` and `.errorWithRetry` use the same renderer; retry copy and callback come from callers. Geometry and button styling remain package-owned. |
+| `CatchLocalizedErrorBanner` | `lib/core/riverpod_ui/catch_localized_error_banner.dart` | App error-to-copy adapter with default error and `.mutation` state recipes. Resolves copy from the active locale and preserves explicit recovery callbacks. The mutation recipe renders only errors and retains caller-owned subscriptions. |
 | `showCatchSnackBar` | `packages/catch_ui/lib/src/components/catch_snack_bar.dart` | Canonical transient-feedback publisher with caller-owned message and action. The exact file owns raw framework snackbar construction/publication. |
 | `showCatchErrorSnackBar` | `lib/core/riverpod_ui/catch_error_snack_bar.dart` | App error mapping and localized retry policy translated onto the shared snackbar publisher. |
 | `CatchMutationErrorListener` | `lib/core/riverpod_ui/catch_mutation_error_listener.dart` | Snackbar boundary for one Riverpod mutation pending-to-error transition. |

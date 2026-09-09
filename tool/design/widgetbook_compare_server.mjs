@@ -1602,7 +1602,7 @@ function buildCandidates() {
         "CatchFrameworkErrorView",
         "CatchErrorScaffold",
         "CatchBanner",
-        "CatchMutationErrorBanner",
+        "CatchLocalizedErrorBanner",
       ],
     },
     {

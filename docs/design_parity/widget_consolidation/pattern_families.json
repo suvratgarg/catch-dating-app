@@ -3002,6 +3002,42 @@
           "rationale": "Use the closed Overlay role for the actual placement responsibility. Ordinary and arrival branches share one renderer and timer interaction policy."
         }
       ]
+    },
+    {
+      "id": "localized-error-banner-mutation-recipe",
+      "title": "Localized persistent errors and mutation-state recipe",
+      "intent": "One localization boundary maps persistent errors and explicit recovery into CatchBanner, with a named recipe for mutation-state visibility.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.banner",
+      "qualityReference": "CatchLocalizedErrorBanner",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve shared banner palette, typography, error mapping, active-locale copy and hidden idle/pending/success mutation states. A mutation is a named input recipe, not a separate renderer.",
+        "Honor the existing architecture rule that an explicit caller recovery callback is authoritative. Show its retry action even when exception metadata cannot infer retry eligibility; never expose an action when the callback is absent.",
+        "Retitle the mutation preview for readable large-text catalog headings while keeping the interactive real-mutation specimen."
+      ],
+      "members": [
+        {
+          "symbol": "CatchLocalizedErrorBanner",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The app error-to-copy adapter owns default error and mutation-state recipes and delegates all banner rendering to CatchBanner."
+        },
+        {
+          "symbol": "CatchMutationErrorBanner",
+          "disposition": "unify",
+          "target": "CatchLocalizedErrorBanner.mutation",
+          "preview": "not-applicable",
+          "rationale": "Selects MutationError and immediately delegates to the localized adapter. Fold that input-state recipe into the adapter while callers continue to watch their own mutations."
+        },
+        {
+          "symbol": "CatchBanner",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Provider-free persistent feedback renderer with caller-resolved copy and actions; it owns neither error classification nor mutation subscription."
+        }
+      ]
     }
   ]
 }

@@ -485,9 +485,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (updateClubMutation.hasError) ...[
-          CatchMutationErrorBanner(
+          CatchLocalizedErrorBanner.mutation(
             mutation: updateClubMutation,
-            errorContext: AppErrorContext.club,
+            context: AppErrorContext.club,
           ),
           gapH12,
         ],

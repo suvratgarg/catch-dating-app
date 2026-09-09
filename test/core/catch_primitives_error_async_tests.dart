@@ -585,7 +585,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     },
   );
 
-  testWidgets('CatchMutationErrorBanner renders mutation errors inline', (
+  testWidgets('localized banner mutation recipe renders errors inline', (
     tester,
   ) async {
     final mutation = Mutation<void>();
@@ -614,7 +614,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
                       },
                       child: const Text('Save'),
                     ),
-                    CatchMutationErrorBanner(
+                    CatchLocalizedErrorBanner.mutation(
                       mutation: state,
                       onRetry: () => retryCount++,
                     ),

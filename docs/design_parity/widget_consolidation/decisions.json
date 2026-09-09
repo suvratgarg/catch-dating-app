@@ -7698,6 +7698,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:localized-error-banner-mutation-recipe",
+      "patternFamilyId": "localized-error-banner-mutation-recipe",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchLocalizedErrorBanner",
+      "members": [
+        {
+          "name": "CatchMutationErrorBanner",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBanner",
+          "action": "keep"
+        }
+      ],
+      "rationale": "The mutation adapter only selects MutationError and delegates to the localized banner. Combine this as a const-capable named constructor with one mapping/rendering path; callers keep their mutation subscriptions. Honor the existing architecture contract by preserving explicit recovery even when exception metadata marks the error nonretryable; absent callbacks still create no action. Source inventory covers every constructor caller and the matching mutation-error scanner moves with the API.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

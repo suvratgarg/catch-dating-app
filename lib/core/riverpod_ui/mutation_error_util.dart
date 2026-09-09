@@ -10,7 +10,7 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 ///   CatchBanner.error(message: mutationErrorMessage(mutation)),
 /// ```
 ///
-/// Prefer `CatchMutationErrorBanner` for new inline mutation error surfaces.
+/// Prefer `CatchLocalizedErrorBanner.mutation` for new inline mutation error surfaces.
 String mutationErrorMessage(
   MutationState mutation, {
   required AppLocalizations l10n,
