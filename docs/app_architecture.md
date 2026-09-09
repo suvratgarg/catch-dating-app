@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.53.0
+version: 1.54.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -3484,7 +3484,7 @@ missing canonical evidence, and records zero inferred grants.
 Reference files:
 
 - `lib/clubs/shared/catch_organizer_poster.dart`
-- `packages/catch_ui/lib/src/components/catch_person_polaroid.dart`
+- `packages/catch_ui/lib/src/components/catch_polaroid.dart`
 - `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
 - `lib/swipes/shared/profile_surface/catch_profile_view.dart`
 - `design/components/catch.components.json`
@@ -3493,7 +3493,7 @@ Reference files:
 
 Entity material is a presentation contract, not feature-local decoration:
 events use the ticket family, organizer identity uses
-`CatchOrganizerPoster`, and person identity uses `CatchPersonPolaroid`.
+`CatchOrganizerPoster`, and person identity uses `CatchPolaroid`.
 Feature widgets provide typed display copy, media, overlays, and callbacks;
 the canonical material owns shape, layout variants, treatment, and spacing.
 Do not duplicate a poster or polaroid canvas inside a screen.
@@ -3520,7 +3520,7 @@ child: CatchOrganizerPoster(
 The shared Profile reference composition is:
 
 ```dart
-child: CatchPersonPolaroid(
+child: CatchPolaroid(
   media: ProfilePhoto(
     image: data.heroPhoto,
     activity: data.kickerActivity,

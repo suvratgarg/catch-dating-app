@@ -139,7 +139,7 @@ class ProfileHeroWidget extends StatelessWidget {
 
     return Padding(
       padding: CatchInsets.pageHorizontal.copyWith(top: CatchSpacing.s3),
-      child: CatchPersonPolaroid(
+      child: CatchPolaroid(
         media: ProfilePhoto(
           image: data.heroPhoto,
           activity: data.kickerActivity,

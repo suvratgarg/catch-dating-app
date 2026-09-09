@@ -765,18 +765,18 @@ Widget profileHeroWidgetStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Person polaroid states',
-  type: CatchPersonPolaroid,
+  type: CatchPolaroid,
   path: '[P1 product surfaces]/Catches/Sections',
 )
 Widget catchPersonPolaroidStates(BuildContext context) {
   final data = _profileView(context);
   return _CatchesCatalog(
-    title: 'CatchPersonPolaroid',
+    title: 'CatchPolaroid',
     contractId: 'card.person.polaroid',
     children: [
       _StateCard(
         label: 'profile identity',
-        child: CatchPersonPolaroid(
+        child: CatchPolaroid(
           media: ProfilePhoto(image: data.heroPhoto),
           kicker: data.kicker,
           name: '${data.name}, ${data.age}',

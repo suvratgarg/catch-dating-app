@@ -3590,6 +3590,34 @@
           "rationale": "Rename the existing implementation and all callers; no forwarding wrapper or second interval input remains."
         }
       ]
+    },
+    {
+      "id": "canonical-polaroid",
+      "title": "One portrait-and-caption Polaroid material",
+      "intent": "Reserve the unqualified Polaroid role for the existing canonical person material.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.person_polaroid",
+      "qualityReference": "CatchPolaroid",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "The catalog heading uses the canonical Polaroid name. Portrait geometry, mat, caption, contextual overlays and interactions remain unchanged."
+      ],
+      "members": [
+        {
+          "symbol": "CatchPolaroid",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The sole Polaroid implementation owns the portrait mat and person caption contract. Product features supply media and relationship context; organizer posters and event tickets retain their separate materials."
+        },
+        {
+          "symbol": "CatchPersonPolaroid",
+          "disposition": "unify",
+          "target": "CatchPolaroid",
+          "preview": "not-applicable",
+          "rationale": "The Person qualifier does not distinguish a second Polaroid contract. Rename the existing owner and all consumers; retain the existing person-only semantics."
+        }
+      ]
     }
   ]
 }

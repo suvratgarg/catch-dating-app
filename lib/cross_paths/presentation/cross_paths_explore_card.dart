@@ -104,7 +104,7 @@ class _CrossPathsExploreCardState extends State<CrossPathsExploreCard> {
           label: profileSemantics,
           onTap: widget.onProfileSelected,
           child: ExcludeSemantics(
-            child: CatchPersonPolaroid(
+            child: CatchPolaroid(
               onTap: widget.onProfileSelected,
               showArrow: true,
               media: primaryPhotoUrl == null

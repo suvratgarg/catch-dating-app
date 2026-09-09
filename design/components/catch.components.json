@@ -16476,21 +16476,21 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchPersonPolaroid",
+      "name": "CatchPolaroid",
       "status": "active",
       "kind": "composite",
       "summary": "Canonical portrait-first person material with a quiet identity caption lane and optional contextual overlay.",
       "dart": {
-        "symbol": "CatchPersonPolaroid",
-        "file": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
+        "symbol": "CatchPolaroid",
+        "file": "packages/catch_ui/lib/src/components/catch_polaroid.dart",
         "constructors": [
-          "CatchPersonPolaroid"
+          "CatchPolaroid"
         ]
       },
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/PersonPolaroid",
+          "componentName": "Catch/Polaroid",
           "componentUrl": null
         },
         "codeConnect": {
@@ -16499,7 +16499,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "PersonPolaroid",
+          "handoffName": "Polaroid",
           "allowed": true
         }
       },
@@ -16623,7 +16623,12 @@
         "conceptId": "catch.person_polaroid"
       },
       "surfaces": {
-        "flutter": "CatchPersonPolaroid"
+        "flutter": "CatchPolaroid"
+      },
+      "level": "L3",
+      "roleNoun": "Polaroid",
+      "naming": {
+        "useCase": ""
       }
     },
     {

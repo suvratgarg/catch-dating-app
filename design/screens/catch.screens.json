@@ -2570,7 +2570,7 @@
           "id": "cross_paths_suggestion",
           "kind": "populated",
           "status": "captured",
-          "source": "exploreCrossPathsSuggestionsProvider requests at most two server-ranked, consent-safe suggestions for currently visible first-party events. ExploreFeedSectionState inserts each CatchPersonPolaroid after event content in the same date group without replacing its event ticket; provider errors and expired tokens fail closed to no people.",
+          "source": "exploreCrossPathsSuggestionsProvider requests at most two server-ranked, consent-safe suggestions for currently visible first-party events. ExploreFeedSectionState inserts each CatchPolaroid after event content in the same date group without replacing its event ticket; provider errors and expired tokens fail closed to no people.",
           "captureIds": [
             "explore_cross_paths_person"
           ],

@@ -1,7 +1,7 @@
 ---
 doc_id: cross_paths
-version: 1.12.0
-updated: 2026-08-10
+version: 1.13.0
+updated: 2026-09-09
 owner: product (approved direction 2026-08-05)
 status: active
 ---
@@ -90,7 +90,7 @@ event, and the event remains the primary marketplace object.
 | Person | Polaroid | Who might I meet? |
 | Organizer | Poster | Who is creating this community? |
 
-`CatchPersonPolaroid` represents the person only. Cross Paths composes the
+`CatchPolaroid` represents the person only. Cross Paths composes the
 event context around it as an event-ticket stub, adjacent copy, or CTA. It must
 not fork a second Polaroid canvas. `CatchOrganizerPoster` remains the organizer
 material and must not be reused for people.
@@ -147,7 +147,7 @@ workflow:
 The implementation should extend these existing contracts rather than build
 parallel systems:
 
-1. `CatchPersonPolaroid` and `CatchOrganizerPoster` establish the person and
+1. `CatchPolaroid` and `CatchOrganizerPoster` establish the person and
    organizer materials. Cross Paths consumes the canonical person material and
    keeps its event context in adjacent composition.
 2. `profileQualitySummary` already measures profile completeness, including
@@ -699,7 +699,7 @@ presentation boundaries:
 - providers/controllers own consent mutation, one bounded current-event
   request, response expiry, and error-to-empty behavior;
 - presentation owns the Event Detail consent section and
-  `CrossPathsExploreCard`, which composes `CatchPersonPolaroid` with separate
+  `CrossPathsExploreCard`, which composes `CatchPolaroid` with separate
   associated-event context and a sanitized profile preview;
 - Explore remains the route/provider boundary and passes provider-free
   suggestion values into mixed-feed planning;

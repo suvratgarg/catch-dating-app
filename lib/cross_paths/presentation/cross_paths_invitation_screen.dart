@@ -163,7 +163,7 @@ class _InvitationDetailBody extends ConsumerWidget {
       sectionGap: CatchSpacing.s4,
       items: [
         CatchSectionListItem(
-          child: CatchPersonPolaroid(
+          child: CatchPolaroid(
             media: photo == null
                 ? CatchImageFallbackSurface(icon: CatchIcons.personOutlined)
                 : CatchNetworkImage(photo),

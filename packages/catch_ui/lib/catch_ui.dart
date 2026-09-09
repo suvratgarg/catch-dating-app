@@ -103,7 +103,7 @@ export 'src/components/catch_notice_tone.dart';
 export 'src/components/catch_option.dart';
 export 'src/components/catch_page_tab_bar.dart';
 export 'src/components/catch_person_avatar_item.dart';
-export 'src/components/catch_person_polaroid.dart';
+export 'src/components/catch_polaroid.dart';
 export 'src/components/catch_person_row.dart';
 export 'src/components/catch_person_row_copy.dart';
 export 'src/components/catch_person_row_data.dart';

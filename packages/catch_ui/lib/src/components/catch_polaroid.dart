@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 /// Product context remains outside the object. Event overlap, reactions, and
 /// relationship state may be supplied as overlays or surrounding composition,
 /// but the polaroid itself only represents the person.
-class CatchPersonPolaroid extends StatelessWidget {
-  const CatchPersonPolaroid({
+class CatchPolaroid extends StatelessWidget {
+  const CatchPolaroid({
     super.key,
     required this.media,
     required this.name,

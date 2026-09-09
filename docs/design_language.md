@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.23.0
+version: 1.24.0
 updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -303,7 +303,7 @@ tiers within one list.
   approved. Real cover photography or deterministic `OrganizerPosterArtwork`
   fills the media lane, while provenance/authority remains explicit overlay
   state rather than being implied by visual polish.
-- **Polaroid → people: canonical.** `CatchPersonPolaroid` reserves the instant
+- **Polaroid → people: canonical.** `CatchPolaroid` reserves the instant
   photograph for a person: portrait media, quiet identity caption, and optional
   context overlay. The shared Profile hero is the reference adopter. A future
   Cross Paths rail may attach the relevant event-ticket stub, but it must not

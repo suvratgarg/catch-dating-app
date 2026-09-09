@@ -1259,13 +1259,13 @@ Widget catchOrganizerPosterContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchPersonPolaroid,
+  type: CatchPolaroid,
   path: '[Core primitives]/Media',
 )
-Widget catchPersonPolaroidContractStates(BuildContext context) {
+Widget catchPolaroidContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return _ContractScreen(
-    title: 'CatchPersonPolaroid',
+    title: 'CatchPolaroid',
     contractId: 'catch.person_polaroid',
     states: const [
       'photo',
@@ -1278,7 +1278,7 @@ Widget catchPersonPolaroidContractStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'read-only',
-        child: CatchPersonPolaroid(
+        child: CatchPolaroid(
           media: ColoredBox(
             color: t.primarySoft,
             child: Icon(
@@ -1294,7 +1294,7 @@ Widget catchPersonPolaroidContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'reactable',
-        child: CatchPersonPolaroid(
+        child: CatchPolaroid(
           media: ColoredBox(
             color: t.raised,
             child: Icon(

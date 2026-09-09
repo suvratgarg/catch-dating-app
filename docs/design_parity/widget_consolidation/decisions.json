@@ -8014,6 +8014,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:canonical-polaroid",
+      "patternFamilyId": "canonical-polaroid",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchPolaroid",
+      "members": [
+        {
+          "name": "CatchPolaroid",
+          "action": "keep"
+        },
+        {
+          "name": "CatchPersonPolaroid",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "The source tree contains one Polaroid renderer. Its role already selects the portrait-and-caption person material, so an unqualified canonical name prevents feature-prefixed copies without changing entity responsibilities or rendering. Update active owner documentation with the source rename.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

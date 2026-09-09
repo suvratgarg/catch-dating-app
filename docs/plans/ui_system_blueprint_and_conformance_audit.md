@@ -1,6 +1,6 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.15.0
+version: 1.16.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -381,7 +381,7 @@ provider factory. They are thin translations onto `catch_ui` surfaces
 
 Domain-flavored core widgets that name product concepts
 (`event_ticket_surface`, `event_activity_visuals`, `event_visual_atoms`,
-`CatchOrganizerPoster`, `CatchPersonPolaroid`, `block_user_dialog`,
+`CatchOrganizerPoster`, `CatchPolaroid`, `block_user_dialog`,
 `confirm_danger_dialog`, `ordered_photo_picker`) are classified during
 extraction: entity-material primitives whose API is expressible in
 presentation-neutral types move to `catch_ui/src/components`; anything

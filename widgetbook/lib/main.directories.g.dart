@@ -3106,13 +3106,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchPersonPolaroid',
+            name: 'CatchPolaroid',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPersonPolaroidContractStates,
+                        .catchPolaroidContractStates,
               ),
             ],
           ),
@@ -5411,7 +5411,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 ],
               ),
               _widgetbook.WidgetbookComponent(
-                name: 'CatchPersonPolaroid',
+                name: 'CatchPolaroid',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Person polaroid states',
