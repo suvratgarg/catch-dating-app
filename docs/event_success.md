@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.108.0
+version: 1.109.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -984,6 +984,38 @@ history, granting consent or invoking a provider. See
 
 ### Confirmed group progress
 
+Rehearsal now records group departures and checkpoint observations through
+`controlEventRehearsal` with `action: movement`. Its closed commands reuse the
+live `confirmDeparture` and `recordCheckpoint` payloads and decision rules.
+They have a group scope and no invented synthetic actor target. Parent receipts,
+setup/runtime revisions, current organizer authority, 24-hour expiry and the
+500-action cap apply to each mutation. Replays preserve later reports and never
+restore an earlier observation set.
+
+`getEventRehearsalMovement` returns a manager-only review for a frozen whole-event
+or pace-group scope. It checks the complete bounded actor roster, exposes current
+candidate visits, and pages history at 25 departures. An explicit revision can
+select an older departure independently of the latest group position. Scheduled
+stops and synthetic GPS never confirm departure. Whole-event venue/itinerary
+choices use the frozen setup; subgroup checkpoints require a configured pace group
+and route path. A selected guest must have a current physical visit and active
+participation, plus accepted membership for a subgroup.
+
+`eventRehearsalMovements` stores immutable departure fields and a separately revised
+checkpoint report. No recorded roster, an explicitly empty roster and a selected
+roster remain distinct. New checkpoint observations require the original departure
+visit; previously recorded observations can survive a later visit. Removing earlier
+observations requires an explanation. Guests remain in the original denominator.
+A reporting request names a current rehearsal Host and a virtual deadline; overdue,
+discrepancy and revoked-owner states remain visible after event completion.
+Completion permits reports, but not new departures. Reports never change attendance,
+participation, membership, movement or return-sweep accountability.
+
+Native movement controllers/screen composition, reporter reassignment, explicit
+checkpoint closeout and joining-message automation from these recorded departures
+remain integration work. Delegated rehearsal group duties are also still required.
+
+
 `movementDecisions.ts` owns the shared, side-effect-free departure and
 checkpoint-observation rules. Its payloads come from the canonical typed command
 union and accept source/visit reviews without a persistence or execution-mode
@@ -1475,8 +1507,8 @@ does not expose group audit data to guest pages or write live memberships. Nativ
 readers and commands reuse `AssistanceMembershipFacts` and the shared membership
 decision validation/confirmation logic. The ordinary assistance editor cannot
 submit group changes; a dedicated pending-command controller and runtime screen
-composition remain integration work. Departure and checkpoint adapters are also
-still required.
+composition remain integration work. Checkpoint reporter reassignment and
+closeout also remain to be connected in rehearsal.
 
 Group-checkpoint practice messages now bind the accepted assignment, group source
 and participation episode. The server derives this proof when publishing; Host
@@ -1487,9 +1519,9 @@ and replies withhold directions when acceptance is missing, historical or change
 Old unbound group messages remain readable as delivery evidence but cannot supply
 instructions or accept replies. A duplicate response never reapplies its intention
 or help effect. Whole-event venue and itinerary directions need no subgroup.
-A new accepted group requires a reviewed matching plan; the remaining departure
-adapter will supply confirmed movement context instead of inferring it from time
-or simulated GPS.
+A new accepted group requires a reviewed matching plan. Joining-message automation
+still needs to consume the recorded departure rather than its manually reviewed
+departure flag.
 
 `getEventAssistanceMembership` and `transferEventAssistanceGroup` own one
 accepted moving-group membership per guest, independently of physical attendance,

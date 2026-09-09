@@ -4425,6 +4425,7 @@ describe("firestore.rules", () => {
         "eventRehearsalActions",
         "eventRehearsalGuestViews",
         "eventRehearsalMessages",
+        "eventRehearsalMovements",
         "eventRehearsalCases",
       ];
       for (const collectionName of collections) {

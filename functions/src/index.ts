@@ -134,6 +134,7 @@ export {
   expireEventRehearsals,
   exportEventRehearsalReproduction,
   getEventRehearsalBootstrap,
+  getEventRehearsalMovement,
   getEventRehearsalGuestBootstrap,
   injectEventRehearsalBehavior,
   resetEventRehearsal,

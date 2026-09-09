@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_rehearsal_movements.schema.json",
+  "title": "EventRehearsalMovementDocument",
+  "$ref": "../shared/event_rehearsal_movement.schema.json#/definitions/Record",
+  "description": "An immutable synthetic departure manifest with a separately revised checkpoint observation.",
+  "x-firestore-collection": "eventRehearsalMovements",
+  "x-firestore-path": "eventRehearsalMovements/{movementId}",
+  "x-document-id-field": "id",
+  "x-owner": "event rehearsal callables"
+}

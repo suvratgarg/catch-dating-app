@@ -41,7 +41,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "previous",
         "advanceClock",
         "complete",
-        "assistance"
+        "assistance",
+        "movement"
       ]
     },
     "minutes": {
@@ -1742,6 +1743,266 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
       "type": "integer",
       "minimum": 0,
       "maximum": 2147483647
+    },
+    "movement": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "confirmDeparture"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "groupId",
+                "destination",
+                "expectedProgressRevision"
+              ],
+              "properties": {
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "destination": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "placeId",
+                        "lateEntry"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "fixedPlace"
+                        },
+                        "placeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "lateEntry": {
+                          "type": "string",
+                          "enum": [
+                            "allowed",
+                            "hostDecision",
+                            "closed"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "itineraryId",
+                        "stopId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "itineraryStop"
+                        },
+                        "itineraryId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "stopId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "routeId",
+                        "groupId",
+                        "checkpointId"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "groupCheckpoint"
+                        },
+                        "routeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        },
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "checkpointId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2000
+                        }
+                      }
+                    }
+                  ]
+                },
+                "expectedProgressRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "departureRoster": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "attendeeIds",
+                    "expectedSourceHash"
+                  ],
+                  "properties": {
+                    "attendeeIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "uniqueItems": true,
+                      "maxItems": 1000
+                    },
+                    "expectedSourceHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    }
+                  }
+                },
+                "checkpointRequest": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "responsibleOperatorId",
+                    "dueAt"
+                  ],
+                  "properties": {
+                    "responsibleOperatorId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[^/]+$"
+                    },
+                    "dueAt": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              }
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "recordCheckpoint"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "groupId",
+                "checkpointId",
+                "accountedFor",
+                "expectedProgressRevision",
+                "expectedCheckpointRevision",
+                "correctionReason"
+              ],
+              "properties": {
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "checkpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "accountedFor": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "maxItems": 1000,
+                  "uniqueItems": true
+                },
+                "expectedProgressRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991,
+                  "description": "Nonnegative safe integer revision."
+                },
+                "expectedCheckpointRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "correctionReason": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 500,
+                      "pattern": "\\S"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      ],
+      "type": "object"
     }
   },
   "if": {
@@ -1757,25 +2018,68 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
       "expectedSetupRevision"
     ],
     "not": {
-      "required": [
-        "minutes"
-      ]
-    }
-  },
-  "else": {
-    "not": {
       "anyOf": [
         {
           "required": [
-            "assistance"
+            "minutes"
           ]
         },
         {
           "required": [
-            "expectedSetupRevision"
+            "movement"
           ]
         }
       ]
+    }
+  },
+  "else": {
+    "if": {
+      "properties": {
+        "action": {
+          "const": "movement"
+        }
+      }
+    },
+    "then": {
+      "required": [
+        "movement",
+        "expectedSetupRevision"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "minutes"
+            ]
+          },
+          {
+            "required": [
+              "assistance"
+            ]
+          }
+        ]
+      }
+    },
+    "else": {
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "assistance"
+            ]
+          },
+          {
+            "required": [
+              "movement"
+            ]
+          },
+          {
+            "required": [
+              "expectedSetupRevision"
+            ]
+          }
+        ]
+      }
     }
   }
 } as const;

@@ -44,6 +44,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'advanceClock',
         'complete',
         'assistance',
+        'movement',
       ],
     },
     'minutes': <String, Object?>{
@@ -1745,6 +1746,266 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
       'minimum': 0,
       'maximum': 2147483647,
     },
+    'movement': <String, Object?>{
+      'oneOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'payload',
+            'expectedSourceHash',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'confirmDeparture',
+            },
+            'payload': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'groupId',
+                'destination',
+                'expectedProgressRevision',
+              ],
+              'properties': <String, Object?>{
+                'groupId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'destination': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'placeId',
+                        'lateEntry',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'type': 'string',
+                          'const': 'fixedPlace',
+                        },
+                        'placeId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 160,
+                          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                        },
+                        'lateEntry': <String, Object?>{
+                          'type': 'string',
+                          'enum': <Object?>[
+                            'allowed',
+                            'hostDecision',
+                            'closed',
+                          ],
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'itineraryId',
+                        'stopId',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'type': 'string',
+                          'const': 'itineraryStop',
+                        },
+                        'itineraryId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 2000,
+                        },
+                        'stopId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 2000,
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'routeId',
+                        'groupId',
+                        'checkpointId',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'type': 'string',
+                          'const': 'groupCheckpoint',
+                        },
+                        'routeId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 2000,
+                        },
+                        'groupId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 160,
+                          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                        },
+                        'checkpointId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 2000,
+                        },
+                      },
+                    },
+                  ],
+                },
+                'expectedProgressRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                  'description': 'Nonnegative safe integer revision.',
+                },
+                'departureRoster': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'attendeeIds',
+                    'expectedSourceHash',
+                  ],
+                  'properties': <String, Object?>{
+                    'attendeeIds': <String, Object?>{
+                      'type': 'array',
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 160,
+                        'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                      },
+                      'uniqueItems': true,
+                      'maxItems': 1000,
+                    },
+                    'expectedSourceHash': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^[a-f0-9]{64}\$',
+                    },
+                  },
+                },
+                'checkpointRequest': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'responsibleOperatorId',
+                    'dueAt',
+                  ],
+                  'properties': <String, Object?>{
+                    'responsibleOperatorId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 128,
+                      'pattern': '^[^/]+\$',
+                    },
+                    'dueAt': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                  },
+                },
+              },
+            },
+            'expectedSourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'payload',
+            'expectedSourceHash',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'recordCheckpoint',
+            },
+            'payload': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'groupId',
+                'checkpointId',
+                'accountedFor',
+                'expectedProgressRevision',
+                'expectedCheckpointRevision',
+                'correctionReason',
+              ],
+              'properties': <String, Object?>{
+                'groupId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'checkpointId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 2000,
+                },
+                'accountedFor': <String, Object?>{
+                  'type': 'array',
+                  'items': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 160,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  'maxItems': 1000,
+                  'uniqueItems': true,
+                },
+                'expectedProgressRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                  'description': 'Nonnegative safe integer revision.',
+                },
+                'expectedCheckpointRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'correctionReason': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                      'pattern': '\\S',
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                },
+              },
+            },
+            'expectedSourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+        },
+      ],
+      'type': 'object',
+    },
   },
   'if': <String, Object?>{
     'properties': <String, Object?>{
@@ -1759,25 +2020,68 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
       'expectedSetupRevision',
     ],
     'not': <String, Object?>{
-      'required': <Object?>[
-        'minutes',
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'required': <Object?>[
+            'minutes',
+          ],
+        },
+        <String, Object?>{
+          'required': <Object?>[
+            'movement',
+          ],
+        },
       ],
     },
   },
   'else': <String, Object?>{
-    'not': <String, Object?>{
-      'anyOf': <Object?>[
-        <String, Object?>{
-          'required': <Object?>[
-            'assistance',
-          ],
+    'if': <String, Object?>{
+      'properties': <String, Object?>{
+        'action': <String, Object?>{
+          'const': 'movement',
         },
-        <String, Object?>{
-          'required': <Object?>[
-            'expectedSetupRevision',
-          ],
-        },
+      },
+    },
+    'then': <String, Object?>{
+      'required': <Object?>[
+        'movement',
+        'expectedSetupRevision',
       ],
+      'not': <String, Object?>{
+        'anyOf': <Object?>[
+          <String, Object?>{
+            'required': <Object?>[
+              'minutes',
+            ],
+          },
+          <String, Object?>{
+            'required': <Object?>[
+              'assistance',
+            ],
+          },
+        ],
+      },
+    },
+    'else': <String, Object?>{
+      'not': <String, Object?>{
+        'anyOf': <Object?>[
+          <String, Object?>{
+            'required': <Object?>[
+              'assistance',
+            ],
+          },
+          <String, Object?>{
+            'required': <Object?>[
+              'movement',
+            ],
+          },
+          <String, Object?>{
+            'required': <Object?>[
+              'expectedSetupRevision',
+            ],
+          },
+        ],
+      },
     },
   },
 };

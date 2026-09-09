@@ -39,6 +39,9 @@
       "type": "integer",
       "minimum": 0,
       "maximum": 2147483647
+    },
+    "movement": {
+      "$ref": "../shared/event_rehearsal_movement.schema.json#/definitions/Command"
     }
   },
   "if": {
@@ -54,25 +57,68 @@
       "expectedSetupRevision"
     ],
     "not": {
-      "required": [
-        "minutes"
-      ]
-    }
-  },
-  "else": {
-    "not": {
       "anyOf": [
         {
           "required": [
-            "assistance"
+            "minutes"
           ]
         },
         {
           "required": [
-            "expectedSetupRevision"
+            "movement"
           ]
         }
       ]
+    }
+  },
+  "else": {
+    "if": {
+      "properties": {
+        "action": {
+          "const": "movement"
+        }
+      }
+    },
+    "then": {
+      "required": [
+        "movement",
+        "expectedSetupRevision"
+      ],
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "minutes"
+            ]
+          },
+          {
+            "required": [
+              "assistance"
+            ]
+          }
+        ]
+      }
+    },
+    "else": {
+      "not": {
+        "anyOf": [
+          {
+            "required": [
+              "assistance"
+            ]
+          },
+          {
+            "required": [
+              "movement"
+            ]
+          },
+          {
+            "required": [
+              "expectedSetupRevision"
+            ]
+          }
+        ]
+      }
     }
   }
 }

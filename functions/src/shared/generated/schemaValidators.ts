@@ -241,6 +241,9 @@ export {validateEventVenueSessionRedemptionDocument} from "./validators/eventVen
 export {validateEventSuccessPresenceDocument} from "./validators/eventSuccessPresenceDocument";
 export {validateEventLivePositionDocument} from "./validators/eventLivePositionDocument";
 export {validateEventSuccessLateArrivalDocument} from "./validators/eventSuccessLateArrivalDocument";
+export {validateEventRehearsalMovementDocument} from "./validators/eventRehearsalMovementDocument";
+export {validateGetEventRehearsalMovementCallablePayload} from "./validators/getEventRehearsalMovementInput";
+export {validateEventRehearsalMovementCallableResponse} from "./validators/eventRehearsalMovementOutput";
 export {validateEventRehearsalDocument} from "./validators/eventRehearsalDocument";
 export {validateEventRehearsalCaseDocument} from "./validators/eventRehearsalCaseDocument";
 export {validateEventRehearsalMessageDocument} from "./validators/eventRehearsalMessageDocument";

@@ -1,3 +1,14 @@
+import type {GetEventRehearsalMovementCallablePayload as MovementInput} from
+  "../shared/generated/getEventRehearsalMovementCallablePayload";
+import type {EventRehearsalMovementCallableResponse as MovementReview} from
+  "../shared/generated/eventRehearsalMovementCallableResponse";
+import {validateGetEventRehearsalMovementCallablePayload} from
+  "../shared/generated/validators/getEventRehearsalMovementInput";
+import {validateEventRehearsalMovementCallableResponse} from
+  "../shared/generated/validators/eventRehearsalMovementOutput";
+import {practiceMovementReview, preparePracticeMovementCommand,
+  practiceMovementScope} from "./movement";
+import {rehearsalMovements, MovementScope} from "./movementRecords";
 import {practiceAccountabilityProjection} from "./accountability";
 import {createHash, randomBytes, timingSafeEqual} from "node:crypto";
 import * as admin from "firebase-admin";
@@ -170,6 +181,45 @@ export async function getEventRehearsalBootstrapHandler(
   return hostProjection(db, data.sessionId, session, request);
 }
 
+/** Detailed movement history is fetched on demand, with bounded pagination. */
+export async function getEventRehearsalMovementHandler(
+  request: CallableRequest<unknown>): Promise<MovementReview> {
+  const uid = requireAuth(request);
+  const data = validateCallableWithAjv<MovementInput>(request,
+    validateGetEventRehearsalMovementCallablePayload);
+  const db = admin.firestore();
+  await checkRateLimit(db, uid, "getEventRehearsalMovement");
+  return hostMovementReview(db, uid, data);
+}
+async function hostMovementReview(db: Firestore, uid: string,
+  data: MovementInput): Promise<MovementReview> {
+  return db.runTransaction(async (tx) => {
+    const [sessionSnap, actorSnaps] = await Promise.all([
+      tx.get(db.collection(sessions).doc(data.sessionId)),
+      tx.get(db.collection(actors).where("sessionId", "==", data.sessionId)
+        .limit(51)),
+    ]);
+    const session = requireSession(sessionSnap);
+    if (session.setupRevision !== data.expectedSetupRevision) {
+      throw new HttpsError("aborted", "This rehearsal was reset.");
+    }
+    const organizer = await requireCurrentHostAuthority(db, tx, session, uid);
+    const review = await practiceMovementReview(db, tx, data.sessionId,
+      session, actorSnaps.docs.map((doc) =>
+        requireDoc<EventRehearsalActorDocument>(doc,
+          "EventRehearsalActorDocument")), data.scope,
+      {organizer, actorUid: uid});
+    if (session.expiresAt.toMillis() <= Date.now()) {
+      throw new HttpsError("not-found", "This dress rehearsal has expired.");
+    }
+    if (!validateEventRehearsalMovementCallableResponse(review)) {
+      throw new HttpsError("failed-precondition",
+        "Movement review unavailable.");
+    }
+    return review;
+  });
+}
+
 /** Updates the frozen safe snapshot while the rehearsal is not running. */
 export async function updateEventRehearsalSetupHandler(
   request: CallableRequest<unknown>
@@ -277,8 +327,9 @@ export async function controlEventRehearsalHandler(
   requireAssistanceGeneration(authorized, data);
   if (previous.exists) {
     requireAssistanceReceipt(previous, requestHash,
-      data.action === "assistance");
-    return hostProjection(db, data.sessionId, authorized, request);
+      ["assistance", "movement"].includes(data.action));
+    return hostProjection(db, data.sessionId, authorized, request,
+      data.movement ? practiceMovementScope(data.movement) : undefined);
   }
   await maybeApplyActionFault(db, data.sessionId, authorized);
   await db.runTransaction(async (tx) => {
@@ -292,7 +343,7 @@ export async function controlEventRehearsalHandler(
     const organizer = await requireCurrentHostAuthority(db, tx, session, uid);
     if (actionSnap.exists) {
       requireAssistanceReceipt(actionSnap, requestHash,
-        data.action === "assistance");
+        ["assistance", "movement"].includes(data.action));
       return;
     }
     assertActionCapacity(session);
@@ -302,6 +353,27 @@ export async function controlEventRehearsalHandler(
         "resource-exhausted",
         "Rehearsal roster is too large."
       );
+    }
+    if (data.action === "movement") {
+      const command = data.movement!;
+      const commit = await preparePracticeMovementCommand(db, tx,
+        data.sessionId, session, actorSnaps.docs.map((doc) =>
+          requireDoc<EventRehearsalActorDocument>(doc,
+            "EventRehearsalActorDocument")), command,
+        {organizer, actorUid: uid}, data.clientActionId);
+      const now = admin.firestore.Timestamp.now();
+      if (session.expiresAt.toMillis() <= now.toMillis()) {
+        throw new HttpsError("not-found", "This dress rehearsal has expired.");
+      }
+      commit();
+      tx.update(sessionRef, {runtimeRevision: session.runtimeRevision + 1,
+        actionCount: session.actionCount + 1, updatedAt: now});
+      tx.create(actionRef, actionDocument({sessionId: data.sessionId,
+        clientActionId: data.clientActionId, actorUid: uid, actorId: null,
+        kind: "control", name: "movement:" + command.kind, requestHash,
+        runtimeRevision: session.runtimeRevision + 1,
+        virtualNow: session.virtualNow, createdAt: now}));
+      return;
     }
     if (data.action === "assistance") {
       const command = data.assistance!;
@@ -398,7 +470,8 @@ export async function controlEventRehearsalHandler(
     db,
     data.sessionId,
     await requireHostSession(db, data.sessionId, uid),
-    request
+    request,
+    data.movement ? practiceMovementScope(data.movement) : undefined
   );
 }
 
@@ -1227,6 +1300,7 @@ async function hostProjection(
   sessionId: string,
   session: EventRehearsalDocument,
   request: CallableRequest<unknown>,
+  movementScope?: MovementScope,
 ): Promise<EventRehearsalBootstrapCallableResponse> {
   const [actorSnaps, actionSnaps] = await Promise.all([
     db.collection(actors).where("sessionId", "==", sessionId).limit(51).get(),
@@ -1256,8 +1330,18 @@ async function hostProjection(
   });
   const deliveryReviews = practiceDeliveryReviews(sessionId, session,
     actorValues, currentMessages, organizer, requireAuth(request));
+  const movementReview = movementScope ? await hostMovementReview(db,
+    requireAuth(request), {sessionId,
+      expectedSetupRevision: session.setupRevision,
+      scope: movementScope}) : undefined;
+  if (movementReview && movementReview.runtimeRevision !==
+      session.runtimeRevision) {
+    throw new HttpsError("aborted",
+      "Rehearsal changed during movement review.");
+  }
   const movementSimulation = rehearsalMovementProjection(session);
   return {
+    ...(movementReview ? {movementReview} : {}),
     helpRequests,
     deliveryReviews,
     accountabilityReviews: practiceAccountabilityProjection(sessionId,
@@ -1615,6 +1699,7 @@ async function deleteSessionChildren(
     deleteBySession(db, guestViews, sessionId),
     deleteBySession(db, rehearsalMessages, sessionId),
     deleteBySession(db, rehearsalCases, sessionId),
+    deleteBySession(db, rehearsalMovements, sessionId),
   ]);
 }
 
@@ -1660,7 +1745,7 @@ function actionDocument(
 /** A reset reuses runtime revisions but always advances setup revision. */
 function requireAssistanceGeneration(session: EventRehearsalDocument,
   data: ControlEventRehearsalCallablePayload): void {
-  if (data.action === "assistance" &&
+  if (["assistance", "movement"].includes(data.action) &&
       data.expectedSetupRevision !== session.setupRevision) {
     throw new HttpsError("aborted",
       "This rehearsal was reset. Review the current run before continuing.");
@@ -1845,4 +1930,9 @@ export const expireEventRehearsals = onSchedule(
   async () => {
     await expireEventRehearsalsHandler();
   }
+);
+
+export const getEventRehearsalMovement = onCall(
+  appCheckCallableOptions,
+  getEventRehearsalMovementHandler
 );

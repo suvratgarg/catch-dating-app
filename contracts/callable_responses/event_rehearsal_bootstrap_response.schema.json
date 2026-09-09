@@ -49,6 +49,9 @@
     },
     "membershipReviews": {
       "$ref": "../shared/event_rehearsal_membership.schema.json#/definitions/reviews"
+    },
+    "movementReview": {
+      "$ref": "../shared/event_rehearsal_movement.schema.json#/definitions/Review"
     }
   },
   "definitions": {

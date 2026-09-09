@@ -116,6 +116,7 @@ class FakeQuery {
         case ">=": return (compare(stored, value) ?? -1) >= 0;
         case "<=": return (compare(stored, value) ?? 1) <= 0;
         case ">": return (compare(stored, value) ?? -1) > 0;
+        case "<": return (compare(stored, value) ?? 1) < 0;
         default: throw new Error("Unsupported fake query operator: " +
           operator);
         }
@@ -178,6 +179,15 @@ class FakeTransaction {
 
   set(reference: FakeDocReference, value: unknown): void {
     this.writes.set(reference.path, structuredClone(value as FakeData));
+  }
+
+  update(reference: FakeDocReference, patch: FakeData): void {
+    assert.ok(Object.keys(patch).every((key) => !key.includes(".")),
+      "This fake supports top-level field updates only");
+    const before = this.writes.get(reference.path) ??
+      this.firestore.read(reference.path);
+    if (!before) throw new Error("document does not exist");
+    this.writes.set(reference.path, {...before, ...structuredClone(patch)});
   }
 
   commit(): void {

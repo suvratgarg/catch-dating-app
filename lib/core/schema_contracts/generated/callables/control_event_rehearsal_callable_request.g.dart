@@ -15,6 +15,7 @@ final class ControlEventRehearsalCallableRequest {
     this.minutes,
     this.assistance,
     this.expectedSetupRevision,
+    this.movement,
   });
 
   final String sessionId;
@@ -24,6 +25,7 @@ final class ControlEventRehearsalCallableRequest {
   final int? minutes;
   final Map<String, Object?>? assistance;
   final int? expectedSetupRevision;
+  final Map<String, Object?>? movement;
 
   Map<String, Object?> toJson() => {
     'sessionId': sessionId,
@@ -33,5 +35,6 @@ final class ControlEventRehearsalCallableRequest {
     'minutes': ?minutes,
     'assistance': ?assistance,
     'expectedSetupRevision': ?expectedSetupRevision,
+    'movement': ?movement,
   };
 }

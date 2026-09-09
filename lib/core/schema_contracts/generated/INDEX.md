@@ -248,6 +248,9 @@ Do not edit it by hand.
 | EventSuccessPresenceDocument | `firestore/event_success_presence.schema.json` | `functions/src/shared/generated/eventSuccessPresenceDocument.ts` |
 | EventLivePositionDocument | `firestore/event_live_positions.schema.json` | `functions/src/shared/generated/eventLivePositionDocument.ts` |
 | EventSuccessLateArrivalDocument | `firestore/event_success_late_arrivals.schema.json` | `functions/src/shared/generated/eventSuccessLateArrivalDocument.ts` |
+| EventRehearsalMovementDocument | `firestore/event_rehearsal_movements.schema.json` | `functions/src/shared/generated/eventRehearsalMovementDocument.ts` |
+| GetEventRehearsalMovementCallablePayload | `callables/get_event_rehearsal_movement_payload.schema.json` | `functions/src/shared/generated/getEventRehearsalMovementCallablePayload.ts` |
+| EventRehearsalMovementCallableResponse | `callable_responses/event_rehearsal_movement_response.schema.json` | `functions/src/shared/generated/eventRehearsalMovementCallableResponse.ts` |
 | EventRehearsalDocument | `firestore/event_rehearsals.schema.json` | `functions/src/shared/generated/eventRehearsalDocument.ts` |
 | EventRehearsalCaseDocument | `firestore/event_rehearsal_cases.schema.json` | `functions/src/shared/generated/eventRehearsalCaseDocument.ts` |
 | EventRehearsalMessageDocument | `firestore/event_rehearsal_messages.schema.json` | `functions/src/shared/generated/eventRehearsalMessageDocument.ts` |
@@ -914,6 +917,9 @@ Do not edit it by hand.
 | `schemaEventSuccessPresenceDocumentSchema` | EventSuccessPresenceDocument | `firestore/event_success_presence.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_presence_document.g.dart` |
 | `schemaEventLivePositionDocumentSchema` | EventLivePositionDocument | `firestore/event_live_positions.schema.json` | `lib/core/schema_contracts/generated/schemas/event_live_position_document.g.dart` |
 | `schemaEventSuccessLateArrivalDocumentSchema` | EventSuccessLateArrivalDocument | `firestore/event_success_late_arrivals.schema.json` | `lib/core/schema_contracts/generated/schemas/event_success_late_arrival_document.g.dart` |
+| `schemaEventRehearsalMovementDocumentSchema` | EventRehearsalMovementDocument | `firestore/event_rehearsal_movements.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_movement_document.g.dart` |
+| `schemaGetEventRehearsalMovementCallablePayloadSchema` | GetEventRehearsalMovementCallablePayload | `callables/get_event_rehearsal_movement_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/get_event_rehearsal_movement_callable_payload.g.dart` |
+| `schemaEventRehearsalMovementCallableResponseSchema` | EventRehearsalMovementCallableResponse | `callable_responses/event_rehearsal_movement_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_movement_callable_response.g.dart` |
 | `schemaEventRehearsalDocumentSchema` | EventRehearsalDocument | `firestore/event_rehearsals.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_document.g.dart` |
 | `schemaEventRehearsalCaseDocumentSchema` | EventRehearsalCaseDocument | `firestore/event_rehearsal_cases.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_case_document.g.dart` |
 | `schemaEventRehearsalMessageDocumentSchema` | EventRehearsalMessageDocument | `firestore/event_rehearsal_messages.schema.json` | `lib/core/schema_contracts/generated/schemas/event_rehearsal_message_document.g.dart` |
@@ -1381,6 +1387,7 @@ Do not edit it by hand.
 | GetEventAssistanceSmsPreferenceCallableRequest | GetEventAssistanceSmsPreferenceCallablePayload | `callables/get_event_assistance_sms_preference_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_sms_preference_callable_request.g.dart` |
 | GetEventAssistanceGuestViewCallableRequest | GetEventAssistanceGuestViewCallablePayload | `callables/get_event_assistance_guest_view_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_assistance_guest_view_callable_request.g.dart` |
 | SubmitEventAssistanceGuestChoiceCallableRequest | SubmitEventAssistanceGuestChoiceCallablePayload | `callables/submit_event_assistance_guest_choice_payload.schema.json` | `lib/core/schema_contracts/generated/callables/submit_event_assistance_guest_choice_callable_request.g.dart` |
+| GetEventRehearsalMovementCallableRequest | GetEventRehearsalMovementCallablePayload | `callables/get_event_rehearsal_movement_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_rehearsal_movement_callable_request.g.dart` |
 | UpdateUserProfilePatch | UpdateUserProfileCallablePayload | `patches/update_user_profile.schema.json` | `lib/core/schema_contracts/generated/callables/update_user_profile_patch.g.dart` |
 | CreateClubCallableRequest | CreateClubCallablePayload | `callables/create_club_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_club_callable_request.g.dart` |
 | CreateOrganizerCallableRequest | CreateOrganizerCallablePayload | `callables/create_organizer_payload.schema.json` | `lib/core/schema_contracts/generated/callables/create_organizer_callable_request.g.dart` |

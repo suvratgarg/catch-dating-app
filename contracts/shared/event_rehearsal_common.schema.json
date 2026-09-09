@@ -76,7 +76,8 @@
         "previous",
         "advanceClock",
         "complete",
-        "assistance"
+        "assistance",
+        "movement"
       ]
     },
     "behavior": {

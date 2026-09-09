@@ -18,7 +18,8 @@ export interface ControlEventRehearsalCallablePayload {
     | "previous"
     | "advanceClock"
     | "complete"
-    | "assistance";
+    | "assistance"
+    | "movement";
   minutes?: number;
   assistance?:
     | {
@@ -400,4 +401,62 @@ export interface ControlEventRehearsalCallablePayload {
         expectedSourceHash: string;
       };
   expectedSetupRevision?: number;
+  movement?:
+    | {
+        kind: "confirmDeparture";
+        payload: {
+          groupId: string;
+          destination:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+          /**
+           * Nonnegative safe integer revision.
+           */
+          expectedProgressRevision: number;
+          departureRoster?: {
+            /**
+             * @maxItems 1000
+             */
+            attendeeIds: string[];
+            expectedSourceHash: string;
+          };
+          checkpointRequest?: {
+            responsibleOperatorId: string;
+            dueAt: number;
+          };
+        };
+        expectedSourceHash: string;
+      }
+    | {
+        kind: "recordCheckpoint";
+        payload: {
+          groupId: string;
+          checkpointId: string;
+          /**
+           * @maxItems 1000
+           */
+          accountedFor: string[];
+          /**
+           * Nonnegative safe integer revision.
+           */
+          expectedProgressRevision: number;
+          expectedCheckpointRevision: number;
+          correctionReason: string | null;
+        };
+        expectedSourceHash: string;
+      };
 }

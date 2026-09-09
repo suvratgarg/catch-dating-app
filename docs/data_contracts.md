@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.100.0
+version: 1.101.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -888,7 +888,7 @@ provider account/version before Event Assistance activates it.
 
 ### Event Dress Rehearsal Isolation Contract
 
-Event rehearsal is a separate bounded domain with six callable-owned,
+Event rehearsal is a separate bounded domain with seven callable-owned,
 server-only collections:
 
 | Collection | Purpose | Limits and authority |
@@ -899,6 +899,7 @@ server-only collections:
 | `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
 | `eventRehearsalMessages/{messageDocumentId}` | Typed practice plan, joining instruction, simulated delivery evidence and response | Created only by a counted Host action; at most 200 messages per actor and run; no live sender binding or production outbox reference |
 | `eventRehearsalCases/{caseDocumentId}` | Clock-scoped practical requests and their reviewed handling | Callable-owned synthetic cases; guest projections omit handling and authority evidence |
+| `eventRehearsalMovements/{movementId}` | Clock/group/revision-bound immutable departure and separately revised checkpoint report | At most one departure per counted Host action, 500 per session, 50 selected synthetic visits; manager-only read pages contain at most 25 departures |
 
 The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
 `contracts/callables/*event_rehearsal*.schema.json` are authoritative.
@@ -935,6 +936,16 @@ history query includes session, actor and clock generation. Reset invalidates
 that generation and deletes messages; cleanup drains bounded batches so older
 remnants cannot survive a page limit. The Host projection additionally exposes
 simulated attempts; the guest projection excludes delivery internals.
+
+Movement controls carry their own closed group command with the parent setup and
+runtime revisions; action receipts use `actorId: null`. The departure freezes its
+source hash, destination, explicit roster selection and optional current-manager
+reporting request. Checkpoint corrections change only the report and bind the
+immutable departure hash plus original visit evidence. Read queries bind session,
+clock and group, order by progress revision, and use a 26-record lookahead for
+25-result pages. An explicitly selected older revision does not become current
+progress. Reset and expiry delete movement children with the other practice state.
+
 
 A rehearsal membership's optional `assignmentRevision` records the last placement,
 accepted transfer or removal; proposal-only decisions preserve it. Group-checkpoint

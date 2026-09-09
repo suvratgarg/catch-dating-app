@@ -167,6 +167,7 @@ export function resolveRehearsalControl(
 ): RehearsalControlResult {
   const currentMillis = session.virtualNow.toMillis();
   switch (action) {
+  case "movement":
   case "assistance":
     throw new Error("Assistance commands require their rehearsal transaction.");
   case "markReady":

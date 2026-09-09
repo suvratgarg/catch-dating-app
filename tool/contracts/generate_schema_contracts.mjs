@@ -1249,6 +1249,24 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessLateArrivalDocument.ts",
   },
   {
+    name: "EventRehearsalMovementDocument",
+    source: "firestore/event_rehearsal_movements.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalMovementDocument.ts",
+  },
+  {
+    name: "GetEventRehearsalMovementCallablePayload",
+    source: "callables/get_event_rehearsal_movement_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getEventRehearsalMovementCallablePayload.ts",
+  },
+  {
+    name: "EventRehearsalMovementCallableResponse",
+    source: "callable_responses/event_rehearsal_movement_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalMovementCallableResponse.ts",
+  },
+  {
     name: "EventRehearsalDocument",
     source: "firestore/event_rehearsals.schema.json",
     typeOutput:

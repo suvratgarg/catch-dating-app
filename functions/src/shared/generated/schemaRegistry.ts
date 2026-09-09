@@ -241,6 +241,9 @@ export {eventVenueSessionRedemptionDocumentSchema} from "./schemas/eventVenueSes
 export {eventSuccessPresenceDocumentSchema} from "./schemas/eventSuccessPresenceDocument";
 export {eventLivePositionDocumentSchema} from "./schemas/eventLivePositionDocument";
 export {eventSuccessLateArrivalDocumentSchema} from "./schemas/eventSuccessLateArrivalDocument";
+export {eventRehearsalMovementDocumentSchema} from "./schemas/eventRehearsalMovementDocument";
+export {getEventRehearsalMovementCallablePayloadSchema} from "./schemas/getEventRehearsalMovementInput";
+export {eventRehearsalMovementCallableResponseSchema} from "./schemas/eventRehearsalMovementOutput";
 export {eventRehearsalDocumentSchema} from "./schemas/eventRehearsalDocument";
 export {eventRehearsalCaseDocumentSchema} from "./schemas/eventRehearsalCaseDocument";
 export {eventRehearsalMessageDocumentSchema} from "./schemas/eventRehearsalMessageDocument";

@@ -12,7 +12,11 @@ export type DeparturePayload = Extract<EventAssistanceCommand,
 export type CheckpointPayload = Extract<EventAssistanceCommand,
   {kind: "recordCheckpoint"}>["payload"];
 export type DepartureReview = Pick<Progress["view"],
-  "revision" | "sourceHash" | "eventOpen" | "runtimeLive" | "destinations">;
+  "revision" | "sourceHash" | "eventOpen" | "runtimeLive"> & {
+    readonly destinations: readonly Pick<
+      Progress["view"]["destinations"][number],
+      "target">[];
+  };
 export type CheckpointObservationReview = Pick<Checkpoint["view"],
   "revision" | "sourceHash" | "availability"> & {
     readonly previouslyAccountedFor: readonly string[];
