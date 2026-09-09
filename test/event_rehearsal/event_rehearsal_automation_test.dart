@@ -14,7 +14,9 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_c
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
+import 'event_rehearsal_accountability_fixtures.dart';
 import 'event_rehearsal_assistance_fixtures.dart';
+import 'event_rehearsal_delivery_fixtures.dart';
 
 void main() {
   final guidance = practicePlan().toJson()['guidance'];
@@ -57,7 +59,7 @@ void main() {
     const delivered = RehearsalDeliveryConfirmed(
       RehearsalConfirmedDelivery.delivered,
     );
-    final kinds = <RehearsalAssistanceCommand>[
+    final commands = <RehearsalAssistanceCommand>[
       RehearsalPublishInstruction(actorId: 'actor-01', plan: practicePlan()),
       RehearsalDispatchMessage(
         actorId: 'actor-01',
@@ -77,6 +79,8 @@ void main() {
       ),
       RehearsalPauseAutomation(actorId: 'actor-01'),
       RehearsalResumeAutomation(actorId: 'actor-01'),
+      practiceDeliveryChange().command,
+      practiceVisitChange().command,
       RehearsalResolveAssistance(
         snapshot:
             EventRehearsalBootstrap.fromCallableData(
@@ -86,12 +90,27 @@ void main() {
         actorUid: 'host-1',
         decision: const AssistanceCaseDecision.resolve(),
       ),
-    ].map((command) => command.kind);
-    final sourceKinds = ((definitions['command'] as Map)['oneOf'] as List).map(
+    ];
+    // Generated schemas resolve shared references in the canonical command union.
+    final payload =
+        schemas.schemaContractsByName['ControlEventRehearsalCallablePayload']!;
+    final commandSchema = ((payload['properties'] as Map)['assistance'] as Map);
+    final sourceKinds = (commandSchema['oneOf'] as List).map(
       (variant) =>
           (((variant as Map)['properties'] as Map)['kind'] as Map)['const'],
     );
-    expect(kinds, unorderedEquals(sourceKinds));
+    expect(
+      commands.map((command) => command.kind),
+      unorderedEquals(sourceKinds),
+    );
+    final validator = JsonSchema.create(commandSchema);
+    for (final command in commands) {
+      expect(
+        validator.validate(command.toJson()).isValid,
+        isTrue,
+        reason: command.kind,
+      );
+    }
     final max =
         ((((definitions['automation'] as Map)['properties'] as Map)['outcomes']
                 as Map)['maxItems']

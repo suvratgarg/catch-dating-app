@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.97.0
+version: 1.98.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -125,8 +125,11 @@ and check-in; reopening clears the outcome. Historical proof cannot resolve a
 later visit. Host identity is stored only as the private resolution audit actor,
 not a synthetic participant identity. Guest responses omit visit and review data.
 Completion permits follow-up within the action cap; reset clears visits and
-invalidates earlier commands. Native review/controller bindings and rehearsal
-checkpoint execution remain integration work.
+invalidates earlier commands. Native reviews now validate bounded coverage,
+clock/episode identity and availability, and construct commands only from a
+current actionable row. The per-guest controller preserves uncertain requests
+across refresh and closure; exact retries retain later visits and corrections.
+Host screen mounting and rehearsal checkpoint execution remain integration work.
 
 ### Explicit Attendance Closeout
 

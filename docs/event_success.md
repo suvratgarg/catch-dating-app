@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.104.0
+version: 1.105.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -680,9 +680,27 @@ The parent rehearsal transaction owns actor changes, action history and runtime
 revision. Reset rebuilds visits and rejects earlier commands; expiry removes them.
 Guest projections remain unchanged, and the resolving Host identity stays in
 private audit evidence. No attendance, group movement, help request, consent or
-provider effect follows from an accountability decision. Native review/controller
-bindings and rehearsal departure, checkpoint and closeout workflows remain
-subsequent integration work.
+provider effect follows from an accountability decision.
+
+Native bootstrap now parses these reviews into immutable, bounded visit evidence
+and distinct actionable/observed rows. Clock and episode identities match the
+backend; foreign or incomplete rosters, fractional revisions, leaked audit fields
+and inconsistent availability are rejected. Missing legacy projections stay null.
+The shared live disposition enum supplies returned, departed and unresolved.
+Only an actionable row from the current review can construct the typed rehearsal
+command; it cannot supply a live command context.
+
+`EventRehearsalAccountabilityController` retains one immutable pending decision
+per synthetic guest, rehearsal generation and uninterrupted account session.
+Duplicate or reentrant taps share that request. A refresh or closed sheet cannot
+replace an uncertain decision, including after a retry is rate-limited; sign-out,
+account changes and authentication errors retire it. The generic assistance
+editor rejects these commands so it cannot replace their retry owner.
+Immediate confirmation must match the visit, disposition, revision and virtual
+time. Exact retries verify the original receipt while preserving later visits,
+departures and corrections. Successful decisions refresh runtime and review
+providers. Host screen mounting and rehearsal departure, checkpoint and closeout
+workflows remain subsequent integration work.
 
 ### Saved assistance settings
 

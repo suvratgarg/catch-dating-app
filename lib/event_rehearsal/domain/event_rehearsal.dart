@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_accountability.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
@@ -448,6 +449,7 @@ class EventRehearsalBootstrap {
     required this.canUseInternalFaults,
     this.helpRequests,
     this.deliveryReviews,
+    this.accountabilityReviews,
   });
 
   factory EventRehearsalBootstrap.fromCallableData(Object? data) {
@@ -462,6 +464,13 @@ class EventRehearsalBootstrap {
     return EventRehearsalBootstrap(
       session: session,
       actors: actors,
+      accountabilityReviews: !map.containsKey('accountabilityReviews')
+          ? null
+          : RehearsalAccountabilityReviews.fromJson(
+              map['accountabilityReviews'],
+              session: session,
+              actors: actors,
+            ),
       deliveryReviews: map['deliveryReviews'] == null
           ? null
           : RehearsalDeliveryReviews.fromJson(
@@ -492,6 +501,7 @@ class EventRehearsalBootstrap {
   final bool canUseInternalFaults;
   final RehearsalHelpRequests? helpRequests;
   final RehearsalDeliveryReviews? deliveryReviews;
+  final RehearsalAccountabilityReviews? accountabilityReviews;
 
   int get presentCount => actors
       .where(
@@ -563,8 +573,12 @@ String _requiredString(Map<Object?, Object?> map, String key) {
 
 int _requiredInt(Map<Object?, Object?> map, String key) {
   final value = map[key];
-  if (value is int) return value;
-  if (value is num) return value.toInt();
+  if (value is num &&
+      value.isFinite &&
+      value.abs() <= 9007199254740991 &&
+      value == value.truncateToDouble()) {
+    return value.toInt();
+  }
   throw FormatException('$key must be an integer.');
 }
 

@@ -171,6 +171,11 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
           'Use the delivery review to take over this message.',
         );
       }
+      if (command is RehearsalResolveAccountability) {
+        throw const ValidationException(
+          'Use the visit review to record this decision.',
+        );
+      }
       final change = command == null
           ? null
           : RehearsalAssistanceChange(

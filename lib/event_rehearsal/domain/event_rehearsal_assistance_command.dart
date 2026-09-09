@@ -1,15 +1,19 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_accountability.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_automation.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_outcome.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
 export 'event_rehearsal_delivery_outcome.dart';
+
+part 'event_rehearsal_accountability_command.dart';
 
 sealed class RehearsalAssistanceCommand {
   RehearsalAssistanceCommand(this.actorId) {
@@ -250,6 +254,7 @@ final class RehearsalAssistanceChange {
               EventRehearsalStatus.paused,
             ].contains(session.status) ||
             (command is RehearsalRecordReceipt ||
+                    command is RehearsalResolveAccountability ||
                     command is RehearsalResolveAssistance) &&
                 session.status == EventRehearsalStatus.complete)) {
       throw const FormatException(
@@ -276,6 +281,17 @@ final class RehearsalAssistanceChange {
               ) ??
               false)) {
         throw const FormatException('Review the current practice delivery.');
+      }
+    }
+    if (command case RehearsalResolveAccountability(snapshot: final visit)) {
+      if (visit.scope.sessionId != session.id ||
+          visit.scope.organizerId != session.organizerId ||
+          visit.scope.setupRevision != session.setupRevision ||
+          !(snapshot.accountabilityReviews?.rows.any(
+                (r) => identical(r, visit),
+              ) ??
+              false)) {
+        throw const FormatException('Review the current practice visit.');
       }
     }
   }
@@ -316,6 +332,15 @@ final class RehearsalAssistanceChange {
         throw const FormatException('Ambiguous practice handoff receipt.');
       }
       handoff._requireResult(session, result);
+    }
+    if (command case final RehearsalResolveAccountability decision) {
+      if (result.actions
+              .where((a) => a.clientActionId == clientActionId)
+              .length !=
+          1) {
+        throw const FormatException('Ambiguous practice visit receipt.');
+      }
+      decision._requireResult(session, result);
     }
   }
 }
