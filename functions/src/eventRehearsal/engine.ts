@@ -1,4 +1,6 @@
 import {advancePracticeVisit, initialPracticeVisit} from "./visitState";
+import {advancePracticeParticipation, initialPracticeParticipation} from
+  "./participation";
 import type {
   EventRehearsalActorDocument,
   EventRehearsalDocument,
@@ -140,6 +142,7 @@ export function buildRehearsalActors(
       persona: personas[(index + seed) % personas.length] ?? "regular",
       status: "expected",
       visit: initialPracticeVisit(),
+      participation: initialPracticeParticipation(),
       connectionState: "connected",
       guestMoment: "welcome",
       optedOut: false,
@@ -325,9 +328,9 @@ export function applyRehearsalBehavior(
     patch.connectionState = "connected";
     break;
   }
-  return advancePracticeVisit(actor,
+  return advancePracticeParticipation(actor, advancePracticeVisit(actor,
     {...actor, ...patch, lastActionAt: now, updatedAt: now}, virtualNowMillis,
-    ["arrive", "arriveLate", "return", "resolveClaim"].includes(behavior));
+    ["arrive", "arriveLate", "return", "resolveClaim"].includes(behavior)));
 }
 
 /** Applies a bounded Room move without escaping the synthetic actor domain. */

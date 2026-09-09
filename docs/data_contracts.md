@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.98.0
+version: 1.99.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -49,6 +49,18 @@ Do not hand-edit generated outputs. Change the contract source, run the schema
 generator, and commit the generated diff.
 
 ### Rehearsal Assistance Generation
+
+`event_rehearsal_membership.schema.json` adds optional callable-owned actor
+`participation` and `groupMembership` state and a private `membershipReviews`
+bootstrap. The rehearsal `transferGroup` command references the canonical live
+payload and accepted/transfer shapes while retaining synthetic clock and episode
+identity. Membership has one accepted group and one optional handover; proposal
+does not replace acceptance. Physical attendance and table placement remain
+separate. The parent action receipt, setup/runtime generation, participation and
+membership revisions, current manager authority, selected source hash and virtual
+deadline fence each mutation. New actors initialize participation explicitly;
+legacy actors do not fabricate it. Reset removes the actor state. No new live
+collection, guest response field or direct client-write permission is introduced.
 
 `controlEventRehearsal` requires `expectedSetupRevision` for assistance commands,
 alongside the runtime revision and immutable client action id. Reset increments

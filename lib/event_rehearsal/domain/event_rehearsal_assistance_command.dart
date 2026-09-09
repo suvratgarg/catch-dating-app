@@ -6,14 +6,17 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistan
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_outcome.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_membership_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
 export 'event_rehearsal_delivery_outcome.dart';
 
 part 'event_rehearsal_accountability_command.dart';
+part 'event_rehearsal_membership_command.dart';
 
 sealed class RehearsalAssistanceCommand {
   RehearsalAssistanceCommand(this.actorId) {
@@ -255,6 +258,7 @@ final class RehearsalAssistanceChange {
             ].contains(session.status) ||
             (command is RehearsalRecordReceipt ||
                     command is RehearsalResolveAccountability ||
+                    command is RehearsalTransferGroup ||
                     command is RehearsalResolveAssistance) &&
                 session.status == EventRehearsalStatus.complete)) {
       throw const FormatException(
@@ -292,6 +296,17 @@ final class RehearsalAssistanceChange {
               ) ??
               false)) {
         throw const FormatException('Review the current practice visit.');
+      }
+    }
+    if (command case RehearsalTransferGroup(snapshot: final membership)) {
+      if (membership.scope.sessionId != session.id ||
+          membership.scope.organizerId != session.organizerId ||
+          membership.scope.setupRevision != session.setupRevision ||
+          !(snapshot.membershipReviews?.rows.any(
+                (r) => identical(r, membership),
+              ) ??
+              false)) {
+        throw const FormatException('Review the current practice membership.');
       }
     }
   }
@@ -339,6 +354,15 @@ final class RehearsalAssistanceChange {
               .length !=
           1) {
         throw const FormatException('Ambiguous practice visit receipt.');
+      }
+      decision._requireResult(session, result);
+    }
+    if (command case final RehearsalTransferGroup decision) {
+      if (result.actions
+              .where((a) => a.clientActionId == clientActionId)
+              .length !=
+          1) {
+        throw const FormatException('Ambiguous practice membership receipt.');
       }
       decision._requireResult(session, result);
     }

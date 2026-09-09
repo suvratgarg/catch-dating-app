@@ -30341,6 +30341,76 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalActorDocumentGroupMembershipAcceptedAcceptedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.accepted.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentGroupMembershipAcceptedGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.accepted.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalActorDocumentGroupMembershipAcceptedGroupSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.accepted.groupSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalActorDocumentGroupMembershipAcceptedResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.accepted.responsibleOperatorId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentGroupMembershipClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalActorDocumentGroupMembershipCreatedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentGroupMembershipEpisodeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.episodeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^episode:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalActorDocumentGroupMembershipRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentGroupMembershipUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.groupMembership.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalActorDocumentGuestMoment = CatchContractFieldConstraints(
     path: 'eventRehearsalActorDocument.guestMoment',
     required: true,
@@ -30396,6 +30466,28 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalActorDocument.optedOut',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalActorDocumentParticipationEpisodeRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.participation.episodeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentParticipationRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.participation.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentParticipationState = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.participation.state',
+    required: true,
+    enumValues: <String>['active', 'departed', 'pending'],
   );
 
   static const eventRehearsalActorDocumentPersona = CatchContractFieldConstraints(
@@ -31482,6 +31574,195 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsCoverage = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.coverage',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsReceivingOperatorIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.receivingOperatorIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 42,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsReceivingOperatorIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.receivingOperatorIds.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRows = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAcceptedAcceptedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.accepted.acceptedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAcceptedGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.accepted.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAcceptedGroupSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.accepted.groupSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAcceptedResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.accepted.responsibleOperatorId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsActions = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.actions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['place', 'propose', 'accept', 'reject', 'cancel', 'leave'],
+    maxItems: 6,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsActionsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.actions.items',
+    required: true,
+    enumValues: <String>['place', 'propose', 'accept', 'reject', 'cancel', 'leave'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAvailability = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.availability',
+    required: true,
+    enumValues: <String>['ready', 'notApplicable', 'participationNotRecorded', 'invalidSource'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsEpisodeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsFreshness = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.freshness',
+    required: true,
+    enumValues: <String>['uninitialized', 'current', 'sourceChanged'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.groups',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 40,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsGroupsItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.groups.items.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.groups.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsParticipationRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.participationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsReady = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.ready',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsServerTime = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsTransferState = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.transferState',
+    required: true,
+    enumValues: <String>['none', 'pending', 'expired', 'sourceChanged', 'accepted', 'rejected', 'cancelled'],
   );
 
   static const eventRehearsalBootstrapCallableResponseSessionActionCount = CatchContractFieldConstraints(
@@ -88935,6 +89216,15 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActorDocument.createdAt._nanoseconds': eventRehearsalActorDocumentCreatedAtNanoseconds,
     'eventRehearsalActorDocument.createdAt._seconds': eventRehearsalActorDocumentCreatedAtSeconds,
     'eventRehearsalActorDocument.displayName': eventRehearsalActorDocumentDisplayName,
+    'eventRehearsalActorDocument.groupMembership.accepted.acceptedAt': eventRehearsalActorDocumentGroupMembershipAcceptedAcceptedAt,
+    'eventRehearsalActorDocument.groupMembership.accepted.groupId': eventRehearsalActorDocumentGroupMembershipAcceptedGroupId,
+    'eventRehearsalActorDocument.groupMembership.accepted.groupSourceHash': eventRehearsalActorDocumentGroupMembershipAcceptedGroupSourceHash,
+    'eventRehearsalActorDocument.groupMembership.accepted.responsibleOperatorId': eventRehearsalActorDocumentGroupMembershipAcceptedResponsibleOperatorId,
+    'eventRehearsalActorDocument.groupMembership.clockId': eventRehearsalActorDocumentGroupMembershipClockId,
+    'eventRehearsalActorDocument.groupMembership.createdAt': eventRehearsalActorDocumentGroupMembershipCreatedAt,
+    'eventRehearsalActorDocument.groupMembership.episodeId': eventRehearsalActorDocumentGroupMembershipEpisodeId,
+    'eventRehearsalActorDocument.groupMembership.revision': eventRehearsalActorDocumentGroupMembershipRevision,
+    'eventRehearsalActorDocument.groupMembership.updatedAt': eventRehearsalActorDocumentGroupMembershipUpdatedAt,
     'eventRehearsalActorDocument.guestMoment': eventRehearsalActorDocumentGuestMoment,
     'eventRehearsalActorDocument.helpRequested': eventRehearsalActorDocumentHelpRequested,
     'eventRehearsalActorDocument.keepApartActorIds': eventRehearsalActorDocumentKeepApartActorIds,
@@ -88943,6 +89233,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActorDocument.lastActionAt._seconds': eventRehearsalActorDocumentLastActionAtSeconds,
     'eventRehearsalActorDocument.layoutUnitId': eventRehearsalActorDocumentLayoutUnitId,
     'eventRehearsalActorDocument.optedOut': eventRehearsalActorDocumentOptedOut,
+    'eventRehearsalActorDocument.participation.episodeRevision': eventRehearsalActorDocumentParticipationEpisodeRevision,
+    'eventRehearsalActorDocument.participation.revision': eventRehearsalActorDocumentParticipationRevision,
+    'eventRehearsalActorDocument.participation.state': eventRehearsalActorDocumentParticipationState,
     'eventRehearsalActorDocument.persona': eventRehearsalActorDocumentPersona,
     'eventRehearsalActorDocument.promptCompleted': eventRehearsalActorDocumentPromptCompleted,
     'eventRehearsalActorDocument.sessionId': eventRehearsalActorDocumentSessionId,
@@ -89096,6 +89389,31 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.helpRequests.coverage': eventRehearsalBootstrapCallableResponseHelpRequestsCoverage,
     'eventRehearsalBootstrapCallableResponse.helpRequests.untrackedActorIds': eventRehearsalBootstrapCallableResponseHelpRequestsUntrackedActorIds,
     'eventRehearsalBootstrapCallableResponse.helpRequests.untrackedActorIds.items': eventRehearsalBootstrapCallableResponseHelpRequestsUntrackedActorIdsItems,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.actorUid': eventRehearsalBootstrapCallableResponseMembershipReviewsActorUid,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.clockId': eventRehearsalBootstrapCallableResponseMembershipReviewsClockId,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.coverage': eventRehearsalBootstrapCallableResponseMembershipReviewsCoverage,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.receivingOperatorIds': eventRehearsalBootstrapCallableResponseMembershipReviewsReceivingOperatorIds,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.receivingOperatorIds.items': eventRehearsalBootstrapCallableResponseMembershipReviewsReceivingOperatorIdsItems,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows': eventRehearsalBootstrapCallableResponseMembershipReviewsRows,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.accepted.acceptedAt': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAcceptedAcceptedAt,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.accepted.groupId': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAcceptedGroupId,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.accepted.groupSourceHash': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAcceptedGroupSourceHash,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.accepted.responsibleOperatorId': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAcceptedResponsibleOperatorId,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.actions': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsActions,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.actions.items': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsActionsItems,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.attendeeId': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAttendeeId,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.availability': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsAvailability,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.episodeId': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsEpisodeId,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.freshness': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsFreshness,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.groups': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsGroups,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.groups.items.groupId': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsGroupsItemsGroupId,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.groups.items.label': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsGroupsItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.participationRevision': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsParticipationRevision,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.ready': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsReady,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.revision': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsRevision,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.serverTime': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsServerTime,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.sourceHash': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.transferState': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsTransferState,
     'eventRehearsalBootstrapCallableResponse.session.actionCount': eventRehearsalBootstrapCallableResponseSessionActionCount,
     'eventRehearsalBootstrapCallableResponse.session.activeStepIndex': eventRehearsalBootstrapCallableResponseSessionActiveStepIndex,
     'eventRehearsalBootstrapCallableResponse.session.actorCount': eventRehearsalBootstrapCallableResponseSessionActorCount,

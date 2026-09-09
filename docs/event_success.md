@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.106.0
+version: 1.107.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1450,6 +1450,34 @@ controller and observation semantics above.
 
 ### Guest group membership and handovers
 
+Rehearsal now executes the same six membership decisions through
+`controlEventRehearsal` with `assistance.kind: transferGroup`. The live and
+rehearsal stores share `membershipDecisions.ts`; each retains its own context,
+authority, persistence and receipts. Current organizer managers can place a
+synthetic guest in a saved pace group, propose a handover to another current
+manager, accept or reject a handover addressed to them, cancel it, or remove the
+membership. Proposal does not move the guest. Only acceptance atomically replaces
+the single accepted group. Delegated rehearsal group duties remain separate work.
+
+Synthetic actors now have explicit participation revisions and re-entry episodes.
+First arrival, reconnecting, social opt-out and seating changes preserve group
+membership. Departure or pending admission withholds new placement/acceptance;
+re-entry creates a new episode and makes prior membership historical. Old actors
+without participation evidence remain unavailable until reset. Clock generation,
+actor creation evidence, source hash, both revisions, current manager authority,
+deadlines and the parent 500-action limit fence changes. Reset drops the actor
+state; exact retries return the current result without restoring an earlier group.
+Complete sessions permit cancellation, rejection and removal, not new handovers.
+
+The private `membershipReviews` bootstrap covers the entire bounded synthetic
+roster, including explicit non-applicability for events without pace groups. It
+does not expose group audit data to guest pages or write live memberships. Native
+readers and commands reuse `AssistanceMembershipFacts` and the shared membership
+decision validation/confirmation logic. The ordinary assistance editor cannot
+submit group changes; a dedicated pending-command controller and runtime screen
+composition remain integration work. Rehearsal joining guidance still needs to
+consume accepted membership, alongside the departure and checkpoint adapters.
+
 `getEventAssistanceMembership` and `transferEventAssistanceGroup` own one
 accepted moving-group membership per guest, independently of physical attendance,
 social allocation, seating, joining intent and message consent. Memberships apply
@@ -1528,7 +1556,7 @@ removal, a replaced source or a new participation episode withholds stale group
 instructions. The next valid publication can update the existing workflow link.
 This does not infer a guest's location, check-in or actual arrival at a checkpoint.
 Host roster controls, bulk setup, operator handover queues, explicit responsibility
-reassignment and rehearsal adapters remain integration work. The dormant live
+reassignment and the remaining rehearsal adapters remain integration work. The dormant live
 late-join worker now consumes membership-change signals; it does not execute
 automatic reassignment or other membership workflows.
 

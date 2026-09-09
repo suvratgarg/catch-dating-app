@@ -3,6 +3,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistan
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_view.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
@@ -450,6 +451,7 @@ class EventRehearsalBootstrap {
     this.helpRequests,
     this.deliveryReviews,
     this.accountabilityReviews,
+    this.membershipReviews,
   });
 
   factory EventRehearsalBootstrap.fromCallableData(Object? data) {
@@ -464,6 +466,13 @@ class EventRehearsalBootstrap {
     return EventRehearsalBootstrap(
       session: session,
       actors: actors,
+      membershipReviews: !map.containsKey('membershipReviews')
+          ? null
+          : RehearsalMembershipReviews.fromJson(
+              map['membershipReviews'],
+              session: session,
+              actors: actors,
+            ),
       accountabilityReviews: !map.containsKey('accountabilityReviews')
           ? null
           : RehearsalAccountabilityReviews.fromJson(
@@ -502,6 +511,7 @@ class EventRehearsalBootstrap {
   final RehearsalHelpRequests? helpRequests;
   final RehearsalDeliveryReviews? deliveryReviews;
   final RehearsalAccountabilityReviews? accountabilityReviews;
+  final RehearsalMembershipReviews? membershipReviews;
 
   int get presentCount => actors
       .where(

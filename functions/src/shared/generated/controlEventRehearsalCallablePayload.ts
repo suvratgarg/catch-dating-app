@@ -360,6 +360,44 @@ export interface ControlEventRehearsalCallablePayload {
           disposition: "returned" | "departed" | "unresolved";
         };
         expectedSourceHash: string;
+      }
+    | {
+        kind: "transferGroup";
+        actorId: string;
+        payload: {
+          attendeeId: string;
+          episodeId: string;
+          expectedParticipationRevision: number;
+          expectedMembershipRevision: number;
+          decision:
+            | {
+                kind: "place";
+                groupId: string;
+              }
+            | {
+                kind: "propose";
+                from: string | null;
+                to: string;
+                receivingOperatorId: string;
+                expiresAtMillis: number;
+              }
+            | {
+                kind: "accept";
+                transferId: string;
+              }
+            | {
+                kind: "reject";
+                transferId: string;
+              }
+            | {
+                kind: "cancel";
+                transferId: string;
+              }
+            | {
+                kind: "leave";
+              };
+        };
+        expectedSourceHash: string;
       };
   expectedSetupRevision?: number;
 }

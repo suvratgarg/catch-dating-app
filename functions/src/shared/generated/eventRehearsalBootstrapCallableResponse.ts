@@ -870,4 +870,93 @@ export interface EventRehearsalBootstrapCallableResponse {
       canResolve: boolean;
     }[];
   };
+  membershipReviews?: {
+    clockId: string;
+    actorUid: string;
+    coverage: "boundedSession";
+    /**
+     * @maxItems 42
+     */
+    receivingOperatorIds: string[];
+    /**
+     * @maxItems 50
+     */
+    rows: {
+      attendeeId: string;
+      sourceHash: string;
+      serverTime: number;
+      revision: number;
+      episodeId: string | null;
+      participationRevision: number;
+      freshness: "uninitialized" | "current" | "sourceChanged";
+      ready: boolean;
+      accepted: {
+        groupId: string;
+        groupSourceHash: string;
+        responsibleOperatorId: string;
+        acceptedAt: number;
+      } | null;
+      transfer:
+        | (
+            | {
+                transferId: string;
+                from: string | null;
+                to: string;
+                targetSourceHash: string;
+                receivingOperatorId: string;
+                requestedBy: string;
+                requestedAt: number;
+                expiresAt: number;
+                status: "pending";
+                resolvedAt: null;
+                resolvedBy: null;
+              }
+            | {
+                transferId: string;
+                from: string | null;
+                to: string;
+                targetSourceHash: string;
+                receivingOperatorId: string;
+                requestedBy: string;
+                requestedAt: number;
+                expiresAt: number;
+                status: "accepted" | "rejected" | "cancelled";
+                resolvedAt: number;
+                resolvedBy: string;
+              }
+          )
+        | null;
+      transferState:
+        | "none"
+        | "pending"
+        | "expired"
+        | "sourceChanged"
+        | "accepted"
+        | "rejected"
+        | "cancelled";
+      /**
+       * @maxItems 40
+       */
+      groups: {
+        groupId: string;
+        label: string;
+      }[];
+      /**
+       * @maxItems 6
+       */
+      actions: (
+        | "place"
+        | "propose"
+        | "accept"
+        | "reject"
+        | "cancel"
+        | "leave"
+      )[];
+      availability:
+        | "ready"
+        | "notApplicable"
+        | "participationNotRecorded"
+        | "invalidSource";
+    }[];
+  };
 }

@@ -249,6 +249,7 @@ test("legacy reconnection cannot invent an arrival", () => {
   const actor = {...buildRehearsalActors("session-1", 2, 7, now)[0],
     status: "disconnected" as const};
   delete actor.connectionState;
+  delete actor.participation;
   assert.equal(rehearsalActorConnectionState(actor), "disconnected");
   const connected = applyRehearsalBehavior(actor, "reconnect", [], now);
   assert.equal(connected.status, "disconnected");

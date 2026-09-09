@@ -98,9 +98,8 @@ final class AssistanceChangedMembership extends AssistanceMembershipRecord {
   final AssistanceMembershipTransfer? transfer;
 }
 
-final class EventAssistanceMembershipView {
-  const EventAssistanceMembershipView._({
-    required this.scope,
+final class AssistanceMembershipFacts {
+  const AssistanceMembershipFacts._({
     required this.sourceHash,
     required this.serverTime,
     required this.episodeId,
@@ -110,7 +109,6 @@ final class EventAssistanceMembershipView {
     required this.groups,
     required this.actions,
   });
-  final EventAssistanceGuestScope scope;
   final String sourceHash;
   final int serverTime, participationRevision;
   final String? episodeId;
@@ -126,13 +124,8 @@ final class EventAssistanceMembershipView {
     AssistanceChangedMembership() => null,
   };
 
-  factory EventAssistanceMembershipView.fromJson(
-    Object? value, {
-    required EventAssistanceGuestScope expectedScope,
-  }) {
+  factory AssistanceMembershipFacts.fromJson(Object? value) {
     final map = assistanceObject(value, {
-      'context',
-      'attendeeId',
       'sourceHash',
       'serverTime',
       'revision',
@@ -146,17 +139,6 @@ final class EventAssistanceMembershipView {
       'groups',
       'actions',
     });
-    final context = assistanceObject(map['context'], {
-      'mode',
-      'eventId',
-      'organizerId',
-    });
-    if (context['mode'] != 'live' ||
-        context['eventId'] != expectedScope.eventId ||
-        context['organizerId'] != expectedScope.organizerId ||
-        map['attendeeId'] != expectedScope.attendeeId) {
-      throw const FormatException('Group membership scope mismatch.');
-    }
     final now = assistanceInteger(map['serverTime']);
     final revision = assistanceInteger(map['revision']);
     final episode = map['episodeId'] == null
@@ -246,8 +228,7 @@ final class EventAssistanceMembershipView {
         )) {
       throw const FormatException('Inconsistent membership actions.');
     }
-    return EventAssistanceMembershipView._(
-      scope: expectedScope,
+    return AssistanceMembershipFacts._(
       sourceHash: assistanceHash(map['sourceHash']),
       serverTime: now,
       episodeId: episode,
@@ -256,6 +237,64 @@ final class EventAssistanceMembershipView {
       membership: membership,
       groups: List.unmodifiable(groups),
       actions: Set.unmodifiable(actions),
+    );
+  }
+}
+
+final class EventAssistanceMembershipView {
+  const EventAssistanceMembershipView._(this.scope, this.facts);
+  final EventAssistanceGuestScope scope;
+  final AssistanceMembershipFacts facts;
+  String get sourceHash => facts.sourceHash;
+  int get serverTime => facts.serverTime;
+  int get participationRevision => facts.participationRevision;
+  String? get episodeId => facts.episodeId;
+  bool get ready => facts.ready;
+  AssistanceMembershipRecord get membership => facts.membership;
+  List<AssistanceMembershipGroup> get groups => facts.groups;
+  Set<AssistanceMembershipAction> get actions => facts.actions;
+  int get revision => facts.revision;
+  AssistanceMembershipTransfer? get transfer => facts.transfer;
+  AssistanceAcceptedGroup? get accepted => facts.accepted;
+
+  factory EventAssistanceMembershipView.fromJson(
+    Object? value, {
+    required EventAssistanceGuestScope expectedScope,
+  }) {
+    final map = assistanceObject(value, {
+      'context',
+      'attendeeId',
+      'sourceHash',
+      'serverTime',
+      'revision',
+      'episodeId',
+      'participationRevision',
+      'freshness',
+      'ready',
+      'accepted',
+      'transfer',
+      'transferState',
+      'groups',
+      'actions',
+    });
+    final context = assistanceObject(map['context'], {
+      'mode',
+      'eventId',
+      'organizerId',
+    });
+    if (context['mode'] != 'live' ||
+        context['eventId'] != expectedScope.eventId ||
+        context['organizerId'] != expectedScope.organizerId ||
+        map['attendeeId'] != expectedScope.attendeeId) {
+      throw const FormatException('Group membership scope mismatch.');
+    }
+    return EventAssistanceMembershipView._(
+      expectedScope,
+      AssistanceMembershipFacts.fromJson({
+        for (final entry in map.entries)
+          if (entry.key != 'context' && entry.key != 'attendeeId')
+            entry.key: entry.value,
+      }),
     );
   }
 }

@@ -115,6 +115,7 @@ import {practiceMessageDocumentId, practiceMessageView, practiceDeliveryView,
 import {preparePracticeHelp, practiceHelpProjection, rehearsalCases} from
   "./assistanceCases";
 import {practiceDeliveryReviews} from "./assistanceDelivery";
+import {practiceMembershipProjection} from "./membership";
 
 const sessions = "eventRehearsals";
 const actors = "eventRehearsalActors";
@@ -264,7 +265,7 @@ export async function controlEventRehearsalHandler(
   const authorized = await requireHostSession(db, data.sessionId, uid);
   const sessionRef = db.collection(sessions).doc(data.sessionId);
   const actorQuery = db.collection(actors)
-    .where("sessionId", "==", data.sessionId);
+    .where("sessionId", "==", data.sessionId).limit(51);
   const actionRef = db.collection(actions)
     .doc(eventRehearsalActionDocumentId(
       data.sessionId,
@@ -288,6 +289,7 @@ export async function controlEventRehearsalHandler(
     ]);
     const session = requireSession(sessionSnap);
     requireAssistanceGeneration(session, data);
+    const organizer = await requireCurrentHostAuthority(db, tx, session, uid);
     if (actionSnap.exists) {
       requireAssistanceReceipt(actionSnap, requestHash,
         data.action === "assistance");
@@ -301,9 +303,13 @@ export async function controlEventRehearsalHandler(
         "Rehearsal roster is too large."
       );
     }
-    const organizer = await requireCurrentHostAuthority(db, tx, session, uid);
     if (data.action === "assistance") {
       const command = data.assistance!;
+      if (command.kind === "transferGroup") {
+        practiceMembershipProjection(data.sessionId, session,
+          actorSnaps.docs.map((doc) => requireDoc<EventRehearsalActorDocument>(
+            doc, "EventRehearsalActorDocument")), {organizer, actorUid: uid});
+      }
       const target = actorSnaps.docs.find((doc) =>
         doc.data().actorId === command.actorId);
       if (!target) {
@@ -1172,6 +1178,9 @@ async function requireCurrentHostAuthority(db: Firestore,
     .doc(session.organizerId));
   const organizer = requireDoc<OrganizerDocument>(snapshot,
     "OrganizerDocument");
+  if (session.expiresAt.toMillis() <= Date.now()) {
+    throw new HttpsError("not-found", "This dress rehearsal has expired.");
+  }
   if (!isOrganizerManager(organizer, uid)) {
     throw new HttpsError("permission-denied", "Host authority changed.");
   }
@@ -1220,7 +1229,7 @@ async function hostProjection(
   request: CallableRequest<unknown>,
 ): Promise<EventRehearsalBootstrapCallableResponse> {
   const [actorSnaps, actionSnaps] = await Promise.all([
-    db.collection(actors).where("sessionId", "==", sessionId).limit(50).get(),
+    db.collection(actors).where("sessionId", "==", sessionId).limit(51).get(),
     db.collection(actions).where("sessionId", "==", sessionId)
       .limit(REHEARSAL_MAX_ACTIONS).get(),
   ]);
@@ -1253,6 +1262,8 @@ async function hostProjection(
     deliveryReviews,
     accountabilityReviews: practiceAccountabilityProjection(sessionId,
       session, actorValues),
+    membershipReviews: practiceMembershipProjection(sessionId, session,
+      actorValues, {organizer, actorUid: requireAuth(request)}),
     session: {
       id: sessionId,
       organizerId: session.organizerId,

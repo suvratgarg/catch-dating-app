@@ -430,6 +430,9 @@
         },
         {
           "$ref": "event_rehearsal_accountability.schema.json#/definitions/command"
+        },
+        {
+          "$ref": "event_rehearsal_membership.schema.json#/definitions/command"
         }
       ],
       "type": "object"

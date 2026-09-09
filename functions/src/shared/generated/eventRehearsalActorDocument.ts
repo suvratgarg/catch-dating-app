@@ -411,4 +411,52 @@ export interface EventRehearsalActorDocument {
       resolvedBy: string;
     } | null;
   };
+  participation?: {
+    revision: number;
+    episodeRevision: number;
+    state: "active" | "departed" | "pending";
+  };
+  groupMembership?: {
+    clockId: string;
+    episodeId: string;
+    revision: number;
+    accepted: {
+      groupId: string;
+      groupSourceHash: string;
+      responsibleOperatorId: string;
+      acceptedAt: number;
+    } | null;
+    transfer:
+      | (
+          | {
+              transferId: string;
+              from: string | null;
+              to: string;
+              targetSourceHash: string;
+              receivingOperatorId: string;
+              requestedBy: string;
+              requestedAt: number;
+              expiresAt: number;
+              status: "pending";
+              resolvedAt: null;
+              resolvedBy: null;
+            }
+          | {
+              transferId: string;
+              from: string | null;
+              to: string;
+              targetSourceHash: string;
+              receivingOperatorId: string;
+              requestedBy: string;
+              requestedAt: number;
+              expiresAt: number;
+              status: "accepted" | "rejected" | "cancelled";
+              resolvedAt: number;
+              resolvedBy: string;
+            }
+        )
+      | null;
+    createdAt: number;
+    updatedAt: number;
+  };
 }

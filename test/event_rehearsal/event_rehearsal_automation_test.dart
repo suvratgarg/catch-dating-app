@@ -17,6 +17,7 @@ import 'package:json_schema/json_schema.dart';
 import 'event_rehearsal_accountability_fixtures.dart';
 import 'event_rehearsal_assistance_fixtures.dart';
 import 'event_rehearsal_delivery_fixtures.dart';
+import 'event_rehearsal_membership_fixtures.dart';
 
 void main() {
   final guidance = practicePlan().toJson()['guidance'];
@@ -81,6 +82,7 @@ void main() {
       RehearsalResumeAutomation(actorId: 'actor-01'),
       practiceDeliveryChange().command,
       practiceVisitChange().command,
+      practiceMembershipChange().command,
       RehearsalResolveAssistance(
         snapshot:
             EventRehearsalBootstrap.fromCallableData(

@@ -46,6 +46,9 @@
     },
     "accountabilityReviews": {
       "$ref": "../shared/event_rehearsal_accountability.schema.json#/definitions/reviews"
+    },
+    "membershipReviews": {
+      "$ref": "../shared/event_rehearsal_membership.schema.json#/definitions/reviews"
     }
   },
   "definitions": {
