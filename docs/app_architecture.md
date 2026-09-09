@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.57.0
+version: 1.58.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -2372,6 +2372,8 @@ or implementation technique cannot justify a second shared implementation.
   `CatchFieldGeometryScopeVariant` publishes the resolved paint silhouette.
   Policy and resolved geometry stay distinct: only a contained section can
   establish a section clip, and gutter ownership does not imply a paint shape.
+  Editorial display sizes are the `CatchTextStylesSize` axis of the typography
+  foundation.
 - **Slots.** `leading`, `trailing`, `title`, `subtitle`, `kicker`, `meta`,
   `body`, `footer`, `actions`, `media`, `mediaOverlay`, `child`, `children`;
   builders end in `Builder`; callbacks start with `on`.

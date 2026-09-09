@@ -120,7 +120,7 @@ class ClubHeroAppBar extends StatelessWidget {
             ),
             style: CatchTextStyles.clubDisplay(
               context,
-              step: CatchDisplayStep.m,
+              step: CatchTextStylesSize.m,
               height: CatchLayout.clubDetailHeroCollapsedTitleLineHeight,
               color: t.ink,
             ),
@@ -230,7 +230,7 @@ double _heroCaptionExtentFor(
       text: title,
       style: CatchTextStyles.clubDisplay(
         context,
-        step: CatchDisplayStep.l,
+        step: CatchTextStylesSize.l,
         height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
         color: t.ink,
       ),
@@ -372,7 +372,7 @@ class ClubHeroModule extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.clubDisplay(
                 context,
-                step: CatchDisplayStep.l,
+                step: CatchTextStylesSize.l,
                 height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
                 color: t.ink,
               ),
@@ -478,7 +478,7 @@ class ClubHeroModule extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.clubDisplay(
                   context,
-                  step: CatchDisplayStep.l,
+                  step: CatchTextStylesSize.l,
                   height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
                   color: t.ink,
                 ),

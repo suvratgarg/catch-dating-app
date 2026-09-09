@@ -151,7 +151,7 @@ class CatchEventCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: CatchTextStyles.eventDisplay(
                             context,
-                            step: CatchDisplayStep.s,
+                            step: CatchTextStylesSize.s,
                             height: 1.02,
                           ),
                         ),

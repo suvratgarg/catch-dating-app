@@ -908,13 +908,13 @@ final _styleRegistry = <_StyleEntry>[
     parametric: true,
     samples: {
       's': (context) =>
-          CatchTextStyles.clubDisplay(context, step: CatchDisplayStep.s),
+          CatchTextStyles.clubDisplay(context, step: CatchTextStylesSize.s),
       'm': (context) =>
-          CatchTextStyles.clubDisplay(context, step: CatchDisplayStep.m),
+          CatchTextStyles.clubDisplay(context, step: CatchTextStylesSize.m),
       'l': (context) =>
-          CatchTextStyles.clubDisplay(context, step: CatchDisplayStep.l),
+          CatchTextStyles.clubDisplay(context, step: CatchTextStylesSize.l),
       'xl': (context) =>
-          CatchTextStyles.clubDisplay(context, step: CatchDisplayStep.xl),
+          CatchTextStyles.clubDisplay(context, step: CatchTextStylesSize.xl),
     },
   ),
   _StyleEntry(
@@ -923,13 +923,13 @@ final _styleRegistry = <_StyleEntry>[
     parametric: true,
     samples: {
       's': (context) =>
-          CatchTextStyles.eventDisplay(context, step: CatchDisplayStep.s),
+          CatchTextStyles.eventDisplay(context, step: CatchTextStylesSize.s),
       'm': (context) =>
-          CatchTextStyles.eventDisplay(context, step: CatchDisplayStep.m),
+          CatchTextStyles.eventDisplay(context, step: CatchTextStylesSize.m),
       'l': (context) =>
-          CatchTextStyles.eventDisplay(context, step: CatchDisplayStep.l),
+          CatchTextStyles.eventDisplay(context, step: CatchTextStylesSize.l),
       'xl': (context) =>
-          CatchTextStyles.eventDisplay(context, step: CatchDisplayStep.xl),
+          CatchTextStyles.eventDisplay(context, step: CatchTextStylesSize.xl),
     },
   ),
   _StyleEntry.single('eventTitle', 'voice', CatchTextStyles.eventTitle),

@@ -107,7 +107,7 @@ class ExploreExternalEventRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.eventDisplay(
                 context,
-                step: CatchDisplayStep.m,
+                step: CatchTextStylesSize.m,
                 height: 1.02,
               ),
             ),
@@ -185,7 +185,7 @@ class ThisWeekRecommendationsSection extends StatelessWidget {
           padding: EdgeInsets.zero,
           titleStyle: CatchTextStyles.clubDisplay(
             context,
-            step: CatchDisplayStep.xl,
+            step: CatchTextStylesSize.xl,
             height: 0.92,
           ),
         ),

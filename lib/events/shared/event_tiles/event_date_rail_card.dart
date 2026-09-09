@@ -134,7 +134,7 @@ class EventDateRailCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: CatchTextStyles.eventDisplay(
                         context,
-                        step: CatchDisplayStep.s,
+                        step: CatchTextStylesSize.s,
                         height: 1.06,
                       ),
                     ),
@@ -580,7 +580,7 @@ class DateRail extends StatelessWidget {
                   ),
                   style: CatchTextStyles.eventDisplay(
                     context,
-                    step: CatchDisplayStep.l,
+                    step: CatchTextStylesSize.l,
                     height: 0.9,
                     color: onColor,
                   ),

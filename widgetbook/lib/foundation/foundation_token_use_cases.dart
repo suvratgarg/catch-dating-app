@@ -311,12 +311,18 @@ class FoundationTypographyTokens extends StatelessWidget {
               _TypeSpec(
                 'clubDisplay(s)',
                 'Fort Greene Run Club',
-                CatchTextStyles.clubDisplay(context, step: CatchDisplayStep.s),
+                CatchTextStyles.clubDisplay(
+                  context,
+                  step: CatchTextStylesSize.s,
+                ),
               ),
               _TypeSpec(
                 'eventDisplay(s)',
                 'Thursday Social Run',
-                CatchTextStyles.eventDisplay(context, step: CatchDisplayStep.s),
+                CatchTextStyles.eventDisplay(
+                  context,
+                  step: CatchTextStylesSize.s,
+                ),
               ),
               _TypeSpec(
                 'eventTitle',

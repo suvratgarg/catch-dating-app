@@ -134,7 +134,7 @@ class ExploreFeedClubRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.clubDisplay(
                     context,
-                    step: CatchDisplayStep.m,
+                    step: CatchTextStylesSize.m,
                   ),
                 ),
                 gapH4,

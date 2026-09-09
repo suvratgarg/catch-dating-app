@@ -5486,7 +5486,7 @@
           "CatchTextStyles.monoLabel",
           "CatchTextStyles.clubDisplay",
           "CatchTextStyles.eventDisplay",
-          "CatchDisplayStep",
+          "CatchTextStylesSize",
           "CatchMetadataText"
         ],
         "goldens": [

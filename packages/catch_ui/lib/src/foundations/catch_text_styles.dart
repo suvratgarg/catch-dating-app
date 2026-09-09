@@ -2,13 +2,14 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_fonts.dart';
 import 'package:flutter/material.dart';
 
-enum CatchDisplayStep {
+/// Display-size axis owned by the editorial recipes in [CatchTextStyles].
+enum CatchTextStylesSize {
   s(22),
   m(27),
   l(32),
   xl(38);
 
-  const CatchDisplayStep(this.size);
+  const CatchTextStylesSize(this.size);
 
   final double size;
 }
@@ -151,7 +152,7 @@ abstract final class CatchTextStyles {
   /// Editorial club identity treatment on the named display-step scale.
   static TextStyle clubDisplay(
     BuildContext context, {
-    required CatchDisplayStep step,
+    required CatchTextStylesSize step,
     double height = 1.0,
     Color? color,
     FontWeight weight = FontWeight.w600,
@@ -167,7 +168,7 @@ abstract final class CatchTextStyles {
   /// Ticket/event identity treatment on the named display-step scale.
   static TextStyle eventDisplay(
     BuildContext context, {
-    required CatchDisplayStep step,
+    required CatchTextStylesSize step,
     double height = 1.0,
     Color? color,
     FontWeight weight = FontWeight.w600,
