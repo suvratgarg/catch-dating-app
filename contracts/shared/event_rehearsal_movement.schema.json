@@ -505,6 +505,7 @@
         "groups",
         "progress",
         "roster",
+        "selected",
         "checkpoint",
         "history",
         "nextBeforeRevision"
@@ -592,6 +593,16 @@
               "type": "integer",
               "minimum": 1,
               "maximum": 501
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "selected": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Record"
             },
             {
               "type": "null"

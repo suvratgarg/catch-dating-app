@@ -132,6 +132,63 @@ final class AssistanceCheckpointMember {
 
 sealed class AssistanceCheckpointAvailability {
   const AssistanceCheckpointAvailability();
+
+  /// Shared observation vocabulary; persistence and execution scope are separate.
+  factory AssistanceCheckpointAvailability.fromJson(
+    Object? raw, {
+    required int now,
+    required List<String>? accountedFor,
+  }) {
+    final map = assistanceObject(raw);
+    if (map['kind'] == 'unavailable') {
+      assistanceObject(map, {'kind', 'reason'});
+      return AssistanceCheckpointUnavailable(
+        assistanceEnum(
+          AssistanceCheckpointUnavailableReason.values,
+          map['reason'],
+        ),
+      );
+    }
+    if (map['kind'] != 'ready') {
+      throw const FormatException('Unknown checkpoint availability.');
+    }
+    assistanceObject(map, {
+      'kind',
+      'rosterId',
+      'label',
+      'reportStatus',
+      'members',
+    });
+    final members = _checkpointList(
+      map['members'],
+    ).map((m) => AssistanceCheckpointMember._parse(m, now)).toList();
+    _checkpointIds(members.map((m) => m.attendeeId).toList());
+    final status = assistanceEnum(
+      AssistanceCheckpointReportStatus.values,
+      map['reportStatus'],
+    );
+    final expected = accountedFor == null
+        ? AssistanceCheckpointReportStatus.unreported
+        : accountedFor.length == members.length
+        ? AssistanceCheckpointReportStatus.complete
+        : AssistanceCheckpointReportStatus.partial;
+    if (status != expected ||
+        !_checkpointSameIds(
+          members
+              .where((m) => m.accountedFor)
+              .map((m) => m.attendeeId)
+              .toList(),
+          accountedFor ?? const [],
+        )) {
+      throw const FormatException('Checkpoint roster and report disagree.');
+    }
+    return AssistanceCheckpointRoster._(
+      _checkpointHashId(map['rosterId'], 'departure-roster'),
+      assistanceText(map['label'], 240),
+      status,
+      List.unmodifiable(members),
+    );
+  }
 }
 
 final class AssistanceCheckpointUnavailable
@@ -268,59 +325,15 @@ final class EventAssistanceCheckpointView {
     if (revision != (report?.revision ?? 0)) {
       throw const FormatException('Checkpoint report revision mismatch.');
     }
-    final rawAvailability = assistanceObject(map['availability']);
-    final AssistanceCheckpointAvailability availability;
-    switch (rawAvailability['kind']) {
-      case 'unavailable':
-        assistanceObject(rawAvailability, {'kind', 'reason'});
-        availability = AssistanceCheckpointUnavailable(
-          assistanceEnum(
-            AssistanceCheckpointUnavailableReason.values,
-            rawAvailability['reason'],
-          ),
-        );
-      case 'ready':
-        assistanceObject(rawAvailability, {
-          'kind',
-          'rosterId',
-          'label',
-          'reportStatus',
-          'members',
-        });
-        final members = _checkpointList(rawAvailability['members'])
-            .map((m) => AssistanceCheckpointMember._parse(m, now))
-            .toList(growable: false);
-        _checkpointIds(members.map((m) => m.attendeeId).toList());
-        final rosterId = _checkpointHashId(
-          rawAvailability['rosterId'],
-          'departure-roster',
-        );
-        final status = assistanceEnum(
-          AssistanceCheckpointReportStatus.values,
-          rawAvailability['reportStatus'],
-        );
-        final observed = members
-            .where((m) => m.accountedFor)
-            .map((m) => m.attendeeId)
-            .toList();
-        final expectedStatus = report == null
-            ? AssistanceCheckpointReportStatus.unreported
-            : report.accountedFor.length == members.length
-            ? AssistanceCheckpointReportStatus.complete
-            : AssistanceCheckpointReportStatus.partial;
-        if ((report != null && report.rosterId != rosterId) ||
-            status != expectedStatus ||
-            !_checkpointSameIds(observed, report?.accountedFor ?? const [])) {
-          throw const FormatException('Checkpoint roster and report disagree.');
-        }
-        availability = AssistanceCheckpointRoster._(
-          rosterId,
-          assistanceText(rawAvailability['label'], 240),
-          status,
-          List.unmodifiable(members),
-        );
-      default:
-        throw const FormatException('Unknown checkpoint availability.');
+    final availability = AssistanceCheckpointAvailability.fromJson(
+      map['availability'],
+      now: now,
+      accountedFor: report?.accountedFor,
+    );
+    if (availability is AssistanceCheckpointRoster &&
+        report != null &&
+        report.rosterId != availability.rosterId) {
+      throw const FormatException('Checkpoint roster and report disagree.');
     }
     final request = map['request'] == null
         ? null

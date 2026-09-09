@@ -39,28 +39,11 @@ final class EventAssistanceCheckpointChange {
     assistanceText(actorUid);
     assistanceId(operationId);
     assistanceInteger(snapshot.revision + 1);
-    final availability = snapshot.availability;
-    if (availability is! AssistanceCheckpointRoster) {
-      throw const FormatException(
-        'Review the recorded checkpoint roster before reporting.',
-      );
-    }
-    final prior = snapshot.report?.accountedFor.toSet() ?? <String>{};
-    final members = {for (final m in availability.members) m.attendeeId: m};
-    for (final id in decision.accountedFor) {
-      final member = members[id];
-      if (member == null || !prior.contains(id) && !member.canAddObservation) {
-        throw const FormatException(
-          'New observations must match the original departure visit.',
-        );
-      }
-    }
-    if (prior.any((id) => !decision.accountedFor.contains(id)) &&
-        decision.correctionReason == null) {
-      throw const FormatException(
-        'Explain why an earlier observation is being removed.',
-      );
-    }
+    requireCheckpointObservation(
+      availability: snapshot.availability,
+      previouslyAccountedFor: snapshot.report?.accountedFor ?? const [],
+      decision: decision,
+    );
   }
   final EventAssistanceCheckpointView snapshot;
   final AssistanceCheckpointObservation decision;
@@ -115,5 +98,34 @@ final class EventAssistanceCheckpointChange {
         'Checkpoint confirmation changed the intended observations.',
       );
     }
+  }
+}
+
+/// The same visit and correction rules apply to live and synthetic reports.
+void requireCheckpointObservation({
+  required AssistanceCheckpointAvailability availability,
+  required List<String> previouslyAccountedFor,
+  required AssistanceCheckpointObservation decision,
+}) {
+  if (availability is! AssistanceCheckpointRoster) {
+    throw const FormatException(
+      'Review the recorded checkpoint roster before reporting.',
+    );
+  }
+  final prior = previouslyAccountedFor.toSet();
+  final members = {for (final m in availability.members) m.attendeeId: m};
+  for (final id in decision.accountedFor) {
+    final member = members[id];
+    if (member == null || !prior.contains(id) && !member.canAddObservation) {
+      throw const FormatException(
+        'New observations must match the original departure visit.',
+      );
+    }
+  }
+  if (prior.any((id) => !decision.accountedFor.contains(id)) &&
+      decision.correctionReason == null) {
+    throw const FormatException(
+      'Explain why an earlier observation is being removed.',
+    );
   }
 }

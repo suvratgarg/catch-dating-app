@@ -145,6 +145,8 @@ final class AssistanceCheckpointRequest {
   final int dueAt;
   final AssistanceCheckpointRequestState state;
   final AssistanceCheckpointOwnerAvailability ownerAvailability;
+  factory AssistanceCheckpointRequest.fromJson(Object? raw) =>
+      AssistanceCheckpointRequest._parse(raw);
   factory AssistanceCheckpointRequest._parse(Object? raw) {
     final map = assistanceObject(raw, {
       'responsibleOperatorId',

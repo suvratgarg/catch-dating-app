@@ -56,6 +56,7 @@ function projectMovement(session: Session, source: MovementSource,
           materialKey: hash([source.sourceHash, destination.target]),
           text: destination.text, validUntil: source.endAt} : null},
     roster: practiceDepartureRoster(session, source, actors, revision),
+    selected,
     checkpoint: selected ? checkpointReview(session, source, selected, actors,
       authority) : null,
     history: records.page.map((record) => ({

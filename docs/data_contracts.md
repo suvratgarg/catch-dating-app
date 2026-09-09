@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.102.0
+version: 1.103.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -141,7 +141,25 @@ invalidates earlier commands. Native reviews now validate bounded coverage,
 clock/episode identity and availability, and construct commands only from a
 current actionable row. The per-guest controller preserves uncertain requests
 across refresh and closure; exact retries retain later visits and corrections.
-Host screen mounting and rehearsal checkpoint execution remain integration work.
+Host screen mounting remains integration work.
+
+`event_rehearsal_movement.schema.json` owns the bounded group movement review.
+`selected` explicitly carries the reviewed departure, including older fixed-place
+records; `progress.current` remains the latest departure independently of history
+selection. A checkpoint repeats the selected record's departure and report, and
+its source hash fences new observations. Native readers validate these identities,
+the original roster denominator, complete candidate coverage and virtual clock.
+An omitted roster is distinct from an explicitly empty roster and from a report.
+
+Native `confirmDeparture` and `recordCheckpoint` controls use `action: movement`
+without an actor target. They share the live checkpoint observation and correction
+rules while retaining rehearsal-only persistence and receipts. One group/generation
+controller owns an unresolved command across sheet closure, history selection and
+refresh. Network ambiguity preserves the exact request; a definitive conflict
+requires a new review. Deliberate snapshot and movement reads must agree on runtime
+revision, and auth transitions revoke both private reviews and pending requests.
+Backend-produced fixtures are checked in both Functions and Flutter tests. Native
+screen mounting, reporter reassignment and explicit checkpoint closeout remain open.
 
 ### Explicit Attendance Closeout
 

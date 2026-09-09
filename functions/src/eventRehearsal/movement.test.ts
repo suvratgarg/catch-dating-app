@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {readFileSync} from "node:fs";
+import {readFileSync, writeFileSync} from "node:fs";
 import {randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
 import type {Firestore} from "firebase-admin/firestore";
@@ -23,7 +23,7 @@ import {rehearsalMovements, MovementScope, practiceMovementId} from
 import {practiceMovementSource, Review} from "./movementSource";
 
 type Command = NonNullable<Control["movement"]>;
-function harness(now = Date.now(), id = randomUUID()) {
+function harness(now = Date.now(), id: string = randomUUID()) {
   const session = practiceSession(now);
   const fixture = JSON.parse(readFileSync(
     "../contracts/fixtures/valid/club_doc.json", "utf8"));
@@ -48,10 +48,11 @@ function harness(now = Date.now(), id = randomUUID()) {
       JSON.stringify(validateEventRehearsalMovementCallableResponse.errors));
     return review;
   };
-  const execute = async (command: Command) => {
+  const execute = async (command: Command,
+    operationId: string = randomUUID()) => {
     await db.runTransaction(async (tx) => {
       const commit = await preparePracticeMovementCommand(db, tx, id, session,
-        actors, command, authority, randomUUID());
+        actors, command, authority, operationId);
       commit.commit();
     });
     session.runtimeRevision++; session.actionCount++;
@@ -408,4 +409,64 @@ test("Firestore movement uses parent receipts, current authority and reset", {
   await sessionRef.update({expiresAt: admin.firestore.Timestamp.fromMillis(0)});
   await assert.rejects(read(request({...scope, expectedSetupRevision:
     resetSession.setupRevision})), {code: "not-found"});
+});
+
+
+test("native movement fixtures retain selected departures and real source " +
+  "identities", async () => {
+  const h = harness(0, "session-1");
+  h.session.virtualNow = admin.firestore.Timestamp.fromMillis(1000);
+  const samples: Record<string, unknown> = {};
+  const sample = async (name: string, scope?: MovementScope) => {
+    const review = await h.read(scope);
+    samples[name] = JSON.parse(JSON.stringify({review, session: {
+      id: h.id, ...h.session,
+      virtualStartedAtMillis: h.session.virtualStartedAt.toMillis(),
+      virtualNowMillis: h.session.virtualNow.toMillis(),
+      expiresAtMillis: h.session.expiresAt.toMillis(),
+    }, actors: h.actors}));
+    return review;
+  };
+  await sample("initial");
+  h.arrive(); h.arrive(1);
+  const ready = await sample("ready");
+  await h.execute(departure(ready, h.actors.map((a) => a.actorId), true),
+    "departure_0001");
+  let r = await sample("departed");
+  await h.execute(report(r, [h.actors[0].actorId]), "report_0001");
+  await sample("partial");
+  h.leave(); h.arrive();
+  r = await sample("reentered");
+  await h.execute(report(r, h.actors.map((a) => a.actorId)), "report_0002");
+  await sample("reported");
+  await h.execute(departure(await h.read()), "departure_0002");
+  await sample("omitted");
+  await h.execute(departure(await h.read(), [], true), "departure_0003");
+  await sample("empty");
+  const fixed = departure(await h.read());
+  if (fixed.kind !== "confirmDeparture") throw new Error("Expected departure");
+  fixed.payload.destination = {kind: "fixedPlace", placeId: "meeting",
+    lateEntry: "allowed"};
+  await h.execute(fixed, "departure_0004");
+  await sample("fixed");
+  await h.execute(departure(await h.read(), []), "departure_0005");
+  r = await sample("oldFixed", {groupId: "event:whole", progressRevision: 4});
+  assert.equal(r.selected?.departure.destination.kind, "fixedPlace");
+  assert.equal(r.selected?.progressRevision, 4);
+  assert.equal(r.progress.revision, 5);
+  assert.equal(r.checkpoint, null);
+  h.session.status = "complete";
+  await sample("complete", {groupId: "event:whole", progressRevision: 1});
+  h.session.status = "running";
+  h.group(); h.place();
+  r = await sample("groupReady", {groupId: "easy"});
+  await h.execute(departure(r, [h.actors[0].actorId], true),
+    "group_departure_1");
+  await sample("groupDeparted", {groupId: "easy"});
+  const path = "../test/event_rehearsal/fixtures/movement_reviews.json";
+  // Update only deliberately, then both runtimes validate this shared fixture.
+  if (process.env.UPDATE_REHEARSAL_MOVEMENT_FIXTURE === "1") {
+    writeFileSync(path, JSON.stringify(samples, null, 2) + "\n");
+  }
+  assert.deepEqual(JSON.parse(readFileSync(path, "utf8")), samples);
 });

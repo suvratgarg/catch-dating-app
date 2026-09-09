@@ -32870,6 +32870,254 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureCheckpointRequestDueAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.checkpointRequest.dueAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureCheckpointRequestResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.checkpointRequest.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureConfirmedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.confirmedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureConfirmedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.confirmedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembers = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.displayName',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsEpisodeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.episodeId',
+    valueTypes: <String>['string'],
+    pattern: '^episode:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsMembershipHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.membershipHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsVisitHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.visitHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterSelectionHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.selectionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedProgressRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 500,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.accountedFor.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.reportedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedSessionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.sessionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseMovementReviewServerTime = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.movementReview.serverTime',
     required: true,
@@ -37004,6 +37252,254 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 2147483647,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureCheckpointRequestDueAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.checkpointRequest.dueAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureCheckpointRequestResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.checkpointRequest.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureConfirmedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.confirmedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureConfirmedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.confirmedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureDestinationCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.destination.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureDestinationGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.destination.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureDestinationItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.destination.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.destination.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureDestinationLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.destination.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureDestinationPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.destination.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureDestinationRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.destination.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureDestinationStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.destination.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureRosterMembers = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.roster.members',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.displayName',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsEpisodeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.episodeId',
+    valueTypes: <String>['string'],
+    pattern: '^episode:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsMembershipHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.membershipHash',
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsVisitHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.visitHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureRosterSelectionHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.roster.selectionHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedDepartureSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.departure.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedProgressRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 500,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.report.accountedFor.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.report.reportedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedReportRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedSessionId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.sessionId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const eventRehearsalMovementCallableResponseServerTime = CatchContractFieldConstraints(
@@ -92145,6 +92641,38 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.roster.unavailable.items.attendeeId': eventRehearsalBootstrapCallableResponseMovementReviewRosterUnavailableItemsAttendeeId,
     'eventRehearsalBootstrapCallableResponse.movementReview.roster.unavailable.items.reason': eventRehearsalBootstrapCallableResponseMovementReviewRosterUnavailableItemsReason,
     'eventRehearsalBootstrapCallableResponse.movementReview.runtimeRevision': eventRehearsalBootstrapCallableResponseMovementReviewRuntimeRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.clockId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedClockId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.checkpointRequest.dueAt': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureCheckpointRequestDueAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.checkpointRequest.responsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureCheckpointRequestResponsibleOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.confirmedAt': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureConfirmedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.confirmedBy': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureConfirmedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.checkpointId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationCheckpointId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.groupId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationGroupId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.itineraryId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationItineraryId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.kind': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.lateEntry': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationLateEntry,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.placeId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationPlaceId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.routeId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationRouteId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.destination.stopId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureDestinationStopId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.operationId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureOperationId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembers,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.attendeeId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsAttendeeId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.displayName': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsDisplayName,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.episodeId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsEpisodeId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.membershipHash': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsMembershipHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.members.items.visitHash': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterMembersItemsVisitHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.roster.selectionHash': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureRosterSelectionHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureSourceHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.groupId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedGroupId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.progressRevision': eventRehearsalBootstrapCallableResponseMovementReviewSelectedProgressRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.accountedFor': eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportAccountedFor,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.accountedFor.items': eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportAccountedForItems,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.correctionReason': eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportCorrectionReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.reportedAt': eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportReportedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.reportedBy': eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportReportedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.revision': eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.report.rosterHash': eventRehearsalBootstrapCallableResponseMovementReviewSelectedReportRosterHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.sessionId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedSessionId,
     'eventRehearsalBootstrapCallableResponse.movementReview.serverTime': eventRehearsalBootstrapCallableResponseMovementReviewServerTime,
     'eventRehearsalBootstrapCallableResponse.movementReview.sessionId': eventRehearsalBootstrapCallableResponseMovementReviewSessionId,
     'eventRehearsalBootstrapCallableResponse.movementReview.setupRevision': eventRehearsalBootstrapCallableResponseMovementReviewSetupRevision,
@@ -92693,6 +93221,38 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.roster.unavailable.items.attendeeId': eventRehearsalMovementCallableResponseRosterUnavailableItemsAttendeeId,
     'eventRehearsalMovementCallableResponse.roster.unavailable.items.reason': eventRehearsalMovementCallableResponseRosterUnavailableItemsReason,
     'eventRehearsalMovementCallableResponse.runtimeRevision': eventRehearsalMovementCallableResponseRuntimeRevision,
+    'eventRehearsalMovementCallableResponse.selected.clockId': eventRehearsalMovementCallableResponseSelectedClockId,
+    'eventRehearsalMovementCallableResponse.selected.departure.checkpointRequest.dueAt': eventRehearsalMovementCallableResponseSelectedDepartureCheckpointRequestDueAt,
+    'eventRehearsalMovementCallableResponse.selected.departure.checkpointRequest.responsibleOperatorId': eventRehearsalMovementCallableResponseSelectedDepartureCheckpointRequestResponsibleOperatorId,
+    'eventRehearsalMovementCallableResponse.selected.departure.confirmedAt': eventRehearsalMovementCallableResponseSelectedDepartureConfirmedAt,
+    'eventRehearsalMovementCallableResponse.selected.departure.confirmedBy': eventRehearsalMovementCallableResponseSelectedDepartureConfirmedBy,
+    'eventRehearsalMovementCallableResponse.selected.departure.destination.checkpointId': eventRehearsalMovementCallableResponseSelectedDepartureDestinationCheckpointId,
+    'eventRehearsalMovementCallableResponse.selected.departure.destination.groupId': eventRehearsalMovementCallableResponseSelectedDepartureDestinationGroupId,
+    'eventRehearsalMovementCallableResponse.selected.departure.destination.itineraryId': eventRehearsalMovementCallableResponseSelectedDepartureDestinationItineraryId,
+    'eventRehearsalMovementCallableResponse.selected.departure.destination.kind': eventRehearsalMovementCallableResponseSelectedDepartureDestinationKind,
+    'eventRehearsalMovementCallableResponse.selected.departure.destination.lateEntry': eventRehearsalMovementCallableResponseSelectedDepartureDestinationLateEntry,
+    'eventRehearsalMovementCallableResponse.selected.departure.destination.placeId': eventRehearsalMovementCallableResponseSelectedDepartureDestinationPlaceId,
+    'eventRehearsalMovementCallableResponse.selected.departure.destination.routeId': eventRehearsalMovementCallableResponseSelectedDepartureDestinationRouteId,
+    'eventRehearsalMovementCallableResponse.selected.departure.destination.stopId': eventRehearsalMovementCallableResponseSelectedDepartureDestinationStopId,
+    'eventRehearsalMovementCallableResponse.selected.departure.operationId': eventRehearsalMovementCallableResponseSelectedDepartureOperationId,
+    'eventRehearsalMovementCallableResponse.selected.departure.roster.members': eventRehearsalMovementCallableResponseSelectedDepartureRosterMembers,
+    'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.attendeeId': eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsAttendeeId,
+    'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.displayName': eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsDisplayName,
+    'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.episodeId': eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsEpisodeId,
+    'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.membershipHash': eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsMembershipHash,
+    'eventRehearsalMovementCallableResponse.selected.departure.roster.members.items.visitHash': eventRehearsalMovementCallableResponseSelectedDepartureRosterMembersItemsVisitHash,
+    'eventRehearsalMovementCallableResponse.selected.departure.roster.selectionHash': eventRehearsalMovementCallableResponseSelectedDepartureRosterSelectionHash,
+    'eventRehearsalMovementCallableResponse.selected.departure.sourceHash': eventRehearsalMovementCallableResponseSelectedDepartureSourceHash,
+    'eventRehearsalMovementCallableResponse.selected.groupId': eventRehearsalMovementCallableResponseSelectedGroupId,
+    'eventRehearsalMovementCallableResponse.selected.progressRevision': eventRehearsalMovementCallableResponseSelectedProgressRevision,
+    'eventRehearsalMovementCallableResponse.selected.report.accountedFor': eventRehearsalMovementCallableResponseSelectedReportAccountedFor,
+    'eventRehearsalMovementCallableResponse.selected.report.accountedFor.items': eventRehearsalMovementCallableResponseSelectedReportAccountedForItems,
+    'eventRehearsalMovementCallableResponse.selected.report.correctionReason': eventRehearsalMovementCallableResponseSelectedReportCorrectionReason,
+    'eventRehearsalMovementCallableResponse.selected.report.reportedAt': eventRehearsalMovementCallableResponseSelectedReportReportedAt,
+    'eventRehearsalMovementCallableResponse.selected.report.reportedBy': eventRehearsalMovementCallableResponseSelectedReportReportedBy,
+    'eventRehearsalMovementCallableResponse.selected.report.revision': eventRehearsalMovementCallableResponseSelectedReportRevision,
+    'eventRehearsalMovementCallableResponse.selected.report.rosterHash': eventRehearsalMovementCallableResponseSelectedReportRosterHash,
+    'eventRehearsalMovementCallableResponse.selected.sessionId': eventRehearsalMovementCallableResponseSelectedSessionId,
     'eventRehearsalMovementCallableResponse.serverTime': eventRehearsalMovementCallableResponseServerTime,
     'eventRehearsalMovementCallableResponse.sessionId': eventRehearsalMovementCallableResponseSessionId,
     'eventRehearsalMovementCallableResponse.setupRevision': eventRehearsalMovementCallableResponseSetupRevision,
