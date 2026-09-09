@@ -4610,7 +4610,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchTicketClock',
+            name: 'CatchClockIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Visual atom clock',

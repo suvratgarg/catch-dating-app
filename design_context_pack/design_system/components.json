@@ -14091,7 +14091,7 @@
           "ActivityKind",
           "EventActivityVisualSpec",
           "EventActivityBackdrop",
-          "CatchTicketClock",
+          "CatchClockIndicator",
           "CatchBadge.ticketStatus",
           "CatchTicketDivider",
           "CatchSurface"
@@ -14156,8 +14156,8 @@
           },
           {
             "id": "catch.event_card.clock_mark",
-            "symbol": "CatchTicketClock",
-            "file": "packages/catch_ui/lib/src/components/catch_ticket_clock.dart",
+            "symbol": "CatchClockIndicator",
+            "file": "packages/catch_ui/lib/src/primitives/catch_clock_indicator.dart",
             "summary": "Event-card time glyph member used by ticket and agenda compositions.",
             "states": [
               "default",
@@ -14169,6 +14169,18 @@
               "parentConceptId": "catch.event_card",
               "qualifier": "variant",
               "decisionRef": "contract-family:catch.event_card"
+            },
+            "level": "L2",
+            "roleNoun": "Indicator",
+            "naming": {
+              "useCase": "Clock",
+              "comparedWith": [
+                "catch.event_card",
+                "catch.loading_indicator",
+                "catch.page_dots",
+                "catch.badge.status_dot"
+              ],
+              "reason": "Displays a supplied time of day through analog hands. It owns no ticking clock, timer, loading state or interaction. Event cards and external-event rows own data and spoken time; loading communicates indeterminate work, page position communicates a selected index, and status dots communicate categorical state."
             }
           },
           {

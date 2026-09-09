@@ -8034,6 +8034,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:clock-time-indicator",
+      "patternFamilyId": "clock-time-indicator",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchClockIndicator",
+      "members": [
+        {
+          "name": "CatchClockIndicator",
+          "action": "keep"
+        },
+        {
+          "name": "CatchTicketClock",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "The existing analog painter displays supplied time, while other Indicator contracts show loading, page position or status. Keep that concrete distinction, remove the caller-specific Ticket qualifier, and place this single visual job at L2. Preserve all painter geometry and caller semantics.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

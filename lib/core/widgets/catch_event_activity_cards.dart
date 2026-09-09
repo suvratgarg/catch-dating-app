@@ -111,7 +111,7 @@ class CatchEventCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            CatchTicketClock(
+                            CatchClockIndicator(
                               accent: visual.accent,
                               time:
                                   clockTime ?? _parseClockTimeLabel(timeLabel),

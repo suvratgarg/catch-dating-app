@@ -3,8 +3,8 @@ import 'dart:math' as math;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-class CatchTicketClock extends StatelessWidget {
-  const CatchTicketClock({
+class CatchClockIndicator extends StatelessWidget {
+  const CatchClockIndicator({
     super.key,
     required this.accent,
     required this.time,
@@ -36,7 +36,7 @@ class CatchTicketClock extends StatelessWidget {
     return SizedBox.square(
       dimension: size,
       child: CustomPaint(
-        painter: _CatchTicketClockPainter(
+        painter: _CatchClockIndicatorPainter(
           ring: ringColor ?? CatchTokens.of(context).line2,
           hand: accent,
           hourTurns: hourTurns,
@@ -53,8 +53,8 @@ class CatchTicketClock extends StatelessWidget {
   }
 }
 
-class _CatchTicketClockPainter extends CustomPainter {
-  const _CatchTicketClockPainter({
+class _CatchClockIndicatorPainter extends CustomPainter {
+  const _CatchClockIndicatorPainter({
     required this.ring,
     required this.hand,
     required this.hourTurns,
@@ -124,7 +124,7 @@ class _CatchTicketClockPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _CatchTicketClockPainter oldDelegate) =>
+  bool shouldRepaint(covariant _CatchClockIndicatorPainter oldDelegate) =>
       oldDelegate.ring != ring ||
       oldDelegate.hand != hand ||
       oldDelegate.hourTurns != hourTurns ||

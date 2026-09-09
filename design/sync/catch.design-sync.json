@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "aa1b3db91f4f52727f7dd0ff9f20bbeae78f44f3f88b1799f69e6b57df2d6c2d",
+  "sourceDigest": "37c3b34213a905edf2956b7e21a9ba414a6c9b296fc9ba5f3a2bf613653e87b0",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "aa1b3db91f4f52727f7dd0ff9f20bbeae78f44f3f88b1799f69e6b57df2d6c2d",
-    "contractDigest": "aa1b3db91f4f52727f7dd0ff9f20bbeae78f44f3f88b1799f69e6b57df2d6c2d"
+    "digest": "37c3b34213a905edf2956b7e21a9ba414a6c9b296fc9ba5f3a2bf613653e87b0",
+    "contractDigest": "37c3b34213a905edf2956b7e21a9ba414a6c9b296fc9ba5f3a2bf613653e87b0"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "3b3f82934bd3549951100cc596e2dab682a3addc05c83ee904813496da52df75",
+    "handoffRequestDigest": "24b74d31f63cafc06bde4eda58980f90da85a02522b83dbde669b71cffe0802d",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -178,10 +178,10 @@
       {
         "key": "catch.event_card",
         "symbols": [
+          "CatchClockIndicator",
           "CatchEventCard",
           "CatchEventThumbnail",
           "CatchEventThumbnailActivityFallback",
-          "CatchTicketClock",
           "EventActivityBackdrop",
           "EventActivityStamp",
           "EventDateRailCard",
@@ -2293,7 +2293,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "EventCard",
       "claudeAllowed": true,
-      "contractDigest": "6e6978d9ae87132e3174046cd6e0bcb317bd276cb025dcdc84d6688965ca68d8"
+      "contractDigest": "80ca89535af15ebd5cc4202705490bb56700b8eb8acc18845f215aec6b463e98"
     },
     {
       "contractId": "catch.graded_image",

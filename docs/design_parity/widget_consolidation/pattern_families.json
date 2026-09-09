@@ -3618,6 +3618,34 @@
           "rationale": "The Person qualifier does not distinguish a second Polaroid contract. Rename the existing owner and all consumers; retain the existing person-only semantics."
         }
       ]
+    },
+    {
+      "id": "clock-time-indicator",
+      "title": "One passive analog time indicator",
+      "intent": "Name the time glyph by its display responsibility, independently of its event-ticket callers.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.event_card",
+      "qualityReference": "CatchClockIndicator",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "No visual change. The sole clock painter, hand geometry, time input and repaint conditions are retained."
+      ],
+      "members": [
+        {
+          "symbol": "CatchClockIndicator",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "A passive time-of-day glyph differs from indeterminate activity, selected-page position and categorical status. Production cards own data and accessible labels; the indicator paints the supplied time."
+        },
+        {
+          "symbol": "CatchTicketClock",
+          "disposition": "unify",
+          "target": "CatchClockIndicator",
+          "preview": "not-applicable",
+          "rationale": "Ticket describes a caller, not a separate time display contract. Rename the single renderer and all callers without an alias."
+        }
+      ]
     }
   ]
 }

@@ -41,7 +41,7 @@ void main() {
     expect(find.text('Social run'), findsOneWidget);
     expect(find.text('FREE'), findsOneWidget);
     expect(find.byType(EventActivityStamp), findsNothing);
-    expect(find.byType(CatchTicketClock), findsNothing);
+    expect(find.byType(CatchClockIndicator), findsNothing);
     expect(find.byType(CatchBadge), findsNothing);
 
     final glyph = tester.widget<Icon>(

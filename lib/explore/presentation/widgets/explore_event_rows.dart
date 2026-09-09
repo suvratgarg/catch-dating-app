@@ -121,7 +121,7 @@ class ExploreExternalEventRow extends StatelessWidget {
             gapH10,
             Row(
               children: [
-                CatchTicketClock(
+                CatchClockIndicator(
                   accent: visual.accent,
                   time: TimeOfDay.fromDateTime(event.startTime),
                   size: 17,

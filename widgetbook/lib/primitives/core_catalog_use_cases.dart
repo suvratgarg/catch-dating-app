@@ -2982,7 +2982,7 @@ Widget eventVisualAtomsCatalogStates(BuildContext context) {
         child: _InlineWrap(
           children: [
             EventActivityStamp(visual: visual),
-            CatchTicketClock(
+            CatchClockIndicator(
               accent: visual.accent,
               time: const TimeOfDay(hour: 18, minute: 30),
               size: 42,

@@ -5,11 +5,11 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(
   name: 'Visual atom clock',
-  type: CatchTicketClock,
+  type: CatchClockIndicator,
   path: '[Events]/Tiles',
 )
 Widget eventClockMarkState(BuildContext context) {
-  return CatchTicketClock(
+  return CatchClockIndicator(
     accent: CatchTokens.of(context).primary,
     time: const TimeOfDay(hour: 6, minute: 30),
     size: 42,
