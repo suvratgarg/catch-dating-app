@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.98.0
+version: 1.99.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1342,6 +1342,34 @@ latest state. A former operator loses access once the guest transfers away; a
 rejected/cancelled/expired receiving request grants no continuing guest access.
 Reads expose one guest's operating state and group choices, without contact fields
 or a full roster. Record/receipt retention remains required before activation.
+
+The native membership repository now uses the generated live callable requests.
+Its immutable models separate uninitialized, current and source-changed records;
+historical accepted groups cannot become current membership. Pending, expired,
+source-changed and closed transfers retain their different meaning. Strict
+parsing rejects mixed scopes, leaked fields, contradictory action offers, unsafe
+times and invalid ownership. Contract tests require coverage of every canonical
+decision and transfer state.
+
+Closed native decisions cover place, propose, accept, reject, cancel and leave.
+They bind the reviewed source, participation episode, both revisions and one
+operation id. Group choices come from the current review; only the named receiver
+can form an acceptance or rejection. Proposal deadlines are bounded to 30 minutes
+from the reviewed server time; the server still checks the current event end and
+receiving duty at mutation time. Applied results must prove the selected ownership
+change and preserve unrelated transfer evidence. Replays return newer current
+membership without reapplying the original move.
+
+The account-scoped read provider removes prior data during reload, sign-out,
+account changes and authentication failures. Its per-guest controller begins
+without a selected decision, freezes a submitted command, deduplicates concurrent
+triggers and retains uncertain requests across page refresh and editor closure.
+A temporary strong authentication subscription revokes that pending state even
+while the closed editor's normal dependencies are paused. Definitive conflicts
+require fresh review. Confirmation refreshes membership and Host assistance reads;
+it does not optimistically assign a group or change attendance. These native
+bindings still need Host roster and delegated-operator screen composition; pending
+requests are not persisted across app restarts.
 
 Group-specific joining guidance now checks accepted membership at publication,
 link issuance, guest view/reply resolution and the shared SMS/WhatsApp dispatch
