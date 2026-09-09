@@ -13,7 +13,8 @@ export const setEventAssistanceSmsPreferenceCallablePayloadSchema: Record<string
     "attendeeId",
     "requestId",
     "expectedRevision",
-    "decision"
+    "decision",
+    "expectedReviewHash"
   ],
   "properties": {
     "eventId": {
@@ -80,6 +81,10 @@ export const setEventAssistanceSmsPreferenceCallablePayloadSchema: Record<string
           }
         }
       ]
+    },
+    "expectedReviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     }
   }
 } as const;

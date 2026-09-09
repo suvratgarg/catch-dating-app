@@ -15,4 +15,5 @@ export interface SetEventAssistanceSmsPreferenceCallablePayload {
     | {
         kind: "revoke";
       };
+  expectedReviewHash: string;
 }

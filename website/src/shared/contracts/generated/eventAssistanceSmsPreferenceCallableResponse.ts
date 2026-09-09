@@ -23,5 +23,6 @@ export interface EventAssistanceSmsPreferenceCallableResponse {
       version: "catch-event-service-sms-v1";
       text: string;
     };
+    reviewHash: string;
   };
 }

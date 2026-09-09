@@ -44,7 +44,9 @@ async function mixed(realDb?: Firestore, id = "test", routes: Routes =
     sender.senderId);
   const smsScope = {eventId: h.context.eventId,
     attendeeId: h.scope.attendeeId};
+  const smsReview = (await smsPreferences.get(h.actor, smsScope)).view;
   await smsPreferences.set(h.actor, {...smsScope, requestId: "sms-grant",
+    expectedReviewHash: smsReview.reviewHash,
     expectedRevision: null, decision: {kind: "grant",
       copyVersion: "catch-event-service-sms-v1"}});
   const smsBudgets: string[] = [];
@@ -88,7 +90,9 @@ async function mixed(realDb?: Firestore, id = "test", routes: Routes =
     () => h.clock.now);
   const dispatch = () => service.dispatch(h.messageId, h.link.linkId);
   const record = async () => (await h.outbox.get(h.messageId))!;
-  const revokeSms = () => smsPreferences.set(h.actor, {...smsScope,
+  const revokeSms = async () => smsPreferences.set(h.actor, {...smsScope,
+    expectedReviewHash: (await smsPreferences.get(h.actor, smsScope))
+      .view.reviewHash,
     requestId: "sms-withdraw", expectedRevision: 1,
     decision: {kind: "revoke"}});
   const revokeWa = () => h.preferences.set(h.actor, {...h.scope,

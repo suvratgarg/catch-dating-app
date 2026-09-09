@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.91.0
+version: 1.92.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -3015,18 +3015,29 @@ state are required. Organizer marketing preference records are not permission
 for this route. The App-Check-protected preference callables require the roster's
 linked Firebase UID. A grant additionally requires the signed phone claim to
 match the roster phone and an admitted guest in an eligible event. Client input
-contains only event/attendee scope, decision, copy version, expected revision
-and request ID. Sender identity, number and evidence timestamps come from the
-server. Revocation can proceed without a ready sender or current phone claim.
+contains only event/attendee scope, decision, copy version, expected revision,
+expected review hash and request ID. Sender identity, number and evidence
+timestamps come from the server. The required `reviewHash` in each view binds
+the verified recipient, exact SDK source generations, event title/window,
+current permission and receipt, consent copy and effective availability. New
+decisions must echo it as `expectedReviewHash`; changes return current state
+as a conflict even at the same permission revision. Ordinary time passage and
+registered-to-checked-in progress preserve an otherwise identical review.
+Revocation can proceed after fresh review without a ready sender or current
+phone claim. The required hash must roll out with the web client; old tabs
+must reload. Missing or malformed hashes fail callable validation.
 
 `eventAssistanceSmsConsentReceipts` records each exact decision atomically with
 its permission revision. Grant receipts pin the displayed copy hash and the
 hash of the complete resulting permission; dispatch requires that matching
 receipt. Receipt timestamps record when the signed phone claim was checked,
 not when a new OTP was sent. Revision conflicts return current state; replaying
-an earlier grant cannot reverse a later withdrawal. An initial opt-out writes a
-revoked tombstone with no fabricated consent evidence. Recreated roster entries
-cannot inherit consent. Responses reveal only the participant's masked number,
+an earlier grant cannot reverse a later withdrawal. An exact receipt replay is
+resolved before checking the current review hash and never repeats the write;
+changing the hash while reusing its request ID is not an exact replay.
+An initial opt-out writes a revoked tombstone with no fabricated consent
+evidence. Changed attendee creation stamps invalidate existing consent.
+Responses reveal only the participant's masked number,
 status, availability and consent text; there is no client collection access.
 Sender approval and activation remain separate trusted provisioning steps.
 

@@ -16,6 +16,7 @@ const schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema = <String, Obje
     'requestId',
     'expectedRevision',
     'decision',
+    'expectedReviewHash',
   ],
   'properties': <String, Object?>{
     'eventId': <String, Object?>{
@@ -82,6 +83,10 @@ const schemaSetEventAssistanceSmsPreferenceCallablePayloadSchema = <String, Obje
           },
         },
       ],
+    },
+    'expectedReviewHash': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[a-f0-9]{64}\$',
     },
   },
 };

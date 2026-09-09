@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.90.0
+version: 1.91.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1540,10 +1540,22 @@ registration and the no-download runtime now offer optional event text controls
 through `getEventAssistanceSmsPreference` and `setEventAssistanceSmsPreference`.
 The server records exact consent receipts with the current permission and
 requires their matching hash before dispatch. Repeat requests are idempotent;
-withdrawal fences old grants. The website reuses uncertain request IDs, rejects
-stale read results and scopes pending state to the current account and event.
+withdrawal fences old grants. Each preference view includes a review hash.
+New decisions must echo that hash as well as the permission revision, so a
+changed verified number, replacement source record or changed event window
+requires a fresh review even when the permission revision is unchanged.
+Ordinary time passage and check-in do not invalidate unchanged consent terms.
+The website submits the review it displayed, retains the complete original
+request on an uncertain retry, rejects stale read results and scopes pending
+state to the current account and event. Exact receipt replays return current
+state without reapplying consent, even when the original review is now stale.
 The control is hidden when there is no preference and enabling is unavailable;
 an existing grant retains a withdrawal control when the sender is paused.
+
+The required review hash is a coordinated API/client rollout change. Old web
+tabs must reload before making a new decision; submissions without a review
+hash fail validation. Do not deploy the server contract without the updated
+web client. This source change does not activate or deploy a sender.
 
 Web registration and guest runtime supply verified opt-in and withdrawal.
 The SMS dispatch claim additionally issues narrow withdrawal authority for its

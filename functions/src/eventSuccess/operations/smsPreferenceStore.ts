@@ -8,8 +8,9 @@ import type {EventAssistanceSmsPreferenceCallableResponse as Response} from
   "../../shared/generated/eventAssistanceSmsPreferenceCallableResponse";
 import {operationContentHash} from "../../operations/durableActions";
 import {
-  GuestSourceFacts, readGuestSourceFacts, requireDocumentId,
+  GuestSourceFacts, guestSourceFactsFromSnapshots, requireDocumentId,
 } from "./guestRecords";
+import {timestampEvidence} from "./groupProgressSource";
 import {
   Permission, parseSmsPermission, smsCollections, smsPermissionId,
 } from "./smsPermissionRecords";
@@ -30,6 +31,7 @@ interface PreferenceFacts {
   permission: Permission | null;
   receipt: ConsentReceipt | null;
   sender: SmsConfig | null;
+  eventEndEvidence: ReturnType<typeof timestampEvidence>;
 }
 
 export class SmsPreferenceStore {
@@ -76,6 +78,9 @@ export class SmsPreferenceStore {
           input.decision.copyVersion !== SMS_CONSENT_VERSION)) {
         throw new HttpsError("failed-precondition",
           "Event text updates cannot be enabled right now.");
+      }
+      if (input.expectedReviewHash !== currentView.reviewHash) {
+        return {outcome: "conflict", view: currentView};
       }
       const phone = facts.phone ?? previous?.phoneE164;
       if (!phone) {
@@ -143,8 +148,8 @@ export class SmsPreferenceStore {
     }
     const context = {mode: "live" as const, eventId: scope.eventId,
       organizerId: event.organizerId ?? event.clubId};
-    const source = await readGuestSourceFacts(this.db, tx, context,
-      scope.attendeeId);
+    const source = guestSourceFactsFromSnapshots(context, scope.attendeeId,
+      eventSnap, attendeeSnap);
     const id = smsPermissionId(context, scope.attendeeId, this.senderId);
     const permissionSnap = await tx.get(this.db
       .collection(smsCollections.permissions).doc(id));
@@ -163,6 +168,7 @@ export class SmsPreferenceStore {
       throw new HttpsError("internal", "Event sender identity mismatch.");
     }
     return {context, source, permission, receipt, sender,
+      eventEndEvidence: timestampEvidence(event.endTime),
       phone: typeof attendee.phoneE164 === "string" &&
         /^\+91[6-9][0-9]{9}$/.test(attendee.phoneE164) ?
         attendee.phoneE164 : null};
@@ -194,11 +200,19 @@ export class SmsPreferenceStore {
       permission!.status === "revoked" ? "disabled" :
         !proof ? "notSet" :
           permission!.expiresAt <= now ? "expired" : "enabled";
-    return {eventId: scope.eventId, attendeeId: scope.attendeeId,
+    const expiresAt = belongs ? permission!.expiresAt : null;
+    // A revision alone misses changed phone claims, replacement source rows,
+    // event windows and current consent proof. Time itself is not a nonce.
+    const reviewHash = operationContentHash([scope.eventId, scope.attendeeId,
+      facts.context, actor.uid, actor.phone, phone, this.senderId,
+      source.sourceGeneration, source.attendeeGeneration, source.eventTitle,
+      source.eventStatus, facts.eventEndEvidence, availability, preference,
+      expiresAt, permission, receipt, SMS_CONSENT_HASH]);
+    return {eventId: scope.eventId, attendeeId: scope.attendeeId, reviewHash,
       serverTime: now, revision: permission?.revision ?? null, preference,
       canEnable: availability === "ready", availability,
       phoneLastFour: phone?.slice(-4) ?? null,
-      expiresAt: belongs ? permission!.expiresAt : null,
+      expiresAt,
       consent: {version: SMS_CONSENT_VERSION, text: SMS_CONSENT_TEXT}};
   }
 

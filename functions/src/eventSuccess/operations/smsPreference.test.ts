@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {ProgressFirestore} from "./groupProgressTestFixtures";
 import type {SetEventAssistanceSmsPreferenceCallablePayload as Submission} from
@@ -14,13 +14,28 @@ import {
 } from "./smsConsent";
 import {parseSmsPermission, smsCollections, smsPermissionId} from
   "./smsDispatchStore";
-import {SmsPreferenceStore} from "./smsPreferenceStore";
+import {SmsPreferenceStore, SmsPreferenceActor} from "./smsPreferenceStore";
 import {
   getEventAssistanceSmsPreferenceHandler,
   setEventAssistanceSmsPreferenceHandler,
 } from "./smsPreferenceHandlers";
 
 const start = Date.parse("2026-09-07T12:00:00Z");
+
+test("a reviewed grant cannot move to a changed verified number", async () => {
+  const h = await harness();
+  const before = (await h.store.get(h.actor, h.scope)).view;
+  const actor = {...h.actor, phone: "+918888889999"};
+  await h.write(h.attendeePath,
+    {...await h.read(h.attendeePath), phoneE164: actor.phone});
+  const after = (await h.store.get(actor, h.scope)).view;
+  assert.equal(after.revision, before.revision);
+  assert.equal(after.phoneLastFour, before.phoneLastFour);
+  assert.notEqual(after.reviewHash, before.reviewHash);
+  const result = await h.store.set(actor, h.grant);
+  assert.equal(result.outcome, "conflict");
+  assert.equal(await h.read(h.permissionPath), undefined);
+});
 
 async function harness(realDb?: Firestore, key = "one") {
   const fake = new ProgressFirestore();
@@ -67,13 +82,89 @@ async function harness(realDb?: Firestore, key = "one") {
     CATCH_EVENT_SMS_SENDER_ID);
   const permissionPath = smsCollections.permissions + "/" + permissionId;
   const store = new SmsPreferenceStore(db, () => clock.now);
-  const grant: Submission = {...scope, requestId: "grant-1", expectedRevision:
-    null, decision: {kind: "grant", copyVersion: SMS_CONSENT_VERSION}};
-  const stop: Submission = {...scope, requestId: "stop-1", expectedRevision:
-    1, decision: {kind: "revoke"}};
+  const initial = (await store.get(actor, scope)).view;
+  const grant: Submission = {...scope, requestId: "grant-1",
+    expectedRevision: null, expectedReviewHash: initial.reviewHash,
+    decision: {kind: "grant", copyVersion: SMS_CONSENT_VERSION}};
+  const stop = async (
+    currentActor: SmsPreferenceActor = actor,
+  ): Promise<Submission> => {
+    const view = (await store.get(currentActor, scope)).view;
+    return {...scope, requestId: "stop-1", expectedRevision: view.revision,
+      expectedReviewHash: view.reviewHash, decision: {kind: "revoke"}};
+  };
   return {db, fake, store, clock, actor, context, scope, grant, stop,
     permissionPath, senderPath, attendeePath, eventPath, read, write, paths};
 }
+
+test("event edits and replacement source rows require a new consent review",
+  async () => {
+    for (const change of ["eventName", "eventEnd", "sourceGeneration"]) {
+      const h = await harness();
+      if (change === "eventName") {
+        await h.write(h.eventPath, {...await h.read(h.eventPath),
+          name: "A different event"});
+      } else if (change === "eventEnd") {
+        // Preserve precision even when the millisecond view cannot differ.
+        await h.write(h.eventPath, {...await h.read(h.eventPath),
+          endTime: {seconds: (start + 3_600_000) / 1000, nanoseconds: 1}});
+      } else h.fake.generation = Timestamp.fromMillis(2);
+      const current = (await h.store.get(h.actor, h.scope)).view;
+      assert.equal(current.revision, null, change);
+      assert.equal(current.canEnable, true, change);
+      const result = await h.store.set(h.actor, h.grant);
+      assert.equal(result.outcome, "conflict", change);
+      assert.equal(await h.read(h.permissionPath), undefined, change);
+    }
+  });
+
+test("ordinary time and check-in progress preserve the reviewed consent",
+  async () => {
+    const h = await harness();
+    h.clock.now += 1000;
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      status: "checkedIn"});
+    const current = (await h.store.get(h.actor, h.scope)).view;
+    assert.equal(current.reviewHash, h.grant.expectedReviewHash);
+    assert.equal((await h.store.set(h.actor, h.grant)).outcome, "applied");
+  });
+
+test("old withdrawal cannot change consent for a corrected phone number",
+  async () => {
+    const h = await harness();
+    await h.store.set(h.actor, h.grant);
+    const stop = await h.stop();
+    const before = await h.read(h.permissionPath);
+    const actor = {...h.actor, phone: "+918888889999"};
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      phoneE164: actor.phone});
+    assert.equal((await h.store.set(actor, stop)).outcome, "conflict");
+    assert.deepEqual(await h.read(h.permissionPath), before);
+    const replay = await h.store.set(actor, h.grant);
+    assert.equal(replay.outcome, "replayed");
+    assert.equal(replay.view.preference, "notSet");
+    assert.deepEqual(await h.read(h.permissionPath), before);
+    const fresh = await h.store.set(actor, await h.stop(actor));
+    assert.equal(fresh.outcome, "applied");
+    assert.equal(fresh.view.preference, "disabled");
+  });
+
+test("changed consent proof invalidates a review without a revision bump",
+  async () => {
+    const h = await harness();
+    await h.store.set(h.actor, h.grant);
+    const stop = await h.stop();
+    const permission = parseSmsPermission(await h.read(h.permissionPath));
+    const receiptPath = SMS_CONSENT_RECEIPTS + "/" +
+      permission.currentReceiptId;
+    await h.write(receiptPath, {...await h.read(receiptPath),
+      permissionHash: "a".repeat(64)});
+    const result = await h.store.set(h.actor, stop);
+    assert.equal(result.outcome, "conflict");
+    assert.equal(result.view.revision, permission.revision);
+    assert.equal(result.view.preference, "notSet");
+    assert.deepEqual(await h.read(h.permissionPath), permission);
+  });
 
 test("verified opt-in records exact consent without changing the roster",
   async () => {
@@ -103,15 +194,17 @@ test("replayed grants cannot undo withdrawal or change request meaning",
   async () => {
     const h = await harness();
     await h.store.set(h.actor, h.grant);
-    const stopped = await h.store.set(h.actor, h.stop);
+    const stopped = await h.store.set(h.actor, await h.stop());
     assert.equal(stopped.view.preference, "disabled");
     const replay = await h.store.set(h.actor, h.grant);
     assert.equal(replay.outcome, "replayed");
     assert.equal(replay.view.revision, 2);
     assert.equal(replay.view.preference, "disabled");
     await assert.rejects(h.store.set(h.actor,
-      {...h.stop, requestId: "grant-1"}),
+      {...(await h.stop()), requestId: "grant-1"}),
     /new preference request/);
+    await assert.rejects(h.store.set(h.actor, {...h.grant,
+      expectedReviewHash: stopped.view.reviewHash}), /new preference request/);
     assert.equal(h.fake.entries().filter(([path]) =>
       path.startsWith(SMS_CONSENT_RECEIPTS + "/")).length, 2);
   });
@@ -119,7 +212,7 @@ test("replayed grants cannot undo withdrawal or change request meaning",
 test("an initial withdrawal creates a tombstone that fences an older grant",
   async () => {
     const h = await harness();
-    await h.store.set(h.actor, {...h.stop, expectedRevision: null});
+    await h.store.set(h.actor, {...(await h.stop()), expectedRevision: null});
     const stored = parseSmsPermission(await h.read(h.permissionPath));
     assert.equal(stored.status, "revoked");
     assert.equal(stored.evidence, null);
@@ -145,7 +238,7 @@ test("withdrawal needs no active sender, event or current phone claim",
       const actor = changed === "phone" ? {...h.actor, phone: null} : h.actor;
       const before = await h.store.get(actor, h.scope);
       assert.equal(before.view.canEnable, false, changed);
-      const result = await h.store.set(actor, h.stop);
+      const result = await h.store.set(actor, await h.stop(actor));
       assert.equal(result.view.preference, "disabled", changed);
     }
   });
@@ -211,6 +304,11 @@ test("preference callables authenticate, validate and rate-limit before writes",
     await assert.rejects(setEventAssistanceSmsPreferenceHandler(request({
       ...h.grant, phoneE164: "+918888888888",
     }), deps), /additional properties/);
+    for (const expectedReviewHash of [undefined, null, "", "old-review"]) {
+      await assert.rejects(setEventAssistanceSmsPreferenceHandler(request({
+        ...h.grant, expectedReviewHash,
+      }), deps), {code: "invalid-argument"});
+    }
     const result = await setEventAssistanceSmsPreferenceHandler(
       request(h.grant), deps);
     assert.equal(result.view.preference, "enabled");
@@ -229,12 +327,20 @@ test("Firestore persists one grant across competing participant requests", {
     "sms-consent-" + key);
   try {
     const h = await harness(getFirestore(app), key);
+    const actor = {...h.actor, phone: "+918888889999"};
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      phoneE164: actor.phone});
+    const stale = await h.store.set(actor, h.grant);
+    assert.equal(stale.outcome, "conflict");
+    assert.equal(await h.read(h.permissionPath), undefined);
+    const grant = {...h.grant, expectedReviewHash: stale.view.reviewHash};
     const results = await Promise.all(Array.from({length: 8}, () =>
-      h.store.set(h.actor, h.grant)));
+      h.store.set(actor, grant)));
     assert.equal(results.filter((r) => r.outcome === "applied").length, 1);
     assert.equal(results.filter((r) => r.outcome === "replayed").length, 7);
     const permission = parseSmsPermission(await h.read(h.permissionPath));
     assert.equal(permission.revision, 1);
+    assert.equal(permission.phoneE164, actor.phone);
   } finally {
     await deleteApp(app);
   }
@@ -245,8 +351,9 @@ test("a backwards clock cannot publish stale consent or mutate its revision",
     const h = await harness();
     await h.store.set(h.actor, h.grant);
     const before = await h.read(h.permissionPath);
+    const stop = await h.stop();
     h.clock.now -= 1;
     await assert.rejects(h.store.get(h.actor, h.scope), /clock is behind/);
-    await assert.rejects(h.store.set(h.actor, h.stop), /clock is behind/);
+    await assert.rejects(h.store.set(h.actor, stop), /clock is behind/);
     assert.deepEqual(await h.read(h.permissionPath), before);
   });

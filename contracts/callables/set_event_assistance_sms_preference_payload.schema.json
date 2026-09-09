@@ -9,7 +9,8 @@
     "attendeeId",
     "requestId",
     "expectedRevision",
-    "decision"
+    "decision",
+    "expectedReviewHash"
   ],
   "properties": {
     "eventId": {
@@ -76,6 +77,10 @@
           }
         }
       ]
+    },
+    "expectedReviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     }
   }
 }

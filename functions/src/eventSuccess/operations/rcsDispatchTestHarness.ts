@@ -47,7 +47,9 @@ export async function rcsHarness(real?: Firestore, id = "rcs",
     sender.senderId);
   const smsScope = {eventId: h.context.eventId,
     attendeeId: h.scope.attendeeId};
+  const smsReview = (await smsPreferences.get(h.actor, smsScope)).view;
   await smsPreferences.set(h.actor, {...smsScope, requestId: "sms-grant",
+    expectedReviewHash: smsReview.reviewHash,
     expectedRevision: null, decision: {kind: "grant",
       copyVersion: "catch-event-service-sms-v1"}});
   const smsBudgets: string[] = [];

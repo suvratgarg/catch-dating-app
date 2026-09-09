@@ -104,7 +104,11 @@ async function harness(realDb?: Firestore, id = "test") {
   await write(senderPath, sender);
   const preferences = new SmsPreferenceStore(db, () => clock.now,
     sender.senderId);
+  const smsReview = (await preferences.get(
+    {uid: "guest-uid", phone: "+919999999999"},
+    {eventId: context.eventId, attendeeId})).view;
   await preferences.set({uid: "guest-uid", phone: "+919999999999"}, {
+    expectedReviewHash: smsReview.reviewHash,
     eventId: context.eventId, attendeeId, requestId: "fixture-opt-in",
     expectedRevision: null, decision: {kind: "grant",
       copyVersion: "catch-event-service-sms-v1"},
@@ -593,7 +597,9 @@ test("old withdrawal requests cannot undo later verified consent",
     assert.equal((await h.preferences.get(actor, scope)).view.preference,
       "disabled");
     h.clock.now++;
+    const review = (await h.preferences.get(actor, scope)).view;
     await h.preferences.set(actor, {...scope, requestId: "enable-again",
+      expectedReviewHash: review.reviewHash,
       expectedRevision: 2, decision: {kind: "grant",
         copyVersion: "catch-event-service-sms-v1"}});
     assert.equal((await h.withdrawal.withdraw(h.request)).view.preference,

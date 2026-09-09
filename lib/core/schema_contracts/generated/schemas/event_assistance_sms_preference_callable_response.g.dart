@@ -38,6 +38,7 @@ const schemaEventAssistanceSmsPreferenceCallableResponseSchema = <String, Object
         'phoneLastFour',
         'expiresAt',
         'consent',
+        'reviewHash',
       ],
       'properties': <String, Object?>{
         'eventId': <String, Object?>{
@@ -132,6 +133,10 @@ const schemaEventAssistanceSmsPreferenceCallableResponseSchema = <String, Object
               'maxLength': 500,
             },
           },
+        },
+        'reviewHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
         },
       },
     },

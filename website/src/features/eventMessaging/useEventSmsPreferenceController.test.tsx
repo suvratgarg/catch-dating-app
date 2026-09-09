@@ -19,6 +19,7 @@ import type {EventAssistanceSmsPreferenceCallableResponse as Response} from "../
 import {eventMessagingCopy as copy} from "../../content/eventMessaging";
 
 const view: SmsPreferenceView = {eventId: "event", attendeeId: "attendee", serverTime: 1000,
+  reviewHash: "a".repeat(64),
   revision: null, preference: "notSet", canEnable: true, availability: "ready",
   phoneLastFour: "9999", expiresAt: null,
   consent: {version: "catch-event-service-sms-v1", text: "Fixture event text consent."}};
@@ -62,6 +63,7 @@ describe("verified event SMS controller", () => {
     expect(api.set).toHaveBeenCalledOnce();
     expect(api.set).toHaveBeenCalledWith({eventId: "event", attendeeId: "attendee",
       expectedRevision: null, requestId: expect.any(String),
+      expectedReviewHash: view.reviewHash,
       decision: {kind: "grant", copyVersion: "catch-event-service-sms-v1"}});
     h.unmount();
   });
@@ -72,12 +74,36 @@ describe("verified event SMS controller", () => {
     await waitFor(() => expect(h.result.current.state.kind).toBe("ready"));
     act(() => h.result.current.enable());
     await waitFor(() => expect(h.result.current.state).toMatchObject({uncertain: true}));
+    const latest = {...initial, view: {...view, serverTime: 1002,
+      reviewHash: "b".repeat(64)}};
+    api.get.mockResolvedValue(latest);
+    act(() => h.result.current.refresh());
+    await waitFor(() => expect(h.result.current.state).toMatchObject({view: latest.view}));
     act(() => h.result.current.disable());
     expect(api.set).toHaveBeenCalledOnce();
     act(() => h.result.current.retry());
     await waitFor(() => expect(api.set).toHaveBeenCalledTimes(2));
     expect(api.set.mock.calls[1][0]).toEqual(api.set.mock.calls[0][0]);
+    expect(api.set.mock.calls[1][0].expectedReviewHash).toBe(view.reviewHash);
     await waitFor(() => expect(h.result.current.state).toMatchObject({uncertain: false}));
+    h.unmount();
+  });
+
+  it("an old rendered action cannot submit a refreshed review with the same revision", async () => {
+    const h = harness();
+    await waitFor(() => expect(h.result.current.state.kind).toBe("ready"));
+    const oldEnable = h.result.current.enable;
+    const latest = {...initial, view: {...view, serverTime: 1001,
+      reviewHash: "b".repeat(64)}};
+    api.get.mockResolvedValue(latest);
+    act(() => h.result.current.refresh());
+    await waitFor(() => expect(h.result.current.state).toMatchObject({view: latest.view}));
+    act(() => oldEnable());
+    expect(api.set).not.toHaveBeenCalled();
+    act(() => h.result.current.enable());
+    await waitFor(() => expect(api.set).toHaveBeenCalledOnce());
+    expect(api.set.mock.calls[0][0]).toMatchObject({expectedRevision: null,
+      expectedReviewHash: latest.view.reviewHash});
     h.unmount();
   });
 

@@ -100,10 +100,11 @@ export function useEventSmsPreferenceController(eventId: string, attendeeId: str
       request = existing;
     } else {
       if (existing?.identity === identity || !view || !cached || query.isError ||
-          view.revision !== cached.revision ||
+          view.revision !== cached.revision || view.reviewHash !== cached.reviewHash ||
           (decision === "grant" && !cached.canEnable)) return;
       request = {identity, submission: {eventId, attendeeId,
         requestId: crypto.randomUUID(), expectedRevision: cached.revision,
+        expectedReviewHash: cached.reviewHash,
         decision: decision === "grant" ?
           {kind: "grant", copyVersion: cached.consent.version} : {kind: "revoke"}}};
     }

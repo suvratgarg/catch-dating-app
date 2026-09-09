@@ -40935,7 +40935,8 @@ export const setEventAssistanceSmsPreferenceCallablePayloadSchema = {
     "attendeeId",
     "requestId",
     "expectedRevision",
-    "decision"
+    "decision",
+    "expectedReviewHash"
   ],
   "properties": {
     "eventId": {
@@ -41002,6 +41003,10 @@ export const setEventAssistanceSmsPreferenceCallablePayloadSchema = {
           }
         }
       ]
+    },
+    "expectedReviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
     }
   }
 };
@@ -41039,7 +41044,8 @@ export const eventAssistanceSmsPreferenceCallableResponseSchema = {
         "availability",
         "phoneLastFour",
         "expiresAt",
-        "consent"
+        "consent",
+        "reviewHash"
       ],
       "properties": {
         "eventId": {
@@ -41134,6 +41140,10 @@ export const eventAssistanceSmsPreferenceCallableResponseSchema = {
               "maxLength": 500
             }
           }
+        },
+        "reviewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
       }
     }

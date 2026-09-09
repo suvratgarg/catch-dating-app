@@ -13,6 +13,7 @@ const meta = {title: "Marketing Website/Event text preferences",
 export default meta;
 type Story = StoryObj<typeof meta>;
 const view: SmsPreferenceView = {eventId: "fixture", attendeeId: "fixture-guest",
+  reviewHash: "a".repeat(64),
   serverTime: 1000, revision: null, preference: "notSet", canEnable: true,
   availability: "ready", phoneLastFour: "9999", expiresAt: null,
   consent: {version: "catch-event-service-sms-v1",

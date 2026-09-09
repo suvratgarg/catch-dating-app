@@ -22384,6 +22384,13 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['notSet', 'enabled', 'disabled', 'expired'],
   );
 
+  static const eventAssistanceSmsPreferenceCallableResponseViewReviewHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceSmsPreferenceCallableResponse.view.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAssistanceSmsPreferenceCallableResponseViewRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceSmsPreferenceCallableResponse.view.revision',
     valueTypes: <String>['integer'],
@@ -75216,6 +75223,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const setEventAssistanceSmsPreferenceCallablePayloadExpectedReviewHash = CatchContractFieldConstraints(
+    path: 'setEventAssistanceSmsPreferenceCallablePayload.expectedReviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const setEventAssistanceSmsPreferenceCallablePayloadExpectedRevision = CatchContractFieldConstraints(
     path: 'setEventAssistanceSmsPreferenceCallablePayload.expectedRevision',
     valueTypes: <String>['integer'],
@@ -86961,6 +86975,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSmsPreferenceCallableResponse.view.expiresAt': eventAssistanceSmsPreferenceCallableResponseViewExpiresAt,
     'eventAssistanceSmsPreferenceCallableResponse.view.phoneLastFour': eventAssistanceSmsPreferenceCallableResponseViewPhoneLastFour,
     'eventAssistanceSmsPreferenceCallableResponse.view.preference': eventAssistanceSmsPreferenceCallableResponseViewPreference,
+    'eventAssistanceSmsPreferenceCallableResponse.view.reviewHash': eventAssistanceSmsPreferenceCallableResponseViewReviewHash,
     'eventAssistanceSmsPreferenceCallableResponse.view.revision': eventAssistanceSmsPreferenceCallableResponseViewRevision,
     'eventAssistanceSmsPreferenceCallableResponse.view.serverTime': eventAssistanceSmsPreferenceCallableResponseViewServerTime,
     'eventAssistanceSmsSenderDocument.activation.approvedAt': eventAssistanceSmsSenderDocumentActivationApprovedAt,
@@ -94174,6 +94189,7 @@ abstract final class CatchContractConstraints {
     'setEventAssistanceSmsPreferenceCallablePayload.decision.copyVersion': setEventAssistanceSmsPreferenceCallablePayloadDecisionCopyVersion,
     'setEventAssistanceSmsPreferenceCallablePayload.decision.kind': setEventAssistanceSmsPreferenceCallablePayloadDecisionKind,
     'setEventAssistanceSmsPreferenceCallablePayload.eventId': setEventAssistanceSmsPreferenceCallablePayloadEventId,
+    'setEventAssistanceSmsPreferenceCallablePayload.expectedReviewHash': setEventAssistanceSmsPreferenceCallablePayloadExpectedReviewHash,
     'setEventAssistanceSmsPreferenceCallablePayload.expectedRevision': setEventAssistanceSmsPreferenceCallablePayloadExpectedRevision,
     'setEventAssistanceSmsPreferenceCallablePayload.requestId': setEventAssistanceSmsPreferenceCallablePayloadRequestId,
     'setEventAttendeeAttendanceCallablePayload.attendeeId': setEventAttendeeAttendanceCallablePayloadAttendeeId,

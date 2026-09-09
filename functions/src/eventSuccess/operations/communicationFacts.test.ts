@@ -171,7 +171,9 @@ async function sms(h: Awaited<ReturnType<typeof harness>>) {
   const store = new SmsPreferenceStore(h.db,
     () => h.clock.now, sender.senderId);
   const scope = {eventId: h.context.eventId, attendeeId: h.scope.attendeeId};
+  const smsReview = (await store.get(h.actor, scope)).view;
   await store.set(h.actor, {...scope, requestId: "sms-grant",
+    expectedReviewHash: smsReview.reviewHash,
     expectedRevision: null, decision: {kind: "grant",
       copyVersion: SMS_CONSENT_VERSION}});
   return {sender, store, scope};

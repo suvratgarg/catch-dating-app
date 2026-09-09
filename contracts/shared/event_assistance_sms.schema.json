@@ -1174,7 +1174,8 @@
         "availability",
         "phoneLastFour",
         "expiresAt",
-        "consent"
+        "consent",
+        "reviewHash"
       ],
       "properties": {
         "eventId": {
@@ -1269,6 +1270,10 @@
               "maxLength": 500
             }
           }
+        },
+        "reviewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
       }
     },
