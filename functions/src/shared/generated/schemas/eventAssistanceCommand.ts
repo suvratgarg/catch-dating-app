@@ -5273,8 +5273,9 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
           "additionalProperties": false,
           "required": [
             "attendeeId",
-            "evidence",
-            "decisionId"
+            "expectedAttendanceRevision",
+            "expectedDispositionRevision",
+            "decision"
           ],
           "properties": {
             "attendeeId": {
@@ -5283,18 +5284,93 @@ export const eventAssistanceCommandSchema: Record<string, unknown> = {
               "maxLength": 160,
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
             },
-            "evidence": {
-              "type": "string",
-              "enum": [
-                "guestDeclined",
-                "hostConfirmed"
-              ]
+            "expectedAttendanceRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
             },
-            "decisionId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            "expectedDispositionRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "decision": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "evidence"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "record"
+                    },
+                    "evidence": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "hostConfirmed"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "kind",
+                            "guestRevision",
+                            "episodeId"
+                          ],
+                          "properties": {
+                            "kind": {
+                              "const": "guestDeclined"
+                            },
+                            "guestRevision": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "maximum": 9007199254740991
+                            },
+                            "episodeId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "reason"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "clear"
+                    },
+                    "reason": {
+                      "enum": [
+                        "recordingMistake",
+                        "attendanceCorrected",
+                        "noLongerApplicable"
+                      ]
+                    }
+                  }
+                }
+              ]
             }
           }
         }

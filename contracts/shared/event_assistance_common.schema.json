@@ -5950,66 +5950,7 @@
           }
         },
         {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "context",
-            "eventId",
-            "operationId",
-            "payload"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "const": "recordNoShow"
-            },
-            "context": {
-              "$ref": "#/definitions/ExecutionContext"
-            },
-            "eventId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "operationId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "payload": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "attendeeId",
-                "evidence",
-                "decisionId"
-              ],
-              "properties": {
-                "attendeeId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                },
-                "evidence": {
-                  "type": "string",
-                  "enum": [
-                    "guestDeclined",
-                    "hostConfirmed"
-                  ]
-                },
-                "decisionId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 160,
-                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-                }
-              }
-            }
-          }
+          "$ref": "#/definitions/RecordNoShowCommand"
         },
         {
           "type": "object",
@@ -7402,6 +7343,69 @@
               "type": "integer",
               "minimum": 0,
               "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    "RecordNoShowCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "recordNoShow"
+        },
+        "context": {
+          "$ref": "#/definitions/ExecutionContext"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attendeeId",
+            "expectedAttendanceRevision",
+            "expectedDispositionRevision",
+            "decision"
+          ],
+          "properties": {
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "expectedAttendanceRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expectedDispositionRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "decision": {
+              "$ref": "event_attendance_disposition.schema.json#/definitions/Decision"
             }
           }
         }

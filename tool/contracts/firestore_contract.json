@@ -2578,6 +2578,48 @@
       "migrationNotes": [
         "One case at most per counted guest action. Reset and expiry remove synthetic requests; old untracked help flags remain explicit. No live case or notification is written."
       ]
+    },
+    {
+      "id": "eventAttendanceDispositions",
+      "path": "eventAttendanceDispositions/{dispositionId}",
+      "rulesMatch": "/eventAttendanceDispositions/{dispositionId}",
+      "typescriptInterface": "EventAttendanceDispositionDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps attendance closeout decisions callable-only"
+      ],
+      "owner": "event attendance callables",
+      "read": "server only; current organizer managers receive a source-bound callable view",
+      "write": "server only; explicit closeout decisions and exact operation receipts share one transaction",
+      "exportedFunctions": [
+        "getEventAttendanceDisposition",
+        "recordEventNoShow"
+      ],
+      "migrationNotes": [
+        "No physical attendance or guest intention is inferred or rewritten. Source/identity changes hide old decisions; attendance and closure changes supersede old no-show annotations."
+      ]
+    },
+    {
+      "id": "eventAttendanceDispositionReceipts",
+      "path": "eventAttendanceDispositionReceipts/{receiptId}",
+      "rulesMatch": "/eventAttendanceDispositionReceipts/{receiptId}",
+      "typescriptInterface": "EventAttendanceDispositionReceiptDocument",
+      "dartModel": null,
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "rulesTestNames": [
+        "keeps attendance closeout decisions callable-only"
+      ],
+      "owner": "event attendance callables",
+      "read": "server only; current organizer managers receive a source-bound callable view",
+      "write": "server only; explicit closeout decisions and exact operation receipts share one transaction",
+      "exportedFunctions": [
+        "getEventAttendanceDisposition",
+        "recordEventNoShow"
+      ],
+      "migrationNotes": [
+        "No physical attendance or guest intention is inferred or rewritten. Source/identity changes hide old decisions; attendance and closure changes supersede old no-show annotations."
+      ]
     }
   ]
 }

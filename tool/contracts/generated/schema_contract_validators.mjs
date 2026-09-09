@@ -56,6 +56,11 @@ import {
   setEventAssistanceGroupStaffCallablePayloadSchema,
   eventAssistanceGroupStaffCallableResponseSchema,
   eventAssistanceStaffReceiptDocumentSchema,
+  getEventAttendanceDispositionCallablePayloadSchema,
+  recordEventNoShowCallablePayloadSchema,
+  eventAttendanceDispositionCallableResponseSchema,
+  eventAttendanceDispositionDocumentSchema,
+  eventAttendanceDispositionReceiptDocumentSchema,
   eventAssistanceParticipationReceiptDocumentSchema,
   getEventAssistanceParticipationCallablePayloadSchema,
   setEventAssistanceParticipationCallablePayloadSchema,
@@ -729,6 +734,11 @@ export const validateGetEventAssistanceGroupStaffCallablePayload = ajv.compile(g
 export const validateSetEventAssistanceGroupStaffCallablePayload = ajv.compile(setEventAssistanceGroupStaffCallablePayloadSchema);
 export const validateEventAssistanceGroupStaffCallableResponse = ajv.compile(eventAssistanceGroupStaffCallableResponseSchema);
 export const validateEventAssistanceStaffReceiptDocument = ajv.compile(eventAssistanceStaffReceiptDocumentSchema);
+export const validateGetEventAttendanceDispositionCallablePayload = ajv.compile(getEventAttendanceDispositionCallablePayloadSchema);
+export const validateRecordEventNoShowCallablePayload = ajv.compile(recordEventNoShowCallablePayloadSchema);
+export const validateEventAttendanceDispositionCallableResponse = ajv.compile(eventAttendanceDispositionCallableResponseSchema);
+export const validateEventAttendanceDispositionDocument = ajv.compile(eventAttendanceDispositionDocumentSchema);
+export const validateEventAttendanceDispositionReceiptDocument = ajv.compile(eventAttendanceDispositionReceiptDocumentSchema);
 export const validateEventAssistanceParticipationReceiptDocument = ajv.compile(eventAssistanceParticipationReceiptDocumentSchema);
 export const validateGetEventAssistanceParticipationCallablePayload = ajv.compile(getEventAssistanceParticipationCallablePayloadSchema);
 export const validateSetEventAssistanceParticipationCallablePayload = ajv.compile(setEventAssistanceParticipationCallablePayloadSchema);

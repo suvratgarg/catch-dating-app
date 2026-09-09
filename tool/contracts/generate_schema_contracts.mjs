@@ -223,6 +223,31 @@ const schemaSpecs = [
   },
 
   {
+    "name": "GetEventAttendanceDispositionCallablePayload",
+    "source": "callables/get_event_attendance_disposition_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAttendanceDispositionCallablePayload.ts"
+  },
+  {
+    "name": "RecordEventNoShowCallablePayload",
+    "source": "callables/record_event_no_show_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/recordEventNoShowCallablePayload.ts"
+  },
+  {
+    "name": "EventAttendanceDispositionCallableResponse",
+    "source": "callable_responses/event_attendance_disposition_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAttendanceDispositionCallableResponse.ts"
+  },
+  {
+    "name": "EventAttendanceDispositionDocument",
+    "source": "firestore/event_attendance_dispositions.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAttendanceDispositionDocument.ts"
+  },
+  {
+    "name": "EventAttendanceDispositionReceiptDocument",
+    "source": "firestore/event_attendance_disposition_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAttendanceDispositionReceiptDocument.ts"
+  },
+  {
     "name": "EventAssistanceParticipationReceiptDocument",
     "source": "firestore/event_assistance_participation_receipts.schema.json",
     "typeOutput": "functions/src/shared/generated/eventAssistanceParticipationReceiptDocument.ts"

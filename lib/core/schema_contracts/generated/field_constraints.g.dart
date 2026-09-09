@@ -23154,6 +23154,477 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventAttendanceDispositionCallableResponseOperationRevision = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.operationRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.outcome',
+    required: true,
+    enumValues: <String>['read', 'applied', 'replayed'],
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewAttendanceCheckedIn = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.attendance.checkedIn',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewAttendanceRevision = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.attendance.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewAttendanceStatus = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.attendance.status',
+    required: true,
+    enumValues: <String>['invited', 'registered', 'waitlisted', 'checkedIn', 'cancelled'],
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewCanClear = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.canClear',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewClosureCompletedAt = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.closure.completedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewClosureEndedAt = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.closure.endedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewClosureKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.closure.kind',
+    required: true,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewContextEventId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewContextMode = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDeclineEvidenceEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.declineEvidence.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDeclineEvidenceGuestRevision = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.declineEvidence.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDeclineEvidenceKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.declineEvidence.kind',
+    required: true,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDisplayName = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDispositionActorUid = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.disposition.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDispositionEvidenceEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.disposition.evidence.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDispositionEvidenceGuestRevision = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.disposition.evidence.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDispositionEvidenceKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.disposition.evidence.kind',
+    required: true,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDispositionKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.disposition.kind',
+    required: true,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDispositionReason = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.disposition.reason',
+    required: true,
+    enumValues: <String>['attendanceChanged', 'eventChanged', 'guestIntentionChanged'],
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDispositionRecordedAt = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.disposition.recordedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewDispositionRevision = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.disposition.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewRecordabilityKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.recordability.kind',
+    required: true,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewRecordabilityReason = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.recordability.reason',
+    required: true,
+    enumValues: <String>['eventNotFinished', 'eventCancelled', 'notAdmitted', 'alreadyAttended'],
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewServerTime = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionCallableResponseViewSourceHash = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionCallableResponse.view.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAttendanceDispositionDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionDocumentBindingAttendanceHash = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.binding.attendanceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAttendanceDispositionDocumentBindingAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.binding.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAttendanceDispositionDocumentBindingClosureHash = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.binding.closureHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAttendanceDispositionDocumentBindingIdentityHash = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.binding.identityHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAttendanceDispositionDocumentBindingSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.binding.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAttendanceDispositionDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendanceDispositionDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendanceDispositionDocumentDecisionEvidenceEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.decision.evidence.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionDocumentDecisionEvidenceGuestRevision = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.decision.evidence.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionDocumentDecisionEvidenceKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.decision.evidence.kind',
+    required: true,
+  );
+
+  static const eventAttendanceDispositionDocumentDecisionKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.decision.kind',
+    required: true,
+  );
+
+  static const eventAttendanceDispositionDocumentDecisionReason = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.decision.reason',
+    required: true,
+    enumValues: <String>['recordingMistake', 'attendanceCorrected', 'noLongerApplicable'],
+  );
+
+  static const eventAttendanceDispositionDocumentDispositionId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.dispositionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionDocumentRecordedAt = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.recordedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentDecisionEvidenceEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.decision.evidence.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentDecisionEvidenceGuestRevision = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.decision.evidence.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentDecisionEvidenceKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.decision.evidence.kind',
+    required: true,
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentDecisionKind = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.decision.kind',
+    required: true,
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentDecisionReason = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.decision.reason',
+    required: true,
+    enumValues: <String>['recordingMistake', 'attendanceCorrected', 'noLongerApplicable'],
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentDispositionId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.dispositionId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentOperationId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.receiptId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAttendanceDispositionReceiptDocumentSourceIdentityHash = CatchContractFieldConstraints(
+    path: 'eventAttendanceDispositionReceiptDocument.sourceIdentityHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventAttendeeAttendanceReceiptDocumentAcceptedRevision = CatchContractFieldConstraints(
     path: 'eventAttendeeAttendanceReceiptDocument.acceptedRevision',
     required: true,
@@ -25431,6 +25902,20 @@ abstract final class CatchContractConstraints {
   static const eventDocumentSynthetic = CatchContractFieldConstraints(
     path: 'eventDocument.synthetic',
     valueTypes: <String>['boolean'],
+  );
+
+  static const eventDocumentUpdatedAtNanoseconds = CatchContractFieldConstraints(
+    path: 'eventDocument.updatedAt._nanoseconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 999999999,
+  );
+
+  static const eventDocumentUpdatedAtSeconds = CatchContractFieldConstraints(
+    path: 'eventDocument.updatedAt._seconds',
+    required: true,
+    valueTypes: <String>['integer'],
   );
 
   static const eventDocumentWaitlistedCohortCounts = CatchContractFieldConstraints(
@@ -41614,6 +42099,38 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9_-]{43}\$',
+  );
+
+  static const getEventAttendanceDispositionCallablePayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'getEventAttendanceDispositionCallablePayload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAttendanceDispositionCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'getEventAttendanceDispositionCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAttendanceDispositionCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'getEventAttendanceDispositionCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const getEventAttendanceDispositionCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'getEventAttendanceDispositionCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
   );
 
   static const getEventInviteLinkTokenCallablePayloadEventId = CatchContractFieldConstraints(
@@ -71169,6 +71686,143 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['consumerApp', 'hostApp', 'runtimeWeb', 'marketingWeb', 'unknown'],
   );
 
+  static const recordEventNoShowCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventNoShowCallablePayloadCommandContextEventId = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventNoShowCallablePayloadCommandContextMode = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventNoShowCallablePayloadCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventNoShowCallablePayloadCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventNoShowCallablePayloadCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventNoShowCallablePayloadCommandEventId = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventNoShowCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const recordEventNoShowCallablePayloadCommandOperationId = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventNoShowCallablePayloadCommandPayloadAttendeeId = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.payload.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventNoShowCallablePayloadCommandPayloadDecisionEvidenceEpisodeId = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.payload.decision.evidence.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const recordEventNoShowCallablePayloadCommandPayloadDecisionEvidenceGuestRevision = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.payload.decision.evidence.guestRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const recordEventNoShowCallablePayloadCommandPayloadDecisionEvidenceKind = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.payload.decision.evidence.kind',
+    required: true,
+  );
+
+  static const recordEventNoShowCallablePayloadCommandPayloadDecisionKind = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.payload.decision.kind',
+    required: true,
+  );
+
+  static const recordEventNoShowCallablePayloadCommandPayloadDecisionReason = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.payload.decision.reason',
+    required: true,
+    enumValues: <String>['recordingMistake', 'attendanceCorrected', 'noLongerApplicable'],
+  );
+
+  static const recordEventNoShowCallablePayloadCommandPayloadExpectedAttendanceRevision = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.payload.expectedAttendanceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const recordEventNoShowCallablePayloadCommandPayloadExpectedDispositionRevision = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.command.payload.expectedDispositionRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const recordEventNoShowCallablePayloadExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'recordEventNoShowCallablePayload.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const recordEventShareIntentCallablePayloadChannelHint = CatchContractFieldConstraints(
     path: 'recordEventShareIntentCallablePayload.channelHint',
     valueTypes: <String>['string'],
@@ -86183,6 +86837,70 @@ abstract final class CatchContractConstraints {
     'eventAssistanceThreadDocument.updatedAt': eventAssistanceThreadDocumentUpdatedAt,
     'eventAssistanceThreadDocument.workflow.kind': eventAssistanceThreadDocumentWorkflowKind,
     'eventAssistanceThreadDocument.workflow.occurrenceId': eventAssistanceThreadDocumentWorkflowOccurrenceId,
+    'eventAttendanceDispositionCallableResponse.operationRevision': eventAttendanceDispositionCallableResponseOperationRevision,
+    'eventAttendanceDispositionCallableResponse.outcome': eventAttendanceDispositionCallableResponseOutcome,
+    'eventAttendanceDispositionCallableResponse.view.attendance.checkedIn': eventAttendanceDispositionCallableResponseViewAttendanceCheckedIn,
+    'eventAttendanceDispositionCallableResponse.view.attendance.revision': eventAttendanceDispositionCallableResponseViewAttendanceRevision,
+    'eventAttendanceDispositionCallableResponse.view.attendance.status': eventAttendanceDispositionCallableResponseViewAttendanceStatus,
+    'eventAttendanceDispositionCallableResponse.view.attendeeId': eventAttendanceDispositionCallableResponseViewAttendeeId,
+    'eventAttendanceDispositionCallableResponse.view.canClear': eventAttendanceDispositionCallableResponseViewCanClear,
+    'eventAttendanceDispositionCallableResponse.view.closure.completedAt': eventAttendanceDispositionCallableResponseViewClosureCompletedAt,
+    'eventAttendanceDispositionCallableResponse.view.closure.endedAt': eventAttendanceDispositionCallableResponseViewClosureEndedAt,
+    'eventAttendanceDispositionCallableResponse.view.closure.kind': eventAttendanceDispositionCallableResponseViewClosureKind,
+    'eventAttendanceDispositionCallableResponse.view.context.eventId': eventAttendanceDispositionCallableResponseViewContextEventId,
+    'eventAttendanceDispositionCallableResponse.view.context.mode': eventAttendanceDispositionCallableResponseViewContextMode,
+    'eventAttendanceDispositionCallableResponse.view.context.organizerId': eventAttendanceDispositionCallableResponseViewContextOrganizerId,
+    'eventAttendanceDispositionCallableResponse.view.declineEvidence.episodeId': eventAttendanceDispositionCallableResponseViewDeclineEvidenceEpisodeId,
+    'eventAttendanceDispositionCallableResponse.view.declineEvidence.guestRevision': eventAttendanceDispositionCallableResponseViewDeclineEvidenceGuestRevision,
+    'eventAttendanceDispositionCallableResponse.view.declineEvidence.kind': eventAttendanceDispositionCallableResponseViewDeclineEvidenceKind,
+    'eventAttendanceDispositionCallableResponse.view.displayName': eventAttendanceDispositionCallableResponseViewDisplayName,
+    'eventAttendanceDispositionCallableResponse.view.disposition.actorUid': eventAttendanceDispositionCallableResponseViewDispositionActorUid,
+    'eventAttendanceDispositionCallableResponse.view.disposition.evidence.episodeId': eventAttendanceDispositionCallableResponseViewDispositionEvidenceEpisodeId,
+    'eventAttendanceDispositionCallableResponse.view.disposition.evidence.guestRevision': eventAttendanceDispositionCallableResponseViewDispositionEvidenceGuestRevision,
+    'eventAttendanceDispositionCallableResponse.view.disposition.evidence.kind': eventAttendanceDispositionCallableResponseViewDispositionEvidenceKind,
+    'eventAttendanceDispositionCallableResponse.view.disposition.kind': eventAttendanceDispositionCallableResponseViewDispositionKind,
+    'eventAttendanceDispositionCallableResponse.view.disposition.reason': eventAttendanceDispositionCallableResponseViewDispositionReason,
+    'eventAttendanceDispositionCallableResponse.view.disposition.recordedAt': eventAttendanceDispositionCallableResponseViewDispositionRecordedAt,
+    'eventAttendanceDispositionCallableResponse.view.disposition.revision': eventAttendanceDispositionCallableResponseViewDispositionRevision,
+    'eventAttendanceDispositionCallableResponse.view.recordability.kind': eventAttendanceDispositionCallableResponseViewRecordabilityKind,
+    'eventAttendanceDispositionCallableResponse.view.recordability.reason': eventAttendanceDispositionCallableResponseViewRecordabilityReason,
+    'eventAttendanceDispositionCallableResponse.view.serverTime': eventAttendanceDispositionCallableResponseViewServerTime,
+    'eventAttendanceDispositionCallableResponse.view.sourceHash': eventAttendanceDispositionCallableResponseViewSourceHash,
+    'eventAttendanceDispositionDocument.actorUid': eventAttendanceDispositionDocumentActorUid,
+    'eventAttendanceDispositionDocument.attendeeId': eventAttendanceDispositionDocumentAttendeeId,
+    'eventAttendanceDispositionDocument.binding.attendanceHash': eventAttendanceDispositionDocumentBindingAttendanceHash,
+    'eventAttendanceDispositionDocument.binding.attendeeGeneration': eventAttendanceDispositionDocumentBindingAttendeeGeneration,
+    'eventAttendanceDispositionDocument.binding.closureHash': eventAttendanceDispositionDocumentBindingClosureHash,
+    'eventAttendanceDispositionDocument.binding.identityHash': eventAttendanceDispositionDocumentBindingIdentityHash,
+    'eventAttendanceDispositionDocument.binding.sourceGeneration': eventAttendanceDispositionDocumentBindingSourceGeneration,
+    'eventAttendanceDispositionDocument.context.eventId': eventAttendanceDispositionDocumentContextEventId,
+    'eventAttendanceDispositionDocument.context.mode': eventAttendanceDispositionDocumentContextMode,
+    'eventAttendanceDispositionDocument.context.organizerId': eventAttendanceDispositionDocumentContextOrganizerId,
+    'eventAttendanceDispositionDocument.decision.evidence.episodeId': eventAttendanceDispositionDocumentDecisionEvidenceEpisodeId,
+    'eventAttendanceDispositionDocument.decision.evidence.guestRevision': eventAttendanceDispositionDocumentDecisionEvidenceGuestRevision,
+    'eventAttendanceDispositionDocument.decision.evidence.kind': eventAttendanceDispositionDocumentDecisionEvidenceKind,
+    'eventAttendanceDispositionDocument.decision.kind': eventAttendanceDispositionDocumentDecisionKind,
+    'eventAttendanceDispositionDocument.decision.reason': eventAttendanceDispositionDocumentDecisionReason,
+    'eventAttendanceDispositionDocument.dispositionId': eventAttendanceDispositionDocumentDispositionId,
+    'eventAttendanceDispositionDocument.recordedAt': eventAttendanceDispositionDocumentRecordedAt,
+    'eventAttendanceDispositionDocument.revision': eventAttendanceDispositionDocumentRevision,
+    'eventAttendanceDispositionReceiptDocument.actorUid': eventAttendanceDispositionReceiptDocumentActorUid,
+    'eventAttendanceDispositionReceiptDocument.attendeeId': eventAttendanceDispositionReceiptDocumentAttendeeId,
+    'eventAttendanceDispositionReceiptDocument.context.eventId': eventAttendanceDispositionReceiptDocumentContextEventId,
+    'eventAttendanceDispositionReceiptDocument.context.mode': eventAttendanceDispositionReceiptDocumentContextMode,
+    'eventAttendanceDispositionReceiptDocument.context.organizerId': eventAttendanceDispositionReceiptDocumentContextOrganizerId,
+    'eventAttendanceDispositionReceiptDocument.createdAt': eventAttendanceDispositionReceiptDocumentCreatedAt,
+    'eventAttendanceDispositionReceiptDocument.decision.evidence.episodeId': eventAttendanceDispositionReceiptDocumentDecisionEvidenceEpisodeId,
+    'eventAttendanceDispositionReceiptDocument.decision.evidence.guestRevision': eventAttendanceDispositionReceiptDocumentDecisionEvidenceGuestRevision,
+    'eventAttendanceDispositionReceiptDocument.decision.evidence.kind': eventAttendanceDispositionReceiptDocumentDecisionEvidenceKind,
+    'eventAttendanceDispositionReceiptDocument.decision.kind': eventAttendanceDispositionReceiptDocumentDecisionKind,
+    'eventAttendanceDispositionReceiptDocument.decision.reason': eventAttendanceDispositionReceiptDocumentDecisionReason,
+    'eventAttendanceDispositionReceiptDocument.dispositionId': eventAttendanceDispositionReceiptDocumentDispositionId,
+    'eventAttendanceDispositionReceiptDocument.operationId': eventAttendanceDispositionReceiptDocumentOperationId,
+    'eventAttendanceDispositionReceiptDocument.receiptId': eventAttendanceDispositionReceiptDocumentReceiptId,
+    'eventAttendanceDispositionReceiptDocument.requestHash': eventAttendanceDispositionReceiptDocumentRequestHash,
+    'eventAttendanceDispositionReceiptDocument.revision': eventAttendanceDispositionReceiptDocumentRevision,
+    'eventAttendanceDispositionReceiptDocument.sourceIdentityHash': eventAttendanceDispositionReceiptDocumentSourceIdentityHash,
     'eventAttendeeAttendanceReceiptDocument.acceptedRevision': eventAttendeeAttendanceReceiptDocumentAcceptedRevision,
     'eventAttendeeAttendanceReceiptDocument.actorUid': eventAttendeeAttendanceReceiptDocumentActorUid,
     'eventAttendeeAttendanceReceiptDocument.attendeeId': eventAttendeeAttendanceReceiptDocumentAttendeeId,
@@ -86498,6 +87216,8 @@ abstract final class CatchContractConstraints {
     'eventDocument.startTime._seconds': eventDocumentStartTimeSeconds,
     'eventDocument.status': eventDocumentStatus,
     'eventDocument.synthetic': eventDocumentSynthetic,
+    'eventDocument.updatedAt._nanoseconds': eventDocumentUpdatedAtNanoseconds,
+    'eventDocument.updatedAt._seconds': eventDocumentUpdatedAtSeconds,
     'eventDocument.waitlistedCohortCounts': eventDocumentWaitlistedCohortCounts,
     'eventDocument.waitlistedCount': eventDocumentWaitlistedCount,
     'eventIdCallablePayload.eventId': eventIdCallablePayloadEventId,
@@ -88680,6 +89400,10 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceSmsPreferenceCallablePayload.eventId': getEventAssistanceSmsPreferenceCallablePayloadEventId,
     'getEventAssistanceSmsWithdrawalCallablePayload.linkId': getEventAssistanceSmsWithdrawalCallablePayloadLinkId,
     'getEventAssistanceSmsWithdrawalCallablePayload.secret': getEventAssistanceSmsWithdrawalCallablePayloadSecret,
+    'getEventAttendanceDispositionCallablePayload.attendeeId': getEventAttendanceDispositionCallablePayloadAttendeeId,
+    'getEventAttendanceDispositionCallablePayload.context.eventId': getEventAttendanceDispositionCallablePayloadContextEventId,
+    'getEventAttendanceDispositionCallablePayload.context.mode': getEventAttendanceDispositionCallablePayloadContextMode,
+    'getEventAttendanceDispositionCallablePayload.context.organizerId': getEventAttendanceDispositionCallablePayloadContextOrganizerId,
     'getEventInviteLinkTokenCallablePayload.eventId': getEventInviteLinkTokenCallablePayloadEventId,
     'getEventInviteLinkTokenCallablePayload.inviteLinkId': getEventInviteLinkTokenCallablePayloadInviteLinkId,
     'getEventRcsPreferenceCallablePayload.attendeeId': getEventRcsPreferenceCallablePayloadAttendeeId,
@@ -92754,6 +93478,24 @@ abstract final class CatchContractConstraints {
     'recordEventInviteLinkOpenCallablePayload.inviteLinkId': recordEventInviteLinkOpenCallablePayloadInviteLinkId,
     'recordEventInviteLinkOpenCallablePayload.sessionId': recordEventInviteLinkOpenCallablePayloadSessionId,
     'recordEventInviteLinkOpenCallablePayload.surface': recordEventInviteLinkOpenCallablePayloadSurface,
+    'recordEventNoShowCallablePayload.command.context.clockId': recordEventNoShowCallablePayloadCommandContextClockId,
+    'recordEventNoShowCallablePayload.command.context.eventId': recordEventNoShowCallablePayloadCommandContextEventId,
+    'recordEventNoShowCallablePayload.command.context.mode': recordEventNoShowCallablePayloadCommandContextMode,
+    'recordEventNoShowCallablePayload.command.context.organizerId': recordEventNoShowCallablePayloadCommandContextOrganizerId,
+    'recordEventNoShowCallablePayload.command.context.rehearsalId': recordEventNoShowCallablePayloadCommandContextRehearsalId,
+    'recordEventNoShowCallablePayload.command.context.virtualEventId': recordEventNoShowCallablePayloadCommandContextVirtualEventId,
+    'recordEventNoShowCallablePayload.command.eventId': recordEventNoShowCallablePayloadCommandEventId,
+    'recordEventNoShowCallablePayload.command.kind': recordEventNoShowCallablePayloadCommandKind,
+    'recordEventNoShowCallablePayload.command.operationId': recordEventNoShowCallablePayloadCommandOperationId,
+    'recordEventNoShowCallablePayload.command.payload.attendeeId': recordEventNoShowCallablePayloadCommandPayloadAttendeeId,
+    'recordEventNoShowCallablePayload.command.payload.decision.evidence.episodeId': recordEventNoShowCallablePayloadCommandPayloadDecisionEvidenceEpisodeId,
+    'recordEventNoShowCallablePayload.command.payload.decision.evidence.guestRevision': recordEventNoShowCallablePayloadCommandPayloadDecisionEvidenceGuestRevision,
+    'recordEventNoShowCallablePayload.command.payload.decision.evidence.kind': recordEventNoShowCallablePayloadCommandPayloadDecisionEvidenceKind,
+    'recordEventNoShowCallablePayload.command.payload.decision.kind': recordEventNoShowCallablePayloadCommandPayloadDecisionKind,
+    'recordEventNoShowCallablePayload.command.payload.decision.reason': recordEventNoShowCallablePayloadCommandPayloadDecisionReason,
+    'recordEventNoShowCallablePayload.command.payload.expectedAttendanceRevision': recordEventNoShowCallablePayloadCommandPayloadExpectedAttendanceRevision,
+    'recordEventNoShowCallablePayload.command.payload.expectedDispositionRevision': recordEventNoShowCallablePayloadCommandPayloadExpectedDispositionRevision,
+    'recordEventNoShowCallablePayload.expectedSourceHash': recordEventNoShowCallablePayloadExpectedSourceHash,
     'recordEventShareIntentCallablePayload.channelHint': recordEventShareIntentCallablePayloadChannelHint,
     'recordEventShareIntentCallablePayload.creativeId': recordEventShareIntentCallablePayloadCreativeId,
     'recordEventShareIntentCallablePayload.eventId': recordEventShareIntentCallablePayloadEventId,

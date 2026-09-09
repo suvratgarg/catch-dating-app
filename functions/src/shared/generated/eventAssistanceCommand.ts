@@ -1051,8 +1051,28 @@ export type EventAssistanceCommand =
       operationId: string;
       payload: {
         attendeeId: string;
-        evidence: "guestDeclined" | "hostConfirmed";
-        decisionId: string;
+        expectedAttendanceRevision: number;
+        expectedDispositionRevision: number;
+        decision:
+          | {
+              kind: "record";
+              evidence:
+                | {
+                    kind: "hostConfirmed";
+                  }
+                | {
+                    kind: "guestDeclined";
+                    guestRevision: number;
+                    episodeId: string;
+                  };
+            }
+          | {
+              kind: "clear";
+              reason:
+                | "recordingMistake"
+                | "attendanceCorrected"
+                | "noLongerApplicable";
+            };
       };
     }
   | {

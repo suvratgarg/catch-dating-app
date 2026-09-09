@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.87.0
+version: 1.88.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -96,6 +96,28 @@ old untracked help flags remain explicit. Guest projections omit these records.
 Native readers reject foreign clocks/actors and inconsistent resolution state;
 only a reviewed open rehearsal case can form its typed handling command.
 Rehearsal reset and expiry remove these cases, independently of live cases.
+
+### Explicit Attendance Closeout
+
+The event document accepts an optional, callable-owned `updatedAt` timestamp.
+The absolute Host attendance writer already updates it with the event checked-in
+aggregate. Older events may omit it; a real-emulator check-in regression validates
+the resulting event and attendee documents before reading closeout again.
+
+`event_attendance_disposition.schema.json` defines live-only reads, the typed
+`recordNoShow` command payload, response projection, annotation and receipt.
+The command distinguishes recording evidence from a clear reason. Its expected
+physical-attendance revision and expected disposition revision are independent.
+`eventAttendanceDispositions` and `eventAttendanceDispositionReceipts` are
+callable-only; their owner validates current organizer authority and canonical
+roster/event/plan/guest evidence in the same transaction as the decision.
+Source hashes preserve timestamp precision and source generations; they cannot
+be reused after attendance, relevant identity, closure or cited guest evidence
+changes. Exact receipts preserve the original operation revision separately
+from current projected disposition. Old decisions are hidden for replacement
+identities or explicitly superseded for changed facts. These documents do not
+replace `eventAttendees`, infer attendance, update event totals or alter report
+aggregates. Native roster and report integration remain separate work.
 
 ### Event Assistance Transaction Boundary
 

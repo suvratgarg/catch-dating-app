@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.86.0
+version: 1.87.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -307,6 +307,39 @@ The live late-join reader, publisher, durable worker and dormant source/schedule
 handlers are described below. Other workflow fact readers/executors, deployed
 provider coordination and the Host/rehearsal application adapters remain
 integration work.
+
+### Attendance closeout decisions
+
+`getEventAttendanceDisposition` and `recordEventNoShow` add an explicit,
+manager-only decision for one live event roster guest. An unchecked registration
+starts as `unreviewed`; elapsed time and unanswered messages never record a
+no-show. The typed `recordNoShow` command carries separate expected attendance
+and decision revisions, a reviewed source hash and an immutable operation id.
+The decision is either a host-confirmed record, a record citing the exact current
+`notComing` guest episode/revision, or an explicit clear with a supported reason.
+Guest-declined labels supplied without that canonical evidence are rejected.
+
+A running Event Success plan remains open after a scheduled overrun. Recording
+requires an admitted, unchecked guest and either a completed runtime with valid
+completion evidence or a passed scheduled end with no running runtime. Cancelled
+events, waitlists and invitations cannot create no-shows. Clearing a mistake
+does not establish attendance; attendance-correction and no-longer-applicable
+reasons require their matching current facts.
+
+Callable-only `eventAttendanceDispositions` annotations and immutable
+`eventAttendanceDispositionReceipts` commit together. They never write physical
+attendance, admission, participation, assignments, messages or payments. Current
+organizer authority is re-read inside the transaction, including on retries.
+Exact retries return the original operation revision and the latest view.
+Event/roster creation generations and reviewed guest identity prevent replacement
+rows from inheriting or replaying old decisions. Attendance facts (including
+check-in timestamp precision, independently of the attendance revision), event
+closure changes and changed cited guest intention supersede earlier decisions.
+A fresh review is required before a new decision can commit.
+
+This backend boundary is not yet connected to the native Host roster or recap.
+Existing report no-show counts retain their current semantics until their
+separate aggregation and UI integration use this explicit decision model.
 
 ### Participation commands
 

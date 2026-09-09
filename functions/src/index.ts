@@ -537,6 +537,8 @@ export {getEventAssistanceHostGuests} from
   "./eventSuccess/operations/hostGuestsHandlers";
 export {getEventAssistanceParticipation, setEventAssistanceParticipation} from
   "./eventSuccess/operations/participationHandlers";
+export {getEventAttendanceDisposition, recordEventNoShow} from
+  "./events/attendanceDispositionHandlers";
 export {getEventAssistanceAccountability,
   resolveEventAssistanceAccountability} from
   "./eventSuccess/operations/accountabilityHandlers";

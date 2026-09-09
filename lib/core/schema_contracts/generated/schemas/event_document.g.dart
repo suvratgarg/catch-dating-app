@@ -1764,5 +1764,26 @@ const schemaEventDocumentSchema = <String, Object?>{
       'maxLength': 80,
       'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
     },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates. Legacy events may omit it.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
   },
 };

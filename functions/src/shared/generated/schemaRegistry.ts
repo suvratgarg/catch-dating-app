@@ -58,6 +58,11 @@ export {getEventAssistanceGroupStaffCallablePayloadSchema} from "./schemas/getEv
 export {setEventAssistanceGroupStaffCallablePayloadSchema} from "./schemas/setEventAssistanceGroupStaffInput";
 export {eventAssistanceGroupStaffCallableResponseSchema} from "./schemas/eventAssistanceGroupStaffOutput";
 export {eventAssistanceStaffReceiptDocumentSchema} from "./schemas/eventAssistanceStaffReceiptDocument";
+export {getEventAttendanceDispositionCallablePayloadSchema} from "./schemas/getEventAttendanceDispositionInput";
+export {recordEventNoShowCallablePayloadSchema} from "./schemas/recordEventNoShowInput";
+export {eventAttendanceDispositionCallableResponseSchema} from "./schemas/eventAttendanceDispositionOutput";
+export {eventAttendanceDispositionDocumentSchema} from "./schemas/eventAttendanceDispositionDocument";
+export {eventAttendanceDispositionReceiptDocumentSchema} from "./schemas/eventAttendanceDispositionReceiptDocument";
 export {eventAssistanceParticipationReceiptDocumentSchema} from "./schemas/eventAssistanceParticipationReceiptDocument";
 export {getEventAssistanceParticipationCallablePayloadSchema} from "./schemas/getEventAssistanceParticipationInput";
 export {setEventAssistanceParticipationCallablePayloadSchema} from "./schemas/setEventAssistanceParticipationInput";

@@ -5275,8 +5275,9 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
           'additionalProperties': false,
           'required': <Object?>[
             'attendeeId',
-            'evidence',
-            'decisionId',
+            'expectedAttendanceRevision',
+            'expectedDispositionRevision',
+            'decision',
           ],
           'properties': <String, Object?>{
             'attendeeId': <String, Object?>{
@@ -5285,18 +5286,93 @@ const schemaEventAssistanceCommandSchema = <String, Object?>{
               'maxLength': 160,
               'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
             },
-            'evidence': <String, Object?>{
-              'type': 'string',
-              'enum': <Object?>[
-                'guestDeclined',
-                'hostConfirmed',
-              ],
+            'expectedAttendanceRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
             },
-            'decisionId': <String, Object?>{
-              'type': 'string',
-              'minLength': 1,
-              'maxLength': 160,
-              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            'expectedDispositionRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'decision': <String, Object?>{
+              'oneOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'evidence',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'const': 'record',
+                    },
+                    'evidence': <String, Object?>{
+                      'oneOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'const': 'hostConfirmed',
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'guestRevision',
+                            'episodeId',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'const': 'guestDeclined',
+                            },
+                            'guestRevision': <String, Object?>{
+                              'type': 'integer',
+                              'minimum': 0,
+                              'maximum': 9007199254740991,
+                            },
+                            'episodeId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 160,
+                              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'kind',
+                    'reason',
+                  ],
+                  'properties': <String, Object?>{
+                    'kind': <String, Object?>{
+                      'const': 'clear',
+                    },
+                    'reason': <String, Object?>{
+                      'enum': <Object?>[
+                        'recordingMistake',
+                        'attendanceCorrected',
+                        'noLongerApplicable',
+                      ],
+                    },
+                  },
+                },
+              ],
             },
           },
         },

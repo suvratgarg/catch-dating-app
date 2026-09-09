@@ -1462,6 +1462,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAttendanceDispositions/{dispositionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAttendanceDispositionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
     match /eventRehearsalCases/{caseId} {
       allow read, write: if false;
     }

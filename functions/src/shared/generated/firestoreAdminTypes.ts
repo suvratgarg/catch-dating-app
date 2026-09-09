@@ -1040,6 +1040,83 @@ export interface EventAssistanceStaffReceiptDocument {
   createdAt: number;
 }
 
+export interface EventAttendanceDispositionDocument {
+  dispositionId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  revision: number;
+  binding: {
+    sourceGeneration: string;
+    attendeeGeneration: string;
+    identityHash: string;
+    attendanceHash: string;
+    closureHash: string;
+  };
+  decision:
+    | {
+        kind: "record";
+        evidence:
+          | {
+              kind: "hostConfirmed";
+            }
+          | {
+              kind: "guestDeclined";
+              guestRevision: number;
+              episodeId: string;
+            };
+      }
+    | {
+        kind: "clear";
+        reason:
+          | "recordingMistake"
+          | "attendanceCorrected"
+          | "noLongerApplicable";
+      };
+  actorUid: string;
+  recordedAt: number;
+}
+
+export interface EventAttendanceDispositionReceiptDocument {
+  receiptId: string;
+  dispositionId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  attendeeId: string;
+  operationId: string;
+  actorUid: string;
+  requestHash: string;
+  sourceIdentityHash: string;
+  revision: number;
+  decision:
+    | {
+        kind: "record";
+        evidence:
+          | {
+              kind: "hostConfirmed";
+            }
+          | {
+              kind: "guestDeclined";
+              guestRevision: number;
+              episodeId: string;
+            };
+      }
+    | {
+        kind: "clear";
+        reason:
+          | "recordingMistake"
+          | "attendanceCorrected"
+          | "noLongerApplicable";
+      };
+  createdAt: number;
+}
+
 export interface EventAssistanceParticipationReceiptDocument {
   receiptId: string;
   guestId: string;
@@ -7268,6 +7345,7 @@ export interface EventDocument {
     updatedAt: FirebaseFirestore.Timestamp;
     updatedBySource: "adminUpdateEventDetails" | "adminEventSearchBackfill";
   };
+  updatedAt?: FirebaseFirestore.Timestamp;
 }
 
 /**
