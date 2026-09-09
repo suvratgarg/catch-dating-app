@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_assistance_sms_withdrawal_payload.schema.json",
+  "title": "GetEventAssistanceSmsWithdrawalCallablePayload",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "linkId",
+    "secret"
+  ],
+  "properties": {
+    "linkId": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{32}$"
+    },
+    "secret": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$"
+    }
+  }
+}

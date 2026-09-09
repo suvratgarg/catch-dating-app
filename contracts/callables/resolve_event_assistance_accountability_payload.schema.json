@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/resolve_event_assistance_accountability_payload.schema.json",
+  "title": "ResolveEventAssistanceAccountabilityCallablePayload",
+  "$ref": "../shared/event_assistance_accountability.schema.json#/definitions/WriteInput"
+}

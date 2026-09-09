@@ -170,12 +170,13 @@ EventRehearsalRuntimeProjection buildEventRehearsalRuntimeProjection(
     ),
     entries: [
       for (final actor in rehearsal.actors)
-        EventSuccessPresenceEntry(
-          uid: actor.actorId,
-          displayName: actor.displayName,
-          state: _presenceState(actor.status),
-          heartbeatAtMillis: virtualNowMillis,
-        ),
+        if (actor.connectionState == EventRehearsalConnectionState.connected)
+          EventSuccessPresenceEntry(
+            uid: actor.actorId,
+            displayName: actor.displayName,
+            state: _presenceState(actor.status),
+            heartbeatAtMillis: virtualNowMillis,
+          ),
     ],
     lateArrivals: [
       for (final actor in rehearsal.actors)
@@ -238,8 +239,7 @@ bool _isPlaceable(EventRehearsalActor actor) => switch (actor.status) {
 
 EventSuccessPresenceState _presenceState(EventRehearsalActorStatus status) =>
     switch (status) {
-      EventRehearsalActorStatus.departed ||
-      EventRehearsalActorStatus.disconnected =>
+      EventRehearsalActorStatus.departed =>
         EventSuccessPresenceState.likelyDeparted,
       EventRehearsalActorStatus.present ||
       EventRehearsalActorStatus.late ||

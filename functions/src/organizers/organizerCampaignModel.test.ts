@@ -67,4 +67,14 @@ test("Meta webhook signature verification is timing-safe and exact", () => {
     signatureHeader,
     appSecret,
   }), false);
+  for (const malformed of [undefined, "", "sha256=" + "0".repeat(63),
+    "sha256=" + "0".repeat(65), "sha256=" + "g".repeat(64),
+    "sha256=" + "é".repeat(64), signatureHeader + "\n"]) {
+    assert.equal(verifyMetaWebhookSignature({
+      rawBody, signatureHeader: malformed, appSecret,
+    }), false);
+  }
+  assert.equal(verifyMetaWebhookSignature({
+    rawBody, signatureHeader, appSecret: "",
+  }), false);
 });

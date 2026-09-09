@@ -4,6 +4,7 @@ import {fileURLToPath} from "node:url";
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import {OperationsError} from "../platform/errors.mjs";
+import {collectSchema} from "../platform/schema-dependencies.mjs";
 
 const moduleDirectory = path.dirname(fileURLToPath(import.meta.url));
 const defaultRepoRoot = path.resolve(moduleDirectory, "..", "..", "..");
@@ -88,29 +89,6 @@ async function requestValidators(catalog, repoRoot) {
     }
     return [action.actionId, validate];
   }));
-}
-
-async function collectSchema(schemaPath, schemas) {
-  if (schemas.has(schemaPath)) return;
-  const schema = JSON.parse(await fs.readFile(schemaPath, "utf8"));
-  schemas.set(schemaPath, schema);
-  const refs = [];
-  visit(schema, (ref) => {
-    if (!ref.startsWith("#")) refs.push(ref.split("#", 1)[0]);
-  });
-  for (const relative of refs) {
-    await collectSchema(path.resolve(path.dirname(schemaPath), relative), schemas);
-  }
-}
-
-function visit(value, onRef) {
-  if (Array.isArray(value)) {
-    value.forEach((entry) => visit(entry, onRef));
-    return;
-  }
-  if (!value || typeof value !== "object") return;
-  if (typeof value.$ref === "string") onRef(value.$ref);
-  Object.values(value).forEach((entry) => visit(entry, onRef));
 }
 
 export function publicAction(action) {

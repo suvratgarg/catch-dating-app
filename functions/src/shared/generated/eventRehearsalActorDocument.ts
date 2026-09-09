@@ -28,6 +28,7 @@ export interface EventRehearsalActorDocument {
     | "disconnected"
     | "walkIn"
     | "ambiguousClaim";
+  connectionState?: "connected" | "disconnected";
   guestMoment:
     | "welcome"
     | "checkIn"
@@ -64,5 +65,402 @@ export interface EventRehearsalActorDocument {
   updatedAt: {
     _seconds: number;
     _nanoseconds: number;
+  };
+  assistance?: {
+    intention:
+      | {
+          kind: "unknown";
+        }
+      | {
+          kind: "onMyWay";
+          claimedEta: number | null;
+        }
+      | {
+          kind: "joinLater";
+          target:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+        }
+      | {
+          kind: "notComing";
+        };
+    latestMessageId: string | null;
+  };
+  assistanceAutomation?: {
+    clockId: string;
+    status: "enabled" | "paused";
+    plan: {
+      policy: {
+        destination:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              /**
+               * @minItems 1
+               * @maxItems 1000
+               */
+              permittedStopIds: string[];
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              /**
+               * @minItems 1
+               * @maxItems 1000
+               */
+              permittedCheckpointIds: string[];
+            };
+        cutoff:
+          | {
+              kind: "eventEnd";
+            }
+          | {
+              kind: "time";
+              /**
+               * UTC milliseconds.
+               */
+              at: number;
+            };
+        maxMessagesPerEpisode: number;
+        minimumMinutesBetweenMessages: number;
+        updateOn: "materialGuidanceChange";
+        unanswered: "keepUnknownUntilCutoff" | "hostReviewAtDeadline";
+      };
+      guidance: {
+        /**
+         * Nonnegative safe integer revision.
+         */
+        revision: number;
+        destination:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              stopId: string;
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              checkpointId: string;
+            };
+        materialKey: string;
+        text: string;
+        /**
+         * UTC milliseconds.
+         */
+        validUntil: number;
+      };
+      departureConfirmed: boolean;
+      responseDeadline: number | null;
+      /**
+       * @minItems 1
+       * @maxItems 3
+       */
+      routes: ("catchEventSms" | "catchEventRcs" | "organizerEventWhatsapp")[];
+      deliveryPolicy: {
+        maxAttempts: number;
+        maxAttemptsPerRoute: number;
+        minimumRetrySeconds: number;
+      };
+      /**
+       * @maxItems 17
+       */
+      laterChoices?: {
+        label: string;
+        target:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              stopId: string;
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              checkpointId: string;
+            };
+      }[];
+    };
+    /**
+     * @minItems 1
+     * @maxItems 6
+     */
+    outcomes: (
+      | {
+          kind: "accepted" | "delivered" | "read" | "revoked";
+        }
+      | {
+          kind: "failed";
+          classification:
+            | "technical"
+            | "policy"
+            | "suppressed"
+            | "invalidRecipient";
+        }
+      | {
+          kind: "unknown";
+          reason: "timeout" | "connectionLost" | "workerInterrupted";
+        }
+    )[];
+    nextOutcomeIndex: number;
+    evaluation: {
+      at: number;
+      policy:
+        | (
+            | {
+                kind: "resolved";
+                reason: "joined" | "declined";
+              }
+            | {
+                kind: "cancelled";
+                reason:
+                  | "eventClosed"
+                  | "notAdmitted"
+                  | "policyDisabled"
+                  | "participationInactive";
+              }
+            | {
+                kind: "expired";
+                reason: "cutoff" | "lateEntryClosed";
+              }
+            | {
+                kind: "wait";
+                reason:
+                  | "departureUnconfirmed"
+                  | "attendanceUnknown"
+                  | "guidanceUnavailable"
+                  | "throttled"
+                  | "unchanged"
+                  | "participationUnknown";
+              }
+            | {
+                kind: "hostDecision";
+                reason: "unreachable" | "entryDecision" | "missingInformation";
+                guidance: {
+                  /**
+                   * Nonnegative safe integer revision.
+                   */
+                  revision: number;
+                  destination:
+                    | {
+                        kind: "fixedPlace";
+                        placeId: string;
+                        lateEntry: "allowed" | "hostDecision" | "closed";
+                      }
+                    | {
+                        kind: "itineraryStop";
+                        itineraryId: string;
+                        stopId: string;
+                      }
+                    | {
+                        kind: "groupCheckpoint";
+                        routeId: string;
+                        groupId: string;
+                        checkpointId: string;
+                      };
+                  materialKey: string;
+                  text: string;
+                  /**
+                   * UTC milliseconds.
+                   */
+                  validUntil: number;
+                } | null;
+              }
+            | {
+                kind: "update";
+                guidance: {
+                  /**
+                   * Nonnegative safe integer revision.
+                   */
+                  revision: number;
+                  destination:
+                    | {
+                        kind: "fixedPlace";
+                        placeId: string;
+                        lateEntry: "allowed" | "hostDecision" | "closed";
+                      }
+                    | {
+                        kind: "itineraryStop";
+                        itineraryId: string;
+                        stopId: string;
+                      }
+                    | {
+                        kind: "groupCheckpoint";
+                        routeId: string;
+                        groupId: string;
+                        checkpointId: string;
+                      };
+                  materialKey: string;
+                  text: string;
+                  /**
+                   * UTC milliseconds.
+                   */
+                  validUntil: number;
+                };
+                messageKey: string;
+                shouldSend: boolean;
+                nextEvaluationAt: number | null;
+              }
+          )
+        | null;
+      delivery:
+        | {
+            kind: "paused";
+          }
+        | {
+            kind: "notApplicable";
+          }
+        | {
+            kind: "scriptExhausted";
+          }
+        | {
+            kind: "stop";
+            reason:
+              | "responded"
+              | "cancelled"
+              | "superseded"
+              | "expired"
+              | "eventClosed"
+              | "permissionRevoked"
+              | "guestPresent"
+              | "guestDeclined"
+              | "notAdmitted"
+              | "hostStopped"
+              | "participationInactive";
+          }
+        | {
+            kind: "delivered";
+            /**
+             * @maxItems 6
+             */
+            attemptIds: string[];
+          }
+        | {
+            kind: "reconcile";
+            /**
+             * @maxItems 6
+             */
+            attemptIds: string[];
+            notBefore: number;
+          }
+        | {
+            kind: "refreshFacts";
+            reason: "eventFactsStale" | "routeFactsStale";
+          }
+        | {
+            kind: "wait";
+            notBefore: number;
+            reason: "retryBackoff";
+          }
+        | {
+            kind: "hostDecision";
+            reason:
+              | "noEligibleRoute"
+              | "attemptLimit"
+              | "policyRejected"
+              | "recipientNeedsReview"
+              | "providerOwnsFallback"
+              | "conflictingDeliveryEvidence"
+              | "historyUnavailable";
+          };
+    } | null;
+  };
+  /**
+   * Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.
+   */
+  untrackedHelpRequested?: boolean;
+  visit?: {
+    attendanceRevision: number;
+    checkedInAtMillis: number | null;
+    accountabilityRevision: number;
+    resolution: {
+      disposition: "returned" | "departed";
+      visitRevision: number;
+      checkedInAtMillis: number;
+      resolvedAtMillis: number;
+      resolvedBy: string;
+    } | null;
+  };
+  participation?: {
+    revision: number;
+    episodeRevision: number;
+    state: "active" | "departed" | "pending";
+  };
+  groupMembership?: {
+    clockId: string;
+    episodeId: string;
+    revision: number;
+    accepted: {
+      groupId: string;
+      groupSourceHash: string;
+      responsibleOperatorId: string;
+      acceptedAt: number;
+    } | null;
+    transfer:
+      | (
+          | {
+              transferId: string;
+              from: string | null;
+              to: string;
+              targetSourceHash: string;
+              receivingOperatorId: string;
+              requestedBy: string;
+              requestedAt: number;
+              expiresAt: number;
+              status: "pending";
+              resolvedAt: null;
+              resolvedBy: null;
+            }
+          | {
+              transferId: string;
+              from: string | null;
+              to: string;
+              targetSourceHash: string;
+              receivingOperatorId: string;
+              requestedBy: string;
+              requestedAt: number;
+              expiresAt: number;
+              status: "accepted" | "rejected" | "cancelled";
+              resolvedAt: number;
+              resolvedBy: string;
+            }
+        )
+      | null;
+    createdAt: number;
+    updatedAt: number;
+    /**
+     * Membership revision of the last placement, accepted transfer or removal. Proposals preserve it; absent legacy evidence cannot authorize group directions.
+     */
+    assignmentRevision?: number;
   };
 }

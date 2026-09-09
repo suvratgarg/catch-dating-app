@@ -1,6 +1,188 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventAssistanceMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "intent.context.mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "intent.context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "intent.eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceWhatsappPermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "attendeeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "evidence.subjectUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceRcsPermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "attendeeId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "subjectUid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceRcsPermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "subscriptionId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceCases",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "context.eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "owner",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "status",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceRuntimeConfigs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "configuration.options.routes",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "configuration.expiresAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceWhatsappPermissions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "recipientEndpointId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "expiresAt",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventAssistanceMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "intent.context.mode", "mode": "ASCENDING"},
+        {"fieldPath": "intent.context.organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "intent.eventId", "mode": "ASCENDING"},
+        {"fieldPath": "intent.attendeeId", "mode": "ASCENDING"},
+        {"fieldPath": "intent.episodeId", "mode": "ASCENDING"},
+        {"fieldPath": "intent.workflow.kind", "mode": "ASCENDING"}
+      ]
+    },
+    {
       "collectionGroup": "crossPathsPairHolds",
       "queryScope": "COLLECTION",
       "fields": [
@@ -1369,6 +1551,39 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "workflowId", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.kind", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.scope.context.organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.scope.context.eventId", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "operationWorkItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "workflowId", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.kind", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.scope.context.organizerId", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.scope.context.eventId", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.scope.attendeeId", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "operationWorkItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "workflowId", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.kind", "mode": "ASCENDING"},
+        {"fieldPath": "normalizedPayload.checkpoint.dueAt", "mode": "ASCENDING"},
+        {"fieldPath": "__name__", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "operationWorkItems",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "workflowId", "mode": "ASCENDING"},
         {"fieldPath": "runId", "mode": "ASCENDING"},
         {"fieldPath": "taskFlags", "arrayConfig": "CONTAINS"},
         {"fieldPath": "__name__", "mode": "ASCENDING"}
@@ -1385,9 +1600,64 @@
     {"collectionGroup": "organizerApplications", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "formId", "mode": "ASCENDING"}]},
     {"collectionGroup": "organizerFormResponses", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "formId", "mode": "ASCENDING"}]},
     {"collectionGroup": "organizerContactOrigins", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "sourceKind", "mode": "ASCENDING"}]},
-    {"collectionGroup": "organizerContactEventEdges", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "eventId", "mode": "ASCENDING"}]}
+    {"collectionGroup": "organizerContactEventEdges", "queryScope": "COLLECTION", "fields": [{"fieldPath": "organizerId", "mode": "ASCENDING"}, {"fieldPath": "eventId", "mode": "ASCENDING"}]},
+    {
+      "collectionGroup": "eventRehearsalMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "sessionId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "actorId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "record.intent.context.clockId",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "eventRehearsalMovements",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "sessionId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "clockId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "groupId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "progressRevision",
+          "order": "DESCENDING"
+        }
+      ]
+    }
   ],
   "fieldOverrides": [
+    {
+      "collectionGroup": "eventAssistanceCheckpoints",
+      "fieldPath": "accountedFor",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "eventAssistanceCheckpointReceipts",
+      "fieldPath": "report",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "eventAssistanceDepartureRosters",
+      "fieldPath": "members",
+      "indexes": []
+    },
     {
       "collectionGroup": "organizerFormAggregateEvents",
       "fieldPath": "expiresAt",

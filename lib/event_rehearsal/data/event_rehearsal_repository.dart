@@ -4,6 +4,9 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -84,6 +87,54 @@ class EventRehearsalRepository {
     ).toJson(),
     action: 'control an event rehearsal',
     parse: EventRehearsalBootstrap.fromCallableData,
+  );
+
+  /// Reuse the reviewed command unchanged after an uncertain network result.
+  Future<EventRehearsalBootstrap> applyAssistance(
+    RehearsalAssistanceChange change,
+  ) => _call(
+    name: 'controlEventRehearsal',
+    payload: change.toJson(),
+    action: 'simulate event rehearsal assistance',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      change.requireResult(result);
+      return result;
+    },
+  );
+
+  Future<RehearsalMovementReview> fetchMovement({
+    required EventRehearsalBootstrap snapshot,
+    required RehearsalMovementSelection selection,
+    required String actorUid,
+  }) => _call(
+    name: 'getEventRehearsalMovement',
+    payload: GetEventRehearsalMovementCallableRequest(
+      sessionId: selection.scope.sessionId,
+      expectedSetupRevision: selection.scope.setupRevision,
+      scope: selection.toJson(),
+    ).toJson(),
+    action: 'review rehearsal group movement',
+    parse: (data) => RehearsalMovementReview.fromJson(
+      data,
+      session: snapshot.session,
+      actors: snapshot.actors,
+      selection: selection,
+      expectedActorUid: actorUid,
+    ),
+  );
+
+  Future<EventRehearsalBootstrap> applyMovement(
+    RehearsalMovementChange change,
+  ) => _call(
+    name: 'controlEventRehearsal',
+    payload: change.toJson(),
+    action: 'rehearse group departure or checkpoint reporting',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      change.requireResult(result);
+      return result;
+    },
   );
 
   Future<EventRehearsalBootstrap> inject({

@@ -1,0 +1,116 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_rehearsal_messages.schema.json",
+  "title": "EventRehearsalMessageDocument",
+  "description": "Synthetic message evidence isolated from the live outbox; deleted with its rehearsal session.",
+  "x-firestore-collection": "eventRehearsalMessages",
+  "x-firestore-path": "eventRehearsalMessages/{messageDocumentId}",
+  "x-document-id-field": "id",
+  "x-owner": "event rehearsal callables",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sessionId",
+    "actorId",
+    "plan",
+    "record"
+  ],
+  "properties": {
+    "sessionId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "actorId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId",
+      "x-catch-ownership": "server-only"
+    },
+    "plan": {
+      "$ref": "../shared/event_rehearsal_assistance.schema.json#/definitions/plan",
+      "x-catch-ownership": "server-only"
+    },
+    "record": {
+      "$ref": "event_assistance_messages.schema.json",
+      "x-catch-ownership": "server-only"
+    },
+    "handoff": {
+      "$ref": "../shared/event_assistance_delivery_review.schema.json#/definitions/Handoff",
+      "x-catch-ownership": "server-only"
+    },
+    "membershipBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "episodeId",
+        "groupId",
+        "groupSourceHash",
+        "assignmentRevision"
+      ],
+      "properties": {
+        "episodeId": {
+          "type": "string",
+          "pattern": "^episode:[a-f0-9]{64}$"
+        },
+        "groupId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "groupSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      },
+      "description": "Server-derived accepted-group proof for a group checkpoint instruction. Unbound historical group messages remain evidence only.",
+      "x-catch-ownership": "server-only"
+    },
+    "movementBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "groupId",
+        "progressRevision",
+        "sourceHash"
+      ],
+      "properties": {
+        "groupId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 500
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "description": "Server-derived confirmed departure proof. Historical messages without this proof remain evidence only.",
+      "x-catch-ownership": "server-only"
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "record": {
+          "properties": {
+            "intent": {
+              "properties": {
+                "context": {
+                  "properties": {
+                    "mode": {
+                      "const": "rehearsal"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

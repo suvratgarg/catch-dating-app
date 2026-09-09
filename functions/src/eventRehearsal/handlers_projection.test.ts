@@ -143,6 +143,7 @@ test(
       actorId: "actor-1",
       displayName: "Rhea",
       status: "late",
+      connectionState: "disconnected",
       guestMoment: "checkIn",
       optedOut: false,
       helpRequested: false,
@@ -161,5 +162,7 @@ test(
     );
     assert.equal("organizerId" in projection.session, false);
     assert.equal("operatorUid" in projection.session, false);
+    assert.equal(projection.actor.status, "late");
+    assert.equal(projection.actor.connectionState, "disconnected");
   }
 );

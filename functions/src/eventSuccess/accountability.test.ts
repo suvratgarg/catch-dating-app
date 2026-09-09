@@ -7,6 +7,7 @@ import {
   requireAccountabilityAcknowledgement,
   requireCurrentAccountabilityCheckIn,
   unresolvedAccountabilityCount,
+  accountabilityResolutionFields,
 } from "./accountability";
 import {
   defaultAccountabilityFor,
@@ -94,4 +95,36 @@ test("only a currently checked-in operational attendee can be resolved", () => {
     status: "checkedIn",
     checkedInAt: checkIn,
   }));
+});
+
+test("wire timestamps retain exact check-in identity", () => {
+  assert.equal(currentAccountabilityResolution({
+    status: "checkedIn",
+    checkedInAt: {_seconds: 1, _nanoseconds: 123},
+    accountabilityResolution: "returned",
+    accountabilityResolvedForCheckInAt: new admin.firestore.Timestamp(1, 124),
+  }), null);
+  assert.equal(currentAccountabilityResolution({
+    status: "checkedIn",
+    checkedInAt: {_seconds: 1, _nanoseconds: 123},
+    accountabilityResolution: "returned",
+    accountabilityResolvedForCheckInAt: new admin.firestore.Timestamp(1, 123),
+  }), "returned");
+});
+
+test("all sweep writers advance the same revision, including clearing", () => {
+  const attendee = {status: "checkedIn" as const, checkedInAt: checkIn};
+  const fields = accountabilityResolutionFields(attendee, "returned", "host",
+    laterCheckIn);
+  assert.equal(fields.accountabilityRevision, 1);
+  const cleared = accountabilityResolutionFields({...attendee,
+    accountabilityRevision: fields.accountabilityRevision}, "unresolved",
+  "host", laterCheckIn);
+  assert.equal(cleared.accountabilityRevision, 2);
+  assert.equal(cleared.accountabilityResolution, null);
+  assert.equal(cleared.accountabilityResolvedForCheckInAt, null);
+  assert.equal(cleared.accountabilityResolvedBy, null);
+  assert.throws(() => accountabilityResolutionFields({...attendee,
+    accountabilityRevision: Number.MAX_SAFE_INTEGER}, "returned", "host",
+  laterCheckIn), {code: "failed-precondition"});
 });

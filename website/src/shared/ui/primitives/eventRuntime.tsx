@@ -121,6 +121,10 @@ export function EventRuntimeActionGrid({children}: {children: ReactNode}) {
   return <div className="event-runtime__action-grid">{children}</div>;
 }
 
+export function EventRuntimeSectionStack({children}: {children: ReactNode}) {
+  return <div className="event-runtime__section-stack">{children}</div>;
+}
+
 export function EventRuntimeNoticeStack({children}: {children: ReactNode}) {
   return <div className="event-runtime__notice-stack">{children}</div>;
 }

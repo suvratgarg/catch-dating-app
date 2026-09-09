@@ -731,6 +731,186 @@ service cloud.firestore {
 
     // Durable business-workflow state. Trusted operations workers use the
     // Admin SDK; browser and mobile clients never access these records directly.
+    match /eventAssistanceSmsSenders/{senderId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsPermissions/{permissionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappWithdrawalGrants/{linkId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsWithdrawalGrants/{linkId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsConsentReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsBudgets/{budgetId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSmsDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceMemberships/{membershipId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceMembershipReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceStaffReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceParticipationReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceAccountabilityReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSettings/{settingId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRuntimeConfigs/{runtimeId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRuntimeConfigReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceSettingReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceCheckpoints/{reportId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceCheckpointReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceDepartureRosters/{rosterId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceProgressReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceGroupProgress/{progressId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceGuests/{guestId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceThreads/{threadId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceGuestGrants/{linkId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceCaseReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceDeliveryRepairs/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsCallbacks/{callbackId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsSubscriptions/{subscriptionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsSenders/{senderId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsBudgets/{budgetId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsCallbackReceipts/{callbackId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsWithdrawalGrants/{linkId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsPermissions/{permissionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsConsentReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceRcsCallbackIdentities/{receiptKey} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceCases/{caseId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappReplyBindings/{attemptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappPermissions/{permissionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappConsentReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappBudgets/{budgetId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappDispatches/{attemptId} {
+      allow read, write: if false;
+    }
+
+    match /organizerWhatsappEndpointStops/{stopId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceWhatsappPolicies/{senderId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceMessages/{messageId} {
+      allow read, write: if false;
+    }
+
     match /operationRuns/{runId} {
       allow read, write: if false;
     }
@@ -1283,6 +1463,26 @@ service cloud.firestore {
     }
 
     match /eventRehearsalActions/{actionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAttendanceDispositions/{dispositionId} {
+      allow read, write: if false;
+    }
+
+    match /eventAttendanceDispositionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /eventRehearsalMovements/{movementId} {
+      allow read, write: if false;
+    }
+
+    match /eventRehearsalCases/{caseId} {
+      allow read, write: if false;
+    }
+
+    match /eventRehearsalMessages/{messageDocumentId} {
       allow read, write: if false;
     }
 

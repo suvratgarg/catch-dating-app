@@ -39,6 +39,56 @@ const schemaSubmitEventRehearsalGuestActionCallablePayloadSchema = <String, Obje
         'optIn',
         'askForHelp',
         'completePrompt',
+        'respondToAssistance',
+      ],
+    },
+    'messageId': <String, Object?>{
+      'type': 'string',
+      'pattern': '^outbox:[a-f0-9]{64}\$',
+    },
+    'intentRevision': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 1000000,
+    },
+    'choiceId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 160,
+    },
+  },
+  'if': <String, Object?>{
+    'properties': <String, Object?>{
+      'action': <String, Object?>{
+        'const': 'respondToAssistance',
+      },
+    },
+  },
+  'then': <String, Object?>{
+    'required': <Object?>[
+      'messageId',
+      'intentRevision',
+      'choiceId',
+    ],
+  },
+  'else': <String, Object?>{
+    'not': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'required': <Object?>[
+            'messageId',
+          ],
+        },
+        <String, Object?>{
+          'required': <Object?>[
+            'intentRevision',
+          ],
+        },
+        <String, Object?>{
+          'required': <Object?>[
+            'choiceId',
+          ],
+        },
       ],
     },
   },

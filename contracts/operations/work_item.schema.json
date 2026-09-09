@@ -8,6 +8,123 @@
   "allOf": [
     {
       "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "liveCheckpointReport"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {
+            "const": "event-assistance"
+          },
+          "entityKind": {
+            "const": "checkpoint_report"
+          },
+          "normalizedPayload": {
+            "$ref": "event_assistance_checkpoint_work.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "liveMessageDelivery"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {
+            "const": "event-assistance"
+          },
+          "entityKind": {
+            "const": "message_delivery"
+          },
+          "normalizedPayload": {
+            "$ref": "event_assistance_delivery_work.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object", "required": ["kind"],
+            "properties": {"kind": {"const": "liveRosterEnrollment"}}
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {"const": "event-assistance"},
+          "entityKind": {"const": "runtime_roster"},
+          "normalizedPayload": {
+            "$ref": "event_assistance_roster_work.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object", "required": ["kind"],
+            "properties": {"kind": {"const": "liveSourceWake"}}
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {"const": "event-assistance"},
+          "entityKind": {"const": "source_signal"},
+          "normalizedPayload": {
+            "$ref": "event_assistance_source_work.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object", "required": ["kind"],
+            "properties": {"kind": {"const": "liveLateJoin"}}
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {"const": "event-assistance"},
+          "entityKind": {"const": "guest_episode"},
+          "normalizedPayload": {
+            "$ref": "event_assistance_live_work.schema.json"
+          }
+        }
+      }
+    },
+    {
+      "if": {
         "properties": {"lifecycleStatus": {"const": "terminal"}}
       },
       "then": {

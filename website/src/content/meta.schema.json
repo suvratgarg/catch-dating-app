@@ -8,13 +8,14 @@
     "$schema": {"const": "./meta.schema.json"},
     "routes": {
       "type": "object",
-      "required": ["home", "host", "event_runtime", "event_rehearsal", "event_invite", "public_form", "organizers", "claim", "privacy", "terms", "help", "not_found"],
+      "required": ["home", "host", "event_runtime", "event_rehearsal", "event_assistance", "event_invite", "public_form", "organizers", "claim", "privacy", "terms", "help", "not_found"],
       "additionalProperties": false,
       "properties": {
         "home": {"$ref": "#/$defs/staticMeta"},
         "host": {"$ref": "#/$defs/staticMeta"},
         "event_runtime": {"$ref": "#/$defs/staticMeta"},
         "event_rehearsal": {"$ref": "#/$defs/staticMeta"},
+        "event_assistance": {"$ref": "#/$defs/staticMeta"},
         "event_invite": {"$ref": "#/$defs/staticMeta"},
         "public_form": {"$ref": "#/$defs/staticMeta"},
         "organizers": {"$ref": "#/$defs/staticMeta"},

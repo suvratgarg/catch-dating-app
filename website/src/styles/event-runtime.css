@@ -437,6 +437,11 @@
   margin-top: var(--catch-space-s4);
 }
 
+.event-runtime__section-stack {
+  display: grid;
+  gap: var(--catch-space-s4);
+}
+
 .event-runtime__notice-stack {
   display: grid;
   gap: var(--catch-space-s2);

@@ -74,6 +74,7 @@ function gtag(...args: unknown[]) {
 }
 
 export function initializeMarketingAnalytics() {
+  if (isPrivateEventUpdate()) return;
   captureAttribution();
   installConsentDefaults();
   installClientErrorMonitoring();
@@ -121,6 +122,7 @@ export function setMarketingConsent(choice: ConsentChoice) {
 }
 
 export function trackPageView(pageName: string) {
+  if (isPrivateEventUpdate()) return;
   const pagePath = window.location.pathname;
   const pageKey = `${pageName}:${pagePath}`;
   if (trackedPageViews.has(pageKey)) return;
@@ -138,6 +140,7 @@ export function trackMarketingEvent(
   eventName: string,
   parameters: Record<string, unknown> = {}
 ) {
+  if (isPrivateEventUpdate()) return;
   const sanitizedParameters = {...parameters};
   sanitizeAnalyticsUrlParameter(sanitizedParameters, "page_path");
   sanitizeAnalyticsUrlParameter(sanitizedParameters, "page_location");
@@ -291,7 +294,7 @@ function sanitizeAnalyticsUrlParameter(
 ) {
   const value = parameters[key];
   if (typeof value !== "string") return;
-  parameters[key] = value.split("?", 1)[0];
+  parameters[key] = value.split(/[?#]/u, 1)[0];
 }
 
 function readJson<T>(key: string): T | null {
@@ -309,4 +312,8 @@ function writeJson(key: string, value: unknown) {
   } catch {
     // Attribution and consent storage should not block form submission.
   }
+}
+
+function isPrivateEventUpdate(): boolean {
+  return window.location.pathname.startsWith("/event-update/");
 }

@@ -76,12 +76,26 @@ const bootstrap: EventRehearsalGuestBootstrap = {
 afterEach(cleanup);
 
 describe("EventRehearsalPreview", () => {
+  it("shows connection loss separately without undoing an arrival", () => {
+    render(<EventRehearsalPreview
+      bootstrap={{...bootstrap, actor: {...bootstrap.actor,
+        status: "present", connectionState: "disconnected"}}}
+      onRefresh={vi.fn()} onReply={vi.fn()} onAction={vi.fn()} pending={false} status={{message: "", tone: ""}}
+    />);
+    expect(screen.getByText(eventRehearsalCopy.disconnectedNotice)).toBeTruthy();
+    expect(screen.getByText("Rhea · Present")).toBeTruthy();
+    expect(screen.queryByRole("button", {name: eventRehearsalCopy.checkedIn}))
+      .toBeNull();
+    expect(screen.queryByRole("button", {name: eventRehearsalCopy.confirmArrival}))
+      .toBeNull();
+  });
+
   it("keeps practice identity visible and sends guest actions", () => {
     const onAction = vi.fn();
     render(
       <EventRehearsalPreview
         bootstrap={bootstrap}
-        onAction={onAction}
+        onRefresh={vi.fn()} onReply={vi.fn()} onAction={onAction}
         pending={false}
         status={{message: "", tone: ""}}
       />
@@ -115,7 +129,7 @@ describe("EventRehearsalPreview", () => {
           },
           actor: {...bootstrap.actor, guestMoment: "complete"},
         }}
-        onAction={vi.fn()}
+        onRefresh={vi.fn()} onReply={vi.fn()} onAction={vi.fn()}
         pending={false}
         status={{message: "", tone: ""}}
       />
@@ -186,3 +200,51 @@ function renderPage() {
     </MemoryRouter>
   );
 }
+
+describe("rehearsal joining instructions", () => {
+  const message = {
+    messageId: `outbox:${"a".repeat(64)}`, intentId: `message:${"b".repeat(64)}`,
+    intentRevision: 1, text: "Join us at the first stop.",
+    choices: [{choiceId: "on-my-way", label: "On my way"},
+      {choiceId: "not-coming", label: "Not coming"}],
+    lifecycle: "active" as const, expiresAt: bootstrap.session.virtualNowMillis + 60000,
+    canRespond: true, responseChoiceId: null,
+  };
+  const props = {bootstrap: {...bootstrap, actor: {...bootstrap.actor, assistanceMessage: message}},
+    onAction: vi.fn(), onReply: vi.fn(), onRefresh: vi.fn(),
+    pending: false, status: {message: "", tone: "" as const}};
+  it("submits a typed reply independently of the check-in control", () => {
+    render(<EventRehearsalPreview {...props} />);
+    fireEvent.click(screen.getByRole("button", {name: "On my way"}));
+    expect(props.onReply).toHaveBeenCalledWith({messageId: message.messageId,
+      intentRevision: 1, choiceId: "on-my-way"});
+    expect(props.onAction).not.toHaveBeenCalled();
+    expect(screen.getByText(eventRehearsalCopy.joiningBody)).toBeTruthy();
+    expect(screen.getByRole("button", {name: eventRehearsalCopy.checkedIn})).toBeTruthy();
+  });
+  it("offers only the same response while an earlier submission is uncertain", () => {
+    render(<EventRehearsalPreview {...props} replyState={{fresh: true,
+      pendingChoice: null, retryChoice: "on-my-way", notice: eventRehearsalCopy.replyUncertain}} />);
+    expect(screen.getByRole<HTMLButtonElement>("button", {name: "Not coming"}).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>("button", {name: "On my way"}).disabled).toBe(false);
+    expect(screen.getByRole<HTMLButtonElement>("button", {name: eventRehearsalCopy.checkedIn}).disabled)
+      .toBe(true);
+    fireEvent.click(screen.getByRole("button", {name: eventRehearsalCopy.refresh}));
+    expect(props.onRefresh).toHaveBeenCalled();
+  });
+  it("shows a saved reply after closure and retains the physical attendance label", () => {
+    render(<EventRehearsalPreview {...props} bootstrap={{...props.bootstrap,
+      session: {...bootstrap.session, status: "complete"},
+      actor: {...props.bootstrap.actor, assistanceMessage: {...message,
+        responseChoiceId: "on-my-way", lifecycle: "responded", canRespond: false}}}} />);
+    expect(screen.getByText("Reply saved: On my way")).toBeTruthy();
+    expect(screen.getByText("Rhea · Expected")).toBeTruthy();
+    expect(screen.queryByRole("button", {name: "On my way"})).toBeNull();
+  });
+  it("never offers a response past its virtual expiry", () => {
+    render(<EventRehearsalPreview {...props} bootstrap={{...props.bootstrap,
+      session: {...bootstrap.session, virtualNowMillis: message.expiresAt}}} />);
+    expect(screen.queryByRole("button", {name: "On my way"})).toBeNull();
+    expect(screen.getByText(eventRehearsalCopy.replyClosed)).toBeTruthy();
+  });
+});

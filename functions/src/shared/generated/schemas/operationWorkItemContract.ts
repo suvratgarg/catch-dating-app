@@ -13,6 +13,2704 @@ export const operationWorkItemSchema: Record<string, unknown> = {
     {
       "if": {
         "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "liveCheckpointReport"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {
+            "const": "event-assistance"
+          },
+          "entityKind": {
+            "const": "checkpoint_report"
+          },
+          "normalizedPayload": {
+            "title": "EventAssistanceCheckpointWork",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schemaVersion",
+              "kind",
+              "scope",
+              "rosterId",
+              "rosterHash",
+              "request",
+              "requestedAt",
+              "checkpoint"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "const": 1
+              },
+              "kind": {
+                "const": "liveCheckpointReport"
+              },
+              "scope": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "context",
+                  "groupId",
+                  "checkpointId",
+                  "progressRevision"
+                ],
+                "properties": {
+                  "context": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "mode",
+                      "eventId",
+                      "organizerId"
+                    ],
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "const": "live"
+                      },
+                      "eventId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "organizerId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      }
+                    }
+                  },
+                  "groupId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "checkpointId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 2000
+                  },
+                  "progressRevision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              "rosterId": {
+                "type": "string",
+                "pattern": "^departure-roster:[a-f0-9]{64}$"
+              },
+              "rosterHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "request": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "responsibleOperatorId",
+                  "dueAt"
+                ],
+                "properties": {
+                  "responsibleOperatorId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^/]+$"
+                  },
+                  "dueAt": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              "requestedAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "checkpoint": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "dueAt",
+                  "evaluatedAt",
+                  "failures",
+                  "observation"
+                ],
+                "properties": {
+                  "dueAt": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "evaluatedAt": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "failures": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                  },
+                  "observation": {
+                    "anyOf": [
+                      {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "request",
+                              "reportRevision",
+                              "sourceHash",
+                              "ownerValidUntil"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "observed"
+                              },
+                              "request": {
+                                "oneOf": [
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "responsibleOperatorId",
+                                      "dueAt",
+                                      "state",
+                                      "ownerAvailability"
+                                    ],
+                                    "properties": {
+                                      "responsibleOperatorId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 128,
+                                        "pattern": "^[^/]+$"
+                                      },
+                                      "dueAt": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991
+                                      },
+                                      "state": {
+                                        "enum": [
+                                          "awaitingReport",
+                                          "overdue",
+                                          "discrepancy",
+                                          "sourceUnavailable"
+                                        ]
+                                      },
+                                      "ownerAvailability": {
+                                        "enum": [
+                                          "current",
+                                          "needsReassignment"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "responsibleOperatorId",
+                                      "dueAt",
+                                      "state",
+                                      "ownerAvailability"
+                                    ],
+                                    "properties": {
+                                      "responsibleOperatorId": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 128,
+                                        "pattern": "^[^/]+$"
+                                      },
+                                      "dueAt": {
+                                        "type": "integer",
+                                        "minimum": 0,
+                                        "maximum": 9007199254740991
+                                      },
+                                      "state": {
+                                        "enum": [
+                                          "complete",
+                                          "closedOut"
+                                        ]
+                                      },
+                                      "ownerAvailability": {
+                                        "const": "notRequired"
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              "reportRevision": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "sourceHash": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{64}$"
+                              },
+                              "ownerValidUntil": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "unavailable"
+                              },
+                              "reason": {
+                                "const": "factsUnavailable"
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "reassignment": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "revision",
+                  "receiptId",
+                  "responsibleOperatorId",
+                  "previousResponsibleOperatorId",
+                  "assignedBy",
+                  "assignedAt",
+                  "reason"
+                ],
+                "properties": {
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "receiptId": {
+                    "type": "string",
+                    "pattern": "^checkpoint-reassignment:[a-f0-9]{64}$"
+                  },
+                  "responsibleOperatorId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^/]+$"
+                  },
+                  "previousResponsibleOperatorId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^/]+$"
+                  },
+                  "assignedBy": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^/]+$"
+                  },
+                  "assignedAt": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500,
+                    "pattern": "\\S"
+                  }
+                }
+              },
+              "closeout": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "revision",
+                  "previousRevision",
+                  "receiptId",
+                  "changedBy",
+                  "changedAt",
+                  "reason",
+                  "decision"
+                ],
+                "properties": {
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "previousRevision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "receiptId": {
+                    "type": "string",
+                    "pattern": "^checkpoint-closeout:[a-f0-9]{64}$"
+                  },
+                  "changedBy": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 128,
+                    "pattern": "^[^/]+$"
+                  },
+                  "changedAt": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 500,
+                    "pattern": "\\S"
+                  },
+                  "decision": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "report",
+                          "dispositions"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "close"
+                          },
+                          "report": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "schemaVersion",
+                              "reportId",
+                              "context",
+                              "groupId",
+                              "checkpointId",
+                              "progressRevision",
+                              "rosterId",
+                              "rosterHash",
+                              "revision",
+                              "accountedFor",
+                              "reportedBy",
+                              "reportedAt",
+                              "correctionReason",
+                              "createdAt"
+                            ],
+                            "properties": {
+                              "schemaVersion": {
+                                "const": 1
+                              },
+                              "reportId": {
+                                "type": "string",
+                                "pattern": "^checkpoint:[a-f0-9]{64}$"
+                              },
+                              "context": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                  "mode",
+                                  "eventId",
+                                  "organizerId"
+                                ],
+                                "properties": {
+                                  "mode": {
+                                    "type": "string",
+                                    "const": "live"
+                                  },
+                                  "eventId": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 160,
+                                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                  },
+                                  "organizerId": {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 2000
+                                  }
+                                }
+                              },
+                              "groupId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 160,
+                                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                              },
+                              "checkpointId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "progressRevision": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 9007199254740991
+                              },
+                              "rosterId": {
+                                "type": "string",
+                                "pattern": "^departure-roster:[a-f0-9]{64}$"
+                              },
+                              "rosterHash": {
+                                "type": "string",
+                                "pattern": "^[a-f0-9]{64}$"
+                              },
+                              "revision": {
+                                "type": "integer",
+                                "minimum": 1,
+                                "maximum": 9007199254740991
+                              },
+                              "accountedFor": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "uniqueItems": true,
+                                "maxItems": 1000
+                              },
+                              "reportedBy": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 2000
+                              },
+                              "reportedAt": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              },
+                              "correctionReason": {
+                                "anyOf": [
+                                  {
+                                    "type": "string",
+                                    "minLength": 1,
+                                    "maxLength": 500,
+                                    "pattern": "\\S"
+                                  },
+                                  {
+                                    "type": "null"
+                                  }
+                                ]
+                              },
+                              "createdAt": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              }
+                            }
+                          },
+                          "dispositions": {
+                            "type": "array",
+                            "maxItems": 1000,
+                            "items": {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "disposition",
+                                "revision",
+                                "resolvedAt",
+                                "resolvedBy",
+                                "sourceHash",
+                                "attendeeId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "const": "resolved"
+                                },
+                                "disposition": {
+                                  "enum": [
+                                    "returned",
+                                    "departed"
+                                  ]
+                                },
+                                "revision": {
+                                  "type": "integer",
+                                  "minimum": 1,
+                                  "maximum": 9007199254740991
+                                },
+                                "resolvedAt": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "maximum": 9007199254740991
+                                },
+                                "resolvedBy": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 128,
+                                  "pattern": "^[^/]+$"
+                                },
+                                "sourceHash": {
+                                  "type": "string",
+                                  "pattern": "^[a-f0-9]{64}$"
+                                },
+                                "attendeeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "reopen"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "liveMessageDelivery"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {
+            "const": "event-assistance"
+          },
+          "entityKind": {
+            "const": "message_delivery"
+          },
+          "normalizedPayload": {
+            "title": "EventAssistanceDeliveryWork",
+            "description": "Private resumable delivery coordination for one published automatic message. The outbox owns provider attempts; a checkpoint never grants dispatch authority.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schemaVersion",
+              "kind",
+              "messageId",
+              "intentHash",
+              "threadId",
+              "scope",
+              "createdAt",
+              "expiresAt",
+              "checkpoint"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "const": 1
+              },
+              "kind": {
+                "type": "string",
+                "const": "liveMessageDelivery"
+              },
+              "messageId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "intentHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "threadId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "scope": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "context",
+                  "attendeeId",
+                  "episodeId"
+                ],
+                "properties": {
+                  "context": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "mode",
+                      "eventId",
+                      "organizerId"
+                    ],
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "const": "live"
+                      },
+                      "eventId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "organizerId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      }
+                    }
+                  },
+                  "attendeeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "episodeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  }
+                }
+              },
+              "createdAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "expiresAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "checkpoint": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "phase",
+                      "reason",
+                      "dueAt",
+                      "messageRevision",
+                      "messageHash",
+                      "failures",
+                      "evaluations"
+                    ],
+                    "properties": {
+                      "phase": {
+                        "type": "string",
+                        "const": "queued"
+                      },
+                      "reason": {
+                        "type": "null"
+                      },
+                      "dueAt": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "messageRevision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "messageHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "failures": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 5,
+                        "const": 0
+                      },
+                      "evaluations": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100,
+                        "const": 0
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "phase",
+                      "reason",
+                      "dueAt",
+                      "messageRevision",
+                      "messageHash",
+                      "failures",
+                      "evaluations"
+                    ],
+                    "properties": {
+                      "phase": {
+                        "type": "string",
+                        "const": "complete"
+                      },
+                      "reason": {
+                        "enum": [
+                          "delivered",
+                          "responded",
+                          "cancelled",
+                          "superseded",
+                          "expired",
+                          "eventClosed",
+                          "permissionRevoked",
+                          "guestPresent",
+                          "guestDeclined",
+                          "notAdmitted",
+                          "hostStopped",
+                          "participationInactive"
+                        ]
+                      },
+                      "dueAt": {
+                        "type": "null"
+                      },
+                      "messageRevision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "messageHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "failures": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 5
+                      },
+                      "evaluations": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "phase",
+                      "reason",
+                      "dueAt",
+                      "messageRevision",
+                      "messageHash",
+                      "failures",
+                      "evaluations"
+                    ],
+                    "properties": {
+                      "phase": {
+                        "type": "string",
+                        "const": "receipt"
+                      },
+                      "reason": {
+                        "const": "providerPending"
+                      },
+                      "dueAt": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "messageRevision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "messageHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "failures": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 5
+                      },
+                      "evaluations": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "phase",
+                      "reason",
+                      "dueAt",
+                      "messageRevision",
+                      "messageHash",
+                      "failures",
+                      "evaluations"
+                    ],
+                    "properties": {
+                      "phase": {
+                        "type": "string",
+                        "const": "retry"
+                      },
+                      "reason": {
+                        "enum": [
+                          "retryBackoff",
+                          "eventFactsStale",
+                          "routeFactsStale",
+                          "workerUnavailable"
+                        ]
+                      },
+                      "dueAt": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "messageRevision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "messageHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "failures": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 5
+                      },
+                      "evaluations": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "phase",
+                      "reason",
+                      "dueAt",
+                      "messageRevision",
+                      "messageHash",
+                      "failures",
+                      "evaluations"
+                    ],
+                    "properties": {
+                      "phase": {
+                        "type": "string",
+                        "const": "review"
+                      },
+                      "reason": {
+                        "enum": [
+                          "noEligibleRoute",
+                          "attemptLimit",
+                          "policyRejected",
+                          "recipientNeedsReview",
+                          "providerOwnsFallback",
+                          "conflictingDeliveryEvidence",
+                          "providerPending",
+                          "workerUnavailable",
+                          "recoveryLimit",
+                          "eventFactsStale",
+                          "routeFactsStale"
+                        ]
+                      },
+                      "dueAt": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "messageRevision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "messageHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "failures": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 5
+                      },
+                      "evaluations": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "liveRosterEnrollment"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {
+            "const": "event-assistance"
+          },
+          "entityKind": {
+            "const": "runtime_roster"
+          },
+          "normalizedPayload": {
+            "title": "EventAssistanceRosterWork",
+            "description": "Private resumable roster enrollment bound to current manager runtime permission. Enrollment never infers attendance or sends messages.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schemaVersion",
+              "kind",
+              "signalId",
+              "source",
+              "scope",
+              "expiresAt",
+              "checkpoint",
+              "runtimeBinding"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "const": 1,
+                "type": "integer"
+              },
+              "kind": {
+                "const": "liveRosterEnrollment",
+                "type": "string"
+              },
+              "signalId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventId",
+                  "collection",
+                  "documentId",
+                  "occurredAt"
+                ],
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "collection": {
+                    "type": "string",
+                    "enum": [
+                      "eventAttendees",
+                      "eventAssistanceGuests",
+                      "eventAssistanceRuntimeConfigs"
+                    ]
+                  },
+                  "documentId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "occurredAt": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              "scope": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "context",
+                  "attendeeId"
+                ],
+                "properties": {
+                  "context": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "mode",
+                      "eventId",
+                      "organizerId"
+                    ],
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "const": "live"
+                      },
+                      "eventId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "organizerId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      }
+                    }
+                  },
+                  "attendeeId": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              },
+              "expiresAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "checkpoint": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "phase",
+                  "cursor",
+                  "visited",
+                  "dueAt",
+                  "failures",
+                  "retries",
+                  "stopReason"
+                ],
+                "properties": {
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "scan",
+                      "retry",
+                      "complete",
+                      "review",
+                      "expired",
+                      "stopped"
+                    ]
+                  },
+                  "cursor": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "visited": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "dueAt": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "failures": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "attendeeId",
+                        "reason"
+                      ],
+                      "properties": {
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "busy",
+                            "unavailable"
+                          ]
+                        },
+                        "attendeeId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        }
+                      }
+                    }
+                  },
+                  "retries": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                  },
+                  "stopReason": {
+                    "enum": [
+                      null,
+                      "missing",
+                      "paused",
+                      "configurationChanged",
+                      "sourceChanged",
+                      "expired",
+                      "eventClosed"
+                    ]
+                  }
+                }
+              },
+              "runtimeBinding": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "runtimeId",
+                  "revision"
+                ],
+                "properties": {
+                  "runtimeId": {
+                    "type": "string",
+                    "pattern": "^runtime:lateJoin:[a-f0-9]{64}$"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "liveSourceWake"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {
+            "const": "event-assistance"
+          },
+          "entityKind": {
+            "const": "source_signal"
+          },
+          "normalizedPayload": {
+            "title": "EventAssistanceSourceWork",
+            "description": "Private bounded source-change fanout using Operations work items. Waking work grants no domain or provider authority.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schemaVersion",
+              "kind",
+              "signalId",
+              "source",
+              "scope",
+              "expiresAt",
+              "checkpoint"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "const": 1,
+                "type": "integer"
+              },
+              "kind": {
+                "const": "liveSourceWake",
+                "type": "string"
+              },
+              "signalId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "source": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "eventId",
+                  "collection",
+                  "documentId",
+                  "occurredAt"
+                ],
+                "properties": {
+                  "eventId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "collection": {
+                    "type": "string",
+                    "enum": [
+                      "events",
+                      "eventAttendees",
+                      "eventSuccessPlans",
+                      "eventAssistanceGuests",
+                      "eventAssistanceSettings",
+                      "eventAssistanceGroupProgress",
+                      "eventAssistanceMemberships",
+                      "eventAssistanceMessages",
+                      "eventAssistanceRuntimeConfigs",
+                      "eventAssistanceSmsPermissions",
+                      "eventAssistanceWhatsappPermissions",
+                      "eventAssistanceSmsSenders",
+                      "eventAssistanceSmsBudgets",
+                      "organizerSenderConnections",
+                      "eventAssistanceWhatsappPolicies",
+                      "organizerMessageTemplates",
+                      "eventAssistanceWhatsappBudgets",
+                      "organizerWhatsappEndpointStops",
+                      "organizerContactChannelStates",
+                      "eventStaffGrants",
+                      "eventAssistanceRcsPermissions",
+                      "eventAssistanceRcsSenders",
+                      "eventAssistanceRcsBudgets",
+                      "eventAssistanceRcsSubscriptions"
+                    ]
+                  },
+                  "documentId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "occurredAt": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              },
+              "scope": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "context",
+                      "attendeeId"
+                    ],
+                    "properties": {
+                      "context": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "mode",
+                          "eventId",
+                          "organizerId"
+                        ],
+                        "properties": {
+                          "mode": {
+                            "type": "string",
+                            "const": "live"
+                          },
+                          "eventId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          "organizerId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          }
+                        }
+                      },
+                      "attendeeId": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "description": "Refresh only existing checkpoint requests whose immutable departure roster contains this attendee. Never enroll guests or dispatch messages.",
+                    "required": [
+                      "kind",
+                      "context",
+                      "attendeeId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "checkpointMember"
+                      },
+                      "context": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "mode",
+                          "eventId",
+                          "organizerId"
+                        ],
+                        "properties": {
+                          "mode": {
+                            "type": "string",
+                            "const": "live"
+                          },
+                          "eventId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          "organizerId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          }
+                        }
+                      },
+                      "attendeeId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "routeId",
+                      "senderId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "sender"
+                      },
+                      "routeId": {
+                        "type": "string",
+                        "enum": [
+                          "catchEventSms",
+                          "organizerEventWhatsapp",
+                          "catchEventRcs"
+                        ]
+                      },
+                      "senderId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "organizerId",
+                      "recipientEndpointId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "whatsappEndpoint"
+                      },
+                      "organizerId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "recipientEndpointId": {
+                        "type": "string",
+                        "pattern": "^whatsapp:[a-f0-9]{64}$"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "subscriptionId"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "type": "string",
+                        "const": "rcsSubscription"
+                      },
+                      "subscriptionId": {
+                        "type": "string",
+                        "pattern": "^rcs-subscription:[a-f0-9]{64}$"
+                      }
+                    }
+                  }
+                ]
+              },
+              "expiresAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "checkpoint": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "phase",
+                  "cursor",
+                  "visited",
+                  "dueAt",
+                  "failures",
+                  "retries"
+                ],
+                "properties": {
+                  "phase": {
+                    "type": "string",
+                    "enum": [
+                      "scan",
+                      "retry",
+                      "complete",
+                      "review",
+                      "expired"
+                    ]
+                  },
+                  "cursor": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "visited": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "dueAt": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "failures": {
+                    "type": "array",
+                    "maxItems": 100,
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "workItemId",
+                            "reason"
+                          ],
+                          "properties": {
+                            "workItemId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 180,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "busy",
+                                "unavailable"
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "targetKey",
+                            "reason"
+                          ],
+                          "properties": {
+                            "targetKey": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 180,
+                              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                            },
+                            "reason": {
+                              "type": "string",
+                              "enum": [
+                                "busy",
+                                "unavailable"
+                              ]
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "retries": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "normalizedPayload": {
+            "type": "object",
+            "required": [
+              "kind"
+            ],
+            "properties": {
+              "kind": {
+                "const": "liveLateJoin"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "workflowId": {
+            "const": "event-assistance"
+          },
+          "entityKind": {
+            "const": "guest_episode"
+          },
+          "normalizedPayload": {
+            "title": "EventAssistanceLiveWork",
+            "description": "Private normalized payload for one durable live guest episode. Due times and evaluation state are explicit; publication is not provider delivery.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schemaVersion",
+              "kind",
+              "scope",
+              "options",
+              "expiresAt",
+              "maxEvaluations",
+              "checkpoint"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "type": "integer",
+                "const": 1
+              },
+              "kind": {
+                "type": "string",
+                "const": "liveLateJoin"
+              },
+              "scope": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "context",
+                  "attendeeId",
+                  "episodeId"
+                ],
+                "properties": {
+                  "context": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "mode",
+                      "eventId",
+                      "organizerId"
+                    ],
+                    "properties": {
+                      "mode": {
+                        "type": "string",
+                        "const": "live"
+                      },
+                      "eventId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "organizerId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 2000
+                      }
+                    }
+                  },
+                  "attendeeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "episodeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  }
+                }
+              },
+              "options": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "routes",
+                  "responseDeadline",
+                  "deliveryPolicy"
+                ],
+                "properties": {
+                  "routes": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 3,
+                    "uniqueItems": true,
+                    "items": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "routeId",
+                            "senderId"
+                          ],
+                          "properties": {
+                            "routeId": {
+                              "type": "string",
+                              "const": "catchEventSms"
+                            },
+                            "senderId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "routeId",
+                            "senderId"
+                          ],
+                          "properties": {
+                            "routeId": {
+                              "type": "string",
+                              "const": "organizerEventWhatsapp"
+                            },
+                            "senderId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                            }
+                          }
+                        },
+                        {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "routeId",
+                            "senderId"
+                          ],
+                          "properties": {
+                            "routeId": {
+                              "type": "string",
+                              "const": "catchEventRcs"
+                            },
+                            "senderId": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160,
+                              "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "responseDeadline": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null",
+                        "const": null
+                      }
+                    ]
+                  },
+                  "deliveryPolicy": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "maxAttempts",
+                      "maxAttemptsPerRoute",
+                      "minimumRetrySeconds"
+                    ],
+                    "properties": {
+                      "maxAttempts": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 6
+                      },
+                      "maxAttemptsPerRoute": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3
+                      },
+                      "minimumRetrySeconds": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 3600
+                      }
+                    }
+                  },
+                  "laterChoices": {
+                    "type": "array",
+                    "maxItems": 17,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "label",
+                        "target"
+                      ],
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        "target": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "placeId",
+                                "lateEntry"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "fixedPlace"
+                                },
+                                "placeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "lateEntry": {
+                                  "type": "string",
+                                  "enum": [
+                                    "allowed",
+                                    "hostDecision",
+                                    "closed"
+                                  ]
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "itineraryId",
+                                "stopId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "itineraryStop"
+                                },
+                                "itineraryId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "stopId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            },
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "kind",
+                                "routeId",
+                                "groupId",
+                                "checkpointId"
+                              ],
+                              "properties": {
+                                "kind": {
+                                  "type": "string",
+                                  "const": "groupCheckpoint"
+                                },
+                                "routeId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                },
+                                "groupId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 160,
+                                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                },
+                                "checkpointId": {
+                                  "type": "string",
+                                  "minLength": 1,
+                                  "maxLength": 2000
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "expiresAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "maxEvaluations": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10000
+              },
+              "checkpoint": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "dueAt",
+                  "evaluatedAt",
+                  "evaluations",
+                  "sourceHash",
+                  "observation",
+                  "publication"
+                ],
+                "properties": {
+                  "dueAt": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null",
+                        "const": null
+                      }
+                    ]
+                  },
+                  "evaluatedAt": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      {
+                        "type": "null",
+                        "const": null
+                      }
+                    ]
+                  },
+                  "evaluations": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 10000
+                  },
+                  "sourceHash": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      {
+                        "type": "null",
+                        "const": null
+                      }
+                    ]
+                  },
+                  "observation": {
+                    "anyOf": [
+                      {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "decision"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "decision"
+                              },
+                              "decision": {
+                                "anyOf": [
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "reason"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "type": "string",
+                                        "const": "resolved"
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "enum": [
+                                          "joined",
+                                          "declined"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "reason"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "type": "string",
+                                        "const": "cancelled"
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "enum": [
+                                          "eventClosed",
+                                          "notAdmitted",
+                                          "policyDisabled",
+                                          "participationInactive"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "reason"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "type": "string",
+                                        "const": "expired"
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "enum": [
+                                          "cutoff",
+                                          "lateEntryClosed"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "reason"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "type": "string",
+                                        "const": "wait"
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "enum": [
+                                          "departureUnconfirmed",
+                                          "attendanceUnknown",
+                                          "guidanceUnavailable",
+                                          "throttled",
+                                          "unchanged",
+                                          "participationUnknown"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "reason",
+                                      "guidance"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "type": "string",
+                                        "const": "hostDecision"
+                                      },
+                                      "reason": {
+                                        "type": "string",
+                                        "enum": [
+                                          "unreachable",
+                                          "entryDecision",
+                                          "missingInformation"
+                                        ]
+                                      },
+                                      "guidance": {
+                                        "anyOf": [
+                                          {
+                                            "type": "object",
+                                            "additionalProperties": false,
+                                            "required": [
+                                              "revision",
+                                              "destination",
+                                              "materialKey",
+                                              "text",
+                                              "validUntil"
+                                            ],
+                                            "properties": {
+                                              "revision": {
+                                                "type": "integer",
+                                                "minimum": 0,
+                                                "maximum": 9007199254740991,
+                                                "description": "Nonnegative safe integer revision."
+                                              },
+                                              "destination": {
+                                                "anyOf": [
+                                                  {
+                                                    "type": "object",
+                                                    "additionalProperties": false,
+                                                    "required": [
+                                                      "kind",
+                                                      "placeId",
+                                                      "lateEntry"
+                                                    ],
+                                                    "properties": {
+                                                      "kind": {
+                                                        "type": "string",
+                                                        "const": "fixedPlace"
+                                                      },
+                                                      "placeId": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 160,
+                                                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                                      },
+                                                      "lateEntry": {
+                                                        "type": "string",
+                                                        "enum": [
+                                                          "allowed",
+                                                          "hostDecision",
+                                                          "closed"
+                                                        ]
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "object",
+                                                    "additionalProperties": false,
+                                                    "required": [
+                                                      "kind",
+                                                      "itineraryId",
+                                                      "stopId"
+                                                    ],
+                                                    "properties": {
+                                                      "kind": {
+                                                        "type": "string",
+                                                        "const": "itineraryStop"
+                                                      },
+                                                      "itineraryId": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 2000
+                                                      },
+                                                      "stopId": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 2000
+                                                      }
+                                                    }
+                                                  },
+                                                  {
+                                                    "type": "object",
+                                                    "additionalProperties": false,
+                                                    "required": [
+                                                      "kind",
+                                                      "routeId",
+                                                      "groupId",
+                                                      "checkpointId"
+                                                    ],
+                                                    "properties": {
+                                                      "kind": {
+                                                        "type": "string",
+                                                        "const": "groupCheckpoint"
+                                                      },
+                                                      "routeId": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 2000
+                                                      },
+                                                      "groupId": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 160,
+                                                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                                      },
+                                                      "checkpointId": {
+                                                        "type": "string",
+                                                        "minLength": 1,
+                                                        "maxLength": 2000
+                                                      }
+                                                    }
+                                                  }
+                                                ]
+                                              },
+                                              "materialKey": {
+                                                "type": "string",
+                                                "minLength": 1,
+                                                "maxLength": 2000
+                                              },
+                                              "text": {
+                                                "type": "string",
+                                                "minLength": 1,
+                                                "maxLength": 2000
+                                              },
+                                              "validUntil": {
+                                                "type": "integer",
+                                                "minimum": 0,
+                                                "maximum": 9007199254740991,
+                                                "description": "UTC milliseconds."
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "null",
+                                            "const": null
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                      "kind",
+                                      "guidance",
+                                      "messageKey",
+                                      "shouldSend",
+                                      "nextEvaluationAt"
+                                    ],
+                                    "properties": {
+                                      "kind": {
+                                        "type": "string",
+                                        "const": "update"
+                                      },
+                                      "guidance": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "required": [
+                                          "revision",
+                                          "destination",
+                                          "materialKey",
+                                          "text",
+                                          "validUntil"
+                                        ],
+                                        "properties": {
+                                          "revision": {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "maximum": 9007199254740991,
+                                            "description": "Nonnegative safe integer revision."
+                                          },
+                                          "destination": {
+                                            "anyOf": [
+                                              {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "required": [
+                                                  "kind",
+                                                  "placeId",
+                                                  "lateEntry"
+                                                ],
+                                                "properties": {
+                                                  "kind": {
+                                                    "type": "string",
+                                                    "const": "fixedPlace"
+                                                  },
+                                                  "placeId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 160,
+                                                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                                  },
+                                                  "lateEntry": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                      "allowed",
+                                                      "hostDecision",
+                                                      "closed"
+                                                    ]
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "required": [
+                                                  "kind",
+                                                  "itineraryId",
+                                                  "stopId"
+                                                ],
+                                                "properties": {
+                                                  "kind": {
+                                                    "type": "string",
+                                                    "const": "itineraryStop"
+                                                  },
+                                                  "itineraryId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 2000
+                                                  },
+                                                  "stopId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 2000
+                                                  }
+                                                }
+                                              },
+                                              {
+                                                "type": "object",
+                                                "additionalProperties": false,
+                                                "required": [
+                                                  "kind",
+                                                  "routeId",
+                                                  "groupId",
+                                                  "checkpointId"
+                                                ],
+                                                "properties": {
+                                                  "kind": {
+                                                    "type": "string",
+                                                    "const": "groupCheckpoint"
+                                                  },
+                                                  "routeId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 2000
+                                                  },
+                                                  "groupId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 160,
+                                                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                                                  },
+                                                  "checkpointId": {
+                                                    "type": "string",
+                                                    "minLength": 1,
+                                                    "maxLength": 2000
+                                                  }
+                                                }
+                                              }
+                                            ]
+                                          },
+                                          "materialKey": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 2000
+                                          },
+                                          "text": {
+                                            "type": "string",
+                                            "minLength": 1,
+                                            "maxLength": 2000
+                                          },
+                                          "validUntil": {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "maximum": 9007199254740991,
+                                            "description": "UTC milliseconds."
+                                          }
+                                        }
+                                      },
+                                      "messageKey": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "maxLength": 2000
+                                      },
+                                      "shouldSend": {
+                                        "type": "boolean"
+                                      },
+                                      "nextEvaluationAt": {
+                                        "anyOf": [
+                                          {
+                                            "type": "integer",
+                                            "minimum": 0,
+                                            "maximum": 9007199254740991
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ]
+                                      }
+                                    }
+                                  }
+                                ],
+                                "title": "EventAssistanceLateJoinDecision"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "sourceNotReady"
+                              },
+                              "reason": {
+                                "type": "string",
+                                "enum": [
+                                  "episodeMissing",
+                                  "guestSourceChanged",
+                                  "membershipMissing",
+                                  "membershipSourceChanged",
+                                  "unconfigured",
+                                  "disabled",
+                                  "settingSourceChanged",
+                                  "eventClosed",
+                                  "runtimeNotLive",
+                                  "progressUnconfirmed",
+                                  "progressSourceChanged",
+                                  "destinationUnavailable"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "historyUnavailable"
+                              },
+                              "reason": {
+                                "type": "string",
+                                "enum": [
+                                  "historyLimit",
+                                  "deliveryConflict",
+                                  "ambiguousHistory"
+                                ]
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "responseDeadlineMissing"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "episodeChanged"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "workExpired"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "evaluationLimit"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "type": "string",
+                                "const": "runtimeUnavailable"
+                              },
+                              "reason": {
+                                "type": "string",
+                                "enum": [
+                                  "missing",
+                                  "paused",
+                                  "configurationChanged",
+                                  "sourceChanged",
+                                  "expired",
+                                  "eventClosed"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "type": "null",
+                        "const": null
+                      }
+                    ]
+                  },
+                  "publication": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "messageId",
+                          "threadId"
+                        ],
+                        "properties": {
+                          "messageId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          "threadId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 180,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          }
+                        }
+                      },
+                      {
+                        "type": "null",
+                        "const": null
+                      }
+                    ]
+                  }
+                }
+              },
+              "runtimeBinding": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "runtimeId",
+                  "revision"
+                ],
+                "properties": {
+                  "runtimeId": {
+                    "type": "string",
+                    "pattern": "^runtime:lateJoin:[a-f0-9]{64}$"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
           "lifecycleStatus": {
             "const": "terminal"
           }

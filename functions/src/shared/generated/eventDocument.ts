@@ -402,4 +402,11 @@ export interface EventDocument {
    * Internal demo-operations command name used for cleanup and diagnostics.
    */
   demoOpsCommand?: string;
+  /**
+   * Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates. Legacy events may omit it.
+   */
+  updatedAt?: {
+    _seconds: number;
+    _nanoseconds: number;
+  };
 }

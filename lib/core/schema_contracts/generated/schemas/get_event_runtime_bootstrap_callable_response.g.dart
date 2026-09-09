@@ -702,6 +702,14 @@ const schemaGetEventRuntimeBootstrapCallableResponseSchema = <String, Object?>{
             'runtimeProfile',
           ],
           'properties': <String, Object?>{
+            'eventAttendeeId': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 160,
+            },
             'accessStatus': <String, Object?>{
               'type': 'string',
               'enum': <Object?>[

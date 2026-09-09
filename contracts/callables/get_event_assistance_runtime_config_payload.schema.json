@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_assistance_runtime_config_payload.schema.json",
+  "title": "GetEventAssistanceRuntimeConfigCallablePayload",
+  "$ref": "../shared/event_assistance_runtime_config.schema.json#/definitions/ReadInput"
+}

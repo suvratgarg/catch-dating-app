@@ -43,7 +43,7 @@
     },
     "organizers": {
       "title": "Organizer directory | Catch",
-      "description": "Find singles-event organizers across India — clubs, venues, and independent hosts — with verified guest reviews and upcoming events.",
+      "description": "Find singles-event organizers across India \u2014 clubs, venues, and independent hosts \u2014 with verified guest reviews and upcoming events.",
       "canonicalPath": "/organizers/",
       "twitterDescription": "Search Catch organizer and club profiles.",
       "robots": "noindex, follow"
@@ -78,6 +78,13 @@
       "description": "This Catch page does not exist. Search organizer profiles, browse the member site, or explore host tools.",
       "canonicalPath": "/404/",
       "twitterDescription": "Search organizer profiles, browse the member site, or explore Catch host tools.",
+      "robots": "noindex, follow"
+    },
+    "event_assistance": {
+      "title": "Your event update | Catch",
+      "description": "Read the latest event instructions and reply to your host.",
+      "canonicalPath": "/event-update/",
+      "twitterDescription": "Your event instructions and response options.",
       "robots": "noindex, follow"
     }
   },

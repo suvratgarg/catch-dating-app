@@ -36,7 +36,57 @@ export const submitEventRehearsalGuestActionCallablePayloadSchema: Record<string
         "optOut",
         "optIn",
         "askForHelp",
-        "completePrompt"
+        "completePrompt",
+        "respondToAssistance"
+      ]
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$"
+    },
+    "intentRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "choiceId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    }
+  },
+  "if": {
+    "properties": {
+      "action": {
+        "const": "respondToAssistance"
+      }
+    }
+  },
+  "then": {
+    "required": [
+      "messageId",
+      "intentRevision",
+      "choiceId"
+    ]
+  },
+  "else": {
+    "not": {
+      "anyOf": [
+        {
+          "required": [
+            "messageId"
+          ]
+        },
+        {
+          "required": [
+            "intentRevision"
+          ]
+        },
+        {
+          "required": [
+            "choiceId"
+          ]
+        }
       ]
     }
   }

@@ -22,6 +22,10 @@
     "parameterBindings": {"type": "array", "maxItems": 20, "items": {"type": "object", "additionalProperties": false, "required": ["variableName", "component", "position", "buttonIndex"], "properties": {"variableName": {"type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_]{0,63}$"}, "component": {"type": "string", "enum": ["header", "body", "button"]}, "position": {"type": "integer", "minimum": 0, "maximum": 19}, "buttonIndex": {"type": ["integer", "null"], "minimum": 0, "maximum": 9}}}},
     "hasMediaHeader": {"type": "boolean"},
     "buttonKinds": {"type": "array", "maxItems": 10, "items": {"type": "string", "enum": ["URL", "PHONE_NUMBER", "QUICK_REPLY", "COPY_CODE", "UNKNOWN"]}},
+    "buttonLabels": {"type": "array", "maxItems": 10, "items": {"type": ["string", "null"], "minLength": 1, "maxLength": 1024}},
+    "parameterFormat": {"type": "string", "enum": ["NAMED", "POSITIONAL", "UNKNOWN"]},
+    "buttonUrls": {"type": "array", "maxItems": 10, "items": {"type": ["string", "null"], "minLength": 1, "maxLength": 2048}},
+    "contentHash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
     "providerUpdatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "syncedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
   }

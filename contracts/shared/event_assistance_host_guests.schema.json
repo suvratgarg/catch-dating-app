@@ -1,0 +1,301 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_assistance_host_guests.schema.json",
+  "title": "EventAssistanceHostGuestsContracts",
+  "definitions": {
+    "ReadInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "attendeeIds"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "attendeeIds": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "event_assistance_guest.schema.json#/definitions/id"
+          }
+        }
+      }
+    },
+    "Work": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "notEnrolled"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "revision",
+            "runStatus",
+            "configurationBinding",
+            "expiresAt",
+            "nextEvaluationAt",
+            "lastEvaluation",
+            "publishedIntentCount"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "recorded"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "runStatus": {
+              "type": "string",
+              "enum": [
+                "running",
+                "paused",
+                "completed"
+              ]
+            },
+            "configurationBinding": {
+              "type": "string",
+              "enum": [
+                "current",
+                "unbound",
+                "configurationChanged"
+              ]
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "nextEvaluationAt": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "lastEvaluation": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "at",
+                    "observation"
+                  ],
+                  "properties": {
+                    "at": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "observation": {
+                      "$ref": "../operations/event_assistance_live_work.schema.json#/properties/checkpoint/properties/observation/anyOf/0"
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "publishedIntentCount": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      ]
+    },
+    "Guest": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attendeeId"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "unavailable"
+            },
+            "attendeeId": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/id"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attendeeId",
+            "rosterStatus"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "ineligible"
+            },
+            "attendeeId": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/id"
+            },
+            "rosterStatus": {
+              "type": "string",
+              "enum": [
+                "invited",
+                "waitlisted",
+                "cancelled"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attendeeId",
+            "checkedIn"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "uninitialized"
+            },
+            "attendeeId": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/id"
+            },
+            "checkedIn": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attendeeId",
+            "checkedIn"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "sourceChanged"
+            },
+            "attendeeId": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/id"
+            },
+            "checkedIn": {
+              "type": "boolean"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attendeeId",
+            "checkedIn",
+            "episodeId",
+            "participation",
+            "intention",
+            "work"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "current"
+            },
+            "attendeeId": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/id"
+            },
+            "checkedIn": {
+              "type": "boolean"
+            },
+            "episodeId": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/id"
+            },
+            "participation": {
+              "$ref": "event_assistance_common.schema.json#/definitions/Participation"
+            },
+            "intention": {
+              "$ref": "event_assistance_guest.schema.json#/definitions/Guest/properties/intention"
+            },
+            "work": {
+              "$ref": "#/definitions/Work"
+            }
+          }
+        }
+      ]
+    },
+    "Response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "serverTime",
+        "coverage",
+        "workflow",
+        "runtimeStatus",
+        "guests"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "coverage": {
+          "type": "string",
+          "const": "selectedAttendees"
+        },
+        "workflow": {
+          "type": "string",
+          "const": "lateJoin"
+        },
+        "runtimeStatus": {
+          "$ref": "event_assistance_runtime_config.schema.json#/definitions/View/properties/status"
+        },
+        "guests": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/definitions/Guest"
+          }
+        }
+      }
+    }
+  }
+}

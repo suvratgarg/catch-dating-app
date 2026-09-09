@@ -85,6 +85,10 @@ export interface EventAttendeeDocument {
     _nanoseconds: number;
   } | null;
   /**
+   * Monotonic revision shared by all accountability writers. Missing legacy values read as zero.
+   */
+  accountabilityRevision?: number;
+  /**
    * Monotonic revision for absolute Host attendance operations. Missing legacy values read as zero.
    */
   attendanceRevision?: number;

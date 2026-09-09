@@ -15,6 +15,627 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+{
+  "name": "ListEventWhatsappPreferencesCallablePayload",
+  "source": "callables/list_event_whatsapp_preferences_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventWhatsappPreferencesInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventWhatsappPreferencesInput.ts"
+  ]
+},
+{
+  "name": "ListEventWhatsappPreferencesCallableResponse",
+  "source": "callable_responses/list_event_whatsapp_preferences_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventWhatsappPreferencesOutput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventWhatsappPreferencesOutput.ts"
+  ]
+},
+{
+  "name": "ListEventRcsPreferencesCallablePayload",
+  "source": "callables/list_event_rcs_preferences_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventRcsPreferencesInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventRcsPreferencesInput.ts"
+  ]
+},
+{
+  "name": "ListEventRcsPreferencesCallableResponse",
+  "source": "callable_responses/list_event_rcs_preferences_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/listEventRcsPreferencesOutput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/listEventRcsPreferencesOutput.ts"
+  ]
+},
+{
+  "name": "EventRcsCallbackReceiptDocument",
+  "source": "firestore/event_assistance_rcs_callback_receipts.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsCallbackReceiptDocument.ts"
+},
+{
+  "name": "EventRcsBudgetDocument",
+  "source": "firestore/event_assistance_rcs_budgets.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsBudgetDocument.ts"
+},
+{
+  "name": "EventRcsDispatchDocument",
+  "source": "firestore/event_assistance_rcs_dispatches.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsDispatchDocument.ts"
+},
+{
+  "name": "EventRcsCapabilityObservation",
+  "source": "shared/event_assistance_rcs_capability.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsCapabilityObservation.ts"
+},
+{
+  "name": "EventRcsWithdrawalGrantDocument",
+  "source": "firestore/event_assistance_rcs_withdrawal_grants.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsWithdrawalGrantDocument.ts"
+},
+{
+  "name": "GetEventRcsWithdrawalCallablePayload",
+  "source": "callables/get_event_rcs_withdrawal_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventRcsWithdrawalInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventRcsWithdrawalInput.ts"
+  ]
+},
+{
+  "name": "WithdrawEventRcsCallablePayload",
+  "source": "callables/withdraw_event_rcs_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/withdrawEventRcsInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/withdrawEventRcsInput.ts"
+  ]
+},
+{
+  "name": "EventRcsWithdrawalCallableResponse",
+  "source": "callable_responses/event_rcs_withdrawal_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsWithdrawalOutput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventRcsWithdrawalOutput.ts"
+  ]
+},
+{
+  "name": "EventRcsSenderDocument",
+  "source": "firestore/event_assistance_rcs_senders.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsSenderDocument.ts"
+},
+{
+  "name": "EventRcsPermissionDocument",
+  "source": "firestore/event_assistance_rcs_permissions.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsPermissionDocument.ts"
+},
+{
+  "name": "EventRcsConsentReceiptDocument",
+  "source": "firestore/event_assistance_rcs_consent_receipts.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsConsentReceiptDocument.ts"
+},
+{
+  "name": "GetEventRcsPreferenceCallablePayload",
+  "source": "callables/get_event_rcs_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventRcsPreferenceInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventRcsPreferenceInput.ts"
+  ]
+},
+{
+  "name": "SetEventRcsPreferenceCallablePayload",
+  "source": "callables/set_event_rcs_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/setEventRcsPreferenceInput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/setEventRcsPreferenceInput.ts"
+  ]
+},
+{
+  "name": "EventRcsPreferenceCallableResponse",
+  "source": "callable_responses/event_rcs_preference_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventRcsPreferenceOutput.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventRcsPreferenceOutput.ts"
+  ]
+},
+  {
+    name: "EventRcsSubscriptionDocument",
+    source: "firestore/event_assistance_rcs_subscriptions.schema.json",
+    typeOutput: "functions/src/shared/generated/eventRcsSubscriptionDocument.ts",
+  },
+  {
+    name: "EventAssistanceRcsCallbackDocument",
+    source: "firestore/event_assistance_rcs_callbacks.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceRcsCallbackDocument.ts",
+  },
+  {
+    name: "EventAssistanceRcsCallbackIdentityDocument",
+    source: "firestore/event_assistance_rcs_callback_identities.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceRcsCallbackIdentity.ts",
+  },
+  {name: "ListEventAssistanceDeliveriesCallablePayload", source: "callables/list_event_assistance_deliveries_payload.schema.json", typeOutput: "functions/src/shared/generated/listEventAssistanceDeliveriesCallablePayload.ts"},
+  {name: "RepairEventAssistanceDeliveryCallablePayload", source: "callables/repair_event_assistance_delivery_payload.schema.json", typeOutput: "functions/src/shared/generated/repairEventAssistanceDeliveryCallablePayload.ts"},
+  {name: "EventAssistanceDeliveriesCallableResponse", source: "callable_responses/event_assistance_deliveries_response.schema.json", typeOutput: "functions/src/shared/generated/eventAssistanceDeliveriesCallableResponse.ts"},
+  {name: "EventAssistanceDeliveryCallableResponse", source: "callable_responses/event_assistance_delivery_response.schema.json", typeOutput: "functions/src/shared/generated/eventAssistanceDeliveryCallableResponse.ts"},
+  {name: "EventAssistanceDeliveryRepairDocument", source: "firestore/event_assistance_delivery_repairs.schema.json", typeOutput: "functions/src/shared/generated/eventAssistanceDeliveryRepairDocument.ts"},
+  {"name":"ListEventAssistanceCasesCallablePayload","source":"callables/list_event_assistance_cases_payload.schema.json","typeOutput":"functions/src/shared/generated/listEventAssistanceCasesCallablePayload.ts"},
+  {"name":"ResolveEventAssistanceCaseCallablePayload","source":"callables/resolve_event_assistance_case_payload.schema.json","typeOutput":"functions/src/shared/generated/resolveEventAssistanceCaseCallablePayload.ts"},
+  {"name":"EventAssistanceCasesCallableResponse","source":"callable_responses/event_assistance_cases_response.schema.json","typeOutput":"functions/src/shared/generated/eventAssistanceCasesCallableResponse.ts"},
+  {"name":"EventAssistanceCaseCallableResponse","source":"callable_responses/event_assistance_case_response.schema.json","typeOutput":"functions/src/shared/generated/eventAssistanceCaseCallableResponse.ts"},
+  {"name":"EventAssistanceCaseReceiptDocument","source":"firestore/event_assistance_case_receipts.schema.json","typeOutput":"functions/src/shared/generated/eventAssistanceCaseReceiptDocument.ts"},
+
+  {"name":"GetEventAssistanceHostGuestsCallablePayload","source":"callables/get_event_assistance_host_guests_payload.schema.json","typeOutput":"functions/src/shared/generated/getEventAssistanceHostGuestsCallablePayload.ts"},
+  {"name":"EventAssistanceHostGuestsCallableResponse","source":"callable_responses/event_assistance_host_guests_response.schema.json","typeOutput":"functions/src/shared/generated/eventAssistanceHostGuestsCallableResponse.ts"},
+  {"name": "SetEventAssistanceCheckpointCloseoutCallablePayload", "source": "callables/set_event_assistance_checkpoint_closeout_payload.schema.json", "typeOutput": "functions/src/shared/generated/setEventAssistanceCheckpointCloseoutCallablePayload.ts"},
+  {"name": "ReassignEventAssistanceCheckpointReporterCallablePayload", "source": "callables/reassign_event_assistance_checkpoint_reporter_payload.schema.json", "typeOutput": "functions/src/shared/generated/reassignEventAssistanceCheckpointReporterCallablePayload.ts"},
+  {"name": "GetEventAssistanceCheckpointCallablePayload", "source": "callables/get_event_assistance_checkpoint_payload.schema.json", "typeOutput": "functions/src/shared/generated/getEventAssistanceCheckpointCallablePayload.ts"},
+  {"name": "RecordEventAssistanceCheckpointCallablePayload", "source": "callables/record_event_assistance_checkpoint_payload.schema.json", "typeOutput": "functions/src/shared/generated/recordEventAssistanceCheckpointCallablePayload.ts"},
+  {"name": "EventAssistanceCheckpointCallableResponse", "source": "callable_responses/event_assistance_checkpoint_response.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceCheckpointCallableResponse.ts"},
+  {"name": "EventAssistanceCheckpointDocument", "source": "firestore/event_assistance_checkpoints.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceCheckpointDocument.ts"},
+  {"name": "EventAssistanceCheckpointReceiptDocument", "source": "firestore/event_assistance_checkpoint_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceCheckpointReceiptDocument.ts"},
+  {"name": "EventAssistanceAccountabilityReceiptDocument", "source": "firestore/event_assistance_accountability_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceAccountabilityReceiptDocument.ts"},
+  {"name": "GetEventAssistanceAccountabilityCallablePayload", "source": "callables/get_event_assistance_accountability_payload.schema.json", "typeOutput": "functions/src/shared/generated/getEventAssistanceAccountabilityCallablePayload.ts"},
+  {"name": "ResolveEventAssistanceAccountabilityCallablePayload", "source": "callables/resolve_event_assistance_accountability_payload.schema.json", "typeOutput": "functions/src/shared/generated/resolveEventAssistanceAccountabilityCallablePayload.ts"},
+  {"name": "EventAssistanceAccountabilityCallableResponse", "source": "callable_responses/event_assistance_accountability_response.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceAccountabilityCallableResponse.ts"},
+
+  {"name": "EventAssistanceRuntimeConfigDocument", "source": "firestore/event_assistance_runtime_configs.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceRuntimeConfigDocument.ts"},
+  {"name": "EventAssistanceRuntimeConfigReceiptDocument", "source": "firestore/event_assistance_runtime_config_receipts.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceRuntimeConfigReceiptDocument.ts"},
+  {"name": "GetEventAssistanceRuntimeConfigCallablePayload", "source": "callables/get_event_assistance_runtime_config_payload.schema.json", "typeOutput": "functions/src/shared/generated/getEventAssistanceRuntimeConfigCallablePayload.ts"},
+  {"name": "SetEventAssistanceRuntimeConfigCallablePayload", "source": "callables/set_event_assistance_runtime_config_payload.schema.json", "typeOutput": "functions/src/shared/generated/setEventAssistanceRuntimeConfigCallablePayload.ts"},
+  {"name": "EventAssistanceRuntimeConfigCallableResponse", "source": "callable_responses/event_assistance_runtime_config_response.schema.json", "typeOutput": "functions/src/shared/generated/eventAssistanceRuntimeConfigCallableResponse.ts"},
+
+  {
+    "name": "GetEventAssistanceMembershipCallablePayload",
+    "source": "callables/get_event_assistance_membership_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceMembershipCallablePayload.ts"
+  },
+  {
+    "name": "TransferEventAssistanceGroupCallablePayload",
+    "source": "callables/transfer_event_assistance_group_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/transferEventAssistanceGroupCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceMembershipCallableResponse",
+    "source": "callable_responses/event_assistance_membership_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceMembershipCallableResponse.ts"
+  },
+  {
+    "name": "EventAssistanceMembershipDocument",
+    "source": "firestore/event_assistance_memberships.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceMembershipDocument.ts"
+  },
+  {
+    "name": "EventAssistanceMembershipReceiptDocument",
+    "source": "firestore/event_assistance_membership_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceMembershipReceiptDocument.ts"
+  },
+  {
+    "name": "GetEventAssistanceGroupStaffCallablePayload",
+    "source": "callables/get_event_assistance_group_staff_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceGroupStaffCallablePayload.ts"
+  },
+  {
+    "name": "SetEventAssistanceGroupStaffCallablePayload",
+    "source": "callables/set_event_assistance_group_staff_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/setEventAssistanceGroupStaffCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceGroupStaffCallableResponse",
+    "source": "callable_responses/event_assistance_group_staff_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGroupStaffCallableResponse.ts"
+  },
+  {
+    "name": "EventAssistanceStaffReceiptDocument",
+    "source": "firestore/event_assistance_staff_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceStaffReceiptDocument.ts"
+  },
+
+  {
+    "name": "GetEventAttendanceReportCallablePayload",
+    "source": "callables/get_event_attendance_report_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAttendanceReportCallablePayload.ts"
+  },
+  {
+    "name": "EventAttendanceReportCallableResponse",
+    "source": "callable_responses/event_attendance_report_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAttendanceReportCallableResponse.ts"
+  },
+  {
+    "name": "GetEventAttendanceDispositionCallablePayload",
+    "source": "callables/get_event_attendance_disposition_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAttendanceDispositionCallablePayload.ts"
+  },
+  {
+    "name": "RecordEventNoShowCallablePayload",
+    "source": "callables/record_event_no_show_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/recordEventNoShowCallablePayload.ts"
+  },
+  {
+    "name": "EventAttendanceDispositionCallableResponse",
+    "source": "callable_responses/event_attendance_disposition_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAttendanceDispositionCallableResponse.ts"
+  },
+  {
+    "name": "EventAttendanceDispositionDocument",
+    "source": "firestore/event_attendance_dispositions.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAttendanceDispositionDocument.ts"
+  },
+  {
+    "name": "EventAttendanceDispositionReceiptDocument",
+    "source": "firestore/event_attendance_disposition_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAttendanceDispositionReceiptDocument.ts"
+  },
+  {
+    "name": "EventAssistanceParticipationReceiptDocument",
+    "source": "firestore/event_assistance_participation_receipts.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceParticipationReceiptDocument.ts"
+  },
+  {
+    "name": "GetEventAssistanceParticipationCallablePayload",
+    "source": "callables/get_event_assistance_participation_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceParticipationCallablePayload.ts"
+  },
+  {
+    "name": "SetEventAssistanceParticipationCallablePayload",
+    "source": "callables/set_event_assistance_participation_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/setEventAssistanceParticipationCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceParticipationCallableResponse",
+    "source": "callable_responses/event_assistance_participation_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceParticipationCallableResponse.ts"
+  },
+
+  {
+      "name": "EventAssistanceSettingDocument",
+      "source": "firestore/event_assistance_settings.schema.json",
+      "typeOutput": "functions/src/shared/generated/eventAssistanceSettingDocument.ts"
+  },
+  {
+      "name": "EventAssistanceSettingReceiptDocument",
+      "source": "firestore/event_assistance_setting_receipts.schema.json",
+      "typeOutput": "functions/src/shared/generated/eventAssistanceSettingReceiptDocument.ts"
+  },
+  {
+      "name": "GetEventAssistanceSettingCallablePayload",
+      "source": "callables/get_event_assistance_setting_payload.schema.json",
+      "typeOutput": "functions/src/shared/generated/getEventAssistanceSettingCallablePayload.ts"
+  },
+  {
+      "name": "SetEventAssistanceSettingCallablePayload",
+      "source": "callables/set_event_assistance_setting_payload.schema.json",
+      "typeOutput": "functions/src/shared/generated/setEventAssistanceSettingCallablePayload.ts"
+  },
+  {
+      "name": "EventAssistanceSettingCallableResponse",
+      "source": "callable_responses/event_assistance_setting_response.schema.json",
+      "typeOutput": "functions/src/shared/generated/eventAssistanceSettingCallableResponse.ts"
+  },
+  {
+    "name": "GetEventAssistanceDepartureRosterCallablePayload",
+    "source": "callables/get_event_assistance_departure_roster_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceDepartureRosterCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceDepartureRosterCallableResponse",
+    "source": "callable_responses/event_assistance_departure_roster_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceDepartureRosterCallableResponse.ts"
+  },
+  {
+    "name": "EventAssistanceDepartureRosterDocument",
+    "source": "firestore/event_assistance_departure_rosters.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceDepartureRosterDocument.ts"
+  },
+  {
+    name: "EventAssistanceProgressReceiptDocument",
+    source: "firestore/event_assistance_progress_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceProgressReceiptDocument.ts",
+  },
+  {
+    "name": "EventAssistanceGroupProgressDocument",
+    "source": "firestore/event_assistance_group_progress.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGroupProgressDocument.ts"
+  },
+  {
+    "name": "GetEventAssistanceGroupProgressCallablePayload",
+    "source": "callables/get_event_assistance_group_progress_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceGroupProgressCallablePayload.ts"
+  },
+  {
+    "name": "ConfirmEventAssistanceDepartureCallablePayload",
+    "source": "callables/confirm_event_assistance_departure_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/confirmEventAssistanceDepartureCallablePayload.ts"
+  },
+  {
+    "name": "EventAssistanceGroupProgressCallableResponse",
+    "source": "callable_responses/event_assistance_group_progress_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGroupProgressCallableResponse.ts"
+  },
+  {
+    "name": "EventWhatsappWithdrawalGrantDocument",
+    "source": "firestore/event_assistance_whatsapp_withdrawal_grants.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventWhatsappWithdrawalGrantDocument.ts"
+  },
+  {
+    "name": "GetEventWhatsappWithdrawalCallablePayload",
+    "source": "callables/get_event_whatsapp_withdrawal_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventWhatsappWithdrawalCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/getEventWhatsappWithdrawalCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "WithdrawEventWhatsappCallablePayload",
+    "source": "callables/withdraw_event_whatsapp_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/withdrawEventWhatsappCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/withdrawEventWhatsappCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "EventWhatsappWithdrawalCallableResponse",
+    "source": "callable_responses/event_whatsapp_withdrawal_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventWhatsappWithdrawalCallableResponse.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/eventWhatsappWithdrawalCallableResponse.ts"
+    ]
+  },
+
+  {
+    name: "EventWhatsappBudgetDocument",
+    source: "firestore/event_whatsapp_budgets.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappBudgetDocument.ts",
+  },
+  {
+    name: "EventWhatsappDispatchDocument",
+    source: "firestore/event_whatsapp_dispatches.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappDispatchDocument.ts",
+  },
+  {
+    name: "OrganizerWhatsappEndpointStopDocument",
+    source: "firestore/organizer_whatsapp_endpoint_stops.schema.json",
+    typeOutput: "functions/src/shared/generated/organizerWhatsappEndpointStopDocument.ts",
+  },
+  {
+    name: "EventWhatsappPermissionDocument",
+    source: "firestore/event_assistance_whatsapp_permissions.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappPermissionDocument.ts",
+  },
+  {
+    name: "EventWhatsappConsentReceiptDocument",
+    source: "firestore/event_assistance_whatsapp_consent_receipts.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappConsentReceiptDocument.ts",
+  },
+  {
+    name: "GetEventWhatsappPreferenceCallablePayload",
+    source: "callables/get_event_whatsapp_preference_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/getEventWhatsappPreferenceCallablePayload.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/getEventWhatsappPreferenceCallablePayload.ts"],
+  },
+  {
+    name: "SetEventWhatsappPreferenceCallablePayload",
+    source: "callables/set_event_whatsapp_preference_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/setEventWhatsappPreferenceCallablePayload.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/setEventWhatsappPreferenceCallablePayload.ts"],
+  },
+  {
+    name: "EventWhatsappPreferenceCallableResponse",
+    source: "callable_responses/event_whatsapp_preference_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappPreferenceCallableResponse.ts",
+    additionalTypeOutputs: ["website/src/shared/contracts/generated/eventWhatsappPreferenceCallableResponse.ts"],
+  },
+  {
+    name: "EventWhatsappPolicyDocument",
+    source: "firestore/event_assistance_whatsapp_policies.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappPolicyDocument.ts",
+  },
+  {
+    name: "EventWhatsappReplyBindingDocument",
+    source: "firestore/event_assistance_whatsapp_reply_bindings.schema.json",
+    typeOutput: "functions/src/shared/generated/eventWhatsappReplyBindingDocument.ts",
+  },
+{
+  "name": "EventAssistanceSmsWithdrawalGrantDocument",
+  "source": "firestore/event_assistance_sms_withdrawal_grants.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsWithdrawalGrantDocument.ts"
+},
+{
+  "name": "GetEventAssistanceSmsWithdrawalCallablePayload",
+  "source": "callables/get_event_assistance_sms_withdrawal_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventAssistanceSmsWithdrawalCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventAssistanceSmsWithdrawalCallablePayload.ts"
+  ]
+},
+{
+  "name": "WithdrawEventAssistanceSmsCallablePayload",
+  "source": "callables/withdraw_event_assistance_sms_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/withdrawEventAssistanceSmsCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/withdrawEventAssistanceSmsCallablePayload.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsWithdrawalCallableResponse",
+  "source": "callable_responses/event_assistance_sms_withdrawal_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsWithdrawalCallableResponse.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventAssistanceSmsWithdrawalCallableResponse.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsConsentReceiptDocument",
+  "source": "firestore/event_assistance_sms_consent_receipts.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsConsentReceiptDocument.ts"
+},
+{
+  "name": "GetEventAssistanceSmsPreferenceCallablePayload",
+  "source": "callables/get_event_assistance_sms_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventAssistanceSmsPreferenceCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/getEventAssistanceSmsPreferenceCallablePayload.ts"
+  ]
+},
+{
+  "name": "SetEventAssistanceSmsPreferenceCallablePayload",
+  "source": "callables/set_event_assistance_sms_preference_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/setEventAssistanceSmsPreferenceCallablePayload.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/setEventAssistanceSmsPreferenceCallablePayload.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsPreferenceCallableResponse",
+  "source": "callable_responses/event_assistance_sms_preference_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsPreferenceCallableResponse.ts",
+  "additionalTypeOutputs": [
+    "website/src/shared/contracts/generated/eventAssistanceSmsPreferenceCallableResponse.ts"
+  ]
+},
+{
+  "name": "EventAssistanceSmsSenderDocument",
+  "source": "firestore/event_assistance_sms_senders.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsSenderDocument.ts"
+},
+{
+  "name": "EventAssistanceSmsPermissionDocument",
+  "source": "firestore/event_assistance_sms_permissions.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsPermissionDocument.ts"
+},
+{
+  "name": "EventAssistanceSmsBudgetDocument",
+  "source": "firestore/event_assistance_sms_budgets.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsBudgetDocument.ts"
+},
+{
+  "name": "EventAssistanceSmsDispatchDocument",
+  "source": "firestore/event_assistance_sms_dispatches.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceSmsDispatchDocument.ts"
+},
+  {
+    name: "EventAssistanceRcsConfig",
+    source: "operations/event_assistance_rcs_config.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceRcsConfig.ts",
+  },
+  {
+    name: "EventAssistanceSmsConfig",
+    source: "operations/event_assistance_sms_config.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceSmsConfig.ts",
+  },
+  {
+    "name": "EventAssistanceGuestDocument",
+    "source": "firestore/event_assistance_guests.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGuestDocument.ts"
+  },
+  {
+    "name": "EventAssistanceThreadDocument",
+    "source": "firestore/event_assistance_threads.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceThreadDocument.ts"
+  },
+  {
+    "name": "EventAssistanceGuestGrantDocument",
+    "source": "firestore/event_assistance_guest_grants.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGuestGrantDocument.ts"
+  },
+  {
+    "name": "EventAssistanceCaseDocument",
+    "source": "firestore/event_assistance_cases.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceCaseDocument.ts"
+  },
+  {
+    "name": "GetEventAssistanceGuestViewCallablePayload",
+    "source": "callables/get_event_assistance_guest_view_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/getEventAssistanceGuestViewCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/getEventAssistanceGuestViewCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "SubmitEventAssistanceGuestChoiceCallablePayload",
+    "source": "callables/submit_event_assistance_guest_choice_payload.schema.json",
+    "typeOutput": "functions/src/shared/generated/submitEventAssistanceGuestChoiceCallablePayload.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/submitEventAssistanceGuestChoiceCallablePayload.ts"
+    ]
+  },
+  {
+    "name": "EventAssistanceGuestViewCallableResponse",
+    "source": "callable_responses/event_assistance_guest_view_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/eventAssistanceGuestViewCallableResponse.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/eventAssistanceGuestViewCallableResponse.ts"
+    ]
+  },
+  {
+    "name": "SubmitEventAssistanceGuestChoiceCallableResponse",
+    "source": "callable_responses/submit_event_assistance_guest_choice_response.schema.json",
+    "typeOutput": "functions/src/shared/generated/submitEventAssistanceGuestChoiceCallableResponse.ts",
+    "additionalTypeOutputs": [
+      "website/src/shared/contracts/generated/submitEventAssistanceGuestChoiceCallableResponse.ts"
+    ]
+  },
+  {
+    name: "EventAssistanceMessageDocument",
+    source: "firestore/event_assistance_messages.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceMessageDocument.ts",
+  },
+  {
+    name: "EventAssistanceMessageIntent",
+    source: "operations/event_assistance_message_intent.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceMessageIntent.ts",
+  },
+  {
+    name: "EventAssistanceDeliveryAttempt",
+    source: "operations/event_assistance_delivery_attempt.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceDeliveryAttempt.ts",
+  },
+  {
+    name: "EventAssistanceGuestResponse",
+    source: "operations/event_assistance_guest_response.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceGuestResponse.ts",
+  },
+  {
+    name: "EventAssistancePolicy",
+    source: "operations/event_assistance_policy.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistancePolicy.ts"
+  },
+  {
+    name: "EventAssistanceCommand",
+    source: "operations/event_assistance_command.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceCommand.ts"
+  },
+  {
+    name: "EventAssistanceSourceWork",
+    source: "operations/event_assistance_source_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceSourceWork.ts",
+  },
+  {
+    name: "EventAssistanceCheckpointWork",
+    source: "operations/event_assistance_checkpoint_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceCheckpointWork.ts",
+  },
+  {
+    name: "EventAssistanceDeliveryWork",
+    source: "operations/event_assistance_delivery_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceDeliveryWork.ts",
+  },
+  {
+    name: "EventAssistanceRosterWork",
+    source: "operations/event_assistance_roster_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceRosterWork.ts",
+  },
+  {
+    name: "EventAssistanceLiveWork",
+    source: "operations/event_assistance_live_work.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceLiveWork.ts",
+  },
+  {
+    name: "EventAssistanceLateJoinInput",
+    source: "operations/event_assistance_late_join_input.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceLateJoinInput.ts"
+  },
+  {
+    name: "EventAssistanceLateJoinDecision",
+    source: "operations/event_assistance_late_join_decision.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceLateJoinDecision.ts"
+  },
   {
     name: "MobileFormState",
     source: "forms/mobile_form_state.schema.json",
@@ -628,10 +1249,40 @@ const schemaSpecs = [
       "functions/src/shared/generated/eventSuccessLateArrivalDocument.ts",
   },
   {
+    name: "EventRehearsalMovementDocument",
+    source: "firestore/event_rehearsal_movements.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalMovementDocument.ts",
+  },
+  {
+    name: "GetEventRehearsalMovementCallablePayload",
+    source: "callables/get_event_rehearsal_movement_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/getEventRehearsalMovementCallablePayload.ts",
+  },
+  {
+    name: "EventRehearsalMovementCallableResponse",
+    source: "callable_responses/event_rehearsal_movement_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalMovementCallableResponse.ts",
+  },
+  {
     name: "EventRehearsalDocument",
     source: "firestore/event_rehearsals.schema.json",
     typeOutput:
       "functions/src/shared/generated/eventRehearsalDocument.ts",
+  },
+  {
+    name: "EventRehearsalCaseDocument",
+    source: "firestore/event_rehearsal_cases.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalCaseDocument.ts",
+  },
+  {
+    name: "EventRehearsalMessageDocument",
+    source: "firestore/event_rehearsal_messages.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventRehearsalMessageDocument.ts",
   },
   {
     name: "EventRehearsalActorDocument",
@@ -3858,6 +4509,30 @@ async function main() {
   const profileDecisionMigration = readContractJson(
     "migrations/swipes_to_profile_decisions.json"
   );
+  const eventAssistanceCatalog = readContractJson(
+    "catalogs/event_assistance_workflows.json"
+  );
+  const assistanceCommon = readContractJson(
+    "shared/event_assistance_common.schema.json"
+  );
+  const workflowKinds = assistanceCommon.definitions.workflowKind.enum;
+  const commandSchema = resolveRefs(assistanceCommon.definitions.Command,
+    path.join(contractRoot, "shared/event_assistance_common.schema.json"),
+    false);
+  const commandKinds = commandSchema.oneOf.map(
+    (variant) => variant.properties.kind.const
+  );
+  addTextOutput(
+    "lib/core/schema_contracts/generated/event_assistance_kinds.g.dart",
+    "// GENERATED CODE - DO NOT MODIFY BY HAND.\n" +
+      "// Regenerate with: node tool/contracts/generate_schema_contracts.mjs\n\n" +
+      "enum EventAssistanceWorkflowKind {\n" +
+      workflowKinds.map((kind) => "  " + kind + ",").join("\n") +
+      "\n}\n\n" +
+      "enum EventAssistanceCommandKind {\n" +
+      commandKinds.map((kind) => "  " + kind + ",").join("\n") +
+      "\n}\n"
+  );
   const bundledSchemas = new Map();
 
   for (const spec of schemaSpecs) {
@@ -3874,6 +4549,7 @@ async function main() {
     "functions/src/shared/generated/schemaRegistry.ts",
     renderTsSchemaRegistry({
       schemaMap: bundledSchemas,
+      eventAssistanceCatalog,
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
@@ -3904,6 +4580,7 @@ async function main() {
     "tool/contracts/generated/schema_contract_registry.mjs",
     renderToolSchemaRegistry({
       schemaMap: bundledSchemas,
+      eventAssistanceCatalog,
       profileCatalog,
       personFieldCatalog,
       organizerFormTemplateCatalog,
@@ -5133,6 +5810,7 @@ function runtimeSchemaModuleName(spec) {
 
 function renderTsSchemaRegistry({
   schemaMap,
+  eventAssistanceCatalog,
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
@@ -5156,6 +5834,7 @@ function renderTsSchemaRegistry({
     exports.push(`export {${name}} from "./schemas/${module}";`);
   }
   const catalogEntries = [
+    ["eventAssistanceWorkflowCatalog", eventAssistanceCatalog],
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],
@@ -5266,6 +5945,7 @@ export const schemaProfileDecisionFutureOutgoingSubcollectionPath =
 
 function renderToolSchemaRegistry({
   schemaMap,
+  eventAssistanceCatalog,
   profileCatalog,
   personFieldCatalog,
   organizerFormTemplateCatalog,
@@ -5275,6 +5955,7 @@ function renderToolSchemaRegistry({
 }) {
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
+    ["eventAssistanceWorkflowCatalog", eventAssistanceCatalog],
     ["profilePromptCatalog", profileCatalog],
     ["personFieldCatalog", personFieldCatalog],
     ["organizerFormTemplateCatalog", organizerFormTemplateCatalog],

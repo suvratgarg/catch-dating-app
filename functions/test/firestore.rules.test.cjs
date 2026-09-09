@@ -4336,6 +4336,64 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("keeps event-service messages private to trusted workers", async () => {
+      for (const collectionName of ["eventAssistanceMessages",
+        "eventAssistanceSettings", "eventAssistanceSettingReceipts",
+        "eventAssistanceRuntimeConfigs", "eventAssistanceRuntimeConfigReceipts",
+        "eventAssistanceParticipationReceipts", "eventAssistanceStaffReceipts",
+        "eventAssistanceAccountabilityReceipts",
+        "eventAssistanceMemberships", "eventAssistanceMembershipReceipts",
+        "eventAssistanceGroupProgress", "eventAssistanceProgressReceipts",
+        "eventAssistanceDepartureRosters",
+        "eventAssistanceCheckpoints", "eventAssistanceCheckpointReceipts",
+        "eventAssistanceGuests", "eventAssistanceThreads",
+        "eventAssistanceGuestGrants", "eventAssistanceCases",
+        "eventAssistanceCaseReceipts", "eventAssistanceDeliveryRepairs",
+        "eventAssistanceRcsCallbacks", "eventAssistanceRcsCallbackIdentities",
+        "eventAssistanceRcsSubscriptions",
+        "eventAssistanceRcsBudgets", "eventAssistanceRcsDispatches",
+        "eventAssistanceRcsCallbackReceipts",
+        "eventAssistanceRcsSenders", "eventAssistanceRcsPermissions",
+        "eventAssistanceRcsConsentReceipts", "eventAssistanceRcsWithdrawalGrants",
+        "eventAssistanceSmsSenders", "eventAssistanceSmsPermissions",
+        "eventAssistanceSmsBudgets", "eventAssistanceSmsDispatches",
+        "eventAssistanceSmsConsentReceipts",
+        "eventAssistanceSmsWithdrawalGrants",
+        "eventAssistanceWhatsappWithdrawalGrants",
+        "eventAssistanceWhatsappReplyBindings",
+        "eventAssistanceWhatsappPolicies",
+        "eventAssistanceWhatsappBudgets",
+        "eventAssistanceWhatsappDispatches",
+        "organizerWhatsappEndpointStops",
+
+        "eventAssistanceWhatsappPermissions",
+        "eventAssistanceWhatsappConsentReceipts"]) {
+        await seed([collectionName, "record-1"], {schemaVersion: 1});
+        for (const client of [testEnv.unauthenticatedContext().firestore(),
+          authedDb("host-1"), authedDb("admin-1", {admin: true})]) {
+          const reference = doc(client, collectionName, "record-1");
+          await assertFails(getDoc(reference));
+          await assertFails(setDoc(reference, {schemaVersion: 1}));
+          await assertFails(deleteDoc(reference));
+        }
+      }
+    });
+
+    it("keeps attendance closeout decisions callable-only", async () => {
+      for (const collectionName of ["eventAttendanceDispositions",
+        "eventAttendanceDispositionReceipts"]) {
+        await seed([collectionName, "record-1"], {revision: 1});
+        for (const client of [testEnv.unauthenticatedContext().firestore(),
+          authedDb("host-1"), authedDb("guest-1"),
+          authedDb("admin-1", {admin: true})]) {
+          const reference = doc(client, collectionName, "record-1");
+          await assertFails(getDoc(reference));
+          await assertFails(setDoc(reference, {revision: 2}));
+          await assertFails(deleteDoc(reference));
+        }
+      }
+    });
+
     it("keeps durable operations records server-owned", async () => {
       const collections = [
         "operationRuns",
@@ -4366,6 +4424,9 @@ describe("firestore.rules", () => {
         "eventRehearsalActors",
         "eventRehearsalActions",
         "eventRehearsalGuestViews",
+        "eventRehearsalMessages",
+        "eventRehearsalMovements",
+        "eventRehearsalCases",
       ];
       for (const collectionName of collections) {
         await seed([collectionName, "practice-1"], {sessionId: "practice-1"});

@@ -6,7 +6,10 @@ test("the route registry covers every supported communication route", () => {
   assert.deepEqual(Object.keys(communicationRoutes).sort(), [
     "catchChat",
     "catchEventAnnouncement",
+    "catchEventRcs",
+    "catchEventSms",
     "catchWhatsapp",
+    "organizerEventWhatsapp",
     "organizerFollowerUpdate",
     "organizerWhatsappCampaign",
     "personalWhatsappHandoff",
@@ -44,6 +47,9 @@ test("every route declares audience, reply, and scheduling semantics", () => {
       "linkedCatchAccount",
       "eventRoster",
       "organizerFollowers",
+      "eventRoster",
+      "eventRoster",
+      "eventRoster",
     ],
   );
   assert.equal(communicationRoutes.catchChat.supportsReplies, true);
@@ -59,4 +65,20 @@ test("every route declares audience, reply, and scheduling semantics", () => {
     communicationRoutes.organizerWhatsappCampaign.supportsScheduling,
     true,
   );
+});
+
+test("automated event routes preserve service and sender boundaries", () => {
+  for (const route of [communicationRoutes.catchEventSms,
+    communicationRoutes.catchEventRcs,
+    communicationRoutes.organizerEventWhatsapp]) {
+    assert.equal(route.consentScope, "eventService");
+    assert.equal(route.audienceScope, "eventRoster");
+    assert.equal(route.requiresHostFinalSend, false);
+    assert.equal(route.supportsScheduling, false);
+  }
+  assert.equal(communicationRoutes.catchEventSms.supportsReplies, false);
+  assert.equal(communicationRoutes.organizerEventWhatsapp.senderIdentity,
+    "organizerManaged");
+  assert.equal(communicationRoutes.catchEventSms.senderIdentity,
+    "catchPlatform");
 });

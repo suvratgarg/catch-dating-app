@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/get_event_assistance_host_guests_payload.schema.json",
+  "title": "GetEventAssistanceHostGuestsCallablePayload",
+  "$ref": "../shared/event_assistance_host_guests.schema.json#/definitions/ReadInput"
+}

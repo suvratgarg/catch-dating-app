@@ -133,6 +133,7 @@
             "runtimeProfile"
           ],
           "properties": {
+            "eventAttendeeId": {"type": ["string", "null"], "minLength": 1, "maxLength": 160},
             "accessStatus": {
               "type": "string",
               "enum": ["needsClaim", "pendingApproval", "needsInput", "ready", "optedOut", "revoked"]

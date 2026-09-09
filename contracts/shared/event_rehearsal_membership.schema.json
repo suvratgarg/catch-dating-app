@@ -1,0 +1,208 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_rehearsal_membership.schema.json",
+  "title": "EventRehearsalMembership",
+  "definitions": {
+    "participation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "episodeRevision",
+        "state"
+      ],
+      "properties": {
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "episodeRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "state": {
+          "enum": [
+            "active",
+            "departed",
+            "pending"
+          ]
+        }
+      }
+    },
+    "membership": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "episodeId",
+        "revision",
+        "accepted",
+        "transfer",
+        "createdAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "episodeId": {
+          "type": "string",
+          "pattern": "^episode:[a-f0-9]{64}$"
+        },
+        "revision": {
+          "$ref": "event_assistance_membership.schema.json#/definitions/Membership/properties/revision"
+        },
+        "accepted": {
+          "$ref": "event_assistance_membership.schema.json#/definitions/Membership/properties/accepted"
+        },
+        "transfer": {
+          "$ref": "event_assistance_membership.schema.json#/definitions/Membership/properties/transfer"
+        },
+        "createdAt": {
+          "$ref": "event_assistance_membership.schema.json#/definitions/Membership/properties/createdAt"
+        },
+        "updatedAt": {
+          "$ref": "event_assistance_membership.schema.json#/definitions/Membership/properties/updatedAt"
+        },
+        "assignmentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991,
+          "description": "Membership revision of the last placement, accepted transfer or removal. Proposals preserve it; absent legacy evidence cannot authorize group directions."
+        }
+      }
+    },
+    "reviews": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "actorUid",
+        "coverage",
+        "receivingOperatorIds",
+        "rows"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "actorUid": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "coverage": {
+          "const": "boundedSession"
+        },
+        "receivingOperatorIds": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "event_common.schema.json#/definitions/documentId"
+          },
+          "maxItems": 42
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "attendeeId",
+              "sourceHash",
+              "serverTime",
+              "revision",
+              "episodeId",
+              "participationRevision",
+              "freshness",
+              "ready",
+              "accepted",
+              "transfer",
+              "transferState",
+              "groups",
+              "actions",
+              "availability"
+            ],
+            "properties": {
+              "attendeeId": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/attendeeId"
+              },
+              "sourceHash": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/sourceHash"
+              },
+              "serverTime": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/serverTime"
+              },
+              "revision": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/revision"
+              },
+              "episodeId": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/episodeId"
+              },
+              "participationRevision": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/participationRevision"
+              },
+              "freshness": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/freshness"
+              },
+              "ready": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/ready"
+              },
+              "accepted": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/accepted"
+              },
+              "transfer": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/transfer"
+              },
+              "transferState": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/transferState"
+              },
+              "groups": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/groups"
+              },
+              "actions": {
+                "$ref": "event_assistance_membership.schema.json#/definitions/View/properties/actions"
+              },
+              "availability": {
+                "enum": [
+                  "ready",
+                  "notApplicable",
+                  "participationNotRecorded",
+                  "invalidSource"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "actorId",
+        "payload",
+        "expectedSourceHash"
+      ],
+      "properties": {
+        "kind": {
+          "const": "transferGroup"
+        },
+        "actorId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "payload": {
+          "$ref": "event_assistance_common.schema.json#/definitions/TransferGroupCommand/properties/payload"
+        },
+        "expectedSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

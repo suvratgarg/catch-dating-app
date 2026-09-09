@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.9.1
-updated: 2026-08-07
+version: 1.25.0
+updated: 2026-09-09
 owner: operations_platform
 status: active
 ---
@@ -522,9 +522,348 @@ Reconciliation is a first-class recurring child run rather than an in-place
 mutation. Event velocity is measured as fresh future inventory, not cumulative
 historical output.
 
+### Trusted worker checkpoints
+
+`FirestoreOperationsRepository.commitWorkItemAction` commits one work-item
+revision and its immutable action receipt in the same Firestore transaction.
+The transaction re-reads the owning run, item and lease, checks the run's
+execution deadline and the worker's current fencing token, and rejects stale
+revisions or scope changes. Receipt ids hash the run, item and idempotency key
+as an ordered JSON array; the receipt binds the complete resulting checkpoint.
+An exact retry returns the committed receipt and latest item without repeating
+the write. Changed evidence under the same key fails closed.
+
+`FirestoreOperationLeaseRepository` retains one deterministic lease document
+per resource in `operationLeases`. Acquisition and renewal use the live server
+clock, leases last at most two minutes, and replacing an expired or released
+lease increments its fencing token. These documents must not receive TTL
+cleanup while a resource can be executed: deleting one would reset its fence.
+An expired acquisition cannot be resurrected by replaying its key. Rehearsal
+virtual time must never be injected as the worker lease clock.
+
+These are trusted persistence primitives, not authorization or a provider
+executor. A worker must resolve current scoped authority and domain policy,
+reserve an external attempt durably, call the provider outside the transaction,
+and reconcile ambiguous provider outcomes. A receipt saying that an attempt
+was reserved is not proof that a message was delivered. Event Assistance's
+private `FirestoreMessageOutbox` now owns immutable message intents, bounded
+attempt history, one-time dispatch claiming and late-receipt reconciliation.
+Its transaction contention boundary is independent of run completion, so a
+closed workflow cannot discard a later provider receipt. The workflow will
+reference that private message state instead of treating a work-item action
+receipt as delivery proof. `EventMessageWorker` now composes the concrete SMS
+and WhatsApp authority readers and adapters through that one outbox history;
+only the selected channel can claim spending and send. The dormant message
+delivery coordinator below supplies durable invocation. Scheduler activation,
+remaining workflow source readers, RCS and provider failure reconciliation
+remain integration work. These primitives do not enable Supply Intake
+publication.
+
+### Durable live assistance work
+
+The trusted Functions `LiveAssistanceWorkStore` uses those same collections for
+one live late-join guest episode per run. Its strict `liveLateJoin` normalized
+payload is defined by `event_assistance_live_work.schema.json` and enforced by
+the generic work-item contract. Run and item ids bind the event, organizer,
+attendee and episode. Initialization requires existing current participation;
+it cannot create an episode or replace the saved sender choices, response
+deadline, expiry or evaluation budget on retry.
+
+The payload owns `checkpoint.dueAt`; generic item `staleAt` is not a scheduling
+field. Bounded discovery selects due items using the declared composite index.
+Every policy evaluation re-reads the live source, host policy and messaging
+evidence.
+The run, item revision, immutable action receipt, message intent and guest
+thread commit in one transaction under the current Operations lease. A lost
+response replays the receipt before any publication, including after the lease
+has expired or a later checkpoint has advanced. Wake signals have durable
+idempotency keys and can advance a waiting item's due time without changing
+its previous outcome or resetting its evaluation budget.
+
+Future evaluations honor the earliest pending cooldown, guidance expiry,
+explicit response deadline, policy cutoff or work expiry. Event facts can wake
+work sooner; elapsed time never proves departure or attendance. Missing facts
+can require host review; exhausted evaluation budgets always do. At work
+expiry, terminal housekeeping can still commit even if no evaluation ran.
+The run therefore has no generic execution deadline: the domain expiry bounds
+publication while the finite evaluation budget bounds policy work. Provider
+attempts and spending remain separately bounded in the message outbox. For
+this adapter, `published` counts newly created message intents and `escalated`
+counts entries into host review; neither counter measures provider delivery.
+
+`LiveAssistanceWorkRunner` acquires an Operations work-item lease before each
+evaluation or wake and releases it afterward. Its runtime marker rejects the
+frozen shadow CLI projection; the registered CLI manifest remains shadow-only.
+There is no public enrollment callable or provider invocation in this worker.
+Scheduled evaluation requires the manager-owned runtime id/revision binding
+described in [Event Success](event_success.md#event-automation-permission).
+Bound initialization verifies the complete configuration; pausing or replacing
+it withholds publication and queued provider claims. The binding does not
+reset the participation episode, messaging history or delivery budgets.
+
+The trusted roster enrollment boundary creates missing participation and its
+first guest work atomically, or reports that existing work needs rebinding.
+`rebind` is a third leased guest action alongside evaluation and wake. It reads
+the saved runtime configuration and current participation inside the checkpoint
+transaction, updates both basis hashes and preserves consumed evaluations and
+publication counters. The configured evaluation ceiling can be lowered below
+prior consumption; this exhausts further work instead of discarding evidence.
+Raising that ceiling does not zero the counter. Rebind receipts are idempotent
+per runtime revision, and completed/expired episodes cannot re-enter execution.
+The resumable roster worker below now owns enrollment discovery and fanout.
+
+### Resumable roster enrollment
+
+`event_assistance_roster_work.schema.json` defines a separate
+`liveRosterEnrollment` payload inside the existing Operations run/item/receipt
+collections. Its immutable basis binds source identity, exact scope
+and the current manager runtime revision. Configuration saves its roster run/item
+atomically with the runtime and command receipt; its logical source identity is
+the saved runtime revision. Configuration-trigger deliveries reuse that job.
+Registration and participation sources use their CloudEvent delivery identity.
+It contains no caller-authored guest
+state, roster snapshot or sender options. Configuration changes request an
+event-wide scan; registration and explicit participation-episode changes request
+a single-guest scan. Replies, unrelated counters and deletion events do not
+request enrollment. A new registration behind a saved cursor is covered by
+its own source delivery rather than requiring a scan restart.
+
+`AssistanceRosterWorkStore` rechecks current permission before discovery, for
+each guest through the atomic enrollment/rebind adapters, and when committing
+the roster checkpoint. Paused, replaced, expired or source-invalidated runtime
+permission stops unfinished scans with an explicit reason. The scan reads the
+selected event's canonical roster and validates each guest's organizer/event
+scope; missing or ineligible registrations produce no enrollment. Malformed
+records retain their attendee IDs for bounded retry and review.
+
+Roster scans share `advanceFanoutPage` with source wakes: at most 20 targets per
+page, 10,000 visited targets, 100 retained failures, five retry rounds and a
+24-hour source lifetime. Cursors and retries use consistent ordinal document-id
+ordering. An Operations lease fences each saved page; per-guest transactions
+and rebind receipts make repeated visits safe if the page checkpoint is lost.
+The visited count measures discovery, never successful enrollment or delivery.
+No provider is invoked, and no new Firestore collection or client permission is
+introduced. Complete, stopped, expired and review outcomes remain distinct.
+
+### Durable checkpoint request work
+
+An explicit departure `checkpointRequest` creates one `liveCheckpointReport`
+run/item in the same transaction as the immutable roster and departure receipt.
+The payload is enforced by `event_assistance_checkpoint_work.schema.json` and
+the generic work-item schema. Its identity binds context, group, departure
+revision and destination checkpoint; its basis pins the complete roster hash,
+original reporter, deadline and request time. It grants no staff access.
+
+`AssistanceCheckpointWorkStore` re-reads that original roster, current report,
+source availability and reporter authority under an Operations work-item lease.
+Each observed state, run/item revision and immutable action receipt commit
+atomically. Unreported requests raise an operator action; overdue, partial,
+source-unavailable or owner-unavailable requests raise human review. The next
+due time is the earlier future report deadline or finite staff expiry. Passing
+either time cannot establish a physical fact. Unreadable facts retain review
+and get at most five scheduled attempts with exponential backoff; a new source
+wake can re-read repaired evidence. No provider or attendee writer is involved.
+
+Complete reports become dormant `report_complete` items with no task flags or
+due time. The run stays running and the item waiting so an explicit report
+correction can reopen it under the existing fenced action protocol; generic
+terminal work is never reopened. Partial corrections restore follow-up, and
+duplicate or delayed source deliveries replay immutable wake receipts instead
+of reapplying older states. Event completion, cancellation or schedule expiry
+cannot discard unresolved original departure members. There is no generic
+expiry or TTL: terminal retention/reconciliation is separate work. The current
+adapter does not implement staff notifications or the Host queue UI.
+
+Explicit reviewed closeout uses the same lease and stores an independent
+`closeout` decision outside the immutable departure basis. A partial arrival
+report plus a current post-departure disposition for every unconfirmed member
+can become `report_closed_out`, with no task flags or due timer. This does not
+convert a disposition into an arrival. The current named reporter with scoped
+reporting authority or an organizer manager supplies a reason; server-owned
+full evidence, its domain receipt and the work/run/action update commit
+atomically. The generic receipt hashes the complete domain receipt. Reads bind
+the latest change to both receipts; older retries validate their original full
+evidence but return current state. Corrected reports, dispositions, changed
+visits or explicit reopening restore review while retaining history. Full
+arrival reports supersede closeout. Both completed states remain nonterminal;
+terminal retention is a separate lifecycle boundary.
+
+Manager-driven reporter reassignment now shares this same work-item lease. Its
+optional `reassignment` payload is mutable responsibility, excluded from the
+immutable original request basis. It advances an independent assignment revision
+and immediately reconciles fresh report/owner facts. The work/run update,
+Operations action receipt and full domain receipt in
+`eventAssistanceCheckpointReceipts` commit together. The original deadline is
+retained, including when overdue; current scoped authority must extend beyond
+both now and that deadline. Assignment reads bind the latest change to both
+immutable receipts. Older retries return current state and never restore a prior
+owner. Background revisions do not invalidate a reviewed assignment, while a
+changed assignment, report or source does. A complete or closed-out report cannot be reassigned;
+a later correction retains the effective reporter when reopening work.
+
+### Source changes and due-work recovery
+
+`AssistanceSourceWorkStore` persists each source delivery and target scope as
+one `liveSourceWake` Operations run/item, enforced by
+`event_assistance_source_work.schema.json`. The source `eventId` is the
+CloudEvent delivery identity. Event scopes carry `scope.context`; readiness
+scopes carry an exact sender selection, organizer/WhatsApp endpoint hash, or
+RCS agent/phone conversation subscription ID.
+Repeated delivery reuses the same work. Source payloads only request a fresh
+evaluation and cannot supply authoritative domain facts or sender permission.
+
+The twenty-four source triggers cover relevant event configuration/lifecycle,
+roster/check-in, live plan status, participation/replies, late-join settings,
+confirmed group progress, membership, runtime permission, message evidence and
+event-specific SMS/WhatsApp/RCS consent, sender configuration, approved templates,
+spending authority, provider STOP, CRM suppression and scoped staff grants. Owner or scope
+changes wake both previous and current affected scopes. Unrelated event
+counters and rehearsal state create no work. No-target checks avoid creating
+source runs when no guest, delivery or checkpoint work exists; newly created work evaluates
+current facts on its first execution.
+
+RCS sender changes select exact configured RCS routes. Event budget changes
+wake that event; UTC sender-day changes discover the corresponding sender.
+Debit increases and revision counters do not trigger repair, while released
+spending and changes to limits, approval, agent, currency or window do. RCS
+subscription discovery queries unexpired permissions by their receipt-covered
+conversation ID with expiry/document-ID cursors. Target resolution revalidates
+that key and current expiry before creating an attendee wake. START-only
+records and subsequent START observations create no work and grant no consent.
+STOP creation, removal or replacement rechecks only the affected conversation.
+The source dispatcher retains the same bounded retry and review lifecycle.
+
+Fanout scans only work for the exact organizer/event and optional attendee,
+then revalidates each target before waking it. Event-wide scopes merge bounded
+guest, delivery and checkpoint queries in document-id order using the existing
+scope indexes; attendee scopes only select guest and delivery work. Each
+scan reads at most 21 candidates per kind, including lookahead, and visits at
+most 20 total. Guest
+wakes make policy evaluation due; checkpoint wakes reconcile the original report;
+delivery wakes re-evaluate the saved message
+under its own lease and the remaining source execution deadline. Both scan and
+retry pages process at most 20 targets under a 60-second lease. The checkpoint cursor is
+the last scanned work id during discovery and the last attempted failed work
+id within a retry round. Successful retries are removed; unfinished rounds
+resume immediately, completed unsuccessful rounds back off. Target wake
+receipts survive a lost fanout checkpoint without duplicating guest effects.
+Limits are 10,000 visited targets, 100 retained failures, five retry rounds and
+a 24-hour source-work lifetime. Exhausted target/failure/retry limits become
+explicit review items with failed ids retained; expiry closes unfinished work.
+
+An explicit `checkpointMember` scope supplies a separate path for attendee
+check-in, registration generation and accountability changes. It selects only
+saved checkpoint requests in the exact organizer/event, then verifies the full
+original departure roster hash and membership before invoking the checkpoint
+worker. Requests without that original member are skipped while the bounded
+cursor advances; deleted or changed current membership cannot erase the
+original obligation. Missing or corrupt rosters retain the target for bounded
+retry and review. Ordinary guest scopes still cannot select checkpoint work.
+Pure accountability changes create no guest enrollment or delivery wake, and
+phone/profile edits create no checkpoint fanout. Exact check-in timestamps,
+including nanoseconds, participate in source-change detection. These signals
+refresh current evidence; they do not infer arrival or close a discrepancy.
+
+`onAssistanceWorkChanged` advances currently due saved work. The once-per-minute
+`evaluateDueEventAssistanceWork` scheduler recovers at most five roster items,
+10 source, 30 guest, 10 delivery and 10 checkpoint items per invocation; one failure does not skip
+the other selected items. Future due times remain saved until reached. All
+twenty source triggers, the direct `onAssistanceCheckpointChanged` report hook,
+the work-item trigger and scheduler are in the dormant target policy and
+cannot enter current logical or exact deployment plans. Source wiring and
+local emulator verification do not claim deployed execution or message delivery.
+
+Readiness discovery reuses the same source-job lease, checkpoint, retry and
+expiry rules. Sender changes query saved runtime route selections; endpoint
+suppression queries organizer-scoped WhatsApp permissions. Both exclude records
+already expired at the source timestamp and persist an expiry/document-id cursor
+that survives deletion. Current records are revalidated before creating an
+idempotent event/guest child wake. Discovery never creates runtime configuration,
+enrolls a guest or invokes a provider. A lost parent checkpoint reuses its child
+job. Failed lookups retain typed `targetKey` entries; event fanout retains its
+existing `workItemId` failures.
+
+Event budgets wake their event directly. Sender-day budgets use sender discovery.
+Changed budget authority or reduced conservative charges wake affected work;
+ordinary charge increases do not create a fanout for every submission. Final
+reservation/claim still rechecks the current remaining budget. Inbox frequency
+and reply counters are likewise excluded from suppression-change signals.
+Event-specific consent changes wake the exact old and new guest scope. Trigger
+snapshots grant no consent; the current permission and its receipt are re-read
+at the execution boundary. Host queue projections remain integration work.
+Activating dormant functions also requires the corresponding operating budget,
+query indexes and delivery configuration.
+
+### Durable message delivery work
+
+`event_assistance_delivery_work.schema.json` binds one immutable automatic
+message to a `message_delivery` work item and run. Publication creates those
+records atomically; no provider or signing-key access occurs in that transaction.
+Its basis binds the message, intent hash, thread, participation scope and expiry.
+Checkpoints retain the observed outbox revision/hash, bounded recovery counts,
+next due time and typed reason. They contain no guest endpoint or bearer secret.
+
+`AssistanceDeliveryWorkStore` leases one job and invokes the existing shared
+message worker at most once per execution. The outbox's claim transaction is the
+provider authority; the Operations lease fences the later checkpoint. If a worker
+loses its lease or checkpoint after submitting, the next execution observes the
+outbox's pending submission and does not submit it again. Checkpoint receipts
+record coordination progress, with zero publication/spend counters; provider
+attempts and debits remain in their owning records.
+
+Missing keys/domain facts retry at bounded delays and become review after five
+failures. Evaluations are capped at 100. Accepted/unknown submissions get one
+receipt wait of at least two minutes, bounded by expiry, then retain a review
+issue until a message change or expiry. A review item keeps its run active so a
+receipt can resolve it without an administrative resume. Completed runs/items
+remain terminal; the independent outbox accepts later evidence. No elapsed-time
+transition claims a provider failed or permits fallback by itself.
+
+The existing dormant message trigger resumes a saved delivery job; the work
+trigger selects `liveMessageDelivery` due payloads. Each scheduled batch reads
+at most ten due delivery items in addition to its roster/source/guest limits.
+Independent items continue after another item fails. Message changes are only
+wake requests: the store re-reads the canonical outbox and current authority.
+The manager-only Host delivery reader now projects recorded evidence separately
+from coordinator state. A reviewed manual handoff writes the outbox and its
+private immutable receipt; it never writes Operations items without their lease.
+The coordinator observes that handoff as `hostStopped` on the existing message
+wake. Future claims are withheld, while already-issued permits and late receipts
+retain their original authority. Completed coordination does not prove delivery.
+Provider lookup/finality, Host UI integration and terminal retention remain
+required before full activation. Signing-key requirements and
+channel controls are owned by [Event Success](event_success.md#durable-message-delivery-coordination).
+
+Source-driven delivery evaluations record one immutable wake receipt per
+signal and target. A lost source checkpoint replays that receipt without another
+evaluation or submission. Wake receipts share the work-item revision fence;
+they cannot reopen terminal work or reset recovery/attempt caps. An unchanged
+accepted/unknown submission keeps its original receipt deadline, or its existing
+review if that wait already elapsed. Consent restoration can resume an unsent
+held message, but does not prove a pending submission failed.
+
 ## Adding Another Workflow
 
-Before a second admin workflow adopts this platform:
+Event Assistance is the second registered workflow. Its initial supported
+commands evaluate a frozen array of canonical late-join inputs:
+
+```sh
+node operations/src/cli/main.mjs plan --workflow event-assistance \
+  --input /absolute/path/late-join-inputs.json --now <snapshot-ISO-time>
+node operations/src/cli/main.mjs run --plan /absolute/path/saved-plan.json
+```
+
+`--input` contains a JSON array matching
+`contracts/operations/event_assistance_late_join_input.schema.json`, with the
+same event context and evaluation time in every item. `plan` emits a JSON
+envelope that `run --plan` accepts directly. The input file is bounded at 2 MB
+and each run at 10,000 distinct guest episodes. The factory uses the generated
+JavaScript version of the canonical typed policy; it has no provider port.
+Ready items are proposed effects in a completed shadow evaluation. This path
+does not claim live scheduling, dispatch or app integration. Supply Intake's
+publication ceiling remains unchanged.
+
+Before another workflow adopts this platform:
 
 1. define its authority, stages, terminal outcomes, idempotency keys, budgets,
    receipts, and human-decision seam;

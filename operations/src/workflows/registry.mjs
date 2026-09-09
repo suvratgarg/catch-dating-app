@@ -4,6 +4,8 @@ import {
   SUPPORTED_EXECUTION_MODES,
 } from "../platform/contracts.mjs";
 import {CLI_COMMANDS} from "../platform/cli-contract.mjs";
+import {EVENT_ASSISTANCE_DEFINITION} from "./event-assistance/definition.mjs";
+import {EventAssistanceWorkflow} from "./event-assistance/workflow.mjs";
 import {SupplyIntakeLearner} from "./supply-intake/learning.mjs";
 import {
   SUPPLY_INTAKE_ENTITY_KINDS,
@@ -41,6 +43,13 @@ export const WORKFLOW_REGISTRY = Object.freeze([
     loadSourceProfiles,
     createWorkflow: (options) => new SupplyIntakeWorkflow(options),
     createLearner: (options) => new SupplyIntakeLearner(options),
+  }),
+  Object.freeze({
+    ...EVENT_ASSISTANCE_DEFINITION,
+    directory: "event-assistance",
+    sourceProfileIds: [],
+    compatibilityArtifactPatterns: [],
+    createWorkflow: (options) => new EventAssistanceWorkflow(options),
   }),
 ]);
 

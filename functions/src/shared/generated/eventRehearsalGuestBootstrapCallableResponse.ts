@@ -145,6 +145,7 @@ export interface EventRehearsalGuestBootstrapCallableResponse {
       | "disconnected"
       | "walkIn"
       | "ambiguousClaim";
+    connectionState?: "connected" | "disconnected";
     guestMoment:
       | "welcome"
       | "checkIn"
@@ -158,5 +159,56 @@ export interface EventRehearsalGuestBootstrapCallableResponse {
     optedOut: boolean;
     helpRequested: boolean;
     promptCompleted: boolean;
+    assistance?: {
+      intention:
+        | {
+            kind: "unknown";
+          }
+        | {
+            kind: "onMyWay";
+            claimedEta: number | null;
+          }
+        | {
+            kind: "joinLater";
+            target:
+              | {
+                  kind: "fixedPlace";
+                  placeId: string;
+                  lateEntry: "allowed" | "hostDecision" | "closed";
+                }
+              | {
+                  kind: "itineraryStop";
+                  itineraryId: string;
+                  stopId: string;
+                }
+              | {
+                  kind: "groupCheckpoint";
+                  routeId: string;
+                  groupId: string;
+                  checkpointId: string;
+                };
+          }
+        | {
+            kind: "notComing";
+          };
+      latestMessageId: string | null;
+    };
+    assistanceMessage?: {
+      messageId: string;
+      intentId: string;
+      intentRevision: number;
+      text: string;
+      /**
+       * @maxItems 20
+       */
+      choices: {
+        choiceId: string;
+        label: string;
+      }[];
+      lifecycle: "active" | "cancelled" | "superseded" | "responded";
+      expiresAt: number;
+      canRespond: boolean;
+      responseChoiceId: string | null;
+    } | null;
   };
 }

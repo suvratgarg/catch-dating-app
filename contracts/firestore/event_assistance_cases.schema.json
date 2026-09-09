@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_cases.schema.json",
+  "title": "EventAssistanceCaseDocument",
+  "$ref": "../shared/event_assistance_guest.schema.json#/definitions/Case",
+  "x-firestore-collection": "eventAssistanceCases",
+  "x-firestore-path": "eventAssistanceCases/{caseId}",
+  "x-document-id-field": "caseId",
+  "x-owner": "trusted event-assistance guest boundary"
+}

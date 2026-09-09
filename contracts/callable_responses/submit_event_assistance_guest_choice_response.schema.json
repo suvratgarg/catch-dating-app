@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/submit_event_assistance_guest_choice_response.schema.json",
+  "title": "SubmitEventAssistanceGuestChoiceCallableResponse",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "result",
+    "view"
+  ],
+  "properties": {
+    "result": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "accepted",
+                "replayed"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "rejected"
+            },
+            "reason": {
+              "enum": [
+                "scopeMismatch",
+                "staleIntent",
+                "invalidChoice",
+                "expired",
+                "alreadyResponded",
+                "noLongerNeeded",
+                "factsStale",
+                "guestStateChanged"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "view": {
+      "$ref": "../shared/event_assistance_guest.schema.json#/definitions/GuestView"
+    }
+  }
+}

@@ -402,6 +402,11 @@
     },
     "demoOpsCommand": {
       "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp",
+      "x-catch-ownership": "callable-owned",
+      "description": "Latest backend event mutation timestamp when supplied by its owner, including attendance aggregate updates. Legacy events may omit it."
     }
   }
 }

@@ -1,7 +1,7 @@
 ---
 doc_id: standalone_host_product_and_crm_delivery_plan
-version: 4.3.0
-updated: 2026-09-05
+version: 4.5.0
+updated: 2026-09-06
 owner: host_tooling
 status: active
 ---
@@ -1278,6 +1278,25 @@ similar. Both registries encode the audience scope, reply support and scheduling
 support explicitly so backend authorization and UI affordances cannot infer
 them from the transport.
 
+Automatic event-service delivery now has three explicit route contracts:
+`catchEventSms`, `catchEventRcs`, and `organizerEventWhatsapp`. The first two
+use an accurately identified Catch sender; WhatsApp uses the organizer's
+connection. All require event-service authority for the particular recipient
+and event, rather than inheriting campaign or follow permission. This sender
+configuration is the initial implementation assumption; provider onboarding
+must verify the actual registered sender and delegated event-service authority.
+
+These routes currently have contracts, delivery-policy code and a private
+durable outbox. Provider adapters, the guest response page, trusted scheduling
+and Host setup/readiness integration remain pending. The outbox alone does not
+send messages. Their presence in the registry must not be shown
+as a connected or usable sender. `supportsReplies` describes native replies:
+SMS is false until a particular sender supports inbound messages; its planned
+response path is the scoped guest webpage. Arbitrary host scheduling remains
+false for these routes. Automatic event-assistance controls belong to event
+setup/readiness, with their own source-backed availability, rather than the
+manual campaign composer.
+
 | Route | Transport and sender | Delivery and audience | Permission | Evidence and replies | Host entry and current status |
 | --- | --- | --- | --- | --- | --- |
 | Personal WhatsApp handoff | WhatsApp app; Host's personal/device account | One Customer with a valid phone; editable prefilled text; Host presses Send | Direct Host action and independent lawful/service basis; explicit opt-out or admin suppression blocks the action; not campaign consent | Catch observes only whether the native app scheme or universal fallback launched, not Send/delivery/read/reply; replies remain in WhatsApp | Customer detail → **WhatsApp app · You**; unavailable state remains visible with its exact phone, suppression, or opt-out blocker; **Implemented** |
@@ -1292,8 +1311,9 @@ composer or its exact readiness explanation. The picker groups delivery inside
 Catch separately from WhatsApp, while every row repeats the exact sender and
 audience semantics. History rows repeat the route label. Unavailable routes
 remain explanatory page content with the owning entry point, not disabled
-commands in an overflow menu. A widget contract requires every registered route
-to appear once, so future market adapters cannot be added invisibly.
+commands in an overflow menu. Every manual-composer route must appear once;
+automatic event-service routes must instead be accounted for in the owning
+event-assistance setup/readiness surface when that integration is delivered.
 
 All server-managed Host outbound free text is moderated before persistence or
 provider handoff: event announcements, follower updates, organizer WhatsApp

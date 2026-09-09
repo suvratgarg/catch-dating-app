@@ -1,0 +1,1132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_rehearsal_assistance.schema.json",
+  "title": "Rehearsal assistance definitions",
+  "description": "Typed virtual outreach commands and scoped guest effects. No live sender binding is accepted.",
+  "definitions": {
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy",
+        "guidance",
+        "departureConfirmed",
+        "responseDeadline",
+        "routes",
+        "deliveryPolicy"
+      ],
+      "properties": {
+        "policy": {
+          "$ref": "event_assistance_common.schema.json#/definitions/LateJoinPolicy"
+        },
+        "guidance": {
+          "$ref": "event_assistance_common.schema.json#/definitions/JoiningGuidance"
+        },
+        "departureConfirmed": {
+          "type": "boolean"
+        },
+        "responseDeadline": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "routes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "event_assistance_messaging.schema.json#/definitions/EventServiceRouteId"
+          }
+        },
+        "deliveryPolicy": {
+          "$ref": "event_assistance_messaging.schema.json#/definitions/MessageIntent/oneOf/0/properties/deliveryPolicy"
+        },
+        "laterChoices": {
+          "type": "array",
+          "maxItems": 17,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "label",
+              "target"
+            ],
+            "properties": {
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "target": {
+                "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
+              }
+            }
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "policy": {
+            "properties": {
+              "unanswered": {
+                "const": "hostReviewAtDeadline"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "responseDeadline": {
+            "type": "integer"
+          }
+        }
+      }
+    },
+    "outcome": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "enum": [
+                "accepted",
+                "delivered",
+                "read",
+                "revoked"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "classification"
+          ],
+          "properties": {
+            "kind": {
+              "const": "failed"
+            },
+            "classification": {
+              "type": "string",
+              "enum": [
+                "technical",
+                "policy",
+                "suppressed",
+                "invalidRecipient"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "unknown"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "timeout",
+                "connectionLost",
+                "workerInterrupted"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intention",
+        "latestMessageId"
+      ],
+      "properties": {
+        "intention": {
+          "$ref": "event_assistance_common.schema.json#/definitions/JoinIntent"
+        },
+        "latestMessageId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^outbox:[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "command": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "plan"
+          ],
+          "properties": {
+            "kind": {
+              "const": "publish"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "plan": {
+              "$ref": "#/definitions/plan"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "messageId",
+            "outcome"
+          ],
+          "properties": {
+            "kind": {
+              "const": "dispatch"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^outbox:[a-f0-9]{64}$"
+            },
+            "outcome": {
+              "$ref": "#/definitions/outcome"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "messageId",
+            "attemptId",
+            "outcome"
+          ],
+          "properties": {
+            "kind": {
+              "const": "receipt"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "messageId": {
+              "type": "string",
+              "pattern": "^outbox:[a-f0-9]{64}$"
+            },
+            "attemptId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160
+            },
+            "outcome": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "accepted",
+                        "delivered",
+                        "read",
+                        "revoked"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "classification"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "failed"
+                    },
+                    "classification": {
+                      "type": "string",
+                      "enum": [
+                        "technical",
+                        "policy",
+                        "suppressed",
+                        "invalidRecipient"
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "plan",
+            "outcomes"
+          ],
+          "properties": {
+            "kind": {
+              "const": "configureAutomation"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "plan": {
+              "$ref": "#/definitions/plan"
+            },
+            "outcomes": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 6,
+              "items": {
+                "$ref": "#/definitions/outcome"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "pauseAutomation"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resumeAutomation"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resolveAssistance"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "payload": {
+              "$ref": "event_assistance_common.schema.json#/definitions/ResolveAssistanceCommand/properties/payload"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "payload",
+            "expectedMessageRevision",
+            "expectedReviewHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "repairDelivery"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "payload": {
+              "allOf": [
+                {
+                  "$ref": "event_assistance_common.schema.json#/definitions/RepairDeliveryCommand/properties/payload"
+                },
+                {
+                  "properties": {
+                    "deliveryId": {
+                      "type": "string",
+                      "pattern": "^outbox:[a-f0-9]{64}$"
+                    }
+                  }
+                }
+              ]
+            },
+            "expectedMessageRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expectedReviewHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "$ref": "event_rehearsal_accountability.schema.json#/definitions/command"
+        },
+        {
+          "$ref": "event_rehearsal_membership.schema.json#/definitions/command"
+        }
+      ],
+      "type": "object"
+    },
+    "view": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "messageId",
+        "intentId",
+        "intentRevision",
+        "text",
+        "choices",
+        "lifecycle",
+        "expiresAt",
+        "canRespond",
+        "responseChoiceId"
+      ],
+      "properties": {
+        "messageId": {
+          "type": "string",
+          "pattern": "^outbox:[a-f0-9]{64}$"
+        },
+        "intentId": {
+          "type": "string"
+        },
+        "intentRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "choices": {
+          "type": "array",
+          "maxItems": 20,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "choiceId",
+              "label"
+            ],
+            "properties": {
+              "choiceId": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 80
+              }
+            }
+          }
+        },
+        "lifecycle": {
+          "type": "string",
+          "enum": [
+            "active",
+            "cancelled",
+            "superseded",
+            "responded"
+          ]
+        },
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "canRespond": {
+          "type": "boolean"
+        },
+        "responseChoiceId": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "deliveryView": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "conflictingEvidence",
+        "attempts"
+      ],
+      "properties": {
+        "conflictingEvidence": {
+          "type": "boolean"
+        },
+        "attempts": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "attemptId",
+              "routeId",
+              "status"
+            ],
+            "properties": {
+              "attemptId": {
+                "type": "string"
+              },
+              "routeId": {
+                "$ref": "event_assistance_messaging.schema.json#/definitions/EventServiceRouteId"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "notDispatched",
+                  "reserved",
+                  "unknown",
+                  "accepted",
+                  "delivered",
+                  "read",
+                  "failed",
+                  "revoked"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "automationDelivery": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "paused"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "notApplicable"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind"
+          ],
+          "properties": {
+            "kind": {
+              "const": "scriptExhausted"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "stop"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "responded",
+                "cancelled",
+                "superseded",
+                "expired",
+                "eventClosed",
+                "permissionRevoked",
+                "guestPresent",
+                "guestDeclined",
+                "notAdmitted",
+                "hostStopped",
+                "participationInactive"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attemptIds"
+          ],
+          "properties": {
+            "kind": {
+              "const": "delivered"
+            },
+            "attemptIds": {
+              "type": "array",
+              "maxItems": 6,
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "attemptIds",
+            "notBefore"
+          ],
+          "properties": {
+            "kind": {
+              "const": "reconcile"
+            },
+            "attemptIds": {
+              "type": "array",
+              "maxItems": 6,
+              "items": {
+                "type": "string"
+              }
+            },
+            "notBefore": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "refreshFacts"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "eventFactsStale",
+                "routeFactsStale"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "notBefore",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "wait"
+            },
+            "notBefore": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "const": "retryBackoff"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "const": "hostDecision"
+            },
+            "reason": {
+              "type": "string",
+              "enum": [
+                "noEligibleRoute",
+                "attemptLimit",
+                "policyRejected",
+                "recipientNeedsReview",
+                "providerOwnsFallback",
+                "conflictingDeliveryEvidence",
+                "historyUnavailable"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "automationEvaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "at",
+        "policy",
+        "delivery"
+      ],
+      "properties": {
+        "at": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "policy": {
+          "anyOf": [
+            {
+              "$ref": "event_assistance_common.schema.json#/definitions/LateJoinEvaluation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "delivery": {
+          "$ref": "#/definitions/automationDelivery"
+        }
+      }
+    },
+    "automation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "status",
+        "plan",
+        "outcomes",
+        "nextOutcomeIndex",
+        "evaluation"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "enabled",
+            "paused"
+          ]
+        },
+        "plan": {
+          "$ref": "#/definitions/plan"
+        },
+        "outcomes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": {
+            "$ref": "#/definitions/outcome"
+          }
+        },
+        "nextOutcomeIndex": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "evaluation": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/automationEvaluation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "helpCase": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "sessionId",
+            "actorId",
+            "clockId",
+            "source",
+            "category",
+            "receivedAt",
+            "status",
+            "handling"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "pattern": "^practice-case:[a-f0-9]{64}$",
+              "x-catch-ownership": "server-only"
+            },
+            "sessionId": {
+              "$ref": "event_common.schema.json#/definitions/documentId",
+              "x-catch-ownership": "server-only"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId",
+              "x-catch-ownership": "server-only"
+            },
+            "clockId": {
+              "type": "string",
+              "pattern": "^clock:[a-f0-9]{64}$",
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "actionId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "guestAction"
+                    },
+                    "actionId": {
+                      "$ref": "event_common.schema.json#/definitions/documentId",
+                      "x-catch-ownership": "server-only"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "messageId",
+                    "responseId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "messageResponse"
+                    },
+                    "messageId": {
+                      "type": "string",
+                      "pattern": "^outbox:[a-f0-9]{64}$"
+                    },
+                    "responseId": {
+                      "$ref": "event_common.schema.json#/definitions/documentId",
+                      "x-catch-ownership": "server-only"
+                    }
+                  }
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "category": {
+              "enum": [
+                "eventLogistics",
+                "accessibility",
+                "other"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "receivedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "x-catch-ownership": "server-only"
+            },
+            "status": {
+              "const": "open",
+              "x-catch-ownership": "server-only"
+            },
+            "handling": {
+              "$ref": "event_assistance_cases.schema.json#/definitions/OpenHandling",
+              "x-catch-ownership": "server-only"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "caseId",
+            "sessionId",
+            "actorId",
+            "clockId",
+            "source",
+            "category",
+            "receivedAt",
+            "status",
+            "handling"
+          ],
+          "properties": {
+            "caseId": {
+              "type": "string",
+              "pattern": "^practice-case:[a-f0-9]{64}$",
+              "x-catch-ownership": "server-only"
+            },
+            "sessionId": {
+              "$ref": "event_common.schema.json#/definitions/documentId",
+              "x-catch-ownership": "server-only"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId",
+              "x-catch-ownership": "server-only"
+            },
+            "clockId": {
+              "type": "string",
+              "pattern": "^clock:[a-f0-9]{64}$",
+              "x-catch-ownership": "server-only"
+            },
+            "source": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "actionId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "guestAction"
+                    },
+                    "actionId": {
+                      "$ref": "event_common.schema.json#/definitions/documentId",
+                      "x-catch-ownership": "server-only"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "messageId",
+                    "responseId"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "messageResponse"
+                    },
+                    "messageId": {
+                      "type": "string",
+                      "pattern": "^outbox:[a-f0-9]{64}$"
+                    },
+                    "responseId": {
+                      "$ref": "event_common.schema.json#/definitions/documentId",
+                      "x-catch-ownership": "server-only"
+                    }
+                  }
+                }
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "category": {
+              "enum": [
+                "eventLogistics",
+                "accessibility",
+                "other"
+              ],
+              "x-catch-ownership": "server-only"
+            },
+            "receivedAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991,
+              "x-catch-ownership": "server-only"
+            },
+            "status": {
+              "const": "resolved",
+              "x-catch-ownership": "server-only"
+            },
+            "handling": {
+              "$ref": "event_assistance_cases.schema.json#/definitions/ResolvedHandling",
+              "x-catch-ownership": "server-only"
+            }
+          }
+        }
+      ]
+    },
+    "helpRequests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "coverage",
+        "cases",
+        "untrackedActorIds"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "coverage": {
+          "const": "boundedSession"
+        },
+        "cases": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "$ref": "event_assistance_cases.schema.json#/definitions/View"
+          }
+        },
+        "untrackedActorIds": {
+          "type": "array",
+          "maxItems": 50,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "event_common.schema.json#/definitions/documentId"
+          }
+        }
+      }
+    },
+    "deliveryReviews": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "coverage",
+        "deliveries"
+      ],
+      "properties": {
+        "context": {
+          "allOf": [
+            {
+              "$ref": "event_assistance_common.schema.json#/definitions/ExecutionContext"
+            },
+            {
+              "properties": {
+                "mode": {
+                  "const": "rehearsal"
+                }
+              }
+            }
+          ]
+        },
+        "coverage": {
+          "const": "currentActorMessages"
+        },
+        "deliveries": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "event_assistance_delivery_review.schema.json#/definitions/View"
+              },
+              {
+                "properties": {
+                  "availability": {
+                    "const": "current"
+                  },
+                  "purpose": {
+                    "const": "joiningUpdate"
+                  },
+                  "coordination": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "untracked"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  }
+}

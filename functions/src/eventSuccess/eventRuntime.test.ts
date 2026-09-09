@@ -417,6 +417,7 @@ test("bootstrap returns bounded event and own state", async () => {
     optionalFieldIds: [],
     questionnaireConfig: null,
   });
+  assert.equal(result.participant?.eventAttendeeId, "attendee-1");
   assert.equal(result.participant?.attendanceStatus, "checkedIn");
   assert.equal(result.participant?.eventId, "event-1");
   assert.equal(result.participant?.clubId, "organizer-1");
