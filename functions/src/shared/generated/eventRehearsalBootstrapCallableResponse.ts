@@ -668,4 +668,177 @@ export interface EventRehearsalBootstrapCallableResponse {
      */
     untrackedActorIds: string[];
   };
+  deliveryReviews?: {
+    context: (
+      | {
+          mode: "live";
+          eventId: string;
+          organizerId: string;
+        }
+      | {
+          mode: "rehearsal";
+          rehearsalId: string;
+          virtualEventId: string;
+          clockId: string;
+        }
+    ) & {
+      mode?: "rehearsal";
+      [k: string]: unknown;
+    };
+    coverage: "currentActorMessages";
+    /**
+     * @maxItems 50
+     */
+    deliveries: ((
+      | {
+          messageId: string;
+          revision: number;
+          reviewHash: string;
+          createdAt: number;
+          expiresAt: number;
+          lifecycle: "active" | "cancelled" | "superseded" | "responded";
+          deliveryStatus:
+            | "notSubmitted"
+            | "reserved"
+            | "unknown"
+            | "accepted"
+            | "delivered"
+            | "read"
+            | "failed"
+            | "notDispatched"
+            | "conflictingEvidence"
+            | "revoked";
+          /**
+           * @maxItems 6
+           */
+          attempts: {
+            channel: "sms" | "whatsapp" | "rcs";
+            state:
+              | "reserved"
+              | "unknown"
+              | "accepted"
+              | "delivered"
+              | "read"
+              | "failed"
+              | "notDispatched"
+              | "revoked";
+            at: number;
+          }[];
+          coordination:
+            | {
+                kind: "untracked";
+              }
+            | {
+                kind: "tracked";
+                phase: "queued" | "retry" | "receipt" | "review" | "complete";
+                reason: string | null;
+                dueAt: number | null;
+              };
+          handling:
+            | {
+                kind: "automatic";
+              }
+            | {
+                kind: "manual";
+                actorUid: string;
+                at: number;
+                authority: "current" | "revoked";
+              };
+          availability: "current";
+          attendeeId: string;
+          /**
+           * @maxItems 1
+           */
+          actions: "manualHandoff"[];
+          purpose:
+            | "joiningUpdate"
+            | "joiningInstructions"
+            | "planChanged"
+            | "guestRequirement"
+            | "assignmentChanged"
+            | "participationCheck"
+            | "eventCancelled"
+            | "eventFinished"
+            | "followUp";
+        }
+      | {
+          messageId: string;
+          revision: number;
+          reviewHash: string;
+          createdAt: number;
+          expiresAt: number;
+          lifecycle: "active" | "cancelled" | "superseded" | "responded";
+          deliveryStatus:
+            | "notSubmitted"
+            | "reserved"
+            | "unknown"
+            | "accepted"
+            | "delivered"
+            | "read"
+            | "failed"
+            | "notDispatched"
+            | "conflictingEvidence"
+            | "revoked";
+          /**
+           * @maxItems 6
+           */
+          attempts: {
+            channel: "sms" | "whatsapp" | "rcs";
+            state:
+              | "reserved"
+              | "unknown"
+              | "accepted"
+              | "delivered"
+              | "read"
+              | "failed"
+              | "notDispatched"
+              | "revoked";
+            at: number;
+          }[];
+          coordination:
+            | {
+                kind: "untracked";
+              }
+            | {
+                kind: "tracked";
+                phase: "queued" | "retry" | "receipt" | "review" | "complete";
+                reason: string | null;
+                dueAt: number | null;
+              };
+          handling:
+            | {
+                kind: "automatic";
+              }
+            | {
+                kind: "manual";
+                actorUid: string;
+                at: number;
+                authority: "current" | "revoked";
+              };
+          availability: "sourceChanged";
+          attendeeId: null;
+          /**
+           * @maxItems 0
+           */
+          actions: "manualHandoff"[];
+          purpose:
+            | "joiningUpdate"
+            | "joiningInstructions"
+            | "planChanged"
+            | "guestRequirement"
+            | "assignmentChanged"
+            | "participationCheck"
+            | "eventCancelled"
+            | "eventFinished"
+            | "followUp";
+        }
+    ) & {
+      availability?: "current";
+      purpose?: "joiningUpdate";
+      coordination?: {
+        kind: "untracked";
+      };
+      [k: string]: unknown;
+    })[];
+  };
 }

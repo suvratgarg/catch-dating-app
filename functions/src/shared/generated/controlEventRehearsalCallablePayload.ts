@@ -334,6 +334,19 @@ export interface ControlEventRehearsalCallablePayload {
           expectedRevision: number;
         };
         expectedSourceHash: string;
+      }
+    | {
+        kind: "repairDelivery";
+        actorId: string;
+        payload: {
+          deliveryId: string;
+          action: "reconcile" | "retryDefiniteFailure" | "manualHandoff";
+        } & {
+          deliveryId?: string;
+          [k: string]: unknown;
+        };
+        expectedMessageRevision: number;
+        expectedReviewHash: string;
       };
   expectedSetupRevision?: number;
 }

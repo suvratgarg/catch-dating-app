@@ -31,6 +31,31 @@
     "record": {
       "$ref": "event_assistance_messages.schema.json",
       "x-catch-ownership": "server-only"
+    },
+    "handoff": {
+      "$ref": "../shared/event_assistance_delivery_review.schema.json#/definitions/Handoff",
+      "x-catch-ownership": "server-only"
     }
-  }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "record": {
+          "properties": {
+            "intent": {
+              "properties": {
+                "context": {
+                  "properties": {
+                    "mode": {
+                      "const": "rehearsal"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

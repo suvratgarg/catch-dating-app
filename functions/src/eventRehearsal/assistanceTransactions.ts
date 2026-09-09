@@ -8,18 +8,20 @@ import type {ControlEventRehearsalCallablePayload} from
 import {operationContentHash as hash} from "../operations/durableActions";
 import {MAX_LATE_JOIN_HISTORY} from
   "../eventSuccess/operations/lateJoinHistoryProjection";
-import {dispatchRehearsalMessage, recordRehearsalMessageOutcome,
+import {recordRehearsalMessageOutcome,
   respondToRehearsalMessage} from "./assistanceMessages";
 import {practiceContext, practiceEpisode, practiceFacts,
   practiceMessageDocumentId, practiceState, publishPracticeMessage,
   readPracticeMessage, rehearsalMessages, PracticeMessage,
-  PracticeHistoryUnavailable} from "./assistanceRuntime";
+  PracticeHistoryUnavailable, dispatchPracticeMessage} from
+  "./assistanceRuntime";
 import {configurePracticeAutomation, evaluatePracticeAutomation,
   pausePracticeAutomation, unavailablePracticeAutomation,
   PracticeAutomationResult} from "./assistanceAutomation";
 
 import {preparePracticeHelp, resolvePracticeHelp, PracticeCaseAuthority} from
   "./assistanceCases";
+import {repairPracticeDelivery} from "./assistanceDelivery";
 
 export type PracticeCommand = NonNullable<
   ControlEventRehearsalCallablePayload["assistance"]>;
@@ -95,7 +97,7 @@ export async function applyPracticeAutomations(db: Firestore, tx: Transaction,
 /** Called before any writes in the existing Host rehearsal transaction. */
 export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
   session: Session, actor: Actor, command: PracticeCommand,
-  authority?: PracticeCaseAuthority): Promise<Actor> {
+  authority?: PracticeCaseAuthority & {operationId?: string}): Promise<Actor> {
   if (command.actorId !== actor.actorId ||
       (!(["running", "paused"].includes(session.status)) &&
         !(["receipt", "resolveAssistance"].includes(command.kind) &&
@@ -116,7 +118,21 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
   }
   const history = await readHistory(db, tx, session, actor);
   let next: PracticeAutomationResult;
-  if (command.kind === "configureAutomation") {
+  if (command.kind === "repairDelivery") {
+    if (!authority?.operationId) {
+      throw new HttpsError("permission-denied",
+        "Current Host authority and operation identity are required.");
+    }
+    const message = history.find((m) =>
+      m.record.messageId === command.payload.deliveryId);
+    if (!message) {
+      throw new HttpsError("not-found", "Practice message not found.");
+    }
+    const updated = repairPracticeDelivery(session, actor, message, command,
+      authority.organizer, authority.actorUid, authority.operationId);
+    next = evaluatePracticeAutomation(session, actor,
+      history.map((m) => m === message ? updated : m));
+  } else if (command.kind === "configureAutomation") {
     next = configurePracticeAutomation(session, actor, command.plan,
       command.outcomes, history);
   } else if (command.kind === "resumeAutomation") {
@@ -148,13 +164,13 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
     }
     const context = practiceContext(session, actor);
     const now = session.virtualNow.toMillis();
-    const result = command.kind === "dispatch" ? dispatchRehearsalMessage({
-      context, record: message.record, now, outcome: command.outcome,
-      facts: practiceFacts(session, actor, message, history)}) :
+    const result = command.kind === "dispatch" ? dispatchPracticeMessage(
+      session, actor, message, history, command.outcome) :
       recordRehearsalMessageOutcome({context, record: message.record,
         now, attemptId: command.attemptId, outcome: command.outcome});
     const messages = history.map((m) => m === message ?
-      {...message, record: result.record} : m);
+      readPracticeMessage({...message, record: result.record},
+        session, actor) : m);
     next = command.kind === "dispatch" ?
       {actor: pausePracticeAutomation(session, actor), messages} :
       evaluatePracticeAutomation(session, actor, messages);
@@ -211,7 +227,8 @@ export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
         responseId: result.result.response.responseId}, effect.category) :
     null;
   const messages = history.map((m) => m === message ?
-    {...message, record: result.record} : m);
+    readPracticeMessage({...message, record: result.record},
+      session, actor) : m);
   const next = evaluatePracticeAutomation(session,
     help?.actor ?? changedActor, messages);
   persistMessages(db, tx, session, next.actor, history, next.messages);

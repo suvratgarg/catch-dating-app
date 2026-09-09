@@ -13,10 +13,11 @@ import {destinationAllowed, evaluateLateJoin, parseLateJoinInput} from
   "../eventSuccess/operations/lateJoin";
 import {projectLateJoinMessageHistory} from
   "../eventSuccess/operations/lateJoinHistoryProjection";
-import {newMessageRecord, parseMessageRecord, OutboxFacts} from
+import {evaluateOutbox, newMessageRecord, parseMessageRecord, OutboxFacts} from
   "../eventSuccess/operations/messageOutbox";
 import {parseMessageIntent} from "../eventSuccess/operations/messageProtocol";
-import {prepareRehearsalLateJoin} from "./assistanceMessages";
+import {dispatchRehearsalMessage, prepareRehearsalLateJoin,
+  RehearsalMessageOutcome} from "./assistanceMessages";
 
 export type {PracticeMessage};
 export type PracticePlan = PracticeMessage["plan"];
@@ -101,6 +102,11 @@ export function readPracticeMessage(value: unknown, session: Session,
       "Practice message is too large.");
   }
   const record = parseMessageRecord(value.record);
+  if (value.handoff && (record.revision < 1 ||
+      value.handoff.at < record.createdAt ||
+      value.handoff.at > record.updatedAt)) {
+    fail("Invalid practice handoff evidence.");
+  }
   const context = practiceContext(session, actor);
   const intent = record.intent;
   if (value.sessionId !== actor.sessionId || value.actorId !== actor.actorId ||
@@ -156,9 +162,8 @@ export function publishPracticeMessage(session: Session, actor: Actor,
     hash([{...base, createdAt: 0}, plan])});
   const record = newMessageRecord(intent, now);
   const existing = history.find((m) => m.record.messageId === record.messageId);
-  const message: PracticeMessage = existing ?? {sessionId: actor.sessionId,
-    actorId: actor.actorId, plan, record};
-  readPracticeMessage(message, session, actor);
+  const message = readPracticeMessage(existing ?? {sessionId: actor.sessionId,
+    actorId: actor.actorId, plan, record}, session, actor);
   return {message, exists: Boolean(existing), actor: {...actor,
     assistance: {...practiceState(actor), latestMessageId: record.messageId}}};
 }
@@ -188,6 +193,29 @@ export function practiceFacts(session: Session, actor: Actor,
     kind: "eligible", checkedAt: input.now, validUntil,
     permissionRevision: "simulation", candidate: {mode: "rehearsal",
       routeId}}}))};
+}
+
+/** Manual ownership stops attempts; the reply gate remains independent. */
+export function practiceDeliveryDecision(message: PracticeMessage,
+  facts: OutboxFacts, now: number): ReturnType<typeof evaluateOutbox> {
+  return message.handoff ? {kind: "stop", reason: "hostStopped"} :
+    evaluateOutbox(message.record, facts, now);
+}
+
+export function dispatchPracticeMessage(session: Session, actor: Actor,
+  message: PracticeMessage, history: readonly PracticeMessage[],
+  outcome: RehearsalMessageOutcome) {
+  readPracticeMessage(message, session, actor);
+  if (message.handoff) {
+    return {record: message.record,
+      decision: {kind: "stop" as const, reason: "hostStopped" as const}};
+  }
+  const facts = practiceFacts(session, actor, message, history);
+  const now = session.virtualNow.toMillis();
+  const decision = practiceDeliveryDecision(message, facts, now);
+  if (decision.kind !== "dispatch") return {record: message.record, decision};
+  return dispatchRehearsalMessage({context: practiceContext(session, actor),
+    record: message.record, facts, now, outcome});
 }
 
 export function practiceMessageView(session: Session, actor: Actor,

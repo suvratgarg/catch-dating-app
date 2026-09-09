@@ -14,6 +14,10 @@ import {sameMessageContext} from "./messagingPolicy";
 import {MessageRecord, parseMessageRecord} from "./messageOutbox";
 import {assertDeliveryMessage, readDeliveryWorkRecords} from
   "./deliveryWorkRecords";
+import {hostDeliveryStatus, manualDeliveryActions} from
+  "./deliveryReviewPolicy";
+
+export {hostDeliveryStatus} from "./deliveryReviewPolicy";
 
 export type HostDeliveryView = Response["deliveries"][number];
 export type DeliveryCoordination = ReturnType<typeof readDeliveryWorkRecords>;
@@ -27,18 +31,6 @@ export function parseHostDelivery(value: unknown, id: string,
     throw invalidSource();
   }
   return record;
-}
-
-/** Pending submissions outrank failures on other routes. */
-export function hostDeliveryStatus(message: MessageRecord):
-  HostDeliveryView["deliveryStatus"] {
-  if (message.deliveryConflict) return "conflictingEvidence";
-  const states = message.attempts.map((a) => a.state.kind);
-  for (const state of ["read", "delivered", "unknown", "accepted",
-    "reserved"] as const) {
-    if (states.includes(state)) return state;
-  }
-  return message.attempts.at(-1)?.state.kind ?? "notSubmitted";
 }
 
 /** A host review never exposes routes, recipient endpoints or bearer links. */
@@ -97,9 +89,6 @@ export function projectHostDelivery(message: MessageRecord,
     (intent.kind !== "joiningUpdate" ||
       (source.attendeeStatus !== "checkedIn" &&
         guest.intention.kind !== "notComing"));
-  const resolved = message.response !== null ||
-    message.attempts.some((a) =>
-      a.state.kind === "read" || a.state.kind === "delivered");
   return {...common, availability: "current", attendeeId: intent.attendeeId,
-    actions: relevant && !resolved && !ownerCurrent ? ["manualHandoff"] : []};
+    actions: manualDeliveryActions(message, relevant, ownerCurrent)};
 }

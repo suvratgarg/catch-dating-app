@@ -3705,5 +3705,55 @@ const schemaEventRehearsalMessageDocumentSchema = <String, Object?>{
       ],
       'x-catch-ownership': 'server-only',
     },
+    'handoff': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'actorUid',
+        'at',
+        'operationId',
+      ],
+      'properties': <String, Object?>{
+        'actorUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'at': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'operationId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
   },
+  'allOf': <Object?>[
+    <String, Object?>{
+      'properties': <String, Object?>{
+        'record': <String, Object?>{
+          'properties': <String, Object?>{
+            'intent': <String, Object?>{
+              'properties': <String, Object?>{
+                'context': <String, Object?>{
+                  'properties': <String, Object?>{
+                    'mode': <String, Object?>{
+                      'const': 'rehearsal',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  ],
 };

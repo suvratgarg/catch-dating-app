@@ -4,12 +4,12 @@ import type {EventRehearsalDocument as Session,
   "../shared/generated/firestoreAdminTypes";
 import {operationContentHash as hash} from "../operations/durableActions";
 import {evaluateLateJoin} from "../eventSuccess/operations/lateJoin";
-import {evaluateOutbox, parseMessageRecord} from
+import {parseMessageRecord} from
   "../eventSuccess/operations/messageOutbox";
-import {dispatchRehearsalMessage} from "./assistanceMessages";
 import {PracticeHistoryUnavailable, PracticeMessage, PracticePlan,
   practiceContext, practiceFacts, practiceInput, practiceState,
-  publishPracticeMessage, requirePracticePlan} from "./assistanceRuntime";
+  publishPracticeMessage, requirePracticePlan, dispatchPracticeMessage,
+  practiceDeliveryDecision, readPracticeMessage} from "./assistanceRuntime";
 
 type Automation = NonNullable<Actor["assistanceAutomation"]>;
 type Evaluation = NonNullable<Automation["evaluation"]>;
@@ -33,7 +33,7 @@ export function configurePracticeAutomation(session: Session, actor: Actor,
   const previous = messages.find((m) => m.record.messageId === currentId);
   if (previous && hash(previous.plan) !== hash(plan)) {
     messages = messages.map((message) => message === previous ?
-      closeMessage(session, message, "superseded") : message);
+      closeMessage(session, actor, message, "superseded") : message);
     nextActor = {...actor, assistance: {...practiceState(actor),
       latestMessageId: null}};
   }
@@ -77,6 +77,14 @@ export function evaluatePracticeAutomation(session: Session, actor: Actor,
       // An independently published instruction owns the page until reviewed.
       return {actor: pausePracticeAutomation(session, actor), messages};
     }
+    if (message?.handoff) {
+      readPracticeMessage(message, session, actor);
+      // Receipt conflicts stay visible in delivery evidence; ownership still
+      // stops this message before policy history can request another action.
+      return {actor: {...actor, assistanceAutomation: {...automation,
+        evaluation: {at: now, policy: null,
+          delivery: {kind: "stop", reason: "hostStopped"}}}}, messages};
+    }
     let policy = evaluateLateJoin(practiceInput(session, actor,
       automation.plan, messages, message));
     if (!message && policy.kind === "update") {
@@ -94,27 +102,28 @@ export function evaluatePracticeAutomation(session: Session, actor: Actor,
       const terminal = ["resolved", "cancelled", "expired"].includes(
         policy.kind) || now >= message.record.intent.expiresAt;
       if (terminal) {
-        message = closeMessage(session, message, "cancelled");
+        message = closeMessage(session, nextActor, message, "cancelled");
         messages = replace(messages, message);
       }
       const facts = practiceFacts(session, nextActor, message, messages);
-      const decision = evaluateOutbox(message.record, facts, now);
+      const decision = practiceDeliveryDecision(message, facts, now);
       if (decision.kind === "dispatch") {
         const outcome = automation.outcomes[consumed];
         if (!outcome) {
           delivery = {kind: "scriptExhausted"};
         } else {
-          const result = dispatchRehearsalMessage({record: message.record,
-            context: practiceContext(session, actor), facts, now, outcome});
+          const result = dispatchPracticeMessage(session, nextActor,
+            message, messages, outcome);
           if (result.decision.kind !== "dispatch" ||
               result.record.attempts.length !==
                 message.record.attempts.length + 1) {
             throw new Error("Practice dispatch decision drift");
           }
-          message = {...message, record: result.record};
+          message = readPracticeMessage({...message, record: result.record},
+            session, nextActor);
           messages = replace(messages, message);
           consumed++;
-          const after = evaluateOutbox(message.record,
+          const after = practiceDeliveryDecision(message,
             practiceFacts(session, nextActor, message, messages), now);
           if (after.kind === "dispatch") {
             throw new Error("Duplicate practice dispatch at the same instant");
@@ -150,10 +159,11 @@ function replace(messages: PracticeMessage[], message: PracticeMessage) {
     message : m);
 }
 
-function closeMessage(session: Session, message: PracticeMessage,
+function closeMessage(session: Session, actor: Actor, message: PracticeMessage,
   lifecycle: "cancelled" | "superseded"): PracticeMessage {
   if (message.record.lifecycle !== "active") return message;
-  return {...message, record: parseMessageRecord({...message.record, lifecycle,
-    updatedAt: session.virtualNow.toMillis(),
-    revision: message.record.revision + 1})};
+  return readPracticeMessage({...message,
+    record: parseMessageRecord({...message.record, lifecycle,
+      updatedAt: session.virtualNow.toMillis(),
+      revision: message.record.revision + 1})}, session, actor);
 }

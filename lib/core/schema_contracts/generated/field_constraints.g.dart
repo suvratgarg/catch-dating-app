@@ -31218,6 +31218,28 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['boolean'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseDeliveryReviewsContext = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.deliveryReviews.context',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseDeliveryReviewsCoverage = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.deliveryReviews.coverage',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseDeliveryReviewsDeliveries = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.deliveryReviews.deliveries',
+    required: true,
+    valueTypes: <String>['array'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseDeliveryReviewsDeliveriesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.deliveryReviews.deliveries.items',
+    required: true,
+  );
+
   static const eventRehearsalBootstrapCallableResponseGuestUrl = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.guestUrl',
     maxLength: 500,
@@ -33134,6 +33156,32 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMessageDocumentHandoffActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.handoff.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMessageDocumentHandoffAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.handoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMessageDocumentHandoffOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.handoff.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const eventRehearsalMessageDocumentPlanDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
@@ -88861,6 +88909,10 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.actors.items.promptCompleted': eventRehearsalBootstrapCallableResponseActorsItemsPromptCompleted,
     'eventRehearsalBootstrapCallableResponse.actors.items.status': eventRehearsalBootstrapCallableResponseActorsItemsStatus,
     'eventRehearsalBootstrapCallableResponse.canUseInternalFaults': eventRehearsalBootstrapCallableResponseCanUseInternalFaults,
+    'eventRehearsalBootstrapCallableResponse.deliveryReviews.context': eventRehearsalBootstrapCallableResponseDeliveryReviewsContext,
+    'eventRehearsalBootstrapCallableResponse.deliveryReviews.coverage': eventRehearsalBootstrapCallableResponseDeliveryReviewsCoverage,
+    'eventRehearsalBootstrapCallableResponse.deliveryReviews.deliveries': eventRehearsalBootstrapCallableResponseDeliveryReviewsDeliveries,
+    'eventRehearsalBootstrapCallableResponse.deliveryReviews.deliveries.items': eventRehearsalBootstrapCallableResponseDeliveryReviewsDeliveriesItems,
     'eventRehearsalBootstrapCallableResponse.guestUrl': eventRehearsalBootstrapCallableResponseGuestUrl,
     'eventRehearsalBootstrapCallableResponse.helpRequests.cases': eventRehearsalBootstrapCallableResponseHelpRequestsCases,
     'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.assignment.kind': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsAssignmentKind,
@@ -89123,6 +89175,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalGuestViewDocument.slotId': eventRehearsalGuestViewDocumentSlotId,
     'eventRehearsalGuestViewDocument.tokenHash': eventRehearsalGuestViewDocumentTokenHash,
     'eventRehearsalMessageDocument.actorId': eventRehearsalMessageDocumentActorId,
+    'eventRehearsalMessageDocument.handoff.actorUid': eventRehearsalMessageDocumentHandoffActorUid,
+    'eventRehearsalMessageDocument.handoff.at': eventRehearsalMessageDocumentHandoffAt,
+    'eventRehearsalMessageDocument.handoff.operationId': eventRehearsalMessageDocumentHandoffOperationId,
     'eventRehearsalMessageDocument.plan.deliveryPolicy.maxAttempts': eventRehearsalMessageDocumentPlanDeliveryPolicyMaxAttempts,
     'eventRehearsalMessageDocument.plan.deliveryPolicy.maxAttemptsPerRoute': eventRehearsalMessageDocumentPlanDeliveryPolicyMaxAttemptsPerRoute,
     'eventRehearsalMessageDocument.plan.deliveryPolicy.minimumRetrySeconds': eventRehearsalMessageDocumentPlanDeliveryPolicyMinimumRetrySeconds,

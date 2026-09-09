@@ -1413,6 +1413,71 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'actorId',
+            'payload',
+            'expectedMessageRevision',
+            'expectedReviewHash',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'repairDelivery',
+            },
+            'actorId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'payload': <String, Object?>{
+              'allOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'deliveryId',
+                    'action',
+                  ],
+                  'properties': <String, Object?>{
+                    'deliveryId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 2000,
+                    },
+                    'action': <String, Object?>{
+                      'type': 'string',
+                      'enum': <Object?>[
+                        'reconcile',
+                        'retryDefiniteFailure',
+                        'manualHandoff',
+                      ],
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'properties': <String, Object?>{
+                    'deliveryId': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^outbox:[a-f0-9]{64}\$',
+                    },
+                  },
+                },
+              ],
+            },
+            'expectedMessageRevision': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'expectedReviewHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+        },
       ],
       'type': 'object',
     },

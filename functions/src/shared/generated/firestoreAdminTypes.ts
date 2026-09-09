@@ -8352,6 +8352,11 @@ export interface EventRehearsalMessageDocument {
     }[];
   };
   record: EventAssistanceMessageDocument;
+  handoff?: {
+    actorUid: string;
+    at: number;
+    operationId: string;
+  };
 }
 
 /**

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.96.0
+version: 1.97.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -609,8 +609,32 @@ A temporary strong auth subscription fences unseen account changes while the
 sheet's normal provider dependencies are paused. Definitive conflicts discard
 the request and require a fresh page. Success invalidates delivery pages and
 uses the returned current state, with no optimistic delivery or handoff.
-Visible Host delivery review, rehearsal handling, provider lookup/verified retry
-and deployment remain subsequent integration work.
+Rehearsal Host bootstrap adds a `deliveryReviews` projection scoped to the current
+clock and the latest message for each synthetic actor. Coverage is explicitly
+`currentActorMessages`; it is not a historical delivery total. Rows reuse the
+live evidence, ownership and action shapes, and the same pure evidence ordering
+and handoff availability rule. Coordination remains `untracked` because the
+rehearsal recipe is exposed separately; no Operations run is invented.
+
+Rehearsal `repairDelivery/manualHandoff` requires the reviewed message revision
+and hash in addition to the existing setup/runtime generation and immutable
+parent action id. The hash binds actor identity/timestamps, participation facts,
+recipe, virtual clock, message and current ownership authority. Ownership is
+stored on the private rehearsal message wrapper; live outbox handoff markers
+remain forbidden in rehearsal records. The parent transaction commits ownership,
+action history and runtime revision together. Exact retries return current
+bootstrap evidence without replaying the action, and resets reject old commands.
+
+Manual handling stops further explicit and scripted attempts, including after a
+late failure or conflicting receipt. It preserves the script cursor, guest
+intentions, physical attendance, message lifecycle and valid guest reply path.
+Later receipts retain their actual evidence. A removed owner can be replaced
+only after a fresh review. A new instruction has independent ownership, and
+reset/expiry use the existing message cleanup. Provider lookup and verified retry
+remain unavailable in rehearsal as in the live Host action.
+
+Visible Host delivery review, native rehearsal delivery-review bindings,
+provider lookup/verified retry and deployment remain subsequent integration work.
 
 ### Saved assistance settings
 

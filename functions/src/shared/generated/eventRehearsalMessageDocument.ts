@@ -7,7 +7,19 @@ import type {EventAssistanceMessageDocument} from "./eventAssistanceMessageDocum
 /**
  * Synthetic message evidence isolated from the live outbox; deleted with its rehearsal session.
  */
-export interface EventRehearsalMessageDocument {
+export type EventRehearsalMessageDocument = {
+  record?: {
+    intent?: {
+      context?: {
+        mode?: "rehearsal";
+        [k: string]: unknown;
+      };
+      [k: string]: unknown;
+    };
+    [k: string]: unknown;
+  };
+  [k: string]: unknown;
+} & {
   sessionId: string;
   actorId: string;
   plan: {
@@ -119,4 +131,9 @@ export interface EventRehearsalMessageDocument {
     }[];
   };
   record: EventAssistanceMessageDocument;
-}
+  handoff?: {
+    actorUid: string;
+    at: number;
+    operationId: string;
+  };
+};

@@ -1410,6 +1410,71 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "pattern": "^[a-f0-9]{64}$"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "payload",
+            "expectedMessageRevision",
+            "expectedReviewHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "repairDelivery"
+            },
+            "actorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "payload": {
+              "allOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "deliveryId",
+                    "action"
+                  ],
+                  "properties": {
+                    "deliveryId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 2000
+                    },
+                    "action": {
+                      "type": "string",
+                      "enum": [
+                        "reconcile",
+                        "retryDefiniteFailure",
+                        "manualHandoff"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "deliveryId": {
+                      "type": "string",
+                      "pattern": "^outbox:[a-f0-9]{64}$"
+                    }
+                  }
+                }
+              ]
+            },
+            "expectedMessageRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expectedReviewHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
         }
       ],
       "type": "object"

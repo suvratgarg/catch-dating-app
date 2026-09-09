@@ -384,6 +384,49 @@
               "pattern": "^[a-f0-9]{64}$"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "payload",
+            "expectedMessageRevision",
+            "expectedReviewHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "repairDelivery"
+            },
+            "actorId": {
+              "$ref": "event_common.schema.json#/definitions/documentId"
+            },
+            "payload": {
+              "allOf": [
+                {
+                  "$ref": "event_assistance_common.schema.json#/definitions/RepairDeliveryCommand/properties/payload"
+                },
+                {
+                  "properties": {
+                    "deliveryId": {
+                      "type": "string",
+                      "pattern": "^outbox:[a-f0-9]{64}$"
+                    }
+                  }
+                }
+              ]
+            },
+            "expectedMessageRevision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expectedReviewHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
         }
       ],
       "type": "object"
@@ -1014,6 +1057,67 @@
           "uniqueItems": true,
           "items": {
             "$ref": "event_common.schema.json#/definitions/documentId"
+          }
+        }
+      }
+    },
+    "deliveryReviews": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "coverage",
+        "deliveries"
+      ],
+      "properties": {
+        "context": {
+          "allOf": [
+            {
+              "$ref": "event_assistance_common.schema.json#/definitions/ExecutionContext"
+            },
+            {
+              "properties": {
+                "mode": {
+                  "const": "rehearsal"
+                }
+              }
+            }
+          ]
+        },
+        "coverage": {
+          "const": "currentActorMessages"
+        },
+        "deliveries": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "allOf": [
+              {
+                "$ref": "event_assistance_delivery_review.schema.json#/definitions/View"
+              },
+              {
+                "properties": {
+                  "availability": {
+                    "const": "current"
+                  },
+                  "purpose": {
+                    "const": "joiningUpdate"
+                  },
+                  "coordination": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "untracked"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
           }
         }
       }

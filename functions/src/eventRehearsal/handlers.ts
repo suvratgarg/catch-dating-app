@@ -113,6 +113,7 @@ import {practiceMessageDocumentId, practiceMessageView, practiceDeliveryView,
 
 import {preparePracticeHelp, practiceHelpProjection, rehearsalCases} from
   "./assistanceCases";
+import {practiceDeliveryReviews} from "./assistanceDelivery";
 
 const sessions = "eventRehearsals";
 const actors = "eventRehearsalActors";
@@ -315,7 +316,7 @@ export async function controlEventRehearsalHandler(
           "Practice actor scope changed.");
       }
       const next = await applyPracticeHostCommand(db, tx, session, actor,
-        command, {actorUid: uid, organizer});
+        command, {actorUid: uid, organizer, operationId: data.clientActionId});
       const now = admin.firestore.Timestamp.now();
       tx.set(target.ref, {...next, updatedAt: now});
       tx.update(sessionRef, {runtimeRevision: session.runtimeRevision + 1,
@@ -1234,9 +1235,19 @@ async function hostProjection(
     snap.data()]));
   const helpRequests = await practiceHelpProjection(db, sessionId, session,
     actorValues, requireAuth(request));
+  const organizer = requireDoc<OrganizerDocument>(await db.collection(
+    "organizers").doc(session.organizerId).get(), "OrganizerDocument");
+  const currentMessages = actorValues.flatMap((actor) => {
+    const id = actor.assistance?.latestMessageId;
+    return id ? [readPracticeMessage(messageValues.get(
+      practiceMessageDocumentId(sessionId, id)), session, actor)] : [];
+  });
+  const deliveryReviews = practiceDeliveryReviews(sessionId, session,
+    actorValues, currentMessages, organizer, requireAuth(request));
   const movementSimulation = rehearsalMovementProjection(session);
   return {
     helpRequests,
+    deliveryReviews,
     session: {
       id: sessionId,
       organizerId: session.organizerId,

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.95.0
+version: 1.96.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -96,6 +96,18 @@ old untracked help flags remain explicit. Guest projections omit these records.
 Native readers reject foreign clocks/actors and inconsistent resolution state;
 only a reviewed open rehearsal case can form its typed handling command.
 Rehearsal reset and expiry remove these cases, independently of live cases.
+
+Rehearsal Host bootstrap optionally adds `deliveryReviews`, with a rehearsal-only
+context, explicit current-actor-message coverage, at most 50 rows and untracked
+coordination. It reuses the live delivery-review shape without adding guest-visible
+fields. The typed `repairDelivery` payload preserves the common action union,
+but only manual handoff is executable or offered. Reviewed message revision and
+hash accompany existing parent setup/runtime/action fences. Private
+`eventRehearsalMessages.handoff` uses virtual time and the parent operation id;
+the wrapped record is constrained to rehearsal context and still rejects the
+live outbox handoff marker. Parent receipts, action capacity, reset and expiry
+remain the existing owners; no additional collection or live dispatch authority
+is introduced.
 
 ### Explicit Attendance Closeout
 
