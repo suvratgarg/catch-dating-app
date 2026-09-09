@@ -402,18 +402,25 @@ expect_code_count \
 probe_path="$probe_root/lib/hosts/presentation/error_recovery_lint_probe.dart"
 stage_probe "canonical error recovery rejects empty actions" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/catch_ui.dart' as ui;
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:flutter/material.dart';
 
 final missingRecovery = CatchErrorState(title: 'Error', message: 'Try again');
 final emptyRecovery = CatchErrorState(title: 'Error', message: 'Try again', actions: const []);
 final nullRecovery = CatchErrorState(title: 'Error', message: 'Try again', onRetry: null);
 final emptySliverRecovery = CatchSliverErrorState(title: 'Error', message: 'Try again', actions: const []);
+final explicitFullScreen = CatchErrorState(title: 'Error', message: 'Try again', mode: CatchErrorStateMode.fullScreen);
+final inline = CatchErrorState(title: 'Error', message: 'Try again', mode: CatchErrorStateMode.inline);
+final compact = CatchErrorState(title: 'Error', message: 'Try again', mode: ui.CatchErrorStateMode.compact);
+final localizedInline = CatchLocalizedErrorState(Exception('Error'), mode: CatchErrorStateMode.inline);
+final localizedCompact = CatchLocalizedErrorState(Exception('Error'), mode: ui.CatchErrorStateMode.compact);
 void recover() {}
 final retry = CatchErrorState(title: 'Error', message: 'Try again', onRetry: recover, retryLabel: 'Retry');
 final exit = CatchErrorState(title: 'Error', message: 'Try again', actions: [CatchButton.text(label: 'Back', onPressed: recover)]);
 final sliverExit = CatchSliverErrorState(title: 'Error', message: 'Try again', actions: [CatchButton.text(label: 'Back', onPressed: recover)]);
 DART
-expect_probe exact catch_error_state_requires_action 4
+expect_probe exact catch_error_state_requires_action 5
 
 probe_path="$probe_root/lib/hosts/presentation/host_async_state_lint_probe.dart"
 stage_probe "Host route-edge async-state violation" <<'DART'

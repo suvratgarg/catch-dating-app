@@ -993,6 +993,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
             typeName == 'CatchLocalizedErrorState' ||
             typeName == 'CatchLocalizedErrorScaffold' ||
             typeName == 'CatchLocalizedSliverErrorState') &&
+        !_isInlineErrorState(node, typeName) &&
         !_hasErrorRecovery(node)) {
       _reportAtNode(node, CatchUiLayoutRules.errorStateRequiresAction);
     }
@@ -1788,6 +1789,26 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return actions != null &&
         actions is! NullLiteral &&
         (actions is! ListLiteral || actions.elements.isNotEmpty);
+  }
+
+  bool _isInlineErrorState(InstanceCreationExpression node, String typeName) {
+    if (typeName != 'CatchErrorState' &&
+        typeName != 'CatchLocalizedErrorState') {
+      return false;
+    }
+    // These recipes inherit recovery from the surrounding section. Resolve
+    // the enum owner so a matching spelling from another API cannot opt out.
+    final mode = _namedArgument(node, 'mode');
+    final element = switch (mode) {
+      PrefixedIdentifier() => mode.element,
+      PropertyAccess() => mode.propertyName.element,
+      SimpleIdentifier() => mode.element,
+      _ => null,
+    };
+    return element?.enclosingElement?.name == 'CatchErrorStateMode' &&
+        element?.library?.uri.toString() ==
+            'package:catch_ui/src/components/catch_error_state_mode.dart' &&
+        const {'inline', 'compact'}.contains(element?.name);
   }
 
   bool _namedArgumentSourceContains(
