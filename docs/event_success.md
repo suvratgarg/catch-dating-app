@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.102.0
+version: 1.103.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1163,8 +1163,8 @@ report and departure revisions, observation set, correction and operation ID acr
 refresh and sheet closure. Account changes retire old state. Applied results must
 confirm the actor, report identity, timestamp and chosen observations; replays
 preserve newer corrections. Reads and writes use the generated callable DTOs.
-Native screen mounting, reporter reassignment and closeout commands, notifications
-and rehearsal adapters remain integration work. Reporting does not change physical
+Native screen mounting, notifications and rehearsal adapters remain integration
+work. Reporting does not change physical
 attendance, group movement, membership, consent or event-visit accountability.
 
 ### Reviewed checkpoint closeout
@@ -1232,6 +1232,33 @@ Reporter access is checked again after all preparation reads and must extend
 beyond both server time and the original deadline. Reassignment after that
 deadline remains overdue; event completion or cancellation does not prevent an
 authorized manager from taking responsibility for an outstanding report.
+
+The native `EventAssistanceCheckpointRequestReview` combines the shared checkpoint
+read with a fresh, account-bound group-permission read. The latter's existing
+`anyAuthorizedOperator` permission identifies an organizer manager; scoped leads,
+pacers and sweeps may resolve a request only when they are its responsible reporter.
+The review checks exact group identity and permission expiry across both reads.
+Event/runtime readiness remains separate, allowing outstanding work after the event
+ends. Eligibility never grants permission, and the server rechecks authority,
+reporter access and the original deadline when applying the command.
+
+`ReassignCheckpointReporter`, `CloseCheckpointRequest` and `ReopenCheckpointRequest`
+are explicit native decisions with nonblank reasons. They use generated callable
+DTOs and the appropriate assignment or closeout hash/revision. Closing verifies
+the complete reviewed report and each unconfirmed member's visit disposition in
+the server-owned receipt; the command cannot supply arrival or disposition proof.
+Reopening remains possible when old closeout evidence needs review, but not after
+a complete arrival report supersedes it. Reassignment grants no staff access.
+
+`EventAssistanceCheckpointRequestController` retains one unresolved request action
+per recorded departure across refresh and sheet closure. Uncertain retries reuse
+the exact decision, actor, hash, revision and operation ID. A definitive rejection
+requires fresh review and an explicit new action. Account transitions retire the
+pending action, including callbacks retained by a closed sheet. Applied results
+verify ownership, original deadline and unchanged arrival facts; exact replays
+preserve later changes. Success refreshes the shared checkpoint read and its
+permission-dependent review. Native screen mounting, staff notifications and
+rehearsal execution remain integration work.
 
 ### Scoped group staff
 
@@ -1361,8 +1388,9 @@ retire reviews and pending decisions; old completions cannot restore them. Appli
 results must confirm the original scope, episode, next revision and disposition;
 replays preserve any later correction. The server remains responsible for verifying
 the exact physical check-in and source generations. Successful writes invalidate
-accountability and Host guest reviews. Native screen mounting, checkpoint arrival
-reporting and rehearsal integration remain separate work.
+accountability and Host guest reviews. Native screen mounting and rehearsal
+integration remain separate work; checkpoint arrival reporting has its own
+controller and observation semantics above.
 
 ### Guest group membership and handovers
 
