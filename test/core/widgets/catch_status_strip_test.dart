@@ -127,7 +127,7 @@ void main() {
         closeTo(first - offlineHeight, .01),
       );
       final bodyContext = tester.element(find.byKey(_body));
-      expect(CatchStatusStripScope.of(bodyContext), isEmpty);
+      expect(CatchBannerStatusScope.of(bodyContext), isEmpty);
 
       outer.jumpTo(outer.position.maxScrollExtent);
       await tester.pump();
@@ -262,10 +262,10 @@ void main() {
         theme: AppTheme.light,
         home: ValueListenableBuilder<bool>(
           valueListenable: offline,
-          builder: (context, value, _) => CatchStatusStripScope(
+          builder: (context, value, _) => CatchBannerStatusScope(
             statuses: [
               if (value)
-                CatchStatusStripData(
+                CatchBannerStatus(
                   id: 'offline',
                   label: 'Offline',
                   message: 'Reconnect to refresh.',
@@ -324,7 +324,7 @@ Widget _app({
         final t = CatchTokens.of(context);
         final global = [
           if (offline)
-            CatchStatusStripData(
+            CatchBannerStatus(
               id: 'offline',
               label: "You're offline",
               message: 'Some content may be out of date.',
@@ -333,18 +333,18 @@ Widget _app({
             ),
         ];
         final local = [
-          CatchStatusStripData(
+          CatchBannerStatus(
             id: 'rehearsal',
             label: 'Rehearsal',
             message: 'Synthetic guests',
             icon: CatchIcons.groupsOutlined,
             color: t.danger,
             actions: [
-              CatchStatusStripAction(
+              CatchBannerAction(
                 label: 'Virtual 5:00 PM',
                 onPressed: onClock ?? () {},
               ),
-              CatchStatusStripAction(
+              CatchBannerAction(
                 label: 'Practice tools',
                 icon: CatchIcons.more,
                 onPressed: onTools ?? () {},
@@ -368,7 +368,7 @@ Widget _app({
               padding: const EdgeInsets.only(top: 59, bottom: 34),
               textScaler: TextScaler.linear(scale),
             ),
-            child: CatchStatusStripScope(
+            child: CatchBannerStatusScope(
               statuses: [if (!pushed) ...local, ...global],
               child: pushed
                   ? CatchRouteScaffold(

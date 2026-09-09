@@ -1608,31 +1608,31 @@ Widget catchNoticeContractStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchStatusStrip,
+  name: 'Persistent status states',
+  type: CatchBanner,
   path: '[Core primitives]/Feedback',
 )
-Widget catchStatusStripContractStates(BuildContext context) {
+Widget catchBannerStatusContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  final offline = CatchStatusStripData(
+  final offline = CatchBannerStatus(
     id: 'offline',
     label: context.l10n.sharedOfflineTitle,
     message: context.l10n.sharedOfflineBody,
     icon: CatchIcons.cloudOffRounded,
     color: t.warning,
   );
-  final rehearsal = CatchStatusStripData(
+  final rehearsal = CatchBannerStatus(
     id: 'rehearsal',
     label: context.l10n.hostEventRehearsalBadge,
     message: context.l10n.hostEventRehearsalSyntheticGuests,
     icon: CatchIcons.groupsOutlined,
     color: t.danger,
     actions: [
-      CatchStatusStripAction(
+      CatchBannerAction(
         label: context.l10n.hostEventRehearsalClockPill(time: '5:00 PM'),
         onPressed: _noop,
       ),
-      CatchStatusStripAction(
+      CatchBannerAction(
         label: context.l10n.hostEventRehearsalPracticeTools,
         icon: CatchIcons.more,
         onPressed: _noop,
@@ -1640,25 +1640,25 @@ Widget catchStatusStripContractStates(BuildContext context) {
     ],
   );
   return _ContractScreen(
-    title: 'CatchStatusStrip',
-    contractId: 'catch.status_strip',
+    title: 'CatchBanner.statuses',
+    contractId: 'catch.banner',
     states: const ['offline', 'rehearsal', 'stacked', 'empty'],
     children: [
       _StateCard(
         label: 'offline',
-        child: CatchStatusStrip(statuses: [offline]),
+        child: CatchBanner.statuses(statuses: [offline]),
       ),
       _StateCard(
         label: 'rehearsal',
-        child: CatchStatusStrip(statuses: [rehearsal]),
+        child: CatchBanner.statuses(statuses: [rehearsal]),
       ),
       _StateCard(
         label: 'stacked',
-        child: CatchStatusStrip(statuses: [rehearsal, offline]),
+        child: CatchBanner.statuses(statuses: [rehearsal, offline]),
       ),
       const _StateCard(
         label: 'empty',
-        child: CatchStatusStrip(statuses: []),
+        child: CatchBanner.statuses(statuses: []),
       ),
     ],
   );

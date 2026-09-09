@@ -109,13 +109,25 @@ void main() {
       ),
     );
     expect(find.text('Synthetic guests'), findsOneWidget);
-    final strip = tester.widget<CatchStatusStrip>(
-      find.byType(CatchStatusStrip),
+    final strip = tester.widget<CatchBanner>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchBanner &&
+            widget.variant == CatchBannerVariant.statuses,
+      ),
     );
     expect(strip.statuses.single.id, 'rehearsal.session-1');
     expect(strip.statuses.single.actions, hasLength(2));
     expect(
-      tester.getTopLeft(find.byType(CatchStatusStrip)).dy,
+      tester
+          .getTopLeft(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is CatchBanner &&
+                  widget.variant == CatchBannerVariant.statuses,
+            ),
+          )
+          .dy,
       tester.getBottomLeft(find.byType(CatchTopBar)).dy,
     );
     expect(find.text('Setup'), findsNothing);

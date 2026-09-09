@@ -4,11 +4,11 @@
     {
       "id": "persistent-header-context",
       "title": "Persistent header context",
-      "intent": "Keep durable offline and rehearsal context separate from transient notifications, local errors and navigation chrome.",
+      "intent": "Keep durable offline/rehearsal publication and layout ownership distinct from transient notifications and local errors, while sharing Banner rendering.",
       "priority": "P0",
       "status": "implemented",
-      "targetContract": "catch.status_strip",
-      "qualityReference": "CatchStatusStrip",
+      "targetContract": "catch.banner",
+      "qualityReference": "CatchBanner",
       "decisionSource": "user-approved:2026-09-03 below-primary-tab-strip",
       "acceptedVisualDelta": [
         "Full-width square-edged bands below the complete primary tab rail, never between title and tabs; pin rail and statuses together.",
@@ -18,21 +18,21 @@
       ],
       "members": [
         {
-          "symbol": "CatchStatusStrip",
+          "symbol": "CatchBanner",
           "disposition": "canonical",
           "preview": "required",
-          "rationale": "One data-configured persistent context renderer; canonical screen owners alone control placement."
+          "rationale": "The statuses recipe is the canonical persistent-context renderer; only screen layouts place it. Inline message and error recipes share Banner anatomy while retaining caller placement."
         },
         {
-          "symbol": "CatchStatusStripScope",
+          "symbol": "CatchBannerStatusScope",
           "disposition": "register",
           "preview": "required",
-          "rationale": "Publication member of the status-strip concept, with no independent paint or business state."
+          "rationale": "Publication member of the Banner status recipe, with no independent paint or business state."
         },
         {
           "symbol": "_RehearsalBand",
           "disposition": "unify",
-          "target": "CatchStatusStrip",
+          "target": "CatchBanner",
           "preview": "not-applicable",
           "rationale": "Rehearsal retains the session/actions but supplies typed status data instead of feature-owned geometry."
         }
@@ -3700,6 +3700,47 @@
           "target": "CatchSectionRowList",
           "preview": "not-applicable",
           "rationale": "Replace the vague Body role with the reviewed Section RowList identity. The renderer and all enum modes remain unchanged."
+        }
+      ]
+    },
+    {
+      "id": "persistent-feedback-canonical-banner",
+      "title": "One persistent feedback renderer",
+      "intent": "Share Banner icon, copy and action rendering while preserving layout-owned durable context and caller-owned inline feedback.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.banner",
+      "qualityReference": "CatchBanner",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "Retain message/error containment and full-width status bands, typography, colors, contrast, action targets and wrapping. Only catalog naming changes."
+      ],
+      "members": [
+        {
+          "symbol": "CatchBanner",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Message, error/retry and status-band recipes share one content renderer. The statuses constructor consumes typed context; its resolved placement guard remains limited to canonical screen layouts."
+        },
+        {
+          "symbol": "CatchBannerStatusScope",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "The inherited member publishes durable status data without paint; layouts consume it once and clear it for descendants."
+        },
+        {
+          "symbol": "CatchStatusStrip",
+          "disposition": "unify",
+          "target": "CatchBanner",
+          "preview": "not-applicable",
+          "rationale": "Its common icon, label/detail and action anatomy becomes the statuses recipe. Remove the second renderer without merging publication, pinning or transient-notice lifecycle ownership."
+        },
+        {
+          "symbol": "CatchStatusStripScope",
+          "disposition": "unify",
+          "target": "CatchBannerStatusScope",
+          "preview": "not-applicable",
+          "rationale": "Rename the same inherited publisher into the Banner family; keep update notification and nested clearing semantics."
         }
       ]
     }

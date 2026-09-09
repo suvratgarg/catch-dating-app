@@ -2160,19 +2160,19 @@ class _ArrivalPreviewState extends ConsumerState<_ArrivalPreview> {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchStatusStripScope,
+  type: CatchBannerStatusScope,
   path: '[Core catalog]/Feedback',
 )
 Widget catchStatusStripScopeCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchStatusStripScope',
+    title: 'CatchBannerStatusScope',
     catalogId: 'core.widgets.catch_status_strip_scope',
     children: [
       SizedBox(
         height: WidgetbookPreviewLayout.stateViewportHeight,
-        child: CatchStatusStripScope(
+        child: CatchBannerStatusScope(
           statuses: [
-            CatchStatusStripData(
+            CatchBannerStatus(
               id: 'offline',
               label: context.l10n.sharedOfflineTitle,
               message: context.l10n.sharedOfflineBody,

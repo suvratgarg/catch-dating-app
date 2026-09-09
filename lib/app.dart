@@ -79,10 +79,10 @@ class MyApp extends ConsumerWidget {
           child: CatchNoticeOverlay(
             child: ForegroundNotificationListener(
               router: goRouter,
-              child: CatchStatusStripScope(
+              child: CatchBannerStatusScope(
                 statuses: [
                   if (isOffline)
-                    CatchStatusStripData(
+                    CatchBannerStatus(
                       id: 'connectivity.offline',
                       label: context.l10n.sharedOfflineTitle,
                       message: context.l10n.sharedOfflineBody,

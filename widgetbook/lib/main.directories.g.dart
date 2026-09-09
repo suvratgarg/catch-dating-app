@@ -983,6 +983,16 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchBannerStatusScope',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchStatusStripScopeCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchErrorDetailsAccordion',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1084,16 +1094,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Sliver optical center',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchStateViewportSliverCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchStatusStripScope',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchStatusStripScopeCatalogStates,
               ),
             ],
           ),
@@ -2389,6 +2389,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchBannerContractStates,
               ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'Persistent status states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchBannerStatusContractStates,
+              ),
             ],
           ),
           _widgetbook.WidgetbookComponent(
@@ -2432,17 +2438,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchNoticeContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchStatusStrip',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchStatusStripContractStates,
               ),
             ],
           ),

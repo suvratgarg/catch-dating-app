@@ -6,8 +6,8 @@ import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
 import 'package:catch_ui/src/components/catch_page_tab_bar.dart';
 import 'package:catch_ui/src/components/catch_primary_rail.dart';
 import 'package:catch_ui/src/components/catch_screen_header.dart';
-import 'package:catch_ui/src/components/catch_status_strip.dart';
-import 'package:catch_ui/src/components/catch_status_strip_scope.dart';
+import 'package:catch_ui/src/components/catch_banner.dart';
+import 'package:catch_ui/src/components/catch_banner_status_scope.dart';
 import 'package:catch_ui/src/components/catch_top_bar.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
@@ -110,7 +110,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final obstruction = CatchTabViewportScope.bottomOverlayInsetOf(context);
-    final statuses = CatchStatusStripScope.of(context);
+    final statuses = CatchBannerStatusScope.of(context);
     Widget scrollView;
     if (primaryRail == null) {
       scrollView = CustomScrollView(
@@ -123,7 +123,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
         slivers: [
           SliverToBoxAdapter(child: _header!),
           if (statuses.isNotEmpty)
-            PinnedHeaderSliver(child: CatchStatusStrip(statuses: statuses)),
+            PinnedHeaderSliver(child: CatchBanner.statuses(statuses: statuses)),
           CatchPageBody.slivers(
             mode: bodyLayout!,
             constrainToContentWidth: constrainToContentWidth,
@@ -160,7 +160,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
                         },
                         child: primaryRail,
                       ),
-                      CatchStatusStrip(statuses: statuses),
+                      CatchBanner.statuses(statuses: statuses),
                     ],
                   ),
                 ),
@@ -184,7 +184,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
         child: scrollView,
       );
     }
-    return CatchStatusStripScope(
+    return CatchBannerStatusScope(
       statuses: const [],
       child: CatchFieldVisibilityScope(
         bottomObstruction: obstruction,

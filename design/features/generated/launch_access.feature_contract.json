@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
   "sourceDigest": "sha256:bd6746da8d1ba1d695799cbedfb572015b899741fd7bdecdc32f35f1fabc9fba",
-  "resolvedDigest": "sha256:6f03b6a04d17327165815610e41fc9cedf2003a63ccbc0cd5ad16f71c79a284c",
+  "resolvedDigest": "sha256:8ac7bd496eedda083677a62908a2b9bd488215121d146313e75fb7ea27527a8e",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -897,7 +897,8 @@
               "constructors": [
                 "CatchBanner",
                 "CatchBanner.error",
-                "CatchBanner.errorWithRetry"
+                "CatchBanner.errorWithRetry",
+                "CatchBanner.statuses"
               ]
             }
           },

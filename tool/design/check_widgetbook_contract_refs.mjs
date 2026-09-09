@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {fromRepo, relativeToRepo, repoRoot} from "../lib/repo_paths.mjs";
 
 const componentRegistryPath = fromRepo("design/components/catch.components.json");
@@ -87,16 +88,18 @@ const requiredGeometrySpecimens = [
 const args = process.argv.slice(2);
 const command = args[0] ?? "--help";
 
-if (command === "--help" || command === "-h" || command === "help") {
-  printHelp();
-} else if (command === "--check" || command === "check") {
-  checkRefs();
-} else if (command === "--summary" || command === "summary") {
-  checkRefs({summary: true});
-} else {
-  console.error(`Unknown command: ${command}`);
-  printHelp();
-  process.exit(64);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  if (command === "--help" || command === "-h" || command === "help") {
+    printHelp();
+  } else if (command === "--check" || command === "check") {
+    checkRefs();
+  } else if (command === "--summary" || command === "summary") {
+    checkRefs({summary: true});
+  } else {
+    console.error(`Unknown command: ${command}`);
+    printHelp();
+    process.exit(64);
+  }
 }
 
 function checkRefs({summary = false} = {}) {
@@ -190,7 +193,7 @@ function validateComponentPreviews(componentRegistry, widgetbook) {
   return errors;
 }
 
-function validatePrimitiveContractUseCases(componentRegistry, primitiveContracts) {
+export function validatePrimitiveContractUseCases(componentRegistry, primitiveContracts) {
   const errors = [];
   const contractEntries = collectComponentContractEntries(componentRegistry);
   const componentIds = new Set(contractEntries.map((entry) => entry.id));
@@ -460,7 +463,7 @@ function collectDartFiles(dir) {
   return files;
 }
 
-function parsePrimitiveContractUseCases(source) {
+export function parsePrimitiveContractUseCases(source) {
   const statesByContractId = new Map();
   for (const block of extractCallBlocks(source, "_ContractScreen")) {
     const contractId = matchString(block, /\bcontractId:\s*'([^']+)'/u);
@@ -468,7 +471,13 @@ function parsePrimitiveContractUseCases(source) {
       /\bstates:\s*(?:const\s*)?(?:<String>\s*)?\[([\s\S]*?)\]/u.exec(block);
     const statesBlock = statesMatch?.[1] ?? null;
     if (!contractId) continue;
-    statesByContractId.set(contractId, parseStringList(statesBlock));
+    // Named recipes share one component contract. Preserve declaration order
+    // while collecting every recipe; a later preview must not hide earlier
+    // states or let a missing recipe silently pass.
+    statesByContractId.set(contractId, [...new Set([
+      ...(statesByContractId.get(contractId) ?? []),
+      ...parseStringList(statesBlock),
+    ])]);
   }
 
   return {

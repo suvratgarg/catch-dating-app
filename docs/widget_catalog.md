@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.78.0
+version: 3.79.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -53,12 +53,12 @@ interaction/layout primitives live in `catch_ui/src/primitives`.
 Component and pattern widgets remain at their current app paths
 until their Phase 3 slices.
 
-`CatchStatusStrip` (`packages/catch_ui/lib/src/components/catch_status_strip.dart`) owns durable
+`CatchBanner.statuses` (`packages/catch_ui/lib/src/components/catch_banner.dart`) owns durable
 offline/rehearsal header anatomy, wrapping and 44 pt actions.
-`CatchStatusStripScope` publishes context without rendering it; canonical
+`CatchBannerStatusScope` publishes context without rendering it; canonical
 screen owners consume it once below the complete title/tab header, preserve
 the 16 pt standard body start and clear it for nested content. Features pass
-`CatchStatusStripData` and `CatchStatusStripAction`, not a renderer or padding.
+`CatchBannerStatus` and `CatchBannerAction`, not a renderer or padding.
 `CatchNoticeOverlay` now renders only the queued transient notice, never the
 persistent context stack.
 
@@ -375,10 +375,10 @@ Widgetbook callers.
 | `showCatchSnackBar` | `packages/catch_ui/lib/src/components/catch_snack_bar.dart` | Canonical transient-feedback publisher with caller-owned message and action. The exact file owns raw framework snackbar construction/publication. |
 | `listenToCatchMutationErrors` | `lib/core/riverpod_ui/catch_error_snack_bar.dart` | Nonvisual Consumer-build subscription operation. Preserves keyed handles and owning branches, deduplicates handles, and publishes pending-to-error transitions through the canonical snackbar. |
 | `showCatchErrorSnackBar` | `lib/core/riverpod_ui/catch_error_snack_bar.dart` | App error mapping and localized retry policy translated onto the shared snackbar publisher. |
-| `CatchNoticeOverlay` | `lib/core/riverpod_ui/catch_notice_overlay.dart` | One app-level overlay above the router, enforced by `catch_notice_host_is_app_owned`. Owns safe-area entry/resting geometry, bounded priority/FIFO display, replacement timers, tap/swipe dismissal, F6/Shift+F6 focus transfer without autofocus, accessibility and reduced motion. Ordinary and arrival notices share interaction-aware expiry; the layer supplies the Tooltip overlay ancestor. Persistent offline/rehearsal context remains in `CatchStatusStrip` below the primary tabs. |
+| `CatchNoticeOverlay` | `lib/core/riverpod_ui/catch_notice_overlay.dart` | One app-level overlay above the router, enforced by `catch_notice_host_is_app_owned`. Owns safe-area entry/resting geometry, bounded priority/FIFO display, replacement timers, tap/swipe dismissal, F6/Shift+F6 focus transfer without autofocus, accessibility and reduced motion. Ordinary and arrival notices share interaction-aware expiry; the layer supplies the Tooltip overlay ancestor. Persistent offline/rehearsal context remains in `CatchBanner.statuses` below the primary tabs. |
 | `ForegroundNotificationListener` | `lib/notifications/presentation/foreground_notification_listener.dart` | App-level feature adapter, not a visual primitive. Converts session-validated arrivals to configurable `CatchNoticeData.arrival`, derives Host/Consumer conversation navigation locally and suppresses active-conversation notices. SDK subscriptions remain in `FcmService`. |
-| `CatchStatusStrip` | `packages/catch_ui/lib/src/components/catch_status_strip.dart` | Durable offline/rehearsal bands. Owns common icon, wrapping label/detail, semantic color and responsive action lanes; only screen layouts construct it. |
-| `CatchStatusStripScope` | `packages/catch_ui/lib/src/components/catch_status_strip_scope.dart` | Inherited context publication, consumed once below complete title/tab chrome and cleared by the canonical screen owner. |
+| `CatchBanner.statuses` | `packages/catch_ui/lib/src/components/catch_banner.dart` | Durable offline/rehearsal bands. Owns common icon, wrapping label/detail, semantic color and responsive action lanes; only screen layouts construct it. |
+| `CatchBannerStatusScope` | `packages/catch_ui/lib/src/components/catch_banner_status_scope.dart` | Inherited context publication, consumed once below complete title/tab chrome and cleared by the canonical screen owner. |
 | `CatchNotice` | `packages/catch_ui/lib/src/components/catch_notice.dart` | Reusable floating notice primitive configured through `CatchNoticeData`: title/message, public icon, optional canonical circular person avatar, semantic tone or theme-derived accent, optional action and dismiss control with required caller-resolved `dismissLabel`. Person identity takes precedence over the icon. Feature adapters own copy/identity; the renderer owns geometry and typography, complete text reflow, measured action placement and canonical icon-action dismissal. Use for ambient app status/events, not inline form errors. |
 | `CatchSectionHeader` | `packages/catch_ui/lib/src/components/catch_section_header.dart:4` | Lightweight section header with sentence-case styling by default, optional heavy weight, and opt-in uppercase for intentional metadata/eyebrow labels. Prefer `CatchSection` for carded content sections. |
 | `CatchSectionKicker` | `packages/catch_ui/lib/src/components/catch_section_kicker.dart` | Section-owned heading, count and trailing action lane. Preserves heading semantics and moves the trailing action below the heading at large text scales. Product callers use the named `CatchSection` constructors. |

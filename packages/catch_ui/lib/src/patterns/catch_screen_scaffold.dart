@@ -1,6 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_status_strip.dart';
-import 'package:catch_ui/src/components/catch_status_strip_scope.dart';
+import 'package:catch_ui/src/components/catch_banner.dart';
+import 'package:catch_ui/src/components/catch_banner_status_scope.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
 import 'package:flutter/material.dart';
 
@@ -58,16 +58,16 @@ class CatchScreenScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statuses = CatchStatusStripScope.of(context);
+    final statuses = CatchBannerStatusScope.of(context);
     // Keep this ancestry stable when connectivity changes: inserting a new
     // wrapper only while offline would recreate focused editors and state.
     final content = safeArea == CatchScreenSafeArea.none
         ? body
-        : CatchStatusStripScope(
+        : CatchBannerStatusScope(
             statuses: const [],
             child: Column(
               children: [
-                CatchStatusStrip(statuses: statuses),
+                CatchBanner.statuses(statuses: statuses),
                 Expanded(child: body),
               ],
             ),

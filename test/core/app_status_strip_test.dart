@@ -72,7 +72,13 @@ void main() {
       expect(find.text("YOU'RE OFFLINE"), findsOneWidget);
       expect(
         tester
-            .widget<CatchStatusStrip>(find.byType(CatchStatusStrip))
+            .widget<CatchBanner>(
+              find.byWidgetPredicate(
+                (widget) =>
+                    widget is CatchBanner &&
+                    widget.variant == CatchBannerVariant.statuses,
+              ),
+            )
             .statuses
             .single
             .actions,

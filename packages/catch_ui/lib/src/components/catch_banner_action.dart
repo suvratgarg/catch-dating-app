@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 @immutable
-class CatchStatusStripAction {
-  const CatchStatusStripAction({
+class CatchBannerAction {
+  const CatchBannerAction({
     required this.label,
     required this.onPressed,
     this.icon,

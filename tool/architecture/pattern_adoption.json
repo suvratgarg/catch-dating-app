@@ -1384,7 +1384,7 @@
       "prototypeFiles": [
         "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart",
         "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart",
-        "packages/catch_ui/lib/src/components/catch_status_strip.dart",
+        "packages/catch_ui/lib/src/components/catch_banner.dart",
         "packages/catch_ui/lib/src/components/catch_section.dart",
         "packages/catch_ui/lib/src/patterns/catch_root_screen_body.dart",
         "packages/catch_ui/lib/src/patterns/catch_root_screen_page_spec.dart",

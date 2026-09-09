@@ -1,26 +1,26 @@
-import 'package:catch_ui/src/components/catch_status_strip_data.dart';
+import 'package:catch_ui/src/components/catch_banner_status.dart';
 import 'package:flutter/widgets.dart';
 
 /// Publishes context without drawing it. Canonical screen owners consume this
 /// scope once, below their title and optional primary rail, and clear it for
 /// nested content. The app publishes connectivity above the route navigator;
 /// route-specific rehearsal context is supplied to its scaffold's typed slot.
-class CatchStatusStripScope extends InheritedWidget {
-  const CatchStatusStripScope({
+class CatchBannerStatusScope extends InheritedWidget {
+  const CatchBannerStatusScope({
     super.key,
     required this.statuses,
     required super.child,
   });
 
-  final List<CatchStatusStripData> statuses;
+  final List<CatchBannerStatus> statuses;
 
-  static List<CatchStatusStripData> of(BuildContext context) =>
+  static List<CatchBannerStatus> of(BuildContext context) =>
       context
-          .dependOnInheritedWidgetOfExactType<CatchStatusStripScope>()
+          .dependOnInheritedWidgetOfExactType<CatchBannerStatusScope>()
           ?.statuses ??
       const [];
 
   @override
-  bool updateShouldNotify(CatchStatusStripScope oldWidget) =>
+  bool updateShouldNotify(CatchBannerStatusScope oldWidget) =>
       statuses != oldWidget.statuses;
 }

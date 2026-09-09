@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/phone_auth.feature.json",
   "generatedFor": "2026-08-30",
   "sourceDigest": "sha256:a24ae8130fdfb68df8efc919086af134077a235ee2fadd83ae9cb66d604984e8",
-  "resolvedDigest": "sha256:401ebf7bc10985f5b8c1e0c27f0758322dff406b8a1a67d9cbb8c24a929e5fd0",
+  "resolvedDigest": "sha256:d0e3fd399f55408f1f07de4a8a97c15c0733a314291951b7647221b02531af8b",
   "feature": {
     "id": "feature.phone_auth",
     "name": "Phone Authentication",
@@ -817,7 +817,8 @@
               "constructors": [
                 "CatchBanner",
                 "CatchBanner.error",
-                "CatchBanner.errorWithRetry"
+                "CatchBanner.errorWithRetry",
+                "CatchBanner.statuses"
               ]
             }
           },

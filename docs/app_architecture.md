@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.54.0
+version: 1.55.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -82,7 +82,7 @@ receive a resolved `retryLabel`; explicit recovery callbacks stay authoritative.
 `CatchTabViewportScope` owns route-neutral active-page and bottom-obstruction
 metrics for shared layouts. App tab identities and route selection stay in the
 app; anchored, floating, and absent bars keep their existing clearance rules.
-`CatchStatusStrip` and its publication scope own persistent header rendering;
+`CatchBanner.statuses` and its publication scope own persistent header rendering;
 `CatchScreenScaffold` owns the Material surface, safe area and keyboard resize
 in the shared package. Connectivity and rehearsal state remain app callers.
 
@@ -667,8 +667,8 @@ literal numbers. Native source reference, semantic adoption and measured
 interaction verification remain separate responsibilities; see
 [the platform token boundary](design_language.md#52-native-reference-and-catch-adoption-boundary).
 
-Persistent context uses `CatchStatusStripData`, not queued notices.
-`MyApp` publishes honest connectivity context through `CatchStatusStripScope`
+Persistent context uses `CatchBannerStatus`, not queued notices.
+`MyApp` publishes honest connectivity context through `CatchBannerStatusScope`
 above the navigator for both apps, including pushed routes. A route may add
 local context through its scaffold's typed `statuses` slot (rehearsal before
 offline). The canonical screen owner consumes that scope once and clears it
@@ -681,7 +681,7 @@ the final strip. Standalone/step-flow surfaces with owned safe areas place
 context above their body; explicitly edge-owned workspace canvases still
 delegate header composition to their semantic owner.
 
-`CatchStatusStrip` owns full-width paint, common icon/label/detail/action
+`CatchBanner.statuses` owns full-width paint, common icon/label/detail/action
 lanes, wrapping and touch targets. It does not read providers, position an
 overlay, dismiss itself or infer retry/sync behavior. The resolved
 `catch_status_strip_is_layout_owned` lint prohibits feature construction

@@ -1977,21 +1977,18 @@
     },
     {
       "id": "catch.banner",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
       "name": "CatchBanner",
       "status": "active",
       "kind": "composite",
-      "summary": "Persistent inline feedback with one icon, text, and action layout; semantic tones and compact error/retry recipes share the same renderer.",
+      "summary": "Persistent inline messages, errors and screen-owned status bands share one icon, copy and action renderer.",
       "dart": {
         "symbol": "CatchBanner",
         "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
         "constructors": [
           "CatchBanner",
           "CatchBanner.error",
-          "CatchBanner.errorWithRetry"
+          "CatchBanner.errorWithRetry",
+          "CatchBanner.statuses"
         ]
       },
       "design": {
@@ -2015,7 +2012,7 @@
           {
             "name": "message",
             "type": "string",
-            "required": true,
+            "required": false,
             "dartType": "String"
           },
           {
@@ -2046,7 +2043,9 @@
             "default": "message",
             "values": [
               "message",
-              "error"
+              "error",
+              "status",
+              "statuses"
             ]
           },
           {
@@ -2066,6 +2065,12 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?"
+          },
+          {
+            "name": "statuses",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchBannerStatus>"
           }
         ],
         "states": [
@@ -2078,7 +2083,11 @@
           "with-action",
           "inline",
           "from-error",
-          "with-retry"
+          "with-retry",
+          "offline",
+          "rehearsal",
+          "stacked",
+          "empty"
         ],
         "slots": [
           "actions"
@@ -2102,7 +2111,11 @@
           "CatchBannerTone",
           "CatchBannerVariant",
           "CatchSurface",
-          "listenToCatchMutationErrors"
+          "listenToCatchMutationErrors",
+          "CatchBannerStatus",
+          "CatchBannerAction",
+          "CatchBannerStatusScope",
+          "CatchIconAction"
         ],
         "goldens": [
           "banner_family"
@@ -2138,6 +2151,32 @@
               ],
               "reason": "Maps app errors and active-locale recovery copy into the provider-free banner. The mutation constructor only selects the error state from caller-watched mutations; both recipes share one mapping and renderer."
             }
+          },
+          {
+            "id": "catch.banner.status_scope",
+            "symbol": "CatchBannerStatusScope",
+            "file": "packages/catch_ui/lib/src/components/catch_banner_status_scope.dart",
+            "summary": "Inherited publication scope, consumed once by canonical screen owners and cleared for nested body content.",
+            "states": [
+              "empty",
+              "published"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.banner",
+              "parentConceptId": "catch.banner",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:persistent-header-context"
+            },
+            "level": "L3",
+            "roleNoun": "Scope",
+            "naming": {
+              "useCase": "BannerStatus",
+              "comparedWith": [
+                "catch.banner"
+              ],
+              "reason": "Publishes durable header-status data for canonical screen layouts to render once through CatchBanner.statuses. Nested content clears publication. Inline message and error recipes retain caller-owned placement and do not publish themselves."
+            }
           }
         ],
         "accessibility": {
@@ -2164,7 +2203,9 @@
           "Use CatchBanner.error and CatchBanner.errorWithRetry for compact inline failures. Callers own copy, error mapping and retry eligibility.",
           "CatchNotice owns transient, dismissible or openable notification delivery; its lifecycle and person/action contract are distinct from persistent page feedback.",
           "Use CatchErrorState for data-load branches that replace content.",
-          "Use listenToCatchMutationErrors during the owning Consumer build for transient failure subscriptions; showCatchErrorSnackBar maps and publishes the error. Neither operation defines another visual component."
+          "Use listenToCatchMutationErrors during the owning Consumer build for transient failure subscriptions; showCatchErrorSnackBar maps and publishes the error. Neither operation defines another visual component.",
+          "CatchBanner.statuses renders durable offline and rehearsal context as full-width live-region bands. Features supply typed data; canonical screen layouts alone place the collection, consume publication once and pin its measured extent.",
+          "Status bands retain their existing tint, 4.5:1 copy/action contrast, narrow/large-text action reflow and separate supported actions. They have no auto-dismissal or arrival animation."
         ]
       },
       "governance": {
@@ -2188,6 +2229,10 @@
       "roleNoun": "Banner",
       "naming": {
         "useCase": ""
+      },
+      "enforcement": {
+        "code": "catch_status_strip_is_layout_owned",
+        "vehicle": "plugin"
       }
     },
     {
@@ -2367,142 +2412,6 @@
       "roleNoun": "Notice",
       "naming": {
         "useCase": ""
-      }
-    },
-    {
-      "id": "catch.status_strip",
-      "enforcement": {
-        "code": "catch_status_strip_is_layout_owned",
-        "vehicle": "plugin"
-      },
-      "name": "CatchStatusStrip",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Durable header context, placed below the complete primary tab rail by canonical screen owners; distinct from transient notices and local errors.",
-      "dart": {
-        "symbol": "CatchStatusStrip",
-        "file": "packages/catch_ui/lib/src/components/catch_status_strip.dart",
-        "constructors": [
-          "CatchStatusStrip"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/StatusStrip",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "StatusStrip",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "statuses",
-            "type": "list",
-            "required": true,
-            "dartType": "List<CatchStatusStripData>"
-          }
-        ],
-        "states": [
-          "offline",
-          "rehearsal",
-          "stacked",
-          "empty"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s2",
-          "space.s5",
-          "space.s11",
-          "space.s12",
-          "theme.light.color.warning",
-          "theme.light.color.danger"
-        ],
-        "dartRoles": [
-          "CatchStatusStripData",
-          "CatchStatusStripAction",
-          "CatchStatusStripScope",
-          "CatchButton.text",
-          "CatchIconAction"
-        ],
-        "goldens": [],
-        "members": [
-          {
-            "id": "catch.status_strip.scope",
-            "symbol": "CatchStatusStripScope",
-            "file": "packages/catch_ui/lib/src/components/catch_status_strip_scope.dart",
-            "summary": "Inherited publication scope, consumed once by canonical screen owners and cleared for nested body content.",
-            "states": [
-              "empty",
-              "published"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.status_strip",
-              "parentConceptId": "catch.status_strip",
-              "qualifier": "adapter",
-              "decisionRef": "pattern-family:persistent-header-context"
-            },
-            "level": "L3",
-            "roleNoun": "Scope",
-            "naming": {
-              "useCase": "StatusStrip",
-              "comparedWith": [
-                "catch.status_strip"
-              ],
-              "reason": "Publishes the status-strip payload for the canonical screen owner to render once; nested content can clear publication without duplicating the status-strip renderer."
-            }
-          }
-        ],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Wrap label and detail; reflow actions below on narrow screens or large text; measure the real pinned extent."
-          },
-          "reducedMotion": {
-            "policy": "Persistent context has no arrival animation or automatic dismissal."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.button",
-          "catch.icon_button"
-        ],
-        "notes": [
-          "Features configure data and actions only; canonical layouts own pinning, overlap and the 16 pt body handoff.",
-          "MyApp publishes connectivity for Host and Consumer above route navigation. Rehearsal is local route context, rendered before offline.",
-          "No fixture sync timestamps, fake global retry, or claimed offline writes. Preserve the real state and supported actions."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.status_strip",
-        "publicApi": true,
-        "stateOwnership": "screen-owned",
-        "asyncOwnership": "display-state-only",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.status_strip",
-        "decisionRef": "pattern-family:persistent-header-context"
-      },
-      "surfaces": {
-        "flutter": "CatchStatusStrip"
       }
     },
     {

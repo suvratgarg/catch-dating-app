@@ -648,11 +648,11 @@ DART
   expect_probe exact catch_use_canonical_feedback 9
   stage_probe "status placement $feedback_scope" <<'DART'
 import 'package:catch_ui/catch_ui.dart' as ui;
-typedef StripAlias = ui.CatchStatusStrip;
+typedef StripAlias = ui.CatchBanner;
 List<Object> forbiddenPlacement() => [
-  const ui.CatchStatusStrip(statuses: []),
-  const StripAlias(statuses: []),
-  ui.CatchStatusStrip.new,
+  const ui.CatchBanner.statuses(statuses: []),
+  const StripAlias.statuses(statuses: []),
+  ui.CatchBanner.statuses,
 ];
 DART
   expect_code_count "status placement $feedback_scope" "catch_status_strip_is_layout_owned" 3
@@ -696,7 +696,7 @@ for status_owner in \
   probe_path="$probe_root/$status_owner"
   stage_probe "status owner $status_owner" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
-final status = CatchStatusStrip(statuses: const []);
+final status = CatchBanner.statuses(statuses: const []);
 DART
   expect_probe exact catch_status_strip_is_layout_owned 0
 done
@@ -708,7 +708,7 @@ for non_status_owner in \
   probe_path="$probe_root/$non_status_owner"
   stage_probe "retired or delegating status non-owner $non_status_owner" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
-final status = CatchStatusStrip(statuses: const []);
+final status = CatchBanner.statuses(statuses: const []);
 DART
   expect_probe exact catch_status_strip_is_layout_owned 1
 done
@@ -718,7 +718,7 @@ stage_probe "canonical feedback owner" <<'DART'
 import 'package:flutter/material.dart';
 import 'package:catch_ui/catch_ui.dart';
 
-final misplaced = CatchStatusStrip(statuses: const []);
+final misplaced = CatchBanner.statuses(statuses: const []);
 
 void owner(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -754,7 +754,7 @@ import 'package:catch_ui/catch_ui.dart' as ui;
 
 class SnackBar {}
 class MaterialBanner {}
-class CatchStatusStrip {}
+class CatchBanner { CatchBanner.statuses(); }
 class ScaffoldMessengerState {
   void showSnackBar(Object notice) {}
   void showMaterialBanner(Object notice) {}
@@ -768,8 +768,10 @@ List<Object> allowedFeedback(material.BuildContext context) {
   messenger.showMaterialBanner(MaterialBanner());
   return [
     SnackBar.new, MaterialBanner.new, messenger.showSnackBar,
-    CatchStatusStrip(), CatchStatusStrip.new,
-    const ui.CatchStatusStripScope(statuses: [], child: material.SizedBox()),
+    CatchBanner.statuses(), CatchBanner.statuses,
+    const ui.CatchBanner(message: 'Inline'), ui.CatchBanner.new,
+    ui.CatchBanner.error, ui.CatchBanner.errorWithRetry,
+    const ui.CatchBannerStatusScope(statuses: [], child: material.SizedBox()),
   ];
 }
 DART

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:6dd188ec35d38b9518f53e6b5a9c07af49b1d16c01ecbd2f062b6ea52cb2dd8d",
-  "resolvedDigest": "sha256:46a0f0be9dcbe18b52d1730f98b5f57ad06df0e41c7a9b8203a525550299a93c",
+  "resolvedDigest": "sha256:994a43add9c3a38632d6bbf3405ba5152ac2fe3c43ee3e155991ad5421f52f4c",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -2311,7 +2311,8 @@
               "constructors": [
                 "CatchBanner",
                 "CatchBanner.error",
-                "CatchBanner.errorWithRetry"
+                "CatchBanner.errorWithRetry",
+                "CatchBanner.statuses"
               ]
             }
           },

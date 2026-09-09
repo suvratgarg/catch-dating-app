@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:bae638ec3b70fbf9e4f4fd3e6efd73945d1e2c543f65b8ab6cccf5dc6b333900",
-  "resolvedDigest": "sha256:70d26c620e3b99941c3f032a9952395de0416b396eeb98c9a556429c02d4be47",
+  "resolvedDigest": "sha256:7701cfad581c34b0a8af52e226f36fb8d6530e7900bfe5ee6bca4eb4a1b0b61c",
   "feature": {
     "id": "feature.host_event_create",
     "name": "Host Event Create",
@@ -4481,7 +4481,8 @@
               "constructors": [
                 "CatchBanner",
                 "CatchBanner.error",
-                "CatchBanner.errorWithRetry"
+                "CatchBanner.errorWithRetry",
+                "CatchBanner.statuses"
               ]
             }
           },

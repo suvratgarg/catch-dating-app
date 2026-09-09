@@ -25,7 +25,7 @@ class CatchFeedbackRules extends MultiAnalysisRule {
   );
   static const statusStripIsLayoutOwned = LintCode(
     'catch_status_strip_is_layout_owned',
-    'Supply CatchStatusStripData through the screen status slot or CatchStatusStripScope; only canonical screen layouts may place the persistent strip.',
+    'Supply CatchBannerStatus through the screen status slot or CatchBannerStatusScope; only canonical screen layouts may place the persistent strip.',
     severity: DiagnosticSeverity.WARNING,
   );
   static const noticeHostIsAppOwned = LintCode(
@@ -103,8 +103,9 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
       );
     }
     if (element is ConstructorElement &&
-        element.enclosingElement.name == 'CatchStatusStrip' &&
-        uri == 'package:catch_ui/src/components/catch_status_strip.dart' &&
+        element.enclosingElement.name == 'CatchBanner' &&
+        element.name == 'statuses' &&
+        uri == 'package:catch_ui/src/components/catch_banner.dart' &&
         !const {
           '/packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart',
           '/packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart',

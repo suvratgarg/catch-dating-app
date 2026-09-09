@@ -99,14 +99,14 @@ class _HostEventRehearsalScreenState
     return CatchRouteScaffold(
       statuses: [
         if (rehearsalAsync.asData?.value case final rehearsal?)
-          CatchStatusStripData(
+          CatchBannerStatus(
             id: 'rehearsal.${rehearsal.session.id}',
             label: context.l10n.hostEventRehearsalBadge,
             message: context.l10n.hostEventRehearsalSyntheticGuests,
             icon: CatchIcons.groupsOutlined,
             color: CatchTokens.of(context).danger,
             actions: [
-              CatchStatusStripAction(
+              CatchBannerAction(
                 label: context.l10n.hostEventRehearsalClockPill(
                   time: DateFormat.jm(
                     Localizations.localeOf(context).toLanguageTag(),
@@ -114,7 +114,7 @@ class _HostEventRehearsalScreenState
                 ),
                 onPressed: () => _showRunControls(rehearsal, busy),
               ),
-              CatchStatusStripAction(
+              CatchBannerAction(
                 label: context.l10n.hostEventRehearsalPracticeTools,
                 icon: CatchIcons.more,
                 onPressed: () => _showPracticeTools(rehearsal, busy),

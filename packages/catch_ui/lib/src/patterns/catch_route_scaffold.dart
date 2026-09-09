@@ -2,9 +2,9 @@
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
-import 'package:catch_ui/src/components/catch_status_strip.dart';
-import 'package:catch_ui/src/components/catch_status_strip_data.dart';
-import 'package:catch_ui/src/components/catch_status_strip_scope.dart';
+import 'package:catch_ui/src/components/catch_banner.dart';
+import 'package:catch_ui/src/components/catch_banner_status.dart';
+import 'package:catch_ui/src/components/catch_banner_status_scope.dart';
 import 'package:catch_ui/src/patterns/catch_page_body.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_page_body_variant.dart';
@@ -369,7 +369,7 @@ class CatchRouteScaffold extends StatefulWidget {
 
   final CatchRouteTopBarBuilder topBarBuilder;
   final CatchRouteBody body;
-  final List<CatchStatusStripData> statuses;
+  final List<CatchBannerStatus> statuses;
   final Widget? bottomNavigationBar;
   final Color? backgroundColor;
   final bool? resizeToAvoidBottomInset;
@@ -395,8 +395,11 @@ class _CatchRouteScaffoldState extends State<CatchRouteScaffold> {
   @override
   Widget build(BuildContext context) {
     final background = widget.backgroundColor ?? CatchTokens.of(context).bg;
-    final statuses = [...widget.statuses, ...CatchStatusStripScope.of(context)];
-    return CatchStatusStripScope(
+    final statuses = [
+      ...widget.statuses,
+      ...CatchBannerStatusScope.of(context),
+    ];
+    return CatchBannerStatusScope(
       statuses: const [],
       child: CatchScreenScaffold.workspace(
         backgroundColor: background,
@@ -407,7 +410,7 @@ class _CatchRouteScaffoldState extends State<CatchRouteScaffold> {
           onNotification: _handleScroll,
           child: Column(
             children: [
-              CatchStatusStrip(statuses: statuses),
+              CatchBanner.statuses(statuses: statuses),
               Expanded(child: widget.body._build(context)),
             ],
           ),

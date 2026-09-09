@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_organizer_create.feature.json",
   "generatedFor": "2026-09-05",
   "sourceDigest": "sha256:1ff57e7e0ff8185a077bd805f51acdd1fd93d0a436dff83f9f0f8992e992e2c5",
-  "resolvedDigest": "sha256:499f2275991657c24d98b12dbfc559d7f6bd6bb7aaf401e556694d3c7bd0e7a9",
+  "resolvedDigest": "sha256:6dd14f3c2da377198c64ba9d4b63a86007547c0eb610c3ad59db22a79fbc907f",
   "feature": {
     "id": "feature.host_organizer_create",
     "name": "Host Organizer Create",
@@ -1568,7 +1568,8 @@
               "constructors": [
                 "CatchBanner",
                 "CatchBanner.error",
-                "CatchBanner.errorWithRetry"
+                "CatchBanner.errorWithRetry",
+                "CatchBanner.statuses"
               ]
             }
           },

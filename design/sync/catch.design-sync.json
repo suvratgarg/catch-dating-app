@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "1bc7a75ee9d9dcf5c7235338863c06cf63311700dd87a20db85e9942c700b32d",
+  "sourceDigest": "e693191569cf298f4856ae43c4abfa540af6bdc42abbcc72f5cedd77648be3d8",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "1bc7a75ee9d9dcf5c7235338863c06cf63311700dd87a20db85e9942c700b32d",
-    "contractDigest": "1bc7a75ee9d9dcf5c7235338863c06cf63311700dd87a20db85e9942c700b32d"
+    "digest": "e693191569cf298f4856ae43c4abfa540af6bdc42abbcc72f5cedd77648be3d8",
+    "contractDigest": "e693191569cf298f4856ae43c4abfa540af6bdc42abbcc72f5cedd77648be3d8"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "ae6d7a70032ef8808d4d16b21d07edfd985c2eff3736ed65ffcb0a75470bafdd",
+    "handoffRequestDigest": "30c50acb3378b9e644143e259b25d0ff4039ad37424b0aa0143cccc64e74df0a",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -82,19 +82,19 @@
     }
   },
   "metrics": {
-    "contractCount": 73,
-    "publicClassCount": 220,
-    "conceptCount": 65,
+    "contractCount": 72,
+    "publicClassCount": 219,
+    "conceptCount": 64,
     "memberCount": 137,
-    "membersPerConcept": 2.11,
+    "membersPerConcept": 2.14,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
-      "concept": 65,
+      "concept": 64,
       "member": 137,
       "screen": 15
     },
-    "collisionCount": 31,
+    "collisionCount": 30,
     "collisions": [
       {
         "key": "catch.badge",
@@ -110,6 +110,7 @@
         "key": "catch.banner",
         "symbols": [
           "CatchBanner",
+          "CatchBannerStatusScope",
           "CatchLocalizedErrorBanner"
         ]
       },
@@ -369,13 +370,6 @@
         ]
       },
       {
-        "key": "catch.status_strip",
-        "symbols": [
-          "CatchStatusStrip",
-          "CatchStatusStripScope"
-        ]
-      },
-      {
         "key": "catch.tab_bar",
         "symbols": [
           "CatchNavigationButton",
@@ -421,12 +415,12 @@
       }
     ],
     "naming": {
-      "canonicalConceptNames": 64,
+      "canonicalConceptNames": 63,
       "documentedConceptNameExceptions": 1,
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 71,
+      "missing": 70,
       "stale": 2
     },
     "figmaPropertyDriftCount": 2,
@@ -434,9 +428,9 @@
     "figmaReviewSnapshotMappings": 2,
     "figmaPublishedMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 73
+      "planned": 72
     },
-    "claudeAllowed": 73,
+    "claudeAllowed": 72,
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
     "figmaMappedConcepts": 0
@@ -699,7 +693,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 6,
-      "figmaExpectedPropertyDigest": "43b55c397baaca1f455923f3409def1eba06e4ac18cbbdf24ec35e75f91daed6",
+      "figmaExpectedPropertyDigest": "a1ad4159a0b08b7716f91c8792f2e820b09674c599075ba1f05c24f6c7060262",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -707,7 +701,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Banner",
       "claudeAllowed": true,
-      "contractDigest": "133c0a926cc1d5b0ca823be8164d676ad5fa0c28e728b6e49bc7f159612d8952"
+      "contractDigest": "adbcffd9bae18964ed8037ab5383bb98abf539afa1e9d7177d0522d6dabf2d64"
     },
     {
       "contractId": "catch.notice",
@@ -740,38 +734,6 @@
       "claudeHandoffName": "Notice",
       "claudeAllowed": true,
       "contractDigest": "84bf2dd76df957856155ab99b621e8d8b8f3736a89414d6d6f802341c2fcecb6"
-    },
-    {
-      "contractId": "catch.status_strip",
-      "conceptRole": "concept",
-      "conceptId": "catch.status_strip",
-      "dartSymbol": "CatchStatusStrip",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_status_strip.dart",
-      "figmaName": "Catch/StatusStrip",
-      "figmaPropertyProjectionMode": "inferred",
-      "figmaReviewStatePolicy": "variant",
-      "figmaPropertySources": {},
-      "figmaDeclaredStatus": "unmapped",
-      "figmaDeclaredUrl": null,
-      "figmaStatus": "missing",
-      "figmaUrl": null,
-      "figmaNodeId": null,
-      "figmaComponentKey": null,
-      "figmaPublishStatus": null,
-      "figmaSnapshotCaptureMethod": "figma-mcp",
-      "figmaVariableBindingCount": 0,
-      "figmaVariableBindingDigest": null,
-      "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 1,
-      "figmaExpectedPropertyDigest": "300b567115eb5d50047fee65c78bfc6b97e40462302b5b01302b9ae68f9cc5d5",
-      "figmaActualPropertyCount": 0,
-      "figmaActualPropertyDigest": null,
-      "figmaDrift": [],
-      "codeConnectStatus": "planned",
-      "codeConnectTemplate": null,
-      "claudeHandoffName": "StatusStrip",
-      "claudeAllowed": true,
-      "contractDigest": "5748f5c3e0e43bb3c03a8022208bc37f89c8e305ed42f7c9ba218c9712ab4e30"
     },
     {
       "contractId": "catch.field",

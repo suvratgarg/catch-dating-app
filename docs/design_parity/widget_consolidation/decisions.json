@@ -8094,6 +8094,34 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:persistent-feedback-canonical-banner",
+      "patternFamilyId": "persistent-feedback-canonical-banner",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchBanner",
+      "members": [
+        {
+          "name": "CatchBanner",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStatusStrip",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBannerStatusScope",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStatusStripScope",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Persistent status bands and inline feedback share icon, copy and action anatomy. Retain the distinct statuses constructor and typed publication scope with the resolved placement guard. The same renderer preserves inline/error containment and status tint, contrast and wrapping; layouts retain all pinning and one-time publication behavior.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }
