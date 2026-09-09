@@ -116,6 +116,7 @@ export async function harness(realDb?: Firestore, id = "test",
   const initial = (await preferences.get(actor, scope)).view;
   const grant = {...scope, requestId: "grant", expectedRevision: null,
     decision: {kind: "grant" as const, copyVersion: WHATSAPP_CONSENT_VERSION,
+      reviewHash: initial.reviewHash,
       senderHash: initial.sender!.bindingHash,
       stopRecordHash: null}} satisfies PreferenceInput;
   await preferences.set(actor, grant);

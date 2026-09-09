@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.92.0
+version: 1.93.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -1740,8 +1740,12 @@ consent evidence or other attendee data appears in the response.
 
 The guest client must load the existing `getEventWhatsappPreference` for the
 selected sender and review its name, displayed sender number, consent text and
-phone suffix before an explicit grant. `setEventWhatsappPreference` binds both
-the displayed sender hash and current STOP-record hash. Sender discovery makes
+phone suffix before an explicit grant. `setEventWhatsappPreference` binds the
+displayed sender and STOP hashes plus the required server `reviewHash`. The
+latter pins the full recipient, source generations, event title and consent
+expiry, selected sender, STOP evidence and consent copy. A changed phone with
+the same displayed suffix still needs fresh review. Withdrawal keeps its
+original recipient/sender evidence and requires no grant review hash. Sender discovery makes
 no writes and cannot enroll the guest or supply organizer marketing permission.
 `EventWhatsappPreferencesPanel` now composes that review after verified public
 registration and on the guest venue/live page. It displays the organizer name,
@@ -1752,9 +1756,11 @@ admission or in rehearsal.
 
 WhatsApp and RCS share the sender-navigation, auth-epoch and exact-retry controller
 and the presentation card. Each has a separate typed port, closed response parser,
-query identity and consent request. WhatsApp stale-click checks compare both sender
-binding and STOP hashes even when the permission revision is unchanged; RCS keeps
-its reviewed hash. A malformed or unknown write outcome freezes navigation and
+query identity and consent request. Both channels compare the reviewed hash even
+when the permission revision is unchanged. Ordinary time, check-in and credential
+rotation preserve unchanged WhatsApp consent terms. The required WhatsApp view
+and grant hash needs coordinated API/web rollout and a reload of existing tabs.
+A malformed or unknown write outcome freezes navigation and
 new choices until the exact request is retried or definitively rejected. Auth or
 event/attendee changes discard private presentation state and fence delayed reads
 and saves. Discovery remains stable during the page session; selected preference

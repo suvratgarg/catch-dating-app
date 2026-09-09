@@ -59,6 +59,7 @@ const schemaSetEventWhatsappPreferenceCallablePayloadSchema = <String, Object?>{
             'copyVersion',
             'senderHash',
             'stopRecordHash',
+            'reviewHash',
           ],
           'properties': <String, Object?>{
             'kind': <String, Object?>{
@@ -83,6 +84,10 @@ const schemaSetEventWhatsappPreferenceCallablePayloadSchema = <String, Object?>{
                   'pattern': '^[a-f0-9]{64}\$',
                 },
               ],
+            },
+            'reviewHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
             },
           },
         },

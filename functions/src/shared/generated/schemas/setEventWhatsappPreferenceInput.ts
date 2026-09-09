@@ -56,7 +56,8 @@ export const setEventWhatsappPreferenceCallablePayloadSchema: Record<string, unk
             "kind",
             "copyVersion",
             "senderHash",
-            "stopRecordHash"
+            "stopRecordHash",
+            "reviewHash"
           ],
           "properties": {
             "kind": {
@@ -81,6 +82,10 @@ export const setEventWhatsappPreferenceCallablePayloadSchema: Record<string, unk
                   "pattern": "^[a-f0-9]{64}$"
                 }
               ]
+            },
+            "reviewHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
             }
           }
         },

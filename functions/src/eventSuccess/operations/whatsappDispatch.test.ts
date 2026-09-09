@@ -711,7 +711,8 @@ test("STOP needs no CRM contact and fences unseen re-enablement",
       requestId: "stale-enable", expectedRevision: 1}), /cannot be enabled/);
     const renewed = await h.preferences.set(h.actor, {...h.grant,
       requestId: "fresh-enable", expectedRevision: 1,
-      decision: {...h.grant.decision, stopRecordHash: stopped.stopRecordHash}});
+      decision: {...h.grant.decision, reviewHash: stopped.reviewHash,
+        stopRecordHash: stopped.stopRecordHash}});
     assert.equal(renewed.view.preference, "enabled");
     // A pre-STOP reservation cannot inherit the renewed permission.
     assert.equal((await h.claim()).kind, "withheld");
@@ -731,6 +732,7 @@ test("older STOP deliveries cannot reverse a later explicit event opt-in",
     h.clock.now += 1000;
     await h.preferences.set(h.actor, {...h.grant, requestId: "fresh",
       expectedRevision: 1, decision: {...h.grant.decision,
+        reviewHash: stopped.reviewHash,
         stopRecordHash: stopped.stopRecordHash}});
     await h.stop(start, "old-stop");
     assert.equal((await h.preferences.get(h.actor, h.scope)).view.preference,

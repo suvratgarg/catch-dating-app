@@ -40025,6 +40025,13 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['notSet', 'enabled', 'disabled', 'expired'],
   );
 
+  static const eventWhatsappPreferenceCallableResponseViewReviewHash = CatchContractFieldConstraints(
+    path: 'eventWhatsappPreferenceCallableResponse.view.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventWhatsappPreferenceCallableResponseViewRevision = CatchContractFieldConstraints(
     path: 'eventWhatsappPreferenceCallableResponse.view.revision',
     valueTypes: <String>['integer'],
@@ -75423,6 +75430,13 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const setEventWhatsappPreferenceCallablePayloadDecisionReviewHash = CatchContractFieldConstraints(
+    path: 'setEventWhatsappPreferenceCallablePayload.decision.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const setEventWhatsappPreferenceCallablePayloadDecisionSenderHash = CatchContractFieldConstraints(
     path: 'setEventWhatsappPreferenceCallablePayload.decision.senderHash',
     required: true,
@@ -89358,6 +89372,7 @@ abstract final class CatchContractConstraints {
     'eventWhatsappPreferenceCallableResponse.view.expiresAt': eventWhatsappPreferenceCallableResponseViewExpiresAt,
     'eventWhatsappPreferenceCallableResponse.view.phoneLastFour': eventWhatsappPreferenceCallableResponseViewPhoneLastFour,
     'eventWhatsappPreferenceCallableResponse.view.preference': eventWhatsappPreferenceCallableResponseViewPreference,
+    'eventWhatsappPreferenceCallableResponse.view.reviewHash': eventWhatsappPreferenceCallableResponseViewReviewHash,
     'eventWhatsappPreferenceCallableResponse.view.revision': eventWhatsappPreferenceCallableResponseViewRevision,
     'eventWhatsappPreferenceCallableResponse.view.sender.bindingHash': eventWhatsappPreferenceCallableResponseViewSenderBindingHash,
     'eventWhatsappPreferenceCallableResponse.view.sender.displayName': eventWhatsappPreferenceCallableResponseViewSenderDisplayName,
@@ -94216,6 +94231,7 @@ abstract final class CatchContractConstraints {
     'setEventWhatsappPreferenceCallablePayload.attendeeId': setEventWhatsappPreferenceCallablePayloadAttendeeId,
     'setEventWhatsappPreferenceCallablePayload.decision.copyVersion': setEventWhatsappPreferenceCallablePayloadDecisionCopyVersion,
     'setEventWhatsappPreferenceCallablePayload.decision.kind': setEventWhatsappPreferenceCallablePayloadDecisionKind,
+    'setEventWhatsappPreferenceCallablePayload.decision.reviewHash': setEventWhatsappPreferenceCallablePayloadDecisionReviewHash,
     'setEventWhatsappPreferenceCallablePayload.decision.senderHash': setEventWhatsappPreferenceCallablePayloadDecisionSenderHash,
     'setEventWhatsappPreferenceCallablePayload.decision.stopRecordHash': setEventWhatsappPreferenceCallablePayloadDecisionStopRecordHash,
     'setEventWhatsappPreferenceCallablePayload.eventId': setEventWhatsappPreferenceCallablePayloadEventId,

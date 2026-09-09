@@ -8,7 +8,7 @@ import type {EventWhatsappPreferenceCallableResponse as Response} from
   "../../shared/generated/eventWhatsappPreferenceCallableResponse";
 import {operationContentHash} from "../../operations/durableActions";
 import {
-  GuestSourceFacts, readGuestSourceFacts, requireDocumentId,
+  GuestSourceFacts, guestSourceFactsFromSnapshots, requireDocumentId,
 } from "./guestRecords";
 import {
   Permission, parseWhatsappPermission, WHATSAPP_PERMISSIONS,
@@ -82,6 +82,7 @@ export class WhatsappPreferenceStore {
       const granting = input.decision.kind === "grant";
       if (input.decision.kind === "grant" && (!currentView.canEnable ||
           input.decision.copyVersion !== WHATSAPP_CONSENT_VERSION ||
+          input.decision.reviewHash !== currentView.reviewHash ||
           input.decision.senderHash !== currentView.sender?.bindingHash ||
           input.decision.stopRecordHash !== currentView.stopRecordHash ||
           now <= (facts.stop?.stoppedAt ?? -1))) {
@@ -160,8 +161,8 @@ export class WhatsappPreferenceStore {
     }
     const context = {mode: "live" as const, eventId: scope.eventId,
       organizerId: event.organizerId ?? event.clubId};
-    const source = await readGuestSourceFacts(this.db, tx, context,
-      scope.attendeeId);
+    const source = guestSourceFactsFromSnapshots(context, scope.attendeeId,
+      eventSnap, attendeeSnap);
     const id = whatsappPermissionId(context, scope.attendeeId, scope.senderId);
     const permissionSnap = await tx.get(this.db
       .collection(WHATSAPP_PERMISSIONS).doc(id));
@@ -238,10 +239,18 @@ export class WhatsappPreferenceStore {
           !proof ? "notSet" :
           permission!.expiresAt <= now ? "expired" : "enabled";
     const identity = sender?.identity ?? permission?.sender;
+    const stopRecordHash = stop ? operationContentHash(stop) : null;
+    // Sender/STOP hashes alone cannot bind an unseen recipient or replacement
+    // event. Pin the consent terms without treating credentials as identity.
+    const reviewHash = operationContentHash([facts.context, scope.attendeeId,
+      actor.uid, source.attendeeGeneration, source.sourceGeneration,
+      source.eventTitle, Math.floor(source.eventEnd) + 86_400_000, phone,
+      scope.senderId, identity ?? null, stopRecordHash,
+      WHATSAPP_CONSENT_HASH]);
     return {eventId: scope.eventId, attendeeId: scope.attendeeId,
       senderId: scope.senderId, serverTime: now,
       revision: permission?.revision ?? null, preference,
-      stopRecordHash: stop ? operationContentHash(stop) : null,
+      stopRecordHash, reviewHash,
       canEnable: availability === "ready", availability,
       phoneLastFour: phone?.slice(-4) ?? null,
       expiresAt: belongs ? permission!.expiresAt : null,

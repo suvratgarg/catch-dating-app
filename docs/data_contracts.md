@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.93.0
+version: 1.94.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -2777,14 +2777,22 @@ silently switch consent. Grants additionally require the matching signed phone
 claim, an admitted participant, eligible event, reviewed sender policy and
 current verified sender identity. The client submits only scope, decision,
 expected revision, request ID, copy version and the previously displayed sender
-hash plus the current nullable STOP-record hash. An unseen STOP cannot be
-reversed by an older in-flight enable request. Provider identities, recipient
-number, consent copy and evidence times
+hash, current nullable STOP-record hash and required grant `reviewHash` from
+the read response. The review hash binds organizer/event/attendee/subject,
+authored and SDK source generations, event title, consent expiry, full recipient
+number, selected sender identity, STOP evidence and consent copy. A changed
+verified number needs fresh review even if its last four digits match. Event
+replacement or changed consent terms also invalidate an unseen grant. An unseen
+STOP cannot be reversed by an older in-flight enable request. Provider
+identities, recipient number, consent copy and evidence times
 come from trusted server data. The response exposes the sender display name and
 business number, masked recipient number and preference state; no provider
 account IDs or credentials are exposed.
 
-Credential rotation and health-sync revisions preserve permission. A changed
+Credential rotation, health-sync revisions, ordinary clock advancement and
+check-in do not invalidate otherwise unchanged reviewed terms; grant-time
+eligibility is still checked. Credential rotation and health-sync revisions
+preserve permission. A changed
 provider account or sending phone requires fresh consent. Display-name updates
 do not erase a saved grant, but a new grant must match the newly displayed
 identity. Consent expires no later than 24 hours after the event end captured
@@ -2792,18 +2800,22 @@ at grant time; dispatch must also recheck the current event window. Sender
 readiness is independent of a recorded enabled preference.
 
 Permission and receipt commit in one transaction. Exact replays return current
-state, while revision conflicts cannot reverse a later withdrawal. The shared
+state before grant review validation and never reapply an old grant. Revision
+conflicts cannot reverse a later withdrawal. The shared
 preference transaction adapter maps only the exact closed-transaction callback
 RPC error into the SDK's bounded ABORTED retry path. It does not catch commit
 uncertainty or reclassify other validation errors. SMS preference and link
 withdrawal use this same boundary; paired withdrawal reads are batched. A first
 opt-out creates a revoked tombstone without invented grant evidence. Withdrawal
-preserves the old recipient/sender evidence even after either changes, and
+preserves the old recipient/sender evidence even after either changes, requires
+the current permission revision but no grant review hash, and
 paused, deleted or malformed sender provisioning cannot obstruct it. These
 authenticated APIs still require a current authorized event/roster identity;
 the independent message-link withdrawal APIs below require neither. Client
 access to permission and receipt collections is denied, including with an admin
-claim. Verified opt-in UI and sender activation remain separate delivery work.
+claim. The required view/grant review hash requires coordinated API and web
+bundle rollout; existing tabs must reload the updated client. Native preference
+UI and sender activation remain separate delivery work.
 
 `eventAssistanceWhatsappWithdrawalGrants/{linkId}` commits with the dispatch
 claim, debits and native reply binding. It pins the original event, attendee

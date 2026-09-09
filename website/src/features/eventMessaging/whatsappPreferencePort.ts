@@ -15,6 +15,7 @@ export const whatsappPreferencePort: SenderPreferencePort<Response, Submission> 
     if (decision === "grant" && !view.sender) throw new Error(copy.senderUnavailable);
     return {...scope, requestId, expectedRevision: view.revision, decision: decision === "grant" ? {
       kind: "grant", copyVersion: view.consent.version,
+      reviewHash: view.reviewHash,
       senderHash: view.sender!.bindingHash, stopRecordHash: view.stopRecordHash,
     } : {kind: "revoke"}};
   },

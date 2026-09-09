@@ -30,5 +30,6 @@ export interface EventWhatsappPreferenceCallableResponse {
       bindingHash: string;
     };
     stopRecordHash: null | string;
+    reviewHash: string;
   };
 }

@@ -6,7 +6,7 @@ export const whatsappOptionsFixture: Options = {eventId: "event", attendeeId: "a
 export const whatsappPreferenceFixture: Response = {outcome: "read", view: {
   eventId: "event", attendeeId: "attendee", senderId: "organizer-whatsapp", serverTime: 1000,
   revision: null, preference: "notSet", canEnable: true, availability: "ready",
-  phoneLastFour: "9999", expiresAt: null, stopRecordHash: null,
+  phoneLastFour: "9999", expiresAt: null, stopRecordHash: null, reviewHash: "d".repeat(64),
   sender: {displayName: "Courtyard Social Club", displayPhoneNumber: "+91 88888 88888", bindingHash: "a".repeat(64)},
   consent: {version: "catch-event-service-whatsapp-v1",
     text: "Receive WhatsApp messages from the organizer shown here about joining, changes and follow-up for this event, until 24 hours after it ends. I can turn them off here."},

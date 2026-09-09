@@ -13,6 +13,7 @@ export interface SetEventWhatsappPreferenceCallablePayload {
         copyVersion: "catch-event-service-whatsapp-v1";
         senderHash: string;
         stopRecordHash: null | string;
+        reviewHash: string;
       }
     | {
         kind: "revoke";

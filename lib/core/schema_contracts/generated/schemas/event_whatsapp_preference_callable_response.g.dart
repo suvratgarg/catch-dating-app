@@ -41,6 +41,7 @@ const schemaEventWhatsappPreferenceCallableResponseSchema = <String, Object?>{
         'senderId',
         'sender',
         'stopRecordHash',
+        'reviewHash',
       ],
       'properties': <String, Object?>{
         'eventId': <String, Object?>{
@@ -184,6 +185,10 @@ const schemaEventWhatsappPreferenceCallableResponseSchema = <String, Object?>{
               'pattern': '^[a-f0-9]{64}\$',
             },
           ],
+        },
+        'reviewHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
         },
       },
     },

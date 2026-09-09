@@ -47,6 +47,7 @@ async function fixture(db?: Firestore) {
       expectedRevision: null, requestId: randomUUID(), decision:
         decision === "revoke" ? {kind: "revoke"} : {kind: "grant",
           copyVersion: view.consent.version,
+          reviewHash: view.reviewHash,
           senderHash: view.sender!.bindingHash,
           stopRecordHash: view.stopRecordHash}});
   };

@@ -688,7 +688,8 @@
         "consent",
         "senderId",
         "sender",
-        "stopRecordHash"
+        "stopRecordHash",
+        "reviewHash"
       ],
       "properties": {
         "eventId": {
@@ -832,6 +833,10 @@
               "pattern": "^[a-f0-9]{64}$"
             }
           ]
+        },
+        "reviewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
       }
     },

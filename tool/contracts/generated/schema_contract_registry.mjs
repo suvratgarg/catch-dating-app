@@ -39686,7 +39686,8 @@ export const setEventWhatsappPreferenceCallablePayloadSchema = {
             "kind",
             "copyVersion",
             "senderHash",
-            "stopRecordHash"
+            "stopRecordHash",
+            "reviewHash"
           ],
           "properties": {
             "kind": {
@@ -39711,6 +39712,10 @@ export const setEventWhatsappPreferenceCallablePayloadSchema = {
                   "pattern": "^[a-f0-9]{64}$"
                 }
               ]
+            },
+            "reviewHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
             }
           }
         },
@@ -39774,7 +39779,8 @@ export const eventWhatsappPreferenceCallableResponseSchema = {
         "consent",
         "senderId",
         "sender",
-        "stopRecordHash"
+        "stopRecordHash",
+        "reviewHash"
       ],
       "properties": {
         "eventId": {
@@ -39918,6 +39924,10 @@ export const eventWhatsappPreferenceCallableResponseSchema = {
               "pattern": "^[a-f0-9]{64}$"
             }
           ]
+        },
+        "reviewHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
       }
     }

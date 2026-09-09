@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
-import {Firestore, getFirestore} from "firebase-admin/firestore";
+import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {ProgressFirestore} from "./groupProgressTestFixtures";
 import type {SetEventWhatsappPreferenceCallablePayload as Submission} from
@@ -22,6 +22,23 @@ import {
 } from "./whatsappPreferenceHandlers";
 
 const start = Date.parse("2026-09-07T12:00:00Z");
+
+test("a reviewed WhatsApp grant cannot move to a changed verified number",
+  async () => {
+    const h = await harness();
+    const before = (await h.store.get(h.actor, h.scope)).view;
+    const actor = {...h.actor, phone: "+918888889999"};
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      phoneE164: actor.phone});
+    const after = (await h.store.get(actor, h.scope)).view;
+    assert.equal(after.revision, before.revision);
+    assert.equal(after.phoneLastFour, before.phoneLastFour);
+    assert.equal(after.sender!.bindingHash, before.sender!.bindingHash);
+    assert.equal(after.stopRecordHash, before.stopRecordHash);
+    assert.notEqual(after.reviewHash, before.reviewHash);
+    await assert.rejects(h.store.set(actor, h.grant), /cannot be enabled/);
+    assert.equal(await h.read(h.permissionPath), undefined);
+  });
 
 async function harness(realDb?: Firestore, key = "one") {
   const fake = new ProgressFirestore();
@@ -82,16 +99,51 @@ async function harness(realDb?: Firestore, key = "one") {
     scope.senderId);
   const permissionPath = WHATSAPP_PERMISSIONS + "/" + permissionId;
   const store = new WhatsappPreferenceStore(db, () => clock.now);
-  const grant: Submission = {...scope, requestId: "grant-1", expectedRevision:
+  const initial = (await store.get(actor, scope)).view;
+  const grant = {...scope, requestId: "grant-1", expectedRevision:
     null, decision: {kind: "grant", copyVersion: WHATSAPP_CONSENT_VERSION,
-    stopRecordHash: null,
-    senderHash: (await store.get(actor, scope)).view.sender!.bindingHash}};
+    stopRecordHash: null, reviewHash: initial.reviewHash,
+    senderHash: initial.sender!.bindingHash}} satisfies Submission;
   const stop: Submission = {...scope, requestId: "stop-1", expectedRevision:
     1, decision: {kind: "revoke"}};
   return {db, fake, store, clock, actor, context, scope, grant, stop,
     permissionPath, senderPath, policyPath, attendeePath, eventPath,
     read, write, paths};
 }
+
+test("replacement source records and changed event terms need fresh review",
+  async () => {
+    for (const change of ["name", "end", "generation"]) {
+      const h = await harness();
+      if (change === "generation") {
+        h.fake.generation = Timestamp.fromMillis(2);
+      } else {
+        await h.write(h.eventPath, {...await h.read(h.eventPath),
+          ...(change === "name" ? {name: "A renamed event"} : {
+            endTime: {seconds: (start + 7_200_000) / 1000, nanoseconds: 0}})});
+      }
+      await assert.rejects(h.store.set(h.actor, h.grant),
+        /cannot be enabled/, change);
+      assert.equal(await h.read(h.permissionPath), undefined, change);
+      const view = (await h.store.get(h.actor, h.scope)).view;
+      const result = await h.store.set(h.actor, {...h.grant,
+        decision: {...h.grant.decision, reviewHash: view.reviewHash}});
+      assert.equal(result.outcome, "applied", change);
+    }
+  });
+
+test("ordinary time, check-in and credential rotation preserve consent terms",
+  async () => {
+    const h = await harness();
+    h.clock.now += 1000;
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      status: "checkedIn"});
+    await h.write(h.senderPath, {...await h.read(h.senderPath), revision: 2,
+      secretVersionResource: "projects/demo/secrets/FIXTURE_WA/versions/2"});
+    assert.equal((await h.store.get(h.actor, h.scope)).view.reviewHash,
+      h.grant.decision.reviewHash);
+    assert.equal((await h.store.set(h.actor, h.grant)).outcome, "applied");
+  });
 
 test("verified opt-in records exact consent without changing the roster",
   async () => {
@@ -229,6 +281,11 @@ test("preference callables authenticate, validate and rate-limit before writes",
     await assert.rejects(setEventWhatsappPreferenceHandler(request({
       ...h.grant, phoneE164: "+917777777777",
     }), deps), /additional properties/);
+    for (const reviewHash of [undefined, null, "", "old-review"]) {
+      await assert.rejects(setEventWhatsappPreferenceHandler(request({
+        ...h.grant, decision: {...h.grant.decision, reviewHash},
+      }), deps), {code: "invalid-argument"});
+    }
     const result = await setEventWhatsappPreferenceHandler(
       request(h.grant), deps);
     assert.equal(result.view.preference, "enabled");
@@ -247,12 +304,20 @@ test("Firestore persists one grant across competing participant requests", {
     "whatsapp-consent-" + key);
   try {
     const h = await harness(getFirestore(app), key);
+    const actor = {...h.actor, phone: "+918888889999"};
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      phoneE164: actor.phone});
+    await assert.rejects(h.store.set(actor, h.grant), /cannot be enabled/);
+    const view = (await h.store.get(actor, h.scope)).view;
+    const grant = {...h.grant,
+      decision: {...h.grant.decision, reviewHash: view.reviewHash}};
     const results = await Promise.all(Array.from({length: 8}, () =>
-      h.store.set(h.actor, h.grant)));
+      h.store.set(actor, grant)));
     assert.equal(results.filter((r) => r.outcome === "applied").length, 1);
     assert.equal(results.filter((r) => r.outcome === "replayed").length, 7);
     const permission = parseWhatsappPermission(await h.read(h.permissionPath));
     assert.equal(permission.revision, 1);
+    assert.equal(permission.phoneE164, actor.phone);
   } finally {
     await deleteApp(app);
   }
@@ -291,6 +356,7 @@ test("credentials can rotate but new provider identity needs fresh consent",
     const fresh = await h.store.set(h.actor, {...h.grant, requestId: "fresh",
       expectedRevision: 1, decision: {kind: "grant",
         copyVersion: WHATSAPP_CONSENT_VERSION,
+        reviewHash: changed.view.reviewHash,
         stopRecordHash: null,
         senderHash: changed.view.sender!.bindingHash}});
     assert.equal(fresh.view.preference, "enabled");
@@ -359,6 +425,7 @@ test("explicit sender selection never inherits another sender's permission",
     // A second sender can use the same UI request id without colliding.
     const applied = await h.store.set(h.actor, {...h.grant, ...scope,
       decision: {kind: "grant", copyVersion: WHATSAPP_CONSENT_VERSION,
+        reviewHash: second.view.reviewHash,
         stopRecordHash: null,
         senderHash: second.view.sender!.bindingHash}});
     assert.equal(applied.outcome, "applied");
@@ -376,12 +443,18 @@ test("a changed recipient needs fresh consent; withdrawal keeps old evidence",
     const changed = await h.store.get(actor, h.scope);
     assert.equal(changed.view.preference, "notSet");
     assert.equal(changed.view.canEnable, true);
+    const replay = await h.store.set(actor, h.grant);
+    assert.equal(replay.outcome, "replayed");
+    assert.equal(replay.view.preference, "notSet");
+    assert.deepEqual(await h.read(h.permissionPath), original);
     await h.store.set(actor, h.stop);
     const withdrawn = parseWhatsappPermission(await h.read(h.permissionPath));
     assert.equal(withdrawn.status, "revoked");
     assert.equal(withdrawn.phoneE164, original.phoneE164);
     assert.deepEqual(withdrawn.evidence, original.evidence);
     const fresh = await h.store.set(actor, {...h.grant, requestId: "new-phone",
+      decision: {...h.grant.decision,
+        reviewHash: (await h.store.get(actor, h.scope)).view.reviewHash},
       expectedRevision: 2});
     assert.equal(fresh.view.preference, "enabled");
     assert.equal(parseWhatsappPermission(await h.read(h.permissionPath))

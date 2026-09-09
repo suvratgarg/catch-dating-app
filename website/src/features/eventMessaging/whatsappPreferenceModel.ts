@@ -18,13 +18,14 @@ export function whatsappPreferenceResponse(value: unknown, scope: SenderPreferen
       typeof value.outcome !== "string" || !Object.hasOwn(outcomes, value.outcome) ||
       (value.outcome === "read") !== (operation === "read")) throw invalid();
   const v = value.view;
-  if (!keys(v, "attendeeId,availability,canEnable,consent,eventId,expiresAt,phoneLastFour,preference,revision,sender,senderId,serverTime,stopRecordHash") ||
+  if (!keys(v, "attendeeId,availability,canEnable,consent,eventId,expiresAt,phoneLastFour,preference,reviewHash,revision,sender,senderId,serverTime,stopRecordHash") ||
       !id(v.eventId) || v.eventId !== scope.eventId || !id(v.attendeeId) || v.attendeeId !== scope.attendeeId ||
       !id(v.senderId) || v.senderId !== scope.senderId || !integer(v.serverTime) ||
       v.revision !== null && !integer(v.revision, 1) || v.expiresAt !== null && !integer(v.expiresAt) ||
       typeof v.preference !== "string" || !Object.hasOwn(preferences, v.preference) ||
       typeof v.availability !== "string" || !Object.hasOwn(availability, v.availability) ||
-      typeof v.canEnable !== "boolean" || v.stopRecordHash !== null && !hash(v.stopRecordHash) ||
+      typeof v.canEnable !== "boolean" || !hash(v.reviewHash) ||
+      v.stopRecordHash !== null && !hash(v.stopRecordHash) ||
       v.phoneLastFour !== null && (typeof v.phoneLastFour !== "string" || !/^\d{4}$/.test(v.phoneLastFour)) ||
       !record(v.consent) || !keys(v.consent, "text,version") ||
       v.consent.version !== "catch-event-service-whatsapp-v1" || !string(v.consent.text, 500) ||
@@ -38,7 +39,8 @@ export function whatsappPreferenceResponse(value: unknown, scope: SenderPreferen
     preference: v.preference as WhatsappPreferenceView["preference"],
     availability: v.availability as WhatsappPreferenceView["availability"],
     canEnable: v.canEnable, phoneLastFour: v.phoneLastFour, expiresAt: v.expiresAt,
-    stopRecordHash: v.stopRecordHash, consent: {version: v.consent.version, text: v.consent.text},
+    stopRecordHash: v.stopRecordHash, reviewHash: v.reviewHash,
+    consent: {version: v.consent.version, text: v.consent.text},
     sender: v.sender === null ? null : {displayName: v.sender.displayName as string,
       displayPhoneNumber: v.sender.displayPhoneNumber as string, bindingHash: v.sender.bindingHash as string},
   }};
@@ -49,7 +51,7 @@ export function whatsappPreferenceOptions(value: unknown,
   return senderPreferenceOptions(value, scope, after, "whatsapp");
 }
 
-/** STOP can change while the preference revision stays the same. */
+/** Recipient, source, sender and STOP can change at the same revision. */
 export function whatsappReviewKey(view: WhatsappPreferenceView): string {
-  return JSON.stringify([view.sender?.bindingHash ?? null, view.stopRecordHash]);
+  return view.reviewHash;
 }

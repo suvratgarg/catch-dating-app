@@ -70,6 +70,7 @@ describe("verified WhatsApp sender preferences", () => {
     expect(api.set).toHaveBeenCalledExactlyOnceWith({eventId: "event", attendeeId: "attendee",
       senderId: "organizer-whatsapp", requestId: expect.any(String), expectedRevision: null,
       decision: {kind: "grant", copyVersion: initial.view.consent.version,
+        reviewHash: initial.view.reviewHash,
         senderHash: initial.view.sender!.bindingHash, stopRecordHash: null}});
     expect(api.rcsSet).not.toHaveBeenCalled();
     act(() => h.result.current.refresh());
@@ -77,12 +78,13 @@ describe("verified WhatsApp sender preferences", () => {
     expect(h.result.current.state).toMatchObject({view: {revision: 1}}); h.unmount();
   });
 
-  it.each(["sender", "stop"])("rejects a stale click when %s changes at the same revision", async (kind) => {
+  it.each(["sender", "stop", "recipient"])("rejects a stale click when %s changes at the same revision", async (kind) => {
     const h = harness(); await ready(h); const oldEnable = h.result.current.enable;
     const key = h.client.getQueryCache().getAll().find((q) => q.queryKey.includes("whatsapp-preference"))!.queryKey;
     act(() => {
-      h.client.setQueryData(key, {...initial, view: {...initial.view, ...(kind === "stop" ?
-        {stopRecordHash: "b".repeat(64)} : {sender: {...initial.view.sender, bindingHash: "c".repeat(64)}})}});
+      h.client.setQueryData(key, {...initial, view: {...initial.view, reviewHash: "e".repeat(64),
+        ...(kind === "stop" ? {stopRecordHash: "b".repeat(64)} : kind === "sender" ?
+          {sender: {...initial.view.sender, bindingHash: "c".repeat(64)}} : {})}});
       oldEnable();
     });
     expect(api.set).not.toHaveBeenCalled(); h.unmount();
@@ -104,7 +106,8 @@ describe("verified WhatsApp sender preferences", () => {
     fireEvent.click(wa.getByRole("button", {name: copy.retry}));
     await screen.findByText(copy.savedOn);
     expect(api.set.mock.calls[1][0]).toEqual(api.set.mock.calls[0][0]);
-    expect(api.set.mock.calls[1][0].decision).not.toHaveProperty("reviewHash");
+    expect(api.set.mock.calls[1][0].decision.reviewHash).toBe(initial.view.reviewHash);
+    expect(api.set.mock.calls[1][0].decision.senderHash).toBe(initial.view.sender!.bindingHash);
     expect(context.client.getQueryCache().getAll().filter((q) => q.queryKey.includes("rcs-preference"))).toHaveLength(1);
     expect(context.client.getQueryCache().getAll().filter((q) => q.queryKey.includes("whatsapp-preference"))).toHaveLength(1);
     page.unmount();
@@ -201,6 +204,7 @@ it("validates WhatsApp scope, sender number and both proof hashes before caching
   for (const patch of [{eventId: "foreign"}, {attendeeId: "foreign"}, {senderId: "foreign"},
     {serverTime: NaN}, {revision: 0}, {expiresAt: -1}, {phoneLastFour: "12345"},
     {availability: "subscriptionUnavailable"}, {stopRecordHash: "invalid"}, {phone: "private"},
+    {reviewHash: null}, {reviewHash: "invalid"},
     {sender: {...initial.view.sender, displayPhoneNumber: "123"}},
     {sender: {...initial.view.sender, displayPhoneNumber: "1".repeat(33)}},
     {sender: {...initial.view.sender, bindingHash: "invalid"}},
