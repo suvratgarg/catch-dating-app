@@ -8206,6 +8206,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:validated-selection-field-owner",
+      "patternFamilyId": "validated-selection-field-owner",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchSelectionField",
+      "members": [
+        {
+          "name": "CatchSelectionField",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFieldSelectControl",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Owns the labelled, nullable single-choice form field, including validation and normalization when options or caller values change. CatchField.select supplies focus and dismissal controllers and delegates this field member. SelectionMenu requires a current supported value and owns an adaptive selection trigger without form validation; both share CatchMenu as the panel renderer. The label computation uses itemLabelBuilder, the icon slot uses leading, and form validation uses onValidate.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

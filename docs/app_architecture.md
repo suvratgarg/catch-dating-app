@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.58.0
+version: 1.59.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -2351,6 +2351,10 @@ or implementation technique cannot justify a second shared implementation.
   The root `withPrimaryRail` recipe exposes its pinned page controls as
   `actions`, constrained by `CatchPrimaryRail`; its scroll-away header and
   typed page-body recipe retain their separate ownership.
+  `CatchSelectionField` is the form-value and validation member used by
+  `CatchField.select`. It owns a nullable selection and reconciles removed
+  options; `CatchSelectionMenu` requires a supported current value and owns
+  the adaptive trigger. Both delegate the panel to `CatchMenu`.
   Header owns a heading assembly with optional supporting copy, count or
   actions; HeaderTitle owns the title itself. Section and sheet presentation
   recipes use `CatchSectionHeader.kicker` and `CatchSheetHeader.branded`.

@@ -92,21 +92,21 @@ class _CatchFieldState extends State<CatchField>
     final Widget field;
     switch (widget._config) {
       case _SelectConfig _:
-        field = CatchFieldSelectControl(
+        field = CatchSelectionField(
           copy: widget.copy,
           title: _title,
           values: widget._selectValues!,
-          itemLabel: widget._selectItemLabel!,
+          itemLabelBuilder: widget._selectItemLabel!,
           value: widget._selectValue,
           onChanged: widget._onSelectChanged,
-          validator: widget._selectValidator,
+          onValidate: widget._selectValidator,
           menuController: _menuController,
           focusNode: _focusNode,
           enabled: widget.enabled,
           showLabel: widget.showLabel,
           size: widget.size,
           placeholder: widget.placeholder,
-          prefixIcon: widget.prefixIcon,
+          leading: widget.prefixIcon,
           error: _displayError,
           helperText: widget.helperText,
           helperTone: widget.helperTone,

@@ -2562,17 +2562,6 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldSelectControl',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Selection value and validation states',
-                builder:
-                    _widgetbook_workspace_primitives_field_select_control_use_cases
-                        .fieldSelectControlStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchFieldStatusIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2612,6 +2601,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_field_input_suffix_use_cases
                         .fieldInputSuffixStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchSelectionField',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Selection value and validation states',
+                builder:
+                    _widgetbook_workspace_primitives_field_select_control_use_cases
+                        .fieldSelectControlStates,
               ),
             ],
           ),

@@ -3686,8 +3686,8 @@
           },
           {
             "id": "catch.field.select_control",
-            "symbol": "CatchFieldSelectControl",
-            "file": "packages/catch_ui/lib/src/components/catch_field_select_control.dart",
+            "symbol": "CatchSelectionField",
+            "file": "packages/catch_ui/lib/src/components/catch_selection_field.dart",
             "summary": "Field-owned selection menu, form-value synchronization, and validation row; the enclosing field supplies copy and retains focus and dismissal controllers.",
             "states": [
               "select",
@@ -3699,7 +3699,16 @@
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "variant",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:validated-selection-field-owner"
+            },
+            "level": "L3",
+            "roleNoun": "Field",
+            "naming": {
+              "useCase": "Selection",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Owns the labelled, nullable single-choice form field, including validation and normalization when options or caller values change. CatchField.select supplies focus and dismissal controllers and delegates this field member. SelectionMenu requires a current supported value and owns an adaptive selection trigger without form validation; both share CatchMenu as the panel renderer."
             }
           },
           {

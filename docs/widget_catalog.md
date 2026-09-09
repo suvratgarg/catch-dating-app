@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.83.0
+version: 3.84.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -170,7 +170,7 @@ Widgetbook callers.
 | `CatchFieldDrawer` | `packages/catch_ui/lib/src/components/catch_field_drawer.dart` | Field disclosure with ordered `meta`, `body`, `actions` and `footer` slots. Preserves reveal/opacity timing, clip clearance, nested pointer isolation and hidden focus/semantics exclusion. Root validation remains outside the drawer. |
 | `CatchField.inputActions` | `packages/catch_ui/lib/src/components/catch_field.dart` | Controlled explicit-save text-entry constructor. Keeps the label and bare value editor in one stable lane while supporting metadata, feedback, a secondary action, and Cancel/Done disclose in that order; validation renders afterward as the handoff's root support sibling. Opening requests native text focus immediately, while the persistent control subtree reveals through `CatchMotion.base` (220 ms with `standardCurve`, or immediately under reduced motion), so one tap both opens the field and places the cursor without remounting draft state. `onBlur` receives the latest controller text once when focus leaves. |
 | `CatchField.control` | `packages/catch_ui/lib/src/components/catch_field.dart` | Canonical row-owned disclosure constructor for steppers, chip groups, option controls, and other non-text editors. Supports caller-owned `open` state or local `initiallyOpen` state, optional Cancel/Done actions, loading/disabled behavior, and a persistent clipped reveal whose child identity survives close/reopen. Save, validation, and domain state remain caller-owned. |
-| `CatchFieldSelectControl` | `packages/catch_ui/lib/src/components/catch_field_select_control.dart` | Field-owned selection menu and validation row. It synchronizes the selected form value when choices change; the enclosing field retains focus and dismissal controllers. Product callers use `CatchField.select`. |
+| `CatchSelectionField` | `packages/catch_ui/lib/src/components/catch_selection_field.dart` | Field-owned selection menu and validation row. It synchronizes the selected form value when choices change; the enclosing field retains focus and dismissal controllers. Product callers use `CatchField.select`. |
 | `CatchFieldSurface` | `packages/catch_ui/lib/src/components/catch_field_surface.dart` | Field-owned state paint. The default recipe paints row activity and press using inherited section geometry; `focusTarget` paints an immediate outer ring around a stepper or commit target without changing layout. The field and its controls retain all pointer, keyboard and save behavior. |
 | `CatchFieldTextEntry` | `packages/catch_ui/lib/src/components/catch_field_text_entry.dart` | Field-owned native input, validation and text-entry chrome. The facade retains controllers, focus and save orchestration. This member moves with the facade into the shared package. |
 | `CatchFieldToggle` | `packages/catch_ui/lib/src/components/catch_field_toggle.dart` | Field-semantic adapter over `CatchToggle.field`, preserving the 44×26 visual switch, platform target, caller constraints and semantics. Product callers use `CatchField.toggle`. |

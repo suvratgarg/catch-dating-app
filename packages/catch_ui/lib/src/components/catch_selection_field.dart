@@ -21,23 +21,23 @@ import 'package:flutter/material.dart';
 /// The enclosing field owns the supplied focus and menu controllers. This
 /// renderer keeps the selected form value in sync when the caller changes
 /// either the value or the available choices.
-class CatchFieldSelectControl extends StatefulWidget {
-  const CatchFieldSelectControl({
+class CatchSelectionField extends StatefulWidget {
+  const CatchSelectionField({
     super.key,
     required this.copy,
     required this.title,
     required this.values,
-    required this.itemLabel,
+    required this.itemLabelBuilder,
     required this.menuController,
     required this.focusNode,
     this.value,
     this.onChanged,
-    this.validator,
+    this.onValidate,
     this.enabled = true,
     this.showLabel = true,
     this.size = CatchFieldSize.md,
     this.placeholder,
-    this.prefixIcon,
+    this.leading,
     this.error,
     this.helperText,
     this.helperTone = CatchFieldSupportRowTone.neutral,
@@ -47,32 +47,31 @@ class CatchFieldSelectControl extends StatefulWidget {
   final CatchFieldCopy copy;
   final String? title;
   final List<Object?> values;
-  final String Function(Object? item) itemLabel;
+  final String Function(Object? item) itemLabelBuilder;
   final MenuController menuController;
   final FocusNode focusNode;
   final Object? value;
   final ValueChanged<Object?>? onChanged;
-  final FormFieldValidator<Object?>? validator;
+  final FormFieldValidator<Object?>? onValidate;
   final bool enabled;
   final bool showLabel;
   final CatchFieldSize size;
   final String? placeholder;
-  final Widget? prefixIcon;
+  final Widget? leading;
   final String? error;
   final String? helperText;
   final CatchFieldSupportRowTone helperTone;
   final CatchFieldContentRowStatus status;
 
   @override
-  State<CatchFieldSelectControl> createState() =>
-      _CatchFieldSelectControlState();
+  State<CatchSelectionField> createState() => _CatchSelectionFieldState();
 }
 
-class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
+class _CatchSelectionFieldState extends State<CatchSelectionField> {
   final _fieldKey = GlobalKey<FormFieldState<Object?>>();
 
   @override
-  void didUpdateWidget(CatchFieldSelectControl oldWidget) {
+  void didUpdateWidget(CatchSelectionField oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.value == widget.value &&
         listEquals(oldWidget.values, widget.values)) {
@@ -115,7 +114,7 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
     return FormField<Object?>(
       key: _fieldKey,
       initialValue: _normalizedValue(widget.value),
-      validator: (value) => widget.validator?.call(_normalizedValue(value)),
+      validator: (value) => widget.onValidate?.call(_normalizedValue(value)),
       enabled: widget.enabled,
       builder: (state) {
         final t = CatchTokens.of(context);
@@ -147,7 +146,7 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
               }
             : null;
         final values = widget.values;
-        final labelOf = widget.itemLabel;
+        final labelOf = widget.itemLabelBuilder;
         final label = value == null ? null : labelOf(value);
         final canOpen =
             widget.enabled && onChanged != null && values.isNotEmpty;
@@ -188,14 +187,14 @@ class _CatchFieldSelectControlState extends State<CatchFieldSelectControl> {
                       : null,
                   constraints: rowConstraints,
                   padding: rowPadding,
-                  leading: widget.prefixIcon == null
+                  leading: widget.leading == null
                       ? null
                       : IconTheme(
                           data: IconThemeData(
                             color: widget.enabled ? t.ink2 : t.ink3,
                             size: CatchFieldRow.leadingSlotIconSize,
                           ),
-                          child: widget.prefixIcon!,
+                          child: widget.leading!,
                         ),
                   body: CatchFieldContentRow.value(
                     labelCopy: widget.copy.label,

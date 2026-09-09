@@ -7,7 +7,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Selection value and validation states',
-  type: CatchFieldSelectControl,
+  type: CatchSelectionField,
   path: '[Core primitives]/Fields',
 )
 Widget fieldSelectControlStates(BuildContext context) {

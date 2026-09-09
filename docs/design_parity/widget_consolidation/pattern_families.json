@@ -3864,6 +3864,34 @@
           "rationale": "Remove the redundant Screen qualifier from the sole generic scaffold owner; every existing composition keeps delegating to this renderer."
         }
       ]
+    },
+    {
+      "id": "validated-selection-field-owner",
+      "title": "Selection field owns its form value and validation",
+      "intent": "Expose one labelled selection-field member while preserving the shared menu panel and the enclosing field controller lifetime.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.field",
+      "qualityReference": "CatchSelectionField",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "No visual changes; the generated use-case type name changes."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSelectionField",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Owns the labelled, nullable single-choice form field, including validation and normalization when options or caller values change. CatchField.select supplies focus and dismissal controllers and delegates this field member. SelectionMenu requires a current supported value and owns an adaptive selection trigger without form validation; both share CatchMenu as the panel renderer."
+        },
+        {
+          "symbol": "CatchFieldSelectControl",
+          "disposition": "unify",
+          "target": "CatchSelectionField",
+          "preview": "not-applicable",
+          "rationale": "Replace the generic Control suffix with the actual Field role; keep the same form-value and menu implementation."
+        }
+      ]
     }
   ]
 }
