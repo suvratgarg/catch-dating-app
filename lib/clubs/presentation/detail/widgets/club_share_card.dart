@@ -3,7 +3,7 @@ import 'package:catch_dating_app/clubs/shared/catch_organizer_poster.dart';
 import 'package:catch_dating_app/clubs/shared/club_identity_atoms.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_sheet_share.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -17,8 +17,8 @@ Future<void> showClubShareCardSheet(
 }) {
   return showCatchBottomSheet<void>(
     context: context,
-    builder: (_) => CatchSheetShare(
-      card: ClubShareCard(club: club),
+    builder: (_) => CatchExternalShareSheet(
+      media: ClubShareCard(club: club),
       share: share,
       fileName: 'catch-organizer-card.png',
       buttonLabel: context.l10n.clubsClubHeroAppBarTooltipShareClub,
@@ -103,7 +103,7 @@ class ClubShareCard extends StatelessWidget {
                   ),
                   if (tags.isNotEmpty) ...[gapH10, ClubTagWrap(tags: tags)],
                   const Spacer(),
-                  CatchShareCardFooter(
+                  CatchAttributionRow(
                     brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
                     trailing: context.l10n.clubsClubShareCardHostedBy(
                       hostName: club.displayHostName,

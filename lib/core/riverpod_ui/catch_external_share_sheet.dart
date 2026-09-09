@@ -14,10 +14,10 @@ import 'package:flutter/rendering.dart';
 /// UI adapter for the app's Riverpod-backed external share controller.
 ///
 /// Owns PNG capture, platform sharing, attribution and localized errors.
-class CatchSheetShare extends StatefulWidget {
-  const CatchSheetShare({
+class CatchExternalShareSheet extends StatefulWidget {
+  const CatchExternalShareSheet({
     super.key,
-    required this.card,
+    required this.media,
     required this.share,
     required this.fileName,
     required this.buttonLabel,
@@ -29,7 +29,7 @@ class CatchSheetShare extends StatefulWidget {
     this.pixelRatio = CatchLayout.richShareCardPixelRatio,
   });
 
-  final Widget card;
+  final Widget media;
   final ExternalShareController share;
   final String fileName;
   final String buttonLabel;
@@ -41,10 +41,11 @@ class CatchSheetShare extends StatefulWidget {
   final double pixelRatio;
 
   @override
-  State<CatchSheetShare> createState() => _CatchSheetShareState();
+  State<CatchExternalShareSheet> createState() =>
+      _CatchExternalShareSheetState();
 }
 
-class _CatchSheetShareState extends State<CatchSheetShare> {
+class _CatchExternalShareSheetState extends State<CatchExternalShareSheet> {
   final _captureKey = GlobalKey();
   bool _sharing = false;
 
@@ -96,7 +97,7 @@ class _CatchSheetShareState extends State<CatchSheetShare> {
 
   @override
   Widget build(BuildContext context) => CatchShareCardSheet(
-    card: widget.card,
+    media: widget.media,
     captureKey: _captureKey,
     buttonLabel: widget.buttonLabel,
     footnote: widget.footnote,

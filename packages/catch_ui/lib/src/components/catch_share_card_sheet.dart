@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 class CatchShareCardSheet extends StatelessWidget {
   const CatchShareCardSheet({
     super.key,
-    required this.card,
+    required this.media,
     required this.captureKey,
     required this.buttonLabel,
     required this.footnote,
@@ -25,7 +25,7 @@ class CatchShareCardSheet extends StatelessWidget {
   static const cardPreviewKey = ValueKey('rich_share_card_sheet.card_preview');
   static const shareButtonKey = ValueKey('rich_share_card_sheet.share_button');
 
-  final Widget card;
+  final Widget media;
   final GlobalKey captureKey;
   final String buttonLabel;
   final String footnote;
@@ -55,7 +55,7 @@ class CatchShareCardSheet extends StatelessWidget {
               child: ConstrainedBox(
                 key: cardPreviewKey,
                 constraints: BoxConstraints(maxWidth: maxWidth),
-                child: card,
+                child: media,
               ),
             ),
             gapH12,

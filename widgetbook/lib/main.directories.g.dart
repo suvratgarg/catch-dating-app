@@ -1749,6 +1749,16 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Sheets and footers',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchAttributionRow',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Catalog states',
+                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                    .catchAttributionRowCatalogStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchBottomAction',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -1775,16 +1785,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Catalog states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
                     .catchBottomDockCatalogStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchShareCardFooter',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchShareCardFooterCatalogStates,
               ),
             ],
           ),
@@ -9705,7 +9705,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             name: 'Components',
             children: [
               _widgetbook.WidgetbookComponent(
-                name: 'CatchSheetShare',
+                name: 'CatchExternalShareSheet',
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Sheet states',

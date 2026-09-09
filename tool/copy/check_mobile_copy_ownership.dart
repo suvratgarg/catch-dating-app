@@ -83,9 +83,9 @@ const _copyConstructors = <String>{
   'CatchNoticeData',
   'CatchPageHeader',
   'CatchSectionHeader',
-  'CatchShareCardFooter',
+  'CatchAttributionRow',
   'CatchShareCardSheet',
-  'CatchSheetShare',
+  'CatchExternalShareSheet',
   'CatchText',
   'CelebrationDetail',
   'CupertinoActionSheetAction',
@@ -657,7 +657,7 @@ const route = '/events';
     throw StateError('Mobile copy scanner self-test failed: $findings');
   }
   const shareAdapterSource = '''
-Widget share() => CatchSheetShare(
+Widget share() => CatchExternalShareSheet(
   buttonLabel: 'Share this card',
   footnote: 'Visible sharing information',
 );

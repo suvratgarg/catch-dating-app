@@ -6308,13 +6308,22 @@
               "parentConceptId": "catch.sheet",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.sheet"
+            },
+            "level": "L3",
+            "roleNoun": "Sheet",
+            "naming": {
+              "useCase": "ShareCard",
+              "comparedWith": [
+                "catch.sheet"
+              ],
+              "reason": "The general Sheet owns modal surface chrome and terminal clearance. ShareCard composes a bounded capturable media preview, footnote and share action over a transparent presentation; it does not own the general sheet surface or export side effects. One renderer receives caller-owned progress and export callbacks."
             }
           },
           {
             "id": "catch.sheet.share_card_footer",
-            "symbol": "CatchShareCardFooter",
-            "file": "packages/catch_ui/lib/src/components/catch_share_card_footer.dart",
-            "summary": "Shared brand footer for card previews, with caller-localized brand and trailing copy.",
+            "symbol": "CatchAttributionRow",
+            "file": "packages/catch_ui/lib/src/components/catch_attribution_row.dart",
+            "summary": "Caller-localized brand attribution and compact trailing context for exported media.",
             "states": [
               "default",
               "long-trailing"
@@ -6325,6 +6334,16 @@
               "parentConceptId": "catch.sheet",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.sheet"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "Attribution",
+              "comparedWith": [
+                "catch.sheet",
+                "catch.meta_row"
+              ],
+              "reason": "The sheet family publishes shareable media. Attribution identifies the brand and provenance on the exported image itself; its strong brand mark and trailing context remain independent of sharing actions. MetaRow presents icon-labelled facts and numeric metadata, not media attribution."
             }
           },
           {
@@ -6356,8 +6375,8 @@
           },
           {
             "id": "catch.sheet.external_share",
-            "symbol": "CatchSheetShare",
-            "file": "lib/core/riverpod_ui/catch_sheet_share.dart",
+            "symbol": "CatchExternalShareSheet",
+            "file": "lib/core/riverpod_ui/catch_external_share_sheet.dart",
             "summary": "App adapter that captures the preview as PNG, uses ExternalShareController, records best-effort attribution and resolves localized failure copy.",
             "states": [
               "preview",
@@ -6372,6 +6391,16 @@
               "parentConceptId": "catch.sheet",
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.sheet"
+            },
+            "level": "L4a",
+            "roleNoun": "Sheet",
+            "naming": {
+              "useCase": "ExternalShare",
+              "comparedWith": [
+                "catch.sheet",
+                "catch.sheet.share_card"
+              ],
+              "reason": "The app adapter owns PNG capture, native export, duplicate-submit exclusion, localized errors and best-effort attribution. It delegates every visible state to ShareCardSheet; moving these platform/controller responsibilities into the shared renderer would cross the package boundary."
             }
           }
         ],

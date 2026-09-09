@@ -7570,6 +7570,30 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:share-media-preview-and-attribution",
+      "patternFamilyId": "share-media-preview-and-attribution",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchShareCardSheet",
+      "members": [
+        {
+          "name": "CatchShareCardSheet",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSheetShare",
+          "action": "rename"
+        },
+        {
+          "name": "CatchShareCardFooter",
+          "action": "rename"
+        }
+      ],
+      "rationale": "Source and consistent-context render review establish complementary contracts: transparent capturable preview, app-owned external export and branding on the exported media. Retain their shared ownership boundaries, standardize card slots as media and name the adapter/attribution row by their responsibility. All feature callers continue through the same renderer and export controller.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

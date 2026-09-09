@@ -2770,6 +2770,54 @@
           "rationale": "Zero production callers; this extra surface and handle renderer has no independent consumer contract."
         }
       ]
+    },
+    {
+      "id": "share-media-preview-and-attribution",
+      "title": "Shareable media preview, export and attribution",
+      "intent": "Keep one renderer for card preview, one app export adapter and one brand-attribution row for exported media.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.sheet",
+      "qualityReference": "CatchShareCardSheet",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve production preview bounds, capture boundary, transparent presentation, typography, action state, copy and platform export behavior.",
+        "Rename the attribution gallery and identity label; its production row keeps the same pixels."
+      ],
+      "members": [
+        {
+          "symbol": "CatchShareCardSheet",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One transparent media preview and action renderer; the caller owns capture and platform export. Standardize the media slot."
+        },
+        {
+          "symbol": "CatchExternalShareSheet",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The app adapter delegates rendering while owning capture, export, localized failure and attribution."
+        },
+        {
+          "symbol": "CatchSheetShare",
+          "disposition": "unify",
+          "target": "CatchExternalShareSheet",
+          "preview": "not-applicable",
+          "rationale": "Move the responsibility into deterministic use-case/role order; no duplicate renderer or compatibility alias."
+        },
+        {
+          "symbol": "CatchAttributionRow",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Brand and provenance on exported images form an independently consumed row, distinct from compact numeric metadata."
+        },
+        {
+          "symbol": "CatchShareCardFooter",
+          "disposition": "unify",
+          "target": "CatchAttributionRow",
+          "preview": "not-applicable",
+          "rationale": "Footer named placement instead of responsibility. One canonical attribution row serves event, chat and organizer cards."
+        }
+      ]
     }
   ]
 }

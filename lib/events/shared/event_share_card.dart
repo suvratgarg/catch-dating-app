@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_sheet_share.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -23,8 +23,8 @@ Future<void> showEventShareCardSheet(
 }) {
   return showCatchBottomSheet<void>(
     context: context,
-    builder: (_) => CatchSheetShare(
-      card: EventShareCard(event: event),
+    builder: (_) => CatchExternalShareSheet(
+      media: EventShareCard(event: event),
       share: share,
       fileName: 'catch-event-invite.png',
       buttonLabel: context.l10n.eventsInviteShareButton,
@@ -237,7 +237,7 @@ class EventShareCard extends StatelessWidget {
                         ],
                       ),
                       gapH14,
-                      CatchShareCardFooter(
+                      CatchAttributionRow(
                         brandLabel:
                             context.l10n.coreCatchShareCardFooterTextCatch,
                         trailing: context.l10n.eventsInviteShareFooter,

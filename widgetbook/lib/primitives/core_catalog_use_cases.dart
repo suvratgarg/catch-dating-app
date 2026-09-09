@@ -3394,7 +3394,7 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
           onShare: (_) {},
           buttonLabel: 'Share card',
           footnote: 'Preview rendered through RepaintBoundary.',
-          card: CatchSurface.card(
+          media: CatchSurface.card(
             width: WidgetbookPreviewLayout.compactComponentWidth,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -3432,7 +3432,7 @@ Widget catchShareCardSheetSharingState(BuildContext context) =>
           footnote: 'Preparing the card for the system share sheet.',
           isSharing: true,
           onShare: (_) {},
-          card: CatchSurface.card(
+          media: CatchSurface.card(
             child: Text('Card preview', style: CatchTextStyles.bodyM(context)),
           ),
         ),
@@ -3441,24 +3441,24 @@ Widget catchShareCardSheetSharingState(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchShareCardFooter,
+  type: CatchAttributionRow,
   path: '[Core catalog]/Sheets and footers',
 )
-Widget catchShareCardFooterCatalogStates(BuildContext context) {
+Widget catchAttributionRowCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchShareCardFooter',
-    catalogId: 'core.widgets.catch_share_card_footer',
+    title: 'CatchAttributionRow',
+    catalogId: 'catch.sheet.share_card_footer',
     children: [
       _StateCard(
         label: 'default',
-        child: CatchShareCardFooter(
+        child: CatchAttributionRow(
           brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
           trailing: 'Curated singles event',
         ),
       ),
       _StateCard(
         label: 'long trailing',
-        child: CatchShareCardFooter(
+        child: CatchAttributionRow(
           brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
           trailing: 'Hosted by The Longest Possible Club Collective',
         ),

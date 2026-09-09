@@ -24,7 +24,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_sheet_share.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/design_fixtures/matches_chat_surface_fixtures.dart';
@@ -691,7 +691,7 @@ Widget chatMessageListRendererStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Sheet states',
-  type: CatchSheetShare,
+  type: CatchExternalShareSheet,
   path: '[P1 product surfaces]/Matches and chat/Components',
 )
 Widget chatShareCardSheetStates(BuildContext context) {
@@ -2054,8 +2054,8 @@ class _ShareCardPreview extends StatelessWidget {
       body: SafeArea(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: CatchSheetShare(
-            card: ChatShareCard(
+          child: CatchExternalShareSheet(
+            media: ChatShareCard(
               messages: messages,
               currentUid: MatchesChatSurfaceFixtures.viewerUid,
               event: event,

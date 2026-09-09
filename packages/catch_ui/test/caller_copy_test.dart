@@ -117,7 +117,7 @@ void main() {
       MaterialApp(
         theme: CatchTheme.light,
         home: const Scaffold(
-          body: CatchShareCardFooter(
+          body: CatchAttributionRow(
             brandLabel: 'Notre marque',
             trailing: 'À partager',
           ),
