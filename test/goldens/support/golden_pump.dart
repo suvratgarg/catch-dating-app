@@ -142,6 +142,9 @@ double _scrollableContentBottom(WidgetTester tester, Finder scrollable) {
 
 Widget _frame(Brightness brightness, double textScale, WidgetBuilder builder) {
   return DefaultAssetBundle(
+    // Paused implicit animations cannot transition inherited Material text
+    // between themes. A fresh app tree also isolates route and control state.
+    key: ValueKey(brightness),
     bundle: _GoldenAssetBundle(),
     child: MaterialApp(
       key: _catchGoldenRootKey,
