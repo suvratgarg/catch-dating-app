@@ -24,6 +24,11 @@ import {
   eventRcsSubscriptionDocumentSchema,
   eventAssistanceRcsCallbackDocumentSchema,
   eventAssistanceRcsCallbackIdentityDocumentSchema,
+  listEventAssistanceDeliveriesCallablePayloadSchema,
+  repairEventAssistanceDeliveryCallablePayloadSchema,
+  eventAssistanceDeliveriesCallableResponseSchema,
+  eventAssistanceDeliveryCallableResponseSchema,
+  eventAssistanceDeliveryRepairDocumentSchema,
   listEventAssistanceCasesCallablePayloadSchema,
   resolveEventAssistanceCaseCallablePayloadSchema,
   eventAssistanceCasesCallableResponseSchema,
@@ -704,6 +709,11 @@ export const validateEventRcsPreferenceCallableResponse = ajv.compile(eventRcsPr
 export const validateEventRcsSubscriptionDocument = ajv.compile(eventRcsSubscriptionDocumentSchema);
 export const validateEventAssistanceRcsCallbackDocument = ajv.compile(eventAssistanceRcsCallbackDocumentSchema);
 export const validateEventAssistanceRcsCallbackIdentityDocument = ajv.compile(eventAssistanceRcsCallbackIdentityDocumentSchema);
+export const validateListEventAssistanceDeliveriesCallablePayload = ajv.compile(listEventAssistanceDeliveriesCallablePayloadSchema);
+export const validateRepairEventAssistanceDeliveryCallablePayload = ajv.compile(repairEventAssistanceDeliveryCallablePayloadSchema);
+export const validateEventAssistanceDeliveriesCallableResponse = ajv.compile(eventAssistanceDeliveriesCallableResponseSchema);
+export const validateEventAssistanceDeliveryCallableResponse = ajv.compile(eventAssistanceDeliveryCallableResponseSchema);
+export const validateEventAssistanceDeliveryRepairDocument = ajv.compile(eventAssistanceDeliveryRepairDocumentSchema);
 export const validateListEventAssistanceCasesCallablePayload = ajv.compile(listEventAssistanceCasesCallablePayloadSchema);
 export const validateResolveEventAssistanceCaseCallablePayload = ajv.compile(resolveEventAssistanceCaseCallablePayloadSchema);
 export const validateEventAssistanceCasesCallableResponse = ajv.compile(eventAssistanceCasesCallableResponseSchema);

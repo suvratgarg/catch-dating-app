@@ -84,6 +84,10 @@
           "type": "null"
         }
       ]
+    },
+    "handoff": {
+      "$ref": "../shared/event_assistance_delivery_review.schema.json#/definitions/Handoff",
+      "x-catch-ownership": "server-only"
     }
   },
   "allOf": [
@@ -106,6 +110,28 @@
         "properties": {
           "response": {
             "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "handoff"
+        ]
+      },
+      "then": {
+        "properties": {
+          "intent": {
+            "properties": {
+              "context": {
+                "properties": {
+                  "mode": {
+                    "const": "live"
+                  }
+                }
+              }
+            }
           }
         }
       }

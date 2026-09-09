@@ -14529,6 +14529,210 @@ abstract final class CatchContractConstraints {
     pattern: '\\S',
   );
 
+  static const eventAssistanceDeliveriesCallableResponseContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseCoverage = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.coverage',
+    required: true,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveries = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsActions = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.actions',
+    required: true,
+    valueTypes: <String>['array'],
+    maxItems: 0,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsActionsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.actions.items',
+    required: true,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsAttempts = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 6,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsAttemptsItemsAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.attempts.items.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsAttemptsItemsChannel = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.attempts.items.channel',
+    required: true,
+    enumValues: <String>['sms', 'whatsapp', 'rcs'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsAttemptsItemsState = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.attempts.items.state',
+    required: true,
+    enumValues: <String>['reserved', 'unknown', 'accepted', 'delivered', 'read', 'failed', 'notDispatched', 'revoked'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsAvailability = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.availability',
+    required: true,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsCoordinationDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.coordination.dueAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsCoordinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.coordination.kind',
+    required: true,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsCoordinationPhase = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.coordination.phase',
+    required: true,
+    enumValues: <String>['queued', 'retry', 'receipt', 'review', 'complete'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsCoordinationReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.coordination.reason',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsDeliveryStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.deliveryStatus',
+    required: true,
+    enumValues: <String>['notSubmitted', 'reserved', 'unknown', 'accepted', 'delivered', 'read', 'failed', 'notDispatched', 'conflictingEvidence', 'revoked'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsHandlingActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.handling.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsHandlingAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.handling.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsHandlingAuthority = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.handling.authority',
+    required: true,
+    enumValues: <String>['current', 'revoked'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsHandlingKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.handling.kind',
+    required: true,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsLifecycle = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.lifecycle',
+    required: true,
+    enumValues: <String>['active', 'cancelled', 'superseded', 'responded'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsPurpose = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.purpose',
+    required: true,
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsReviewHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseDeliveriesItemsRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.deliveries.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseNextCursor = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.nextCursor',
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveriesCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveriesCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceDeliveryAttemptAttemptId = CatchContractFieldConstraints(
     path: 'eventAssistanceDeliveryAttempt.attemptId',
     maxLength: 160,
@@ -14762,6 +14966,290 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryCallableResponseContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseOperationRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.operationRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseOutcome = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.outcome',
+    required: true,
+    enumValues: <String>['applied', 'replayed'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewActions = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.actions',
+    required: true,
+    valueTypes: <String>['array'],
+    maxItems: 0,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewActionsItems = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.actions.items',
+    required: true,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewAttempts = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.attempts',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 6,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewAttemptsItemsAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.attempts.items.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewAttemptsItemsChannel = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.attempts.items.channel',
+    required: true,
+    enumValues: <String>['sms', 'whatsapp', 'rcs'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewAttemptsItemsState = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.attempts.items.state',
+    required: true,
+    enumValues: <String>['reserved', 'unknown', 'accepted', 'delivered', 'read', 'failed', 'notDispatched', 'revoked'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewAvailability = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.availability',
+    required: true,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewCoordinationDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.coordination.dueAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewCoordinationKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.coordination.kind',
+    required: true,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewCoordinationPhase = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.coordination.phase',
+    required: true,
+    enumValues: <String>['queued', 'retry', 'receipt', 'review', 'complete'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewCoordinationReason = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.coordination.reason',
+    maxLength: 80,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewDeliveryStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.deliveryStatus',
+    required: true,
+    enumValues: <String>['notSubmitted', 'reserved', 'unknown', 'accepted', 'delivered', 'read', 'failed', 'notDispatched', 'conflictingEvidence', 'revoked'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewHandlingActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.handling.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewHandlingAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.handling.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewHandlingAuthority = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.handling.authority',
+    required: true,
+    enumValues: <String>['current', 'revoked'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewHandlingKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.handling.kind',
+    required: true,
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewLifecycle = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.lifecycle',
+    required: true,
+    enumValues: <String>['active', 'cancelled', 'superseded', 'responded'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewPurpose = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.purpose',
+    required: true,
+    enumValues: <String>['joiningUpdate', 'joiningInstructions', 'planChanged', 'guestRequirement', 'assignmentChanged', 'participationCheck', 'eventCancelled', 'eventFinished', 'followUp'],
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewReviewHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveryCallableResponseViewRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryCallableResponse.view.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentIntentHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.intentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.messageId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentMessageRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.messageRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentOperationId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentReceiptId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.receiptId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^delivery-repair:[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceDeliveryRepairDocumentRequestHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceDeliveryRepairDocument.requestHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventAssistanceDeliveryWorkCheckpointDueAt = CatchContractFieldConstraints(
@@ -18899,6 +19387,32 @@ abstract final class CatchContractConstraints {
     path: 'eventAssistanceMessageDocument.deliveryConflict',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const eventAssistanceMessageDocumentHandoffActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.handoff.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMessageDocumentHandoffAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.handoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMessageDocumentHandoffOperationId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMessageDocument.handoff.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const eventAssistanceMessageDocumentIntentAttendeeId = CatchContractFieldConstraints(
@@ -33231,6 +33745,32 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalMessageDocument.record.deliveryConflict',
     required: true,
     valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalMessageDocumentRecordHandoffActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.record.handoff.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMessageDocumentRecordHandoffAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.record.handoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMessageDocumentRecordHandoffOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.record.handoff.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const eventRehearsalMessageDocumentRecordIntentAttendeeId = CatchContractFieldConstraints(
@@ -48817,6 +49357,35 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['open', 'resolved'],
+  );
+
+  static const listEventAssistanceDeliveriesCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'listEventAssistanceDeliveriesCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const listEventAssistanceDeliveriesCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'listEventAssistanceDeliveriesCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventAssistanceDeliveriesCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'listEventAssistanceDeliveriesCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventAssistanceDeliveriesCallablePayloadCursor = CatchContractFieldConstraints(
+    path: 'listEventAssistanceDeliveriesCallablePayload.cursor',
+    valueTypes: <String>['string'],
+    pattern: '^outbox:[a-f0-9]{64}\$',
   );
 
   static const listEventRcsPreferencesCallablePayloadAttendeeId = CatchContractFieldConstraints(
@@ -72348,6 +72917,108 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const repairEventAssistanceDeliveryCallablePayloadCommandContextClockId = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandContextEventId = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandContextMode = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandContextOrganizerId = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandContextRehearsalId = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandEventId = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandKind = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandOperationId = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.operationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandPayloadAction = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.payload.action',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['reconcile', 'retryDefiniteFailure', 'manualHandoff'],
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadCommandPayloadDeliveryId = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.command.payload.deliveryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadExpectedMessageRevision = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.expectedMessageRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const repairEventAssistanceDeliveryCallablePayloadExpectedReviewHash = CatchContractFieldConstraints(
+    path: 'repairEventAssistanceDeliveryCallablePayload.expectedReviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const replanOrganizerManualSendTasksCallablePayloadOrganizerId = CatchContractFieldConstraints(
     path: 'replanOrganizerManualSendTasksCallablePayload.organizerId',
     maxLength: 180,
@@ -85959,6 +86630,36 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCommand.payload.expectedProgressRevision': eventAssistanceCommandPayloadExpectedProgressRevision,
     'eventAssistanceCommand.payload.groupId': eventAssistanceCommandPayloadGroupId,
     'eventAssistanceCommand.payload.reason': eventAssistanceCommandPayloadReason,
+    'eventAssistanceDeliveriesCallableResponse.context.eventId': eventAssistanceDeliveriesCallableResponseContextEventId,
+    'eventAssistanceDeliveriesCallableResponse.context.mode': eventAssistanceDeliveriesCallableResponseContextMode,
+    'eventAssistanceDeliveriesCallableResponse.context.organizerId': eventAssistanceDeliveriesCallableResponseContextOrganizerId,
+    'eventAssistanceDeliveriesCallableResponse.coverage': eventAssistanceDeliveriesCallableResponseCoverage,
+    'eventAssistanceDeliveriesCallableResponse.deliveries': eventAssistanceDeliveriesCallableResponseDeliveries,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.actions': eventAssistanceDeliveriesCallableResponseDeliveriesItemsActions,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.actions.items': eventAssistanceDeliveriesCallableResponseDeliveriesItemsActionsItems,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.attempts': eventAssistanceDeliveriesCallableResponseDeliveriesItemsAttempts,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.attempts.items.at': eventAssistanceDeliveriesCallableResponseDeliveriesItemsAttemptsItemsAt,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.attempts.items.channel': eventAssistanceDeliveriesCallableResponseDeliveriesItemsAttemptsItemsChannel,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.attempts.items.state': eventAssistanceDeliveriesCallableResponseDeliveriesItemsAttemptsItemsState,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.availability': eventAssistanceDeliveriesCallableResponseDeliveriesItemsAvailability,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.coordination.dueAt': eventAssistanceDeliveriesCallableResponseDeliveriesItemsCoordinationDueAt,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.coordination.kind': eventAssistanceDeliveriesCallableResponseDeliveriesItemsCoordinationKind,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.coordination.phase': eventAssistanceDeliveriesCallableResponseDeliveriesItemsCoordinationPhase,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.coordination.reason': eventAssistanceDeliveriesCallableResponseDeliveriesItemsCoordinationReason,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.createdAt': eventAssistanceDeliveriesCallableResponseDeliveriesItemsCreatedAt,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.deliveryStatus': eventAssistanceDeliveriesCallableResponseDeliveriesItemsDeliveryStatus,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.expiresAt': eventAssistanceDeliveriesCallableResponseDeliveriesItemsExpiresAt,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.handling.actorUid': eventAssistanceDeliveriesCallableResponseDeliveriesItemsHandlingActorUid,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.handling.at': eventAssistanceDeliveriesCallableResponseDeliveriesItemsHandlingAt,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.handling.authority': eventAssistanceDeliveriesCallableResponseDeliveriesItemsHandlingAuthority,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.handling.kind': eventAssistanceDeliveriesCallableResponseDeliveriesItemsHandlingKind,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.lifecycle': eventAssistanceDeliveriesCallableResponseDeliveriesItemsLifecycle,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.messageId': eventAssistanceDeliveriesCallableResponseDeliveriesItemsMessageId,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.purpose': eventAssistanceDeliveriesCallableResponseDeliveriesItemsPurpose,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.reviewHash': eventAssistanceDeliveriesCallableResponseDeliveriesItemsReviewHash,
+    'eventAssistanceDeliveriesCallableResponse.deliveries.items.revision': eventAssistanceDeliveriesCallableResponseDeliveriesItemsRevision,
+    'eventAssistanceDeliveriesCallableResponse.nextCursor': eventAssistanceDeliveriesCallableResponseNextCursor,
+    'eventAssistanceDeliveriesCallableResponse.serverTime': eventAssistanceDeliveriesCallableResponseServerTime,
     'eventAssistanceDeliveryAttempt.attemptId': eventAssistanceDeliveryAttemptAttemptId,
     'eventAssistanceDeliveryAttempt.authorization.checkedAt': eventAssistanceDeliveryAttemptAuthorizationCheckedAt,
     'eventAssistanceDeliveryAttempt.authorization.instructionRevision': eventAssistanceDeliveryAttemptAuthorizationInstructionRevision,
@@ -85990,6 +86691,46 @@ abstract final class CatchContractConstraints {
     'eventAssistanceDeliveryAttempt.state.providerMessageId': eventAssistanceDeliveryAttemptStateProviderMessageId,
     'eventAssistanceDeliveryAttempt.state.reason': eventAssistanceDeliveryAttemptStateReason,
     'eventAssistanceDeliveryAttempt.state.reconcileAfter': eventAssistanceDeliveryAttemptStateReconcileAfter,
+    'eventAssistanceDeliveryCallableResponse.context.eventId': eventAssistanceDeliveryCallableResponseContextEventId,
+    'eventAssistanceDeliveryCallableResponse.context.mode': eventAssistanceDeliveryCallableResponseContextMode,
+    'eventAssistanceDeliveryCallableResponse.context.organizerId': eventAssistanceDeliveryCallableResponseContextOrganizerId,
+    'eventAssistanceDeliveryCallableResponse.operationRevision': eventAssistanceDeliveryCallableResponseOperationRevision,
+    'eventAssistanceDeliveryCallableResponse.outcome': eventAssistanceDeliveryCallableResponseOutcome,
+    'eventAssistanceDeliveryCallableResponse.serverTime': eventAssistanceDeliveryCallableResponseServerTime,
+    'eventAssistanceDeliveryCallableResponse.view.actions': eventAssistanceDeliveryCallableResponseViewActions,
+    'eventAssistanceDeliveryCallableResponse.view.actions.items': eventAssistanceDeliveryCallableResponseViewActionsItems,
+    'eventAssistanceDeliveryCallableResponse.view.attempts': eventAssistanceDeliveryCallableResponseViewAttempts,
+    'eventAssistanceDeliveryCallableResponse.view.attempts.items.at': eventAssistanceDeliveryCallableResponseViewAttemptsItemsAt,
+    'eventAssistanceDeliveryCallableResponse.view.attempts.items.channel': eventAssistanceDeliveryCallableResponseViewAttemptsItemsChannel,
+    'eventAssistanceDeliveryCallableResponse.view.attempts.items.state': eventAssistanceDeliveryCallableResponseViewAttemptsItemsState,
+    'eventAssistanceDeliveryCallableResponse.view.availability': eventAssistanceDeliveryCallableResponseViewAvailability,
+    'eventAssistanceDeliveryCallableResponse.view.coordination.dueAt': eventAssistanceDeliveryCallableResponseViewCoordinationDueAt,
+    'eventAssistanceDeliveryCallableResponse.view.coordination.kind': eventAssistanceDeliveryCallableResponseViewCoordinationKind,
+    'eventAssistanceDeliveryCallableResponse.view.coordination.phase': eventAssistanceDeliveryCallableResponseViewCoordinationPhase,
+    'eventAssistanceDeliveryCallableResponse.view.coordination.reason': eventAssistanceDeliveryCallableResponseViewCoordinationReason,
+    'eventAssistanceDeliveryCallableResponse.view.createdAt': eventAssistanceDeliveryCallableResponseViewCreatedAt,
+    'eventAssistanceDeliveryCallableResponse.view.deliveryStatus': eventAssistanceDeliveryCallableResponseViewDeliveryStatus,
+    'eventAssistanceDeliveryCallableResponse.view.expiresAt': eventAssistanceDeliveryCallableResponseViewExpiresAt,
+    'eventAssistanceDeliveryCallableResponse.view.handling.actorUid': eventAssistanceDeliveryCallableResponseViewHandlingActorUid,
+    'eventAssistanceDeliveryCallableResponse.view.handling.at': eventAssistanceDeliveryCallableResponseViewHandlingAt,
+    'eventAssistanceDeliveryCallableResponse.view.handling.authority': eventAssistanceDeliveryCallableResponseViewHandlingAuthority,
+    'eventAssistanceDeliveryCallableResponse.view.handling.kind': eventAssistanceDeliveryCallableResponseViewHandlingKind,
+    'eventAssistanceDeliveryCallableResponse.view.lifecycle': eventAssistanceDeliveryCallableResponseViewLifecycle,
+    'eventAssistanceDeliveryCallableResponse.view.messageId': eventAssistanceDeliveryCallableResponseViewMessageId,
+    'eventAssistanceDeliveryCallableResponse.view.purpose': eventAssistanceDeliveryCallableResponseViewPurpose,
+    'eventAssistanceDeliveryCallableResponse.view.reviewHash': eventAssistanceDeliveryCallableResponseViewReviewHash,
+    'eventAssistanceDeliveryCallableResponse.view.revision': eventAssistanceDeliveryCallableResponseViewRevision,
+    'eventAssistanceDeliveryRepairDocument.actorUid': eventAssistanceDeliveryRepairDocumentActorUid,
+    'eventAssistanceDeliveryRepairDocument.context.eventId': eventAssistanceDeliveryRepairDocumentContextEventId,
+    'eventAssistanceDeliveryRepairDocument.context.mode': eventAssistanceDeliveryRepairDocumentContextMode,
+    'eventAssistanceDeliveryRepairDocument.context.organizerId': eventAssistanceDeliveryRepairDocumentContextOrganizerId,
+    'eventAssistanceDeliveryRepairDocument.createdAt': eventAssistanceDeliveryRepairDocumentCreatedAt,
+    'eventAssistanceDeliveryRepairDocument.intentHash': eventAssistanceDeliveryRepairDocumentIntentHash,
+    'eventAssistanceDeliveryRepairDocument.messageId': eventAssistanceDeliveryRepairDocumentMessageId,
+    'eventAssistanceDeliveryRepairDocument.messageRevision': eventAssistanceDeliveryRepairDocumentMessageRevision,
+    'eventAssistanceDeliveryRepairDocument.operationId': eventAssistanceDeliveryRepairDocumentOperationId,
+    'eventAssistanceDeliveryRepairDocument.receiptId': eventAssistanceDeliveryRepairDocumentReceiptId,
+    'eventAssistanceDeliveryRepairDocument.requestHash': eventAssistanceDeliveryRepairDocumentRequestHash,
     'eventAssistanceDeliveryWork.checkpoint.dueAt': eventAssistanceDeliveryWorkCheckpointDueAt,
     'eventAssistanceDeliveryWork.checkpoint.evaluations': eventAssistanceDeliveryWorkCheckpointEvaluations,
     'eventAssistanceDeliveryWork.checkpoint.failures': eventAssistanceDeliveryWorkCheckpointFailures,
@@ -86531,6 +87272,9 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageDocument.attempts.items.state.reconcileAfter': eventAssistanceMessageDocumentAttemptsItemsStateReconcileAfter,
     'eventAssistanceMessageDocument.createdAt': eventAssistanceMessageDocumentCreatedAt,
     'eventAssistanceMessageDocument.deliveryConflict': eventAssistanceMessageDocumentDeliveryConflict,
+    'eventAssistanceMessageDocument.handoff.actorUid': eventAssistanceMessageDocumentHandoffActorUid,
+    'eventAssistanceMessageDocument.handoff.at': eventAssistanceMessageDocumentHandoffAt,
+    'eventAssistanceMessageDocument.handoff.operationId': eventAssistanceMessageDocumentHandoffOperationId,
     'eventAssistanceMessageDocument.intent.attendeeId': eventAssistanceMessageDocumentIntentAttendeeId,
     'eventAssistanceMessageDocument.intent.automation.groupId': eventAssistanceMessageDocumentIntentAutomationGroupId,
     'eventAssistanceMessageDocument.intent.automation.kind': eventAssistanceMessageDocumentIntentAutomationKind,
@@ -88458,6 +89202,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMessageDocument.record.attempts.items.state.reconcileAfter': eventRehearsalMessageDocumentRecordAttemptsItemsStateReconcileAfter,
     'eventRehearsalMessageDocument.record.createdAt': eventRehearsalMessageDocumentRecordCreatedAt,
     'eventRehearsalMessageDocument.record.deliveryConflict': eventRehearsalMessageDocumentRecordDeliveryConflict,
+    'eventRehearsalMessageDocument.record.handoff.actorUid': eventRehearsalMessageDocumentRecordHandoffActorUid,
+    'eventRehearsalMessageDocument.record.handoff.at': eventRehearsalMessageDocumentRecordHandoffAt,
+    'eventRehearsalMessageDocument.record.handoff.operationId': eventRehearsalMessageDocumentRecordHandoffOperationId,
     'eventRehearsalMessageDocument.record.intent.attendeeId': eventRehearsalMessageDocumentRecordIntentAttendeeId,
     'eventRehearsalMessageDocument.record.intent.automation.groupId': eventRehearsalMessageDocumentRecordIntentAutomationGroupId,
     'eventRehearsalMessageDocument.record.intent.automation.kind': eventRehearsalMessageDocumentRecordIntentAutomationKind,
@@ -90575,6 +91322,10 @@ abstract final class CatchContractConstraints {
     'listEventAssistanceCasesCallablePayload.context.organizerId': listEventAssistanceCasesCallablePayloadContextOrganizerId,
     'listEventAssistanceCasesCallablePayload.cursor': listEventAssistanceCasesCallablePayloadCursor,
     'listEventAssistanceCasesCallablePayload.status': listEventAssistanceCasesCallablePayloadStatus,
+    'listEventAssistanceDeliveriesCallablePayload.context.eventId': listEventAssistanceDeliveriesCallablePayloadContextEventId,
+    'listEventAssistanceDeliveriesCallablePayload.context.mode': listEventAssistanceDeliveriesCallablePayloadContextMode,
+    'listEventAssistanceDeliveriesCallablePayload.context.organizerId': listEventAssistanceDeliveriesCallablePayloadContextOrganizerId,
+    'listEventAssistanceDeliveriesCallablePayload.cursor': listEventAssistanceDeliveriesCallablePayloadCursor,
     'listEventRcsPreferencesCallablePayload.attendeeId': listEventRcsPreferencesCallablePayloadAttendeeId,
     'listEventRcsPreferencesCallablePayload.cursor': listEventRcsPreferencesCallablePayloadCursor,
     'listEventRcsPreferencesCallablePayload.eventId': listEventRcsPreferencesCallablePayloadEventId,
@@ -93818,6 +94569,19 @@ abstract final class CatchContractConstraints {
     'removeClubHostCallablePayload.uid': removeClubHostCallablePayloadUid,
     'removeOrganizerManagerCallablePayload.organizerId': removeOrganizerManagerCallablePayloadOrganizerId,
     'removeOrganizerManagerCallablePayload.uid': removeOrganizerManagerCallablePayloadUid,
+    'repairEventAssistanceDeliveryCallablePayload.command.context.clockId': repairEventAssistanceDeliveryCallablePayloadCommandContextClockId,
+    'repairEventAssistanceDeliveryCallablePayload.command.context.eventId': repairEventAssistanceDeliveryCallablePayloadCommandContextEventId,
+    'repairEventAssistanceDeliveryCallablePayload.command.context.mode': repairEventAssistanceDeliveryCallablePayloadCommandContextMode,
+    'repairEventAssistanceDeliveryCallablePayload.command.context.organizerId': repairEventAssistanceDeliveryCallablePayloadCommandContextOrganizerId,
+    'repairEventAssistanceDeliveryCallablePayload.command.context.rehearsalId': repairEventAssistanceDeliveryCallablePayloadCommandContextRehearsalId,
+    'repairEventAssistanceDeliveryCallablePayload.command.context.virtualEventId': repairEventAssistanceDeliveryCallablePayloadCommandContextVirtualEventId,
+    'repairEventAssistanceDeliveryCallablePayload.command.eventId': repairEventAssistanceDeliveryCallablePayloadCommandEventId,
+    'repairEventAssistanceDeliveryCallablePayload.command.kind': repairEventAssistanceDeliveryCallablePayloadCommandKind,
+    'repairEventAssistanceDeliveryCallablePayload.command.operationId': repairEventAssistanceDeliveryCallablePayloadCommandOperationId,
+    'repairEventAssistanceDeliveryCallablePayload.command.payload.action': repairEventAssistanceDeliveryCallablePayloadCommandPayloadAction,
+    'repairEventAssistanceDeliveryCallablePayload.command.payload.deliveryId': repairEventAssistanceDeliveryCallablePayloadCommandPayloadDeliveryId,
+    'repairEventAssistanceDeliveryCallablePayload.expectedMessageRevision': repairEventAssistanceDeliveryCallablePayloadExpectedMessageRevision,
+    'repairEventAssistanceDeliveryCallablePayload.expectedReviewHash': repairEventAssistanceDeliveryCallablePayloadExpectedReviewHash,
     'replanOrganizerManualSendTasksCallablePayload.organizerId': replanOrganizerManualSendTasksCallablePayloadOrganizerId,
     'replanOrganizerManualSendTasksCallablePayload.taskIds': replanOrganizerManualSendTasksCallablePayloadTaskIds,
     'replanOrganizerManualSendTasksCallablePayload.taskIds.items': replanOrganizerManualSendTasksCallablePayloadTaskIdsItems,

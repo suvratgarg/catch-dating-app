@@ -75,6 +75,24 @@ function receipt(
     providerEventId: "receipt-" + state.kind, receivedAt: state.at, state};
 }
 
+test("manual handoff evidence is live-only and within the message history",
+  async () => {
+    const h = harness();
+    const record = await h.outbox.enqueue(message());
+    const handoff = {actorUid: "host-1", operationId: "take-over",
+      at: h.clock.now};
+    assert.ok(parseMessageRecord({...record, revision: 1, handoff}));
+    for (const at of [record.createdAt - 1, record.updatedAt + 1]) {
+      assert.throws(() => parseMessageRecord({...record,
+        handoff: {...handoff, at}}), /handoff evidence/);
+    }
+    const intent = {...message(),
+      context: {mode: "rehearsal" as const, rehearsalId: "practice",
+        virtualEventId: "event-1", clockId: "clock-1"}};
+    const rehearsal = await h.outbox.enqueue(intent);
+    assert.throws(() => parseMessageRecord({...rehearsal, handoff}));
+  });
+
 test("outbox enqueue is immutable and context scoped", async () => {
   const {outbox, clock} = harness();
   const intent = message();

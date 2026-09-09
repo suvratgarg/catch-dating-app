@@ -10,6 +10,7 @@ export type DeliveryExecution = EventMessageWorkerResult |
 /** Recorded outcomes can be reconciled after source/permission changes. */
 export function observedDeliveryDecision(message: MessageRecord, now: number):
   DeliveryDecision | null {
+  if (message.handoff) return {kind: "stop", reason: "hostStopped"};
   if (now >= message.intent.expiresAt) {
     return {kind: "stop", reason: "expired"};
   }

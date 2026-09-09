@@ -533,6 +533,8 @@ export {
 
 export {listEventAssistanceCases, resolveEventAssistanceCase} from
   "./eventSuccess/operations/hostCasesHandlers";
+export {listEventAssistanceDeliveries, repairEventAssistanceDelivery} from
+  "./eventSuccess/operations/hostDeliveriesHandlers";
 export {getEventAssistanceHostGuests} from
   "./eventSuccess/operations/hostGuestsHandlers";
 export {getEventAssistanceParticipation, setEventAssistanceParticipation} from

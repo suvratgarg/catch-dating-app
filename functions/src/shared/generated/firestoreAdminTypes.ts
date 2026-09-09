@@ -841,6 +841,22 @@ export interface EventAssistanceRcsCallbackIdentityDocument {
   conflictedAt: number | null;
 }
 
+export interface EventAssistanceDeliveryRepairDocument {
+  receiptId: string;
+  context: {
+    mode: "live";
+    eventId: string;
+    organizerId: string;
+  };
+  messageId: string;
+  intentHash: string;
+  requestHash: string;
+  actorUid: string;
+  operationId: string;
+  messageRevision: number;
+  createdAt: number;
+}
+
 export interface EventAssistanceCaseReceiptDocument {
   receiptId: string;
   context: {
@@ -3458,6 +3474,11 @@ export interface EventAssistanceMessageDocument {
           }
       )
     | null;
+  handoff?: {
+    actorUid: string;
+    at: number;
+    operationId: string;
+  };
 }
 
 /**

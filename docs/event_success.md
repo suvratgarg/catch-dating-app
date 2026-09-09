@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.94.0
+version: 1.95.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -559,6 +559,36 @@ help request. A retried guest reply cannot reopen a settled case. Case records
 and receipts remain server-only. Host Today integration, the actionable runtime
 sheet, audited legacy repair and terminal retention remain
 subsequent work; these callables have not been deployed by this source change.
+
+### Delivery review and manual handling
+
+`listEventAssistanceDeliveries` returns a manager-authorized page of up to 50
+recorded messages for one live event. Each row separates delivery evidence,
+coordinator progress and manual ownership. Accepted, unknown, reserved, failed,
+verified-revoked, delivered/read and conflicting states remain distinct; a failed
+attempt cannot hide another pending submission. Coverage is only the returned
+page. Endpoints, provider IDs, templates, private message content and guest-link
+secrets are excluded. Missing/recreated guest sources hide attendee identity and
+remove available actions; malformed matching records fail visibly.
+
+`repairEventAssistanceDelivery` implements `repairDelivery/manualHandoff`. A
+current organizer manager must supply the exact reviewed message revision and
+review hash, which also binds guest/source and coordinator state and the current
+owner's authority. The command records manual ownership on the immutable message
+and an `eventAssistanceDeliveryRepairs` receipt in one transaction. It stops future
+reservations and claims; an already-issued provider permit may still finish.
+Taking over does not mark the message delivered or failed, refund spending, or
+change consent. A removed owner's message can be explicitly taken over after a
+fresh review. Ownership applies to this message, not future messages for the guest.
+
+The message lifecycle stays active so valid guest replies remain usable. Late
+receipts still update its evidence, and exact command retries return the original
+operation revision with the current view. The existing dormant coordinator
+observes the handoff as `hostStopped` and closes its work without claiming a
+provider outcome. Host commands do not write Operations checkpoints directly.
+Provider lookup and verified retry actions are still unavailable and are not
+advertised in the returned actions. Native bindings, visible delivery review,
+rehearsal handling and deployment remain subsequent integration work.
 
 ### Saved assistance settings
 
@@ -1324,8 +1354,8 @@ or accept a real provider receipt. The selected worker connects the outbox to
 Gupshup SMS or Meta WhatsApp outside the transaction. An unknown or accepted
 submission holds all fallback even if its channel later becomes unavailable.
 The dormant delivery coordinator below now resumes the published automatic
-late-join messages. Host read models and rehearsal runtime remain separate
-integration steps. Terminal cleanup must be added before
+late-join messages. Host delivery review now has a typed backend boundary; its native
+bindings and rehearsal runtime remain separate integration steps. Terminal cleanup must be added before
 activation and retain deduplication state throughout the provider reconciliation
 window.
 
@@ -1389,8 +1419,8 @@ it does not grant a new provider submission.
 
 Recorded delivery evidence remains readable after sender or event authority
 changes. Completed Operations work never reopens; later contradictory or delayed
-receipts remain in the outbox, whose current state must inform the Host read
-model. A delivery review flag is not yet a surfaced Host case or notification.
+receipts remain in the outbox, whose current state informs the Host delivery review above. A delivery review
+flag is not yet a surfaced Host notification.
 Relevant event/guest changes and event-specific SMS/WhatsApp/RCS consent now also
 wake saved delivery work, including unsent items held for missing permission.
 The bounded source job revalidates each target's scope and forwards only a

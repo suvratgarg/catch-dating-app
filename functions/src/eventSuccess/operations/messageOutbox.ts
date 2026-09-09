@@ -27,6 +27,11 @@ export function parseMessageRecord(value: unknown): MessageRecord {
     throw new Error("Invalid event message record");
   }
   parseMessageIntent(value.intent);
+  if (value.handoff && (value.intent.context.mode !== "live" ||
+      value.handoff.at < value.createdAt ||
+      value.handoff.at > value.updatedAt)) {
+    throw new Error("Invalid message handoff evidence");
+  }
   if (value.messageId !== assistanceMessageId(value.intent) ||
       value.createdAt < value.intent.createdAt ||
       value.updatedAt < value.createdAt ||
@@ -75,6 +80,7 @@ export function newMessageRecord(
 export function evaluateOutbox(
   record: MessageRecord, facts: OutboxFacts, now: number
 ): DeliveryDecision {
+  if (record.handoff) return {kind: "stop", reason: "hostStopped"};
   if (record.deliveryConflict) {
     return {kind: "hostDecision", reason: "conflictingDeliveryEvidence"};
   }
@@ -107,6 +113,7 @@ export function canClaimLiveAttempt(
   {kind: "withheld"; reason: Extract<PermitResult,
     {kind: "withheld"}>["reason"]} {
   const attempt = record.attempts.find((a) => a.attemptId === attemptId);
+  if (record.handoff) return {kind: "withheld", reason: "authorityChanged"};
   if (!attempt || attempt.state.kind !== "reserved") {
     return {kind: "withheld", reason: "notReserved"};
   }

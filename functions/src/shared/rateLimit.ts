@@ -187,6 +187,8 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   getEventAssistanceSetting: {maxRequests: 60, windowMs: 60_000},
   getEventAssistanceRuntimeConfig: {maxRequests: 60, windowMs: 60_000},
   listEventAssistanceCases: {maxRequests: 30, windowMs: 60_000},
+  listEventAssistanceDeliveries: {maxRequests: 30, windowMs: 60_000},
+  repairEventAssistanceDelivery: {maxRequests: 30, windowMs: 60_000},
   resolveEventAssistanceCase: {maxRequests: 30, windowMs: 60_000},
   getEventAssistanceHostGuests: {maxRequests: 30, windowMs: 60_000},
   getEventAssistanceParticipation: {maxRequests: 60, windowMs: 60_000},

@@ -5457,59 +5457,7 @@
           }
         },
         {
-          "type": "object",
-          "additionalProperties": false,
-          "required": [
-            "kind",
-            "context",
-            "eventId",
-            "operationId",
-            "payload"
-          ],
-          "properties": {
-            "kind": {
-              "type": "string",
-              "const": "repairDelivery"
-            },
-            "context": {
-              "$ref": "#/definitions/ExecutionContext"
-            },
-            "eventId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "operationId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 160,
-              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
-            },
-            "payload": {
-              "type": "object",
-              "additionalProperties": false,
-              "required": [
-                "deliveryId",
-                "action"
-              ],
-              "properties": {
-                "deliveryId": {
-                  "type": "string",
-                  "minLength": 1,
-                  "maxLength": 2000
-                },
-                "action": {
-                  "type": "string",
-                  "enum": [
-                    "reconcile",
-                    "retryDefiniteFailure",
-                    "manualHandoff"
-                  ]
-                }
-              }
-            }
-          }
+          "$ref": "#/definitions/RepairDeliveryCommand"
         },
         {
           "type": "object",
@@ -7406,6 +7354,61 @@
             },
             "decision": {
               "$ref": "event_attendance_disposition.schema.json#/definitions/Decision"
+            }
+          }
+        }
+      }
+    },
+    "RepairDeliveryCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "repairDelivery"
+        },
+        "context": {
+          "$ref": "#/definitions/ExecutionContext"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "deliveryId",
+            "action"
+          ],
+          "properties": {
+            "deliveryId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "reconcile",
+                "retryDefiniteFailure",
+                "manualHandoff"
+              ]
             }
           }
         }

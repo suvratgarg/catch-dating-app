@@ -26,6 +26,11 @@ export {eventRcsPreferenceCallableResponseSchema} from "./schemas/eventRcsPrefer
 export {eventRcsSubscriptionDocumentSchema} from "./schemas/eventRcsSubscriptionDocument";
 export {eventAssistanceRcsCallbackDocumentSchema} from "./schemas/eventAssistanceRcsCallbackDocument";
 export {eventAssistanceRcsCallbackIdentityDocumentSchema} from "./schemas/eventAssistanceRcsCallbackIdentity";
+export {listEventAssistanceDeliveriesCallablePayloadSchema} from "./schemas/listEventAssistanceDeliveriesInput";
+export {repairEventAssistanceDeliveryCallablePayloadSchema} from "./schemas/repairEventAssistanceDeliveryInput";
+export {eventAssistanceDeliveriesCallableResponseSchema} from "./schemas/eventAssistanceDeliveriesOutput";
+export {eventAssistanceDeliveryCallableResponseSchema} from "./schemas/eventAssistanceDeliveryOutput";
+export {eventAssistanceDeliveryRepairDocumentSchema} from "./schemas/eventAssistanceDeliveryRepairDocument";
 export {listEventAssistanceCasesCallablePayloadSchema} from "./schemas/listEventAssistanceCasesInput";
 export {resolveEventAssistanceCaseCallablePayloadSchema} from "./schemas/resolveEventAssistanceCaseInput";
 export {eventAssistanceCasesCallableResponseSchema} from "./schemas/eventAssistanceCasesOutput";

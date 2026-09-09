@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.94.0
+version: 1.95.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -169,6 +169,24 @@ requires the reviewed source hash. `eventAssistanceCaseReceipts` records exact
 request hashes, source binding, actor, outcome and committed revision for
 transactional retry safety. Both collections deny direct client access.
 See `docs/event_success.md` for lifecycle and integration boundaries.
+
+### Event Assistance Delivery Review
+
+`event_assistance_delivery_review.schema.json` owns the closed Host delivery
+page, reviewed repair input, ownership projection and immutable repair receipt.
+Both callables require organizer management access. List coverage is page-local;
+delivery evidence and coordinator completion remain independent. Missing or
+replaced guest sources redact attendee identity and prohibit new commands.
+
+`repairEventAssistanceDelivery` currently supports only the typed command's
+`manualHandoff` action. Its expected message revision and complete review hash
+fence changed evidence and source state. It atomically adds optional server-owned
+`handoff` evidence to the existing outbox and creates a private
+`eventAssistanceDeliveryRepairs` receipt. Legacy messages need no migration.
+Rehearsal records cannot carry live handoff evidence. Exact retries retain their
+original operation revision while returning the current projection. The handoff
+stops new dispatch authority without closing replies or inventing nondelivery.
+Receipt lookup/finality and verified retry remain unimplemented integrations.
 
 ### Event Assistance RCS Configuration
 

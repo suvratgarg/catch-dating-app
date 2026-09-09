@@ -26,6 +26,11 @@ export {validateEventRcsPreferenceCallableResponse} from "./validators/eventRcsP
 export {validateEventRcsSubscriptionDocument} from "./validators/eventRcsSubscriptionDocument";
 export {validateEventAssistanceRcsCallbackDocument} from "./validators/eventAssistanceRcsCallbackDocument";
 export {validateEventAssistanceRcsCallbackIdentityDocument} from "./validators/eventAssistanceRcsCallbackIdentity";
+export {validateListEventAssistanceDeliveriesCallablePayload} from "./validators/listEventAssistanceDeliveriesInput";
+export {validateRepairEventAssistanceDeliveryCallablePayload} from "./validators/repairEventAssistanceDeliveryInput";
+export {validateEventAssistanceDeliveriesCallableResponse} from "./validators/eventAssistanceDeliveriesOutput";
+export {validateEventAssistanceDeliveryCallableResponse} from "./validators/eventAssistanceDeliveryOutput";
+export {validateEventAssistanceDeliveryRepairDocument} from "./validators/eventAssistanceDeliveryRepairDocument";
 export {validateListEventAssistanceCasesCallablePayload} from "./validators/listEventAssistanceCasesInput";
 export {validateResolveEventAssistanceCaseCallablePayload} from "./validators/resolveEventAssistanceCaseInput";
 export {validateEventAssistanceCasesCallableResponse} from "./validators/eventAssistanceCasesOutput";

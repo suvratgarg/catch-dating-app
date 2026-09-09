@@ -3099,6 +3099,35 @@ export const eventAssistanceMessageDocumentSchema: Record<string, unknown> = {
           "type": "null"
         }
       ]
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actorUid",
+        "at",
+        "operationId"
+      ],
+      "properties": {
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "at": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "x-catch-ownership": "server-only"
     }
   },
   "allOf": [
@@ -3121,6 +3150,28 @@ export const eventAssistanceMessageDocumentSchema: Record<string, unknown> = {
         "properties": {
           "response": {
             "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "handoff"
+        ]
+      },
+      "then": {
+        "properties": {
+          "intent": {
+            "properties": {
+              "context": {
+                "properties": {
+                  "mode": {
+                    "const": "live"
+                  }
+                }
+              }
+            }
           }
         }
       }

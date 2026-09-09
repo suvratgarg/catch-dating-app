@@ -3040,6 +3040,1416 @@ export const eventAssistanceRcsCallbackIdentityDocumentSchema = {
   "x-owner": "event-assistance authenticated RCS ingress"
 };
 
+export const listEventAssistanceDeliveriesCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "cursor"
+  ],
+  "properties": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "cursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^outbox:[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "title": "ListEventAssistanceDeliveriesCallablePayload"
+};
+
+export const repairEventAssistanceDeliveryCallablePayloadSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "command",
+    "expectedMessageRevision",
+    "expectedReviewHash"
+  ],
+  "properties": {
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "context",
+        "eventId",
+        "operationId",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "repairDelivery"
+        },
+        "context": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "eventId",
+                "organizerId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "live"
+                },
+                "eventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "rehearsalId",
+                "virtualEventId",
+                "clockId"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "const": "rehearsal"
+                },
+                "rehearsalId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "virtualEventId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "clockId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                }
+              }
+            }
+          ]
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "deliveryId",
+            "action"
+          ],
+          "properties": {
+            "deliveryId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            },
+            "action": {
+              "type": "string",
+              "enum": [
+                "reconcile",
+                "retryDefiniteFailure",
+                "manualHandoff"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "expectedMessageRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "expectedReviewHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "properties": {
+        "command": {
+          "properties": {
+            "context": {
+              "properties": {
+                "mode": {
+                  "const": "live"
+                }
+              }
+            },
+            "payload": {
+              "properties": {
+                "deliveryId": {
+                  "type": "string",
+                  "pattern": "^outbox:[a-f0-9]{64}$"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "title": "RepairEventAssistanceDeliveryCallablePayload"
+};
+
+export const eventAssistanceDeliveriesCallableResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "serverTime",
+    "coverage",
+    "deliveries",
+    "nextCursor"
+  ],
+  "properties": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "serverTime": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "coverage": {
+      "const": "page"
+    },
+    "deliveries": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "messageId",
+              "revision",
+              "reviewHash",
+              "createdAt",
+              "expiresAt",
+              "lifecycle",
+              "deliveryStatus",
+              "attempts",
+              "coordination",
+              "handling",
+              "availability",
+              "attendeeId",
+              "actions",
+              "purpose"
+            ],
+            "properties": {
+              "messageId": {
+                "type": "string",
+                "pattern": "^outbox:[a-f0-9]{64}$"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "reviewHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "createdAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "expiresAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "lifecycle": {
+                "enum": [
+                  "active",
+                  "cancelled",
+                  "superseded",
+                  "responded"
+                ]
+              },
+              "deliveryStatus": {
+                "enum": [
+                  "notSubmitted",
+                  "reserved",
+                  "unknown",
+                  "accepted",
+                  "delivered",
+                  "read",
+                  "failed",
+                  "notDispatched",
+                  "conflictingEvidence",
+                  "revoked"
+                ]
+              },
+              "attempts": {
+                "type": "array",
+                "maxItems": 6,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "channel",
+                    "state",
+                    "at"
+                  ],
+                  "properties": {
+                    "channel": {
+                      "enum": [
+                        "sms",
+                        "whatsapp",
+                        "rcs"
+                      ]
+                    },
+                    "state": {
+                      "enum": [
+                        "reserved",
+                        "unknown",
+                        "accepted",
+                        "delivered",
+                        "read",
+                        "failed",
+                        "notDispatched",
+                        "revoked"
+                      ]
+                    },
+                    "at": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              },
+              "coordination": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "untracked"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "phase",
+                      "reason",
+                      "dueAt"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "tracked"
+                      },
+                      "phase": {
+                        "enum": [
+                          "queued",
+                          "retry",
+                          "receipt",
+                          "review",
+                          "complete"
+                        ]
+                      },
+                      "reason": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 80
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "dueAt": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "handling": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "automatic"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "actorUid",
+                      "at",
+                      "authority"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "manual"
+                      },
+                      "actorUid": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "authority": {
+                        "enum": [
+                          "current",
+                          "revoked"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "availability": {
+                "const": "current"
+              },
+              "attendeeId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "actions": {
+                "type": "array",
+                "maxItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "const": "manualHandoff"
+                }
+              },
+              "purpose": {
+                "enum": [
+                  "joiningUpdate",
+                  "joiningInstructions",
+                  "planChanged",
+                  "guestRequirement",
+                  "assignmentChanged",
+                  "participationCheck",
+                  "eventCancelled",
+                  "eventFinished",
+                  "followUp"
+                ]
+              }
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "messageId",
+              "revision",
+              "reviewHash",
+              "createdAt",
+              "expiresAt",
+              "lifecycle",
+              "deliveryStatus",
+              "attempts",
+              "coordination",
+              "handling",
+              "availability",
+              "attendeeId",
+              "actions",
+              "purpose"
+            ],
+            "properties": {
+              "messageId": {
+                "type": "string",
+                "pattern": "^outbox:[a-f0-9]{64}$"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "reviewHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "createdAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "expiresAt": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "lifecycle": {
+                "enum": [
+                  "active",
+                  "cancelled",
+                  "superseded",
+                  "responded"
+                ]
+              },
+              "deliveryStatus": {
+                "enum": [
+                  "notSubmitted",
+                  "reserved",
+                  "unknown",
+                  "accepted",
+                  "delivered",
+                  "read",
+                  "failed",
+                  "notDispatched",
+                  "conflictingEvidence",
+                  "revoked"
+                ]
+              },
+              "attempts": {
+                "type": "array",
+                "maxItems": 6,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "channel",
+                    "state",
+                    "at"
+                  ],
+                  "properties": {
+                    "channel": {
+                      "enum": [
+                        "sms",
+                        "whatsapp",
+                        "rcs"
+                      ]
+                    },
+                    "state": {
+                      "enum": [
+                        "reserved",
+                        "unknown",
+                        "accepted",
+                        "delivered",
+                        "read",
+                        "failed",
+                        "notDispatched",
+                        "revoked"
+                      ]
+                    },
+                    "at": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              },
+              "coordination": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "untracked"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "phase",
+                      "reason",
+                      "dueAt"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "tracked"
+                      },
+                      "phase": {
+                        "enum": [
+                          "queued",
+                          "retry",
+                          "receipt",
+                          "review",
+                          "complete"
+                        ]
+                      },
+                      "reason": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 80
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "dueAt": {
+                        "anyOf": [
+                          {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "handling": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "automatic"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "actorUid",
+                      "at",
+                      "authority"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "manual"
+                      },
+                      "actorUid": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "at": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "authority": {
+                        "enum": [
+                          "current",
+                          "revoked"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "availability": {
+                "const": "sourceChanged"
+              },
+              "attendeeId": {
+                "type": "null"
+              },
+              "actions": {
+                "type": "array",
+                "maxItems": 0,
+                "items": {
+                  "const": "manualHandoff"
+                }
+              },
+              "purpose": {
+                "enum": [
+                  "joiningUpdate",
+                  "joiningInstructions",
+                  "planChanged",
+                  "guestRequirement",
+                  "assignmentChanged",
+                  "participationCheck",
+                  "eventCancelled",
+                  "eventFinished",
+                  "followUp"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "nextCursor": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^outbox:[a-f0-9]{64}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "title": "EventAssistanceDeliveriesCallableResponse"
+};
+
+export const eventAssistanceDeliveryCallableResponseSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "context",
+    "serverTime",
+    "outcome",
+    "operationRevision",
+    "view"
+  ],
+  "properties": {
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "serverTime": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "outcome": {
+      "enum": [
+        "applied",
+        "replayed"
+      ]
+    },
+    "operationRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "view": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "messageId",
+            "revision",
+            "reviewHash",
+            "createdAt",
+            "expiresAt",
+            "lifecycle",
+            "deliveryStatus",
+            "attempts",
+            "coordination",
+            "handling",
+            "availability",
+            "attendeeId",
+            "actions",
+            "purpose"
+          ],
+          "properties": {
+            "messageId": {
+              "type": "string",
+              "pattern": "^outbox:[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reviewHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "lifecycle": {
+              "enum": [
+                "active",
+                "cancelled",
+                "superseded",
+                "responded"
+              ]
+            },
+            "deliveryStatus": {
+              "enum": [
+                "notSubmitted",
+                "reserved",
+                "unknown",
+                "accepted",
+                "delivered",
+                "read",
+                "failed",
+                "notDispatched",
+                "conflictingEvidence",
+                "revoked"
+              ]
+            },
+            "attempts": {
+              "type": "array",
+              "maxItems": 6,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "channel",
+                  "state",
+                  "at"
+                ],
+                "properties": {
+                  "channel": {
+                    "enum": [
+                      "sms",
+                      "whatsapp",
+                      "rcs"
+                    ]
+                  },
+                  "state": {
+                    "enum": [
+                      "reserved",
+                      "unknown",
+                      "accepted",
+                      "delivered",
+                      "read",
+                      "failed",
+                      "notDispatched",
+                      "revoked"
+                    ]
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            },
+            "coordination": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "untracked"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "phase",
+                    "reason",
+                    "dueAt"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "tracked"
+                    },
+                    "phase": {
+                      "enum": [
+                        "queued",
+                        "retry",
+                        "receipt",
+                        "review",
+                        "complete"
+                      ]
+                    },
+                    "reason": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "dueAt": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "handling": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "automatic"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "actorUid",
+                    "at",
+                    "authority"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "manual"
+                    },
+                    "actorUid": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "at": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "authority": {
+                      "enum": [
+                        "current",
+                        "revoked"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "availability": {
+              "const": "current"
+            },
+            "attendeeId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "actions": {
+              "type": "array",
+              "maxItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "const": "manualHandoff"
+              }
+            },
+            "purpose": {
+              "enum": [
+                "joiningUpdate",
+                "joiningInstructions",
+                "planChanged",
+                "guestRequirement",
+                "assignmentChanged",
+                "participationCheck",
+                "eventCancelled",
+                "eventFinished",
+                "followUp"
+              ]
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "messageId",
+            "revision",
+            "reviewHash",
+            "createdAt",
+            "expiresAt",
+            "lifecycle",
+            "deliveryStatus",
+            "attempts",
+            "coordination",
+            "handling",
+            "availability",
+            "attendeeId",
+            "actions",
+            "purpose"
+          ],
+          "properties": {
+            "messageId": {
+              "type": "string",
+              "pattern": "^outbox:[a-f0-9]{64}$"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "reviewHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "createdAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "expiresAt": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "lifecycle": {
+              "enum": [
+                "active",
+                "cancelled",
+                "superseded",
+                "responded"
+              ]
+            },
+            "deliveryStatus": {
+              "enum": [
+                "notSubmitted",
+                "reserved",
+                "unknown",
+                "accepted",
+                "delivered",
+                "read",
+                "failed",
+                "notDispatched",
+                "conflictingEvidence",
+                "revoked"
+              ]
+            },
+            "attempts": {
+              "type": "array",
+              "maxItems": 6,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "channel",
+                  "state",
+                  "at"
+                ],
+                "properties": {
+                  "channel": {
+                    "enum": [
+                      "sms",
+                      "whatsapp",
+                      "rcs"
+                    ]
+                  },
+                  "state": {
+                    "enum": [
+                      "reserved",
+                      "unknown",
+                      "accepted",
+                      "delivered",
+                      "read",
+                      "failed",
+                      "notDispatched",
+                      "revoked"
+                    ]
+                  },
+                  "at": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                }
+              }
+            },
+            "coordination": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "untracked"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "phase",
+                    "reason",
+                    "dueAt"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "tracked"
+                    },
+                    "phase": {
+                      "enum": [
+                        "queued",
+                        "retry",
+                        "receipt",
+                        "review",
+                        "complete"
+                      ]
+                    },
+                    "reason": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 80
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "dueAt": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "handling": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "automatic"
+                    }
+                  }
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "kind",
+                    "actorUid",
+                    "at",
+                    "authority"
+                  ],
+                  "properties": {
+                    "kind": {
+                      "const": "manual"
+                    },
+                    "actorUid": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "at": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "authority": {
+                      "enum": [
+                        "current",
+                        "revoked"
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            "availability": {
+              "const": "sourceChanged"
+            },
+            "attendeeId": {
+              "type": "null"
+            },
+            "actions": {
+              "type": "array",
+              "maxItems": 0,
+              "items": {
+                "const": "manualHandoff"
+              }
+            },
+            "purpose": {
+              "enum": [
+                "joiningUpdate",
+                "joiningInstructions",
+                "planChanged",
+                "guestRequirement",
+                "assignmentChanged",
+                "participationCheck",
+                "eventCancelled",
+                "eventFinished",
+                "followUp"
+              ]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "title": "EventAssistanceDeliveryCallableResponse"
+};
+
+export const eventAssistanceDeliveryRepairDocumentSchema = {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receiptId",
+    "context",
+    "messageId",
+    "intentHash",
+    "requestHash",
+    "actorUid",
+    "operationId",
+    "messageRevision",
+    "createdAt"
+  ],
+  "properties": {
+    "receiptId": {
+      "type": "string",
+      "pattern": "^delivery-repair:[a-f0-9]{64}$"
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "eventId",
+        "organizerId"
+      ],
+      "properties": {
+        "mode": {
+          "type": "string",
+          "const": "live"
+        },
+        "eventId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      }
+    },
+    "messageId": {
+      "type": "string",
+      "pattern": "^outbox:[a-f0-9]{64}$"
+    },
+    "intentHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "requestHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "actorUid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "operationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "messageRevision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "title": "EventAssistanceDeliveryRepairDocument",
+  "x-firestore-collection": "eventAssistanceDeliveryRepairs",
+  "x-firestore-path": "eventAssistanceDeliveryRepairs/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "trusted event-assistance host recovery"
+};
+
 export const listEventAssistanceCasesCallablePayloadSchema = {
   "type": "object",
   "additionalProperties": false,
@@ -47493,6 +48903,35 @@ export const eventAssistanceMessageDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "handoff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actorUid",
+        "at",
+        "operationId"
+      ],
+      "properties": {
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "at": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "operationId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      },
+      "x-catch-ownership": "server-only"
     }
   },
   "allOf": [
@@ -47515,6 +48954,28 @@ export const eventAssistanceMessageDocumentSchema = {
         "properties": {
           "response": {
             "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "handoff"
+        ]
+      },
+      "then": {
+        "properties": {
+          "intent": {
+            "properties": {
+              "context": {
+                "properties": {
+                  "mode": {
+                    "const": "live"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -112641,6 +114102,35 @@ export const eventRehearsalMessageDocumentSchema = {
               "type": "null"
             }
           ]
+        },
+        "handoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actorUid",
+            "at",
+            "operationId"
+          ],
+          "properties": {
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "at": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "operationId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            }
+          },
+          "x-catch-ownership": "server-only"
         }
       },
       "allOf": [
@@ -112663,6 +114153,28 @@ export const eventRehearsalMessageDocumentSchema = {
             "properties": {
               "response": {
                 "type": "null"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "handoff"
+            ]
+          },
+          "then": {
+            "properties": {
+              "intent": {
+                "properties": {
+                  "context": {
+                    "properties": {
+                      "mode": {
+                        "const": "live"
+                      }
+                    }
+                  }
+                }
               }
             }
           }

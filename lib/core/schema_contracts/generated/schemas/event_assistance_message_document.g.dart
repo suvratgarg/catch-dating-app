@@ -3102,6 +3102,35 @@ const schemaEventAssistanceMessageDocumentSchema = <String, Object?>{
         },
       ],
     },
+    'handoff': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'actorUid',
+        'at',
+        'operationId',
+      ],
+      'properties': <String, Object?>{
+        'actorUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'at': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'operationId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 160,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+      },
+      'x-catch-ownership': 'server-only',
+    },
   },
   'allOf': <Object?>[
     <String, Object?>{
@@ -3123,6 +3152,28 @@ const schemaEventAssistanceMessageDocumentSchema = <String, Object?>{
         'properties': <String, Object?>{
           'response': <String, Object?>{
             'type': 'null',
+          },
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'required': <Object?>[
+          'handoff',
+        ],
+      },
+      'then': <String, Object?>{
+        'properties': <String, Object?>{
+          'intent': <String, Object?>{
+            'properties': <String, Object?>{
+              'context': <String, Object?>{
+                'properties': <String, Object?>{
+                  'mode': <String, Object?>{
+                    'const': 'live',
+                  },
+                },
+              },
+            },
           },
         },
       },

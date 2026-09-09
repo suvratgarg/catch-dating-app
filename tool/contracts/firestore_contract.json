@@ -2187,6 +2187,25 @@
       "write": "server only",
       "migrationNotes": [
         "Intent and bounded attempts are private. Provider activation and guest response endpoints are separate integration work."
+      ],
+      "exportedFunctions": [
+        "listEventAssistanceDeliveries",
+        "repairEventAssistanceDelivery"
+      ]
+    },
+    {
+      "id": "eventAssistanceDeliveryRepairs",
+      "path": "eventAssistanceDeliveryRepairs/{receiptId}",
+      "rulesMatch": "/eventAssistanceDeliveryRepairs/{receiptId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "trusted event-assistance host recovery",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "repairEventAssistanceDelivery"
+      ],
+      "migrationNotes": [
+        "Immutable reviewed manual handoffs. No provider evidence, receipt or consent can be inferred from a host action."
       ]
     },
     {

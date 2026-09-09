@@ -1,6 +1,28 @@
 {
   "indexes": [
     {
+      "collectionGroup": "eventAssistanceMessages",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "intent.context.mode",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "intent.context.organizerId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "intent.eventId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "__name__",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "eventAssistanceWhatsappPermissions",
       "queryScope": "COLLECTION",
       "fields": [

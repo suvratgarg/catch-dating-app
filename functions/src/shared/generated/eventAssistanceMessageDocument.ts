@@ -725,4 +725,9 @@ export type EventAssistanceMessageDocument = {
           }
       )
     | null;
+  handoff?: {
+    actorUid: string;
+    at: number;
+    operationId: string;
+  };
 };

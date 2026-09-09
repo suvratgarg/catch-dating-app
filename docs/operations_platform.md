@@ -1,7 +1,7 @@
 ---
 doc_id: operations_platform
-version: 1.24.0
-updated: 2026-09-08
+version: 1.25.0
+updated: 2026-09-09
 owner: operations_platform
 status: active
 ---
@@ -824,8 +824,14 @@ trigger selects `liveMessageDelivery` due payloads. Each scheduled batch reads
 at most ten due delivery items in addition to its roster/source/guest limits.
 Independent items continue after another item fails. Message changes are only
 wake requests: the store re-reads the canonical outbox and current authority.
-Provider lookup/finality, Host projection and terminal retention remain required
-before full activation. Signing-key requirements and
+The manager-only Host delivery reader now projects recorded evidence separately
+from coordinator state. A reviewed manual handoff writes the outbox and its
+private immutable receipt; it never writes Operations items without their lease.
+The coordinator observes that handoff as `hostStopped` on the existing message
+wake. Future claims are withheld, while already-issued permits and late receipts
+retain their original authority. Completed coordination does not prove delivery.
+Provider lookup/finality, Host UI integration and terminal retention remain
+required before full activation. Signing-key requirements and
 channel controls are owned by [Event Success](event_success.md#durable-message-delivery-coordination).
 
 Source-driven delivery evaluations record one immutable wake receipt per
