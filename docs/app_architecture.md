@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.42.0
+version: 1.43.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -1680,10 +1680,15 @@ navigation policy. Inquiries resolve organizer manager membership on the server:
 customer-to-manager targets Host; manager-to-customer targets Consumer. Personal
 matches/messages target Consumer. Host replies use professional Host identity.
 
-One `CatchNoticeHost` is mounted in `MyApp` above the routed child, inside the
+One `CatchNoticeOverlay` is mounted in `MyApp` above the routed child, inside the
 force-update gate. It owns safe-area overlay placement, arrival motion, bounded
 FIFO/priority queue display, auto-dismiss and tap/swipe/keyboard/accessibility
-interaction. Arrival cards never consume header/body layout space. They sit
+interaction. The overlay supplies the actual Flutter Overlay ancestor for notice
+tooltips. Pointer, hover and focus pause expiry for both ordinary and arrival
+notices. F6 or Shift+F6 transfers focus between notice controls and the prior
+route focus; showing a notice never steals keyboard focus. Text wraps and
+long actions move below the content when their measured widths do not fit.
+Arrival cards never consume header/body layout space. They sit
 above title, tabs and persistent status strips, including on pushed routes.
 `catch_notice_host_is_app_owned` rejects route-local hosts and
 `catch_notification_delivery_is_service_owned` rejects raw foreground SDK
@@ -2436,7 +2441,7 @@ Reference implementation:
 - `lib/core/presentation/app_shell.dart` and
   `lib/core/presentation/host_app_shell.dart` — semantic navigation destinations
   localized at render time;
-- `lib/core/riverpod_ui/catch_notice_host.dart` — resolves notice dismiss copy
+- `lib/core/riverpod_ui/catch_notice_overlay.dart` — resolves notice dismiss copy
   at the app boundary;
 - presentation-state factories such as
   `lib/onboarding/presentation/onboarding_flow_state.dart`,

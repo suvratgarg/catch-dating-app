@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/presentation/catch_adaptive_tab_scaffold.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -623,7 +623,7 @@ void main() {
             ),
             child: Builder(
               builder: (context) => const Scaffold(
-                body: CatchNoticeHost(child: SizedBox.expand()),
+                body: CatchNoticeOverlay(child: SizedBox.expand()),
               ),
             ),
           ),
@@ -631,7 +631,7 @@ void main() {
       ),
     );
 
-    ProviderScope.containerOf(tester.element(find.byType(CatchNoticeHost)))
+    ProviderScope.containerOf(tester.element(find.byType(CatchNoticeOverlay)))
         .read(catchNoticeControllerProvider.notifier)
         .show(const CatchNoticeData(id: 'message', title: 'New message'));
     await pumpFeatureUi(tester);
@@ -650,12 +650,12 @@ void main() {
       ProviderScope(
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const Scaffold(body: CatchNoticeHost(child: SizedBox.expand())),
+          home: const Scaffold(body: CatchNoticeOverlay(child: SizedBox.expand())),
         ),
       ),
     );
 
-    final context = tester.element(find.byType(CatchNoticeHost));
+    final context = tester.element(find.byType(CatchNoticeOverlay));
     ProviderScope.containerOf(context)
         .read(catchNoticeControllerProvider.notifier)
         .show(

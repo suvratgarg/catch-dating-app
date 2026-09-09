@@ -1537,9 +1537,10 @@ Widget catchNoticeContractStates(BuildContext context) {
           dismissLabel: context.l10n.coreCatchNoticeTooltipDismiss,
           notice: CatchNoticeData(
             id: 'action',
-            title: 'Event updated',
-            message: 'Review the latest details.',
-            actionLabel: 'View',
+            title: 'Important update to your upcoming event',
+            message:
+                'The meeting location has moved to the north entrance. Your booking is unchanged.',
+            actionLabel: 'Review updated event details',
             onAction: _noop,
           ),
         ),

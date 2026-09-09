@@ -16,7 +16,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.da
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
@@ -2013,19 +2013,19 @@ Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchNoticeHost,
+  type: CatchNoticeOverlay,
   path: '[Core catalog]/Feedback',
 )
-Widget catchNoticeHostCatalogStates(BuildContext context) {
+Widget catchNoticeOverlayCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchNoticeHost',
-    catalogId: 'core.widgets.catch_notice_host',
+    title: 'Notice overlay',
+    catalogId: 'catch.notice',
     children: [
       _StateCard(
-        label: 'overlay host',
+        label: 'app-level overlay',
         child: SizedBox(
           height: WidgetbookPreviewLayout.stateViewportHeight,
-          child: CatchNoticeHost(
+          child: CatchNoticeOverlay(
             child: CatchSurface.card(
               height: WidgetbookPreviewLayout.mediaPanelHeight,
               child: Center(
@@ -2060,7 +2060,7 @@ Widget catchNoticeQueueCatalogState(BuildContext context) =>
           ],
           child: const SizedBox(
             height: WidgetbookPreviewLayout.stateViewportHeight,
-            child: CatchNoticeHost(child: SizedBox.expand()),
+            child: CatchNoticeOverlay(child: SizedBox.expand()),
           ),
         ),
       ],
@@ -2169,7 +2169,7 @@ class _ArrivalPreviewState extends ConsumerState<_ArrivalPreview> {
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     routerConfig: _router,
-    builder: (context, child) => CatchNoticeHost(
+    builder: (context, child) => CatchNoticeOverlay(
       child: ForegroundNotificationListener(router: _router, child: child!),
     ),
   );

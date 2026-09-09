@@ -655,14 +655,14 @@ DART
   expect_code_count "status placement $feedback_scope" "catch_status_strip_is_layout_owned" 3
   expect_probe exact catch_status_strip_is_layout_owned 3
   stage_probe "arrival placement $feedback_scope" <<'DART'
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart' as ui;
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart' as ui;
 import 'package:firebase_messaging/firebase_messaging.dart' as fcm;
 import 'package:flutter/widgets.dart';
-typedef NoticeHostAlias = ui.CatchNoticeHost;
+typedef NoticeOverlayAlias = ui.CatchNoticeOverlay;
 List<Object> forbiddenArrivals() => [
-  const ui.CatchNoticeHost(child: SizedBox()),
-  const NoticeHostAlias(child: SizedBox()),
-  ui.CatchNoticeHost.new,
+  const ui.CatchNoticeOverlay(child: SizedBox()),
+  const NoticeOverlayAlias(child: SizedBox()),
+  ui.CatchNoticeOverlay.new,
   fcm.FirebaseMessaging.onMessage,
 ];
 DART
@@ -672,9 +672,9 @@ done
 
 probe_path="$probe_root/lib/app.dart"
 stage_probe "global arrival host owner" <<'DART'
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:flutter/widgets.dart';
-final host = CatchNoticeHost(child: const SizedBox());
+final host = CatchNoticeOverlay(child: const SizedBox());
 DART
 expect_probe exact catch_notice_host_is_app_owned 0
 

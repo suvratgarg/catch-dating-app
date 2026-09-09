@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -39,7 +39,7 @@ void main() {
               disableAnimations: reduceMotion,
               accessibleNavigation: accessibleNavigation,
             ),
-            child: CatchNoticeHost(child: child!),
+            child: CatchNoticeOverlay(child: child!),
           ),
           home: const Scaffold(body: Text('Underlying route')),
         ),

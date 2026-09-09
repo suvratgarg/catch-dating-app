@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/startup/catch_native_splash.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
@@ -76,7 +76,7 @@ class MyApp extends ConsumerWidget {
               ),
             );
           },
-          child: CatchNoticeHost(
+          child: CatchNoticeOverlay(
             child: ForegroundNotificationListener(
               router: goRouter,
               child: CatchStatusStripScope(

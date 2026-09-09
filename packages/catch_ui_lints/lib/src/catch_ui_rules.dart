@@ -30,7 +30,7 @@ class CatchFeedbackRules extends MultiAnalysisRule {
   );
   static const noticeHostIsAppOwned = LintCode(
     'catch_notice_host_is_app_owned',
-    'CatchNoticeHost belongs once above the router in app.dart; features publish CatchNoticeData rather than creating a route-local overlay.',
+    'CatchNoticeOverlay belongs once above the router in app.dart; features publish CatchNoticeData rather than creating a route-local overlay.',
     severity: DiagnosticSeverity.WARNING,
   );
   static const notificationDeliveryIsServiceOwned = LintCode(
@@ -81,9 +81,9 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
   void _check(AstNode node, Element? element) {
     final uri = element?.library?.uri.toString();
     if (element is ConstructorElement &&
-        element.enclosingElement.name == 'CatchNoticeHost' &&
+        element.enclosingElement.name == 'CatchNoticeOverlay' &&
         uri ==
-            'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart' &&
+            'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart' &&
         !const {
           '/lib/app.dart',
           '/widgetbook/lib/primitives/core_catalog_use_cases.dart',

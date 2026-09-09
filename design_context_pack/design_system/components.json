@@ -2230,7 +2230,7 @@
       "name": "CatchNotice",
       "status": "active",
       "kind": "composite",
-      "summary": "Configurable notice family. CatchNoticeData.arrival uses whole-card open and swipe dismissal in one app-level safe-area host; ordinary inline notices retain optional controls. Features own copy, identity, tone and routing; the primitive owns geometry and interaction.",
+      "summary": "Configurable ambient notice family with one app-level safe-area overlay. Arrival notices open from the whole card and support swipe dismissal; ordinary notifications use explicit action and dismiss controls. Features own copy, identity, tone and routing; the shared renderer owns readable geometry and interaction.",
       "dart": {
         "symbol": "CatchNotice",
         "file": "packages/catch_ui/lib/src/components/catch_notice.dart",
@@ -2273,12 +2273,6 @@
             "type": "callback",
             "required": false,
             "dartType": "VoidCallback?"
-          },
-          {
-            "name": "child",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget"
           }
         ],
         "states": [
@@ -2293,12 +2287,7 @@
           "arrival-swipe-to-dismiss",
           "arrival-reduced-motion"
         ],
-        "slots": [
-          {
-            "name": "child",
-            "kind": "hosted-content-widget"
-          }
-        ],
+        "slots": [],
         "tokens": [
           "space.s1",
           "space.s2",
@@ -2317,11 +2306,12 @@
           "CatchNoticeTone",
           "CatchNoticeQueue",
           "CatchNoticeController",
-          "CatchNoticeHost",
+          "CatchNoticeOverlay",
           "CatchAvatar",
           "CatchPersonAvatarItem",
           "CatchSurface",
           "CatchButton",
+          "CatchIconAction",
           "CatchTextStyles.labelL",
           "CatchTextStyles.supporting"
         ],
@@ -2329,9 +2319,9 @@
         "members": [
           {
             "id": "catch.notice.host",
-            "symbol": "CatchNoticeHost",
-            "file": "lib/core/riverpod_ui/catch_notice_host.dart",
-            "summary": "One MyApp-owned safe-area overlay above the router, enforced by catch_notice_host_is_app_owned. Owns entry motion, gesture/keyboard dismissal and interaction-aware timers; persistent context remains with CatchStatusStrip below tabs.",
+            "symbol": "CatchNoticeOverlay",
+            "file": "lib/core/riverpod_ui/catch_notice_overlay.dart",
+            "summary": "One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchStatusStrip below tabs.",
             "states": [
               "empty",
               "queued",
@@ -2341,8 +2331,17 @@
               "conceptRole": "member",
               "conceptId": "catch.notice",
               "parentConceptId": "catch.notice",
-              "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.notice"
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:notice-overlay-and-action-delivery"
+            },
+            "level": "L4a",
+            "roleNoun": "Overlay",
+            "naming": {
+              "useCase": "Notice",
+              "comparedWith": [
+                "catch.notice"
+              ],
+              "reason": "Binds the notice queue to one MyApp-owned safe-area layer, motion and interaction-aware lifetime. The parent renders one notification from caller data; this adapter owns neither feature routing policy nor persistent inline feedback."
             }
           }
         ],
@@ -2371,7 +2370,8 @@
           "Persistent offline and rehearsal context uses CatchStatusStrip in the canonical screen header, never this overlay host.",
           "CatchNoticeData owns caller-supplied title, message, icon, person, and accentColor; a supplied person takes precedence over the icon and uses CatchAvatar's circular image/initials fallback.",
           "Keep match/message copy and identity in feature adapters. Do not fork the renderer for different strings, icons or colors. Accent overrides must be theme-derived and reviewed for contrast; geometry and typography remain renderer-owned.",
-          "Use CatchErrorBanner for inline persistent form/section failures and CatchErrorState for blocking data-load failures."
+          "Use CatchBanner.error for inline persistent form/section failures and CatchErrorState for blocking data-load failures.",
+          "Notice text wraps and action placement follows measured label widths at the active text scale. CatchIconAction.plain owns dismiss feedback; the overlay pauses expiry during pointer, hover and focus interaction, provides F6/Shift+F6 focus transfer without autofocus, and supplies the Tooltip overlay ancestor."
         ]
       },
       "governance": {
@@ -2389,6 +2389,11 @@
       },
       "surfaces": {
         "flutter": "CatchNotice"
+      },
+      "level": "L3",
+      "roleNoun": "Notice",
+      "naming": {
+        "useCase": ""
       }
     },
     {

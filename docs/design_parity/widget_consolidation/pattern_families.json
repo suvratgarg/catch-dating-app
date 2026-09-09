@@ -2966,6 +2966,42 @@
           "rationale": "The same passive or tappable edge annotation is needed with a Flutter circle and with a native geographic circle; share one renderer as a named recipe."
         }
       ]
+    },
+    {
+      "id": "notice-overlay-and-action-delivery",
+      "title": "Ambient notice rendering and app-level delivery",
+      "intent": "One shared notice renderer and one app-owned queue overlay; keep transient snackbar publication and persistent inline error feedback with their existing owners.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.notice",
+      "qualityReference": "CatchNotice",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve notice tone blending exactly with named CatchOpacity.noticeFill, noticeIconFill and noticeBorder tokens; retain person identity, icons, safe-area placement, entry motion, queue ordering and replacement identity checks.",
+        "Allow complete title/message wrapping and place long actions below the content when measured widths do not fit. Use the canonical plain icon action for dismiss feedback with the existing 48-point allocation and glyph.",
+        "Use one notice leaf and common interaction-aware expiry for ordinary and arrival notices. Supply a Flutter Overlay ancestor for dismiss tooltips and F6/Shift+F6 transfer between the notice and prior route focus without stealing focus."
+      ],
+      "members": [
+        {
+          "symbol": "CatchNotice",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns the ambient notification contract with person, title, message, tone and optional actions; it delegates shared surface, button and icon-action rendering."
+        },
+        {
+          "symbol": "CatchNoticeOverlay",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "One app-owned provider adapter controls safe-area placement, queue presentation, entry motion and interaction lifetime above the router."
+        },
+        {
+          "symbol": "CatchNoticeHost",
+          "disposition": "unify",
+          "target": "CatchNoticeOverlay",
+          "preview": "not-applicable",
+          "rationale": "Use the closed Overlay role for the actual placement responsibility. Ordinary and arrival branches share one renderer and timer interaction policy."
+        }
+      ]
     }
   ]
 }

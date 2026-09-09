@@ -7678,6 +7678,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:notice-overlay-and-action-delivery",
+      "patternFamilyId": "notice-overlay-and-action-delivery",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchNoticeOverlay",
+      "members": [
+        {
+          "name": "CatchNoticeHost",
+          "action": "rename"
+        },
+        {
+          "name": "CatchNotice",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Source and rendered review preserve the notice renderer and name the distinct queue adapter by its Overlay role. Merge the duplicate notice leaves and ordinary/arrival interaction timing. Repair measured long-copy overflow and truncation, use the shared icon action, and provide the root Tooltip ancestor. F6 reaches the nonmodal notice from the route and returns focus without interrupting typing. Canonical snackbar publication, contextual persistent errors and feature navigation retain their existing owners.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

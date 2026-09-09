@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "8f4afa7af31fa2f840a494b7d4c966ffc0276048bd57e1adb3ea6604d064e3dc",
+  "sourceDigest": "33865532a121297910b7087058cabf2dbbdae473271bc6180057def3503a255c",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "8f4afa7af31fa2f840a494b7d4c966ffc0276048bd57e1adb3ea6604d064e3dc",
-    "contractDigest": "8f4afa7af31fa2f840a494b7d4c966ffc0276048bd57e1adb3ea6604d064e3dc"
+    "digest": "33865532a121297910b7087058cabf2dbbdae473271bc6180057def3503a255c",
+    "contractDigest": "33865532a121297910b7087058cabf2dbbdae473271bc6180057def3503a255c"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "ea59a666c5d735bf6a44c5d7b81151588006919d0fd16fe771e9498218f27019",
+    "handoffRequestDigest": "6b5e4fbf39d1918b2243abc0bcf10bb5865e7a64f0b16e69013855fa17ff5379",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -283,7 +283,7 @@
         "key": "catch.notice",
         "symbols": [
           "CatchNotice",
-          "CatchNoticeHost"
+          "CatchNoticeOverlay"
         ]
       },
       {
@@ -763,7 +763,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Notice",
       "claudeAllowed": true,
-      "contractDigest": "915c065206ef432d557c3a4c57d0edc6e905c0669485367adeb8372294dd9ef9"
+      "contractDigest": "84bf2dd76df957856155ab99b621e8d8b8f3736a89414d6d6f802341c2fcecb6"
     },
     {
       "contractId": "catch.status_strip",

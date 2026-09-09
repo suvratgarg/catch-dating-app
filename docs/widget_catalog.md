@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.61.0
+version: 3.62.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -59,7 +59,7 @@ offline/rehearsal header anatomy, wrapping and 44 pt actions.
 screen owners consume it once below the complete title/tab header, preserve
 the 16 pt standard body start and clear it for nested content. Features pass
 `CatchStatusStripData` and `CatchStatusStripAction`, not a renderer or padding.
-`CatchNoticeHost` now renders only the queued transient notice, never the
+`CatchNoticeOverlay` now renders only the queued transient notice, never the
 persistent context stack.
 
 | Family | Use | Do not use |
@@ -392,11 +392,11 @@ Widgetbook callers.
 | `showCatchErrorSnackBar` | `lib/core/riverpod_ui/catch_error_snack_bar.dart` | App error mapping and localized retry policy translated onto the shared snackbar publisher. |
 | `CatchMutationErrorListener` | `lib/core/riverpod_ui/catch_mutation_error_listener.dart` | Snackbar boundary for one Riverpod mutation pending-to-error transition. |
 | `CatchMutationErrorListeners` | `lib/core/riverpod_ui/catch_mutation_error_listeners.dart` | Snackbar boundary for several mutations sharing one transient error channel. |
-| `CatchNoticeHost` | `lib/core/riverpod_ui/catch_notice_host.dart` | One app-level overlay above the router, enforced by `catch_notice_host_is_app_owned`. Owns safe-area entry/resting geometry, bounded priority/FIFO display, replacement timers, tap/swipe dismissal, accessibility and reduced motion. Persistent offline/rehearsal context remains in `CatchStatusStrip` below the primary tabs. |
+| `CatchNoticeOverlay` | `lib/core/riverpod_ui/catch_notice_overlay.dart` | One app-level overlay above the router, enforced by `catch_notice_host_is_app_owned`. Owns safe-area entry/resting geometry, bounded priority/FIFO display, replacement timers, tap/swipe dismissal, F6/Shift+F6 focus transfer without autofocus, accessibility and reduced motion. Ordinary and arrival notices share interaction-aware expiry; the layer supplies the Tooltip overlay ancestor. Persistent offline/rehearsal context remains in `CatchStatusStrip` below the primary tabs. |
 | `ForegroundNotificationListener` | `lib/notifications/presentation/foreground_notification_listener.dart` | App-level feature adapter, not a visual primitive. Converts session-validated arrivals to configurable `CatchNoticeData.arrival`, derives Host/Consumer conversation navigation locally and suppresses active-conversation notices. SDK subscriptions remain in `FcmService`. |
 | `CatchStatusStrip` | `packages/catch_ui/lib/src/components/catch_status_strip.dart` | Durable offline/rehearsal bands. Owns common icon, wrapping label/detail, semantic color and responsive action lanes; only screen layouts construct it. |
 | `CatchStatusStripScope` | `packages/catch_ui/lib/src/components/catch_status_strip_scope.dart` | Inherited context publication, consumed once below complete title/tab chrome and cleared by the canonical screen owner. |
-| `CatchNotice` | `packages/catch_ui/lib/src/components/catch_notice.dart` | Reusable floating notice primitive configured through `CatchNoticeData`: title/message, public icon, optional canonical circular person avatar, semantic tone or theme-derived accent, optional action and dismiss control with required caller-resolved `dismissLabel`. Person identity takes precedence over the icon. Feature adapters own copy/identity; the renderer owns geometry and typography. Use for ambient app status/events, not inline form errors. |
+| `CatchNotice` | `packages/catch_ui/lib/src/components/catch_notice.dart` | Reusable floating notice primitive configured through `CatchNoticeData`: title/message, public icon, optional canonical circular person avatar, semantic tone or theme-derived accent, optional action and dismiss control with required caller-resolved `dismissLabel`. Person identity takes precedence over the icon. Feature adapters own copy/identity; the renderer owns geometry and typography, complete text reflow, measured action placement and canonical icon-action dismissal. Use for ambient app status/events, not inline form errors. |
 | `CatchSectionHeader` | `packages/catch_ui/lib/src/components/catch_section_header.dart:4` | Lightweight section header with sentence-case styling by default, optional heavy weight, and opt-in uppercase for intentional metadata/eyebrow labels. Prefer `CatchSection` for carded content sections. |
 | `CatchSectionKicker` | `packages/catch_ui/lib/src/components/catch_section_kicker.dart` | Section-owned heading, count and trailing action lane. Preserves heading semantics and moves the trailing action below the heading at large text scales. Product callers use the named `CatchSection` constructors. |
 | `CatchSectionBody` | `packages/catch_ui/lib/src/components/catch_section_body.dart` | Section-owned child layout with content or field separator placement. Direct fields expose numeric text-lane geometry through `CatchFieldDividerGeometry`; adapter rows retain the existing fallback. Product callers use the named `CatchSection` constructors. |
