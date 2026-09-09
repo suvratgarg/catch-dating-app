@@ -841,4 +841,33 @@ export interface EventRehearsalBootstrapCallableResponse {
       [k: string]: unknown;
     })[];
   };
+  accountabilityReviews?: {
+    clockId: string;
+    coverage: "boundedSession";
+    /**
+     * @maxItems 50
+     */
+    rows: {
+      attendeeId: string;
+      episodeId: string;
+      sourceHash: string;
+      visitRevision: number | null;
+      checkedInAtMillis: number | null;
+      revision: number;
+      disposition: "returned" | "departed" | "unresolved";
+      availability:
+        | {
+            kind: "ready";
+          }
+        | {
+            kind: "unavailable";
+            reason:
+              | "notApplicable"
+              | "notCheckedIn"
+              | "visitNotRecorded"
+              | "invalidSource";
+          };
+      canResolve: boolean;
+    }[];
+  };
 }

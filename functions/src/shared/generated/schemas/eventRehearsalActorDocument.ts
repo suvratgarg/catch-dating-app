@@ -1628,6 +1628,87 @@ export const eventRehearsalActorDocumentSchema: Record<string, unknown> = {
       "type": "boolean",
       "description": "Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.",
       "x-catch-ownership": "server-only"
+    },
+    "visit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attendanceRevision",
+        "checkedInAtMillis",
+        "accountabilityRevision",
+        "resolution"
+      ],
+      "properties": {
+        "attendanceRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "checkedInAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accountabilityRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "resolution": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "disposition",
+                "visitRevision",
+                "checkedInAtMillis",
+                "resolvedAtMillis",
+                "resolvedBy"
+              ],
+              "properties": {
+                "disposition": {
+                  "enum": [
+                    "returned",
+                    "departed"
+                  ]
+                },
+                "visitRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "checkedInAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "resolvedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "resolvedBy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 } as const;

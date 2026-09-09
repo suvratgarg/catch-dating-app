@@ -1631,5 +1631,86 @@ const schemaEventRehearsalActorDocumentSchema = <String, Object?>{
       'description': 'Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.',
       'x-catch-ownership': 'server-only',
     },
+    'visit': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'attendanceRevision',
+        'checkedInAtMillis',
+        'accountabilityRevision',
+        'resolution',
+      ],
+      'properties': <String, Object?>{
+        'attendanceRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'checkedInAtMillis': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'accountabilityRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'resolution': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'disposition',
+                'visitRevision',
+                'checkedInAtMillis',
+                'resolvedAtMillis',
+                'resolvedBy',
+              ],
+              'properties': <String, Object?>{
+                'disposition': <String, Object?>{
+                  'enum': <Object?>[
+                    'returned',
+                    'departed',
+                  ],
+                },
+                'visitRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'checkedInAtMillis': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'resolvedAtMillis': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'resolvedBy': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
   },
 };

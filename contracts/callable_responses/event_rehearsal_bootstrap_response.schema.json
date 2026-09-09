@@ -43,6 +43,9 @@
     },
     "deliveryReviews": {
       "$ref": "../shared/event_rehearsal_assistance.schema.json#/definitions/deliveryReviews"
+    },
+    "accountabilityReviews": {
+      "$ref": "../shared/event_rehearsal_accountability.schema.json#/definitions/reviews"
     }
   },
   "definitions": {

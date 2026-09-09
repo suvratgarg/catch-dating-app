@@ -1,3 +1,4 @@
+import {resolvePracticeAccountability} from "./accountability";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventRehearsalDocument as Session,
@@ -100,10 +101,18 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
   authority?: PracticeCaseAuthority & {operationId?: string}): Promise<Actor> {
   if (command.actorId !== actor.actorId ||
       (!(["running", "paused"].includes(session.status)) &&
-        !(["receipt", "resolveAssistance"].includes(command.kind) &&
+        !(["receipt", "resolveAssistance", "resolveAccountability"]
+          .includes(command.kind) &&
           session.status === "complete"))) {
     throw new HttpsError("failed-precondition",
       "Practice command is unavailable.");
+  }
+  if (command.kind === "resolveAccountability") {
+    if (!authority) {
+      throw new HttpsError("permission-denied",
+        "Current Host authority required.");
+    }
+    return resolvePracticeAccountability(session, actor, command, authority);
   }
   if (command.kind === "resolveAssistance") {
     if (!authority) {

@@ -3281,6 +3281,134 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
           }
         }
       }
+    },
+    "accountabilityReviews": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "coverage",
+        "rows"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "coverage": {
+          "const": "boundedSession"
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "attendeeId",
+              "episodeId",
+              "sourceHash",
+              "visitRevision",
+              "checkedInAtMillis",
+              "revision",
+              "disposition",
+              "availability",
+              "canResolve"
+            ],
+            "properties": {
+              "attendeeId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "episodeId": {
+                "type": "string",
+                "pattern": "^episode:[a-f0-9]{64}$"
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "visitRevision": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "checkedInAtMillis": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "disposition": {
+                "enum": [
+                  "returned",
+                  "departed",
+                  "unresolved"
+                ]
+              },
+              "availability": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "ready"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "reason"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "unavailable"
+                      },
+                      "reason": {
+                        "enum": [
+                          "notApplicable",
+                          "notCheckedIn",
+                          "visitNotRecorded",
+                          "invalidSource"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "canResolve": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

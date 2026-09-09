@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.103.0
+version: 1.104.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -657,6 +657,32 @@ takeover so it cannot replace that message-scoped retry owner.
 Visible live/rehearsal delivery review, provider lookup/verified retry and
 deployment remain subsequent integration work. These native bindings are not yet
 mounted in the Host screens.
+
+### Rehearsal visit accountability
+
+Synthetic actors now record distinct physical visits. Arrival stores the virtual
+check-in time; leaving and rejoining advance a separate attendance revision,
+including when both happen at the same virtual instant. Crossed scenario cues
+use each cue's scheduled time. Connection state, consent flags, guest moments
+and table placement do not create a visit or invalidate its outcome. Legacy
+presence without visit evidence stays unknown until an explicit observation.
+
+The Host-only bounded review distinguishes unavailable evidence from an unresolved
+current visit. A typed `resolveAccountability` command records returned/departed
+or explicitly reopens that visit using the live accountability reducer. It binds
+the reviewed actor, episode, visit and resolution revision through a source hash,
+alongside the rehearsal setup/runtime revisions and immutable action receipt.
+Current organizer-manager authority is required. Stored historical outcomes
+cannot carry over to a new visit; exact retries return the current review without
+reapplying old proof. Completion still permits follow-up within the session cap.
+
+The parent rehearsal transaction owns actor changes, action history and runtime
+revision. Reset rebuilds visits and rejects earlier commands; expiry removes them.
+Guest projections remain unchanged, and the resolving Host identity stays in
+private audit evidence. No attendance, group movement, help request, consent or
+provider effect follows from an accountability decision. Native review/controller
+bindings and rehearsal departure, checkpoint and closeout workflows remain
+subsequent integration work.
 
 ### Saved assistance settings
 

@@ -347,6 +347,19 @@ export interface ControlEventRehearsalCallablePayload {
         };
         expectedMessageRevision: number;
         expectedReviewHash: string;
+      }
+    | {
+        kind: "resolveAccountability";
+        actorId: string;
+        payload: {
+          attendeeId: string;
+          /**
+           * Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in.
+           */
+          episodeId: string | null;
+          disposition: "returned" | "departed" | "unresolved";
+        };
+        expectedSourceHash: string;
       };
   expectedSetupRevision?: number;
 }

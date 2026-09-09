@@ -399,4 +399,16 @@ export interface EventRehearsalActorDocument {
    * Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.
    */
   untrackedHelpRequested?: boolean;
+  visit?: {
+    attendanceRevision: number;
+    checkedInAtMillis: number | null;
+    accountabilityRevision: number;
+    resolution: {
+      disposition: "returned" | "departed";
+      visitRevision: number;
+      checkedInAtMillis: number;
+      resolvedAtMillis: number;
+      resolvedBy: string;
+    } | null;
+  };
 }

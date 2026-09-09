@@ -1475,6 +1475,69 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "pattern": "^[a-f0-9]{64}$"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resolveAccountability"
+            },
+            "actorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "episodeId",
+                "disposition"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in."
+                },
+                "disposition": {
+                  "type": "string",
+                  "enum": [
+                    "returned",
+                    "departed",
+                    "unresolved"
+                  ]
+                }
+              }
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
         }
       ],
       "type": "object"

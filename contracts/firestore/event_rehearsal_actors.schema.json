@@ -138,6 +138,10 @@
       "type": "boolean",
       "description": "Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.",
       "x-catch-ownership": "server-only"
+    },
+    "visit": {
+      "$ref": "../shared/event_rehearsal_accountability.schema.json#/definitions/visit",
+      "x-catch-ownership": "callable-owned"
     }
   }
 }

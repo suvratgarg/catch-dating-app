@@ -30445,6 +30445,154 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
   );
 
+  static const eventRehearsalActorDocumentVisitAccountabilityRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.visit.accountabilityRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentVisitAttendanceRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.visit.attendanceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentVisitCheckedInAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.visit.checkedInAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentVisitResolutionCheckedInAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.visit.resolution.checkedInAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentVisitResolutionDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.visit.resolution.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventRehearsalActorDocumentVisitResolutionResolvedAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.visit.resolution.resolvedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalActorDocumentVisitResolutionResolvedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.visit.resolution.resolvedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentVisitResolutionVisitRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.visit.resolution.visitRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsCoverage = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.coverage',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRows = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsAvailabilityKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.availability.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsAvailabilityReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.availability.reason',
+    required: true,
+    enumValues: <String>['notApplicable', 'notCheckedIn', 'visitNotRecorded', 'invalidSource'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsCanResolve = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.canResolve',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsCheckedInAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.checkedInAtMillis',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed', 'unresolved'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsEpisodeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.episodeId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^episode:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsVisitRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.visitRevision',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalBootstrapCallableResponseActions = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.actions',
     required: true,
@@ -88802,6 +88950,27 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActorDocument.untrackedHelpRequested': eventRehearsalActorDocumentUntrackedHelpRequested,
     'eventRehearsalActorDocument.updatedAt._nanoseconds': eventRehearsalActorDocumentUpdatedAtNanoseconds,
     'eventRehearsalActorDocument.updatedAt._seconds': eventRehearsalActorDocumentUpdatedAtSeconds,
+    'eventRehearsalActorDocument.visit.accountabilityRevision': eventRehearsalActorDocumentVisitAccountabilityRevision,
+    'eventRehearsalActorDocument.visit.attendanceRevision': eventRehearsalActorDocumentVisitAttendanceRevision,
+    'eventRehearsalActorDocument.visit.checkedInAtMillis': eventRehearsalActorDocumentVisitCheckedInAtMillis,
+    'eventRehearsalActorDocument.visit.resolution.checkedInAtMillis': eventRehearsalActorDocumentVisitResolutionCheckedInAtMillis,
+    'eventRehearsalActorDocument.visit.resolution.disposition': eventRehearsalActorDocumentVisitResolutionDisposition,
+    'eventRehearsalActorDocument.visit.resolution.resolvedAtMillis': eventRehearsalActorDocumentVisitResolutionResolvedAtMillis,
+    'eventRehearsalActorDocument.visit.resolution.resolvedBy': eventRehearsalActorDocumentVisitResolutionResolvedBy,
+    'eventRehearsalActorDocument.visit.resolution.visitRevision': eventRehearsalActorDocumentVisitResolutionVisitRevision,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.clockId': eventRehearsalBootstrapCallableResponseAccountabilityReviewsClockId,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.coverage': eventRehearsalBootstrapCallableResponseAccountabilityReviewsCoverage,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRows,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.attendeeId': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsAttendeeId,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.availability.kind': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsAvailabilityKind,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.availability.reason': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsAvailabilityReason,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.canResolve': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsCanResolve,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.checkedInAtMillis': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsCheckedInAtMillis,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.disposition': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsDisposition,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.episodeId': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsEpisodeId,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.revision': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsRevision,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.sourceHash': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.visitRevision': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsVisitRevision,
     'eventRehearsalBootstrapCallableResponse.actions': eventRehearsalBootstrapCallableResponseActions,
     'eventRehearsalBootstrapCallableResponse.actions.items.actorId': eventRehearsalBootstrapCallableResponseActionsItemsActorId,
     'eventRehearsalBootstrapCallableResponse.actions.items.clientActionId': eventRehearsalBootstrapCallableResponseActionsItemsClientActionId,

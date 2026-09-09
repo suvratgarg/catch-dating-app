@@ -3284,6 +3284,134 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
         },
       },
     },
+    'accountabilityReviews': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'clockId',
+        'coverage',
+        'rows',
+      ],
+      'properties': <String, Object?>{
+        'clockId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^clock:[a-f0-9]{64}\$',
+        },
+        'coverage': <String, Object?>{
+          'const': 'boundedSession',
+        },
+        'rows': <String, Object?>{
+          'type': 'array',
+          'maxItems': 50,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'attendeeId',
+              'episodeId',
+              'sourceHash',
+              'visitRevision',
+              'checkedInAtMillis',
+              'revision',
+              'disposition',
+              'availability',
+              'canResolve',
+            ],
+            'properties': <String, Object?>{
+              'attendeeId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'episodeId': <String, Object?>{
+                'type': 'string',
+                'pattern': '^episode:[a-f0-9]{64}\$',
+              },
+              'sourceHash': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[a-f0-9]{64}\$',
+              },
+              'visitRevision': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 9007199254740991,
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'checkedInAtMillis': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 9007199254740991,
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'revision': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+              'disposition': <String, Object?>{
+                'enum': <Object?>[
+                  'returned',
+                  'departed',
+                  'unresolved',
+                ],
+              },
+              'availability': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'const': 'ready',
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'reason',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'const': 'unavailable',
+                      },
+                      'reason': <String, Object?>{
+                        'enum': <Object?>[
+                          'notApplicable',
+                          'notCheckedIn',
+                          'visitNotRecorded',
+                          'invalidSource',
+                        ],
+                      },
+                    },
+                  },
+                ],
+              },
+              'canResolve': <String, Object?>{
+                'type': 'boolean',
+              },
+            },
+          },
+        },
+      },
+    },
   },
   'definitions': <String, Object?>{
     'session': <String, Object?>{

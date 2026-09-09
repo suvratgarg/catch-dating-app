@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.96.0
+version: 1.97.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -108,6 +108,25 @@ the wrapped record is constrained to rehearsal context and still rejects the
 live outbox handoff marker. Parent receipts, action capacity, reset and expiry
 remain the existing owners; no additional collection or live dispatch authority
 is introduced.
+
+The optional, callable-owned `eventRehearsalActors.visit` separates physical
+visits from connection state, placement and response intention. Observed arrival
+and departure transitions advance an attendance revision; check-in uses virtual
+time, and crossed scenario cues retain their individual scheduled times.
+Rejoining starts a distinct visit even without advancing the virtual clock.
+Legacy actors without visit evidence remain unavailable until an explicit
+physical observation; a connection change cannot supply that evidence.
+
+Host bootstrap optionally adds bounded `accountabilityReviews`. The typed
+`resolveAccountability` assistance command reuses the common payload and live
+resolution reducer, with a reviewed source hash plus existing setup/runtime and
+action-receipt fences. Returned/departed outcomes bind to the exact visit revision
+and check-in; reopening clears the outcome. Historical proof cannot resolve a
+later visit. Host identity is stored only as the private resolution audit actor,
+not a synthetic participant identity. Guest responses omit visit and review data.
+Completion permits follow-up within the action cap; reset clears visits and
+invalidates earlier commands. Native review/controller bindings and rehearsal
+checkpoint execution remain integration work.
 
 ### Explicit Attendance Closeout
 
@@ -854,23 +873,24 @@ provider account/version before Event Assistance activates it.
 
 ### Event Dress Rehearsal Isolation Contract
 
-Event rehearsal is a separate bounded domain with five callable-owned,
+Event rehearsal is a separate bounded domain with six callable-owned,
 server-only collections:
 
 | Collection | Purpose | Limits and authority |
 |---|---|---|
 | `eventRehearsals/{sessionId}` | Frozen source snapshot, editable pre-start setup, scenario/seed, virtual clock, lifecycle and revisions | Organizer manager reads through Host callables only; 24-hour expiry; at most five active sessions per owner |
-| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, attendance/status, independent connection state, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no UID, phone, email, booking, payment, match, chat, or production attendee id |
+| `eventRehearsalActors/{sessionId_actorId}` | Deterministically generated synthetic people, visit-bound accountability, attendance/status, independent connection state, guest moment, Room placement/confirmation, opt-out/help/prompt flags and keep-apart ids | At most 50 actors; no participant UID, phone, email, booking, payment, match, chat, or production attendee id. A resolving Host UID is private audit evidence only. |
 | `eventRehearsalActions/{sessionId_actionKey}` | Idempotent Host/guest controls and deterministic replay history | At most 500 actions; a stable hash of session plus client action id deduplicates delivery |
 | `eventRehearsalGuestViews/{sessionId_slotId}` | One browser-instance-to-actor lease with hashed bearer token state | Created only by the public guest bootstrap callable; link rotation invalidates prior slots |
 | `eventRehearsalMessages/{messageDocumentId}` | Typed practice plan, joining instruction, simulated delivery evidence and response | Created only by a counted Host action; at most 200 messages per actor and run; no live sender binding or production outbox reference |
+| `eventRehearsalCases/{caseDocumentId}` | Clock-scoped practical requests and their reviewed handling | Callable-owned synthetic cases; guest projections omit handling and authority evidence |
 
 The schemas under `contracts/firestore/event_rehearsal_*.schema.json` and
 `contracts/callables/*event_rehearsal*.schema.json` are authoritative.
 Functions may read `events/{sourceEventId}` exactly once during creation to
 copy a bounded title, location, duration, and supported playbook shape after
 verifying organizer authority. No rehearsal handler may write a production
-collection. Firestore rules deny every direct client read and write to the five
+collection. Firestore rules deny every direct client read and write to these
 collections; App-Check-protected callables own all Host access.
 
 Host writes carry the expected setup or runtime revision. Mutating controls and

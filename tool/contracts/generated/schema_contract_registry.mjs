@@ -115861,6 +115861,87 @@ export const eventRehearsalActorDocumentSchema = {
       "type": "boolean",
       "description": "Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.",
       "x-catch-ownership": "server-only"
+    },
+    "visit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attendanceRevision",
+        "checkedInAtMillis",
+        "accountabilityRevision",
+        "resolution"
+      ],
+      "properties": {
+        "attendanceRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "checkedInAtMillis": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accountabilityRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "resolution": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "disposition",
+                "visitRevision",
+                "checkedInAtMillis",
+                "resolvedAtMillis",
+                "resolvedBy"
+              ],
+              "properties": {
+                "disposition": {
+                  "enum": [
+                    "returned",
+                    "departed"
+                  ]
+                },
+                "visitRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "checkedInAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "resolvedAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "resolvedBy": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "x-catch-ownership": "callable-owned"
     }
   }
 };
@@ -151006,6 +151087,134 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
           }
         }
       }
+    },
+    "accountabilityReviews": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "coverage",
+        "rows"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "pattern": "^clock:[a-f0-9]{64}$"
+        },
+        "coverage": {
+          "const": "boundedSession"
+        },
+        "rows": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "attendeeId",
+              "episodeId",
+              "sourceHash",
+              "visitRevision",
+              "checkedInAtMillis",
+              "revision",
+              "disposition",
+              "availability",
+              "canResolve"
+            ],
+            "properties": {
+              "attendeeId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "episodeId": {
+                "type": "string",
+                "pattern": "^episode:[a-f0-9]{64}$"
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "visitRevision": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "checkedInAtMillis": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "disposition": {
+                "enum": [
+                  "returned",
+                  "departed",
+                  "unresolved"
+                ]
+              },
+              "availability": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "ready"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "kind",
+                      "reason"
+                    ],
+                    "properties": {
+                      "kind": {
+                        "const": "unavailable"
+                      },
+                      "reason": {
+                        "enum": [
+                          "notApplicable",
+                          "notCheckedIn",
+                          "visitNotRecorded",
+                          "invalidSource"
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              "canResolve": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -155172,6 +155381,69 @@ export const controlEventRehearsalCallablePayloadSchema = {
               "maximum": 9007199254740991
             },
             "expectedReviewHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "actorId",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resolveAccountability"
+            },
+            "actorId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "attendeeId",
+                "episodeId",
+                "disposition"
+              ],
+              "properties": {
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "episodeId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ],
+                  "description": "Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in."
+                },
+                "disposition": {
+                  "type": "string",
+                  "enum": [
+                    "returned",
+                    "departed",
+                    "unresolved"
+                  ]
+                }
+              }
+            },
+            "expectedSourceHash": {
               "type": "string",
               "pattern": "^[a-f0-9]{64}$"
             }

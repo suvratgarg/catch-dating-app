@@ -1,3 +1,4 @@
+import {practiceAccountabilityProjection} from "./accountability";
 import {createHash, randomBytes, timingSafeEqual} from "node:crypto";
 import * as admin from "firebase-admin";
 import {CallableRequest, HttpsError, onCall} from
@@ -361,7 +362,7 @@ export async function controlEventRehearsalHandler(
     const nextActors = await applyPracticeAutomations(db, tx, nextSession,
       applyRehearsalCues(actorDocuments.map((actor) =>
         actorAtMoment(actor.value, momentForStep(resolved.activeStepIndex), now)
-      ), cues, now));
+      ), cues, now, session.virtualStartedAt.toMillis()));
     tx.update(sessionRef, {
       status: resolved.status,
       activeStepIndex: resolved.activeStepIndex,
@@ -472,7 +473,8 @@ export async function injectEventRehearsalBehaviorHandler(
             "EventRehearsalActorDocument"
           ).actorId
         ),
-        now
+        now,
+        session.virtualNow.toMillis()
       );
       const [nextActor] = await applyPracticeAutomations(db, tx,
         {...session, runtimeRevision: nextRevision}, [changedActor]);
@@ -810,7 +812,8 @@ export async function submitEventRehearsalGuestActionHandler(
           resolved.id, slotId, data.clientActionId])}) :
       (await applyPracticeAutomations(db, tx, nextSession,
         [help?.actor ??
-          applyRehearsalGuestAction(actor, data.action, now)]))[0];
+          applyRehearsalGuestAction(actor, data.action, now,
+            session.virtualNow.toMillis())]))[0];
     help?.commit();
     tx.set(actorRef, {...nextActor, lastActionAt: now, updatedAt: now});
     tx.update(sessionRef, {
@@ -1248,6 +1251,8 @@ async function hostProjection(
   return {
     helpRequests,
     deliveryReviews,
+    accountabilityReviews: practiceAccountabilityProjection(sessionId,
+      session, actorValues),
     session: {
       id: sessionId,
       organizerId: session.organizerId,

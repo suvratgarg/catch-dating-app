@@ -427,6 +427,9 @@
               "pattern": "^[a-f0-9]{64}$"
             }
           }
+        },
+        {
+          "$ref": "event_rehearsal_accountability.schema.json#/definitions/command"
         }
       ],
       "type": "object"

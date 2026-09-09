@@ -1,3 +1,4 @@
+import {advancePracticeVisit, initialPracticeVisit} from "./visitState";
 import type {
   EventRehearsalActorDocument,
   EventRehearsalDocument,
@@ -138,6 +139,7 @@ export function buildRehearsalActors(
       displayName: count === 1 ? baseName : `${baseName} ${count}`,
       persona: personas[(index + seed) % personas.length] ?? "regular",
       status: "expected",
+      visit: initialPracticeVisit(),
       connectionState: "connected",
       guestMoment: "welcome",
       optedOut: false,
@@ -248,7 +250,8 @@ export function cuesBetween(
 export function applyRehearsalCues(
   actors: EventRehearsalActorDocument[],
   cues: ScenarioCue[],
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
+  virtualStartedAtMillis?: number
 ): EventRehearsalActorDocument[] {
   const next = [...actors];
   const actorIds = actors.map((actor) => actor.actorId);
@@ -256,7 +259,9 @@ export function applyRehearsalCues(
     const actor = next[cue.actorIndex];
     if (!actor) throw new Error("Rehearsal scenario guest is unavailable.");
     next[cue.actorIndex] = applyRehearsalBehavior(
-      actor, cue.behavior, actorIds, now);
+      actor, cue.behavior, actorIds, now,
+      virtualStartedAtMillis === undefined ? now.toMillis() :
+        virtualStartedAtMillis + cue.atMinute * 60000);
   }
   return next;
 }
@@ -266,7 +271,8 @@ export function applyRehearsalBehavior(
   actor: EventRehearsalActorDocument,
   behavior: Behavior,
   otherActorIds: string[],
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
+  virtualNowMillis = now.toMillis()
 ): EventRehearsalActorDocument {
   const patch: Partial<EventRehearsalActorDocument> = {};
   switch (behavior) {
@@ -319,7 +325,9 @@ export function applyRehearsalBehavior(
     patch.connectionState = "connected";
     break;
   }
-  return {...actor, ...patch, lastActionAt: now, updatedAt: now};
+  return advancePracticeVisit(actor,
+    {...actor, ...patch, lastActionAt: now, updatedAt: now}, virtualNowMillis,
+    ["arrive", "arriveLate", "return", "resolveClaim"].includes(behavior));
 }
 
 /** Applies a bounded Room move without escaping the synthetic actor domain. */
@@ -372,14 +380,15 @@ export function actorAtMoment(
 export function applyRehearsalGuestAction(
   actor: EventRehearsalActorDocument,
   action: GuestAction,
-  now: FirebaseFirestore.Timestamp
+  now: FirebaseFirestore.Timestamp,
+  virtualNowMillis = now.toMillis()
 ): EventRehearsalActorDocument {
   switch (action) {
   case "respondToAssistance":
     throw new Error("Assistance replies require their rehearsal transaction.");
   case "checkIn":
   case "confirmArrival":
-    return applyRehearsalBehavior(actor, "arrive", [], now);
+    return applyRehearsalBehavior(actor, "arrive", [], now, virtualNowMillis);
   case "optOut":
     return applyRehearsalBehavior(actor, "optOut", [], now);
   case "optIn":

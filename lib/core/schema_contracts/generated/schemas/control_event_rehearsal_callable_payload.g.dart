@@ -1478,6 +1478,69 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'actorId',
+            'payload',
+            'expectedSourceHash',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'resolveAccountability',
+            },
+            'actorId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
+            'payload': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'attendeeId',
+                'episodeId',
+                'disposition',
+              ],
+              'properties': <String, Object?>{
+                'attendeeId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'episodeId': <String, Object?>{
+                  'anyOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                    <String, Object?>{
+                      'type': 'null',
+                    },
+                  ],
+                  'description': 'Current assistance episode, or explicit absence. The command adapter separately fences the canonical physical check-in.',
+                },
+                'disposition': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'returned',
+                    'departed',
+                    'unresolved',
+                  ],
+                },
+              },
+            },
+            'expectedSourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+        },
       ],
       'type': 'object',
     },
