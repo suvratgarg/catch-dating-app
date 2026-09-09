@@ -1063,7 +1063,7 @@
           "catch.field",
           "catch.map_preview",
           "catch.option_card",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.surface",
           "catch.top_bar"
         ],

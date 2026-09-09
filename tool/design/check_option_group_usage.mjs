@@ -6,10 +6,10 @@ import {repoRoot} from "../lib/repo_paths.mjs";
 
 const generatedSuffixes = [".g.dart", ".freezed.dart", ".mocks.dart"];
 const allowedProductionPaths = new Set([
-  "packages/catch_ui/lib/src/components/catch_option_group.dart",
+  "packages/catch_ui/lib/src/components/catch_choice_input.dart",
 ]);
 const directItemPattern =
-  /\bCatchOptionGroupItem(?:\s*<[^>\n]+>)?\s*\(/gu;
+  /\bCatchChoiceButton(?:\s*<[^>\n]+>)?\s*\(/gu;
 
 const isCliEntrypoint =
   process.argv[1] != null &&
@@ -50,8 +50,8 @@ export function scanSourceForOptionGroupUsage({relativePath, source}) {
       level: "high",
       rule: "OPTION-GROUP-001",
       reason:
-        "Production code should route underline tabs through CatchOptionGroup or CatchPageTabBar; direct item composition forks divider, indicator, ink, and trailing alignment behavior.",
-      expression: "CatchOptionGroupItem",
+        "Production code should route underline tabs through CatchChoiceInput.segmented or CatchPageTabBar; direct item composition forks divider, indicator, ink, and trailing alignment behavior.",
+      expression: "CatchChoiceButton",
     });
   }
   return findings;
@@ -140,8 +140,8 @@ function printHelp() {
   node tool/design/check_option_group_usage.mjs --summary [--max 40]
   node tool/design/check_option_group_usage.mjs --json
 
-Reports production direct CatchOptionGroupItem usage that should route through
-CatchOptionGroup or CatchPageTabBar.
+Reports production direct CatchChoiceButton usage that should route through
+CatchChoiceInput.segmented or CatchPageTabBar.
 `);
 }
 

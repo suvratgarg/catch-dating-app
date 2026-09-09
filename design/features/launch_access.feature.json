@@ -41,7 +41,7 @@
           "catch.banner",
           "catch.error_state",
           "catch.field",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.skeleton",
           "catch.top_bar"
         ],

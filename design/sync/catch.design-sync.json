@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-09-08",
+  "updated": "2026-09-09",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "916878c2b13d4a751845d8c173716d1cf225fc83abc8961d0f855249ecbb43c9",
+  "sourceDigest": "fc2bfabb3bae9dda120950c084669f974d40e78b7df9f2fc697f339cb76e76af",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "916878c2b13d4a751845d8c173716d1cf225fc83abc8961d0f855249ecbb43c9",
-    "contractDigest": "916878c2b13d4a751845d8c173716d1cf225fc83abc8961d0f855249ecbb43c9"
+    "digest": "fc2bfabb3bae9dda120950c084669f974d40e78b7df9f2fc697f339cb76e76af",
+    "contractDigest": "fc2bfabb3bae9dda120950c084669f974d40e78b7df9f2fc697f339cb76e76af"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "b9d2fb72350daab7dd6244aab4d67103d6e302d73649faca3ba75c98f45785ad",
+    "handoffRequestDigest": "2a8685b81b892c1cf9e67d49e5814ab17aa808cbf307f3dfca71fcef4597fcd3",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -82,19 +82,19 @@
     }
   },
   "metrics": {
-    "contractCount": 77,
-    "publicClassCount": 256,
-    "conceptCount": 69,
+    "contractCount": 76,
+    "publicClassCount": 255,
+    "conceptCount": 68,
     "memberCount": 169,
-    "membersPerConcept": 2.45,
+    "membersPerConcept": 2.49,
     "unclassifiedCount": 0,
     "byConceptRole": {
       "composition": 3,
-      "concept": 69,
+      "concept": 68,
       "member": 169,
       "screen": 15
     },
-    "collisionCount": 37,
+    "collisionCount": 36,
     "collisions": [
       {
         "key": "catch.async_value",
@@ -141,8 +141,11 @@
       {
         "key": "catch.chip.field",
         "symbols": [
+          "CatchChoiceButton",
           "CatchChoiceInput",
-          "CatchChoiceTile"
+          "CatchChoiceTile",
+          "CatchOption",
+          "CatchPageTabBar"
         ]
       },
       {
@@ -305,15 +308,6 @@
         "symbols": [
           "CatchStepper",
           "CatchStepperRepeatButton"
-        ]
-      },
-      {
-        "key": "catch.option_group",
-        "symbols": [
-          "CatchOption",
-          "CatchOptionGroup",
-          "CatchOptionGroupItem",
-          "CatchPageTabBar"
         ]
       },
       {
@@ -489,12 +483,12 @@
       }
     ],
     "naming": {
-      "canonicalConceptNames": 68,
+      "canonicalConceptNames": 67,
       "documentedConceptNameExceptions": 1,
       "undocumentedConceptNameExceptions": 0
     },
     "figmaMappingStates": {
-      "missing": 75,
+      "missing": 74,
       "stale": 2
     },
     "figmaPropertyDriftCount": 2,
@@ -502,9 +496,9 @@
     "figmaReviewSnapshotMappings": 2,
     "figmaPublishedMappings": 0,
     "codeConnectMappingStates": {
-      "planned": 77
+      "planned": 76
     },
-    "claudeAllowed": 77,
+    "claudeAllowed": 76,
     "claudeContextState": "current",
     "claudeDesignReceiptState": "missing",
     "figmaMappedConcepts": 0
@@ -1392,8 +1386,8 @@
       "figmaVariableBindingCount": 0,
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 4,
-      "figmaExpectedPropertyDigest": "a27bd60bc4585284437edb3b25b4b272e9a96cba1e7d39afb8002dd6d34fbc48",
+      "figmaExpectedPropertyCount": 6,
+      "figmaExpectedPropertyDigest": "4b0343084d8de1928038a95c7a35639e40f3bc5497326bdd601da8c34292bf81",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1401,7 +1395,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "ChoiceInput",
       "claudeAllowed": true,
-      "contractDigest": "d7d85a47e863ccb33c74731c591e3e890f404ececdfaf14cabfdc5f20c5a6104"
+      "contractDigest": "a0e8edb8418f5c2d7338c226c38659654efe9a449cc960db22d3b91027d86ab3"
     },
     {
       "contractId": "catch.option_card",
@@ -1852,41 +1846,9 @@
       "contractDigest": "2d471bfe9d94c090290ba988f7d99fb87b32896323d3802beb1af3c55a096b80"
     },
     {
-      "contractId": "catch.option_group",
-      "conceptRole": "concept",
-      "conceptId": "catch.option_group",
-      "dartSymbol": "CatchOptionGroup",
-      "dartFile": "packages/catch_ui/lib/src/components/catch_option_group.dart",
-      "figmaName": "Catch/OptionGroup",
-      "figmaPropertyProjectionMode": "inferred",
-      "figmaReviewStatePolicy": "variant",
-      "figmaPropertySources": {},
-      "figmaDeclaredStatus": "unmapped",
-      "figmaDeclaredUrl": null,
-      "figmaStatus": "missing",
-      "figmaUrl": null,
-      "figmaNodeId": null,
-      "figmaComponentKey": null,
-      "figmaPublishStatus": null,
-      "figmaSnapshotCaptureMethod": "figma-mcp",
-      "figmaVariableBindingCount": 0,
-      "figmaVariableBindingDigest": null,
-      "figmaReviewSnapshot": null,
-      "figmaExpectedPropertyCount": 3,
-      "figmaExpectedPropertyDigest": "a8a74682fbbb5a4e0ecb80453d108e3f55809f09d5bdb678cdc55430d02ab5f6",
-      "figmaActualPropertyCount": 0,
-      "figmaActualPropertyDigest": null,
-      "figmaDrift": [],
-      "codeConnectStatus": "planned",
-      "codeConnectTemplate": null,
-      "claudeHandoffName": "OptionGroup",
-      "claudeAllowed": true,
-      "contractDigest": "6e40211cf5617513083dd6001ce4d525c947dd47762ae08c112d525df4ae5b61"
-    },
-    {
       "contractId": "catch.tab_rail",
       "conceptRole": "member",
-      "conceptId": "catch.option_group",
+      "conceptId": "catch.chip.field",
       "dartSymbol": "CatchPageTabBar",
       "dartFile": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
       "figmaName": "Catch/PageTabBar",
@@ -1913,7 +1875,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "PageTabBar",
       "claudeAllowed": true,
-      "contractDigest": "b193fc4be5ef638b55c209b77053c2dc104ac7e3569871733a4773a8ead64770"
+      "contractDigest": "390d16d29db9ddf4197f534426991200a9cd51321cbbd25c46aa8c4d24867787"
     },
     {
       "contractId": "catch.search_field",

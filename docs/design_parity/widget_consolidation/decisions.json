@@ -7398,6 +7398,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:segmented-choice-input",
+      "patternFamilyId": "segmented-choice-input",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchChoiceInput",
+      "members": [
+        {
+          "name": "CatchOptionGroup",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchOptionGroupItem",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Owner-delegated Phase 4 source review found the same typed selection responsibility in form choices, inline scopes, broadcast recipients and event action settings. Segmented now shares the canonical input algorithm while retaining selected semantics, all visual variants and scrolling/pager geometry; its target is registered ChoiceButton anatomy.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

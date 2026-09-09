@@ -342,10 +342,10 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
         ),
         CatchSection.divided(
           title: context.l10n.hostsHostAnalyticsLabelPerformancePeriod,
-          child: CatchOptionGroup<HostClubInsightsRangePreset>(
+          child: CatchChoiceInput<HostClubInsightsRangePreset>.segmented(
             contract: CatchContractConstraints
                 .hostAnalyticsQueryCallablePayloadRangePreset,
-            contractValue: (preset) => switch (preset) {
+            contractValueBuilder: (preset) => switch (preset) {
               HostClubInsightsRangePreset.thirtyDays => '30d',
               HostClubInsightsRangePreset.ninetyDays => '90d',
               HostClubInsightsRangePreset.twelveMonths => '12m',

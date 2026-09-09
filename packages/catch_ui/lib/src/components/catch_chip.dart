@@ -17,7 +17,7 @@ enum _CatchChipVariant { tag, selectable, choice, activity, removable }
 /// - [CatchChip.tag] is passive metadata.
 /// - [CatchChip.selectable] is a parent-owned independent binary choice or one
 ///   member of a multi-select set. Scalar scope, lifecycle, and mode rows use
-///   `CatchOptionGroup` or `CatchSelectionMenu.control` instead.
+///   `CatchChoiceInput` or `CatchSelectionMenu.control` instead.
 /// - [CatchChip.choice] is a checked member of a form or disclosure input.
 /// - [CatchChip.activity] renders caller-resolved text, glyph, and pigments.
 /// - [CatchChip.removable] exposes one removal action across the whole chip.

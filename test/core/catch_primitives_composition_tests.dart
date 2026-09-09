@@ -235,13 +235,13 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(find.text('Optional'), findsOneWidget);
   });
 
-  testWidgets('CatchOptionGroup composes public option items', (tester) async {
+  testWidgets('CatchChoiceInput composes public option items', (tester) async {
     var selected = 'all';
 
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchOptionGroup<String>(
+          builder: (context, setState) => CatchChoiceInput<String>.segmented(
             selected: selected,
             onChanged: (value) => setState(() => selected = value),
             options: const [
@@ -254,13 +254,13 @@ void _registerCatchPrimitivesCompositionTests() {
       ),
     );
 
-    expect(find.byType(CatchOptionGroupItem<String>), findsNWidgets(3));
+    expect(find.byType(CatchChoiceButton<String>), findsNWidgets(3));
     await tester.tap(find.text('Saved'));
     await tester.pump();
     expect(selected, 'saved');
   });
 
-  testWidgets('CatchOptionGroup keeps option labels on a stable axis', (
+  testWidgets('CatchChoiceInput keeps option labels on a stable axis', (
     tester,
   ) async {
     var selected = 'first';
@@ -268,7 +268,7 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchOptionGroup<String>(
+          builder: (context, setState) => CatchChoiceInput<String>.segmented(
             selected: selected,
             onChanged: (value) => setState(() => selected = value),
             options: const [
@@ -348,7 +348,7 @@ void _registerCatchPrimitivesCompositionTests() {
           CatchPageTabBar<String>(
             selected: selected,
             options: options,
-            variant: CatchOptionGroupVariant.operational,
+            variant: CatchChoiceInputVariant.operational,
             onChanged: (value) => selected = value,
           ),
         ),
@@ -362,7 +362,7 @@ void _registerCatchPrimitivesCompositionTests() {
           CatchPageTabBar<String>(
             selected: selected,
             options: options,
-            variant: CatchOptionGroupVariant.operational,
+            variant: CatchChoiceInputVariant.operational,
             onChanged: (value) => selected = value,
           ),
           textScale: 2,
@@ -377,18 +377,18 @@ void _registerCatchPrimitivesCompositionTests() {
     },
   );
 
-  testWidgets('CatchOptionGroupItem renders mono uppercase label and tap', (
+  testWidgets('CatchChoiceButton renders mono uppercase label and tap', (
     tester,
   ) async {
     var tapped = false;
 
     await tester.pumpWidget(
       _wrap(
-        CatchOptionGroupItem<String>(
+        CatchChoiceButton<String>(
           option: const CatchOption(value: 'mine', label: 'Mine'),
           selected: true,
           selectedRule: Colors.black,
-          variant: CatchOptionGroupVariant.mono,
+          variant: CatchChoiceInputVariant.mono,
           onTap: () => tapped = true,
         ),
       ),

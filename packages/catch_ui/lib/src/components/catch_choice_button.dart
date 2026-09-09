@@ -1,18 +1,18 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_choice_input_variant.dart';
 import 'package:catch_ui/src/components/catch_option.dart';
-import 'package:catch_ui/src/components/catch_option_group_variant.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
 import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
-class CatchOptionGroupItem<T> extends StatelessWidget {
-  const CatchOptionGroupItem({
+class CatchChoiceButton<T> extends StatelessWidget {
+  const CatchChoiceButton({
     super.key,
     required this.option,
     required this.selected,
     this.selectedRule,
-    this.variant = CatchOptionGroupVariant.label,
+    this.variant = CatchChoiceInputVariant.label,
     this.onTap,
     this.showIndicator = true,
     this.labelKey,
@@ -21,7 +21,7 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
   final CatchOption<T> option;
   final bool selected;
   final Color? selectedRule;
-  final CatchOptionGroupVariant variant;
+  final CatchChoiceInputVariant variant;
   final VoidCallback? onTap;
   final bool showIndicator;
   final Key? labelKey;
@@ -29,7 +29,7 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    if (variant == CatchOptionGroupVariant.summary) {
+    if (variant == CatchChoiceInputVariant.summary) {
       return Semantics(
         button: true,
         selected: selected,
@@ -88,25 +88,25 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
         : t.ink2;
     final selectedRuleColor = selectedRule ?? t.ink;
     final style = switch (variant) {
-      CatchOptionGroupVariant.summary => CatchTextStyles.selectionLabel(
+      CatchChoiceInputVariant.summary => CatchTextStyles.selectionLabel(
         context,
         selected: selected,
       ),
-      CatchOptionGroupVariant.label => CatchTextStyles.tabLabel(
+      CatchChoiceInputVariant.label => CatchTextStyles.tabLabel(
         context,
         selected: selected,
         color: foreground,
       ),
-      CatchOptionGroupVariant.mono => CatchTextStyles.monoLabel(
+      CatchChoiceInputVariant.mono => CatchTextStyles.monoLabel(
         context,
         color: foreground,
       ),
-      CatchOptionGroupVariant.operational => CatchTextStyles.labelL(
+      CatchChoiceInputVariant.operational => CatchTextStyles.labelL(
         context,
         color: foreground,
       ),
     };
-    final label = variant == CatchOptionGroupVariant.mono
+    final label = variant == CatchChoiceInputVariant.mono
         ? option.label.toUpperCase()
         : option.label;
 
@@ -136,14 +136,14 @@ class CatchOptionGroupItem<T> extends StatelessWidget {
                 : CatchMotion.fast,
             curve: CatchMotion.standardCurve,
             padding: EdgeInsets.symmetric(
-              horizontal: variant == CatchOptionGroupVariant.operational
+              horizontal: variant == CatchChoiceInputVariant.operational
                   ? textScale >= 1.4
                         ? CatchSpacing.s1
                         : CatchSpacing.s2
                   : CatchSpacing.s1,
               vertical: CatchSpacing.s2,
             ),
-            decoration: variant == CatchOptionGroupVariant.operational
+            decoration: variant == CatchChoiceInputVariant.operational
                 ? BoxDecoration(
                     color: selected ? t.surface : Colors.transparent,
                     borderRadius: BorderRadius.circular(CatchRadius.pill),

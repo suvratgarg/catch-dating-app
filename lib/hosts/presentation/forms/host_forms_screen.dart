@@ -475,7 +475,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
       slivers: [
         SliverList.list(
           children: [
-            CatchOptionGroup<HostFormLifecycleStatus?>(
+            CatchChoiceInput<HostFormLifecycleStatus?>.segmented(
               options: [
                 CatchOption(
                   value: null,
@@ -494,7 +494,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                   ),
               ],
               selected: status,
-              variant: CatchOptionGroupVariant.summary,
+              variant: CatchChoiceInputVariant.summary,
               contractExemption:
                   'The lifecycle rail maps All to no status and every other '
                   'option to one item in the statuses array contract.',

@@ -920,7 +920,7 @@ Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
 
 Widget catchOptionGroupCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchOptionGroup',
+    title: 'CatchChoiceInput',
     catalogId: 'core.widgets.catch_option_group',
     children: const [
       _StateCard(label: 'label / mono / trailing', child: _OptionGroupDemo()),
@@ -4402,7 +4402,7 @@ class _OptionGroupDemoState extends State<_OptionGroupDemo> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CatchOptionGroup<String>(
+        CatchChoiceInput<String>.segmented(
           options: const [
             CatchOption(value: 'tonight', label: 'Tonight'),
             CatchOption(value: 'week', label: 'This week'),
@@ -4413,14 +4413,14 @@ class _OptionGroupDemoState extends State<_OptionGroupDemo> {
           trailing: CatchBadge(label: '12'),
         ),
         gapH16,
-        CatchOptionGroup<String>(
+        CatchChoiceInput<String>.segmented(
           options: const [
             CatchOption(value: 'all', label: 'All'),
             CatchOption(value: 'hosts', label: 'Hosts'),
             CatchOption(value: 'clubs', label: 'Clubs'),
           ],
           selected: _mono,
-          variant: CatchOptionGroupVariant.mono,
+          variant: CatchChoiceInputVariant.mono,
           onChanged: (value) => setState(() => _mono = value),
         ),
       ],

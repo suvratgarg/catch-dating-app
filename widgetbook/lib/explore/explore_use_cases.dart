@@ -1345,12 +1345,12 @@ Widget exploreAppliedFilterChipsStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Filter option item states',
-  type: CatchOptionGroupItem,
+  type: CatchChoiceButton,
   path: '[Explore]/Controls',
 )
 Widget exploreFilterOptionItemStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchOptionGroupItem',
+    title: 'CatchChoiceButton',
     catalogId: 'control.explore.filter_option_item',
     children: [
       _StateCard(
@@ -1358,7 +1358,7 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchOptionGroupItem<ExploreTimeFilter>(
+            CatchChoiceButton<ExploreTimeFilter>(
               option: const CatchOption(
                 value: ExploreTimeFilter.tonight,
                 label: 'Tonight',
@@ -1367,7 +1367,7 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
               onTap: _noop,
             ),
             gapW12,
-            CatchOptionGroupItem<ExploreTimeFilter>(
+            CatchChoiceButton<ExploreTimeFilter>(
               option: const CatchOption(
                 value: ExploreTimeFilter.weekend,
                 label: 'Weekend',
@@ -1380,7 +1380,7 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
       ),
       _StateCard(
         label: 'long copy',
-        child: CatchOptionGroupItem<ExploreTimeFilter>(
+        child: CatchChoiceButton<ExploreTimeFilter>(
           option: const CatchOption(
             value: ExploreTimeFilter.thisWeek,
             label: 'This week',

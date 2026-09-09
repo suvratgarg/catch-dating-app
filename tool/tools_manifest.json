@@ -5957,7 +5957,7 @@
       "command": "node tool/design/check_option_group_usage.mjs --summary",
       "safety": "local",
       "status": "active",
-      "description": "Reports production direct CatchOptionGroupItem usage so underline tabs route through CatchOptionGroup or CatchPageTabBar rather than forking divider, indicator, ink, and trailing alignment behavior.",
+      "description": "Reports production direct CatchChoiceButton usage so underline tabs route through CatchChoiceInput.segmented or CatchPageTabBar rather than forking divider, indicator, ink, and trailing alignment behavior.",
       "checks": [
         "node --check tool/design/check_option_group_usage.mjs",
         "node --test tool/design/check_option_group_usage.test.mjs",
@@ -5972,8 +5972,8 @@
         "type": "test",
         "path": "tool/design/check_option_group_usage.test.mjs",
         "contains": [
-          "flags direct CatchOptionGroupItem usage in production feature code",
-          "allows the canonical CatchOptionGroup implementation",
+          "flags direct CatchChoiceButton usage in production feature code",
+          "allows the canonical CatchChoiceInput.segmented implementation",
           "ignores direct item usage outside production lib sources"
         ]
       }

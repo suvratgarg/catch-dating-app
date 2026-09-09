@@ -58,7 +58,7 @@
           "catch.banner",
           "catch.field",
           "catch.option_card",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.surface",
           "catch.top_bar"
         ],

@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.19.0
+version: 1.20.0
 updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -221,7 +221,7 @@ Use `CatchPersonRow.directory` for identity plus rich metadata/context/status;
 `CatchRecordRow` for activity/event inventory, historical evidence or provenance; and `CatchField` for an
 editable value or setting. Record text has natural height. Status moves below
 content at enlarged text sizes. `CatchBadge.status` is a passive rounded rectangle
-with readable categorical tones. `CatchOptionGroupVariant.summary` is a tappable
+with readable categorical tones. `CatchChoiceInput.segmentedVariant.summary` is a tappable
 rounded rectangle with selected semantics; `CatchButton.command` owns the paired
 sort/filter action treatment. Color communicates positive, attention, or affinity
 meaning and does not introduce a brand accent. These recipes supersede the
@@ -432,7 +432,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
 - Screen hierarchy follows one control per level. Shell destinations express
   product-level navigation; pinned `CatchPageTabBar` / `CatchRootScreenScaffold.withPrimaryRail`
   tabs switch peer views within one destination. A small fixed set of terse,
-  mutually-exclusive filters uses `CatchOptionGroup`; longer, numerous, or
+  mutually-exclusive filters uses `CatchChoiceInput.segmented`; longer, numerous, or
   dynamic mutually-exclusive filters use `CatchSelectionMenu.control` so
   options do not disappear beyond the viewport. Selectable chips express
   independent binary or multi-select values, not scalar scope or lifecycle

@@ -100,7 +100,7 @@ void main() {
     expect(find.text('BOOKED · 1'), findsOneWidget);
     expect(find.text('PROSPECTIVE · 1'), findsOneWidget);
     expect(
-      find.byType(CatchOptionGroup<HostInboxAudienceSegment>),
+      find.byType(CatchChoiceInput<HostInboxAudienceSegment>),
       findsOneWidget,
     );
     expect(find.text('Message 1 booked attendee'), findsNothing);

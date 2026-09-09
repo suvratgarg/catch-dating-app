@@ -1248,17 +1248,17 @@ class HostRosterFilterHeader extends StatelessWidget {
           ),
           if (canFilter) ...[
             gapH12,
-            CatchOptionGroup<HostRosterFilter>(
+            CatchChoiceInput<HostRosterFilter>.segmented(
               contract:
                   CatchContractConstraints.mobileFormStateHostRosterFilter,
-              contractValue: (filter) => filter.name,
+              contractValueBuilder: (filter) => filter.name,
               options: [
                 for (final spec in filters)
                   CatchOption(value: spec.filter, label: spec.label),
               ],
               selected: selectedFilter,
               onChanged: onFilterChanged,
-              variant: CatchOptionGroupVariant.mono,
+              variant: CatchChoiceInputVariant.mono,
               scrollable: true,
             ),
           ],

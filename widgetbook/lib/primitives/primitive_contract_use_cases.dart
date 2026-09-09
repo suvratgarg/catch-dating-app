@@ -3123,6 +3123,12 @@ Widget catchFieldDisclosureDrawerContractStates(BuildContext context) {
 )
 Widget catchChoiceInputContractStates(BuildContext context) {
   const values = ['English', 'Hindi', 'Tamil', 'Marathi'];
+  final t = CatchTokens.of(context);
+  const options = [
+    CatchOption(value: 'all', label: 'All'),
+    CatchOption(value: 'going', label: 'Going'),
+    CatchOption(value: 'hosting', label: 'Hosting'),
+  ];
   return _ContractScreen(
     title: 'CatchChoiceInput',
     contractId: 'catch.chip.field',
@@ -3140,6 +3146,15 @@ Widget catchChoiceInputContractStates(BuildContext context) {
       'described-selected',
       'described-unselected',
       'described-disabled',
+      'segmented-label',
+      'segmented-mono',
+      'segmented-operational',
+      'segmented-selected',
+      'segmented-disabled',
+      'segmented-accented',
+      'segmented-trailing',
+      'segmented-overflow',
+      'segmented-summary',
     ],
     children: [
       _StateCard(
@@ -3227,6 +3242,125 @@ Widget catchChoiceInputContractStates(BuildContext context) {
           itemLabelBuilder: (_) => 'Standard',
           itemSubtitleBuilder: (_) =>
               'Refunds step down as the event approaches.',
+        ),
+      ),
+
+      _StateCard(
+        label: 'segmented · summary',
+        child: CatchChoiceInput<int>.segmented(
+          options: const [
+            CatchOption(value: 0, label: 'All 214'),
+            CatchOption(value: 1, label: 'Returning 148'),
+            CatchOption(value: 2, label: 'New 19'),
+          ],
+          selected: 0,
+          variant: CatchChoiceInputVariant.summary,
+          contractExemption: 'Local Widgetbook scope preview.',
+          onChanged: (_) {},
+        ),
+      ),
+      _StateCard(
+        label: 'segmented · label',
+        child: _FieldWidth(
+          child: CatchChoiceInput<String>.segmented(
+            options: options,
+            selected: 'all',
+            onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'segmented · mono',
+        child: _FieldWidth(
+          child: CatchChoiceInput<String>.segmented(
+            options: options,
+            selected: 'going',
+            variant: CatchChoiceInputVariant.mono,
+            onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'segmented · selected',
+        child: _FieldWidth(
+          child: CatchChoiceInput<String>.segmented(
+            options: options,
+            selected: 'hosting',
+            onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'segmented · operational',
+        child: _FieldWidth(
+          child: CatchChoiceInput<String>.segmented(
+            options: [
+              CatchOption(
+                value: 'now',
+                label: 'Now',
+                icon: CatchIcons.scheduleRounded,
+              ),
+              CatchOption(
+                value: 'guests',
+                label: 'Guests',
+                icon: CatchIcons.groupsOutlined,
+              ),
+              CatchOption(
+                value: 'room',
+                label: 'Room',
+                icon: CatchIcons.gridViewRounded,
+              ),
+            ],
+            selected: 'room',
+            variant: CatchChoiceInputVariant.operational,
+            onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      const _StateCard(
+        label: 'segmented · disabled',
+        child: _FieldWidth(
+          child: CatchChoiceInput<String>.segmented(
+            options: options,
+            selected: 'all',
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'segmented · accented',
+        child: _FieldWidth(
+          child: CatchChoiceInput<String>.segmented(
+            options: options,
+            selected: 'going',
+            accent: t.primary,
+            onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'segmented · trailing',
+        child: _FieldWidth(
+          child: CatchChoiceInput<String>.segmented(
+            options: options,
+            selected: 'all',
+            trailing: const CatchBadge(label: '12'),
+            onChanged: _ignoreString,
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'segmented · overflow',
+        child: SizedBox(
+          width: WidgetbookPreviewLayout.compactComponentWidth,
+          child: CatchChoiceInput<String>.segmented(
+            options: const [
+              CatchOption(value: 'attending', label: 'Attending tonight'),
+              CatchOption(value: 'waitlist', label: 'Waitlist'),
+              CatchOption(value: 'declined', label: 'Declined invites'),
+            ],
+            selected: 'attending',
+            onChanged: _ignoreString,
+          ),
         ),
       ),
     ],
@@ -6726,206 +6860,59 @@ Widget catchCodeCaretIndicatorContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchOptionGroup,
+  type: CatchChoiceButton,
   path: '[Core primitives]/Selection',
 )
-Widget catchOptionGroupContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  const options = [
-    CatchOption(value: 'all', label: 'All'),
-    CatchOption(value: 'going', label: 'Going'),
-    CatchOption(value: 'hosting', label: 'Hosting'),
-  ];
-
-  return _ContractScreen(
-    title: 'CatchOptionGroup',
-    contractId: 'catch.option_group',
-    states: const [
-      'label',
-      'mono',
-      'operational',
-      'selected',
-      'disabled',
-      'accented',
-      'trailing',
-      'overflow',
-      'summary',
-    ],
-    children: [
-      _StateCard(
-        label: 'summary',
-        child: CatchOptionGroup<int>(
-          options: const [
-            CatchOption(value: 0, label: 'All 214'),
-            CatchOption(value: 1, label: 'Returning 148'),
-            CatchOption(value: 2, label: 'New 19'),
-          ],
-          selected: 0,
-          variant: CatchOptionGroupVariant.summary,
-          contractExemption: 'Local Widgetbook scope preview.',
-          onChanged: (_) {},
-        ),
-      ),
-      _StateCard(
-        label: 'label',
-        child: _FieldWidth(
-          child: CatchOptionGroup<String>(
-            options: options,
-            selected: 'all',
-            onChanged: _ignoreString,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'mono',
-        child: _FieldWidth(
-          child: CatchOptionGroup<String>(
-            options: options,
-            selected: 'going',
-            variant: CatchOptionGroupVariant.mono,
-            onChanged: _ignoreString,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'selected',
-        child: _FieldWidth(
-          child: CatchOptionGroup<String>(
-            options: options,
-            selected: 'hosting',
-            onChanged: _ignoreString,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'operational',
-        child: _FieldWidth(
-          child: CatchOptionGroup<String>(
-            options: [
-              CatchOption(
-                value: 'now',
-                label: 'Now',
-                icon: CatchIcons.scheduleRounded,
-              ),
-              CatchOption(
-                value: 'guests',
-                label: 'Guests',
-                icon: CatchIcons.groupsOutlined,
-              ),
-              CatchOption(
-                value: 'room',
-                label: 'Room',
-                icon: CatchIcons.gridViewRounded,
-              ),
-            ],
-            selected: 'room',
-            variant: CatchOptionGroupVariant.operational,
-            onChanged: _ignoreString,
-          ),
-        ),
-      ),
-      const _StateCard(
-        label: 'disabled',
-        child: _FieldWidth(
-          child: CatchOptionGroup<String>(options: options, selected: 'all'),
-        ),
-      ),
-      _StateCard(
-        label: 'accented',
-        child: _FieldWidth(
-          child: CatchOptionGroup<String>(
-            options: options,
-            selected: 'going',
-            accent: t.primary,
-            onChanged: _ignoreString,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'trailing',
-        child: _FieldWidth(
-          child: CatchOptionGroup<String>(
-            options: options,
-            selected: 'all',
-            trailing: const CatchBadge(label: '12'),
-            onChanged: _ignoreString,
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'overflow',
-        child: SizedBox(
-          width: WidgetbookPreviewLayout.compactComponentWidth,
-          child: CatchOptionGroup<String>(
-            options: const [
-              CatchOption(value: 'attending', label: 'Attending tonight'),
-              CatchOption(value: 'waitlist', label: 'Waitlist'),
-              CatchOption(value: 'declined', label: 'Declined invites'),
-            ],
-            selected: 'attending',
-            onChanged: _ignoreString,
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchOptionGroupItem,
-  path: '[Core primitives]/Selection',
-)
-Widget catchOptionGroupItemContractStates(BuildContext context) {
+Widget catchChoiceButtonContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchOptionGroupItem',
-    contractId: 'catch.option_group.item',
+    title: 'CatchChoiceButton',
+    contractId: 'catch.chip.field.segmented_button',
     states: const ['selected', 'unselected', 'mono', 'operational', 'summary'],
     children: [
       _StateCard(
         label: 'summary',
-        child: CatchOptionGroupItem<int>(
+        child: CatchChoiceButton<int>(
           option: const CatchOption(value: 1, label: 'Returning 148'),
           selected: true,
-          variant: CatchOptionGroupVariant.summary,
+          variant: CatchChoiceInputVariant.summary,
           onTap: () {},
         ),
       ),
       _StateCard(
         label: 'selected',
-        child: CatchOptionGroupItem<String>(
+        child: CatchChoiceButton<String>(
           option: const CatchOption(value: 'all', label: 'All'),
           selected: true,
           selectedRule: t.ink,
-          variant: CatchOptionGroupVariant.label,
+          variant: CatchChoiceInputVariant.label,
           onTap: _noop,
         ),
       ),
       _StateCard(
         label: 'unselected',
-        child: CatchOptionGroupItem<String>(
+        child: CatchChoiceButton<String>(
           option: const CatchOption(value: 'saved', label: 'Saved'),
           selected: false,
           selectedRule: t.ink,
-          variant: CatchOptionGroupVariant.label,
+          variant: CatchChoiceInputVariant.label,
           onTap: _noop,
         ),
       ),
       _StateCard(
         label: 'mono',
-        child: CatchOptionGroupItem<String>(
+        child: CatchChoiceButton<String>(
           option: const CatchOption(value: 'nearby', label: 'Nearby'),
           selected: true,
           selectedRule: t.primary,
-          variant: CatchOptionGroupVariant.mono,
+          variant: CatchChoiceInputVariant.mono,
           onTap: _noop,
         ),
       ),
       _StateCard(
         label: 'operational',
-        child: CatchOptionGroupItem<String>(
+        child: CatchChoiceButton<String>(
           option: CatchOption(
             value: 'room',
             label: 'Room',
@@ -6933,7 +6920,7 @@ Widget catchOptionGroupItemContractStates(BuildContext context) {
           ),
           selected: true,
           selectedRule: t.ink,
-          variant: CatchOptionGroupVariant.operational,
+          variant: CatchChoiceInputVariant.operational,
           onTap: _noop,
         ),
       ),
@@ -7007,7 +6994,7 @@ Widget catchPageTabBarContractStates(BuildContext context) {
           child: CatchPageTabBar<String>(
             selected: 'room',
             onChanged: _ignoreString,
-            variant: CatchOptionGroupVariant.operational,
+            variant: CatchChoiceInputVariant.operational,
             options: [
               CatchOption(
                 value: 'now',

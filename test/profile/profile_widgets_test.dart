@@ -245,7 +245,7 @@ Finder _promptAnswerEditableText(int index) => find.descendant(
   matching: find.byType(EditableText),
 );
 
-Finder _profileOptionGroup() => find.byType(CatchOptionGroup<SelfProfileTab>);
+Finder _profileOptionGroup() => find.byType(CatchChoiceInput<SelfProfileTab>);
 
 Finder _catchChip(String label) => find.byWidgetPredicate(
   (widget) =>

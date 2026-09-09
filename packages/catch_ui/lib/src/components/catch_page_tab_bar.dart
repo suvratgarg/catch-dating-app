@@ -1,9 +1,9 @@
 import 'dart:math' as math;
 
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_choice_input.dart';
+import 'package:catch_ui/src/components/catch_choice_input_variant.dart';
 import 'package:catch_ui/src/components/catch_option.dart';
-import 'package:catch_ui/src/components/catch_option_group.dart';
-import 'package:catch_ui/src/components/catch_option_group_variant.dart';
 import 'package:catch_ui/src/components/catch_primary_rail.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
@@ -19,7 +19,7 @@ class CatchPageTabBar<T> extends StatelessWidget
   /// The unscaled preferredSize remains the canonical minimum contract.
   static double heightFor(
     BuildContext context, {
-    CatchOptionGroupVariant variant = CatchOptionGroupVariant.label,
+    CatchChoiceInputVariant variant = CatchChoiceInputVariant.label,
   }) {
     final style = CatchTextStyles.tabLabel(context);
     final lineHeight =
@@ -27,7 +27,7 @@ class CatchPageTabBar<T> extends StatelessWidget
     final contentHeight = lineHeight + CatchSpacing.s4 + CatchSpacing.micro2;
     final gridHeight =
         (contentHeight / CatchSpacing.s1).ceil() * CatchSpacing.s1;
-    final inset = variant == CatchOptionGroupVariant.operational
+    final inset = variant == CatchChoiceInputVariant.operational
         ? CatchSpacing.s2
         : 0.0;
     return math.max(gridHeight, minimumHeight) + inset;
@@ -38,9 +38,9 @@ class CatchPageTabBar<T> extends StatelessWidget
     CatchPlatformTokens.minimumInteractiveExtent,
   );
 
-  static double minimumHeightFor(CatchOptionGroupVariant variant) =>
+  static double minimumHeightFor(CatchChoiceInputVariant variant) =>
       minimumHeight +
-      (variant == CatchOptionGroupVariant.operational ? CatchSpacing.s2 : 0);
+      (variant == CatchChoiceInputVariant.operational ? CatchSpacing.s2 : 0);
 
   const CatchPageTabBar({
     super.key,
@@ -51,7 +51,7 @@ class CatchPageTabBar<T> extends StatelessWidget
     this.selectionPosition,
     this.trailing,
     this.scrollable = false,
-    this.variant = CatchOptionGroupVariant.label,
+    this.variant = CatchChoiceInputVariant.label,
     this.accent,
     this.backgroundColor,
     this.contentPadding = CatchInsets.screenControlRow,
@@ -67,7 +67,7 @@ class CatchPageTabBar<T> extends StatelessWidget
     this.groupKey,
     this.trailing,
     this.scrollable = false,
-    this.variant = CatchOptionGroupVariant.label,
+    this.variant = CatchChoiceInputVariant.label,
     this.accent,
     this.backgroundColor,
     this.contentPadding = CatchInsets.screenControlRow,
@@ -89,7 +89,7 @@ class CatchPageTabBar<T> extends StatelessWidget
   final double? selectionPosition;
   final Widget? trailing;
   final bool scrollable;
-  final CatchOptionGroupVariant variant;
+  final CatchChoiceInputVariant variant;
   final Color? accent;
   final Color? backgroundColor;
   final EdgeInsetsGeometry contentPadding;
@@ -104,7 +104,7 @@ class CatchPageTabBar<T> extends StatelessWidget
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final operational = variant == CatchOptionGroupVariant.operational;
+    final operational = variant == CatchChoiceInputVariant.operational;
 
     return AnimatedBuilder(
       animation: controller?.animation ?? kAlwaysDismissedAnimation,
@@ -127,7 +127,7 @@ class CatchPageTabBar<T> extends StatelessWidget
                       ).all,
                     )
                   : const BoxDecoration(),
-              child: CatchOptionGroup<T>(
+              child: CatchChoiceInput<T>.segmented(
                 key: groupKey,
                 selected: selected,
                 onChanged: controller == null

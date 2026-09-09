@@ -771,10 +771,10 @@ class HostInboxAudienceRail extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: CatchInsets.pageHorizontal,
-        child: CatchOptionGroup<HostInboxAudienceSegment>(
+        child: CatchChoiceInput<HostInboxAudienceSegment>.segmented(
           contract:
               CatchContractConstraints.mobileFormStateHostInboxAudienceSegment,
-          contractValue: (segment) => segment.name,
+          contractValueBuilder: (segment) => segment.name,
           selected: workspace.selectedSegment,
           options: [
             CatchOption(
@@ -792,7 +792,7 @@ class HostInboxAudienceRail extends StatelessWidget {
                   ),
             ),
           ],
-          variant: CatchOptionGroupVariant.mono,
+          variant: CatchChoiceInputVariant.mono,
           onChanged: onChanged,
         ),
       ),

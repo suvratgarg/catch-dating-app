@@ -221,7 +221,7 @@
         {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "HostBroadcastComposerSheet"}
       ],
       "anchors": [
-        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchOptionGroup", "expected": 1},
+        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchChoiceInput.segmented", "expected": 1},
         {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchChoiceInput.described", "expected": 1},
         {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchField.input", "expected": 1}
       ],

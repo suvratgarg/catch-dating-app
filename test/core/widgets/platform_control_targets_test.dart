@@ -155,7 +155,7 @@ void main() {
         });
       }
 
-      for (final variant in CatchOptionGroupVariant.values) {
+      for (final variant in CatchChoiceInputVariant.values) {
         testWidgets('$variant choices retain targets at $scale $platform', (
           tester,
         ) async {
@@ -166,7 +166,7 @@ void main() {
             tester,
             SizedBox(
               width: 280,
-              child: CatchOptionGroup<int>(
+              child: CatchChoiceInput<int>.segmented(
                 variant: variant,
                 selected: 1,
                 options: const [
@@ -182,7 +182,7 @@ void main() {
             ),
             scale: scale,
           );
-          final items = find.byType(CatchOptionGroupItem<int>);
+          final items = find.byType(CatchChoiceButton<int>);
           for (final item in items.evaluate()) {
             final size = tester.getSize(find.byWidget(item.widget));
             expect(
@@ -224,8 +224,8 @@ void main() {
         debugDefaultTargetPlatformOverride = platform;
         addTearDown(() => debugDefaultTargetPlatformOverride = null);
         for (final variant in [
-          CatchOptionGroupVariant.label,
-          CatchOptionGroupVariant.operational,
+          CatchChoiceInputVariant.label,
+          CatchChoiceInputVariant.operational,
         ]) {
           await _pump(
             tester,
@@ -250,8 +250,7 @@ void main() {
             widget.preferredSizeFor(tester.element(rail)).height,
           );
           final bounds = tester.getRect(rail);
-          for (final item
-              in find.byType(CatchOptionGroupItem<int>).evaluate()) {
+          for (final item in find.byType(CatchChoiceButton<int>).evaluate()) {
             final rect = tester.getRect(find.byWidget(item.widget));
             expect(
               rect.height,
@@ -600,7 +599,7 @@ void main() {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchOptionGroup<int>(
+            CatchChoiceInput<int>.segmented(
               selected: 0,
               onChanged: (_) {},
               options: const [

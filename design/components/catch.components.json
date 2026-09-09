@@ -1303,7 +1303,7 @@
           "Selected choices use a solid fill, inverse ink, subtle selected shadow, and press-only scale. Selection state is always parent-owned.",
           "Use badges for compact status metadata, compact controls for floating actions, identity switchers for current-context menus, and progress cues for sequence state.",
           "Use OptionCard when each choice needs explanatory copy.",
-          "Do not compose scalar scope, lifecycle, or mode rails from selectable chips. Use CatchOptionGroup when fixed terse choices fit, or CatchSelectionMenu.control when they do not."
+          "Do not compose scalar scope, lifecycle, or mode rails from selectable chips. Use CatchChoiceInput.segmented when fixed terse choices fit, or CatchSelectionMenu.control when they do not."
         ]
       },
       "governance": {
@@ -6960,7 +6960,7 @@
         ],
         "notes": [
           "Use CatchActionMenu only for short command lists. Keep sort, filter, and other selected choices out of overflow.",
-          "Use CatchSelectionMenu.control when the current choice should remain visible or mutually-exclusive choices are too numerous, long, or dynamic for an inline CatchOptionGroup; use CatchSelectionMenu.adaptive with a custom trigger when needed.",
+          "Use CatchSelectionMenu.control when the current choice should remain visible or mutually-exclusive choices are too numerous, long, or dynamic for an inline CatchChoiceInput.segmented; use CatchSelectionMenu.adaptive with a custom trigger when needed.",
           "Informational status belongs on the owning page, not as a disabled menu row. Disabled commands must explain why they are unavailable.",
           "Use explicit section boundaries instead of drawing a divider after every row.",
           "CatchMenu.anchored pairs the trigger and panel, carries shell obstruction into the overlay, flips above low triggers and constrains long menus. Direct top/bottom anchored previews and geometry tests cover the same closed/open, flipped and scrolling states as the former anchor wrapper.",
@@ -7593,13 +7593,14 @@
       "name": "CatchChoiceInput",
       "status": "active",
       "kind": "primitive",
-      "summary": "Caller-owned single or multiple selection through compact chips, explanatory tiles, or the form validation recipe. One selection and after-commit notification implementation serves every recipe.",
+      "summary": "One typed choice input: compact checked, described, segmented and Flutter Form recipes share cardinality and callbacks while preserving their rendering and semantics.",
       "dart": {
         "symbol": "CatchChoiceInput",
         "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
         "constructors": [
           "CatchChoiceInput",
           "CatchChoiceInput.described",
+          "CatchChoiceInput.segmented",
           "CatchChoiceInput.form"
         ]
       },
@@ -7625,26 +7626,29 @@
             "name": "values",
             "type": "object",
             "required": true,
-            "dartType": "List<T>"
+            "dartType": "List<T>",
+            "notes": "Required by checked/described/form recipes; segmented receives typed options with labels and availability."
           },
           {
             "name": "selected",
             "type": "object",
             "required": true,
-            "dartType": "Set<T>"
+            "dartType": "Set<T>",
+            "notes": "Set<T> for checked/described/form recipes; segmented accepts one T? and exposes its selected option through the same set-valued getter. Null is unselected unless explicitly present as an option."
           },
           {
             "name": "onChanged",
             "type": "callback",
             "required": true,
             "dartType": "ValueChanged<Set<T>>?",
-            "notes": "Null disables all options. Described choices select one value; compact choices use the declared mode."
+            "notes": "Null disables all choices. Segmented accepts ValueChanged<T>?; checked recipes accept ValueChanged<Set<T>>?. Both share the same cardinality algorithm; segmented has selected semantics, checked recipes have checked semantics."
           },
           {
             "name": "itemLabelBuilder",
             "type": "callback",
             "required": true,
-            "dartType": "String Function(T value)"
+            "dartType": "String Function(T value)",
+            "notes": "Required by checked/described/form recipes; segmented gets full visual/spoken labels from CatchOption."
           },
           {
             "name": "itemSubtitleBuilder",
@@ -7684,7 +7688,50 @@
               "single",
               "multiple"
             ],
-            "notes": "Required for compact/form recipes; described fixes single selection."
+            "notes": "Required by compact/form recipes; described and segmented fix single selection."
+          },
+          {
+            "name": "options",
+            "type": "generic-list",
+            "required": false,
+            "dartType": "List<CatchOption<T>>",
+            "notes": "Segmented recipe only."
+          },
+          {
+            "name": "variant",
+            "type": "enum",
+            "required": false,
+            "default": "label",
+            "dartType": "CatchChoiceInputVariant",
+            "values": [
+              "label",
+              "mono",
+              "operational",
+              "summary"
+            ],
+            "notes": "Segmented recipe only."
+          },
+          {
+            "name": "accent",
+            "type": "color",
+            "required": false,
+            "dartType": "Color?",
+            "notes": "Segmented recipe only."
+          },
+          {
+            "name": "trailing",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Segmented recipe only."
+          },
+          {
+            "name": "scrollable",
+            "type": "bool",
+            "required": false,
+            "default": false,
+            "dartType": "bool",
+            "notes": "Forces horizontal scrolling for non-summary variants. False still permits content-driven overflow when scaled labels and targets do not fit; summary choices wrap. Segmented recipe only."
           }
         ],
         "states": [
@@ -7700,18 +7747,53 @@
           "label-free",
           "described-selected",
           "described-unselected",
-          "described-disabled"
+          "described-disabled",
+          "segmented-label",
+          "segmented-mono",
+          "segmented-operational",
+          "segmented-selected",
+          "segmented-disabled",
+          "segmented-accented",
+          "segmented-trailing",
+          "segmented-overflow",
+          "segmented-summary"
         ],
-        "slots": [],
+        "slots": [
+          {
+            "name": "trailing",
+            "kind": "inline-control",
+            "allowedComponents": [
+              "catch.badge",
+              "catch.icon_button"
+            ],
+            "notes": "Use only for compact metadata or a single adjacent action."
+          }
+        ],
         "tokens": [
           "space.s2",
-          "space.s3"
+          "space.s3",
+          "space.s1",
+          "space.s4",
+          "radius.md",
+          "theme.light.color.ink",
+          "theme.light.color.ink2",
+          "theme.light.color.ink3",
+          "theme.light.color.line",
+          "theme.light.color.surface",
+          "radius.sm",
+          "layout.selectionHorizontalPadding",
+          "layout.selectionVerticalPadding"
         ],
         "dartRoles": [
           "CatchChip.choice",
           "CatchChoiceTile",
           "CatchFormFieldLabel",
-          "CatchFieldChoicePickedNotification"
+          "CatchFieldChoicePickedNotification",
+          "CatchTextStyles.labelL",
+          "CatchTextStyles.monoLabel",
+          "CatchMotion.fast",
+          "CatchTextStyles.selectionLabel",
+          "CatchPlatformTokens.minimumInteractiveExtent"
         ],
         "goldens": [],
         "accessibility": {
@@ -7726,13 +7808,69 @@
             "light",
             "dark"
           ]
-        }
+        },
+        "members": [
+          {
+            "id": "catch.chip.field.segmented_button",
+            "symbol": "CatchChoiceButton",
+            "file": "packages/catch_ui/lib/src/components/catch_choice_button.dart",
+            "summary": "Direct option renderer with platform-sized activation, selected/disabled semantics, and preserved custom spoken-label actions. Underline and operational labels retain a defensive one-line ellipsis fallback; CatchChoiceInput.segmented measures full content and enables scrolling before that fallback is needed. Summary labels wrap.",
+            "states": [
+              "selected",
+              "unselected",
+              "mono",
+              "operational",
+              "summary"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.chip.field",
+              "parentConceptId": "catch.chip.field",
+              "qualifier": "variant",
+              "decisionRef": "pattern-family:segmented-choice-input"
+            },
+            "level": "L3",
+            "roleNoun": "Button",
+            "naming": {
+              "useCase": "Choice",
+              "comparedWith": [
+                "catch.button",
+                "catch.chip.field"
+              ],
+              "reason": "Segmented choice-input anatomy owns selected option semantics, label measurement anchors and an optional underline; ordinary Button owns commands. It shares group selection through the parent input and is not a second independent choice control."
+            }
+          },
+          {
+            "id": "catch.chip.field.option",
+            "symbol": "CatchOption",
+            "file": "packages/catch_ui/lib/src/components/catch_option.dart",
+            "summary": "Presentation-neutral option value, label, icon, spoken label and availability; disabled options require their caller-owned reason.",
+            "states": [
+              "enabled",
+              "disabled",
+              "custom-semantics"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.chip.field",
+              "parentConceptId": "catch.chip.field",
+              "qualifier": "adapter",
+              "decisionRef": "pattern-family:segmented-choice-input"
+            }
+          }
+        ]
       },
       "handoff": {
-        "allowedChildren": [],
+        "allowedChildren": [
+          "catch.badge",
+          "catch.icon_button"
+        ],
         "notes": [
           "Input owns typed selection and optional form validation; Chip and ChoiceTile own their individual target renderers. Field owns disclosure, commit bars and asynchronous saves.",
-          "The stable catch.chip.field ID is retained while the independently configured group moves from chip anatomy to the choice concept primary. Names are derived from the reviewed responsibility, not the historical ID."
+          "The stable catch.chip.field ID is retained while the independently configured group moves from chip anatomy to the choice concept primary. Names are derived from the reviewed responsibility, not the historical ID.",
+          "Use as the canonical inline single-select scope and mode row when a fixed set of terse lifecycle, audience, granularity, or workspace choices remains legible in the viewport. Use CatchSelectionMenu.control when it does not.",
+          "The group measures full scaled labels before allocation and scrolls automatically if they would be compressed. Operational choices are equal-width while they fit and intrinsic-width when scrolling; icons yield to labels at large text scale. Reduced motion makes item and selected-indicator transitions immediate.",
+          "Segmented input retains selected/disabled semantics, nullable initial selection, contract filtering, summary wrapping, automatic overflow reveal, reduced motion, and fractional pager underline geometry. It shares the checked recipes' selection algorithm, with no automatic field-close notification. PageTabBar owns only its scaled placement and controller binding."
         ]
       },
       "governance": {
@@ -7749,7 +7887,8 @@
         "conceptId": "catch.chip.field"
       },
       "surfaces": {
-        "flutter": "CatchChoiceInput"
+        "flutter": "CatchChoiceInput",
+        "admin": "SegmentedControl"
       },
       "level": "L3",
       "roleNoun": "Input",
@@ -11006,220 +11145,6 @@
       }
     },
     {
-      "id": "catch.option_group",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
-      "name": "CatchOptionGroup",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Single-select scopes with underline, operational, and wrapping rounded-rectangle summary recipes.",
-      "dart": {
-        "symbol": "CatchOptionGroup",
-        "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
-        "constructors": [
-          "CatchOptionGroup"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/OptionGroup",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "OptionGroup",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "options",
-            "type": "generic-list",
-            "required": true,
-            "dartType": "List<CatchOption<T>>"
-          },
-          {
-            "name": "selected",
-            "type": "object",
-            "required": true,
-            "dartType": "T?"
-          },
-          {
-            "name": "onChanged",
-            "type": "callback",
-            "required": false,
-            "dartType": "ValueChanged<T>?"
-          },
-          {
-            "name": "variant",
-            "type": "enum",
-            "required": false,
-            "default": "label",
-            "dartType": "CatchOptionGroupVariant",
-            "values": [
-              "label",
-              "mono",
-              "operational",
-              "summary"
-            ]
-          },
-          {
-            "name": "accent",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?"
-          },
-          {
-            "name": "trailing",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
-          },
-          {
-            "name": "scrollable",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool",
-            "notes": "Forces horizontal scrolling for non-summary variants. False still permits content-driven overflow when scaled labels and targets do not fit; summary choices wrap."
-          }
-        ],
-        "states": [
-          "label",
-          "mono",
-          "operational",
-          "selected",
-          "disabled",
-          "accented",
-          "trailing",
-          "overflow",
-          "summary"
-        ],
-        "slots": [
-          {
-            "name": "trailing",
-            "kind": "inline-control",
-            "allowedComponents": [
-              "catch.badge",
-              "catch.icon_button"
-            ],
-            "notes": "Use only for compact metadata or a single adjacent action."
-          }
-        ],
-        "tokens": [
-          "space.s1",
-          "space.s2",
-          "space.s3",
-          "space.s4",
-          "radius.md",
-          "theme.light.color.ink",
-          "theme.light.color.ink2",
-          "theme.light.color.ink3",
-          "theme.light.color.line",
-          "theme.light.color.surface",
-          "radius.sm",
-          "layout.selectionHorizontalPadding",
-          "layout.selectionVerticalPadding"
-        ],
-        "dartRoles": [
-          "CatchTextStyles.labelL",
-          "CatchTextStyles.monoLabel",
-          "CatchMotion.fast",
-          "CatchTextStyles.selectionLabel",
-          "CatchPlatformTokens.minimumInteractiveExtent"
-        ],
-        "goldens": [],
-        "members": [
-          {
-            "id": "catch.option_group.item",
-            "symbol": "CatchOptionGroupItem",
-            "file": "packages/catch_ui/lib/src/components/catch_option_group_item.dart",
-            "summary": "Direct option renderer with platform-sized activation, selected/disabled semantics, and preserved custom spoken-label actions. Underline and operational labels retain a defensive one-line ellipsis fallback; CatchOptionGroup measures full content and enables scrolling before that fallback is needed. Summary labels wrap.",
-            "states": [
-              "selected",
-              "unselected",
-              "mono",
-              "operational",
-              "summary"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.option_group",
-              "parentConceptId": "catch.option_group",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.option_group"
-            }
-          },
-          {
-            "id": "catch.option_group.option",
-            "symbol": "CatchOption",
-            "file": "packages/catch_ui/lib/src/components/catch_option.dart",
-            "summary": "Presentation-neutral option value, label, icon, spoken label and availability; disabled options require their caller-owned reason.",
-            "states": [
-              "enabled",
-              "disabled",
-              "custom-semantics"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.option_group",
-              "parentConceptId": "catch.option_group",
-              "qualifier": "adapter",
-              "decisionRef": "contract-family:catch.option_group"
-            }
-          }
-        ],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.badge",
-          "catch.icon_button"
-        ],
-        "notes": [
-          "Use as the canonical inline single-select scope and mode row when a fixed set of terse lifecycle, audience, granularity, or workspace choices remains legible in the viewport. Use CatchSelectionMenu.control when it does not.",
-          "The group measures full scaled labels before allocation and scrolls automatically if they would be compressed. Operational choices are equal-width while they fit and intrinsic-width when scrolling; icons yield to labels at large text scale. Reduced motion makes item and selected-indicator transitions immediate."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.option_group",
-        "publicApi": true,
-        "stateOwnership": "slot-state-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.option_group"
-      },
-      "surfaces": {
-        "flutter": "CatchOptionGroup",
-        "admin": "SegmentedControl"
-      }
-    },
-    {
       "id": "catch.tab_rail",
       "verification": {
         "vehicle": "widgetbook-contract",
@@ -11285,7 +11210,7 @@
             "type": "enum",
             "required": false,
             "default": "label",
-            "dartType": "CatchOptionGroupVariant",
+            "dartType": "CatchChoiceInputVariant",
             "values": [
               "label",
               "mono",
@@ -11327,7 +11252,7 @@
         ],
         "dartRoles": [
           "CatchPrimaryRail",
-          "CatchOptionGroup",
+          "CatchChoiceInput.segmented",
           "CatchOption",
           "CatchLayout.tabRailHeight",
           "CatchScaledPreferredSize",
@@ -11353,10 +11278,10 @@
       },
       "handoff": {
         "allowedChildren": [
-          "catch.option_group"
+          "catch.chip.field"
         ],
         "notes": [
-          "Use for app-bar bottom tabs. Use CatchOptionGroup directly for inline scope controls that are not PreferredSizeWidget app-bar bottoms.",
+          "Use for app-bar bottom tabs. Use CatchChoiceInput.segmented directly for inline scope controls that are not PreferredSizeWidget app-bar bottoms.",
           "preferredSize reports the variant-specific unscaled minimum; preferredSizeFor(context) and rendering share heightFor(context, variant). Operational chrome includes its existing 8-point inner vertical inset. Root adapters must forward these values: root validation rejects inconsistent minimum or scaled declarations.",
           "Use controlled for a caller-owned TabController. It preserves tap-to-page binding, continuous drag interpolation and committed selected semantics; changing controllers retains the same renderer and releases the old animation listener. The unused CatchTopBarTabBar and its label are retired."
         ]
@@ -11372,8 +11297,8 @@
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "member",
-        "conceptId": "catch.option_group",
-        "parentConceptId": "catch.option_group",
+        "conceptId": "catch.chip.field",
+        "parentConceptId": "catch.chip.field",
         "qualifier": "adapter",
         "decisionRef": "concept-boundary:option-group-tab-rail"
       },
@@ -11386,7 +11311,7 @@
         "useCase": "Page",
         "comparedWith": [
           "catch.tab_bar",
-          "catch.option_group"
+          "catch.chip.field"
         ],
         "reason": "Page peers occupy a text-scaled PreferredSize/root primary-rail slot and can track a pager. CatchTabBar owns product-level bottom destinations, drag contact, badges and safe-area chrome. The inline option parent supplies selection rendering without this placement protocol."
       }
@@ -11727,7 +11652,7 @@
           "SegmentedButton",
           "Switch"
         ],
-        "replacement": "CatchToggleInput or CatchOptionGroup",
+        "replacement": "CatchToggleInput or CatchChoiceInput.segmented",
         "steeringGroup": "button",
         "steeringCode": "catch_no_raw_button_control",
         "probeSeed": "Switch(value: false, onChanged: (_) {})"
@@ -16477,7 +16402,7 @@
           "catch.ui_label"
         ],
         "notes": [
-          "Use for quiet browse and directory indexes; richer selectable controls belong to catch.option_group."
+          "Use for quiet browse and directory indexes; richer selectable controls belong to CatchChoiceInput.segmented."
         ]
       },
       "governance": {

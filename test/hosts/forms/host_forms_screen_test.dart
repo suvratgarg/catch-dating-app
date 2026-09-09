@@ -221,7 +221,7 @@ void main() {
           'Search forms',
         );
         expect(
-          find.byType(CatchOptionGroup<HostFormLifecycleStatus?>),
+          find.byType(CatchChoiceInput<HostFormLifecycleStatus?>),
           findsOneWidget,
         );
 

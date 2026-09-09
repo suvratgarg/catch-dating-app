@@ -43,7 +43,7 @@ void main() {
           drive: (tester) async {
             Finder summaryChoice(String name) => find.byWidgetPredicate(
               (widget) =>
-                  widget is CatchOptionGroupItem<HostCustomerFilter> &&
+                  widget is CatchChoiceButton<HostCustomerFilter> &&
                   widget.option.value.name == name,
             );
 

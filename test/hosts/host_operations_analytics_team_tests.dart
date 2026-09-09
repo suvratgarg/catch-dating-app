@@ -157,13 +157,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.text('SAKET · INDORE'), findsNothing);
     expect(find.byTooltip('Back to Organizer'), findsNothing);
     final rangeOptions = find.byType(
-      CatchOptionGroup<HostClubInsightsRangePreset>,
+      CatchChoiceInput<HostClubInsightsRangePreset>,
     );
     expect(
       tester
-          .widget<CatchOptionGroup<HostClubInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostClubInsightsRangePreset>>(rangeOptions)
           .selected,
-      HostClubInsightsRangePreset.thirtyDays,
+      {HostClubInsightsRangePreset.thirtyDays},
     );
     await Scrollable.ensureVisible(
       tester.element(find.text('90 days')),
@@ -174,9 +174,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
     expect(
       tester
-          .widget<CatchOptionGroup<HostClubInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostClubInsightsRangePreset>>(rangeOptions)
           .selected,
-      HostClubInsightsRangePreset.ninetyDays,
+      {HostClubInsightsRangePreset.ninetyDays},
     );
 
     await tester.tap(tab('Preview'));
@@ -219,9 +219,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
     expect(
       tester
-          .widget<CatchOptionGroup<HostClubInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostClubInsightsRangePreset>>(rangeOptions)
           .selected,
-      HostClubInsightsRangePreset.ninetyDays,
+      {HostClubInsightsRangePreset.ninetyDays},
     );
 
     await tester.tap(tab('Edit'));

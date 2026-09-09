@@ -153,10 +153,10 @@ class _HostBroadcastComposerSheetState
                 style: CatchTextStyles.fieldRowTitle(context),
               ),
               gapH8,
-              CatchOptionGroup<EventBroadcastAudience>(
+              CatchChoiceInput<EventBroadcastAudience>.segmented(
                 contract: CatchContractConstraints
                     .sendEventBroadcastCallablePayloadAudience,
-                contractValue: (audience) => audience.name,
+                contractValueBuilder: (audience) => audience.name,
                 options: [
                   CatchOption(
                     value: EventBroadcastAudience.booked,

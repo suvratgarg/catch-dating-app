@@ -5157,7 +5157,7 @@
       "notes": "Shared admin UI primitive with deterministic preview coverage in admin/src/stories/AdminPrimitives.stories.tsx.",
       "exportName": "SegmentedControl",
       "lexicon": true,
-      "lexiconId": "catch.option_group"
+      "lexiconId": "catch.chip.field"
     },
     {
       "id": "shared_selectable_card_button",

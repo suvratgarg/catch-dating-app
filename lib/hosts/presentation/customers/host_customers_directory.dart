@@ -478,9 +478,9 @@ class HostCustomersSummary extends StatelessWidget {
           label: context.l10n.hostsHostEventManageScreenStateLabelNew,
         ),
       ];
-      return CatchOptionGroup<HostCustomerFilter>(
+      return CatchChoiceInput<HostCustomerFilter>.segmented(
         selected: selectedFilter,
-        variant: CatchOptionGroupVariant.summary,
+        variant: CatchChoiceInputVariant.summary,
         contractExemption: 'Organizer directory lenses are local view state.',
         onChanged: onFilterSelected,
         options: [

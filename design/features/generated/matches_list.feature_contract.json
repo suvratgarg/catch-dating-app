@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/matches_list.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:4fdc792050fdf521693ce53e99c56d3fc6a1c09bc9565e6abef8edb5a4ff79a2",
-  "resolvedDigest": "sha256:d07d1521ed1aa686b7daa18d26e29b85521fb780460b52853aac3d8bf5ca53ba",
+  "sourceDigest": "sha256:a37aad8076f718d025972eb85326a3969868c4bf698b3bd5b7dd79d1fcaab52f",
+  "resolvedDigest": "sha256:b7950fead308910cd8391a3314a175edfa786e386efab8a9258645585d1657fc",
   "feature": {
     "id": "feature.matches_list",
     "name": "Matches List",
@@ -59,7 +59,7 @@
           "catch.badge",
           "catch.button",
           "catch.field",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.surface",
           "catch.top_bar"
         ],
@@ -940,13 +940,16 @@
             }
           },
           {
-            "id": "catch.option_group",
-            "kind": "composite",
+            "id": "catch.chip.field",
+            "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
+              "symbol": "CatchChoiceInput",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
               "constructors": [
-                "CatchOptionGroup"
+                "CatchChoiceInput",
+                "CatchChoiceInput.described",
+                "CatchChoiceInput.segmented",
+                "CatchChoiceInput.form"
               ]
             }
           },

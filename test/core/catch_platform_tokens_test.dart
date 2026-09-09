@@ -168,12 +168,12 @@ void main() {
                             ),
                             Align(
                               alignment: AlignmentDirectional.centerStart,
-                              child: CatchOptionGroup<int>(
+                              child: CatchChoiceInput<int>.segmented(
                                 options: const [
                                   CatchOption(value: 1, label: 'Returning 148'),
                                 ],
                                 selected: 1,
-                                variant: CatchOptionGroupVariant.summary,
+                                variant: CatchChoiceInputVariant.summary,
                                 onChanged: (_) => selected = true,
                               ),
                             ),
@@ -217,7 +217,7 @@ void main() {
             greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
           );
           expect(
-            tester.getSize(find.byType(CatchOptionGroupItem<int>)).height,
+            tester.getSize(find.byType(CatchChoiceButton<int>)).height,
             greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
           );
           await tester.tap(find.text('Ananya Rao with a longer family name'));
@@ -243,13 +243,13 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CatchOptionGroup<int>(
+          body: CatchChoiceInput<int>.segmented(
             options: const [
               CatchOption(value: 1, label: 'All 214'),
               CatchOption(value: 2, label: 'Returning 148'),
             ],
             selected: null,
-            variant: CatchOptionGroupVariant.summary,
+            variant: CatchChoiceInputVariant.summary,
             onChanged: (_) => chosen = true,
           ),
         ),
@@ -257,8 +257,8 @@ void main() {
     );
     expect(
       tester
-          .widgetList<CatchOptionGroupItem<int>>(
-            find.byType(CatchOptionGroupItem<int>),
+          .widgetList<CatchChoiceButton<int>>(
+            find.byType(CatchChoiceButton<int>),
           )
           .every((option) => !option.selected),
       isTrue,

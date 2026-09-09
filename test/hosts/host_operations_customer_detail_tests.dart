@@ -106,7 +106,7 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(
       find.descendant(
         of: summary,
-        matching: find.byType(CatchOptionGroupItem<HostCustomerFilter>),
+        matching: find.byType(CatchChoiceButton<HostCustomerFilter>),
       ),
       findsNWidgets(3),
     );

@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_initializing_formals
 
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_choice_input_variant.dart';
 import 'package:catch_ui/src/components/catch_field_visibility_scope.dart';
-import 'package:catch_ui/src/components/catch_option_group_variant.dart';
 import 'package:catch_ui/src/components/catch_page_tab_bar.dart';
 import 'package:catch_ui/src/components/catch_primary_rail.dart';
 import 'package:catch_ui/src/components/catch_screen_header.dart';
@@ -208,7 +208,7 @@ class CatchRootScreenScrollView extends StatelessWidget {
     // the old 44-point constant or substitute local geometry.
     final variant = primaryRail is CatchPageTabBar
         ? (primaryRail as CatchPageTabBar).variant
-        : CatchOptionGroupVariant.label;
+        : CatchChoiceInputVariant.label;
     final expectedMinimum = CatchPageTabBar.minimumHeightFor(variant);
     final expectedScaled = CatchPageTabBar.heightFor(context, variant: variant);
     final declaredScaled = switch (primaryRail) {

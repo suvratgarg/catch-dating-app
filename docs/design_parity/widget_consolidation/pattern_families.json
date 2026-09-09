@@ -2428,6 +2428,48 @@
           "rationale": "Only anatomy of the retired duplicate; canonical options own complete labels, disabled reasons and scaled target semantics."
         }
       ]
+    },
+    {
+      "id": "segmented-choice-input",
+      "title": "One typed choice input across visual recipes",
+      "intent": "Share value selection and schema boundaries across compact, described, segmented and form choices.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.chip.field",
+      "qualityReference": "CatchChoiceInput",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "No production paint or geometry change. Compact/described recipes retain checked semantics; segmented recipes retain selected semantics, summary wrapping, scalable targets and continuous underline interpolation.",
+        "The same number of source options may yield a different contract-filtered count after an update; refresh measurement keys from the rendered count to avoid out-of-range label anchors."
+      ],
+      "members": [
+        {
+          "symbol": "CatchChoiceInput",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Production option groups also edit typed broadcast audiences and event-action settings; they do not establish a second selection concept. Segmented is a named recipe with scalar convenience arguments over the canonical set-valued selection callback and cardinality algorithm."
+        },
+        {
+          "symbol": "CatchChoiceButton",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Segmented target anatomy preserves selected semantics, label anchors, optional own underline and operational/summary paint. It is owned by the input concept and has no separate group-selection policy."
+        },
+        {
+          "symbol": "CatchOptionGroup",
+          "disposition": "unify",
+          "target": "CatchChoiceInput",
+          "preview": "not-applicable",
+          "rationale": "Absorb layout state and direct single-value selection into segmented; retain all four visual recipes and caller-owned pager interpolation."
+        },
+        {
+          "symbol": "CatchOptionGroupItem",
+          "disposition": "unify",
+          "target": "CatchChoiceButton",
+          "preview": "not-applicable",
+          "rationale": "Name the input target by the closed Button role; production direct-item composition remains forbidden by the existing seeded scanner."
+        }
+      ]
     }
   ]
 }

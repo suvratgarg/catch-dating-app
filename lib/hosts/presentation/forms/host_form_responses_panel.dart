@@ -56,7 +56,7 @@ class _HostFormResponsesPanelState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchOptionGroup<bool>(
+        CatchChoiceInput<bool>.segmented(
           key: const ValueKey('host-form-responses-review-applications'),
           options: [
             CatchOption(
@@ -66,7 +66,7 @@ class _HostFormResponsesPanelState
             CatchOption(value: true, label: context.l10n.hostApplicationsTitle),
           ],
           selected: false,
-          variant: CatchOptionGroupVariant.summary,
+          variant: CatchChoiceInputVariant.summary,
           contractExemption:
               'Navigation between raw submissions and the application review queue; not a stored value.',
           onChanged: (applications) {

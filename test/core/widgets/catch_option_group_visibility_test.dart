@@ -29,17 +29,18 @@ void main() {
               child: Scaffold(
                 body: ValueListenableBuilder<String>(
                   valueListenable: selected,
-                  builder: (context, value, _) => CatchOptionGroup<String>(
-                    options: const [
-                      CatchOption(value: 'People', label: 'People'),
-                      CatchOption(value: 'Groups', label: 'Groups'),
-                      CatchOption(value: 'Forms', label: 'Forms'),
-                      CatchOption(value: 'Responses', label: 'Responses'),
-                    ],
-                    selected: value,
-                    contractExemption: 'Test navigation destinations.',
-                    onChanged: (value) => selected.value = value,
-                  ),
+                  builder: (context, value, _) =>
+                      CatchChoiceInput<String>.segmented(
+                        options: const [
+                          CatchOption(value: 'People', label: 'People'),
+                          CatchOption(value: 'Groups', label: 'Groups'),
+                          CatchOption(value: 'Forms', label: 'Forms'),
+                          CatchOption(value: 'Responses', label: 'Responses'),
+                        ],
+                        selected: value,
+                        contractExemption: 'Test navigation destinations.',
+                        onChanged: (value) => selected.value = value,
+                      ),
                 ),
               ),
             ),

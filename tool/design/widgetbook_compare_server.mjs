@@ -1328,7 +1328,7 @@ function buildCandidates() {
       "Claude has SegPill and OptionGroup language. Decide if these are separate controls or one global segmented primitive with variants.",
     recommended: "catch.segmented_control",
     left: findFirst(byName, "CatchSegmentedControl"),
-    right: findFirst(byName, "CatchOptionGroup"),
+    right: findFirst(byName, "CatchChoiceInput"),
     tags: ["selection"],
   });
   add({

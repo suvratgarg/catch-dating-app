@@ -97,7 +97,7 @@ test("inventory includes bound and unbound product callsites", () => {
         label: 'Kinds',
         contract: kindsContract,
       );
-      final option = CatchOptionGroup<String>(
+      final option = CatchChoiceInput<String>.segmented(
         contract: optionContract,
         options: options,
         selected: selected,
@@ -149,3 +149,20 @@ function write(root, relative, source) {
   fs.mkdirSync(path.dirname(file), {recursive: true});
   fs.writeFileSync(file, source);
 }
+
+test("segmented choices cannot escape the missing-contract inventory", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-segmented-contracts-"));
+  try {
+    write(root, "lib/feature/choices.dart", `
+      CatchChoiceInput<String>.segmented(options: options, selected: selected,
+        contract: choiceContract, contractValueBuilder: (value) => value);
+      CatchChoiceInput<String>.segmented(options: options, selected: selected);
+    `);
+    const result = buildFormContractInventory({repoRoot: root});
+    assert.equal(result.summary.bySymbol.choiceInputSegmented, 2);
+    assert.equal(result.summary.boundCallsites, 1);
+    assert.equal(result.summary.unboundCallsites, 1);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});

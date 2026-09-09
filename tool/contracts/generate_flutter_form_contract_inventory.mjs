@@ -15,7 +15,7 @@ const EDITABLE_SYMBOLS = new Set([
   "input",
   "inputActions",
   "choiceTile",
-  "optionGroup",
+  "choiceInputSegmented",
   "optionCards",
   "rangeSlider",
   "searchField",
@@ -90,8 +90,8 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
       symbol: (match) => match[1] === "form" ? "choiceInputForm" : "choiceInputDescribed",
     },
     {
-      expression: /CatchOptionGroup(?:<[^>]+>)?\s*\(/g,
-      symbol: () => "optionGroup",
+      expression: /CatchChoiceInput(?:<[^>]+>)?\.segmented\s*\(/g,
+      symbol: () => "choiceInputSegmented",
     },
     {
       expression: /CatchChoiceTile\s*\(/g,

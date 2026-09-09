@@ -6473,7 +6473,7 @@
             "targetOwner": "provider-free chats list header section",
             "dependencies": [
               "catch.field",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.top_bar"
             ],
             "states": [
@@ -7986,7 +7986,7 @@
             "targetOwner": "SelfProfileScreenState provider/controller adapter",
             "dependencies": [
               "catch.top_bar",
-              "catch.option_group"
+              "catch.chip.field"
             ],
             "states": [
               "loading",
@@ -8018,7 +8018,7 @@
             "targetOwner": "provider-free self-profile header section",
             "dependencies": [
               "catch.icon_button",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.top_bar"
             ],
             "states": [
@@ -11065,7 +11065,7 @@
             "dependencies": [
               "catch.badge",
               "catch.button",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.surface"
             ],
             "states": [
@@ -15173,7 +15173,7 @@
             "dependencies": [
               "catch.button",
               "catch.option_card",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.surface",
               "catch.field"
             ],
@@ -16614,7 +16614,7 @@
             "currentOwner": "HostInboxScreen + HostInboxViewModel",
             "targetOwner": "Host-owned typed Event/General scope selector plus Booked/Prospective rail",
             "dependencies": [
-              "catch.option_group"
+              "catch.chip.field"
             ],
             "states": [
               "selected_event",
@@ -16765,7 +16765,7 @@
             "dependencies": [
               "catch.button",
               "catch.field",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.surface"
             ],
             "states": [
@@ -24995,7 +24995,7 @@
             "dependencies": [
               "catch.button",
               "catch.field",
-              "catch.option_group"
+              "catch.chip.field"
             ],
             "states": [
               "editable_application",

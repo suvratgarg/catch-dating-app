@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
-  "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:dc42a2391ec85bf7e5fcd3f8b299ecd65a0ad05e1b29fe6d139188ac355c0d92",
+  "sourceDigest": "sha256:32bd03c638130d61d5160badf88c4e5f9606e2cb61dd8414a6f228d89755374a",
+  "resolvedDigest": "sha256:d264c30284d1a3b49296fd4b077ba00f25f1749b2d8059a49f1765698c546453",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -117,7 +117,7 @@
           "catch.error_state",
           "catch.field",
           "catch.notice",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.person_row",
           "catch.search_field",
           "catch.section",
@@ -6194,13 +6194,16 @@
             }
           },
           {
-            "id": "catch.option_group",
-            "kind": "composite",
+            "id": "catch.chip.field",
+            "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
+              "symbol": "CatchChoiceInput",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
               "constructors": [
-                "CatchOptionGroup"
+                "CatchChoiceInput",
+                "CatchChoiceInput.described",
+                "CatchChoiceInput.segmented",
+                "CatchChoiceInput.form"
               ]
             }
           },

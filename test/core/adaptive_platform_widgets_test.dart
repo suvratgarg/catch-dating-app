@@ -288,7 +288,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(CatchOptionGroup<int>), findsOneWidget);
+      expect(find.byType(CatchChoiceInput<int>), findsOneWidget);
       expect(find.byType(TabBar), findsNothing);
 
       await tester.tap(find.text('Activity'));

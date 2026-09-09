@@ -232,11 +232,11 @@ void _registerHostOperationsStateEventsTests() {
     expect(find.text('Preview'), findsOneWidget);
     expect(
       tester
-          .widget<CatchOptionGroup<HostClubTab>>(
+          .widget<CatchChoiceInput<HostClubTab>>(
             find.byKey(const ValueKey('host-club-tab-rail')),
           )
           .selected,
-      HostClubTab.edit,
+      {HostClubTab.edit},
     );
     expect(find.text('Sign in required'), findsNothing);
     expect(

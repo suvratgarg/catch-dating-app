@@ -128,7 +128,7 @@
           "catch.field",
           "catch.icon_button",
           "catch.menu",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.section",
           "catch.sheet",
           "catch.skeleton",

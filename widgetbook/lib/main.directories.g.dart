@@ -3908,6 +3908,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchChoiceButton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchChoiceButtonContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchChoiceTile',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3915,28 +3926,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchChoiceTileContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchOptionGroup',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchOptionGroupContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchOptionGroupItem',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchOptionGroupItemContractStates,
               ),
             ],
           ),
@@ -4993,22 +4982,22 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Controls',
         children: [
           _widgetbook.WidgetbookComponent(
+            name: 'CatchChoiceButton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Filter option item states',
+                builder: _widgetbook_workspace_explore_explore_use_cases
+                    .exploreFilterOptionItemStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchIconAction',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Counted filter action',
                 builder: _widgetbook_workspace_explore_explore_use_cases
                     .exploreCountedFilterActionStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchOptionGroupItem',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Filter option item states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
-                    .exploreFilterOptionItemStates,
               ),
             ],
           ),

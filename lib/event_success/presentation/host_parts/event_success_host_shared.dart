@@ -35,7 +35,7 @@ class EventSuccessLiveWorkspacePicker extends StatelessWidget {
       ],
       selected: selected,
       onChanged: onChanged,
-      variant: CatchOptionGroupVariant.operational,
+      variant: CatchChoiceInputVariant.operational,
     );
   }
 }

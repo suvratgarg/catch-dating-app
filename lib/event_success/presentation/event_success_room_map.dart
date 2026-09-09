@@ -623,7 +623,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchOptionGroup<EventSuccessSpatialScope>(
+                child: CatchChoiceInput<EventSuccessSpatialScope>.segmented(
                   options: [
                     CatchOption(
                       value: EventSuccessSpatialScope.thisRound,
@@ -638,7 +638,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
                   selected: scope,
                   contract: CatchContractConstraints
                       .eventSuccessSpatialActionCallablePayloadScope,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   onChanged: pending ? null : onScopeChanged,
                   showDivider: false,
                 ),

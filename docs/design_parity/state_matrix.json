@@ -3419,7 +3419,7 @@
           "componentIds": [
             "catch.badge",
             "catch.field",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -4110,7 +4110,7 @@
             "catch.field",
             "catch.icon_button",
             "catch.range_slider",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.section",
             "catch.surface",
             "catch.top_bar"
@@ -5114,7 +5114,7 @@
             "catch.error_state",
             "catch.field",
             "catch.notice",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.person_row",
             "catch.search_field",
             "catch.section",
@@ -5724,7 +5724,7 @@
             "catch.chip",
             "catch.field",
             "catch.icon_button",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -6823,7 +6823,7 @@
             "catch.button",
             "catch.chip",
             "catch.field",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -7508,7 +7508,7 @@
             "catch.field",
             "catch.icon_button",
             "catch.option_card",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -8748,7 +8748,7 @@
           "componentIds": [
             "catch.badge",
             "catch.field",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -11797,7 +11797,7 @@
           "componentIds": [
             "catch.button",
             "catch.field",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.top_bar"
           ],
           "captureIds": [

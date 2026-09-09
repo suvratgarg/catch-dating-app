@@ -110,8 +110,8 @@ void main() {
       addTearDown(controller.dispose);
       for (final scale in [1.0, 2.0]) {
         for (final variant in [
-          CatchOptionGroupVariant.label,
-          CatchOptionGroupVariant.operational,
+          CatchChoiceInputVariant.label,
+          CatchChoiceInputVariant.operational,
         ]) {
           final value = CatchPageTabBar<String>(
             selected: 'people',

@@ -48,7 +48,7 @@
         "componentContracts": [
           "catch.field",
           "catch.icon_button",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.range_slider",
           "catch.section",
           "catch.surface",

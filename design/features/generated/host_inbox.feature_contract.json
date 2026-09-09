@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
-  "sourceDigest": "sha256:8884d2908a31459f320aa590c6cacf9a4d53a44d6ab62ce6cf645a9c795c29cf",
-  "resolvedDigest": "sha256:cb257bdab1e0ac5e0266f3f00ae2e101be4b3660e920b9c5841525056bd03a47",
+  "sourceDigest": "sha256:2a99e6a3396b6fabe8d07eaa4de186588ad739735b46028ba046b176ef3f2100",
+  "resolvedDigest": "sha256:c9e82a943edaae7fd959967ecf3055791b019a97589809c37b0e345d503b1411",
   "feature": {
     "id": "feature.host_inbox",
     "name": "Host Inbox",
@@ -132,7 +132,7 @@
           "catch.menu",
           "catch.notice",
           "catch.option_card",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.person_row",
           "catch.search_field",
           "catch.section",
@@ -4786,13 +4786,16 @@
             }
           },
           {
-            "id": "catch.option_group",
-            "kind": "composite",
+            "id": "catch.chip.field",
+            "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
+              "symbol": "CatchChoiceInput",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
               "constructors": [
-                "CatchOptionGroup"
+                "CatchChoiceInput",
+                "CatchChoiceInput.described",
+                "CatchChoiceInput.segmented",
+                "CatchChoiceInput.form"
               ]
             }
           },

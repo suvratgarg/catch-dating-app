@@ -108,7 +108,7 @@ class _HostApplicationsScreenState
               ),
               gapH12,
             ],
-            CatchOptionGroup<String>(
+            CatchChoiceInput<String>.segmented(
               options: [
                 CatchOption(
                   value: 'all',
@@ -131,7 +131,7 @@ class _HostApplicationsScreenState
                     ].contains(_status)
                   ? _status!.name
                   : null,
-              variant: CatchOptionGroupVariant.summary,
+              variant: CatchChoiceInputVariant.summary,
               contractExemption:
                   'Local application review lens; status is passed to the governed request.',
               onChanged: (value) => setState(
