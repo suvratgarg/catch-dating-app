@@ -61,7 +61,7 @@ class StepperFooter extends StatelessWidget {
 
     return CatchBottomActionOverlay(
       body: body,
-      notice: notice,
+      meta: notice,
       actions: onPrevious == null && expandSoloPrimary
           ? primaryButton
           : stacksActions

@@ -52,7 +52,7 @@ class OnboardingStepLayout extends StatelessWidget {
         if (footer != null)
           SafeArea(
             top: false,
-            child: CatchBottomDock(
+            child: CatchDockSurface(
               includeSafeArea: false,
               padding: footerPadding,
               child: Center(

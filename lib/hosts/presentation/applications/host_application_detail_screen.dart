@@ -51,7 +51,7 @@ class _HostApplicationDetailScreenState
               loaded.dataAccessState != 'revokedParticipantGrant' &&
               (loaded.reviewStatus != HostApplicationReviewStatus.approved ||
                   loaded.contactId != null)
-          ? CatchBottomAction(
+          ? CatchDockSurface.primary(
               buttonKey: ValueKey(
                 loaded.reviewStatus == HostApplicationReviewStatus.approved
                     ? 'host-application-open-person'

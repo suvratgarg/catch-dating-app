@@ -39,7 +39,14 @@ void main() {
     );
     expect(find.text('Why do you want to join?'), findsOneWidget);
     expect(find.text('I love meeting new people in the city.'), findsOneWidget);
-    expect(find.byType(CatchBottomAction), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchDockSurface &&
+            widget.variant == CatchDockSurfaceVariant.primary,
+      ),
+      findsOneWidget,
+    );
     expect(
       find.byKey(const ValueKey('host-form-response-convert-application')),
       findsOneWidget,
@@ -82,7 +89,14 @@ void main() {
           .height,
       greaterThan(CatchSpacing.s12),
     );
-    expect(find.byType(CatchBottomAction), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchDockSurface &&
+            widget.variant == CatchDockSurfaceVariant.primary,
+      ),
+      findsOneWidget,
+    );
     expect(tester.takeException(), isNull);
   });
   testWidgets(
@@ -106,7 +120,14 @@ void main() {
     'Withdrawn responses preserve answers without conversion actions',
     (tester) async {
       await _pumpDetail(tester, withdrawn: true);
-      expect(find.byType(CatchBottomAction), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.primary,
+        ),
+        findsNothing,
+      );
       expect(
         find.byKey(const ValueKey('host-form-response-convert-crm')),
         findsNothing,

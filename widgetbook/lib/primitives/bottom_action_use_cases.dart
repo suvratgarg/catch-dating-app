@@ -38,7 +38,7 @@ Widget bottomActionOverlayStates(BuildContext context) =>
                     ],
                   ],
                 ),
-                notice: safeBottom == 0
+                meta: safeBottom == 0
                     ? null
                     : const Center(child: CatchBadge(label: 'Draft saved')),
                 actions: CatchButton(

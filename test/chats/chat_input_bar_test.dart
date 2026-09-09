@@ -23,7 +23,14 @@ void main() {
           ? 44.0
           : 48.0;
 
-      expect(find.byType(CatchBottomDock), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.utility,
+        ),
+        findsNothing,
+      );
       expect(pillRect.left, CatchSpacing.screenPx);
       expect(pillRect.right, 390 - CatchSpacing.screenPx);
       expect(pillRect.height, targetExtent + 2 * CatchSpacing.s2);

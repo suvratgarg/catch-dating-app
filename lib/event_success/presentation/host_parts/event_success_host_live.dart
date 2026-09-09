@@ -1312,7 +1312,7 @@ class LiveNowConsole extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     controlRoomBody(showVenue: true),
-                    CatchBottomAction(
+                    CatchDockSurface.primary(
                       label: primaryLabel,
                       onPressed: primaryAction,
                       isLoading: isPrimaryLoading,
@@ -1322,7 +1322,7 @@ class LiveNowConsole extends StatelessWidget {
                             .l10n
                             .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
                       ),
-                      leadingContent: previousAction,
+                      leading: previousAction,
                     ),
                   ],
                 ),
@@ -1335,7 +1335,7 @@ class LiveNowConsole extends StatelessWidget {
                       child: controlRoomBody(showVenue: true),
                     ),
                   ),
-                  CatchBottomAction(
+                  CatchDockSurface.primary(
                     label: primaryLabel,
                     onPressed: primaryAction,
                     isLoading: isPrimaryLoading,
@@ -1345,7 +1345,7 @@ class LiveNowConsole extends StatelessWidget {
                           .l10n
                           .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
                     ),
-                    leadingContent: previousAction,
+                    leading: previousAction,
                   ),
                 ],
               ),
@@ -1372,7 +1372,7 @@ class LiveNowConsole extends StatelessWidget {
                       showVenue: true,
                     ),
                   ),
-                  CatchBottomAction(
+                  CatchDockSurface.primary(
                     label: primaryLabel,
                     onPressed: primaryAction,
                     isLoading: isPrimaryLoading,
@@ -1382,7 +1382,7 @@ class LiveNowConsole extends StatelessWidget {
                           .l10n
                           .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
                     ),
-                    leadingContent: previousAction,
+                    leading: previousAction,
                   ),
                 ],
               ),
@@ -1744,7 +1744,7 @@ class LiveStepNavigation extends StatelessWidget {
                   plan.activeStepIndex + 1,
                 ),
               ));
-    return CatchBottomActionContent(
+    return CatchDockSurface.primaryContent(
       label: nextLabel,
       onPressed: onNext,
       isLoading: isLoading,
@@ -1754,7 +1754,7 @@ class LiveStepNavigation extends StatelessWidget {
             .l10n
             .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
       ),
-      leadingContent: CatchIconAction.icon(
+      leading: CatchIconAction.icon(
         key: ValueKey(
           context
               .l10n

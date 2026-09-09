@@ -544,7 +544,7 @@ class _HostFormBuilderBottomAction extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final isLoading = current.operationInProgress;
-    return CatchBottomAction(
+    return CatchDockSurface.primary(
       label: current.editor.form.status == HostFormLifecycleStatus.published
           ? context.l10n.hostFormReviewPublishChanges
           : context.l10n.hostFormReviewPublish,

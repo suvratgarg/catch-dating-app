@@ -163,7 +163,7 @@ class GuestAuthCtaBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomDock(
+    return CatchDockSurface(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s4,
         CatchSpacing.micro10,

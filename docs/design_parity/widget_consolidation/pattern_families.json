@@ -2818,6 +2818,55 @@
           "rationale": "Footer named placement instead of responsibility. One canonical attribution row serves event, chat and organizer cards."
         }
       ]
+    },
+    {
+      "id": "persistent-dock-and-primary-action",
+      "title": "Persistent dock and primary-action surface",
+      "intent": "One persistent dock surface with utility, primary-action and embedded-content recipes; keep the full-body fade overlay separate.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.bottom_action",
+      "qualityReference": "CatchDockSurface",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve production paint, button and content geometry, iOS floating chrome, Android anchored chrome, utility safe-area ownership and embedded action-body behavior.",
+        "Combine formal utility and primary-action previews, retain every catalog state and add explicit iOS/Android fixtures plus the embedded recipe. Gallery titles, identifiers and pagination change."
+      ],
+      "members": [
+        {
+          "symbol": "CatchDockSurface",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Shared dock paint and action contents; typed named recipes preserve the meaning of each caller."
+        },
+        {
+          "symbol": "CatchBottomDock",
+          "disposition": "unify",
+          "target": "CatchDockSurface",
+          "preview": "not-applicable",
+          "rationale": "Utility chrome belongs to the default required-child recipe."
+        },
+        {
+          "symbol": "CatchBottomAction",
+          "disposition": "unify",
+          "target": "CatchDockSurface.primary",
+          "preview": "not-applicable",
+          "rationale": "The primary action is a dock recipe with automatic platform chrome, not a separate surface implementation."
+        },
+        {
+          "symbol": "CatchBottomActionContent",
+          "disposition": "unify",
+          "target": "CatchDockSurface.primaryContent",
+          "preview": "not-applicable",
+          "rationale": "One existing production caller supplies its own surface; reuse the exact primary body without exposing another renderer class."
+        },
+        {
+          "symbol": "CatchBottomActionOverlay",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Full-body stacking, fade and pinned action clearance are a separate pattern, with the standard meta slot for contextual notices."
+        }
+      ]
     }
   ]
 }

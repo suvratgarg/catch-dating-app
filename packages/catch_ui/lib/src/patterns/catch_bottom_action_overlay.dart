@@ -14,12 +14,12 @@ class CatchBottomActionOverlay extends StatelessWidget {
     super.key,
     required this.body,
     required this.actions,
-    this.notice,
+    this.meta,
   });
 
   final Widget body;
   final Widget actions;
-  final Widget? notice;
+  final Widget? meta;
 
   @override
   Widget build(BuildContext context) {
@@ -93,14 +93,14 @@ class CatchBottomActionOverlay extends StatelessWidget {
             ),
           ),
         ),
-        if (notice != null)
+        if (meta != null)
           Positioned(
             left: 0,
             right: 0,
             bottom: bodyBottomInset,
             child: KeyedSubtree(
               key: const ValueKey('catch_bottom_action_overlay.notice'),
-              child: notice!,
+              child: meta!,
             ),
           ),
         Positioned(

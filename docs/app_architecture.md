@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.41.0
+version: 1.42.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -1243,7 +1243,7 @@ the Preview slivers.
 | Map-heavy screens | Keep the stable full-bleed viewport, but declare it as an immersive `CatchScreenScaffold.workspace`; overlays continue to own their local safe-area insets. |
 | Attendance sheet | Keep box-based while it remains a modal/sheet. |
 | Create event, onboarding, auth | Use the typed `stepFlow` or `standalone` surface role while preserving their task-specific header, safe-area, keyboard, and footer behavior. |
-| Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchBottomAction`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
+| Host Forms | Keep Forms / Responses as peer pages in the direct Forms destination. The Forms directory uses an 840 px operational content lane on capable widths so lifecycle, response, and consequence summaries remain legible. The builder stays single-task on phone and uses outline / respondent preview / inspector panes from 960 px; phone publication stays in `CatchDockSurface.primary`, while tablet and desktop publication belongs in the top command bar rather than a full-viewport footer. |
 
 ### Design Tooling And Component Contracts
 

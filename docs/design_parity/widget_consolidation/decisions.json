@@ -7594,6 +7594,34 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:persistent-dock-and-primary-action",
+      "patternFamilyId": "persistent-dock-and-primary-action",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchDockSurface",
+      "members": [
+        {
+          "name": "CatchBottomDock",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBottomAction",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBottomActionContent",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBottomActionOverlay",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Source and consistent-context rendered review identify overlapping dock chrome and one repeated primary-action body. Combine them under required-child, primary and primaryContent recipes with one widget identity. Keep the scroll-fade overlay as a complementary pattern. The pre-gallery-change visual trial passed all selected original images; platform-bound geometry and terminal-clearance tests cover the preserved ownership differences.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

@@ -97,7 +97,13 @@ void main() {
     );
     expect(
       tester
-          .widget<CatchBottomAction>(find.byType(CatchBottomAction))
+          .widget<CatchDockSurface>(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is CatchDockSurface &&
+                  widget.variant == CatchDockSurfaceVariant.primary,
+            ),
+          )
           .buttonMode,
       CatchButtonMode.rounded,
     );
@@ -110,7 +116,14 @@ void main() {
 
       expect(find.text('Outline'), findsOneWidget);
       expect(find.text('SECTION 1'), findsOneWidget);
-      expect(find.byType(CatchBottomAction), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.primary,
+        ),
+        findsNothing,
+      );
       final publishAction = find.byType(CatchTopBarPrimaryButton);
       expect(publishAction, findsOneWidget);
       expect(

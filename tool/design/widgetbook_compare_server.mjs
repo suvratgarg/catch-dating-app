@@ -1960,7 +1960,7 @@ function buildCandidates() {
       recommended: "catch.bottom_chrome",
       tags: ["bottom", "actions"],
       names: [
-        "CatchBottomDock",
+        "CatchDockSurface",
         "EventBookingDock",
         "ClubMembershipDock",
         "StageActionDock",

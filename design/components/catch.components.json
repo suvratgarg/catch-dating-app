@@ -12397,126 +12397,6 @@
       }
     },
     {
-      "id": "catch.bottom_dock",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
-      "name": "CatchBottomDock",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Anchored bottom utility surface for chat inputs, filter actions, and compact controls above the device safe area.",
-      "dart": {
-        "symbol": "CatchBottomDock",
-        "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
-        "constructors": [
-          "CatchBottomDock"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/BottomDock",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "BottomDock",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "child",
-            "type": "widget",
-            "required": true,
-            "dartType": "Widget"
-          },
-          {
-            "name": "padding",
-            "type": "object",
-            "required": false,
-            "dartType": "EdgeInsetsGeometry"
-          },
-          {
-            "name": "includeSafeArea",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool"
-          }
-        ],
-        "states": [
-          "custom",
-          "custom-no-safe-area"
-        ],
-        "slots": [
-          {
-            "name": "child",
-            "kind": "dock-content",
-            "allowedComponents": [
-              "catch.button",
-              "catch.search_field",
-              "catch.icon_button"
-            ]
-          }
-        ],
-        "tokens": [
-          "space.s3",
-          "space.s4",
-          "theme.light.color.line",
-          "theme.light.color.surface"
-        ],
-        "dartRoles": [],
-        "goldens": [],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.button",
-          "catch.search_field",
-          "catch.icon_button"
-        ],
-        "notes": [
-          "Use CatchBottomDock only for generic anchored utility chrome. Primary screen CTAs route through CatchBottomAction.",
-          "Use CatchTabBar for bottom navigation; do not merge tab navigation behavior into this utility dock."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.bottom_dock",
-        "publicApi": true,
-        "stateOwnership": "slot-state-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "none",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.bottom_dock"
-      },
-      "surfaces": {
-        "flutter": "CatchBottomDock"
-      }
-    },
-    {
       "id": "catch.confirm_dialog",
       "verification": {
         "vehicle": "widgetbook-contract",
@@ -14921,7 +14801,7 @@
             "name": "bookingDock",
             "kind": "event-detail-bottom-dock",
             "allowedComponents": [
-              "catch.bottom_dock",
+              "catch.bottom_action",
               "catch.button",
               "catch.surface"
             ]
@@ -15200,7 +15080,7 @@
       },
       "handoff": {
         "allowedChildren": [
-          "catch.bottom_dock",
+          "catch.bottom_action",
           "catch.button",
           "catch.detail_media",
           "catch.event_card",
@@ -15570,14 +15450,14 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchBottomAction",
+      "name": "CatchDockSurface",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical primary bottom-action family: platform-adaptive single-CTA chrome plus a scroll-aware fade overlay for dockless multi-action forms.",
+      "summary": "Persistent docked controls with utility, platform-adaptive primary-action and embedded primary-content recipes.",
       "design": {
         "figma": {
           "status": "unmapped",
-          "componentName": "Catch/BottomAction",
+          "componentName": "Catch/DockSurface",
           "componentUrl": null
         },
         "codeConnect": {
@@ -15586,7 +15466,7 @@
           "template": null
         },
         "claude": {
-          "handoffName": "BookingDock",
+          "handoffName": "DockSurface",
           "allowed": true
         }
       },
@@ -15595,17 +15475,19 @@
           {
             "name": "label",
             "type": "string",
-            "required": true,
-            "dartType": "String"
+            "required": false,
+            "dartType": "String",
+            "notes": "Required by primary and primaryContent."
           },
           {
             "name": "onPressed",
             "type": "callback",
-            "required": true,
-            "dartType": "VoidCallback?"
+            "required": false,
+            "dartType": "VoidCallback?",
+            "notes": "Required by primary and primaryContent."
           },
           {
-            "name": "leadingContent",
+            "name": "leading",
             "type": "widget",
             "required": false,
             "dartType": "Widget?"
@@ -15669,6 +15551,33 @@
             "type": "string",
             "required": false,
             "dartType": "String?"
+          },
+          {
+            "name": "child",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget",
+            "notes": "Required by the default utility constructor."
+          },
+          {
+            "name": "padding",
+            "type": "object",
+            "required": false,
+            "dartType": "EdgeInsetsGeometry"
+          },
+          {
+            "name": "includeSafeArea",
+            "type": "bool",
+            "required": false,
+            "default": true,
+            "dartType": "bool"
+          },
+          {
+            "name": "bottomPadding",
+            "type": "number",
+            "required": false,
+            "dartType": "double",
+            "notes": "Available on primaryContent; its caller owns terminal clearance."
           }
         ],
         "states": [
@@ -15680,15 +15589,27 @@
           "scroll-overlay",
           "loading",
           "disabled",
-          "rounded-button"
+          "rounded-button",
+          "custom",
+          "custom-no-safe-area",
+          "embedded"
         ],
         "slots": [
           {
-            "name": "leadingContent",
+            "name": "leading",
             "kind": "optional-action-leading",
             "allowedComponents": [
               "catch.badge",
               "catch.metric_strip"
+            ]
+          },
+          {
+            "name": "child",
+            "kind": "dock-content",
+            "allowedComponents": [
+              "catch.button",
+              "catch.search_field",
+              "catch.icon_button"
             ]
           }
         ],
@@ -15735,27 +15656,15 @@
               "parentConceptId": "catch.bottom_action",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.bottom_action"
-            }
-          },
-          {
-            "id": "catch.bottom_action.content",
-            "symbol": "CatchBottomActionContent",
-            "file": "packages/catch_ui/lib/src/components/catch_bottom_action_content.dart",
-            "summary": "Provider-free action contents shared by the floating and anchored platform shells.",
-            "states": [
-              "default",
-              "leading-content",
-              "catch-line",
-              "footnote",
-              "loading",
-              "disabled"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.bottom_action",
-              "parentConceptId": "catch.bottom_action",
-              "qualifier": "variant",
-              "decisionRef": "contract-family:catch.bottom_action"
+            },
+            "level": "L4",
+            "roleNoun": "Overlay",
+            "naming": {
+              "useCase": "BottomAction",
+              "comparedWith": [
+                "catch.bottom_action"
+              ],
+              "reason": "Pins actions and optional contextual metadata above the body while scrolling content passes beneath a fade and blur. The parent dock owns opaque platform chrome; the overlay owns full-body stacking and reachability instead of a second dock renderer."
             }
           }
         ],
@@ -15777,21 +15686,23 @@
         "allowedChildren": [
           "catch.button",
           "catch.badge",
-          "catch.metric_strip"
+          "catch.metric_strip",
+          "catch.search_field",
+          "catch.icon_button"
         ],
         "notes": [
-          "Callers provide one CTA contract; CatchBottomAction selects floating Cupertino or anchored Material chrome from the active platform.",
-          "Use CatchBottomActionOverlay for multi-action form footers that must stay pinned without an opaque dock; keep the scrolling body visible beneath its fade.",
-          "Do not place primary screen CTAs in CatchBottomDock or branch on platform at feature call sites."
+          "Use the default constructor for utility content; primary selects floating Cupertino or anchored Material chrome without platform branches in callers.",
+          "Use primaryContent only when an owning surface already supplies chrome. The BottomActionOverlay member independently pins multi-action controls above a scrolling body.",
+          "Tab navigation retains its own contract and does not use this dock."
         ]
       },
       "governance": {
         "role": "composition",
         "canonicalFamily": "catch.bottom_action",
         "publicApi": true,
-        "stateOwnership": "local-ui-only",
+        "stateOwnership": "slot-state-only",
         "asyncOwnership": "none",
-        "layoutOwnership": "internal-only",
+        "layoutOwnership": "slot-layout",
         "actionOwnership": "callbacks-only",
         "allowedDependencyLevel": "primitives-and-slots",
         "reviewPolicy": "contract-page-canonical",
@@ -15799,14 +15710,25 @@
         "conceptId": "catch.bottom_action"
       },
       "dart": {
-        "symbol": "CatchBottomAction",
-        "file": "packages/catch_ui/lib/src/components/catch_bottom_action.dart",
+        "symbol": "CatchDockSurface",
+        "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
         "constructors": [
-          "CatchBottomAction"
+          "CatchDockSurface",
+          "CatchDockSurface.primary",
+          "CatchDockSurface.primaryContent"
         ]
       },
       "surfaces": {
-        "flutter": "CatchBottomAction"
+        "flutter": "CatchDockSurface"
+      },
+      "level": "L3",
+      "roleNoun": "Surface",
+      "naming": {
+        "useCase": "Dock",
+        "comparedWith": [
+          "catch.surface"
+        ],
+        "reason": "Persistent control docking owns safe-area geometry and shared utility/primary-action chrome. The Surface primitive owns paint only; Sheet owns modal content and header layout. Utility and primary actions use one dock renderer with named recipes, while already-framed primary content reuses the same action body."
       }
     },
     {

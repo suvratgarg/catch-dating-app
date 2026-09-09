@@ -109,7 +109,7 @@ class _HostAutomationRuleEditorState
           onBack: _busy ? () {} : widget.onCancel,
           divider: scrolledUnder,
         ),
-        bottomNavigationBar: CatchBottomAction(
+        bottomNavigationBar: CatchDockSurface.primary(
           label: l.hostAutomationSave,
           buttonKey: const ValueKey('automation-save'),
           isLoading: _busy,

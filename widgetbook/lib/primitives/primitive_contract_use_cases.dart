@@ -8391,44 +8391,12 @@ Widget catchMapPreviewContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchBottomDock,
+  type: CatchDockSurface,
   path: '[Core primitives]/Product composites',
 )
-Widget catchBottomDockContractStates(BuildContext context) {
+Widget catchDockSurfaceContractStates(BuildContext context) {
   return _ContractScreen(
-    title: 'CatchBottomDock',
-    contractId: 'catch.bottom_dock',
-    states: const ['custom', 'custom-no-safe-area'],
-    children: [
-      _StateCard(
-        label: 'custom',
-        child: _DockFrame(
-          child: CatchBottomDock(
-            child: CatchButton(label: 'Continue', onPressed: _noop),
-          ),
-        ),
-      ),
-      _StateCard(
-        label: 'custom-no-safe-area',
-        child: _DockFrame(
-          child: CatchBottomDock(
-            includeSafeArea: false,
-            child: CatchButton(label: 'Apply filters', onPressed: _noop),
-          ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchBottomAction,
-  path: '[Core primitives]/Product composites',
-)
-Widget catchBottomActionContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchBottomAction',
+    title: 'CatchDockSurface',
     contractId: 'catch.bottom_action',
     states: const [
       'ios-floating',
@@ -8440,20 +8408,41 @@ Widget catchBottomActionContractStates(BuildContext context) {
       'loading',
       'disabled',
       'rounded-button',
+      'custom',
+      'custom-no-safe-area',
+      'embedded',
     ],
     children: [
       _StateCard(
-        label: 'default',
+        label: 'ios-floating',
         child: _DockFrame(
-          child: CatchBottomAction(label: 'Book your spot', onPressed: _noop),
+          child: Theme(
+            data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+            child: const CatchDockSurface.primary(
+              label: 'Book your spot',
+              onPressed: _noop,
+            ),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'android-anchored',
+        child: _DockFrame(
+          child: Theme(
+            data: Theme.of(context).copyWith(platform: TargetPlatform.android),
+            child: const CatchDockSurface.primary(
+              label: 'Book your spot',
+              onPressed: _noop,
+            ),
+          ),
         ),
       ),
       _StateCard(
         label: 'leading-content',
         child: _DockFrame(
-          child: CatchBottomAction(
+          child: CatchDockSurface.primary(
             label: 'Join waitlist',
-            leadingContent: const CatchBadge(label: '4 left'),
+            leading: const CatchBadge(label: '4 left'),
             onPressed: _noop,
           ),
         ),
@@ -8461,7 +8450,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
       _StateCard(
         label: 'rounded-button',
         child: _DockFrame(
-          child: CatchBottomAction(
+          child: CatchDockSurface.primary(
             label: 'Review & publish',
             buttonMode: CatchButtonMode.rounded,
             onPressed: _noop,
@@ -8471,7 +8460,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
       _StateCard(
         label: 'catch-line-footnote',
         child: _DockFrame(
-          child: CatchBottomAction(
+          child: CatchDockSurface.primary(
             label: 'Confirm',
             catchLine: 'FREE TO JOIN',
             footnote: 'No charge until the host approves.',
@@ -8522,7 +8511,7 @@ Widget catchBottomActionContractStates(BuildContext context) {
       const _StateCard(
         label: 'loading',
         child: _DockFrame(
-          child: CatchBottomAction(
+          child: CatchDockSurface.primary(
             label: 'Saving',
             isLoading: true,
             onPressed: null,
@@ -8532,7 +8521,36 @@ Widget catchBottomActionContractStates(BuildContext context) {
       const _StateCard(
         label: 'disabled',
         child: _DockFrame(
-          child: CatchBottomAction(label: 'Sold out', onPressed: null),
+          child: CatchDockSurface.primary(label: 'Sold out', onPressed: null),
+        ),
+      ),
+
+      _StateCard(
+        label: 'custom',
+        child: _DockFrame(
+          child: CatchDockSurface(
+            child: CatchButton(label: 'Continue', onPressed: _noop),
+          ),
+        ),
+      ),
+      _StateCard(
+        label: 'custom-no-safe-area',
+        child: _DockFrame(
+          child: CatchDockSurface(
+            includeSafeArea: false,
+            child: CatchButton(label: 'Apply filters', onPressed: _noop),
+          ),
+        ),
+      ),
+
+      const _StateCard(
+        label: 'embedded',
+        child: _DockFrame(
+          child: CatchDockSurface.primaryContent(
+            label: 'Next',
+            onPressed: _noop,
+            leading: CatchBadge(label: 'Step 2'),
+          ),
         ),
       ),
     ],

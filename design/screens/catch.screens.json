@@ -21280,8 +21280,8 @@
             "symbol": "CreateClubScreen"
           },
           {
-            "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
-            "symbol": "CatchBottomDock"
+            "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
+            "symbol": "CatchDockSurface"
           },
           {
             "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
@@ -22498,8 +22498,8 @@
               "EditEventFooter"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
-              "symbol": "CatchBottomDock"
+              "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
+              "symbol": "CatchDockSurface"
             },
             "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",
             "targetOwner": "provider-free mutation footer",

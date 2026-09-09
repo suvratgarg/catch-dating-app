@@ -3178,20 +3178,20 @@ Widget catchMetaRowEntryStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchBottomDock,
+  name: 'Utility states',
+  type: CatchDockSurface,
   path: '[Core catalog]/Sheets and footers',
 )
-Widget catchBottomDockCatalogStates(BuildContext context) {
+Widget catchDockUtilityCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchBottomDock',
-    catalogId: 'core.widgets.catch_bottom_dock',
+    title: 'CatchDockSurface',
+    catalogId: 'catch.bottom_action',
     children: [
       _StateCard(
         label: 'safe-area utility dock',
         child: Column(
           children: [
-            CatchBottomDock(
+            CatchDockSurface(
               child: Row(
                 children: [
                   Expanded(
@@ -3209,7 +3209,7 @@ Widget catchBottomDockCatalogStates(BuildContext context) {
               ),
             ),
             gapH12,
-            CatchBottomDock(
+            CatchDockSurface(
               includeSafeArea: false,
               child: CatchButton(
                 label: 'Apply filters',
@@ -3225,31 +3225,31 @@ Widget catchBottomDockCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchBottomAction,
+  name: 'Primary action states',
+  type: CatchDockSurface,
   path: '[Core catalog]/Sheets and footers',
 )
-Widget catchBottomActionCatalogStates(BuildContext context) {
+Widget catchDockPrimaryCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchBottomAction',
-    catalogId: 'core.widgets.catch_bottom_action',
+    title: 'CatchDockSurface.primary',
+    catalogId: 'catch.bottom_action',
     children: [
       _StateCard(
         label: 'platform-adaptive CTA variants',
         child: Column(
           children: [
-            CatchBottomAction(
+            CatchDockSurface.primary(
               label: 'Join event',
               onPressed: _noop,
               catchLine: 'Matching opens after check-in',
               catchLineAccent: t.primary,
             ),
             gapH12,
-            CatchBottomAction(
+            CatchDockSurface.primary(
               label: 'Book spot',
               onPressed: _noop,
-              leadingContent: Column(
+              leading: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('₹799', style: CatchTextStyles.titleL(context)),
@@ -3262,13 +3262,13 @@ Widget catchBottomActionCatalogStates(BuildContext context) {
               footnote: 'Refundable until 24 hours before start.',
             ),
             gapH12,
-            CatchBottomAction(
+            CatchDockSurface.primary(
               label: 'Joining',
               onPressed: _noop,
               isLoading: true,
             ),
             gapH12,
-            const CatchBottomAction(label: 'Sold out', onPressed: null),
+            const CatchDockSurface.primary(label: 'Sold out', onPressed: null),
           ],
         ),
       ),
@@ -3300,26 +3300,29 @@ Widget catchBottomActionCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchBottomActionContent,
+  name: 'Embedded primary action states',
+  type: CatchDockSurface,
   path: '[Core catalog]/Sheets and footers',
 )
-Widget catchBottomActionContentCatalogStates(BuildContext context) {
+Widget catchDockEmbeddedPrimaryCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchBottomActionContent',
-    catalogId: 'core.widgets.catch_bottom_action_content',
+    title: 'CatchDockSurface.primaryContent',
+    catalogId: 'catch.bottom_action',
     children: [
       _StateCard(
         label: 'default',
-        child: CatchBottomActionContent(label: 'Join event', onPressed: _noop),
+        child: CatchDockSurface.primaryContent(
+          label: 'Join event',
+          onPressed: _noop,
+        ),
       ),
       _StateCard(
         label: 'leading content / catch line / footnote',
-        child: CatchBottomActionContent(
+        child: CatchDockSurface.primaryContent(
           label: 'Book spot',
           onPressed: _noop,
-          leadingContent: Column(
+          leading: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('₹799', style: CatchTextStyles.titleL(context)),
@@ -3336,13 +3339,13 @@ Widget catchBottomActionContentCatalogStates(BuildContext context) {
         label: 'loading / disabled',
         child: Column(
           children: [
-            CatchBottomActionContent(
+            CatchDockSurface.primaryContent(
               label: 'Joining',
               onPressed: null,
               isLoading: true,
             ),
             SizedBox(height: CatchSpacing.s3),
-            CatchBottomActionContent(label: 'Sold out', onPressed: null),
+            CatchDockSurface.primaryContent(label: 'Sold out', onPressed: null),
           ],
         ),
       ),

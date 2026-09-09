@@ -473,7 +473,7 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (detail.applicationId case final id?) {
-      return CatchBottomAction(
+      return CatchDockSurface.primary(
         buttonKey: const ValueKey('host-form-response-convert-application'),
         label: context.l10n.hostAudienceReviewApplication,
         onPressed: converting != null
@@ -502,7 +502,7 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
       ),
       builder: (context, canApply) {
         if (canApply) {
-          return CatchBottomAction(
+          return CatchDockSurface.primary(
             buttonKey: const ValueKey('host-form-response-convert-application'),
             label: context.l10n.hostAudienceReviewApplication,
             isLoading: converting == HostFormConversionKind.application,
@@ -512,7 +512,7 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
           );
         }
         if (detail.contactId case final id?) {
-          return CatchBottomAction(
+          return CatchDockSurface.primary(
             label: context.l10n.hostApplicationOpenPerson,
             onPressed: converting != null
                 ? null
@@ -528,7 +528,7 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
         )) {
           return const SizedBox.shrink();
         }
-        return CatchBottomAction(
+        return CatchDockSurface.primary(
           buttonKey: const ValueKey('host-form-response-convert-crm-primary'),
           label: context.l10n.hostFormConvertCrm,
           isLoading: converting == HostFormConversionKind.crmContact,

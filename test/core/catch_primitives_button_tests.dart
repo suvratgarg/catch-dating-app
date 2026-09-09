@@ -132,13 +132,13 @@ void _registerCatchPrimitivesButtonTests() {
   });
 
   testWidgets(
-    'CatchBottomAction forwards activity accent to the primary button',
+    'CatchDockSurface forwards activity accent to the primary button',
     (tester) async {
       const accent = Color(0xFF116466);
 
       await tester.pumpWidget(
         _wrap(
-          CatchBottomAction(
+          CatchDockSurface.primary(
             label: 'Join event',
             onPressed: () {},
             buttonAccentColor: accent,
@@ -147,7 +147,14 @@ void _registerCatchPrimitivesButtonTests() {
         ),
       );
 
-      expect(find.byType(CatchBottomAction), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.primary,
+        ),
+        findsOneWidget,
+      );
       final button = tester.widget<CatchButton>(
         find.widgetWithText(CatchButton, 'Join event'),
       );

@@ -61,7 +61,14 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(CatchStepHeader), findsNothing);
-      expect(find.byType(CatchBottomDock), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.utility,
+        ),
+        findsNothing,
+      );
 
       final sendButton = tester.widget<CatchButton>(
         find.byKey(AuthFormKeys.sendCode),
@@ -161,7 +168,14 @@ void main() {
 
       expect(find.byType(CatchScreenScaffold), findsOneWidget);
       expect(find.byType(CatchScreenBody), findsOneWidget);
-      expect(find.byType(CatchBottomDock), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.utility,
+        ),
+        findsOneWidget,
+      );
       expect(find.byType(CatchStepHeader), findsOneWidget);
       expect(find.text("What's your number?"), findsOneWidget);
       expect(find.text('Send code'), findsOneWidget);

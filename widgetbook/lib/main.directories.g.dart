@@ -1759,32 +1759,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchBottomAction',
+            name: 'CatchDockSurface',
             useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Embedded primary action states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchBottomActionCatalogStates,
+                    .catchDockEmbeddedPrimaryCatalogStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchBottomActionContent',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Primary action states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchBottomActionContentCatalogStates,
+                    .catchDockPrimaryCatalogStates,
               ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchBottomDock',
-            useCases: [
               _widgetbook.WidgetbookUseCase(
-                name: 'Catalog states',
+                name: 'Utility states',
                 builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .catchBottomDockCatalogStates,
+                    .catchDockUtilityCatalogStates,
               ),
             ],
           ),
@@ -3512,28 +3502,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         name: 'Product composites',
         children: [
           _widgetbook.WidgetbookComponent(
-            name: 'CatchBottomAction',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchBottomActionContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchBottomDock',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchBottomDockContractStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
             name: 'CatchCoverStory',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -3541,6 +3509,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_primitive_contract_use_cases
                         .catchCoverStoryContractStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'CatchDockSurface',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Contract states',
+                builder:
+                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                        .catchDockSurfaceContractStates,
               ),
             ],
           ),

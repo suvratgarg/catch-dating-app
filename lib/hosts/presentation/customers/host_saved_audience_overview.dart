@@ -60,7 +60,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
       ),
       bottomNavigationBar: current == null
           ? null
-          : CatchBottomAction(
+          : CatchDockSurface.primary(
               buttonKey: const ValueKey('host-saved-audience-message'),
               label: context.l10n.hostAudienceOpenInbox,
               onPressed:

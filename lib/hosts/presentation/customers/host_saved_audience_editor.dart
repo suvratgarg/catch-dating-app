@@ -143,7 +143,7 @@ class _HostSavedAudienceEditorFormState
           leadingType: CatchTopBarLeading.back,
           divider: scrolledUnder,
         ),
-        bottomNavigationBar: CatchBottomAction(
+        bottomNavigationBar: CatchDockSurface.primary(
           label: editing
               ? context.l10n.hostAudienceSaveCheckMembership
               : context.l10n.hostAudienceCreateCheckMembership,

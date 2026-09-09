@@ -1,6 +1,6 @@
 ---
 doc_id: design_language
-version: 1.21.0
+version: 1.22.0
 updated: 2026-09-09
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
@@ -416,12 +416,12 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   the top safe area and never shifts route content. Reduced motion skips entry;
   accessible navigation holds the card, and pointer/hover/focus interaction
   pauses auto-dismiss. Ordinary inline notices retain their existing controls.
-- Primary screen CTA placement routes through the `CatchBottomAction` family.
-  `CatchBottomAction` owns one floating Cupertino or anchored Material action;
-  `CatchBottomActionOverlay` owns pinned multi-action form controls over a soft
-  fade and blur while the form remains visible and scrollable beneath them.
-  `CatchBottomDock` is a required-child utility plane for chat inputs and
-  compact action strips, not a second CTA family.
+- Persistent control docking routes through `CatchDockSurface`. Its default
+  constructor hosts utility content; `primary` owns floating Cupertino or
+  anchored Material action chrome. `primaryContent` reuses the same action body
+  when its caller already supplies a surface. `CatchBottomActionOverlay` owns
+  pinned multi-action form controls over a soft fade and blur while the form
+  remains visible and scrollable beneath them.
 - Top-bar action grouping routes through `CatchTopBarActionRow`; callers do
   not compose parallel header rows. A primary root-screen action uses
   `CatchTopBarPrimaryButton`, which owns a compact quiet icon target with the

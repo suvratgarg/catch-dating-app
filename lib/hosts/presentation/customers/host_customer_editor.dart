@@ -42,7 +42,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
         leadingType: CatchTopBarLeading.back,
         divider: scrolledUnder,
       ),
-      bottomNavigationBar: CatchBottomAction(
+      bottomNavigationBar: CatchDockSurface.primary(
         label: context.l10n.hostCustomersAdd,
         buttonKey: const ValueKey('host-add-customer-submit'),
         isLoading: _saving,

@@ -66,7 +66,7 @@ class ClubDetailDock extends StatelessWidget {
     final t = CatchTokens.of(context);
     final showCount = members != null && state != ClubDetailDockRole.owner;
 
-    return CatchBottomDock(
+    return CatchDockSurface(
       padding: CatchInsets.clubDetailDock,
       child: Column(
         mainAxisSize: MainAxisSize.min,

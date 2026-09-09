@@ -239,12 +239,12 @@ void _registerCatchPrimitivesControlsTests() {
 
   _registerCatchPrimitivesButtonTests();
 
-  testWidgets('CatchBottomAction renders catch line and footnote', (
+  testWidgets('CatchDockSurface renders catch line and footnote', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchBottomAction(
+        CatchDockSurface.primary(
           label: 'Confirm',
           onPressed: () {},
           catchLine: 'free to join',

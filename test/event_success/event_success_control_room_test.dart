@@ -171,9 +171,24 @@ void main() {
       expect(find.text('18 checked in · 24 expected'), findsOneWidget);
       expect(find.text('Guests'), findsNWidgets(2));
       expect(find.text('Help & fallback'), findsOneWidget);
-      expect(find.byType(CatchBottomAction), findsOneWidget);
       expect(
-        tester.getBottomRight(find.byType(CatchBottomAction)).dy,
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.primary,
+        ),
+        findsOneWidget,
+      );
+      expect(
+        tester
+            .getBottomRight(
+              find.byWidgetPredicate(
+                (widget) =>
+                    widget is CatchDockSurface &&
+                    widget.variant == CatchDockSurfaceVariant.primary,
+              ),
+            )
+            .dy,
         lessThanOrEqualTo(812),
       );
 
@@ -189,7 +204,14 @@ void main() {
       await tester.tap(find.text('Room'));
       await tester.pump();
       expect(find.text('One shared room'), findsOneWidget);
-      expect(find.byType(CatchBottomAction), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.primary,
+        ),
+        findsNothing,
+      );
     },
   );
 
@@ -266,7 +288,14 @@ void main() {
         tester.getRect(commandPane).right,
         lessThanOrEqualTo(tester.getRect(supportingPane).left),
       );
-      expect(find.byType(CatchBottomAction), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.primary,
+        ),
+        findsOneWidget,
+      );
       expect(find.text('18 checked in · 24 expected'), findsOneWidget);
 
       await tester.tap(
@@ -318,7 +347,14 @@ void main() {
         findsNothing,
       );
       expect(supportingPane, findsNothing);
-      expect(find.byType(CatchBottomAction), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.primary,
+        ),
+        findsOneWidget,
+      );
       expect(tester.takeException(), isNull);
     },
   );

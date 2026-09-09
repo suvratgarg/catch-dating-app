@@ -834,7 +834,14 @@ void main() {
         expect(tester.takeException(), isNull);
         expect(find.text('Previous'), findsOneWidget);
         expect(find.text('Schedule event'), findsOneWidget);
-        expect(find.byType(CatchBottomDock), findsNothing);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchDockSurface &&
+                widget.variant == CatchDockSurfaceVariant.utility,
+          ),
+          findsNothing,
+        );
         expect(find.byType(Divider), findsNothing);
         expect(find.byType(BackdropFilter), findsOneWidget);
 
