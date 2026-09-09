@@ -29,7 +29,7 @@ class DashboardEmptySliverBody extends StatelessWidget {
                         context.l10n.dashboardDashboardEmptyTitleHowCatchWorks,
                     first: true,
                     bodyGap: CatchSpacing.s4,
-                    child: CatchJourneySteps(
+                    child: CatchStepRowList(
                       steps: _howCatchWorksSteps(context.l10n),
                     ),
                   ),
@@ -43,20 +43,20 @@ class DashboardEmptySliverBody extends StatelessWidget {
   }
 }
 
-List<CatchJourneyStep> _howCatchWorksSteps(AppLocalizations l10n) => [
-  CatchJourneyStep(
+List<CatchStepRowData> _howCatchWorksSteps(AppLocalizations l10n) => [
+  CatchStepRowData(
     title: l10n.dashboardDashboardEmptyTitleBookAGroupEvent,
     body: l10n.dashboardDashboardEmptyBodyPickAClubNear,
   ),
-  CatchJourneyStep(
+  CatchStepRowData(
     title: l10n.dashboardDashboardEmptyTitleActuallyShowUp,
     body: l10n.dashboardDashboardEmptyBodyMeetTheClubAt,
   ),
-  CatchJourneyStep(
+  CatchStepRowData(
     title: l10n.dashboardDashboardEmptyTitleCatchWithin24Hours,
     body: l10n.dashboardDashboardEmptyBodyYouGetTheRoster,
   ),
-  CatchJourneyStep(
+  CatchStepRowData(
     title: l10n.dashboardDashboardEmptyTitleTheyCatchYouBack,
     body: l10n.dashboardDashboardEmptyBodyMatchMessagePlanThe,
   ),

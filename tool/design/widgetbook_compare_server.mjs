@@ -1544,7 +1544,6 @@ function buildCandidates() {
         "CatchFormStepBody",
         "CatchStepHeader",
         "CatchStepFlowHeader",
-        "CatchStepProgress",
         "CreateEventStepHeader",
         "ClubBasicsStep",
         "EventDetailsStep",

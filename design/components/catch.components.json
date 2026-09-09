@@ -3525,6 +3525,16 @@
               "parentConceptId": "catch.field",
               "qualifier": "layout",
               "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L4",
+            "roleNoun": "RowList",
+            "naming": {
+              "useCase": "Form",
+              "comparedWith": [
+                "catch.field",
+                "catch.journey_steps"
+              ],
+              "reason": "Maps typed field descriptors to editors inside one section, owns accordion lifecycle and coordinates per-field patch saves. StepRowList presents ordered instructions without editing or persistence."
             }
           },
           {
@@ -8856,15 +8866,15 @@
         "vehicle": "widgetbook-contract",
         "reason": "Canonical states are exercised through the generated Widgetbook contract."
       },
-      "name": "CatchJourneySteps",
+      "name": "CatchStepRowList",
       "status": "active",
       "kind": "composite",
       "summary": "Numbered, line-traced sequence for ordered onboarding, dashboard, or event journey steps.",
       "dart": {
-        "symbol": "CatchJourneySteps",
-        "file": "packages/catch_ui/lib/src/components/catch_journey_steps.dart",
+        "symbol": "CatchStepRowList",
+        "file": "packages/catch_ui/lib/src/components/catch_step_row_list.dart",
         "constructors": [
-          "CatchJourneySteps"
+          "CatchStepRowList"
         ]
       },
       "design": {
@@ -8889,7 +8899,7 @@
             "name": "steps",
             "type": "list",
             "required": true,
-            "dartType": "List<CatchJourneyStep>"
+            "dartType": "List<CatchStepRowData>"
           },
           {
             "name": "accent",
@@ -8918,29 +8928,11 @@
           "CatchLayout.journeyStepsRailColumnWidth",
           "CatchLayout.journeyStepsNodeExtent",
           "CatchTextStyles.mono",
-          "CatchTextStyles.titleS",
-          "CatchTextStyles.bodyS"
+          "CatchTextStyles.fieldRowTitle",
+          "CatchTextStyles.supporting"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.journey_steps.node",
-            "symbol": "CatchJourneyStepNode",
-            "file": "packages/catch_ui/lib/src/components/catch_journey_step_node.dart",
-            "summary": "Direct journey-step node renderer for step status, icon, and connector composition.",
-            "states": [
-              "default",
-              "accented"
-            ],
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.journey_steps",
-              "parentConceptId": "catch.journey_steps",
-              "qualifier": "anatomy",
-              "decisionRef": "contract-family:catch.journey_steps"
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -8959,7 +8951,8 @@
         "allowedChildren": [],
         "notes": [
           "Use only when order and trace matter; unordered benefits or facts should use a list/card pattern.",
-          "The primitive owns numbering, rail geometry, and connector termination."
+          "The primitive owns numbering, rail geometry, and connector termination.",
+          "The number column keeps its standard minimum and expands to the measured scaled monospace number width; indices never wrap across lines."
         ]
       },
       "governance": {
@@ -8976,7 +8969,16 @@
         "conceptId": "catch.journey_steps"
       },
       "surfaces": {
-        "flutter": "CatchJourneySteps"
+        "flutter": "CatchStepRowList"
+      },
+      "level": "L3",
+      "roleNoun": "RowList",
+      "naming": {
+        "useCase": "Step",
+        "comparedWith": [
+          "catch.field.form_row_list"
+        ],
+        "reason": "Presents a passive ordered instruction sequence with numbered rows and a connecting trace. FormRowList edits typed values with accordion and save orchestration; neither its editing state nor StepHeader current-step progress belongs in this instructional list."
       }
     },
     {
@@ -12077,30 +12079,10 @@
           "CatchTopBarLeading",
           "CatchButton.text",
           "CatchTextStyles.monoLabel",
-          "CatchLayout.stepHeaderProgressHeight",
-          "CatchStepProgress"
+          "CatchLayout.stepHeaderProgressHeight"
         ],
         "goldens": [],
-        "members": [
-          {
-            "id": "catch.step_header.progress",
-            "symbol": "CatchStepProgress",
-            "summary": "Hairline step-progress indicator used by wizard and step-flow headers.",
-            "states": [
-              "empty",
-              "partial",
-              "complete"
-            ],
-            "file": "packages/catch_ui/lib/src/components/catch_step_progress.dart",
-            "governance": {
-              "conceptRole": "member",
-              "conceptId": "catch.step_header",
-              "parentConceptId": "catch.step_header",
-              "qualifier": "layout",
-              "decisionRef": "contract-family:catch.step_header"
-            }
-          }
-        ],
+        "members": [],
         "accessibility": {
           "largeText": {
             "minimumScale": 2,
@@ -12123,7 +12105,7 @@
         ],
         "notes": [
           "Use for multi-step flows; prefer a close leading action for global wizard exit and expose the step counter as an overview action in resumable forms.",
-          "CatchStepProgress is the progress member of catch.step_header, not a separate wizard primitive."
+          "The header owns the production current-step counter and continuous progress hairline. The former standalone segmented progress widget had no production callers and is retired."
         ]
       },
       "governance": {
@@ -12852,7 +12834,7 @@
       "handoff": {
         "allowedChildren": [],
         "notes": [
-          "Use for carousel/page progress only; use CatchStepProgress for wizard completion progress."
+          "Use for carousel/page progress only; use CatchStepHeader for wizard completion progress."
         ]
       },
       "governance": {

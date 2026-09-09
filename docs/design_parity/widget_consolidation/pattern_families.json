@@ -2581,6 +2581,59 @@
           "rationale": "No production consumers; duplicates the existing section grouping responsibility and adds an embedded shrink-wrapped list."
         }
       ]
+    },
+    {
+      "id": "step-instructions-and-progress",
+      "title": "Instructional step rows and flow progress have explicit owners",
+      "intent": "Keep passive instructions separate from editing orchestration and current-step progress; retire unused alternate progress and trivial node identities.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.journey_steps",
+      "qualityReference": "CatchStepRowList",
+      "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
+      "acceptedVisualDelta": [
+        "Preserve normal-size production instruction rows, trace geometry, typography and accent. At large text, measure the scaled number column so two-digit indices stay on one line and reflow supporting copy in the remaining space.",
+        "Retire the unused segmented-progress preview and standalone decorative-node gallery. Production StepHeader progress is unchanged."
+      ],
+      "members": [
+        {
+          "symbol": "CatchStepRowList",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Passive numbered instructions use the Step RowList responsibility; the concrete input and behavior differ from FormRowList."
+        },
+        {
+          "symbol": "CatchFormRowList",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Typed editor selection, accordion state and patch saves remain field-owned orchestration, not an instruction list."
+        },
+        {
+          "symbol": "CatchStepHeader",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "The live flow header owns current-step progress, localized counters and overview actions."
+        },
+        {
+          "symbol": "CatchJourneySteps",
+          "disposition": "unify",
+          "target": "CatchStepRowList",
+          "preview": "not-applicable",
+          "rationale": "Rename the preserved instructional sequence to the deterministic role; retain its stable contract identity."
+        },
+        {
+          "symbol": "CatchJourneyStepNode",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "A decorative circle with only parent and catalog callers has no independent input or behavior. Inline its exact geometry into its owning list."
+        },
+        {
+          "symbol": "CatchStepProgress",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "Zero production callers. Its segmented-progress alternative is not used by the production StepHeader and has no consumer to migrate."
+        }
+      ]
     }
   ]
 }

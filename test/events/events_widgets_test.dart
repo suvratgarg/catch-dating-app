@@ -732,7 +732,7 @@ void main() {
       expect(find.text('Start time must be in the future'), findsOneWidget);
     });
 
-    testWidgets('agenda and progress widgets render and handle selection', (
+    testWidgets('agenda and action widgets render and handle selection', (
       tester,
     ) async {
       final now = DateTime(2026, 5, 5);
@@ -751,11 +751,6 @@ void main() {
         Scaffold(
           body: ListView(
             children: [
-              CatchStepProgress(
-                currentStep: 1,
-                totalSteps: 4,
-                counterLabelBuilder: (step, total) => '$step/$total',
-              ),
               CatchButton(
                 label: 'Next',
                 onPressed: () => footerTapped = true,

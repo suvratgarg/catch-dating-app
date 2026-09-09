@@ -5805,30 +5805,30 @@ Widget catchPrivacyBadgeContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchJourneySteps,
+  type: CatchStepRowList,
   path: '[Core primitives]/Sections',
 )
-Widget catchJourneyStepsContractStates(BuildContext context) {
+Widget catchStepRowListContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchJourneySteps',
+    title: 'CatchStepRowList',
     contractId: 'catch.journey_steps',
     states: const ['numbered-trace', 'titles-only', 'accented', 'long-copy'],
     children: [
       const _StateCard(
         label: 'numbered-trace',
-        child: CatchJourneySteps(
+        child: CatchStepRowList(
           steps: [
-            CatchJourneyStep(
+            CatchStepRowData(
               title: 'Pick your room',
               body: 'Choose the event format and guest count.',
             ),
-            CatchJourneyStep(
+            CatchStepRowData(
               title: 'Confirm the guest list',
               body: 'Review attendance, private access, and reminders.',
             ),
-            CatchJourneyStep(
+            CatchStepRowData(
               title: 'Host the moment',
               body: 'Use check-in and post-event tools from the same flow.',
             ),
@@ -5837,25 +5837,25 @@ Widget catchJourneyStepsContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'titles-only',
-        child: CatchJourneySteps(
+        child: CatchStepRowList(
           accent: t.success,
           steps: const [
-            CatchJourneyStep(title: 'Arrive'),
-            CatchJourneyStep(title: 'Check in'),
-            CatchJourneyStep(title: 'Start matching'),
+            CatchStepRowData(title: 'Arrive'),
+            CatchStepRowData(title: 'Check in'),
+            CatchStepRowData(title: 'Start matching'),
           ],
         ),
       ),
       _StateCard(
         label: 'accented',
-        child: CatchJourneySteps(
+        child: CatchStepRowList(
           accent: t.like,
           steps: const [
-            CatchJourneyStep(
+            CatchStepRowData(
               title: 'Open requests',
               body: 'Let the host approve a balanced room.',
             ),
-            CatchJourneyStep(
+            CatchStepRowData(
               title: 'Send reminders',
               body: 'Guests receive the final timing and arrival notes.',
             ),
@@ -5866,48 +5866,20 @@ Widget catchJourneyStepsContractStates(BuildContext context) {
         label: 'long-copy',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchJourneySteps(
+          child: CatchStepRowList(
             steps: [
-              CatchJourneyStep(
+              CatchStepRowData(
                 title:
                     'A longer step title that should wrap without pushing the trace out of alignment',
                 body:
                     'Long supporting copy stays in the content column while the numbered rail keeps a stable width.',
               ),
-              CatchJourneyStep(
+              CatchStepRowData(
                 title: 'A concise final step',
                 body: 'The trace ends without a dangling connector.',
               ),
             ],
           ),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchJourneyStepNode,
-  path: '[Core primitives]/Sections',
-)
-Widget catchJourneyStepNodeContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-
-  return _ContractScreen(
-    title: 'CatchJourneyStepNode',
-    contractId: 'catch.journey_steps.node',
-    states: const ['default', 'accented'],
-    children: [
-      _StateCard(
-        label: 'node colors',
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CatchJourneyStepNode(),
-            const SizedBox(width: CatchSpacing.s4),
-            CatchJourneyStepNode(accent: t.like),
-          ],
         ),
       ),
     ],

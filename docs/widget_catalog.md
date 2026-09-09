@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.52.0
+version: 3.53.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -215,8 +215,7 @@ Widgetbook callers.
 | `CatchKicker` | `packages/catch_ui/lib/src/primitives/catch_kicker.dart:5` | Handoff `Kicker` leaf: uppercase mono eyebrow for section starts and editorial labels, with optional color override and `md` / `lg` sizes. Used by shared section and info-group composition. |
 | `CatchMonoLabel` | `packages/catch_ui/lib/src/primitives/catch_mono_label.dart:5` | Single-line mono text leaf for compact metadata in dense cards and rails. Use when a small metadata string needs the shared mono label style and ellipsis behavior without restating local `Text` setup. |
 | `CatchSectionLabel` | `packages/catch_ui/lib/src/primitives/catch_section_label.dart:7` | Handoff activity-accent eyebrow for section starts inside panels. Carries one accent color through an optional leading glyph and mono kicker label, with bounded ellipsis behavior for long labels. |
-| `CatchJourneySteps` | `packages/catch_ui/lib/src/components/catch_journey_steps.dart:14` | Handoff `JourneySteps`: numbered, line-traced sequence for ordered onboarding, dashboard, and event-flow guidance. Renders mono auto-numbered indices, an accent node rail, function-font titles, optional body copy, and source-owned spacing. Registered as formal component contract `catch.journey_steps`; Widgetbook contract states are the canonical review surface for numbered trace, titles-only, accented, and long-copy sequences. |
-| `CatchJourneyStepNode` | `packages/catch_ui/lib/src/components/catch_journey_step_node.dart:4` | Direct journey-rail node renderer used by `CatchJourneySteps`. Keeps the circular node extent, surface fill, accent border, and stroke width reviewable without a private widget-returning helper. |
+| `CatchStepRowList` | `packages/catch_ui/lib/src/components/catch_step_row_list.dart` | Passive ordered instructions with mono numbering, connecting trace, titles and optional body copy. Owns node geometry and connector termination; current-step progress belongs to `CatchStepHeader` and editable rows to `CatchFormRowList`. The stable contract is `catch.journey_steps`. |
 | `CatchDetailHeroBackdrop` | `packages/catch_ui/lib/src/components/catch_detail_hero_backdrop.dart:7` | Shared photo-or-branded-fallback backdrop for detail-page heroes. Used by club and event detail headers so no-photo states share the same dark branded gradient and scrim treatment. |
 | `CatchDetailHeroFallback` | `packages/catch_ui/lib/src/components/catch_detail_hero_fallback.dart:4` | Direct branded-gradient fallback renderer used when detail heroes have no usable image or image loading fails. Keeps the no-photo hero state reviewable without relying on a private widget-returning helper. |
 | `CatchScrim` | `packages/catch_ui/lib/src/primitives/catch_scrim.dart:6` | Shared pointer-transparent photo scrim renderer. Named presets cover detail hero media, club/directory photo frames, and profile hero tinting so photo text-protection gradients stay centralized. |
@@ -303,7 +302,6 @@ Widgetbook callers.
 | `CatchMapRevealViewport` | `packages/catch_ui/lib/src/primitives/catch_map_reveal_viewport.dart` | Map-route transition surface that leaves the native platform view stationary while a token-colored paper veil opens from the Explore launcher origin. Reduced-motion settings remove the veil and present the map immediately. |
 | `CatchIconTile` | `packages/catch_ui/lib/src/primitives/catch_icon_tile.dart` | Fixed icon tile with shared surface, outline, radius and glyph sizing. |
 | `CatchPageDots` | `packages/catch_ui/lib/src/primitives/catch_page_dots.dart` | Animated selected-page dots with caller-owned index and semantics. |
-| `CatchStepProgress` | `packages/catch_ui/lib/src/components/catch_step_progress.dart` | Step-header progress member with clamped segments and a caller-localized counter formatter. |
 | `CatchStatusDot` | `packages/catch_ui/lib/src/primitives/catch_status_dot.dart` | Status pigment dot with optional outline and tokenized extent. |
 | `CatchInlineStatus` | `packages/catch_ui/lib/src/components/catch_inline_status.dart` | Unboxed semantic status dot and caller-localized supporting label. |
 | `CatchFadeScaleViewport` | `packages/catch_ui/lib/src/primitives/catch_fade_scale_viewport.dart` | Detail-route fade and subtle scale viewport around caller-owned content. |

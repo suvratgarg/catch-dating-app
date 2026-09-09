@@ -229,13 +229,13 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     expect(find.byType(CatchCountText), findsNothing);
   });
 
-  testWidgets('CatchJourneySteps composes public step nodes', (tester) async {
+  testWidgets('CatchStepRowList numbers instructional rows', (tester) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchJourneySteps(
+        const CatchStepRowList(
           steps: [
-            CatchJourneyStep(title: 'Arrive', body: 'Check in with the host.'),
-            CatchJourneyStep(title: 'Meet', body: 'Start the first round.'),
+            CatchStepRowData(title: 'Arrive', body: 'Check in with the host.'),
+            CatchStepRowData(title: 'Meet', body: 'Start the first round.'),
           ],
         ),
       ),
@@ -243,7 +243,8 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
 
     expect(find.text('01'), findsOneWidget);
     expect(find.text('02'), findsOneWidget);
-    expect(find.byType(CatchJourneyStepNode), findsNWidgets(2));
+    expect(find.text('Arrive'), findsOneWidget);
+    expect(find.text('Meet'), findsOneWidget);
   });
 
   testWidgets('CatchTabBar reveals only the selected label and badges icons', (

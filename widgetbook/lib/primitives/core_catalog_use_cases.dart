@@ -1329,40 +1329,6 @@ Widget catchStepHeaderCatalogStates(BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchStepProgress,
-  path: '[Core catalog]/Navigation',
-)
-Widget catchStepProgressCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchStepProgress',
-    catalogId: 'core.widgets.catch_step_progress',
-    children: [
-      _StateCard(
-        label: 'counter / unlabeled',
-        child: Column(
-          children: [
-            CatchStepProgress(
-              counterLabelBuilder: (step, total) => '$step/$total',
-              currentStep: 1,
-              totalSteps: 5,
-              label: 'Basics',
-            ),
-            SizedBox(height: CatchSpacing.s4),
-            CatchStepProgress(
-              counterLabelBuilder: (step, total) => '$step/$total',
-              currentStep: 3,
-              totalSteps: 5,
-              showCounter: false,
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
 Widget catchTabDockCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
     title: 'CatchTabBar',

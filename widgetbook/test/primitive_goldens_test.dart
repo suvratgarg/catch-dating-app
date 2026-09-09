@@ -23,7 +23,6 @@ const _referenceCases = <String, String>{
   'Core catalog/Typography/CatchSectionHeaderTitle/Catalog states':
       'section_label',
   'Core catalog/Inputs/CatchControlSurface/Catalog states': 'control_shell',
-  'Core catalog/Navigation/CatchStepProgress/Catalog states': 'step_progress',
   'Core catalog/Navigation/CatchPageIndicator/Catalog states': 'page_dots',
   'Core catalog/Data display/CatchMetricTile/Catalog states': 'stat_column',
   'Core catalog/Data display/CatchMetaRow/Group states': 'meta_dot_row',
@@ -102,7 +101,7 @@ void main() {
     expect(registered, greaterThan(0));
     expect(renderer.visited.length, registered);
     expect(renderer.visited.toSet().length, registered);
-    expect(coreGoldenIds, hasLength(312));
+    expect(coreGoldenIds, hasLength(310));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),

@@ -7470,6 +7470,38 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:step-instructions-and-progress",
+      "patternFamilyId": "step-instructions-and-progress",
+      "decision": "keep-distinct-and-retire-unused",
+      "canonicalSymbol": "CatchStepRowList",
+      "members": [
+        {
+          "name": "CatchJourneySteps",
+          "action": "rename"
+        },
+        {
+          "name": "CatchJourneyStepNode",
+          "action": "delete"
+        },
+        {
+          "name": "CatchStepProgress",
+          "action": "delete"
+        },
+        {
+          "name": "CatchFormRowList",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStepHeader",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Source callers and rendered contract states establish three different responsibilities: instructions, editable field orchestration and current-step header progress. Preserve them, name the instructional RowList deterministically, inline its decorative node and remove the standalone progress renderer with no production callers.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

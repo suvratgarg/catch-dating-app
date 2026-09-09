@@ -1,26 +1,45 @@
+import 'dart:math' as math;
+
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_journey_step.dart';
-import 'package:catch_ui/src/components/catch_journey_step_node.dart';
+import 'package:catch_ui/src/components/catch_step_row_data.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
 import 'package:flutter/material.dart';
 
-/// Design-system `JourneySteps` (`components/events/JourneySteps`): a numbered,
-/// line-traced sequence — the Itinerary grammar applied to ordered steps. A mono
-/// index, a node rail with a connecting line tracing one step into the next, and
-/// a function-font title + body. Indices auto-number (01, 02 …). Use where a list
-/// is genuinely a sequence (first-run dashboard, multi-step "how it works"); the
-/// trace is the point. [accent] defaults to the ink primary.
-class CatchJourneySteps extends StatelessWidget {
-  const CatchJourneySteps({super.key, required this.steps, this.accent});
+/// Ordered instructional rows with automatic numbering and a connecting trace.
+///
+/// Owns the sequence geometry and caller-provided copy. It does not select a
+/// current step or edit form values. The final row has no trailing connector.
+class CatchStepRowList extends StatelessWidget {
+  const CatchStepRowList({super.key, required this.steps, this.accent});
 
-  final List<CatchJourneyStep> steps;
+  final List<CatchStepRowData> steps;
   final Color? accent;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final accentColor = accent ?? t.primary;
+    final indexStyle = CatchTextStyles.mono(
+      context,
+      color: accentColor,
+    ).copyWith(fontWeight: FontWeight.w700);
+    // Reserve the actual scaled monospace number width, while keeping the
+    // standard column as the minimum. Numbers must never split across lines.
+    final indexPainter = TextPainter(
+      text: TextSpan(
+        text: steps.length.toString().padLeft(2, '0'),
+        style: indexStyle,
+      ),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final indexWidth = math.max(
+      CatchLayout.journeyStepsIndexColumnWidth,
+      indexPainter.width.ceilToDouble(),
+    );
+    indexPainter.dispose();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -31,15 +50,14 @@ class CatchJourneySteps extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 SizedBox(
-                  width: CatchLayout.journeyStepsIndexColumnWidth,
+                  width: indexWidth,
                   child: Padding(
                     padding: const EdgeInsets.only(top: CatchStroke.hairline),
                     child: Text(
                       (i + 1).toString().padLeft(2, '0'),
-                      style: CatchTextStyles.mono(
-                        context,
-                        color: accentColor,
-                      ).copyWith(fontWeight: FontWeight.w700),
+                      style: indexStyle,
+                      maxLines: 1,
+                      softWrap: false,
                     ),
                   ),
                 ),
@@ -48,7 +66,18 @@ class CatchJourneySteps extends StatelessWidget {
                   child: Column(
                     children: [
                       const SizedBox(height: CatchSpacing.micro3),
-                      CatchJourneyStepNode(accent: accentColor),
+                      Container(
+                        width: CatchLayout.journeyStepsNodeExtent,
+                        height: CatchLayout.journeyStepsNodeExtent,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: t.bg,
+                          border: Border.all(
+                            color: accentColor,
+                            width: CatchStroke.avatarRing,
+                          ),
+                        ),
+                      ),
                       if (i < steps.length - 1)
                         Expanded(
                           child: Container(

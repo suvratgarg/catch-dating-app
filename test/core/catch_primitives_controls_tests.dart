@@ -632,27 +632,6 @@ void _registerCatchPrimitivesControlsTests() {
     expect(iconSurface.borderSpec?.role, CatchBorderRole.control);
   });
 
-  testWidgets('CatchStepProgress renders count and full-width segments', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        SizedBox(
-          width: 320,
-          child: CatchStepProgress(
-            counterLabelBuilder: (step, total) => '$step/$total',
-            label: 'Profile setup',
-            currentStep: 1,
-            totalSteps: 5,
-          ),
-        ),
-      ),
-    );
-
-    expect(find.text('Profile setup'), findsOneWidget);
-    expect(find.text('2/5'), findsOneWidget);
-  });
-
   testWidgets('CatchStepHeader renders AppBar anatomy and progress hairline', (
     tester,
   ) async {
