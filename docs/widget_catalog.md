@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.58.0
+version: 3.59.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -331,7 +331,7 @@ Widgetbook callers.
 | `CatchSliverContentWidth` | `packages/catch_ui/lib/src/patterns/catch_sliver_content_width.dart` | Centers a readable sliver lane on wide local viewports. |
 | `CatchMetaRow` | `packages/catch_ui/lib/src/components/catch_meta_row.dart:13` | Single icon and label metadata row with caller-provided text, semantic icon tint, optional label color, and bounded ellipsis. Use `CatchMetaRow.group` for multiple separated entries. |
 | `CatchDockSurface` | `packages/catch_ui/lib/src/components/catch_dock_surface.dart` | Persistent control docking. The default constructor hosts utility content; `primary` selects floating Cupertino or anchored Material chrome and renders the shared action body; `primaryContent` reuses that body inside caller-owned chrome. Safe areas, optional leading content, accents, catch line, footnote and action states remain owned by this contract. |
-| `CatchBottomActionOverlay` | `packages/catch_ui/lib/src/patterns/catch_bottom_action_overlay.dart` | Canonical dockless multi-action form overlay. Keeps scroll content visible beneath a tokenized fade and background blur, pins optional notice and action rows above the safe area, and pairs with the form-step bottom inset so the final control remains reachable without an opaque dock or divider. |
+| `CatchBottomActionOverlay` | `packages/catch_ui/lib/src/patterns/catch_bottom_action_overlay.dart` | Canonical dockless multi-action form overlay. Measures wrapped or stacked actions and optional metadata before sizing the usable form viewport. A tokenized fade reaches the page background above the controls so transparent buttons remain readable; form-step terminal insets keep the final field clear of the fade. Safe-area clearance is owned once, with no dock edge or divider. |
 | `CatchSheet` | `packages/catch_ui/lib/src/components/catch_sheet.dart:49` | Handoff `Sheet`: surface bottom-sheet panel with overlay shadow, grabber toggle, plain title/subtitle header, branded glyph-tile header, optional badge/trailing slot, content, and optional footer slot. It always owns a terminal safe region: at least the visual bottom-padding token, otherwise the device bottom obstruction plus the terminal gap; `keyboardSafe` lets a larger keyboard obstruction replace the device inset. `mode: CatchSheetMode.scrollable` lets long content and footer scroll together within the available sheet height. Caller padding can tune the other edges or request more bottom space but cannot remove this invariant. |
 | `CatchSheetHeader` | `packages/catch_ui/lib/src/components/catch_sheet_header.dart` | Sheet title, subtitle and trailing content with default plain and named branded-glyph recipes sharing one renderer. The parent Sheet owns the surface, scrolling and terminal clearance. |
 | `CatchShareCardSheet` | `packages/catch_ui/lib/src/components/catch_share_card_sheet.dart` | Presentation-only share-card preview, keyboard-safe sheet spacing, footnote and platform-share button. The `media` slot supplies exportable content. The caller owns the capture key, busy state and callback; `cardPreviewKey` and `shareButtonKey` retain the existing automation values. |

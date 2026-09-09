@@ -302,9 +302,11 @@ void _registerCatchPrimitivesControlsTests() {
       final actionsRect = tester.getRect(
         find.byKey(const ValueKey('catch_bottom_action_overlay.actions')),
       );
+      final overlayRect = tester.getRect(find.byType(CatchBottomActionOverlay));
       expect(scrimRect.top, lessThan(bodyRect.bottom));
       expect(actionsRect.top, greaterThan(scrimRect.top));
-      expect(actionsRect.bottom, lessThanOrEqualTo(bodyRect.bottom));
+      expect(actionsRect.top, bodyRect.bottom);
+      expect(actionsRect.bottom, lessThanOrEqualTo(overlayRect.bottom));
       expect(actionsRect.left, greaterThanOrEqualTo(CatchSpacing.screenPx));
       expect(actionsRect.right, lessThanOrEqualTo(320 - CatchSpacing.screenPx));
 

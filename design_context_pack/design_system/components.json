@@ -15631,7 +15631,7 @@
           "CatchButton",
           "CatchElevation.raised",
           "CatchIcons.sparkle",
-          "CatchLayout.bottomActionOverlayScrimHeight",
+          "CatchSpacing.s16",
           "CatchOpacity.bottomActionScrim",
           "CatchSpacing.screenPx",
           "CatchTextStyles.monoLabel"
@@ -15642,7 +15642,7 @@
             "id": "catch.bottom_action.overlay",
             "symbol": "CatchBottomActionOverlay",
             "file": "packages/catch_ui/lib/src/patterns/catch_bottom_action_overlay.dart",
-            "summary": "Dockless pinned-action layout that lets scrolling content pass beneath a soft background fade while paired form insets keep final content reachable.",
+            "summary": "Dockless pinned-action layout with measured action and metadata heights. The usable form viewport ends above their opaque backing; terminal form insets clear the soft fade.",
             "states": [
               "scrolling",
               "long-content",
@@ -15664,7 +15664,7 @@
               "comparedWith": [
                 "catch.bottom_action"
               ],
-              "reason": "Pins actions and optional contextual metadata above the body while scrolling content passes beneath a fade and blur. The parent dock owns opaque platform chrome; the overlay owns full-body stacking and reachability instead of a second dock renderer."
+              "reason": "Pins actions and optional contextual metadata above the body while scrolling content passes beneath a fade and blur. The parent dock owns opaque platform chrome; the overlay owns measured form clearance and a seamless fade instead of a second dock renderer."
             }
           }
         ],

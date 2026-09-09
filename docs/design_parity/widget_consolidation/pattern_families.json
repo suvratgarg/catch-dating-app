@@ -2830,7 +2830,8 @@
       "decisionSource": "owner-delegated:2026-09-08 semantic consolidation",
       "acceptedVisualDelta": [
         "Preserve production paint, button and content geometry, iOS floating chrome, Android anchored chrome, utility safe-area ownership and embedded action-body behavior.",
-        "Combine formal utility and primary-action previews, retain every catalog state and add explicit iOS/Android fixtures plus the embedded recipe. Gallery titles, identifiers and pagination change."
+        "Combine formal utility and primary-action previews, retain every catalog state and add explicit iOS/Android fixtures plus the embedded recipe. Gallery titles, identifiers and pagination change.",
+        "Fix the existing overlay readability and large-text clearance defects: measure action and metadata heights, reserve their usable viewport region, and finish the soft fade above the controls. Transparent actions have page-colored backing and final form fields remain reachable. Dock recipes retain their earlier preservation contract."
       ],
       "members": [
         {

@@ -186,7 +186,6 @@ abstract final class CatchLayout {
   static const double celebrationPaperActionTopGap = CatchSpacing.s6;
   static const double celebrationDetailLabelWidth = 78.0;
   static const double bottomActionScrimHeight = 128.0;
-  static const double bottomActionOverlayScrimHeight = 160.0;
   static const double floatingControlExtent = 48.0;
   static const double selectionBadgeRadius = 14.0;
   static const double badgeMdVerticalPadding =

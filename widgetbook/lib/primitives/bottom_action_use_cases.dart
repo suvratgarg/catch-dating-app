@@ -16,7 +16,7 @@ Widget bottomActionOverlayStates(BuildContext context) =>
       children: [
         for (final safeBottom in [0.0, 34.0]) ...[
           CatchMetadataText(
-            safeBottom == 0 ? 'No bottom inset' : 'Bottom inset and notice',
+            safeBottom == 0 ? 'No bottom inset' : 'Stacked + safe area',
             color: CatchTokens.of(context).ink2,
           ),
           SizedBox(
@@ -41,10 +41,24 @@ Widget bottomActionOverlayStates(BuildContext context) =>
                 meta: safeBottom == 0
                     ? null
                     : const Center(child: CatchBadge(label: 'Draft saved')),
-                actions: CatchButton(
-                  label: 'Continue',
-                  onPressed: () {},
-                  fullWidth: true,
+                actions: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CatchButton(
+                      label: 'Continue',
+                      onPressed: () {},
+                      fullWidth: true,
+                    ),
+                    if (safeBottom > 0) ...[
+                      gapH8,
+                      CatchButton(
+                        label: 'Previous',
+                        onPressed: () {},
+                        variant: CatchButtonVariant.ghost,
+                        fullWidth: true,
+                      ),
+                    ],
+                  ],
                 ),
               ),
             ),
