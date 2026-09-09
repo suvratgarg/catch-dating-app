@@ -8,6 +8,8 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_observati
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
 part 'event_rehearsal_movement_records.dart';
+part 'event_rehearsal_checkpoint_management_records.dart';
+part 'event_rehearsal_checkpoint_management_review.dart';
 part 'event_rehearsal_movement_checkpoint.dart';
 
 typedef RehearsalMovementScope = ({

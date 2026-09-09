@@ -43,6 +43,10 @@ enum AssistanceCheckpointDispositionUnavailableReason {
 
 sealed class AssistanceCheckpointDisposition {
   const AssistanceCheckpointDisposition();
+  factory AssistanceCheckpointDisposition.fromJson(
+    Object? raw, {
+    required int now,
+  }) => AssistanceCheckpointDisposition._parse(raw, now);
   factory AssistanceCheckpointDisposition._parse(Object? raw, int now) {
     final map = assistanceObject(raw);
     switch (map['kind']) {
@@ -299,6 +303,8 @@ final class AssistanceCheckpointCloseoutState {
   const AssistanceCheckpointCloseoutState._(this.kind, this.reason);
   final AssistanceCheckpointCloseoutKind kind;
   final AssistanceCheckpointCloseoutReviewReason? reason;
+  factory AssistanceCheckpointCloseoutState.fromJson(Object? raw) =>
+      AssistanceCheckpointCloseoutState._parse(raw);
   factory AssistanceCheckpointCloseoutState._parse(Object? raw) {
     final map = assistanceObject(raw);
     final kind = assistanceEnum(
@@ -331,6 +337,32 @@ enum AssistanceCheckpointCloseoutUnavailableReason {
 
 sealed class AssistanceCheckpointCloseoutEligibility {
   const AssistanceCheckpointCloseoutEligibility();
+  factory AssistanceCheckpointCloseoutEligibility.fromJson(Object? raw) {
+    final rawEligibility = assistanceObject(raw);
+    final AssistanceCheckpointCloseoutEligibility eligibility;
+    switch (rawEligibility['kind']) {
+      case 'ready':
+        assistanceObject(rawEligibility, {'kind'});
+        eligibility = const AssistanceCheckpointCloseoutReady();
+      case 'unavailable':
+        assistanceObject(rawEligibility, {'kind', 'reason', 'attendeeIds'});
+        final reason = assistanceEnum(
+          AssistanceCheckpointCloseoutUnavailableReason.values,
+          rawEligibility['reason'],
+        );
+        final ids = _checkpointIds(rawEligibility['attendeeIds']);
+        if ((reason ==
+                AssistanceCheckpointCloseoutUnavailableReason
+                    .unresolvedMembers) !=
+            ids.isNotEmpty) {
+          throw const FormatException('Invalid unresolved closeout members.');
+        }
+        eligibility = AssistanceCheckpointCloseoutUnavailable._(reason, ids);
+      default:
+        throw const FormatException('Unknown closeout eligibility.');
+    }
+    return eligibility;
+  }
 }
 
 /// Eligibility describes the evidence; it does not grant manager permission.
@@ -509,29 +541,9 @@ final class AssistanceCheckpointCloseout {
         'Checkpoint closeout state contradicts its saved change.',
       );
     }
-    final rawEligibility = assistanceObject(map['eligibility']);
-    final AssistanceCheckpointCloseoutEligibility eligibility;
-    switch (rawEligibility['kind']) {
-      case 'ready':
-        assistanceObject(rawEligibility, {'kind'});
-        eligibility = const AssistanceCheckpointCloseoutReady();
-      case 'unavailable':
-        assistanceObject(rawEligibility, {'kind', 'reason', 'attendeeIds'});
-        final reason = assistanceEnum(
-          AssistanceCheckpointCloseoutUnavailableReason.values,
-          rawEligibility['reason'],
-        );
-        final ids = _checkpointIds(rawEligibility['attendeeIds']);
-        if ((reason ==
-                AssistanceCheckpointCloseoutUnavailableReason
-                    .unresolvedMembers) !=
-            ids.isNotEmpty) {
-          throw const FormatException('Invalid unresolved closeout members.');
-        }
-        eligibility = AssistanceCheckpointCloseoutUnavailable._(reason, ids);
-      default:
-        throw const FormatException('Unknown closeout eligibility.');
-    }
+    final eligibility = AssistanceCheckpointCloseoutEligibility.fromJson(
+      map['eligibility'],
+    );
     return AssistanceCheckpointCloseout._(
       revision,
       assistanceHash(map['sourceHash']),

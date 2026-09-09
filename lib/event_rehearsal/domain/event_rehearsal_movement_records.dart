@@ -215,23 +215,30 @@ final class RehearsalMovementRecord {
     this.revision,
     this.departure,
     this.report,
+    this.assignment,
+    this.closeout,
   );
   final RehearsalMovementScope scope;
   final int revision;
   final RehearsalDeparture departure;
   final RehearsalCheckpointReport? report;
+  final RehearsalCheckpointReassignment? assignment;
+  final RehearsalCheckpointCloseoutChange? closeout;
   factory RehearsalMovementRecord._parse(
     Object? raw,
     RehearsalMovementScope scope,
     EventRehearsalSession session,
   ) {
-    final m = assistanceObject(raw, {
+    final m = assistanceObject(raw);
+    assistanceObject(m, {
       'sessionId',
       'clockId',
       'groupId',
       'progressRevision',
       'departure',
       'report',
+      if (m.containsKey('assignment')) 'assignment',
+      if (m.containsKey('closeout')) 'closeout',
     });
     if (m['sessionId'] != scope.sessionId ||
         m['clockId'] != scope.clockId ||
@@ -241,13 +248,40 @@ final class RehearsalMovementRecord {
       );
     }
     final departure = RehearsalDeparture._parse(m['departure'], scope, session);
+    final report = m['report'] == null
+        ? null
+        : RehearsalCheckpointReport._parse(m['report'], departure, session);
+    final assignment = m['assignment'] == null
+        ? null
+        : RehearsalCheckpointReassignment._parse(
+            m['assignment'],
+            departure,
+            session,
+          );
+    final closeout = m['closeout'] == null
+        ? null
+        : RehearsalCheckpointCloseoutChange._parse(
+            m['closeout'],
+            departure,
+            report,
+            session,
+          );
+    if (closeout != null && closeout.operationId == assignment?.operationId) {
+      throw const FormatException(
+        'Management decisions need distinct operations.',
+      );
+    }
+    if (m.containsKey('assignment') && assignment == null ||
+        m.containsKey('closeout') && closeout == null) {
+      throw const FormatException('A stored management change cannot be null.');
+    }
     return RehearsalMovementRecord._(
       scope,
       _movementRevision(m['progressRevision'], positive: true),
       departure,
-      m['report'] == null
-          ? null
-          : RehearsalCheckpointReport._parse(m['report'], departure, session),
+      report,
+      assignment,
+      closeout,
     );
   }
   Map<String, Object?> toJson() => {
@@ -257,6 +291,8 @@ final class RehearsalMovementRecord {
     'progressRevision': revision,
     'departure': departure.toJson(),
     'report': report?.toJson(),
+    if (assignment != null) 'assignment': assignment!.toJson(),
+    if (closeout != null) 'closeout': closeout!.toJson(),
   };
 }
 

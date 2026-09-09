@@ -31785,6 +31785,81 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeAssignedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeAssignedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangePreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityKind = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.kind',
     required: true,
@@ -31905,6 +31980,232 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeChangedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeChangedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.accountedFor.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.reportedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangePreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutEligibilityAttendeeIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.eligibility.attendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutEligibilityAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.eligibility.attendeeIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutEligibilityKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.eligibility.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutEligibilityReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.eligibility.reason',
+    required: true,
+    enumValues: <String>['sourceUnavailable', 'reportMissing', 'reportComplete', 'unresolvedMembers', 'alreadyClosed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutStateKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.state.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutStateReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.state.reason',
+    required: true,
+    enumValues: <String>['sourceUnavailable', 'reportChanged', 'dispositionChanged'],
   );
 
   static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointDepartureCheckpointRequestDueAt = CatchContractFieldConstraints(
@@ -32328,11 +32629,242 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentAssignedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentAssignedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentPreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentClockId = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.clockId',
     required: true,
     valueTypes: <String>['string'],
     pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutChangedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutChangedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.accountedFor.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.reportedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentDepartureCheckpointRequestDueAt = CatchContractFieldConstraints(
@@ -32870,11 +33402,242 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentAssignedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentAssignedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentPreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedClockId = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.clockId',
     required: true,
     valueTypes: <String>['string'],
     pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutChangedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutChangedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.accountedFor.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.reportedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureCheckpointRequestDueAt = CatchContractFieldConstraints(
@@ -36169,6 +36932,81 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalMovementCallableResponseCheckpointAssignmentChangeAssignedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAssignmentChangeAssignedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAssignmentChangeOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAssignmentChangePreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAssignmentChangeReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAssignmentChangeResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAssignmentChangeRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.assignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAssignmentSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.assignment.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventRehearsalMovementCallableResponseCheckpointAvailabilityKind = CatchContractFieldConstraints(
     path: 'eventRehearsalMovementCallableResponse.checkpoint.availability.kind',
     required: true,
@@ -36289,6 +37127,232 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeChangedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeChangedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.accountedFor.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.reportedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangePreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutChangeRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutEligibilityAttendeeIds = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.eligibility.attendeeIds',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 1000,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutEligibilityAttendeeIdsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.eligibility.attendeeIds.items',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutEligibilityKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.eligibility.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutEligibilityReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.eligibility.reason',
+    required: true,
+    enumValues: <String>['sourceUnavailable', 'reportMissing', 'reportComplete', 'unresolvedMembers', 'alreadyClosed'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutStateKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.state.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointCloseoutStateReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.closeout.state.reason',
+    required: true,
+    enumValues: <String>['sourceUnavailable', 'reportChanged', 'dispositionChanged'],
   );
 
   static const eventRehearsalMovementCallableResponseCheckpointDepartureCheckpointRequestDueAt = CatchContractFieldConstraints(
@@ -36712,11 +37776,242 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalMovementCallableResponseProgressCurrentAssignmentAssignedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.assignment.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentAssignmentAssignedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.assignment.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentAssignmentOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.assignment.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentAssignmentPreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.assignment.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentAssignmentReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.assignment.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentAssignmentResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.assignment.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.assignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalMovementCallableResponseProgressCurrentClockId = CatchContractFieldConstraints(
     path: 'eventRehearsalMovementCallableResponse.progress.current.clockId',
     required: true,
     valueTypes: <String>['string'],
     pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutChangedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutChangedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.accountedFor.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.reportedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseProgressCurrentCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.progress.current.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const eventRehearsalMovementCallableResponseProgressCurrentDepartureCheckpointRequestDueAt = CatchContractFieldConstraints(
@@ -37254,11 +38549,242 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const eventRehearsalMovementCallableResponseSelectedAssignmentAssignedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.assignment.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedAssignmentAssignedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.assignment.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedAssignmentOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.assignment.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedAssignmentPreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.assignment.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedAssignmentReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.assignment.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedAssignmentResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.assignment.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.assignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalMovementCallableResponseSelectedClockId = CatchContractFieldConstraints(
     path: 'eventRehearsalMovementCallableResponse.selected.clockId',
     required: true,
     valueTypes: <String>['string'],
     pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutChangedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutChangedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.accountedFor.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.reportedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementCallableResponseSelectedCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.selected.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const eventRehearsalMovementCallableResponseSelectedDepartureCheckpointRequestDueAt = CatchContractFieldConstraints(
@@ -37526,11 +39052,242 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const eventRehearsalMovementDocumentAssignmentAssignedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.assignment.assignedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementDocumentAssignmentAssignedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.assignment.assignedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementDocumentAssignmentOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.assignment.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementDocumentAssignmentPreviousResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.assignment.previousResponsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementDocumentAssignmentReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.assignment.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementDocumentAssignmentResponsibleOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.assignment.responsibleOperatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementDocumentAssignmentRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.assignment.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalMovementDocumentClockId = CatchContractFieldConstraints(
     path: 'eventRehearsalMovementDocument.clockId',
     required: true,
     valueTypes: <String>['string'],
     pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutChangedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.changedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutChangedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.changedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionDispositions = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.dispositions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.dispositions.items.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.dispositions.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed'],
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.dispositions.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsResolvedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.dispositions.items.resolvedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsResolvedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.dispositions.items.resolvedBy',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.dispositions.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.dispositions.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionReportAccountedFor = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.report.accountedFor',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    maxItems: 50,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionReportAccountedForItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.report.accountedFor.items',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionReportCorrectionReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.report.correctionReason',
+    maxLength: 500,
+    minLength: 1,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionReportReportedAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.report.reportedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionReportReportedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.report.reportedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionReportRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.report.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutDecisionReportRosterHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.decision.report.rosterHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutOperationId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.operationId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutPreviousRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.previousRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.reason',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '\\S',
+  );
+
+  static const eventRehearsalMovementDocumentCloseoutRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementDocument.closeout.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
   );
 
   static const eventRehearsalMovementDocumentDepartureCheckpointRequestDueAt = CatchContractFieldConstraints(
@@ -92498,6 +94255,15 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.sourceHash': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsSourceHash,
     'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.transferState': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsTransferState,
     'eventRehearsalBootstrapCallableResponse.movementReview.actorUid': eventRehearsalBootstrapCallableResponseMovementReviewActorUid,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.assignedAt': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeAssignedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.assignedBy': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeAssignedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.operationId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeOperationId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.previousResponsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangePreviousResponsibleOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.reason': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.responsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeResponsibleOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.revision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.revision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentSourceHash,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.kind': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityKind,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.label': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityLabel,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.members': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityMembers,
@@ -92516,6 +94282,36 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.reportStatus': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityReportStatus,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.rosterId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityRosterId,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.checkpointId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCheckpointId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.changedAt': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeChangedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.changedBy': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeChangedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositions,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.attendeeId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsAttendeeId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.disposition': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsDisposition,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.kind': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.resolvedAt': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsResolvedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.resolvedBy': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsResolvedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.revision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.dispositions.items.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionDispositionsItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.kind': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.accountedFor': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportAccountedFor,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.accountedFor.items': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportAccountedForItems,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.correctionReason': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportCorrectionReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.reportedAt': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportReportedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.reportedBy': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportReportedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.revision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.decision.report.rosterHash': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeDecisionReportRosterHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.operationId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeOperationId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.previousRevision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangePreviousRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.reason': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.change.revision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutChangeRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.eligibility.attendeeIds': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutEligibilityAttendeeIds,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.eligibility.attendeeIds.items': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutEligibilityAttendeeIdsItems,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.eligibility.kind': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutEligibilityKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.eligibility.reason': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutEligibilityReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.revision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutSourceHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.state.kind': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutStateKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.closeout.state.reason': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointCloseoutStateReason,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.departure.checkpointRequest.dueAt': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointDepartureCheckpointRequestDueAt,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.departure.checkpointRequest.responsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointDepartureCheckpointRequestResponsibleOperatorId,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.departure.confirmedAt': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointDepartureConfirmedAt,
@@ -92570,7 +94366,36 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.history.items.rosterSize': eventRehearsalBootstrapCallableResponseMovementReviewHistoryItemsRosterSize,
     'eventRehearsalBootstrapCallableResponse.movementReview.nextBeforeRevision': eventRehearsalBootstrapCallableResponseMovementReviewNextBeforeRevision,
     'eventRehearsalBootstrapCallableResponse.movementReview.organizerId': eventRehearsalBootstrapCallableResponseMovementReviewOrganizerId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.assignedAt': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentAssignedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.assignedBy': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentAssignedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.operationId': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentOperationId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.previousResponsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentPreviousResponsibleOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.reason': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.responsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentResponsibleOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.assignment.revision': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentAssignmentRevision,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.clockId': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentClockId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.changedAt': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutChangedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.changedBy': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutChangedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositions,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.attendeeId': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsAttendeeId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.disposition': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsDisposition,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.kind': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.resolvedAt': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsResolvedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.resolvedBy': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsResolvedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.revision': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.dispositions.items.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionDispositionsItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.kind': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.accountedFor': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportAccountedFor,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.accountedFor.items': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportAccountedForItems,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.correctionReason': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportCorrectionReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.reportedAt': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportReportedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.reportedBy': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportReportedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.revision': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.decision.report.rosterHash': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutDecisionReportRosterHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.operationId': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutOperationId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.previousRevision': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutPreviousRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.reason': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.closeout.revision': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentCloseoutRevision,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.departure.checkpointRequest.dueAt': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentDepartureCheckpointRequestDueAt,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.departure.checkpointRequest.responsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentDepartureCheckpointRequestResponsibleOperatorId,
     'eventRehearsalBootstrapCallableResponse.movementReview.progress.current.departure.confirmedAt': eventRehearsalBootstrapCallableResponseMovementReviewProgressCurrentDepartureConfirmedAt,
@@ -92641,7 +94466,36 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.roster.unavailable.items.attendeeId': eventRehearsalBootstrapCallableResponseMovementReviewRosterUnavailableItemsAttendeeId,
     'eventRehearsalBootstrapCallableResponse.movementReview.roster.unavailable.items.reason': eventRehearsalBootstrapCallableResponseMovementReviewRosterUnavailableItemsReason,
     'eventRehearsalBootstrapCallableResponse.movementReview.runtimeRevision': eventRehearsalBootstrapCallableResponseMovementReviewRuntimeRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.assignedAt': eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentAssignedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.assignedBy': eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentAssignedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.operationId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentOperationId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.previousResponsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentPreviousResponsibleOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.reason': eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.responsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentResponsibleOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.assignment.revision': eventRehearsalBootstrapCallableResponseMovementReviewSelectedAssignmentRevision,
     'eventRehearsalBootstrapCallableResponse.movementReview.selected.clockId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedClockId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.changedAt': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutChangedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.changedBy': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutChangedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositions,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.attendeeId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsAttendeeId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.disposition': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsDisposition,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.kind': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.resolvedAt': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsResolvedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.resolvedBy': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsResolvedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.revision': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.dispositions.items.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionDispositionsItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.kind': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.accountedFor': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportAccountedFor,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.accountedFor.items': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportAccountedForItems,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.correctionReason': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportCorrectionReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.reportedAt': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportReportedAt,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.reportedBy': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportReportedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.revision': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.decision.report.rosterHash': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutDecisionReportRosterHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.operationId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutOperationId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.previousRevision': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutPreviousRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.reason': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.selected.closeout.revision': eventRehearsalBootstrapCallableResponseMovementReviewSelectedCloseoutRevision,
     'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.checkpointRequest.dueAt': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureCheckpointRequestDueAt,
     'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.checkpointRequest.responsibleOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureCheckpointRequestResponsibleOperatorId,
     'eventRehearsalBootstrapCallableResponse.movementReview.selected.departure.confirmedAt': eventRehearsalBootstrapCallableResponseMovementReviewSelectedDepartureConfirmedAt,
@@ -93078,6 +94932,15 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMessageDocument.record.updatedAt': eventRehearsalMessageDocumentRecordUpdatedAt,
     'eventRehearsalMessageDocument.sessionId': eventRehearsalMessageDocumentSessionId,
     'eventRehearsalMovementCallableResponse.actorUid': eventRehearsalMovementCallableResponseActorUid,
+    'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.assignedAt': eventRehearsalMovementCallableResponseCheckpointAssignmentChangeAssignedAt,
+    'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.assignedBy': eventRehearsalMovementCallableResponseCheckpointAssignmentChangeAssignedBy,
+    'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.operationId': eventRehearsalMovementCallableResponseCheckpointAssignmentChangeOperationId,
+    'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.previousResponsibleOperatorId': eventRehearsalMovementCallableResponseCheckpointAssignmentChangePreviousResponsibleOperatorId,
+    'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.reason': eventRehearsalMovementCallableResponseCheckpointAssignmentChangeReason,
+    'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.responsibleOperatorId': eventRehearsalMovementCallableResponseCheckpointAssignmentChangeResponsibleOperatorId,
+    'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.revision': eventRehearsalMovementCallableResponseCheckpointAssignmentChangeRevision,
+    'eventRehearsalMovementCallableResponse.checkpoint.assignment.revision': eventRehearsalMovementCallableResponseCheckpointAssignmentRevision,
+    'eventRehearsalMovementCallableResponse.checkpoint.assignment.sourceHash': eventRehearsalMovementCallableResponseCheckpointAssignmentSourceHash,
     'eventRehearsalMovementCallableResponse.checkpoint.availability.kind': eventRehearsalMovementCallableResponseCheckpointAvailabilityKind,
     'eventRehearsalMovementCallableResponse.checkpoint.availability.label': eventRehearsalMovementCallableResponseCheckpointAvailabilityLabel,
     'eventRehearsalMovementCallableResponse.checkpoint.availability.members': eventRehearsalMovementCallableResponseCheckpointAvailabilityMembers,
@@ -93096,6 +94959,36 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.checkpoint.availability.reportStatus': eventRehearsalMovementCallableResponseCheckpointAvailabilityReportStatus,
     'eventRehearsalMovementCallableResponse.checkpoint.availability.rosterId': eventRehearsalMovementCallableResponseCheckpointAvailabilityRosterId,
     'eventRehearsalMovementCallableResponse.checkpoint.checkpointId': eventRehearsalMovementCallableResponseCheckpointCheckpointId,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.changedAt': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeChangedAt,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.changedBy': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeChangedBy,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositions,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.attendeeId': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsAttendeeId,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.disposition': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsDisposition,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.kind': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsKind,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.resolvedAt': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsResolvedAt,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.resolvedBy': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsResolvedBy,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.revision': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsRevision,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.dispositions.items.sourceHash': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionDispositionsItemsSourceHash,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.kind': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionKind,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.accountedFor': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportAccountedFor,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.accountedFor.items': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportAccountedForItems,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.correctionReason': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportCorrectionReason,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.reportedAt': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportReportedAt,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.reportedBy': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportReportedBy,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.revision': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportRevision,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.decision.report.rosterHash': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeDecisionReportRosterHash,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.operationId': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeOperationId,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.previousRevision': eventRehearsalMovementCallableResponseCheckpointCloseoutChangePreviousRevision,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.reason': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeReason,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.change.revision': eventRehearsalMovementCallableResponseCheckpointCloseoutChangeRevision,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.eligibility.attendeeIds': eventRehearsalMovementCallableResponseCheckpointCloseoutEligibilityAttendeeIds,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.eligibility.attendeeIds.items': eventRehearsalMovementCallableResponseCheckpointCloseoutEligibilityAttendeeIdsItems,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.eligibility.kind': eventRehearsalMovementCallableResponseCheckpointCloseoutEligibilityKind,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.eligibility.reason': eventRehearsalMovementCallableResponseCheckpointCloseoutEligibilityReason,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.revision': eventRehearsalMovementCallableResponseCheckpointCloseoutRevision,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.sourceHash': eventRehearsalMovementCallableResponseCheckpointCloseoutSourceHash,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.state.kind': eventRehearsalMovementCallableResponseCheckpointCloseoutStateKind,
+    'eventRehearsalMovementCallableResponse.checkpoint.closeout.state.reason': eventRehearsalMovementCallableResponseCheckpointCloseoutStateReason,
     'eventRehearsalMovementCallableResponse.checkpoint.departure.checkpointRequest.dueAt': eventRehearsalMovementCallableResponseCheckpointDepartureCheckpointRequestDueAt,
     'eventRehearsalMovementCallableResponse.checkpoint.departure.checkpointRequest.responsibleOperatorId': eventRehearsalMovementCallableResponseCheckpointDepartureCheckpointRequestResponsibleOperatorId,
     'eventRehearsalMovementCallableResponse.checkpoint.departure.confirmedAt': eventRehearsalMovementCallableResponseCheckpointDepartureConfirmedAt,
@@ -93150,7 +95043,36 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.history.items.rosterSize': eventRehearsalMovementCallableResponseHistoryItemsRosterSize,
     'eventRehearsalMovementCallableResponse.nextBeforeRevision': eventRehearsalMovementCallableResponseNextBeforeRevision,
     'eventRehearsalMovementCallableResponse.organizerId': eventRehearsalMovementCallableResponseOrganizerId,
+    'eventRehearsalMovementCallableResponse.progress.current.assignment.assignedAt': eventRehearsalMovementCallableResponseProgressCurrentAssignmentAssignedAt,
+    'eventRehearsalMovementCallableResponse.progress.current.assignment.assignedBy': eventRehearsalMovementCallableResponseProgressCurrentAssignmentAssignedBy,
+    'eventRehearsalMovementCallableResponse.progress.current.assignment.operationId': eventRehearsalMovementCallableResponseProgressCurrentAssignmentOperationId,
+    'eventRehearsalMovementCallableResponse.progress.current.assignment.previousResponsibleOperatorId': eventRehearsalMovementCallableResponseProgressCurrentAssignmentPreviousResponsibleOperatorId,
+    'eventRehearsalMovementCallableResponse.progress.current.assignment.reason': eventRehearsalMovementCallableResponseProgressCurrentAssignmentReason,
+    'eventRehearsalMovementCallableResponse.progress.current.assignment.responsibleOperatorId': eventRehearsalMovementCallableResponseProgressCurrentAssignmentResponsibleOperatorId,
+    'eventRehearsalMovementCallableResponse.progress.current.assignment.revision': eventRehearsalMovementCallableResponseProgressCurrentAssignmentRevision,
     'eventRehearsalMovementCallableResponse.progress.current.clockId': eventRehearsalMovementCallableResponseProgressCurrentClockId,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.changedAt': eventRehearsalMovementCallableResponseProgressCurrentCloseoutChangedAt,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.changedBy': eventRehearsalMovementCallableResponseProgressCurrentCloseoutChangedBy,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositions,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.attendeeId': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsAttendeeId,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.disposition': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsDisposition,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.kind': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsKind,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.resolvedAt': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsResolvedAt,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.resolvedBy': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsResolvedBy,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.revision': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsRevision,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.dispositions.items.sourceHash': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionDispositionsItemsSourceHash,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.kind': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionKind,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.accountedFor': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportAccountedFor,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.accountedFor.items': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportAccountedForItems,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.correctionReason': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportCorrectionReason,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.reportedAt': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportReportedAt,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.reportedBy': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportReportedBy,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.revision': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportRevision,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.decision.report.rosterHash': eventRehearsalMovementCallableResponseProgressCurrentCloseoutDecisionReportRosterHash,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.operationId': eventRehearsalMovementCallableResponseProgressCurrentCloseoutOperationId,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.previousRevision': eventRehearsalMovementCallableResponseProgressCurrentCloseoutPreviousRevision,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.reason': eventRehearsalMovementCallableResponseProgressCurrentCloseoutReason,
+    'eventRehearsalMovementCallableResponse.progress.current.closeout.revision': eventRehearsalMovementCallableResponseProgressCurrentCloseoutRevision,
     'eventRehearsalMovementCallableResponse.progress.current.departure.checkpointRequest.dueAt': eventRehearsalMovementCallableResponseProgressCurrentDepartureCheckpointRequestDueAt,
     'eventRehearsalMovementCallableResponse.progress.current.departure.checkpointRequest.responsibleOperatorId': eventRehearsalMovementCallableResponseProgressCurrentDepartureCheckpointRequestResponsibleOperatorId,
     'eventRehearsalMovementCallableResponse.progress.current.departure.confirmedAt': eventRehearsalMovementCallableResponseProgressCurrentDepartureConfirmedAt,
@@ -93221,7 +95143,36 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.roster.unavailable.items.attendeeId': eventRehearsalMovementCallableResponseRosterUnavailableItemsAttendeeId,
     'eventRehearsalMovementCallableResponse.roster.unavailable.items.reason': eventRehearsalMovementCallableResponseRosterUnavailableItemsReason,
     'eventRehearsalMovementCallableResponse.runtimeRevision': eventRehearsalMovementCallableResponseRuntimeRevision,
+    'eventRehearsalMovementCallableResponse.selected.assignment.assignedAt': eventRehearsalMovementCallableResponseSelectedAssignmentAssignedAt,
+    'eventRehearsalMovementCallableResponse.selected.assignment.assignedBy': eventRehearsalMovementCallableResponseSelectedAssignmentAssignedBy,
+    'eventRehearsalMovementCallableResponse.selected.assignment.operationId': eventRehearsalMovementCallableResponseSelectedAssignmentOperationId,
+    'eventRehearsalMovementCallableResponse.selected.assignment.previousResponsibleOperatorId': eventRehearsalMovementCallableResponseSelectedAssignmentPreviousResponsibleOperatorId,
+    'eventRehearsalMovementCallableResponse.selected.assignment.reason': eventRehearsalMovementCallableResponseSelectedAssignmentReason,
+    'eventRehearsalMovementCallableResponse.selected.assignment.responsibleOperatorId': eventRehearsalMovementCallableResponseSelectedAssignmentResponsibleOperatorId,
+    'eventRehearsalMovementCallableResponse.selected.assignment.revision': eventRehearsalMovementCallableResponseSelectedAssignmentRevision,
     'eventRehearsalMovementCallableResponse.selected.clockId': eventRehearsalMovementCallableResponseSelectedClockId,
+    'eventRehearsalMovementCallableResponse.selected.closeout.changedAt': eventRehearsalMovementCallableResponseSelectedCloseoutChangedAt,
+    'eventRehearsalMovementCallableResponse.selected.closeout.changedBy': eventRehearsalMovementCallableResponseSelectedCloseoutChangedBy,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositions,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.attendeeId': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsAttendeeId,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.disposition': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsDisposition,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.kind': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsKind,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.resolvedAt': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsResolvedAt,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.resolvedBy': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsResolvedBy,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.revision': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsRevision,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.dispositions.items.sourceHash': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionDispositionsItemsSourceHash,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.kind': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionKind,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.accountedFor': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportAccountedFor,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.accountedFor.items': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportAccountedForItems,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.correctionReason': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportCorrectionReason,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.reportedAt': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportReportedAt,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.reportedBy': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportReportedBy,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.revision': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportRevision,
+    'eventRehearsalMovementCallableResponse.selected.closeout.decision.report.rosterHash': eventRehearsalMovementCallableResponseSelectedCloseoutDecisionReportRosterHash,
+    'eventRehearsalMovementCallableResponse.selected.closeout.operationId': eventRehearsalMovementCallableResponseSelectedCloseoutOperationId,
+    'eventRehearsalMovementCallableResponse.selected.closeout.previousRevision': eventRehearsalMovementCallableResponseSelectedCloseoutPreviousRevision,
+    'eventRehearsalMovementCallableResponse.selected.closeout.reason': eventRehearsalMovementCallableResponseSelectedCloseoutReason,
+    'eventRehearsalMovementCallableResponse.selected.closeout.revision': eventRehearsalMovementCallableResponseSelectedCloseoutRevision,
     'eventRehearsalMovementCallableResponse.selected.departure.checkpointRequest.dueAt': eventRehearsalMovementCallableResponseSelectedDepartureCheckpointRequestDueAt,
     'eventRehearsalMovementCallableResponse.selected.departure.checkpointRequest.responsibleOperatorId': eventRehearsalMovementCallableResponseSelectedDepartureCheckpointRequestResponsibleOperatorId,
     'eventRehearsalMovementCallableResponse.selected.departure.confirmedAt': eventRehearsalMovementCallableResponseSelectedDepartureConfirmedAt,
@@ -93256,7 +95207,36 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.serverTime': eventRehearsalMovementCallableResponseServerTime,
     'eventRehearsalMovementCallableResponse.sessionId': eventRehearsalMovementCallableResponseSessionId,
     'eventRehearsalMovementCallableResponse.setupRevision': eventRehearsalMovementCallableResponseSetupRevision,
+    'eventRehearsalMovementDocument.assignment.assignedAt': eventRehearsalMovementDocumentAssignmentAssignedAt,
+    'eventRehearsalMovementDocument.assignment.assignedBy': eventRehearsalMovementDocumentAssignmentAssignedBy,
+    'eventRehearsalMovementDocument.assignment.operationId': eventRehearsalMovementDocumentAssignmentOperationId,
+    'eventRehearsalMovementDocument.assignment.previousResponsibleOperatorId': eventRehearsalMovementDocumentAssignmentPreviousResponsibleOperatorId,
+    'eventRehearsalMovementDocument.assignment.reason': eventRehearsalMovementDocumentAssignmentReason,
+    'eventRehearsalMovementDocument.assignment.responsibleOperatorId': eventRehearsalMovementDocumentAssignmentResponsibleOperatorId,
+    'eventRehearsalMovementDocument.assignment.revision': eventRehearsalMovementDocumentAssignmentRevision,
     'eventRehearsalMovementDocument.clockId': eventRehearsalMovementDocumentClockId,
+    'eventRehearsalMovementDocument.closeout.changedAt': eventRehearsalMovementDocumentCloseoutChangedAt,
+    'eventRehearsalMovementDocument.closeout.changedBy': eventRehearsalMovementDocumentCloseoutChangedBy,
+    'eventRehearsalMovementDocument.closeout.decision.dispositions': eventRehearsalMovementDocumentCloseoutDecisionDispositions,
+    'eventRehearsalMovementDocument.closeout.decision.dispositions.items.attendeeId': eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsAttendeeId,
+    'eventRehearsalMovementDocument.closeout.decision.dispositions.items.disposition': eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsDisposition,
+    'eventRehearsalMovementDocument.closeout.decision.dispositions.items.kind': eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsKind,
+    'eventRehearsalMovementDocument.closeout.decision.dispositions.items.resolvedAt': eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsResolvedAt,
+    'eventRehearsalMovementDocument.closeout.decision.dispositions.items.resolvedBy': eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsResolvedBy,
+    'eventRehearsalMovementDocument.closeout.decision.dispositions.items.revision': eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsRevision,
+    'eventRehearsalMovementDocument.closeout.decision.dispositions.items.sourceHash': eventRehearsalMovementDocumentCloseoutDecisionDispositionsItemsSourceHash,
+    'eventRehearsalMovementDocument.closeout.decision.kind': eventRehearsalMovementDocumentCloseoutDecisionKind,
+    'eventRehearsalMovementDocument.closeout.decision.report.accountedFor': eventRehearsalMovementDocumentCloseoutDecisionReportAccountedFor,
+    'eventRehearsalMovementDocument.closeout.decision.report.accountedFor.items': eventRehearsalMovementDocumentCloseoutDecisionReportAccountedForItems,
+    'eventRehearsalMovementDocument.closeout.decision.report.correctionReason': eventRehearsalMovementDocumentCloseoutDecisionReportCorrectionReason,
+    'eventRehearsalMovementDocument.closeout.decision.report.reportedAt': eventRehearsalMovementDocumentCloseoutDecisionReportReportedAt,
+    'eventRehearsalMovementDocument.closeout.decision.report.reportedBy': eventRehearsalMovementDocumentCloseoutDecisionReportReportedBy,
+    'eventRehearsalMovementDocument.closeout.decision.report.revision': eventRehearsalMovementDocumentCloseoutDecisionReportRevision,
+    'eventRehearsalMovementDocument.closeout.decision.report.rosterHash': eventRehearsalMovementDocumentCloseoutDecisionReportRosterHash,
+    'eventRehearsalMovementDocument.closeout.operationId': eventRehearsalMovementDocumentCloseoutOperationId,
+    'eventRehearsalMovementDocument.closeout.previousRevision': eventRehearsalMovementDocumentCloseoutPreviousRevision,
+    'eventRehearsalMovementDocument.closeout.reason': eventRehearsalMovementDocumentCloseoutReason,
+    'eventRehearsalMovementDocument.closeout.revision': eventRehearsalMovementDocumentCloseoutRevision,
     'eventRehearsalMovementDocument.departure.checkpointRequest.dueAt': eventRehearsalMovementDocumentDepartureCheckpointRequestDueAt,
     'eventRehearsalMovementDocument.departure.checkpointRequest.responsibleOperatorId': eventRehearsalMovementDocumentDepartureCheckpointRequestResponsibleOperatorId,
     'eventRehearsalMovementDocument.departure.confirmedAt': eventRehearsalMovementDocumentDepartureConfirmedAt,

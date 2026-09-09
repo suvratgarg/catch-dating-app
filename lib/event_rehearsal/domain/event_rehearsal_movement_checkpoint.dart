@@ -7,11 +7,17 @@ final class RehearsalMovementCheckpoint {
     this.sourceHash,
     this.availability,
     this.request,
+    this.assignment,
+    this.closeout,
   );
   final RehearsalMovementRecord record;
   final String checkpointId, sourceHash;
   final AssistanceCheckpointAvailability availability;
   final AssistanceCheckpointRequest? request;
+  final AssistanceCheckpointSupplement<RehearsalCheckpointAssignmentReview>
+  assignment;
+  final AssistanceCheckpointSupplement<RehearsalCheckpointCloseoutReview>
+  closeout;
   int get progressRevision => record.revision;
   int get revision => record.report?.revision ?? 0;
   RehearsalDeparture get departure => record.departure;
@@ -25,7 +31,8 @@ final class RehearsalMovementCheckpoint {
     required List<RehearsalMovementDestination> destinations,
     required RehearsalMovementRecord? selected,
   }) {
-    final m = assistanceObject(raw, {
+    final m = assistanceObject(raw);
+    assistanceObject(m, {
       'progressRevision',
       'checkpointId',
       'sourceHash',
@@ -34,6 +41,8 @@ final class RehearsalMovementCheckpoint {
       'report',
       'request',
       'departure',
+      if (m.containsKey('assignment')) 'assignment',
+      if (m.containsKey('closeout')) 'closeout',
     });
     if (selected == null ||
         selected.departure.checkpointId == null ||
@@ -94,11 +103,32 @@ final class RehearsalMovementCheckpoint {
         ? null
         : AssistanceCheckpointRequest.fromJson(m['request']);
     final original = departure.checkpointRequest;
+    final assignment = _managementSupplement(
+      m,
+      'assignment',
+      original != null,
+      (v) => RehearsalCheckpointAssignmentReview._parse(v, selected),
+    );
+    final closeout = _managementSupplement(
+      m,
+      'closeout',
+      original != null,
+      (v) => RehearsalCheckpointCloseoutReview._parse(v, selected, available),
+    );
+    if (selected.assignment != null && !assignment.isProvided ||
+        selected.closeout != null && !closeout.isProvided) {
+      throw const FormatException(
+        'Stored decisions require management reviews.',
+      );
+    }
     final complete =
         report != null &&
         report.accountedFor.length == departure.roster?.members.length;
     final expected = complete
         ? AssistanceCheckpointRequestState.complete
+        : closeout.value?.state.kind ==
+              AssistanceCheckpointCloseoutKind.closedOut
+        ? AssistanceCheckpointRequestState.closedOut
         : available is! AssistanceCheckpointRoster
         ? AssistanceCheckpointRequestState.sourceUnavailable
         : report != null
@@ -108,8 +138,10 @@ final class RehearsalMovementCheckpoint {
         : AssistanceCheckpointRequestState.awaitingReport;
     if ((request == null) != (original == null) ||
         request != null &&
-            (request.responsibleOperatorId != original!.responsibleOperatorId ||
-                request.dueAt != original.dueAt ||
+            (request.responsibleOperatorId !=
+                    (selected.assignment?.responsibleOperatorId ??
+                        original!.responsibleOperatorId) ||
+                request.dueAt != original!.dueAt ||
                 request.state != expected)) {
       throw const FormatException(
         'Checkpoint request contradicts its departure or observations.',
@@ -121,6 +153,8 @@ final class RehearsalMovementCheckpoint {
       assistanceHash(m['sourceHash']),
       available,
       request,
+      assignment,
+      closeout,
     );
   }
 }

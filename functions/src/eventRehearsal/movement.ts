@@ -1,3 +1,5 @@
+import {practiceCheckpointReview} from "./movementCheckpoint";
+import {preparePracticeCheckpointManagement} from "./movementManagement";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import type {EventRehearsalDocument as Session,
@@ -12,14 +14,13 @@ import {prepareDepartureDecision, prepareCheckpointObservation,
 import {assertCheckpointRequestDeadline} from
   "../eventSuccess/operations/checkpointRequest";
 import {practiceMovementSource, practiceDepartureRoster,
-  practiceCheckpointVisits, MovementSource, Movement, Review} from
+  MovementSource, Review} from
   "./movementSource";
 import {readPracticeMovements, parsePracticeMovement, practiceMovementId,
   rehearsalMovements, MovementScope, MovementRecords} from "./movementRecords";
 import type {PracticeCaseAuthority} from "./assistanceCases";
 
 type Command = NonNullable<Control["movement"]>;
-type Checkpoint = NonNullable<Review["checkpoint"]>;
 
 export function practiceMovementScope(command: Command): MovementScope {
   return {groupId: command.payload.groupId, progressRevision:
@@ -57,7 +58,8 @@ function projectMovement(session: Session, source: MovementSource,
           text: destination.text, validUntil: source.endAt} : null},
     roster: practiceDepartureRoster(session, source, actors, revision),
     selected,
-    checkpoint: selected ? checkpointReview(session, source, selected, actors,
+    checkpoint: selected ? practiceCheckpointReview(session, source, selected,
+      actors,
       authority) : null,
     history: records.page.map((record) => ({
       progressRevision: record.progressRevision,
@@ -68,42 +70,6 @@ function projectMovement(session: Session, source: MovementSource,
       accountedForCount: record.report?.accountedFor.length ?? 0,
       checkpointRequest: record.departure.checkpointRequest})),
     nextBeforeRevision: records.nextBeforeRevision};
-}
-
-function checkpointReview(session: Session, source: MovementSource,
-  record: Movement, actors: readonly Actor[],
-  authority: PracticeCaseAuthority): Checkpoint | null {
-  const {departure, report} = record;
-  const target = departure.destination;
-  const checkpointId = target.kind === "itineraryStop" ? target.stopId :
-    target.kind === "groupCheckpoint" ? target.checkpointId : null;
-  if (checkpointId === null) return null;
-  const visits = practiceCheckpointVisits(session, source, record, actors);
-  const destination = source.destinations.find((d) =>
-    hash(d.target) === hash(target));
-  const availability: Checkpoint["availability"] =
-    !departure.roster ? {kind: "unavailable", reason: "rosterNotRecorded"} :
-      departure.sourceHash !== source.sourceHash || !destination ?
-        {kind: "unavailable", reason: "setupChanged"} :
-        {kind: "ready", rosterId: practiceMovementId(source,
-          record.progressRevision), label: destination.label,
-        reportStatus: !report ? "unreported" :
-          report.accountedFor.length === departure.roster.members.length ?
-            "complete" : "partial", members: visits};
-  const original = departure.checkpointRequest;
-  const complete = !!report &&
-    report.accountedFor.length === departure.roster?.members.length;
-  return {progressRevision: record.progressRevision, checkpointId,
-    sourceHash: hash([source.context, source.groupId, source.sourceHash,
-      record, visits]), revision: report?.revision ?? 0,
-    report, availability, departure,
-    request: !original ? null : complete ? {...original, state: "complete",
-      ownerAvailability: "notRequired"} : {...original, state:
-      availability.kind !== "ready" ? "sourceUnavailable" :
-        report ? "discrepancy" : source.now >= original.dueAt ? "overdue" :
-          "awaitingReport", ownerAvailability: isOrganizerManager(
-      authority.organizer,
-      original.responsibleOperatorId) ? "current" : "needsReassignment"}};
 }
 
 /** The parent owns generation, runtime revision, capacity and receipts. */
@@ -118,7 +84,7 @@ export async function preparePracticeMovementCommand(db: Firestore,
   }
   const source = practiceMovementSource(sessionId, session,
     command.payload.groupId);
-  const scope = command.kind === "recordCheckpoint" ?
+  const scope = command.kind !== "confirmDeparture" ?
     practiceMovementScope(command) : {groupId: command.payload.groupId};
   const records = await readPracticeMovements(db, tx, source, scope);
   const review = projectMovement(session, source, actors, records, authority);
@@ -166,17 +132,23 @@ export async function preparePracticeMovementCommand(db: Firestore,
     throw new HttpsError("failed-precondition",
       "Choose a saved checkpoint.");
   }
-  const change = prepareCheckpointObservation({...checkpoint,
-    previouslyAccountedFor: record.report?.accountedFor ?? []},
-  command.payload, command.expectedSourceHash);
-  const report = {revision: checkpoint.revision + 1,
-    rosterHash: hash(record.departure), ...change,
-    reportedBy: authority.actorUid,
-    reportedAt: source.now};
-  parsePracticeMovement({...record, report}, source);
+  let updates: Partial<Pick<MovementRecords["page"][number],
+    "report" | "assignment" | "closeout">>;
+  if (command.kind === "recordCheckpoint") {
+    const change = prepareCheckpointObservation({...checkpoint,
+      previouslyAccountedFor: record.report?.accountedFor ?? []},
+    command.payload, command.expectedSourceHash);
+    updates = {report: {revision: checkpoint.revision + 1,
+      rosterHash: hash(record.departure), ...change,
+      reportedBy: authority.actorUid, reportedAt: source.now}};
+  } else {
+    updates = preparePracticeCheckpointManagement(record, checkpoint,
+      source, command, authority, operationId);
+  }
+  parsePracticeMovement({...record, ...updates}, source);
   return {confirmedDeparture: null, commit: () => tx.update(
     db.collection(rehearsalMovements).doc(
-      practiceMovementId(source, record.progressRevision)), {report})};
+      practiceMovementId(source, record.progressRevision)), updates)};
 }
 
 function requireAuthority(authority: PracticeCaseAuthority) {

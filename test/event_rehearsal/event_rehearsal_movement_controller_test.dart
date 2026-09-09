@@ -9,10 +9,12 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_as
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'event_rehearsal_checkpoint_management_fixtures.dart';
 import 'event_rehearsal_movement_fixtures.dart';
 
 void main() {
@@ -314,10 +316,61 @@ void main() {
       expect(container.read(query).asData, isNull);
     },
   );
+  for (final scenario in [
+    (
+      before: 'departed',
+      after: 'reassigned',
+      decision: ReassignCheckpointReporter(
+        reporterId: 'host-1',
+        reason: 'Taking over the report.',
+      ),
+    ),
+    (
+      before: 'resolved',
+      after: 'closed',
+      decision: CloseCheckpointRequest('Reviewed every outstanding guest.'),
+    ),
+    (
+      before: 'needsReview',
+      after: 'reopened',
+      decision: ReopenCheckpointRequest('Reviewed every outstanding guest.'),
+    ),
+  ]) {
+    test(
+      '${scenario.after} retains the exact pending command through refresh',
+      () async {
+        repository.management = true;
+        repository.sample = scenario.before;
+        final page = await load();
+        final actions = open(page);
+        final command = RehearsalManageCheckpoint(
+          snapshot: page.snapshot,
+          decision: scenario.decision,
+        );
+        await fail(actions.submit(command));
+        final original = repository.writes.single.change;
+        container.invalidate(query);
+        final refreshed = (await settle()).requireValue;
+        actions.open(refreshed);
+        expect(form().change, same(original));
+        final pending = actions.retry();
+        expect(repository.writes.last.change, same(original));
+        final result = EventRehearsalBootstrap.fromCallableData(
+          managementResult(original, scenario.after),
+        );
+        repository.writes.last.result.complete(result);
+        expect(await pending, same(result));
+        expect(form().phase, RehearsalMovementPhase.saved);
+      },
+    );
+  }
 }
 
 class _Repository extends Fake implements EventRehearsalRepository {
   String sample = 'ready';
+  bool management = false;
+  Map<String, Object?> sampleData(String name) =>
+      management ? managementBootstrap(name) : movementBootstrap(name);
   String? movementSample;
   bool wrongGeneration = false;
   int movementReads = 0;
@@ -332,7 +385,7 @@ class _Repository extends Fake implements EventRehearsalRepository {
       >[];
   @override
   Future<EventRehearsalBootstrap> fetch(String sessionId) async {
-    final raw = movementBootstrap(sample);
+    final raw = sampleData(sample);
     raw.remove('movementReview');
     if (wrongGeneration) {
       final session = movementObjectAt(raw, ['session']);
@@ -350,7 +403,7 @@ class _Repository extends Fake implements EventRehearsalRepository {
     movementReads++;
     if (!movementStarted.isCompleted) movementStarted.complete();
     if (delayedMovement != null) return delayedMovement!.future;
-    final raw = movementObjectAt(movementBootstrap(movementSample ?? sample), [
+    final raw = movementObjectAt(sampleData(movementSample ?? sample), [
       'movementReview',
     ]);
     raw['actorUid'] = actorUid;

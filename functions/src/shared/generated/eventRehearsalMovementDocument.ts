@@ -61,4 +61,51 @@ export interface EventRehearsalMovementDocument {
     reportedBy: string;
     correctionReason: string | null;
   } | null;
+  assignment?: {
+    revision: number;
+    responsibleOperatorId: string;
+    previousResponsibleOperatorId: string;
+    assignedBy: string;
+    assignedAt: number;
+    reason: string;
+    operationId: string;
+  };
+  closeout?: {
+    revision: number;
+    previousRevision: number;
+    changedBy: string;
+    changedAt: number;
+    reason: string;
+    decision:
+      | {
+          kind: "close";
+          report: {
+            revision: number;
+            rosterHash: string;
+            /**
+             * @maxItems 50
+             */
+            accountedFor: string[];
+            reportedAt: number;
+            reportedBy: string;
+            correctionReason: string | null;
+          };
+          /**
+           * @maxItems 50
+           */
+          dispositions: {
+            kind: "resolved";
+            disposition: "returned" | "departed";
+            revision: number;
+            resolvedAt: number;
+            resolvedBy: string;
+            sourceHash: string;
+            attendeeId: string;
+          }[];
+        }
+      | {
+          kind: "reopen";
+        };
+    operationId: string;
+  };
 }

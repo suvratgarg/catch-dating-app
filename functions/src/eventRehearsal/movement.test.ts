@@ -1,107 +1,20 @@
+import {harness, departure, report} from "./movementTestFixtures";
 import assert from "node:assert/strict";
 import test from "node:test";
 import {readFileSync, writeFileSync} from "node:fs";
 import {randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
-import type {Firestore} from "firebase-admin/firestore";
-import type {OrganizerDocument} from "../shared/generated/firestoreAdminTypes";
 import {validateControlEventRehearsalCallablePayload} from
   "../shared/generated/validators/controlEventRehearsalInput";
-import {validateEventRehearsalMovementCallableResponse} from
-  "../shared/generated/validators/eventRehearsalMovementOutput";
 import type {ControlEventRehearsalCallablePayload as Control} from
   "../shared/generated/controlEventRehearsalCallablePayload";
-import {FakeFirestore} from "../operations/testFirestore";
 import {operationContentHash as hash} from "../operations/durableActions";
-import {practiceSession} from "./assistanceTestFixtures";
 import {buildRehearsalActors, applyRehearsalBehavior} from "./engine";
-import {practiceMembershipView, transferPracticeMembership} from "./membership";
-import {practiceMovementReview, preparePracticeMovementCommand} from
-  "./movement";
 import {rehearsalMovements, MovementScope, practiceMovementId} from
   "./movementRecords";
-import {practiceMovementSource, Review} from "./movementSource";
+import {practiceMovementSource} from "./movementSource";
 
 type Command = NonNullable<Control["movement"]>;
-function harness(now = Date.now(), id: string = randomUUID()) {
-  const session = practiceSession(now);
-  const fixture = JSON.parse(readFileSync(
-    "../contracts/fixtures/valid/club_doc.json", "utf8"));
-  const schema = JSON.parse(readFileSync(
-    "../contracts/firestore/organizers.schema.json", "utf8"));
-  const organizer = {...Object.fromEntries(Object.entries(fixture).filter(
-    ([k]) => k in schema.properties)), followerCount: 0, organizerPhotos: [],
-  organizerType: "community", hostUserIds: ["host-1", "host-2"]} as
-    unknown as OrganizerDocument;
-  const authority = {organizer, actorUid: "host-1"};
-  session.setup.movementSimulation = {routePlan: null, livePositions: [],
-    lateArrivalGuidance: null, itinerary: ["one", "two"].map((id, i) => ({
-      id, kind: "stop", offsetMinutes: i * 30, title: "Stop " + id,
-      location: {name: "Stop " + id, latitude: 22.7, longitude: 75.8}}))};
-  const actors = buildRehearsalActors(id, 2, 1, session.virtualNow);
-  const fake = new FakeFirestore();
-  const db = fake as unknown as Firestore;
-  const read = async (scope: MovementScope = {groupId: "event:whole"}) => {
-    const review = await db.runTransaction((tx) => practiceMovementReview(db,
-      tx, id, session, actors, scope, authority));
-    assert.equal(validateEventRehearsalMovementCallableResponse(review), true,
-      JSON.stringify(validateEventRehearsalMovementCallableResponse.errors));
-    return review;
-  };
-  const execute = async (command: Command,
-    operationId: string = randomUUID()) => {
-    await db.runTransaction(async (tx) => {
-      const commit = await preparePracticeMovementCommand(db, tx, id, session,
-        actors, command, authority, operationId);
-      commit.commit();
-    });
-    session.runtimeRevision++; session.actionCount++;
-  };
-  const arrive = (i = 0) => actors[i] = applyRehearsalBehavior(actors[i],
-    "arrive", [], session.virtualNow);
-  const leave = (i = 0) => actors[i] = applyRehearsalBehavior(actors[i],
-    "leaveEarly", [], session.virtualNow);
-  const group = () => {
-    session.setup.movementSimulation!.routePlan = {version: 2,
-      movementMode: "run", routeShape: "loop", groupStrategy: "paceGroups",
-      stopCadence: "hostedStops", stopKinds: ["regroup"], roleKinds: ["pacer"],
-      paceGroups: [{id: "easy", label: "Easy pace", sortOrder: 0}],
-      path: [{latitude: 22.7, longitude: 75.8},
-        {latitude: 22.71, longitude: 75.81}]};
-  };
-  const place = (i = 0) => {
-    const row = practiceMembershipView(session, actors[i], authority);
-    actors[i] = transferPracticeMembership(session, actors[i], {
-      kind: "transferGroup", actorId: row.attendeeId,
-      expectedSourceHash: row.sourceHash, payload: {attendeeId: row.attendeeId,
-        episodeId: row.episodeId!, expectedParticipationRevision:
-          row.participationRevision, expectedMembershipRevision: row.revision,
-        decision: {kind: "place", groupId: "easy"}}}, authority, randomUUID());
-  };
-  return {id, session, actors, authority, fake, db, read, execute, arrive,
-    leave,
-    group, place};
-}
-function departure(r: Review, ids?: string[], request = false): Command {
-  return {kind: "confirmDeparture", expectedSourceHash: r.progress.sourceHash,
-    payload: {groupId: r.groupId, expectedProgressRevision: r.progress.revision,
-      destination: r.progress.destinations.find((d) =>
-        d.target.kind !== "fixedPlace")!.target,
-      ...(ids === undefined ? {} : {departureRoster: {
-        attendeeIds: ids, expectedSourceHash: r.roster.sourceHash}}),
-      ...(request ? {checkpointRequest: {responsibleOperatorId: "host-2",
-        dueAt: r.serverTime + 60000}} : {})}};
-}
-function report(r: Review, ids: string[],
-  correctionReason: string | null = null):
-  Command {
-  const c = r.checkpoint!;
-  return {kind: "recordCheckpoint", expectedSourceHash: c.sourceHash,
-    payload: {groupId: r.groupId, expectedProgressRevision: c.progressRevision,
-      expectedCheckpointRevision: c.revision, checkpointId: c.checkpointId,
-      accountedFor: ids, correctionReason}};
-}
-
 test("candidates and schedules cannot confirm movement", async () => {
   const h = harness();
   let r = await h.read();

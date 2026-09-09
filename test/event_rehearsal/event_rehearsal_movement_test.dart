@@ -122,6 +122,7 @@ void main() {
         1,
       ]);
       c['visit'] = {'kind': 'unavailable', 'reason': 'visitChanged'};
+      c['disposition'] = {'kind': 'unavailable', 'reason': 'visitChanged'};
       final r = EventRehearsalBootstrap.fromCallableData(raw).movementReview!;
       expect(
         () => RehearsalRecordCheckpoint(

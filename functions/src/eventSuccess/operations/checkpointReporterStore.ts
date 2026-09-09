@@ -1,3 +1,4 @@
+import {prepareCheckpointReassignment} from "./checkpointManagementDecisions";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
@@ -79,22 +80,10 @@ export class CheckpointReporterStore {
         }
         return {s, replay: checkpointResponse("replayed", s, a.revision)};
       }
-      const assignment = checkpointAssignmentView(s)!;
-      if (assignment.sourceHash !== input.expectedSourceHash ||
-          assignment.revision !== payload.expectedAssignmentRevision) {
-        throw checkpointConflict();
-      }
-      if (checkpointAvailability(s).kind !== "ready" ||
-          ["complete", "closedOut"].includes(
-            checkpointRequestView(s)?.state ?? "")) {
-        throw new HttpsError("failed-precondition",
-          "Only an outstanding report with current sources can be reassigned.");
-      }
-      if (effectiveCheckpointRequest(s.requestWork.payload)
-        .responsibleOperatorId === payload.responsibleOperatorId) {
-        throw new HttpsError("failed-precondition",
-          "Choose a different reporter.");
-      }
+      prepareCheckpointReassignment({assignment: checkpointAssignmentView(s)!,
+        availability: checkpointAvailability(s),
+        request: checkpointRequestView(s)},
+      payload, input.expectedSourceHash);
       return {s, replay: null};
     };
     // Authorize and resolve retries before taking the shared work lease.

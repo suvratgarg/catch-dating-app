@@ -1,3 +1,4 @@
+import {prepareCheckpointCloseout} from "./checkpointManagementDecisions";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationCollections} from "../../operations/collections";
@@ -90,19 +91,8 @@ export class CheckpointCloseoutStore {
         return {s, access,
           replay: checkpointResponse("replayed", s, c.revision)};
       }
-      const view = checkpointCloseoutView(s)!;
-      if (view.sourceHash !== input.expectedSourceHash ||
-          view.revision !== payload.expectedCloseoutRevision) {
-        throw checkpointConflict();
-      }
-      if (payload.decision === "close" ?
-        view.eligibility.kind !== "ready" :
-        view.change?.decision.kind !== "close" ||
-          checkpointRequestView(s)?.state === "complete") {
-        throw new HttpsError("failed-precondition", payload.decision ===
-          "close" ? "Review a disposition for every unconfirmed guest first." :
-          "Only a recorded, unsuperseded closeout can be reopened.");
-      }
+      prepareCheckpointCloseout({closeout: checkpointCloseoutView(s)!,
+        request: checkpointRequestView(s)}, payload, input.expectedSourceHash);
       return {s, access, replay: null};
     };
     const initial = await runAssistanceTransaction(this.db, snapshot);

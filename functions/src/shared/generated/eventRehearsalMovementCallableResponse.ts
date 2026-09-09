@@ -103,6 +103,53 @@ export interface EventRehearsalMovementCallableResponse {
         reportedBy: string;
         correctionReason: string | null;
       } | null;
+      assignment?: {
+        revision: number;
+        responsibleOperatorId: string;
+        previousResponsibleOperatorId: string;
+        assignedBy: string;
+        assignedAt: number;
+        reason: string;
+        operationId: string;
+      };
+      closeout?: {
+        revision: number;
+        previousRevision: number;
+        changedBy: string;
+        changedAt: number;
+        reason: string;
+        decision:
+          | {
+              kind: "close";
+              report: {
+                revision: number;
+                rosterHash: string;
+                /**
+                 * @maxItems 50
+                 */
+                accountedFor: string[];
+                reportedAt: number;
+                reportedBy: string;
+                correctionReason: string | null;
+              };
+              /**
+               * @maxItems 50
+               */
+              dispositions: {
+                kind: "resolved";
+                disposition: "returned" | "departed";
+                revision: number;
+                resolvedAt: number;
+                resolvedBy: string;
+                sourceHash: string;
+                attendeeId: string;
+              }[];
+            }
+          | {
+              kind: "reopen";
+            };
+        operationId: string;
+      };
     } | null;
     guidance: {
       /**
@@ -294,6 +341,89 @@ export interface EventRehearsalMovementCallableResponse {
         dueAt: number;
       } | null;
     };
+    assignment?: {
+      revision: number;
+      sourceHash: string;
+      change: {
+        revision: number;
+        responsibleOperatorId: string;
+        previousResponsibleOperatorId: string;
+        assignedBy: string;
+        assignedAt: number;
+        reason: string;
+        operationId: string;
+      } | null;
+    } | null;
+    closeout?: {
+      revision: number;
+      sourceHash: string;
+      change: {
+        revision: number;
+        previousRevision: number;
+        changedBy: string;
+        changedAt: number;
+        reason: string;
+        decision:
+          | {
+              kind: "close";
+              report: {
+                revision: number;
+                rosterHash: string;
+                /**
+                 * @maxItems 50
+                 */
+                accountedFor: string[];
+                reportedAt: number;
+                reportedBy: string;
+                correctionReason: string | null;
+              };
+              /**
+               * @maxItems 50
+               */
+              dispositions: {
+                kind: "resolved";
+                disposition: "returned" | "departed";
+                revision: number;
+                resolvedAt: number;
+                resolvedBy: string;
+                sourceHash: string;
+                attendeeId: string;
+              }[];
+            }
+          | {
+              kind: "reopen";
+            };
+        operationId: string;
+      } | null;
+      state:
+        | {
+            kind: "open" | "reopened" | "closedOut" | "superseded";
+          }
+        | {
+            kind: "needsReview";
+            reason:
+              | "sourceUnavailable"
+              | "reportChanged"
+              | "dispositionChanged";
+          };
+      eligibility:
+        | {
+            kind: "ready";
+          }
+        | {
+            kind: "unavailable";
+            reason:
+              | "sourceUnavailable"
+              | "reportMissing"
+              | "reportComplete"
+              | "unresolvedMembers"
+              | "alreadyClosed";
+            /**
+             * @maxItems 1000
+             */
+            attendeeIds: string[];
+          };
+    } | null;
   } | null;
   /**
    * @maxItems 25
@@ -383,5 +513,52 @@ export interface EventRehearsalMovementCallableResponse {
       reportedBy: string;
       correctionReason: string | null;
     } | null;
+    assignment?: {
+      revision: number;
+      responsibleOperatorId: string;
+      previousResponsibleOperatorId: string;
+      assignedBy: string;
+      assignedAt: number;
+      reason: string;
+      operationId: string;
+    };
+    closeout?: {
+      revision: number;
+      previousRevision: number;
+      changedBy: string;
+      changedAt: number;
+      reason: string;
+      decision:
+        | {
+            kind: "close";
+            report: {
+              revision: number;
+              rosterHash: string;
+              /**
+               * @maxItems 50
+               */
+              accountedFor: string[];
+              reportedAt: number;
+              reportedBy: string;
+              correctionReason: string | null;
+            };
+            /**
+             * @maxItems 50
+             */
+            dispositions: {
+              kind: "resolved";
+              disposition: "returned" | "departed";
+              revision: number;
+              resolvedAt: number;
+              resolvedBy: string;
+              sourceHash: string;
+              attendeeId: string;
+            }[];
+          }
+        | {
+            kind: "reopen";
+          };
+      operationId: string;
+    };
   } | null;
 }

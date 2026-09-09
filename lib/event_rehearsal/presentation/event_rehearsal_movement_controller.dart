@@ -79,7 +79,7 @@ final class RehearsalMovementForm extends RehearsalMovementEditorState {
   );
 }
 
-/// A group owns one pending departure or report across history selection,
+/// A group owns one pending departure, report or checkpoint decision across
 /// refresh and sheet closure. It is never keyed to an arbitrary guest.
 @riverpod
 class EventRehearsalMovementController

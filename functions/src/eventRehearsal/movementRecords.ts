@@ -45,7 +45,39 @@ export function parsePracticeMovement(value: unknown, source: MovementSource,
       report.accountedFor.some((id) => !ids.includes(id)))) {
     throw invalidSource();
   }
+  assertManagement(value, source);
   return value;
+}
+
+function assertManagement(record: Movement, source: MovementSource) {
+  const {assignment: a, closeout: c, ...base} = record;
+  const {departure} = record;
+  const original = departure.checkpointRequest;
+  const time = (at: number) => at >= departure.confirmedAt && at <= source.now;
+  if (a && (!original || !time(a.assignedAt) || a.reason !== a.reason.trim() ||
+      a.operationId === departure.operationId ||
+      a.responsibleOperatorId === a.previousResponsibleOperatorId ||
+      a.revision === 1 && a.previousResponsibleOperatorId !==
+        original.responsibleOperatorId)) throw invalidSource();
+  if (!c) return;
+  if (!original || !time(c.changedAt) || c.reason !== c.reason.trim() ||
+      c.previousRevision !== c.revision - 1 ||
+      c.operationId === departure.operationId ||
+      c.operationId === a?.operationId ||
+      c.decision.kind === "reopen" && c.previousRevision === 0) {
+    throw invalidSource();
+  }
+  if (c.decision.kind !== "close") return;
+  const {report, dispositions} = c.decision;
+  parsePracticeMovement({...base, report}, {...source, now: c.changedAt});
+  const ids = [...report.accountedFor,
+    ...dispositions.map((d) => d.attendeeId)].sort();
+  if (!record.report || report.revision > record.report.revision ||
+      dispositions.length === 0 ||
+      !canonical(dispositions.map((d) => d.attendeeId)) ||
+      hash(ids) !== hash(departure.roster!.members.map((m) => m.attendeeId)) ||
+      dispositions.some((d) => d.resolvedAt < departure.confirmedAt ||
+        d.resolvedAt > c.changedAt)) throw invalidSource();
 }
 function canonical(ids: readonly string[]) {
   return ids.every((id, i) => i === 0 || ids[i - 1] < id);

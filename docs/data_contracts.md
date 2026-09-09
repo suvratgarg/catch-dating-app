@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.103.0
+version: 1.104.0
 updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
@@ -184,8 +184,27 @@ controller owns an unresolved command across sheet closure, history selection an
 refresh. Network ambiguity preserves the exact request; a definitive conflict
 requires a new review. Deliberate snapshot and movement reads must agree on runtime
 revision, and auth transitions revoke both private reviews and pending requests.
-Backend-produced fixtures are checked in both Functions and Flutter tests. Native
-screen mounting, reporter reassignment and explicit checkpoint closeout remain open.
+Backend-produced fixtures are checked in both Functions and Flutter tests.
+
+Rehearsal also supports `reassignCheckpointReporter` and `setCheckpointCloseout`
+through the same movement action, with native commands using the live decision
+vocabulary and the existing group pending-request controller. Optional record
+`assignment` and `closeout` changes have independent revisions and parent action
+identities. They preserve the original departure, deadline and arrival report.
+Legacy records remain readable; private checkpoint reviews explicitly distinguish
+missing legacy metadata from a departure with no reporting request. Native readers
+validate stored decisions, original-roster coverage and derived review states;
+command receipts also preserve the reviewed actor, reason and evidence.
+
+Live and rehearsal share closeout eligibility and decision rules. Closing requires
+an explicit partial report and a current, post-departure visit disposition for each
+unconfirmed original member. It never creates an arrival observation. Changed
+reports or dispositions restore review; a complete report supersedes closeout.
+Reopening retains the saved evidence. Current organizer managers can reassign a
+request to another current manager without extending its original deadline or
+granting access. All changes use the existing bounded rehearsal transaction,
+action receipt and reset/expiry cleanup; no live Operations work or notification
+is created. Native screen mounting and delegated rehearsal staff remain open.
 
 ### Explicit Attendance Closeout
 

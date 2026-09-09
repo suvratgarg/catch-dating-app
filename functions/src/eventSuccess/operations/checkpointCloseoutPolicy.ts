@@ -1,3 +1,5 @@
+import {currentCheckpointCloseout, checkpointCloseoutDecisionState,
+  checkpointCloseoutEligibility} from "./checkpointManagementDecisions";
 import {operationContentHash} from "../../operations/durableActions";
 import type {EventAssistanceCheckpointWork} from
   "../../shared/generated/eventAssistanceCheckpointWork";
@@ -22,68 +24,26 @@ export function assertCloseoutRoster(s: CheckpointState) {
     s.roster!.members.map((m) => m.attendeeId))) throw invalidSource();
 }
 
-/** No source snapshot is inferred from a guest's intention or location. */
+function evidence(s: CheckpointState) {
+  return {availability: checkpointAvailability(s), report: s.report,
+    rosterIds: s.roster?.members.map((m) => m.attendeeId) ?? []};
+}
+
 export function currentCloseoutDecision(s: CheckpointState): Closed | null {
-  const available = checkpointAvailability(s);
-  if (available.kind !== "ready" || !s.report ||
-      available.reportStatus === "complete") return null;
-  const accounted = new Set(s.report.accountedFor);
-  const dispositions: Closed["dispositions"] = [];
-  for (const member of s.roster!.members) {
-    if (accounted.has(member.attendeeId)) continue;
-    const row = available.members.find((m) =>
-      m.attendeeId === member.attendeeId);
-    if (row?.visit.kind !== "current" ||
-        row.disposition?.kind !== "resolved") return null;
-    dispositions.push({attendeeId: member.attendeeId, ...row.disposition});
-  }
-  return {kind: "close", report: s.report, dispositions};
+  return currentCheckpointCloseout(evidence(s));
 }
 
 export function checkpointCloseoutState(s: CheckpointState): View["state"] {
-  const c = s.requestWork?.payload.closeout;
-  if (!c) return {kind: "open"};
-  if (s.report && s.report.accountedFor.length === s.roster!.members.length) {
-    return {kind: "superseded"};
-  }
-  if (c.decision.kind === "reopen") return {kind: "reopened"};
-  if (checkpointAvailability(s).kind !== "ready") {
-    return {kind: "needsReview", reason: "sourceUnavailable"};
-  }
-  if (operationContentHash(s.report) !==
-      operationContentHash(c.decision.report)) {
-    return {kind: "needsReview", reason: "reportChanged"};
-  }
-  const current = currentCloseoutDecision(s);
-  return current && operationContentHash(current) ===
-    operationContentHash(c.decision) ? {kind: "closedOut"} :
-    {kind: "needsReview", reason: "dispositionChanged"};
+  return checkpointCloseoutDecisionState(evidence(s),
+    s.requestWork?.payload.closeout?.decision ?? null);
 }
 
 export function checkpointCloseoutView(s: CheckpointState): View | null {
   if (!s.requestWork) return null;
   const change = s.requestWork.payload.closeout ?? null;
   const state = checkpointCloseoutState(s);
-  const availability = checkpointAvailability(s);
-  let eligibility: View["eligibility"];
-  const reason = availability.kind !== "ready" ? "sourceUnavailable" :
-    !s.report ? "reportMissing" : availability.reportStatus === "complete" ?
-      "reportComplete" : state.kind === "closedOut" ? "alreadyClosed" : null;
-  if (reason) {
-    eligibility = {kind: "unavailable", reason, attendeeIds: []};
-  } else if (currentCloseoutDecision(s)) {
-    eligibility = {kind: "ready"};
-  } else {
-    const accounted = new Set(s.report!.accountedFor);
-    const members = availability.kind === "ready" ? availability.members : [];
-    eligibility = {kind: "unavailable", reason: "unresolvedMembers",
-      attendeeIds: s.roster!.members.filter((m) =>
-        !accounted.has(m.attendeeId) &&
-        !members.some((d) => d.attendeeId === m.attendeeId &&
-          d.visit.kind === "current" && d.disposition?.kind === "resolved"))
-        .map((m) => m.attendeeId)};
-  }
-  return {revision: change?.revision ?? 0, change, state, eligibility,
+  return {revision: change?.revision ?? 0, change, state,
+    eligibility: checkpointCloseoutEligibility(evidence(s), state),
     sourceHash: operationContentHash([checkpointSourceHash(s),
       s.dispositions ?? null, s.requestWork.payload.request,
       s.requestWork.payload.reassignment ?? null, change])};

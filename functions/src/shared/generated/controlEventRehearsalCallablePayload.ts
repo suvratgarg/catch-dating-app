@@ -458,5 +458,35 @@ export interface ControlEventRehearsalCallablePayload {
           correctionReason: string | null;
         };
         expectedSourceHash: string;
+      }
+    | {
+        kind: "reassignCheckpointReporter";
+        payload: {
+          groupId: string;
+          checkpointId: string;
+          /**
+           * Nonnegative safe integer revision.
+           */
+          expectedProgressRevision: number;
+          expectedAssignmentRevision: number;
+          responsibleOperatorId: string;
+          reason: string;
+        };
+        expectedSourceHash: string;
+      }
+    | {
+        kind: "setCheckpointCloseout";
+        payload: {
+          groupId: string;
+          checkpointId: string;
+          /**
+           * Nonnegative safe integer revision.
+           */
+          expectedProgressRevision: number;
+          reason: string;
+          expectedCloseoutRevision: number;
+          decision: "close" | "reopen";
+        };
+        expectedSourceHash: string;
       };
 }

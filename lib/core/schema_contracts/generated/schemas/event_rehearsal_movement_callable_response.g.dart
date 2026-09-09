@@ -553,6 +553,247 @@ const schemaEventRehearsalMovementCallableResponseSchema = <String, Object?>{
                     },
                   ],
                 },
+                'assignment': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'revision',
+                    'operationId',
+                    'responsibleOperatorId',
+                    'previousResponsibleOperatorId',
+                    'assignedBy',
+                    'assignedAt',
+                    'reason',
+                  ],
+                  'properties': <String, Object?>{
+                    'revision': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 1,
+                      'maximum': 9007199254740991,
+                    },
+                    'responsibleOperatorId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 128,
+                      'pattern': '^[^/]+\$',
+                    },
+                    'previousResponsibleOperatorId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 128,
+                      'pattern': '^[^/]+\$',
+                    },
+                    'assignedBy': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 128,
+                      'pattern': '^[^/]+\$',
+                    },
+                    'assignedAt': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'reason': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                      'pattern': '\\S',
+                    },
+                    'operationId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                  },
+                },
+                'closeout': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'revision',
+                    'previousRevision',
+                    'operationId',
+                    'changedBy',
+                    'changedAt',
+                    'reason',
+                    'decision',
+                  ],
+                  'properties': <String, Object?>{
+                    'revision': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 1,
+                      'maximum': 9007199254740991,
+                    },
+                    'previousRevision': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'changedBy': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 128,
+                      'pattern': '^[^/]+\$',
+                    },
+                    'changedAt': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'reason': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 500,
+                      'pattern': '\\S',
+                    },
+                    'decision': <String, Object?>{
+                      'oneOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'report',
+                            'dispositions',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'const': 'close',
+                            },
+                            'report': <String, Object?>{
+                              'type': 'object',
+                              'additionalProperties': false,
+                              'required': <Object?>[
+                                'revision',
+                                'rosterHash',
+                                'accountedFor',
+                                'reportedAt',
+                                'reportedBy',
+                                'correctionReason',
+                              ],
+                              'properties': <String, Object?>{
+                                'revision': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 1,
+                                  'maximum': 9007199254740991,
+                                },
+                                'rosterHash': <String, Object?>{
+                                  'type': 'string',
+                                  'pattern': '^[a-f0-9]{64}\$',
+                                },
+                                'accountedFor': <String, Object?>{
+                                  'type': 'array',
+                                  'maxItems': 50,
+                                  'uniqueItems': true,
+                                  'items': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 180,
+                                  },
+                                },
+                                'reportedAt': <String, Object?>{
+                                  'type': 'integer',
+                                  'minimum': 0,
+                                  'maximum': 9007199254740991,
+                                },
+                                'reportedBy': <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 180,
+                                },
+                                'correctionReason': <String, Object?>{
+                                  'anyOf': <Object?>[
+                                    <String, Object?>{
+                                      'type': 'string',
+                                      'minLength': 1,
+                                      'maxLength': 500,
+                                      'pattern': '\\S',
+                                    },
+                                    <String, Object?>{
+                                      'type': 'null',
+                                    },
+                                  ],
+                                },
+                              },
+                            },
+                            'dispositions': <String, Object?>{
+                              'type': 'array',
+                              'maxItems': 50,
+                              'items': <String, Object?>{
+                                'type': 'object',
+                                'additionalProperties': false,
+                                'required': <Object?>[
+                                  'kind',
+                                  'disposition',
+                                  'revision',
+                                  'resolvedAt',
+                                  'resolvedBy',
+                                  'sourceHash',
+                                  'attendeeId',
+                                ],
+                                'properties': <String, Object?>{
+                                  'kind': <String, Object?>{
+                                    'const': 'resolved',
+                                  },
+                                  'disposition': <String, Object?>{
+                                    'enum': <Object?>[
+                                      'returned',
+                                      'departed',
+                                    ],
+                                  },
+                                  'revision': <String, Object?>{
+                                    'type': 'integer',
+                                    'minimum': 1,
+                                    'maximum': 9007199254740991,
+                                  },
+                                  'resolvedAt': <String, Object?>{
+                                    'type': 'integer',
+                                    'minimum': 0,
+                                    'maximum': 9007199254740991,
+                                  },
+                                  'resolvedBy': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 128,
+                                    'pattern': '^[^/]+\$',
+                                  },
+                                  'sourceHash': <String, Object?>{
+                                    'type': 'string',
+                                    'pattern': '^[a-f0-9]{64}\$',
+                                  },
+                                  'attendeeId': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 160,
+                                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'const': 'reopen',
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    'operationId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                  },
+                },
               },
             },
             <String, Object?>{
@@ -1400,6 +1641,408 @@ const schemaEventRehearsalMovementCallableResponseSchema = <String, Object?>{
                 },
               },
             },
+            'assignment': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'revision',
+                    'sourceHash',
+                    'change',
+                  ],
+                  'properties': <String, Object?>{
+                    'revision': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'sourceHash': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^[a-f0-9]{64}\$',
+                    },
+                    'change': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'revision',
+                            'operationId',
+                            'responsibleOperatorId',
+                            'previousResponsibleOperatorId',
+                            'assignedBy',
+                            'assignedAt',
+                            'reason',
+                          ],
+                          'properties': <String, Object?>{
+                            'revision': <String, Object?>{
+                              'type': 'integer',
+                              'minimum': 1,
+                              'maximum': 9007199254740991,
+                            },
+                            'responsibleOperatorId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 128,
+                              'pattern': '^[^/]+\$',
+                            },
+                            'previousResponsibleOperatorId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 128,
+                              'pattern': '^[^/]+\$',
+                            },
+                            'assignedBy': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 128,
+                              'pattern': '^[^/]+\$',
+                            },
+                            'assignedAt': <String, Object?>{
+                              'type': 'integer',
+                              'minimum': 0,
+                              'maximum': 9007199254740991,
+                            },
+                            'reason': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                              'pattern': '\\S',
+                            },
+                            'operationId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 180,
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'null',
+                        },
+                      ],
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
+            'closeout': <String, Object?>{
+              'anyOf': <Object?>[
+                <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'revision',
+                    'sourceHash',
+                    'change',
+                    'state',
+                    'eligibility',
+                  ],
+                  'properties': <String, Object?>{
+                    'revision': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'sourceHash': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^[a-f0-9]{64}\$',
+                    },
+                    'change': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'revision',
+                            'previousRevision',
+                            'operationId',
+                            'changedBy',
+                            'changedAt',
+                            'reason',
+                            'decision',
+                          ],
+                          'properties': <String, Object?>{
+                            'revision': <String, Object?>{
+                              'type': 'integer',
+                              'minimum': 1,
+                              'maximum': 9007199254740991,
+                            },
+                            'previousRevision': <String, Object?>{
+                              'type': 'integer',
+                              'minimum': 0,
+                              'maximum': 9007199254740991,
+                            },
+                            'changedBy': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 128,
+                              'pattern': '^[^/]+\$',
+                            },
+                            'changedAt': <String, Object?>{
+                              'type': 'integer',
+                              'minimum': 0,
+                              'maximum': 9007199254740991,
+                            },
+                            'reason': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 500,
+                              'pattern': '\\S',
+                            },
+                            'decision': <String, Object?>{
+                              'oneOf': <Object?>[
+                                <String, Object?>{
+                                  'type': 'object',
+                                  'additionalProperties': false,
+                                  'required': <Object?>[
+                                    'kind',
+                                    'report',
+                                    'dispositions',
+                                  ],
+                                  'properties': <String, Object?>{
+                                    'kind': <String, Object?>{
+                                      'const': 'close',
+                                    },
+                                    'report': <String, Object?>{
+                                      'type': 'object',
+                                      'additionalProperties': false,
+                                      'required': <Object?>[
+                                        'revision',
+                                        'rosterHash',
+                                        'accountedFor',
+                                        'reportedAt',
+                                        'reportedBy',
+                                        'correctionReason',
+                                      ],
+                                      'properties': <String, Object?>{
+                                        'revision': <String, Object?>{
+                                          'type': 'integer',
+                                          'minimum': 1,
+                                          'maximum': 9007199254740991,
+                                        },
+                                        'rosterHash': <String, Object?>{
+                                          'type': 'string',
+                                          'pattern': '^[a-f0-9]{64}\$',
+                                        },
+                                        'accountedFor': <String, Object?>{
+                                          'type': 'array',
+                                          'maxItems': 50,
+                                          'uniqueItems': true,
+                                          'items': <String, Object?>{
+                                            'type': 'string',
+                                            'minLength': 1,
+                                            'maxLength': 180,
+                                          },
+                                        },
+                                        'reportedAt': <String, Object?>{
+                                          'type': 'integer',
+                                          'minimum': 0,
+                                          'maximum': 9007199254740991,
+                                        },
+                                        'reportedBy': <String, Object?>{
+                                          'type': 'string',
+                                          'minLength': 1,
+                                          'maxLength': 180,
+                                        },
+                                        'correctionReason': <String, Object?>{
+                                          'anyOf': <Object?>[
+                                            <String, Object?>{
+                                              'type': 'string',
+                                              'minLength': 1,
+                                              'maxLength': 500,
+                                              'pattern': '\\S',
+                                            },
+                                            <String, Object?>{
+                                              'type': 'null',
+                                            },
+                                          ],
+                                        },
+                                      },
+                                    },
+                                    'dispositions': <String, Object?>{
+                                      'type': 'array',
+                                      'maxItems': 50,
+                                      'items': <String, Object?>{
+                                        'type': 'object',
+                                        'additionalProperties': false,
+                                        'required': <Object?>[
+                                          'kind',
+                                          'disposition',
+                                          'revision',
+                                          'resolvedAt',
+                                          'resolvedBy',
+                                          'sourceHash',
+                                          'attendeeId',
+                                        ],
+                                        'properties': <String, Object?>{
+                                          'kind': <String, Object?>{
+                                            'const': 'resolved',
+                                          },
+                                          'disposition': <String, Object?>{
+                                            'enum': <Object?>[
+                                              'returned',
+                                              'departed',
+                                            ],
+                                          },
+                                          'revision': <String, Object?>{
+                                            'type': 'integer',
+                                            'minimum': 1,
+                                            'maximum': 9007199254740991,
+                                          },
+                                          'resolvedAt': <String, Object?>{
+                                            'type': 'integer',
+                                            'minimum': 0,
+                                            'maximum': 9007199254740991,
+                                          },
+                                          'resolvedBy': <String, Object?>{
+                                            'type': 'string',
+                                            'minLength': 1,
+                                            'maxLength': 128,
+                                            'pattern': '^[^/]+\$',
+                                          },
+                                          'sourceHash': <String, Object?>{
+                                            'type': 'string',
+                                            'pattern': '^[a-f0-9]{64}\$',
+                                          },
+                                          'attendeeId': <String, Object?>{
+                                            'type': 'string',
+                                            'minLength': 1,
+                                            'maxLength': 160,
+                                            'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                                          },
+                                        },
+                                      },
+                                    },
+                                  },
+                                },
+                                <String, Object?>{
+                                  'type': 'object',
+                                  'additionalProperties': false,
+                                  'required': <Object?>[
+                                    'kind',
+                                  ],
+                                  'properties': <String, Object?>{
+                                    'kind': <String, Object?>{
+                                      'const': 'reopen',
+                                    },
+                                  },
+                                },
+                              ],
+                            },
+                            'operationId': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 180,
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'null',
+                        },
+                      ],
+                    },
+                    'state': <String, Object?>{
+                      'oneOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'enum': <Object?>[
+                                'open',
+                                'reopened',
+                                'closedOut',
+                                'superseded',
+                              ],
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'reason',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'const': 'needsReview',
+                            },
+                            'reason': <String, Object?>{
+                              'enum': <Object?>[
+                                'sourceUnavailable',
+                                'reportChanged',
+                                'dispositionChanged',
+                              ],
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    'eligibility': <String, Object?>{
+                      'oneOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'const': 'ready',
+                            },
+                          },
+                        },
+                        <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'kind',
+                            'reason',
+                            'attendeeIds',
+                          ],
+                          'properties': <String, Object?>{
+                            'kind': <String, Object?>{
+                              'const': 'unavailable',
+                            },
+                            'reason': <String, Object?>{
+                              'enum': <Object?>[
+                                'sourceUnavailable',
+                                'reportMissing',
+                                'reportComplete',
+                                'unresolvedMembers',
+                                'alreadyClosed',
+                              ],
+                            },
+                            'attendeeIds': <String, Object?>{
+                              'type': 'array',
+                              'maxItems': 1000,
+                              'uniqueItems': true,
+                              'items': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 160,
+                                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                              },
+                            },
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+                <String, Object?>{
+                  'type': 'null',
+                },
+              ],
+            },
           },
         },
         <String, Object?>{
@@ -1909,6 +2552,247 @@ const schemaEventRehearsalMovementCallableResponseSchema = <String, Object?>{
                   'type': 'null',
                 },
               ],
+            },
+            'assignment': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'revision',
+                'operationId',
+                'responsibleOperatorId',
+                'previousResponsibleOperatorId',
+                'assignedBy',
+                'assignedAt',
+                'reason',
+              ],
+              'properties': <String, Object?>{
+                'revision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'responsibleOperatorId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[^/]+\$',
+                },
+                'previousResponsibleOperatorId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[^/]+\$',
+                },
+                'assignedBy': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[^/]+\$',
+                },
+                'assignedAt': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'reason': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                  'pattern': '\\S',
+                },
+                'operationId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+              },
+            },
+            'closeout': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'revision',
+                'previousRevision',
+                'operationId',
+                'changedBy',
+                'changedAt',
+                'reason',
+                'decision',
+              ],
+              'properties': <String, Object?>{
+                'revision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                },
+                'previousRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'changedBy': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[^/]+\$',
+                },
+                'changedAt': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'reason': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                  'pattern': '\\S',
+                },
+                'decision': <String, Object?>{
+                  'oneOf': <Object?>[
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                        'report',
+                        'dispositions',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'const': 'close',
+                        },
+                        'report': <String, Object?>{
+                          'type': 'object',
+                          'additionalProperties': false,
+                          'required': <Object?>[
+                            'revision',
+                            'rosterHash',
+                            'accountedFor',
+                            'reportedAt',
+                            'reportedBy',
+                            'correctionReason',
+                          ],
+                          'properties': <String, Object?>{
+                            'revision': <String, Object?>{
+                              'type': 'integer',
+                              'minimum': 1,
+                              'maximum': 9007199254740991,
+                            },
+                            'rosterHash': <String, Object?>{
+                              'type': 'string',
+                              'pattern': '^[a-f0-9]{64}\$',
+                            },
+                            'accountedFor': <String, Object?>{
+                              'type': 'array',
+                              'maxItems': 50,
+                              'uniqueItems': true,
+                              'items': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 180,
+                              },
+                            },
+                            'reportedAt': <String, Object?>{
+                              'type': 'integer',
+                              'minimum': 0,
+                              'maximum': 9007199254740991,
+                            },
+                            'reportedBy': <String, Object?>{
+                              'type': 'string',
+                              'minLength': 1,
+                              'maxLength': 180,
+                            },
+                            'correctionReason': <String, Object?>{
+                              'anyOf': <Object?>[
+                                <String, Object?>{
+                                  'type': 'string',
+                                  'minLength': 1,
+                                  'maxLength': 500,
+                                  'pattern': '\\S',
+                                },
+                                <String, Object?>{
+                                  'type': 'null',
+                                },
+                              ],
+                            },
+                          },
+                        },
+                        'dispositions': <String, Object?>{
+                          'type': 'array',
+                          'maxItems': 50,
+                          'items': <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'disposition',
+                              'revision',
+                              'resolvedAt',
+                              'resolvedBy',
+                              'sourceHash',
+                              'attendeeId',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'const': 'resolved',
+                              },
+                              'disposition': <String, Object?>{
+                                'enum': <Object?>[
+                                  'returned',
+                                  'departed',
+                                ],
+                              },
+                              'revision': <String, Object?>{
+                                'type': 'integer',
+                                'minimum': 1,
+                                'maximum': 9007199254740991,
+                              },
+                              'resolvedAt': <String, Object?>{
+                                'type': 'integer',
+                                'minimum': 0,
+                                'maximum': 9007199254740991,
+                              },
+                              'resolvedBy': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 128,
+                                'pattern': '^[^/]+\$',
+                              },
+                              'sourceHash': <String, Object?>{
+                                'type': 'string',
+                                'pattern': '^[a-f0-9]{64}\$',
+                              },
+                              'attendeeId': <String, Object?>{
+                                'type': 'string',
+                                'minLength': 1,
+                                'maxLength': 160,
+                                'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'kind',
+                      ],
+                      'properties': <String, Object?>{
+                        'kind': <String, Object?>{
+                          'const': 'reopen',
+                        },
+                      },
+                    },
+                  ],
+                },
+                'operationId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+              },
             },
           },
         },

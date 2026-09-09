@@ -2003,6 +2003,138 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'payload',
+            'expectedSourceHash',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'reassignCheckpointReporter',
+            },
+            'payload': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'groupId',
+                'checkpointId',
+                'expectedProgressRevision',
+                'expectedAssignmentRevision',
+                'responsibleOperatorId',
+                'reason',
+              ],
+              'properties': <String, Object?>{
+                'groupId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'checkpointId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 2000,
+                },
+                'expectedProgressRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                  'description': 'Nonnegative safe integer revision.',
+                },
+                'expectedAssignmentRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'responsibleOperatorId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[^/]+\$',
+                },
+                'reason': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                  'pattern': '\\S',
+                },
+              },
+            },
+            'expectedSourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'payload',
+            'expectedSourceHash',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'setCheckpointCloseout',
+            },
+            'payload': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'groupId',
+                'checkpointId',
+                'expectedProgressRevision',
+                'reason',
+                'expectedCloseoutRevision',
+                'decision',
+              ],
+              'properties': <String, Object?>{
+                'groupId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 160,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'checkpointId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 2000,
+                },
+                'expectedProgressRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 9007199254740991,
+                  'description': 'Nonnegative safe integer revision.',
+                },
+                'reason': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 500,
+                  'pattern': '\\S',
+                },
+                'expectedCloseoutRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'decision': <String, Object?>{
+                  'enum': <Object?>[
+                    'close',
+                    'reopen',
+                  ],
+                },
+              },
+            },
+            'expectedSourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+          },
+        },
       ],
       'type': 'object',
     },
