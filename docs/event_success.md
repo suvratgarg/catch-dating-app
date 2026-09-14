@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.127.0
+version: 1.128.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -242,6 +242,18 @@ policies. Every actor history is read before writes; the script cursor,
 messages, actor state and parent action receipt commit together. At most one
 scripted attempt is consumed per transition. Clock jumps use the final observed
 actor state, without inventing sends at missed historical times.
+
+Practice recipes now retain the same optional rule setting as live templates:
+observe, prepare, execute within policy, or disabled. The server supplies the
+rehearsal policy version. Observe/prepare evaluates current facts for Host review
+without creating a guest instruction or consuming a delivery outcome; disabled
+rules cancel the policy. Manual publication cannot bypass these modes. Changing
+an executable recipe to a restricted mode supersedes its old instruction and
+preserves uncertain delivery evidence. Older recipes without a setting keep
+their earlier behavior and exact wire identity. Native source-derived recipe
+assembly retains the mode and rejects publication from a preview-only recipe.
+This is engine/contract parity; the event-wide configuration adapter and shared
+settings controls in rehearsal remain pending.
 
 Uncertain delivery holds fallback until confirmed evidence arrives. Backoff,
 outreach caps, deadlines and exhausted scripts remain explicit evaluation

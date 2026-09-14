@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.113.0
+version: 1.114.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -109,6 +109,17 @@ Native configure/pause/resume commands use the existing assistance payload and
 receipt checks. Configuration freezes the reviewed plan and script, including
 through an uncertain exact retry; no schema or live provider change is required
 for these native bindings.
+
+Rehearsal plans optionally include the closed `TemplateSetting` union as
+`setting`. Presence preserves observe/prepare/execute/disabled behavior through
+callable commands, stored actor/message plans and Host bootstrap. Absence keeps
+legacy execution and serialization unchanged; explicit null and a supplied
+runtime policy version are rejected. Native typed plans and publication drafts
+retain the same union. Restricted modes never create a guest instruction or
+consume the simulated delivery script. Clients with the older closed plan parser
+must be updated before explicit modes are written; this extension needs a
+coordinated API/app rollout. Guest bootstrap and real sender authority do not
+change.
 
 Native joining configuration consumes a current, account-bound movement review.
 It reuses the reviewed destination IDs and copy. Defaults permit the whole

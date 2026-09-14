@@ -63,12 +63,15 @@ export function practiceInput(session: Session, actor: Actor,
   }
   const end = session.virtualStartedAt.toMillis() +
     session.setup.durationMinutes * 60000;
+  const setting = plan.setting ??
+    {kind: "enabled" as const, authority: "executeWithinPolicy" as const};
   const confirmed = resolvePracticeGuidance(session, actor, plan, departures);
   return parseLateJoinInput({context, eventId: context.virtualEventId,
     eventOpen: ["running", "paused"].includes(session.status) && now < end,
     departureConfirmed: !!confirmed, now,
-    setting: {kind: "enabled", authority: "executeWithinPolicy",
-      policyVersion: "rehearsal:v1"}, policy: plan.policy,
+    setting: setting.kind === "enabled" ?
+      {...setting, policyVersion: "rehearsal:v1"} : setting,
+    policy: plan.policy,
     guest: {attendeeId: actor.actorId,
       episodeId: practiceEpisode(session, actor),
       admission: ["walkIn", "ambiguousClaim"].includes(actor.status) ?

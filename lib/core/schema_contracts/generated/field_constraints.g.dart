@@ -30889,6 +30889,26 @@ abstract final class CatchContractConstraints {
     enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
   );
 
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanSettingKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalActorDocumentAssistanceAutomationPlanSettingReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalActorDocument.assistanceAutomation.plan.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
   static const eventRehearsalActorDocumentAssistanceAutomationStatus = CatchContractFieldConstraints(
     path: 'eventRehearsalActorDocument.assistanceAutomation.status',
     required: true,
@@ -31866,6 +31886,26 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanSettingKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanSettingReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
   );
 
   static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationStatus = CatchContractFieldConstraints(
@@ -37410,6 +37450,26 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventRehearsalMessageDocumentPlanSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.plan.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventRehearsalMessageDocumentPlanSettingKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.plan.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMessageDocumentPlanSettingReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMessageDocument.plan.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
   );
 
   static const eventRehearsalMessageDocumentRecordAttempts = CatchContractFieldConstraints(
@@ -95814,6 +95874,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalActorDocument.assistanceAutomation.plan.responseDeadline': eventRehearsalActorDocumentAssistanceAutomationPlanResponseDeadline,
     'eventRehearsalActorDocument.assistanceAutomation.plan.routes': eventRehearsalActorDocumentAssistanceAutomationPlanRoutes,
     'eventRehearsalActorDocument.assistanceAutomation.plan.routes.items': eventRehearsalActorDocumentAssistanceAutomationPlanRoutesItems,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.setting.authority': eventRehearsalActorDocumentAssistanceAutomationPlanSettingAuthority,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.setting.kind': eventRehearsalActorDocumentAssistanceAutomationPlanSettingKind,
+    'eventRehearsalActorDocument.assistanceAutomation.plan.setting.reason': eventRehearsalActorDocumentAssistanceAutomationPlanSettingReason,
     'eventRehearsalActorDocument.assistanceAutomation.status': eventRehearsalActorDocumentAssistanceAutomationStatus,
     'eventRehearsalActorDocument.confirmedLayoutUnitId': eventRehearsalActorDocumentConfirmedLayoutUnitId,
     'eventRehearsalActorDocument.connectionState': eventRehearsalActorDocumentConnectionState,
@@ -95947,6 +96010,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.responseDeadline': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanResponseDeadline,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.routes': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanRoutes,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.routes.items': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanRoutesItems,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.setting.authority': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanSettingAuthority,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.setting.kind': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanSettingKind,
+    'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.plan.setting.reason': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationPlanSettingReason,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.status': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationStatus,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistanceDelivery.attempts': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceDeliveryAttempts,
     'eventRehearsalBootstrapCallableResponse.actors.items.assistanceDelivery.attempts.items.attemptId': eventRehearsalBootstrapCallableResponseActorsItemsAssistanceDeliveryAttemptsItemsAttemptId,
@@ -96686,6 +96752,9 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMessageDocument.plan.responseDeadline': eventRehearsalMessageDocumentPlanResponseDeadline,
     'eventRehearsalMessageDocument.plan.routes': eventRehearsalMessageDocumentPlanRoutes,
     'eventRehearsalMessageDocument.plan.routes.items': eventRehearsalMessageDocumentPlanRoutesItems,
+    'eventRehearsalMessageDocument.plan.setting.authority': eventRehearsalMessageDocumentPlanSettingAuthority,
+    'eventRehearsalMessageDocument.plan.setting.kind': eventRehearsalMessageDocumentPlanSettingKind,
+    'eventRehearsalMessageDocument.plan.setting.reason': eventRehearsalMessageDocumentPlanSettingReason,
     'eventRehearsalMessageDocument.record.attempts': eventRehearsalMessageDocumentRecordAttempts,
     'eventRehearsalMessageDocument.record.attempts.items.attemptId': eventRehearsalMessageDocumentRecordAttemptsItemsAttemptId,
     'eventRehearsalMessageDocument.record.attempts.items.authorization.checkedAt': eventRehearsalMessageDocumentRecordAttemptsItemsAuthorizationCheckedAt,

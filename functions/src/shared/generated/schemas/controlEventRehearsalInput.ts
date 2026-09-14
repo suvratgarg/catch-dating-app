@@ -82,6 +82,54 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
                 "deliveryPolicy"
               ],
               "properties": {
+                "setting": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "authority"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "enabled"
+                        },
+                        "authority": {
+                          "type": "string",
+                          "enum": [
+                            "observe",
+                            "prepare",
+                            "executeWithinPolicy"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "disabled"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "hostChoice",
+                            "organizerDefault"
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "description": "Explicit observe, prepare, execute or disabled practice mode. Absence preserves earlier executable recipes."
+                },
                 "policy": {
                   "type": "object",
                   "additionalProperties": false,
@@ -760,6 +808,54 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
                 "deliveryPolicy"
               ],
               "properties": {
+                "setting": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "authority"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "enabled"
+                        },
+                        "authority": {
+                          "type": "string",
+                          "enum": [
+                            "observe",
+                            "prepare",
+                            "executeWithinPolicy"
+                          ]
+                        }
+                      }
+                    },
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "kind",
+                        "reason"
+                      ],
+                      "properties": {
+                        "kind": {
+                          "type": "string",
+                          "const": "disabled"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "enum": [
+                            "hostChoice",
+                            "organizerDefault"
+                          ]
+                        }
+                      }
+                    }
+                  ],
+                  "description": "Explicit observe, prepare, execute or disabled practice mode. Absence preserves earlier executable recipes."
+                },
                 "policy": {
                   "type": "object",
                   "additionalProperties": false,

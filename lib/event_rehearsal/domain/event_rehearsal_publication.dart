@@ -7,7 +7,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistan
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_plan.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_template.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
 
@@ -88,6 +88,7 @@ final class RehearsalPublicationDraft {
     required this.rules,
     required List<AssistanceMessageRoute> routes,
     required this.deliveryPolicy,
+    this.setting,
     this.responseDeadline,
     List<RehearsalLaterJoiningOption> laterChoices = const [],
   }) : routes = List.unmodifiable(routes),
@@ -98,6 +99,7 @@ final class RehearsalPublicationDraft {
   final AssistanceLateJoinRules rules;
   final List<AssistanceMessageRoute> routes;
   final AssistanceDeliveryPolicy deliveryPolicy;
+  final AssistanceTemplateSetting? setting;
   final DateTime? responseDeadline;
   final List<RehearsalLaterJoiningOption> laterChoices;
 
@@ -106,6 +108,13 @@ final class RehearsalPublicationDraft {
 
   RehearsalPublishInstruction prepare(EventRehearsalBootstrap snapshot) {
     final prepared = _prepare(snapshot);
+    final setting = prepared.plan.effectiveSetting;
+    if (setting is! AssistanceTemplateEnabled ||
+        setting.authority != AssistanceTemplateAuthority.executeWithinPolicy) {
+      throw const FormatException(
+        'Choose automatic execution before publishing practice directions.',
+      );
+    }
     if (prepared.preview case RehearsalJoiningConfirmed(
       :final entryPermitted,
     ) when entryPermitted) {
@@ -220,6 +229,7 @@ final class RehearsalPublicationDraft {
       preview: preview,
       plan: RehearsalAssistancePlan(
         rules: resolved,
+        setting: setting,
         // The existing wire plan requires a configured copy/target even before
         // departure. These fields are not movement authority; the backend replaces
         // them from saved progress, and the waiting preview exposes no guidance.

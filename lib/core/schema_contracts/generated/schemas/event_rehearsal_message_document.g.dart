@@ -46,6 +46,54 @@ const schemaEventRehearsalMessageDocumentSchema = <String, Object?>{
         'deliveryPolicy',
       ],
       'properties': <String, Object?>{
+        'setting': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'authority',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'enabled',
+                },
+                'authority': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'observe',
+                    'prepare',
+                    'executeWithinPolicy',
+                  ],
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'reason',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'type': 'string',
+                  'const': 'disabled',
+                },
+                'reason': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'hostChoice',
+                    'organizerDefault',
+                  ],
+                },
+              },
+            },
+          ],
+          'description': 'Explicit observe, prepare, execute or disabled practice mode. Absence preserves earlier executable recipes.',
+        },
         'policy': <String, Object?>{
           'type': 'object',
           'additionalProperties': false,

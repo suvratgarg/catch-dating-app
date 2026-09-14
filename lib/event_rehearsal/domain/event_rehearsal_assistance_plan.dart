@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_destination.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_rules.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_template.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
@@ -13,6 +13,7 @@ final class RehearsalAssistancePlan {
     required this.responseDeadline,
     required List<AssistanceMessageRoute> routes,
     required this.deliveryPolicy,
+    this.setting,
     List<AssistanceLaterJoiningChoice>? laterChoices,
   }) : guidance = AssistanceJoiningGuidance.fromJson(_guidanceJson(guidance)),
        routes = List.unmodifiable(routes),
@@ -52,6 +53,7 @@ final class RehearsalAssistancePlan {
       'responseDeadline',
       'routes',
       'deliveryPolicy',
+      if (object.containsKey('setting')) 'setting',
       if (object.containsKey('laterChoices')) 'laterChoices',
     });
     final routes = map['routes'];
@@ -69,6 +71,9 @@ final class RehearsalAssistancePlan {
           .map((route) => assistanceEnum(AssistanceMessageRoute.values, route))
           .toList(growable: false),
       deliveryPolicy: AssistanceDeliveryPolicy.fromJson(map['deliveryPolicy']),
+      setting: object.containsKey('setting')
+          ? AssistanceTemplateSetting.fromJson(map['setting'])
+          : null,
       laterChoices: later == null
           ? null
           : (later as List)
@@ -83,6 +88,13 @@ final class RehearsalAssistancePlan {
   final int? responseDeadline;
   final List<AssistanceMessageRoute> routes;
   final AssistanceDeliveryPolicy deliveryPolicy;
+  // Absence keeps earlier recipes executable without changing their wire hash.
+  final AssistanceTemplateSetting? setting;
+  AssistanceTemplateSetting get effectiveSetting =>
+      setting ??
+      const AssistanceTemplateEnabled(
+        AssistanceTemplateAuthority.executeWithinPolicy,
+      );
   final List<AssistanceLaterJoiningChoice>? laterChoices;
 
   Map<String, Object?> toJson() => {
@@ -92,6 +104,7 @@ final class RehearsalAssistancePlan {
     'responseDeadline': responseDeadline,
     'routes': routes.map((route) => route.name).toList(growable: false),
     'deliveryPolicy': deliveryPolicy.toJson(),
+    if (setting != null) 'setting': setting!.toJson(),
     if (laterChoices != null)
       'laterChoices': laterChoices!
           .map((choice) => choice.toJson())

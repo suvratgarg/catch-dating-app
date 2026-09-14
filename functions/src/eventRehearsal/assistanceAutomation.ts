@@ -108,7 +108,10 @@ export function evaluatePracticeAutomation(session: Session, actor: Actor,
     }
     let policy = evaluateLateJoin(practiceInput(session, nextActor,
       automation.plan, messages, message, departures));
-    if (!message && policy.kind === "update") {
+    const setting = automation.plan.setting;
+    const mayPublish = !setting || setting.kind === "enabled" &&
+      setting.authority === "executeWithinPolicy";
+    if (!message && policy.kind === "update" && mayPublish) {
       const published = publishPracticeMessage(session, nextActor,
         automation.plan, messages, departures);
       message = published.message;

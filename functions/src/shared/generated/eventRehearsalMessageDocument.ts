@@ -23,6 +23,18 @@ export type EventRehearsalMessageDocument = {
   sessionId: string;
   actorId: string;
   plan: {
+    /**
+     * Explicit observe, prepare, execute or disabled practice mode. Absence preserves earlier executable recipes.
+     */
+    setting?:
+      | {
+          kind: "enabled";
+          authority: "observe" | "prepare" | "executeWithinPolicy";
+        }
+      | {
+          kind: "disabled";
+          reason: "hostChoice" | "organizerDefault";
+        };
     policy: {
       destination:
         | {

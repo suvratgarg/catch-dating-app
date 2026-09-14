@@ -16,6 +16,10 @@
         "deliveryPolicy"
       ],
       "properties": {
+        "setting": {
+          "$ref": "event_assistance_settings.schema.json#/definitions/TemplateSetting",
+          "description": "Explicit observe, prepare, execute or disabled practice mode. Absence preserves earlier executable recipes."
+        },
         "policy": {
           "$ref": "event_assistance_common.schema.json#/definitions/LateJoinPolicy"
         },
