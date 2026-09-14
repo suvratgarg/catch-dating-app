@@ -54,6 +54,21 @@ final class AssistanceLateJoinRules {
   final int maxMessagesPerEpisode;
   final int minimumMinutesBetweenMessages;
   final LateJoinUnansweredRule unanswered;
+  AssistanceLateJoinRules copyWith({
+    LateJoinDestination? destination,
+    LateJoinCutoff? cutoff,
+    int? maxMessagesPerEpisode,
+    int? minimumMinutesBetweenMessages,
+    LateJoinUnansweredRule? unanswered,
+  }) => AssistanceLateJoinRules(
+    destination: destination ?? this.destination,
+    cutoff: cutoff ?? this.cutoff,
+    maxMessagesPerEpisode: maxMessagesPerEpisode ?? this.maxMessagesPerEpisode,
+    minimumMinutesBetweenMessages:
+        minimumMinutesBetweenMessages ?? this.minimumMinutesBetweenMessages,
+    unanswered: unanswered ?? this.unanswered,
+  );
+
   factory AssistanceLateJoinRules.fromJson(Object? value) {
     final map = assistanceObject(value, {
       'destination',

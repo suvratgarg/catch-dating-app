@@ -14,6 +14,7 @@ class SetupTab extends StatefulWidget {
     required this.onSaveSetup,
     required this.embedded,
     this.referenceNow,
+    this.assistanceSettingsSection,
   });
 
   final Event event;
@@ -29,6 +30,7 @@ class SetupTab extends StatefulWidget {
   onSaveSetup;
   final bool embedded;
   final DateTime? referenceNow;
+  final Widget? assistanceSettingsSection;
 
   @override
   State<SetupTab> createState() => _SetupTabState();
@@ -305,6 +307,7 @@ class _SetupTabState extends State<SetupTab> {
             fullWidth: true,
           ),
         ],
+        ?widget.assistanceSettingsSection,
       ],
     );
   }

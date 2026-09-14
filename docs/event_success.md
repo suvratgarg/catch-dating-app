@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.123.0
+version: 1.124.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -849,11 +849,31 @@ success reloads settings without optimistic execution or enrollment. Focused
 tests cover detached recovery, foreign-group and actor receipts, and immediate
 retry callbacks.
 
-Host screen composition and the rehearsal adapter remain integration work. This
-client currently edits the late-join workflow; the other catalog entries still
-need their corresponding Host configuration adapters. No live sender is activated
-and no message, attendance, progress or allocation command is issued by a setting
-change.
+The actual Event Success Setup tab now mounts a compact late-arrival settings
+entry. Event defaults open directly; configured group overrides appear on demand.
+The shared form shows the saved status and current proposal, with destination,
+cutoff, per-guest update limit, minimum interval and unanswered handling behind
+customization. Mode changes preserve all customized rules, and disabling a
+configured preference retains its template. Group inheritance explicitly removes
+the local override on save. Joining points come only from the reviewed setup;
+removed points and out-of-window custom cutoffs require a new choice. Missing
+setup from an older API permits disablement or group inheritance, not invented
+configuration options. Defaults and edits stay local until Save rules.
+
+A pending-settings index contains only scope references and keeps uncertain saves
+reachable even when current group setup changes. Each stable editor still owns
+its command and exact retry; the index cannot execute or replace it. The live
+sheet hides private data on lost access or authentication and validates saves at
+the state owner. Normal and large-text widget tests exercise customization,
+disabling without losing rules, dismissed saves, exact retry and sign-out.
+Widgetbook preview sources use real backend read fixtures and a local transport;
+shared generated index registration awaits its current owner.
+
+The rehearsal settings adapter and event messaging controls remain integration
+work. The shared form does not activate a sender or claim messages are running.
+This client currently edits the late-join workflow; other catalog entries still
+need their corresponding Host configuration adapters. A setting change issues
+no message, attendance, progress or allocation command.
 
 ### Live late-join source assembly
 

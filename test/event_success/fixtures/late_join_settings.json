@@ -10,8 +10,8 @@
       },
       "groupId": "event:whole",
       "workflowKind": "lateJoin",
-      "serverTime": 1000000,
-      "sourceHash": "d75dbd4431cabc59c979682848b5037bdea70142f273ddfbdf04cb53b6c320fc",
+      "serverTime": 1789482600000,
+      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
       "ownRevision": 0,
       "own": null,
       "origin": "none",
@@ -38,7 +38,7 @@
         }
       },
       "setup": {
-        "eventEnd": 4600000,
+        "eventEnd": 1789486200000,
         "destinations": [
           {
             "target": {
@@ -96,7 +96,7 @@
     "workflowKind": "lateJoin",
     "requestId": "save",
     "expectedRevision": 0,
-    "expectedSourceHash": "d75dbd4431cabc59c979682848b5037bdea70142f273ddfbdf04cb53b6c320fc",
+    "expectedSourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
     "preference": {
       "kind": "configured",
       "template": {
@@ -116,7 +116,7 @@
           },
           "cutoff": {
             "kind": "time",
-            "at": 2800000
+            "at": 1789484400000
           },
           "maxMessagesPerEpisode": 3,
           "minimumMinutesBetweenMessages": 10,
@@ -137,8 +137,8 @@
       },
       "groupId": "event:whole",
       "workflowKind": "lateJoin",
-      "serverTime": 1000000,
-      "sourceHash": "d75dbd4431cabc59c979682848b5037bdea70142f273ddfbdf04cb53b6c320fc",
+      "serverTime": 1789482600000,
+      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
       "ownRevision": 1,
       "own": {
         "schemaVersion": 1,
@@ -170,7 +170,7 @@
               },
               "cutoff": {
                 "kind": "time",
-                "at": 2800000
+                "at": 1789484400000
               },
               "maxMessagesPerEpisode": 3,
               "minimumMinutesBetweenMessages": 10,
@@ -179,10 +179,10 @@
             }
           }
         },
-        "sourceHash": "d75dbd4431cabc59c979682848b5037bdea70142f273ddfbdf04cb53b6c320fc",
+        "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
         "updatedBy": "host-1",
-        "createdAt": 1000000,
-        "updatedAt": 1000000
+        "createdAt": 1789482600000,
+        "updatedAt": 1789482600000
       },
       "origin": "event",
       "status": "configured",
@@ -203,7 +203,7 @@
           },
           "cutoff": {
             "kind": "time",
-            "at": 2800000
+            "at": 1789484400000
           },
           "maxMessagesPerEpisode": 3,
           "minimumMinutesBetweenMessages": 10,
@@ -232,7 +232,7 @@
         }
       },
       "setup": {
-        "eventEnd": 4600000,
+        "eventEnd": 1789486200000,
         "destinations": [
           {
             "target": {
@@ -291,8 +291,8 @@
       },
       "groupId": "event:whole",
       "workflowKind": "lateJoin",
-      "serverTime": 1000000,
-      "sourceHash": "d75dbd4431cabc59c979682848b5037bdea70142f273ddfbdf04cb53b6c320fc",
+      "serverTime": 1789482600000,
+      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
       "ownRevision": 2,
       "own": {
         "schemaVersion": 1,
@@ -324,7 +324,7 @@
               },
               "cutoff": {
                 "kind": "time",
-                "at": 2800000
+                "at": 1789484400000
               },
               "maxMessagesPerEpisode": 3,
               "minimumMinutesBetweenMessages": 10,
@@ -333,10 +333,10 @@
             }
           }
         },
-        "sourceHash": "d75dbd4431cabc59c979682848b5037bdea70142f273ddfbdf04cb53b6c320fc",
+        "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
         "updatedBy": "host-1",
-        "createdAt": 1000000,
-        "updatedAt": 1000000
+        "createdAt": 1789482600000,
+        "updatedAt": 1789482600000
       },
       "origin": "event",
       "status": "disabled",
@@ -357,7 +357,7 @@
           },
           "cutoff": {
             "kind": "time",
-            "at": 2800000
+            "at": 1789484400000
           },
           "maxMessagesPerEpisode": 3,
           "minimumMinutesBetweenMessages": 10,
@@ -386,7 +386,7 @@
         }
       },
       "setup": {
-        "eventEnd": 4600000,
+        "eventEnd": 1789486200000,
         "destinations": [
           {
             "target": {
@@ -445,8 +445,8 @@
       },
       "groupId": "event:whole",
       "workflowKind": "lateJoin",
-      "serverTime": 1000000,
-      "sourceHash": "d75dbd4431cabc59c979682848b5037bdea70142f273ddfbdf04cb53b6c320fc",
+      "serverTime": 1789482600000,
+      "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
       "ownRevision": 2,
       "own": {
         "schemaVersion": 1,
@@ -478,7 +478,7 @@
               },
               "cutoff": {
                 "kind": "time",
-                "at": 2800000
+                "at": 1789484400000
               },
               "maxMessagesPerEpisode": 3,
               "minimumMinutesBetweenMessages": 10,
@@ -487,10 +487,10 @@
             }
           }
         },
-        "sourceHash": "d75dbd4431cabc59c979682848b5037bdea70142f273ddfbdf04cb53b6c320fc",
+        "sourceHash": "8b29ead29f42d5e6d65ae7a1995ad9c1aea2ef5fe6ef909f55929f7d397c71b8",
         "updatedBy": "host-1",
-        "createdAt": 1000000,
-        "updatedAt": 1000000
+        "createdAt": 1789482600000,
+        "updatedAt": 1789482600000
       },
       "origin": "event",
       "status": "disabled",
@@ -511,7 +511,7 @@
           },
           "cutoff": {
             "kind": "time",
-            "at": 2800000
+            "at": 1789484400000
           },
           "maxMessagesPerEpisode": 3,
           "minimumMinutesBetweenMessages": 10,
@@ -540,7 +540,7 @@
         }
       },
       "setup": {
-        "eventEnd": 4600000,
+        "eventEnd": 1789486200000,
         "destinations": [
           {
             "target": {

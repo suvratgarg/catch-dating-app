@@ -30138,6 +30138,426 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Message sending is simulated in this rehearsal.'**
   String get eventAssistanceDeliveryPracticeSending;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Late arrival help'**
+  String get eventAssistanceLateJoinTitle;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how guests can catch up when they miss the start or the group moves on.'**
+  String get eventAssistanceLateJoinBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'How should Catch help?'**
+  String get eventAssistanceLateJoinMode;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Use event rules'**
+  String get eventAssistanceLateJoinInherit;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get eventAssistanceLateJoinOff;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor only'**
+  String get eventAssistanceLateJoinObserve;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare for review'**
+  String get eventAssistanceLateJoinPrepare;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Send automatically'**
+  String get eventAssistanceLateJoinAutomatic;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow the event’s rules. Saving removes this group’s override.'**
+  String get eventAssistanceLateJoinInheritBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off future late arrival help. Customized rules are kept for later.'**
+  String get eventAssistanceLateJoinOffBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Catch to identify joining needs without preparing or sending messages.'**
+  String get eventAssistanceLateJoinObserveBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Catch to prepare guidance for a host to review.'**
+  String get eventAssistanceLateJoinPrepareBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Catch to send joining updates within the rules below.'**
+  String get eventAssistanceLateJoinAutomaticBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving rules does not turn on messaging. Sender setup and guest permission are also required.'**
+  String get eventAssistanceLateJoinDeliveryRequired;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get eventAssistanceLateJoinUnconfigured;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules saved'**
+  String get eventAssistanceLateJoinConfigured;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Turned off'**
+  String get eventAssistanceLateJoinDisabled;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Event setup changed. Review these rules.'**
+  String get eventAssistanceLateJoinSourceChanged;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to the whole event'**
+  String get eventAssistanceLateJoinEventOrigin;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Uses the event’s rules'**
+  String get eventAssistanceLateJoinInheritedOrigin;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Overrides event rules for this group'**
+  String get eventAssistanceLateJoinGroupOrigin;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize rules'**
+  String get eventAssistanceLateJoinCustomize;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore suggested rules'**
+  String get eventAssistanceLateJoinRestore;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Where can guests join?'**
+  String get eventAssistanceLateJoinWhere;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow confirmed group progress'**
+  String get eventAssistanceLateJoinConfirmed;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the group’s latest confirmed destination. A scheduled stop alone does not move the group.'**
+  String get eventAssistanceLateJoinConfirmedBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Itinerary stops'**
+  String get eventAssistanceLateJoinItinerary;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Route checkpoints'**
+  String get eventAssistanceLateJoinCheckpoints;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed joining points'**
+  String get eventAssistanceLateJoinPoints;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Late entry at this place'**
+  String get eventAssistanceLateJoinEntry;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed'**
+  String get eventAssistanceLateJoinEntryAllowed;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Host decides'**
+  String get eventAssistanceLateJoinEntryHost;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get eventAssistanceLateJoinEntryClosed;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining window'**
+  String get eventAssistanceLateJoinWindow;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Until the event ends'**
+  String get eventAssistanceLateJoinEventEnd;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a cutoff'**
+  String get eventAssistanceLateJoinCustomTime;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining cutoff'**
+  String get eventAssistanceLateJoinCutoff;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates per guest'**
+  String get eventAssistanceLateJoinMaximum;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'The maximum while a guest is trying to join. Zero keeps guidance available without sending updates.'**
+  String get eventAssistanceLateJoinMaximumBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum minutes between updates'**
+  String get eventAssistanceLateJoinGap;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Send another update only when joining guidance changes, after this minimum gap.'**
+  String get eventAssistanceLateJoinGapBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'If a guest doesn’t reply'**
+  String get eventAssistanceLateJoinUnanswered;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep arrival unknown'**
+  String get eventAssistanceLateJoinKeepUnknown;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a host to review'**
+  String get eventAssistanceLateJoinHostReview;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'No response never marks someone absent. Host review also needs a response deadline in messaging setup.'**
+  String get eventAssistanceLateJoinUnansweredBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload to get current joining options. You can still turn help off.'**
+  String get eventAssistanceLateJoinSetupUnknown;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'No suggested rules are available. Reload to try again.'**
+  String get eventAssistanceLateJoinMissingRules;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Some joining points are no longer in this event. Choose from the updated list.'**
+  String get eventAssistanceLateJoinDestinationChanged;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a time after now and no later than the event ends.'**
+  String get eventAssistanceLateJoinInvalidCutoff;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Save rules'**
+  String get eventAssistanceLateJoinSave;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get eventAssistanceLateJoinDone;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload rules'**
+  String get eventAssistanceLateJoinReload;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Check save result'**
+  String get eventAssistanceLateJoinRetry;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'The save result is unknown. Check the original save before making another change.'**
+  String get eventAssistanceLateJoinRetryBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'These rules need a fresh review before another save.'**
+  String get eventAssistanceLateJoinRefreshBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current saved rules are shown below.'**
+  String get eventAssistanceLateJoinSavedBody;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease limit'**
+  String get eventAssistanceLateJoinDecrease;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase limit'**
+  String get eventAssistanceLateJoinIncrease;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Rules for'**
+  String get eventAssistanceLateJoinChooseScope;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Whole event'**
+  String get eventAssistanceLateJoinEveryone;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'A save needs confirmation'**
+  String get eventAssistanceLateJoinPending;
+
+  /// Host late arrival settings shared by live and rehearsal adapters.
+  ///
+  /// In en, this message translates to:
+  /// **'Set joining guidance, message limits and group overrides.'**
+  String get eventAssistanceLateJoinEntryBody;
+
+  /// Host late arrival settings navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistance settings'**
+  String get eventAssistanceLateJoinSettings;
+
+  /// Host late arrival settings navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Group overrides'**
+  String get eventAssistanceLateJoinGroupOverrides;
+
+  /// Host late arrival settings navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous group'**
+  String get eventAssistanceLateJoinPreviousGroup;
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide customization'**
+  String get eventAssistanceLateJoinHideRules;
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining points: {places}'**
+  String eventAssistanceLateJoinDestinationSummary({required String places});
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining until {time}'**
+  String eventAssistanceLateJoinCutoffSummary({required String time});
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No message updates} =1{Up to 1 update per guest} other{Up to {count} updates per guest}}'**
+  String eventAssistanceLateJoinLimitSummary({required int count});
+
+  /// Concise summary of reviewed late arrival rules.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes, plural, =0{No minimum gap} =1{At least 1 minute between updates} other{At least {minutes} minutes between updates}}'**
+  String eventAssistanceLateJoinGapSummary({required int minutes});
 }
 
 class _AppLocalizationsDelegate

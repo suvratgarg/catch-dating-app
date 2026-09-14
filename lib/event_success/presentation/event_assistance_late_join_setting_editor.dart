@@ -7,6 +7,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_group_pro
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting_result.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_setting_provider.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_pending_settings.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -101,11 +102,11 @@ class EventAssistanceLateJoinSettingEditor
     final auth = ref.watch(authenticatedSessionProvider);
     _epoch++;
     _account = null;
-    _clearPending();
+    _clearPending(updateIndex: false);
     _inFlight = null;
     ref.onDispose(() {
       _epoch++;
-      _clearPending();
+      _clearPending(updateIndex: false);
     });
     if (auth.isLoading || auth.hasError || auth.asData == null) {
       return LateJoinSettingFormUnavailable(
@@ -274,6 +275,9 @@ class EventAssistanceLateJoinSettingEditor
   void _retainPending(AuthenticatedSession account) {
     if (_releasePending != null) return;
     final lease = ref.keepAlive();
+    ref
+        .read(eventAssistancePendingSettingsProvider.notifier)
+        .retain(scope, account);
     // A kept-alive sheet can have paused provider dependencies. This temporary
     // strong subscription detects unseen sign-out/account changes while pending.
     final auth = ref.container.listen(authenticatedSessionProvider, (_, next) {
@@ -283,7 +287,7 @@ class EventAssistanceLateJoinSettingEditor
         _epoch++;
         _account = null;
         _inFlight = null;
-        _clearPending();
+        _clearPending(updateIndex: false);
         if (ref.mounted) ref.invalidateSelf();
       }
     });
@@ -293,7 +297,12 @@ class EventAssistanceLateJoinSettingEditor
     };
   }
 
-  void _clearPending() {
+  void _clearPending({bool updateIndex = true}) {
+    if (updateIndex && _pending != null && ref.mounted) {
+      ref
+          .read(eventAssistancePendingSettingsProvider.notifier)
+          .release(scope, _account);
+    }
     _pending = null;
     final release = _releasePending;
     _releasePending = null;

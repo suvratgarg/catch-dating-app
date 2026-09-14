@@ -7,6 +7,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_late_join
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setting_result.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_setting_editor.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_setting_provider.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_pending_settings.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -321,6 +322,9 @@ void main() {
         const NetworkException('unavailable', 'Lost reply'),
       );
       await failure;
+      expect(container.read(eventAssistancePendingSettingsProvider), {
+        review.view.scope,
+      });
       container.read(provider.notifier).reload();
       await container.pump();
       await repository.waitForReads(2);
@@ -342,6 +346,7 @@ void main() {
       expect(repository.writes.last.change, same(original));
       repository.writes.last.result.complete(confirmation(1));
       await retry;
+      expect(container.read(eventAssistancePendingSettingsProvider), isEmpty);
       sub.close();
     },
   );
@@ -375,6 +380,7 @@ void main() {
         await container.pump();
       }
       sub = container.listen(editor, (_, _) {});
+      expect(container.read(eventAssistancePendingSettingsProvider), isEmpty);
       expect(container.read(editor), isNot(isA<LateJoinSettingForm>()));
       expect(
         () => container.read(editor.notifier).open(review),

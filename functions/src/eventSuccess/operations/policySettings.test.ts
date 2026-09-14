@@ -19,7 +19,7 @@ import {getEventAssistanceSettingHandler, setEventAssistanceSettingHandler} from
 import type {EventAssistanceSettingCallableResponse as Response} from
   "../../shared/generated/eventAssistanceSettingCallableResponse";
 
-const now = 1_000_000;
+const now = Date.UTC(2026, 8, 15, 14, 30);
 const manager = progressFixtureManager;
 async function harness(realDb?: Firestore, fixtureId?: string) {
   const fake = new ProgressFirestore();

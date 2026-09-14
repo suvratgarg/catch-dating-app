@@ -18989,4 +18989,258 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventAssistanceDeliveryPracticeSending =>
       'Message sending is simulated in this rehearsal.';
+
+  @override
+  String get eventAssistanceLateJoinTitle => 'Late arrival help';
+
+  @override
+  String get eventAssistanceLateJoinBody =>
+      'Choose how guests can catch up when they miss the start or the group moves on.';
+
+  @override
+  String get eventAssistanceLateJoinMode => 'How should Catch help?';
+
+  @override
+  String get eventAssistanceLateJoinInherit => 'Use event rules';
+
+  @override
+  String get eventAssistanceLateJoinOff => 'Off';
+
+  @override
+  String get eventAssistanceLateJoinObserve => 'Monitor only';
+
+  @override
+  String get eventAssistanceLateJoinPrepare => 'Prepare for review';
+
+  @override
+  String get eventAssistanceLateJoinAutomatic => 'Send automatically';
+
+  @override
+  String get eventAssistanceLateJoinInheritBody =>
+      'Follow the event’s rules. Saving removes this group’s override.';
+
+  @override
+  String get eventAssistanceLateJoinOffBody =>
+      'Turn off future late arrival help. Customized rules are kept for later.';
+
+  @override
+  String get eventAssistanceLateJoinObserveBody =>
+      'Allow Catch to identify joining needs without preparing or sending messages.';
+
+  @override
+  String get eventAssistanceLateJoinPrepareBody =>
+      'Allow Catch to prepare guidance for a host to review.';
+
+  @override
+  String get eventAssistanceLateJoinAutomaticBody =>
+      'Allow Catch to send joining updates within the rules below.';
+
+  @override
+  String get eventAssistanceLateJoinDeliveryRequired =>
+      'Saving rules does not turn on messaging. Sender setup and guest permission are also required.';
+
+  @override
+  String get eventAssistanceLateJoinUnconfigured => 'Not configured';
+
+  @override
+  String get eventAssistanceLateJoinConfigured => 'Rules saved';
+
+  @override
+  String get eventAssistanceLateJoinDisabled => 'Turned off';
+
+  @override
+  String get eventAssistanceLateJoinSourceChanged =>
+      'Event setup changed. Review these rules.';
+
+  @override
+  String get eventAssistanceLateJoinEventOrigin => 'Applies to the whole event';
+
+  @override
+  String get eventAssistanceLateJoinInheritedOrigin => 'Uses the event’s rules';
+
+  @override
+  String get eventAssistanceLateJoinGroupOrigin =>
+      'Overrides event rules for this group';
+
+  @override
+  String get eventAssistanceLateJoinCustomize => 'Customize rules';
+
+  @override
+  String get eventAssistanceLateJoinRestore => 'Restore suggested rules';
+
+  @override
+  String get eventAssistanceLateJoinWhere => 'Where can guests join?';
+
+  @override
+  String get eventAssistanceLateJoinConfirmed =>
+      'Follow confirmed group progress';
+
+  @override
+  String get eventAssistanceLateJoinConfirmedBody =>
+      'Use the group’s latest confirmed destination. A scheduled stop alone does not move the group.';
+
+  @override
+  String get eventAssistanceLateJoinItinerary => 'Itinerary stops';
+
+  @override
+  String get eventAssistanceLateJoinCheckpoints => 'Route checkpoints';
+
+  @override
+  String get eventAssistanceLateJoinPoints => 'Allowed joining points';
+
+  @override
+  String get eventAssistanceLateJoinEntry => 'Late entry at this place';
+
+  @override
+  String get eventAssistanceLateJoinEntryAllowed => 'Allowed';
+
+  @override
+  String get eventAssistanceLateJoinEntryHost => 'Host decides';
+
+  @override
+  String get eventAssistanceLateJoinEntryClosed => 'Closed';
+
+  @override
+  String get eventAssistanceLateJoinWindow => 'Joining window';
+
+  @override
+  String get eventAssistanceLateJoinEventEnd => 'Until the event ends';
+
+  @override
+  String get eventAssistanceLateJoinCustomTime => 'Choose a cutoff';
+
+  @override
+  String get eventAssistanceLateJoinCutoff => 'Joining cutoff';
+
+  @override
+  String get eventAssistanceLateJoinMaximum => 'Updates per guest';
+
+  @override
+  String get eventAssistanceLateJoinMaximumBody =>
+      'The maximum while a guest is trying to join. Zero keeps guidance available without sending updates.';
+
+  @override
+  String get eventAssistanceLateJoinGap => 'Minimum minutes between updates';
+
+  @override
+  String get eventAssistanceLateJoinGapBody =>
+      'Send another update only when joining guidance changes, after this minimum gap.';
+
+  @override
+  String get eventAssistanceLateJoinUnanswered => 'If a guest doesn’t reply';
+
+  @override
+  String get eventAssistanceLateJoinKeepUnknown => 'Keep arrival unknown';
+
+  @override
+  String get eventAssistanceLateJoinHostReview => 'Ask a host to review';
+
+  @override
+  String get eventAssistanceLateJoinUnansweredBody =>
+      'No response never marks someone absent. Host review also needs a response deadline in messaging setup.';
+
+  @override
+  String get eventAssistanceLateJoinSetupUnknown =>
+      'Reload to get current joining options. You can still turn help off.';
+
+  @override
+  String get eventAssistanceLateJoinMissingRules =>
+      'No suggested rules are available. Reload to try again.';
+
+  @override
+  String get eventAssistanceLateJoinDestinationChanged =>
+      'Some joining points are no longer in this event. Choose from the updated list.';
+
+  @override
+  String get eventAssistanceLateJoinInvalidCutoff =>
+      'Choose a time after now and no later than the event ends.';
+
+  @override
+  String get eventAssistanceLateJoinSave => 'Save rules';
+
+  @override
+  String get eventAssistanceLateJoinDone => 'Done';
+
+  @override
+  String get eventAssistanceLateJoinReload => 'Reload rules';
+
+  @override
+  String get eventAssistanceLateJoinRetry => 'Check save result';
+
+  @override
+  String get eventAssistanceLateJoinRetryBody =>
+      'The save result is unknown. Check the original save before making another change.';
+
+  @override
+  String get eventAssistanceLateJoinRefreshBody =>
+      'These rules need a fresh review before another save.';
+
+  @override
+  String get eventAssistanceLateJoinSavedBody =>
+      'Your current saved rules are shown below.';
+
+  @override
+  String get eventAssistanceLateJoinDecrease => 'Decrease limit';
+
+  @override
+  String get eventAssistanceLateJoinIncrease => 'Increase limit';
+
+  @override
+  String get eventAssistanceLateJoinChooseScope => 'Rules for';
+
+  @override
+  String get eventAssistanceLateJoinEveryone => 'Whole event';
+
+  @override
+  String get eventAssistanceLateJoinPending => 'A save needs confirmation';
+
+  @override
+  String get eventAssistanceLateJoinEntryBody =>
+      'Set joining guidance, message limits and group overrides.';
+
+  @override
+  String get eventAssistanceLateJoinSettings => 'Assistance settings';
+
+  @override
+  String get eventAssistanceLateJoinGroupOverrides => 'Group overrides';
+
+  @override
+  String get eventAssistanceLateJoinPreviousGroup => 'Previous group';
+
+  @override
+  String get eventAssistanceLateJoinHideRules => 'Hide customization';
+
+  @override
+  String eventAssistanceLateJoinDestinationSummary({required String places}) {
+    return 'Joining points: $places';
+  }
+
+  @override
+  String eventAssistanceLateJoinCutoffSummary({required String time}) {
+    return 'Joining until $time';
+  }
+
+  @override
+  String eventAssistanceLateJoinLimitSummary({required int count}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Up to $count updates per guest',
+      one: 'Up to 1 update per guest',
+      zero: 'No message updates',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventAssistanceLateJoinGapSummary({required int minutes}) {
+    String _temp0 = intl.Intl.pluralLogic(
+      minutes,
+      locale: localeName,
+      other: 'At least $minutes minutes between updates',
+      one: 'At least 1 minute between updates',
+      zero: 'No minimum gap',
+    );
+    return '$_temp0';
+  }
 }

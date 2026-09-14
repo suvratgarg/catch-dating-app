@@ -28,6 +28,7 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_liv
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_groups_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_help_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_movement_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_settings_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
@@ -450,6 +451,9 @@ class _EventSuccessHostSectionState
               attendees: accountabilityAttendeesAsync,
             )
           : null,
+      assistanceSettingsSection: EventAssistanceLiveSettingsSection(
+        event: event,
+      ),
       deliverySection: EventAssistanceLiveDeliverySection(
         organizerId: event.clubId,
         eventId: event.id,
@@ -1228,6 +1232,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.membershipSection,
     this.helpSection,
     this.deliverySection,
+    this.assistanceSettingsSection,
     this.movementSection,
     this.accountabilityMode,
     this.accountabilityError,
@@ -1308,6 +1313,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final Widget? membershipSection;
   final Widget? helpSection;
   final Widget? deliverySection;
+  final Widget? assistanceSettingsSection;
   final Widget? movementSection;
   final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
@@ -1404,6 +1410,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
   Widget build(BuildContext context) {
     final body = switch (_selectedTab) {
       EventSuccessHostTab.setup => SetupTab(
+        assistanceSettingsSection: widget.assistanceSettingsSection,
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,

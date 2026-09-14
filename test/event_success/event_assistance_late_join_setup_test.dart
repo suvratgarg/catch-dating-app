@@ -44,7 +44,7 @@ void main() {
       expect(schema.validate(raw).isValid, isTrue);
       final view = read(raw).view;
       final setup = view.setup!;
-      expect(setup.eventEnd, 4600000);
+      expect(setup.eventEnd, view.serverTime + 3600000);
       final options = setup.destinations;
       expect(options, hasLength(3));
       expect(options.first.target, isA<AssistanceFixedPlace>());
