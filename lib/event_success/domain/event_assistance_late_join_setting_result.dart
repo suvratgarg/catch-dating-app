@@ -40,24 +40,35 @@ final class LateJoinSettingResult {
         _invalid();
       }
     } else {
-      if (expectedChange.snapshot.scope != expectedScope ||
-          outcome == AssistanceSettingOutcome.read ||
-          revision != expectedChange.snapshot.ownRevision + 1 ||
-          revision! > view.ownRevision ||
-          view.serverTime < expectedChange.snapshot.serverTime) {
-        _invalid();
-      }
-      // A replay carries the original receipt and the latest effective state.
-      if (outcome == AssistanceSettingOutcome.applied &&
-          (revision != view.ownRevision ||
-              view.sourceHash != expectedChange.snapshot.sourceHash ||
-              view.own?.sourceHash != view.sourceHash ||
-              jsonEncode(view.own?.preference.toJson()) !=
-                  jsonEncode(expectedChange.preference.toJson()))) {
-        _invalid();
-      }
+      final result = LateJoinSettingResult._(outcome, revision, view);
+      if (expectedChange.snapshot.scope != expectedScope) _invalid();
+      result.requireChange(expectedChange);
     }
     return LateJoinSettingResult._(outcome, revision, view);
+  }
+
+  /// Validate the receipt at every ownership boundary, including substituted repositories.
+  void requireChange(LateJoinSettingChange change, {String? actorUid}) {
+    if (view.scope != change.snapshot.scope ||
+        outcome == AssistanceSettingOutcome.read ||
+        operationRevision != change.snapshot.ownRevision + 1 ||
+        operationRevision! > view.ownRevision ||
+        view.serverTime < change.snapshot.serverTime) {
+      _invalid();
+    }
+    // A replay carries the original receipt and the latest effective state.
+    if (outcome == AssistanceSettingOutcome.applied &&
+        (operationRevision != view.ownRevision ||
+            view.sourceHash != change.snapshot.sourceHash ||
+            view.own?.sourceHash != view.sourceHash ||
+            view.own?.updatedAt != view.serverTime ||
+            (change.snapshot.own != null &&
+                view.own?.createdAt != change.snapshot.own!.createdAt) ||
+            (actorUid != null && view.own?.updatedBy != actorUid) ||
+            jsonEncode(view.own?.preference.toJson()) !=
+                jsonEncode(change.preference.toJson()))) {
+      _invalid();
+    }
   }
 }
 

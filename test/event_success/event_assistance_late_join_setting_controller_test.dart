@@ -17,6 +17,8 @@ void main() {
   late _Repository repository;
   late StreamController<String?> auth;
   late ProviderContainer container;
+  late ProviderSubscription<AsyncValue<LateJoinSettingSession>>
+  pageSubscription;
   final provider = eventAssistanceLateJoinSettingProvider(settingScope());
   setUp(() {
     repository = _Repository();
@@ -29,7 +31,7 @@ void main() {
         ),
       ],
     );
-    container.listen(provider, (_, _) {});
+    pageSubscription = container.listen(provider, (_, _) {});
   });
   tearDown(() async {
     container.dispose();
@@ -62,7 +64,10 @@ void main() {
         outcome: 'applied',
         operationRevision: 1,
         revision: 1,
-        own: settingRecord(preference: change.preference.toJson()),
+        own: {
+          ...settingRecord(preference: change.preference.toJson()),
+          'updatedBy': 'host-1',
+        },
         status: change.preference is LateJoinDisabled
             ? 'disabled'
             : 'configured',
@@ -139,13 +144,23 @@ void main() {
     },
   );
 
+  test('a repository cannot substitute another group review', () async {
+    await signIn('host-1');
+    repository.reads.single.result.complete(settingView(groupId: 'pace:slow'));
+    await container.pump();
+    expect(container.read(provider).hasValue, isFalse);
+    expect(container.read(provider).error, isA<FormatException>());
+  });
+
   test(
     'suggestions require an explicit choice; duplicate saves share one frozen request',
     () async {
       final review = await session();
-      final editor = eventAssistanceLateJoinSettingEditorProvider(review);
+      final editor = eventAssistanceLateJoinSettingEditorProvider(
+        review.view.scope,
+      );
       container.listen(editor, (_, _) {});
-      final notifier = container.read(editor.notifier);
+      final notifier = container.read(editor.notifier)..open(review);
       expect((container.read(editor) as LateJoinSettingForm).decision, isNull);
       await expectLater(notifier.submit(), throwsA(isA<ValidationException>()));
       expect(repository.writes, isEmpty);
@@ -179,9 +194,11 @@ void main() {
     'uncertain saves retain the request and reject edits until exact retry',
     () async {
       final review = await session();
-      final editor = eventAssistanceLateJoinSettingEditorProvider(review);
+      final editor = eventAssistanceLateJoinSettingEditorProvider(
+        review.view.scope,
+      );
       container.listen(editor, (_, _) {});
-      final notifier = container.read(editor.notifier);
+      final notifier = container.read(editor.notifier)..open(review);
       notifier.select(const LateJoinDisabled());
       final first = notifier.submit();
       final failed = expectLater(first, throwsA(isA<StateError>()));
@@ -192,7 +209,7 @@ void main() {
         LateJoinSettingEditorPhase.retryRequired,
       );
       notifier.select(LateJoinConfigured(lateJoinTemplate()));
-      final retry = notifier.submit();
+      final retry = notifier.retry();
       expect(repository.writes[1].change, same(repository.writes[0].change));
       repository.writes[1].result.complete(confirmation(1));
       await retry;
@@ -201,9 +218,11 @@ void main() {
 
   test('a conflict requires new review, never a rebased retry', () async {
     final review = await session();
-    final editor = eventAssistanceLateJoinSettingEditorProvider(review);
+    final editor = eventAssistanceLateJoinSettingEditorProvider(
+      review.view.scope,
+    );
     container.listen(editor, (_, _) {});
-    final notifier = container.read(editor.notifier);
+    final notifier = container.read(editor.notifier)..open(review);
     notifier.select(const LateJoinDisabled());
     final pending = notifier.submit();
     final failed = expectLater(
@@ -231,12 +250,14 @@ void main() {
   });
 
   test(
-    'an account change permanently revokes the editor even when its save completes',
+    'an account change revokes the prior decision even when its save completes',
     () async {
       final review = await session();
-      final editor = eventAssistanceLateJoinSettingEditorProvider(review);
+      final editor = eventAssistanceLateJoinSettingEditorProvider(
+        review.view.scope,
+      );
       container.listen(editor, (_, _) {});
-      final notifier = container.read(editor.notifier);
+      final notifier = container.read(editor.notifier)..open(review);
       notifier.select(const LateJoinDisabled());
       final pending = notifier.submit();
       final failed = expectLater(
@@ -245,11 +266,11 @@ void main() {
       );
       await signIn(null);
       await signIn('host-1');
-      expect(container.read(editor), isA<LateJoinSettingFormUnavailable>());
+      expect(container.read(editor), isA<LateJoinSettingIdle>());
       repository.writes.single.result.complete(confirmation(0));
       await failed;
       await complete(1);
-      expect(container.read(editor), isA<LateJoinSettingFormUnavailable>());
+      expect(container.read(editor), isA<LateJoinSettingIdle>());
       await expectLater(
         notifier.submit(),
         throwsA(isA<BackendOperationException>()),
@@ -257,6 +278,220 @@ void main() {
       expect(repository.writes, hasLength(1));
     },
   );
+  test(
+    'a retired settings page cannot authorize a new choice or save',
+    () async {
+      final review = await session();
+      final editor = eventAssistanceLateJoinSettingEditorProvider(
+        review.view.scope,
+      );
+      final sub = container.listen(editor, (_, _) {});
+      addTearDown(sub.close);
+      final notifier = container.read(editor.notifier)..open(review);
+      notifier.select(const LateJoinDisabled());
+      container.read(provider.notifier).reload();
+      await container.pump();
+      expect(review.isCurrent, isFalse);
+      expect(
+        (container.read(editor) as LateJoinSettingForm).canSubmit,
+        isFalse,
+      );
+      await expectLater(notifier.submit(), throwsA(isA<ValidationException>()));
+      expect(() => notifier.open(review), throwsA(isA<ValidationException>()));
+      expect(repository.writes, isEmpty);
+    },
+  );
+
+  test(
+    'a hidden pending save survives page replacement and confirms the same command',
+    () async {
+      final review = await session();
+      final editor = eventAssistanceLateJoinSettingEditorProvider(
+        review.view.scope,
+      );
+      var sub = container.listen(editor, (_, _) {});
+      final notifier = container.read(editor.notifier)..open(review);
+      notifier.select(const LateJoinDisabled());
+      final first = notifier.submit();
+      final failure = expectLater(first, throwsA(isA<NetworkException>()));
+      final original = repository.writes.single.change;
+      sub.close();
+      await container.pump();
+      repository.writes.single.result.completeError(
+        const NetworkException('unavailable', 'Lost reply'),
+      );
+      await failure;
+      container.read(provider.notifier).reload();
+      await container.pump();
+      await repository.waitForReads(2);
+      await complete(1);
+      sub = container.listen(editor, (_, _) {});
+      notifier.open(container.read(provider).requireValue);
+      notifier.reload();
+      expect(
+        (container.read(editor) as LateJoinSettingForm).change,
+        same(original),
+      );
+      expect(
+        (container.read(editor) as LateJoinSettingForm).canReload,
+        isFalse,
+      );
+      await expectLater(notifier.submit(), throwsA(isA<ValidationException>()));
+      final retry = notifier.retry();
+      expect(notifier.retry(), same(retry));
+      expect(repository.writes.last.change, same(original));
+      repository.writes.last.result.complete(confirmation(1));
+      await retry;
+      sub.close();
+    },
+  );
+
+  for (final transition in ['signOut', 'sameUidReturn', 'authError']) {
+    test('a detached uncertain setting cannot survive $transition', () async {
+      final review = await session();
+      final editor = eventAssistanceLateJoinSettingEditorProvider(
+        review.view.scope,
+      );
+      var sub = container.listen(editor, (_, _) {});
+      final notifier = container.read(editor.notifier)..open(review);
+      notifier.select(const LateJoinDisabled());
+      final first = notifier.submit();
+      final failure = expectLater(first, throwsA(isA<NetworkException>()));
+      repository.writes.single.result.completeError(
+        const NetworkException('unavailable', 'Lost reply'),
+      );
+      await failure;
+      sub.close();
+      pageSubscription.close();
+      await container.pump();
+      if (transition == 'authError') {
+        auth.addError(StateError('Auth unavailable'));
+      } else {
+        auth.add(null);
+      }
+      await container.pump();
+      if (transition == 'sameUidReturn') {
+        auth.add('host-1');
+        await container.pump();
+      }
+      sub = container.listen(editor, (_, _) {});
+      expect(container.read(editor), isNot(isA<LateJoinSettingForm>()));
+      expect(
+        () => container.read(editor.notifier).open(review),
+        throwsA(isA<BackendOperationException>()),
+      );
+      await expectLater(
+        container.read(editor.notifier).retry(),
+        throwsA(isA<BackendOperationException>()),
+      );
+      expect(repository.writes, hasLength(1));
+      sub.close();
+    });
+  }
+
+  test(
+    'a response from another group remains uncertain at the state owner',
+    () async {
+      final review = await session();
+      final editor = eventAssistanceLateJoinSettingEditorProvider(
+        review.view.scope,
+      );
+      final sub = container.listen(editor, (_, _) {});
+      addTearDown(sub.close);
+      final notifier = container.read(editor.notifier)..open(review);
+      notifier.select(const LateJoinDisabled());
+      final first = notifier.submit();
+      final failure = expectLater(first, throwsFormatException);
+      final other = settingView(
+        groupId: 'pace:slow',
+      ).prepareChange(requestId: 'other', preference: const LateJoinDisabled());
+      repository.writes.single.result.complete(
+        LateJoinSettingResult.fromCallableData(
+          settingResponse(
+            outcome: 'applied',
+            operationRevision: 1,
+            revision: 1,
+            groupId: 'pace:slow',
+            status: 'disabled',
+            origin: 'group',
+            own: settingRecord(
+              groupId: 'pace:slow',
+              preference: const LateJoinDisabled().toJson(),
+            ),
+          ),
+          expectedScope: other.snapshot.scope,
+          expectedChange: other,
+        ),
+      );
+      await failure;
+      expect((container.read(editor) as LateJoinSettingForm).canRetry, isTrue);
+      final retry = notifier.retry();
+      repository.writes.last.result.complete(confirmation(1));
+      await retry;
+    },
+  );
+  test(
+    'a receipt naming another manager cannot acknowledge this host',
+    () async {
+      final review = await session();
+      final editor = eventAssistanceLateJoinSettingEditorProvider(
+        review.view.scope,
+      );
+      final sub = container.listen(editor, (_, _) {});
+      addTearDown(sub.close);
+      final notifier = container.read(editor.notifier)..open(review);
+      notifier.select(const LateJoinDisabled());
+      final first = notifier.submit();
+      final failure = expectLater(first, throwsFormatException);
+      final change = repository.writes.single.change;
+      repository.writes.single.result.complete(
+        LateJoinSettingResult.fromCallableData(
+          settingResponse(
+            outcome: 'applied',
+            operationRevision: 1,
+            revision: 1,
+            status: 'disabled',
+            origin: 'event',
+            own: {
+              ...settingRecord(preference: const LateJoinDisabled().toJson()),
+              'updatedBy': 'host-2',
+            },
+          ),
+          expectedScope: change.snapshot.scope,
+          expectedChange: change,
+        ),
+      );
+      await failure;
+      expect((container.read(editor) as LateJoinSettingForm).canRetry, isTrue);
+    },
+  );
+
+  test('retry from the visible error starts a new active future', () async {
+    final review = await session();
+    final editor = eventAssistanceLateJoinSettingEditorProvider(
+      review.view.scope,
+    );
+    Future<LateJoinSettingResult>? retry;
+    final sub = container.listen(editor, (_, next) {
+      if (next is LateJoinSettingForm && next.canRetry && retry == null) {
+        retry = container.read(editor.notifier).retry();
+      }
+    });
+    addTearDown(sub.close);
+    final notifier = container.read(editor.notifier)..open(review);
+    notifier.select(const LateJoinDisabled());
+    final first = notifier.submit();
+    final failure = expectLater(first, throwsA(isA<NetworkException>()));
+    repository.writes.first.result.completeError(
+      const NetworkException('unavailable', 'Lost reply'),
+    );
+    await failure;
+    expect(repository.writes, hasLength(2));
+    expect(retry, isNot(same(first)));
+    expect(repository.writes.last.change, same(repository.writes.first.change));
+    repository.writes.last.result.complete(confirmation(1));
+    await retry;
+  });
 }
 
 class _Repository extends Fake

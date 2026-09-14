@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.121.0
+version: 1.122.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -827,10 +827,17 @@ A save freezes its reviewed source hash, own revision, request ID and typed
 preference. Applied responses must confirm that exact choice; replays preserve
 the original operation revision independently of the latest current setting.
 Account-scoped reads hide stale private state during loading, sign-out and auth
-errors. The settings editor rejects old review periods even after the same UID
-signs in again, deduplicates in-flight submissions, retains uncertain requests
-for exact retry and requires a fresh review after conflict or lost authority.
-Successful saves reload settings without optimistic execution or enrollment.
+errors. Each event/group has one stable preference editor for an uninterrupted
+sign-in. Retired review pages cannot authorize a new choice; explicit open,
+select, submit and exact retry operations retain the same immutable command
+through page refresh and sheet dismissal. Reload cannot discard an uncertain
+save. A temporary strong authentication subscription clears detached pending
+state on sign-out, same-UID re-entry and authentication failure. The state owner
+independently validates the receipt's scope, revision, applied preference,
+manager and timestamps. Conflicts or lost authority require fresh review;
+success reloads settings without optimistic execution or enrollment. Focused
+tests cover detached recovery, foreign-group and actor receipts, and immediate
+retry callbacks.
 
 Host screen composition and the rehearsal adapter remain integration work. This
 client currently edits the late-join workflow; the other catalog entries still

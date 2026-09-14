@@ -8,26 +8,23 @@ part of 'event_assistance_late_join_setting_editor.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// One reviewed preference. Suggestions remain unselected until an explicit
-/// host choice; uncertain saves retain the exact request and review basis.
+/// One event or group owns one pending late arrival preference across page refresh and sheet closure.
 
 @ProviderFor(EventAssistanceLateJoinSettingEditor)
 final eventAssistanceLateJoinSettingEditorProvider =
     EventAssistanceLateJoinSettingEditorFamily._();
 
-/// One reviewed preference. Suggestions remain unselected until an explicit
-/// host choice; uncertain saves retain the exact request and review basis.
+/// One event or group owns one pending late arrival preference across page refresh and sheet closure.
 final class EventAssistanceLateJoinSettingEditorProvider
     extends
         $NotifierProvider<
           EventAssistanceLateJoinSettingEditor,
           LateJoinSettingEditorState
         > {
-  /// One reviewed preference. Suggestions remain unselected until an explicit
-  /// host choice; uncertain saves retain the exact request and review basis.
+  /// One event or group owns one pending late arrival preference across page refresh and sheet closure.
   EventAssistanceLateJoinSettingEditorProvider._({
     required EventAssistanceLateJoinSettingEditorFamily super.from,
-    required LateJoinSettingSession super.argument,
+    required EventAssistanceGroupScope super.argument,
   }) : super(
          retry: null,
          name: r'eventAssistanceLateJoinSettingEditorProvider',
@@ -73,10 +70,9 @@ final class EventAssistanceLateJoinSettingEditorProvider
 }
 
 String _$eventAssistanceLateJoinSettingEditorHash() =>
-    r'fc4fe17eb0d8f4cc34c039aaca9c3e07121d7c4b';
+    r'1fdb65c9117e98dbb11ab69ac638f612a4a6abf0';
 
-/// One reviewed preference. Suggestions remain unselected until an explicit
-/// host choice; uncertain saves retain the exact request and review basis.
+/// One event or group owns one pending late arrival preference across page refresh and sheet closure.
 
 final class EventAssistanceLateJoinSettingEditorFamily extends $Family
     with
@@ -85,7 +81,7 @@ final class EventAssistanceLateJoinSettingEditorFamily extends $Family
           LateJoinSettingEditorState,
           LateJoinSettingEditorState,
           LateJoinSettingEditorState,
-          LateJoinSettingSession
+          EventAssistanceGroupScope
         > {
   EventAssistanceLateJoinSettingEditorFamily._()
     : super(
@@ -96,13 +92,12 @@ final class EventAssistanceLateJoinSettingEditorFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One reviewed preference. Suggestions remain unselected until an explicit
-  /// host choice; uncertain saves retain the exact request and review basis.
+  /// One event or group owns one pending late arrival preference across page refresh and sheet closure.
 
   EventAssistanceLateJoinSettingEditorProvider call(
-    LateJoinSettingSession review,
+    EventAssistanceGroupScope scope,
   ) => EventAssistanceLateJoinSettingEditorProvider._(
-    argument: review,
+    argument: scope,
     from: this,
   );
 
@@ -110,15 +105,14 @@ final class EventAssistanceLateJoinSettingEditorFamily extends $Family
   String toString() => r'eventAssistanceLateJoinSettingEditorProvider';
 }
 
-/// One reviewed preference. Suggestions remain unselected until an explicit
-/// host choice; uncertain saves retain the exact request and review basis.
+/// One event or group owns one pending late arrival preference across page refresh and sheet closure.
 
 abstract class _$EventAssistanceLateJoinSettingEditor
     extends $Notifier<LateJoinSettingEditorState> {
-  late final _$args = ref.$arg as LateJoinSettingSession;
-  LateJoinSettingSession get review => _$args;
+  late final _$args = ref.$arg as EventAssistanceGroupScope;
+  EventAssistanceGroupScope get scope => _$args;
 
-  LateJoinSettingEditorState build(LateJoinSettingSession review);
+  LateJoinSettingEditorState build(EventAssistanceGroupScope scope);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {

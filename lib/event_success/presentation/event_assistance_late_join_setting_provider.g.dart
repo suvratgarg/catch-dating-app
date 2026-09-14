@@ -193,7 +193,7 @@ final class EventAssistanceLateJoinSettingForAccountProvider
 }
 
 String _$eventAssistanceLateJoinSettingForAccountHash() =>
-    r'92bed2b4eaa90a3435306aa637695300803fd2d0';
+    r'04b0769c715d6ea4b94a4bc72fe2c197498de2a1';
 
 final class EventAssistanceLateJoinSettingForAccountFamily extends $Family
     with

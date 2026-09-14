@@ -8,9 +8,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'event_assistance_late_join_setting_provider.g.dart';
 
 final class LateJoinSettingSession {
-  const LateJoinSettingSession._(this.account, this.view);
+  LateJoinSettingSession._(this.account, this.view);
   final EventAssistanceAccount account;
   final LateJoinSettingView view;
+  bool _current = true;
+  bool get isCurrent => _current;
 }
 
 const settingReviewSessionChanged = BackendOperationException(
@@ -83,7 +85,14 @@ Future<LateJoinSettingSession> eventAssistanceLateJoinSettingForAccount(
       .watch(eventAssistanceLateJoinSettingRepositoryProvider)
       .fetch(query);
   requireSettingReviewAccount(ref, account);
-  return LateJoinSettingSession._(account, page);
+  if (page.scope != query) {
+    throw const FormatException(
+      'Late arrival settings do not match this scope.',
+    );
+  }
+  final session = LateJoinSettingSession._(account, page);
+  ref.onDispose(() => session._current = false);
+  return session;
 }
 
 Duration? _noSettingReadRetry(int retryCount, Object error) => null;
