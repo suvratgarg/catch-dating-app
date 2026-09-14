@@ -17929,4 +17929,167 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventAssistanceVisitCheckpointContext =>
       'This records the event visit. Use the checkpoint report to confirm arrival there.';
+
+  @override
+  String get eventAssistanceGroupReview => 'Review group';
+
+  @override
+  String get eventAssistanceGroupBody =>
+      'Manage who is responsible for this guest in a pace group.';
+
+  @override
+  String get eventAssistanceGroupCurrent => 'Current group';
+
+  @override
+  String get eventAssistanceGroupNone => 'No accepted group';
+
+  @override
+  String get eventAssistanceGroupPrevious =>
+      'The previous group assignment needs review.';
+
+  @override
+  String get eventAssistanceGroupPlace => 'Assign to a group';
+
+  @override
+  String get eventAssistanceGroupPropose => 'Hand over to another group';
+
+  @override
+  String get eventAssistanceGroupAccept => 'Accept into this group';
+
+  @override
+  String get eventAssistanceGroupReject => 'Decline handover';
+
+  @override
+  String get eventAssistanceGroupCancel => 'Cancel handover';
+
+  @override
+  String get eventAssistanceGroupLeave => 'Remove from group';
+
+  @override
+  String get eventAssistanceGroupChoose => 'Group';
+
+  @override
+  String get eventAssistanceGroupReceiver => 'Receiving host';
+
+  @override
+  String get eventAssistanceGroupDeadline => 'Accept by';
+
+  @override
+  String get eventAssistanceGroupProposeBody =>
+      'The receiving host must accept before the guest’s group changes. This does not send a message.';
+
+  @override
+  String get eventAssistanceGroupPlaceBody =>
+      'You will take responsibility for this guest in the selected group.';
+
+  @override
+  String get eventAssistanceGroupAcceptBody =>
+      'You will take responsibility for this guest in the requested group.';
+
+  @override
+  String get eventAssistanceGroupRejectBody =>
+      'Decline this request without accepting responsibility for the guest.';
+
+  @override
+  String get eventAssistanceGroupCancelBody => 'Cancel this handover request.';
+
+  @override
+  String get eventAssistanceGroupLeaveBody =>
+      'This removes group responsibility. Their event attendance stays unchanged.';
+
+  @override
+  String eventAssistanceGroupPending({required String group}) {
+    return 'Waiting for acceptance into $group.';
+  }
+
+  @override
+  String get eventAssistanceGroupExpired =>
+      'The handover request expired. The group assignment is unchanged.';
+
+  @override
+  String get eventAssistanceGroupChanged =>
+      'Refresh the group details before continuing.';
+
+  @override
+  String get eventAssistanceGroupClosedAccepted =>
+      'The receiving host accepted the handover.';
+
+  @override
+  String get eventAssistanceGroupClosedRejected =>
+      'The receiving host declined the handover.';
+
+  @override
+  String get eventAssistanceGroupClosedCancelled =>
+      'The handover was cancelled.';
+
+  @override
+  String get eventAssistanceGroupNoActions =>
+      'No group actions are available for this guest under your current access.';
+
+  @override
+  String get eventAssistanceGroupNoReceivers =>
+      'Receiving hosts are unavailable in this review. Refresh the group details to try again.';
+
+  @override
+  String get eventAssistanceGroupSaving => 'Saving this group action…';
+
+  @override
+  String get eventAssistanceGroupUnconfirmed =>
+      'This action has not been confirmed. Retry the same action before making another change.';
+
+  @override
+  String get eventAssistanceGroupSaved => 'Group action confirmed.';
+
+  @override
+  String get eventAssistanceGroupRetry => 'Retry this group action';
+
+  @override
+  String get eventAssistanceGroupRefresh => 'Refresh group details';
+
+  @override
+  String get eventAssistanceGroupConfirm => 'Confirm group action';
+
+  @override
+  String get eventAssistanceGroupChooseAgain => 'Choose another action';
+
+  @override
+  String get eventAssistanceGroupYou => 'You';
+
+  @override
+  String get eventAssistanceGroupUnnamedHost => 'Organizer host';
+
+  @override
+  String get eventAssistanceGroupUnknown => 'Previous group';
+
+  @override
+  String eventAssistanceGroupSelected({required String action}) {
+    return 'Selected action: $action';
+  }
+
+  @override
+  String get eventAssistanceGroupNotApplicable =>
+      'Group handovers apply to events with configured pace groups.';
+
+  @override
+  String get eventAssistanceGroupRosterTitle => 'Pace groups';
+
+  @override
+  String get eventAssistanceGroupRosterBody =>
+      'Review a guest’s group or hand over responsibility to another host.';
+
+  @override
+  String get eventAssistanceGroupNoGuests =>
+      'No guests are available to review.';
+
+  @override
+  String get eventAssistanceGroupGuest => 'Guest';
+
+  @override
+  String eventAssistanceGroupReceiverValue({required String name}) {
+    return 'Receiving host: $name';
+  }
+
+  @override
+  String get eventAssistanceGroupMissingName =>
+      'Some hosts have no name on file and can’t be selected.';
 }

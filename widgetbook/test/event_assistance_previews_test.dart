@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_edit_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_membership_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_group_roster_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_visit_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,7 +10,7 @@ import 'package:widgetbook_workspace/event_success/event_assistance_use_cases.da
 
 void main() {
   testWidgets(
-    'backend fixture asset mounts real staff and visit previews without Firebase',
+    'backend fixture asset mounts real staff, visit and group previews without Firebase',
     (tester) async {
       // Loading the declared asset verifies the browser-compatible fixture path.
       final fixtures = await tester.runAsync(loadAssistancePreviewFixtures);
@@ -16,6 +18,10 @@ void main() {
       for (final preview in [
         assistancePracticeStaffEdit,
         assistanceLiveVisit,
+        assistanceLiveMembership,
+        assistancePracticeMembership,
+        assistanceLiveGroups,
+        assistancePracticeGroups,
       ]) {
         await tester.pumpWidget(
           MaterialApp(
@@ -32,6 +38,12 @@ void main() {
         expect(
           preview == assistancePracticeStaffEdit
               ? find.byType(EventRehearsalStaffEditSection)
+              : preview == assistanceLiveMembership ||
+                    preview == assistancePracticeMembership
+              ? find.byType(EventAssistanceMembershipSection)
+              : preview == assistanceLiveGroups ||
+                    preview == assistancePracticeGroups
+              ? find.byType(EventAssistanceGroupRosterSection)
               : find.byType(EventAssistanceVisitSection),
           findsOneWidget,
           reason: tester

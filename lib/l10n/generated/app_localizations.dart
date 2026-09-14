@@ -28403,6 +28403,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This records the event visit. Use the checkpoint report to confirm arrival there.'**
   String get eventAssistanceVisitCheckpointContext;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Review group'**
+  String get eventAssistanceGroupReview;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage who is responsible for this guest in a pace group.'**
+  String get eventAssistanceGroupBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Current group'**
+  String get eventAssistanceGroupCurrent;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'No accepted group'**
+  String get eventAssistanceGroupNone;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The previous group assignment needs review.'**
+  String get eventAssistanceGroupPrevious;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to a group'**
+  String get eventAssistanceGroupPlace;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Hand over to another group'**
+  String get eventAssistanceGroupPropose;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept into this group'**
+  String get eventAssistanceGroupAccept;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline handover'**
+  String get eventAssistanceGroupReject;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel handover'**
+  String get eventAssistanceGroupCancel;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from group'**
+  String get eventAssistanceGroupLeave;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get eventAssistanceGroupChoose;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving host'**
+  String get eventAssistanceGroupReceiver;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept by'**
+  String get eventAssistanceGroupDeadline;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The receiving host must accept before the guest’s group changes. This does not send a message.'**
+  String get eventAssistanceGroupProposeBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'You will take responsibility for this guest in the selected group.'**
+  String get eventAssistanceGroupPlaceBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'You will take responsibility for this guest in the requested group.'**
+  String get eventAssistanceGroupAcceptBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline this request without accepting responsibility for the guest.'**
+  String get eventAssistanceGroupRejectBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this handover request.'**
+  String get eventAssistanceGroupCancelBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes group responsibility. Their event attendance stays unchanged.'**
+  String get eventAssistanceGroupLeaveBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for acceptance into {group}.'**
+  String eventAssistanceGroupPending({required String group});
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The handover request expired. The group assignment is unchanged.'**
+  String get eventAssistanceGroupExpired;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh the group details before continuing.'**
+  String get eventAssistanceGroupChanged;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The receiving host accepted the handover.'**
+  String get eventAssistanceGroupClosedAccepted;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The receiving host declined the handover.'**
+  String get eventAssistanceGroupClosedRejected;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The handover was cancelled.'**
+  String get eventAssistanceGroupClosedCancelled;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'No group actions are available for this guest under your current access.'**
+  String get eventAssistanceGroupNoActions;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving hosts are unavailable in this review. Refresh the group details to try again.'**
+  String get eventAssistanceGroupNoReceivers;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving this group action…'**
+  String get eventAssistanceGroupSaving;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This action has not been confirmed. Retry the same action before making another change.'**
+  String get eventAssistanceGroupUnconfirmed;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Group action confirmed.'**
+  String get eventAssistanceGroupSaved;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this group action'**
+  String get eventAssistanceGroupRetry;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh group details'**
+  String get eventAssistanceGroupRefresh;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm group action'**
+  String get eventAssistanceGroupConfirm;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another action'**
+  String get eventAssistanceGroupChooseAgain;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get eventAssistanceGroupYou;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizer host'**
+  String get eventAssistanceGroupUnnamedHost;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous group'**
+  String get eventAssistanceGroupUnknown;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected action: {action}'**
+  String eventAssistanceGroupSelected({required String action});
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Group handovers apply to events with configured pace groups.'**
+  String get eventAssistanceGroupNotApplicable;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Pace groups'**
+  String get eventAssistanceGroupRosterTitle;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Review a guest’s group or hand over responsibility to another host.'**
+  String get eventAssistanceGroupRosterBody;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'No guests are available to review.'**
+  String get eventAssistanceGroupNoGuests;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest'**
+  String get eventAssistanceGroupGuest;
+
+  /// Shared live and rehearsal pace-group membership controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Receiving host: {name}'**
+  String eventAssistanceGroupReceiverValue({required String name});
+
+  /// Explains why unidentified receiving hosts are withheld from the handover selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Some hosts have no name on file and can’t be selected.'**
+  String get eventAssistanceGroupMissingName;
 }
 
 class _AppLocalizationsDelegate

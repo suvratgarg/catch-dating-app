@@ -3,14 +3,22 @@ import 'package:catch_dating_app/design_fixtures/event_success_companion_fixture
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_groups_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_membership_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_practice_role_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_edit_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_sweep_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_visit_sheet.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_accountability_repository.dart';
+import 'package:catch_dating_app/event_success/data/event_assistance_membership_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_group_roster_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_groups_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_membership_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_membership_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_visit_section.dart';
@@ -147,7 +155,54 @@ Widget assistancePracticeStaff(BuildContext context) =>
 Widget assistancePracticeStaffEdit(BuildContext context) =>
     const _AssistancePreview(surface: _Surface.practiceStaffEdit);
 
+@widgetbook.UseCase(
+  name: 'Shared group responsibility actions',
+  type: EventAssistanceMembershipSection,
+  path: _path,
+)
+Widget assistanceMembershipStates(BuildContext context) =>
+    const _AssistancePreview(surface: _Surface.liveMembership);
+@widgetbook.UseCase(
+  name: 'Shared guest selection for groups',
+  type: EventAssistanceGroupRosterSection,
+  path: _path,
+)
+Widget assistanceGroupRoster(BuildContext context) =>
+    const _AssistancePreview(surface: _Surface.liveGroups);
+@widgetbook.UseCase(
+  name: 'Live roster to group review',
+  type: EventAssistanceLiveGroupsSection,
+  path: _path,
+)
+Widget assistanceLiveGroups(BuildContext context) =>
+    const _AssistancePreview(surface: _Surface.liveGroups);
+@widgetbook.UseCase(
+  name: 'Live group action with exact retry',
+  type: EventAssistanceMembershipSheet,
+  path: _path,
+)
+Widget assistanceLiveMembership(BuildContext context) =>
+    const _AssistancePreview(surface: _Surface.liveMembership);
+@widgetbook.UseCase(
+  name: 'Practice roster to group review',
+  type: EventRehearsalGroupsSection,
+  path: _path,
+)
+Widget assistancePracticeGroups(BuildContext context) =>
+    const _AssistancePreview(surface: _Surface.practiceGroups);
+@widgetbook.UseCase(
+  name: 'Practice group action with exact retry',
+  type: EventRehearsalMembershipSheet,
+  path: _path,
+)
+Widget assistancePracticeMembership(BuildContext context) =>
+    const _AssistancePreview(surface: _Surface.practiceMembership);
+
 enum _Surface {
+  liveGroups,
+  liveMembership,
+  practiceGroups,
+  practiceMembership,
   liveSweep,
   liveVisit,
   practiceSweep,
@@ -191,6 +246,25 @@ class _AssistancePreviewState extends State<_AssistancePreview> {
         checkedInAt: event.startTime,
       );
       final surface = switch (widget.surface) {
+        _Surface.liveGroups => EventAssistanceLiveGroupsSection(
+          event: event,
+          attendees: AsyncData([guest]),
+        ),
+        _Surface.liveMembership => EventAssistanceMembershipSheet(
+          scope: EventAssistanceGuestScope(
+            organizerId: event.clubId,
+            eventId: event.id,
+            attendeeId: guest.id,
+          ),
+          guestName: guest.displayName,
+        ),
+        _Surface.practiceGroups => EventRehearsalGroupsSection(
+          rehearsal: rehearsal,
+        ),
+        _Surface.practiceMembership => EventRehearsalMembershipSheet(
+          scope: rehearsal.membershipReviews!.rows.first.scope,
+          guestName: rehearsal.actors.first.displayName,
+        ),
         _Surface.liveSweep => EventAssistanceLiveSweepSection(
           event: event,
           attendees: AsyncData([guest]),
@@ -225,12 +299,17 @@ class _AssistancePreviewState extends State<_AssistancePreview> {
         _Surface.practiceStaffEdit => const _StaffEditPreview(),
       };
       final sheet =
+          widget.surface == _Surface.liveMembership ||
+          widget.surface == _Surface.practiceMembership ||
           widget.surface == _Surface.liveVisit ||
           widget.surface == _Surface.practiceVisit;
       return ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
           eventRehearsalRepositoryProvider.overrideWith((ref) => repository),
+          eventAssistanceMembershipRepositoryProvider.overrideWith(
+            (ref) => AssistancePreviewMembershipRepository(value.requireData),
+          ),
           eventAssistanceAccountabilityRepositoryProvider.overrideWith(
             (ref) => AssistancePreviewLiveRepository(),
           ),
@@ -278,7 +357,10 @@ class _StaffEditPreviewState extends ConsumerState<_StaffEditPreview> {
       _,
       next,
     ) {
-      if (_configured || next.isLoading || next.hasError || next.asData == null) {
+      if (_configured ||
+          next.isLoading ||
+          next.hasError ||
+          next.asData == null) {
         return;
       }
       _configured = true;

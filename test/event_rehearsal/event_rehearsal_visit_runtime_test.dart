@@ -157,6 +157,57 @@ void main() {
   );
 
   testWidgets(
+    'real rehearsal runtime opens one guest group review without changing attendance',
+    (tester) async {
+      final fixture =
+          jsonDecode(
+                File(
+                  'test/event_rehearsal/fixtures/staff_reviews.json',
+                ).readAsStringSync(),
+              )
+              as Map;
+      final repository = _Repository(
+        EventRehearsalBootstrap.fromCallableData(fixture['manager']),
+      );
+      await mount(tester, repository);
+      final selector = find.byType(EventAssistanceGroupRosterSection);
+      expect(selector, findsOneWidget);
+      final guestField = find.descendant(
+        of: selector,
+        matching: find.text('Guest'),
+      );
+      await tester.ensureVisible(guestField);
+      await tester.tap(guestField);
+      await pumpFeatureUi(tester);
+      final name = repository.snapshot.actors.first.displayName;
+      await tester.tap(find.widgetWithText(CatchMenuRow<Object?>, name));
+      await pumpFeatureUi(tester);
+      final review = find.text('Review group');
+      await tester.ensureVisible(review);
+      await tester.tap(review);
+      await pumpFeatureUi(tester);
+      final section = tester.widget<EventAssistanceMembershipSection>(
+        find.byType(EventAssistanceMembershipSection),
+      );
+      expect(
+        section.facts.accepted?.groupId,
+        repository
+            .snapshot
+            .membershipReviews!
+            .rows
+            .first
+            .facts
+            .accepted
+            ?.groupId,
+      );
+      expect(section.actorUid, 'host-1');
+      expect(section.handoverReview, isNotNull);
+      expect(repository.writes, isEmpty);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
     'selected expired practice duty opens read-only controls and stays visible in the rehearsal strip',
     (tester) async {
       final fixture =

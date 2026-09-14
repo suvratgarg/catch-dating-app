@@ -144,6 +144,18 @@ class EventAssistanceMembershipController
     state = MembershipForm._(review);
   }
 
+  void reload() {
+    final form = state;
+    if (form is! MembershipForm ||
+        !form.canReload ||
+        _pending != null ||
+        _inFlight != null) {
+      return;
+    }
+    _refresh(form.review.account);
+    state = const MembershipIdle();
+  }
+
   void select(AssistanceMembershipDecision? decision) {
     final form = state;
     if (form is! MembershipForm || !form.canSelect || _pending != null) return;

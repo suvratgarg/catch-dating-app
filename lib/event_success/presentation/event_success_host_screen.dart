@@ -24,6 +24,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_groups_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
@@ -40,6 +41,7 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -230,11 +232,16 @@ class _EventSuccessHostSectionState
               .watch(watchEventSuccessPresenceSummaryProvider(event.id))
               .whenData((summary) => summary)
         : const AsyncData<EventSuccessPresenceSummary?>(null);
+    final hasPaceGroups =
+        event.eventFormat.routePlan?.groupStrategy ==
+            RouteGroupStrategy.paceGroups &&
+        (event.eventFormat.routePlan?.paceGroups.isNotEmpty ?? false);
     final shouldLoadOperationalAttendees =
         shouldLoadAssignments &&
         (eventSuccessProfile.accountability ==
                 EventSuccessAccountability.sweep ||
-            unitOutcome == EventSuccessUnitOutcome.score);
+            unitOutcome == EventSuccessUnitOutcome.score ||
+            hasPaceGroups);
     final AsyncValue<List<EventAttendee>> accountabilityAttendeesAsync =
         shouldLoadOperationalAttendees
         ? ref.watch(watchEventAttendeesProvider(event.id))
@@ -431,6 +438,12 @@ class _EventSuccessHostSectionState
           : null,
       accountabilityAttendees:
           accountabilityAttendeesAsync.asData?.value ?? const [],
+      membershipSection: hasPaceGroups
+          ? EventAssistanceLiveGroupsSection(
+              event: event,
+              attendees: accountabilityAttendeesAsync,
+            )
+          : null,
       accountabilitySection: EventAssistanceLiveSweepSection(
         event: event,
         attendees: accountabilityAttendeesAsync,
@@ -1198,6 +1211,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.presenceError,
     this.accountabilityAttendees = const [],
     this.accountabilitySection,
+    this.membershipSection,
     this.accountabilityMode,
     this.accountabilityError,
     this.loadingAccountability = false,
@@ -1274,6 +1288,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final Object? presenceError;
   final List<EventAttendee> accountabilityAttendees;
   final Widget? accountabilitySection;
+  final Widget? membershipSection;
   final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
   final bool loadingAccountability;
@@ -1401,6 +1416,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         presenceError: widget.presenceError,
         accountabilityAttendees: widget.accountabilityAttendees,
         accountabilitySection: widget.accountabilitySection,
+        membershipSection: widget.membershipSection,
         accountabilityMode: widget.accountabilityMode,
         accountabilityError: widget.accountabilityError,
         loadingAccountability: widget.loadingAccountability,

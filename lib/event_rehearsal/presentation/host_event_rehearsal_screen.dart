@@ -8,6 +8,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_practice_role_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_groups_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_practice_role_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
@@ -221,6 +222,16 @@ class _HostEventRehearsalScreenState
                           )
                           ? EventSuccessAccountability.sweep
                           : EventSuccessAccountability.none,
+                      membershipSection:
+                          (rehearsal.membershipReviews?.rows.any(
+                                (r) => r.facts.groups.isNotEmpty,
+                              ) ??
+                              false)
+                          ? EventRehearsalGroupsSection(
+                              rehearsal: rehearsal,
+                              practiceOperatorId: selectedRole,
+                            )
+                          : null,
                       accountabilitySection: EventRehearsalSweepSection(
                         rehearsal: rehearsal,
                         practiceOperatorId: selectedRole,

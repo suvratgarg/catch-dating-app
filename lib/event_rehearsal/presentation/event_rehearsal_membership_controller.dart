@@ -179,6 +179,18 @@ class EventRehearsalMembershipController
     state = RehearsalMembershipForm._(selected);
   }
 
+  void reload() {
+    final form = state;
+    if (form is! RehearsalMembershipForm ||
+        !form.canReload ||
+        _pending != null ||
+        _inFlight != null) {
+      return;
+    }
+    _refresh(form.review.account);
+    state = const RehearsalMembershipIdle();
+  }
+
   void select(AssistanceMembershipDecision? decision) {
     if (!ref.mounted) return;
     final form = state;

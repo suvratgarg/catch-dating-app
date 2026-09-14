@@ -1548,8 +1548,7 @@ does not expose group audit data to guest pages or write live memberships. Nativ
 readers and commands reuse `AssistanceMembershipFacts` and the shared membership
 decision validation/confirmation logic. The ordinary assistance editor cannot
 submit group changes; the dedicated membership controller retains one unresolved
-command per synthetic guest across role changes. Runtime screen composition
-remains integration work. Reporter reassignment and closeout now
+command per synthetic guest across role changes. Reporter reassignment and closeout now
 execute in rehearsal with independent revisions and the original arrival proof;
 `EventRehearsalStaffController` now owns one unresolved staff edit per rehearsal,
 including new fictional operators. The optional Practice team section in Practice
@@ -1567,8 +1566,30 @@ role on an unresolved command. Practice tools now offer an optional assistance-r
 selector, and the persistent strip identifies a selected synthetic operator. Host
 controls still run the rehearsal. The visit sheet names the original role on an
 unresolved command, even after the selector changes. Expired or unassigned roles
-remain read-only according to their current server review. Group membership,
-departure, checkpoint and messaging action surfaces remain integration work.
+remain read-only according to their current server review. Departure, checkpoint
+and messaging action surfaces remain integration work.
+
+The existing Event Success live workspace now includes a compact guest selector
+for saved pace groups. It loads operational attendees for that capability even
+when the format has no sweep or score module. Rehearsal supplies the same selector
+and group-action controls through its synthetic adapter. Opening a guest performs
+an explicit authority review; choosing an action, destination group, receiver or
+deadline does not write. Confirmation submits one of the six existing decisions.
+The sheet distinguishes accepted membership, pending/expired handover and changed
+source, and offers only server-reviewed actions. It discloses group/receiver/deadline
+fields for placement and handover as needed. Receiver choices retain per-group
+deadlines; an older server without choices withholds new handover configuration.
+Practice resolves names and deadlines from its current fictional team and virtual
+clock, without reading production staff. Both modes retain the original role,
+decision and request during an uncertain outcome, including across sheet closure
+and refreshed reads; exact retry is the only offered write until resolved. The
+submitted details are shown while unresolved, and a confirmed response displays
+current membership without repeating a historical selection as current state.
+Auth changes hide private guest content. These controls do not change physical
+attendance or the existing social/table assignment engine, and handovers do not
+send a message. Staff-only navigation and pending-handover discovery still require
+integration with the operator workspace; this shared Host runtime connection alone
+does not provide that separate entry path.
 
 Group-checkpoint practice messages now bind the accepted assignment, group source
 and participation episode. The server derives this proof when publishing; Host

@@ -24401,5 +24401,202 @@
   "hostEventRehearsalAssistanceAs": "Synthetic guests · Assistance as {name}",
   "@hostEventRehearsalAssistanceAs": {"description": "Rehearsal role and scoped visit review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation.widgets.event_rehearsal_practice_role_section", "placeholders": {"name": {"type": "String"}}},
   "eventAssistanceVisitCheckpointContext": "This records the event visit. Use the checkpoint report to confirm arrival there.",
-  "@eventAssistanceVisitCheckpointContext": {"description": "Rehearsal role and scoped visit review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation.widgets.event_rehearsal_practice_role_section"}
+  "@eventAssistanceVisitCheckpointContext": {"description": "Rehearsal role and scoped visit review copy.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation.widgets.event_rehearsal_practice_role_section"},
+  "eventAssistanceGroupReview": "Review group",
+  "eventAssistanceGroupBody": "Manage who is responsible for this guest in a pace group.",
+  "eventAssistanceGroupCurrent": "Current group",
+  "eventAssistanceGroupNone": "No accepted group",
+  "eventAssistanceGroupPrevious": "The previous group assignment needs review.",
+  "eventAssistanceGroupPlace": "Assign to a group",
+  "eventAssistanceGroupPropose": "Hand over to another group",
+  "eventAssistanceGroupAccept": "Accept into this group",
+  "eventAssistanceGroupReject": "Decline handover",
+  "eventAssistanceGroupCancel": "Cancel handover",
+  "eventAssistanceGroupLeave": "Remove from group",
+  "eventAssistanceGroupChoose": "Group",
+  "eventAssistanceGroupReceiver": "Receiving host",
+  "eventAssistanceGroupDeadline": "Accept by",
+  "eventAssistanceGroupProposeBody": "The receiving host must accept before the guest’s group changes. This does not send a message.",
+  "eventAssistanceGroupPlaceBody": "You will take responsibility for this guest in the selected group.",
+  "eventAssistanceGroupAcceptBody": "You will take responsibility for this guest in the requested group.",
+  "eventAssistanceGroupRejectBody": "Decline this request without accepting responsibility for the guest.",
+  "eventAssistanceGroupCancelBody": "Cancel this handover request.",
+  "eventAssistanceGroupLeaveBody": "This removes group responsibility. Their event attendance stays unchanged.",
+  "eventAssistanceGroupPending": "Waiting for acceptance into {group}.",
+  "@eventAssistanceGroupPending": {
+    "placeholders": {
+      "group": {
+        "type": "String"
+      }
+    },
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "eventAssistanceGroupExpired": "The handover request expired. The group assignment is unchanged.",
+  "eventAssistanceGroupChanged": "Refresh the group details before continuing.",
+  "eventAssistanceGroupClosedAccepted": "The receiving host accepted the handover.",
+  "eventAssistanceGroupClosedRejected": "The receiving host declined the handover.",
+  "eventAssistanceGroupClosedCancelled": "The handover was cancelled.",
+  "eventAssistanceGroupNoActions": "No group actions are available for this guest under your current access.",
+  "eventAssistanceGroupNoReceivers": "Receiving hosts are unavailable in this review. Refresh the group details to try again.",
+  "eventAssistanceGroupSaving": "Saving this group action…",
+  "eventAssistanceGroupUnconfirmed": "This action has not been confirmed. Retry the same action before making another change.",
+  "eventAssistanceGroupSaved": "Group action confirmed.",
+  "eventAssistanceGroupRetry": "Retry this group action",
+  "eventAssistanceGroupRefresh": "Refresh group details",
+  "eventAssistanceGroupConfirm": "Confirm group action",
+  "eventAssistanceGroupChooseAgain": "Choose another action",
+  "eventAssistanceGroupYou": "You",
+  "eventAssistanceGroupUnnamedHost": "Organizer host",
+  "eventAssistanceGroupUnknown": "Previous group",
+  "eventAssistanceGroupSelected": "Selected action: {action}",
+  "@eventAssistanceGroupSelected": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    },
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "eventAssistanceGroupNotApplicable": "Group handovers apply to events with configured pace groups.",
+  "eventAssistanceGroupRosterTitle": "Pace groups",
+  "eventAssistanceGroupRosterBody": "Review a guest’s group or hand over responsibility to another host.",
+  "eventAssistanceGroupNoGuests": "No guests are available to review.",
+  "eventAssistanceGroupGuest": "Guest",
+  "eventAssistanceGroupReceiverValue": "Receiving host: {name}",
+  "@eventAssistanceGroupReceiverValue": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupReview": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupBody": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupCurrent": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupNone": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupPrevious": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupPlace": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupPropose": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupAccept": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupReject": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupCancel": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupLeave": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupChoose": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupReceiver": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupDeadline": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupProposeBody": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupPlaceBody": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupAcceptBody": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupRejectBody": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupCancelBody": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupLeaveBody": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupExpired": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupChanged": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupClosedAccepted": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupClosedRejected": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupClosedCancelled": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupNoActions": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupNoReceivers": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupSaving": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupUnconfirmed": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupSaved": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupRetry": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupRefresh": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupConfirm": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupChooseAgain": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupYou": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupUnnamedHost": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupUnknown": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupNotApplicable": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupRosterTitle": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupRosterBody": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupNoGuests": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "@eventAssistanceGroupGuest": {
+    "description": "Shared live and rehearsal pace-group membership controls."
+  },
+  "eventAssistanceGroupMissingName": "Some hosts have no name on file and can’t be selected.",
+  "@eventAssistanceGroupMissingName": {"description": "Explains why unidentified receiving hosts are withheld from the handover selector."}
 }

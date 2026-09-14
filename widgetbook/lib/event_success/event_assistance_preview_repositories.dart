@@ -3,10 +3,15 @@ import 'dart:convert';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership_receivers.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff_change.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_accountability_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability_change.dart';
+import 'package:catch_dating_app/event_success/data/event_assistance_membership_repository.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_membership.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_membership_change.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/services.dart';
 
@@ -85,4 +90,53 @@ class AssistancePreviewPracticeRepository implements EventRehearsalRepository {
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnsupportedError('No live operations in assistance previews.');
+}
+
+/// The live adapter also uses synthetic fixture evidence and never a callable.
+class AssistancePreviewMembershipRepository
+    implements EventAssistanceMembershipRepository {
+  AssistancePreviewMembershipRepository(this.fixtures);
+  final Map<String, Object?> fixtures;
+  @override
+  Future<EventAssistanceMembershipView> fetch(
+    EventAssistanceGuestScope scope,
+  ) async {
+    final snapshot = EventRehearsalBootstrap.fromCallableData(
+      fixtures['manager'],
+    );
+    final row = snapshot.membershipReviews!.rows.first;
+    final choices = rehearsalMembershipReceivers(snapshot.session, row);
+    final raw =
+        (((fixtures['manager'] as Map)['membershipReviews'] as Map)['rows']
+                    as List)
+                .first
+            as Map;
+    return EventAssistanceMembershipView.fromJson({
+      for (final entry in raw.entries)
+        if (entry.key != 'availability' && entry.key != 'attendeeId')
+          entry.key: entry.value,
+      'context': scope.context,
+      'attendeeId': scope.attendeeId,
+      if (choices != null)
+        'handoverReview': {
+          'expiresAt': choices.expiresAt,
+          'receivers': [
+            for (final receiver in choices.receivers)
+              {
+                'operatorId': receiver.operatorId,
+                'displayName': receiver.displayName,
+                'groups': [
+                  for (final group in receiver.groups.entries)
+                    {'groupId': group.key, 'validUntil': group.value},
+                ],
+              },
+          ],
+        },
+    }, expectedScope: scope);
+  }
+
+  @override
+  Future<EventAssistanceMembershipResult> apply(
+    EventAssistanceMembershipChange change,
+  ) async => throw previewUnconfirmed;
 }
