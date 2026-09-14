@@ -1695,7 +1695,7 @@
         ],
         "dartRoles": [
           "CatchErrorStateMode",
-          "CatchErrorIcon",
+          "CatchIconTile.error",
           "CatchButton",
           "CatchTextStyles.titleL",
           "CatchTextStyles.sectionTitle",
@@ -2339,7 +2339,7 @@
             "id": "catch.notice.host",
             "symbol": "CatchNoticeOverlay",
             "file": "lib/core/riverpod_ui/catch_notice_overlay.dart",
-            "summary": "One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchStatusStrip below tabs.",
+            "summary": "One MyApp-owned safe-area overlay above the router, with a real overlay ancestor for tooltips. Owns entry motion, gesture/keyboard dismissal, F6 focus transfer and interaction-aware timers for every notice; persistent context remains with CatchBanner.statuses below tabs.",
             "states": [
               "empty",
               "queued",
@@ -2385,7 +2385,7 @@
         ],
         "notes": [
           "Use for ambient app-level notices that float above existing content.",
-          "Persistent offline and rehearsal context uses CatchStatusStrip in the canonical screen header, never this overlay host.",
+          "Persistent offline and rehearsal context uses CatchBanner.statuses in the canonical screen header, never this overlay host.",
           "CatchNoticeData owns caller-supplied title, message, icon, person, and accentColor; a supplied person takes precedence over the icon and uses CatchAvatar's circular image/initials fallback.",
           "Keep match/message copy and identity in feature adapters. Do not fork the renderer for different strings, icons or colors. Accent overrides must be theme-derived and reviewed for contrast; geometry and typography remain renderer-owned.",
           "Use CatchBanner.error for inline persistent form/section failures and CatchErrorState for blocking data-load failures.",
@@ -8592,7 +8592,6 @@
           "CatchTopBarPrimaryButton",
           "CatchActionMenu",
           "CatchButton.text",
-          "CatchTopBarTabBar",
           "CatchTopBarNavigation"
         ],
         "goldens": [],

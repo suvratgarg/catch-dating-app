@@ -8,14 +8,14 @@ import {
   scanHostEventFieldSource,
 } from "./check_host_event_field_contracts.mjs";
 
-test("flags activity choice fields without itemAccent", () => {
+test("flags activity choice fields without itemAccentBuilder", () => {
   const findings = scanHostEventFieldSource({
     relativePath:
       "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
     source: [
       "CatchField<ActivityKind>.choices(",
       "  values: ActivityKind.values,",
-      "  itemLabel: (value) => value.label,",
+      "  itemLabelBuilder: (value) => value.label,",
       ")",
     ].join("\n"),
   });
@@ -24,14 +24,14 @@ test("flags activity choice fields without itemAccent", () => {
   assert.equal(findings[0].rule, "HOST-EVENT-FIELD-001");
 });
 
-test("allows activity choice fields with itemAccent", () => {
+test("allows activity choice fields with itemAccentBuilder", () => {
   const findings = scanHostEventFieldSource({
     relativePath:
       "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
     source: [
       "CatchField<PaceLevel>.choices(",
       "  values: PaceLevel.values,",
-      "  itemAccent: (_) => activity.accent,",
+      "  itemAccentBuilder: (_) => activity.accent,",
       ")",
     ].join("\n"),
   });
@@ -43,11 +43,30 @@ test("flags initially open event create fields", () => {
   const findings = scanHostEventFieldSource({
     relativePath:
       "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
-    source: "CatchField<String>.choices(initiallyOpen: true)",
+    source: "CatchField<String>.choices(disclosureMode: CatchFieldMode.localExpanded)",
   });
 
   assert.equal(findings.length, 1);
   assert.equal(findings[0].rule, "HOST-EVENT-FIELD-002");
+});
+
+test("typed disclosure modes distinguish an expanded seed from interaction-owned state", () => {
+  const scan = (source) => scanHostEventFieldSource({
+    relativePath: "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+    source,
+  });
+  assert.equal(scan("CatchField.choices(disclosureMode: CatchFieldMode.controlledExpanded)").length, 1);
+  assert.equal(scan("CatchField.choices(disclosureMode: CatchFieldMode.localCollapsed)").length, 0);
+  assert.equal(scan("CatchField.choices(disclosureMode: accordion.isExpanded(id) ? CatchFieldMode.controlledExpanded : CatchFieldMode.controlledCollapsed)").length, 0);
+});
+
+test("commented accent builders cannot satisfy activity color ownership", () => {
+  const findings = scanHostEventFieldSource({
+    relativePath: "lib/hosts/presentation/event_management/widgets/event_details_step.dart",
+    source: "CatchField<ActivityKind>.choices(// itemAccentBuilder: (_) => accent,\n values: ActivityKind.values)",
+  });
+  assert.equal(findings.length, 1);
+  assert.equal(findings[0].rule, "HOST-EVENT-FIELD-001");
 });
 
 test("flags event accordions seeded with an expanded field", () => {
@@ -69,7 +88,7 @@ test("repository scan covers all Host Dart sources", () => {
   fs.mkdirSync(path.dirname(sourcePath), {recursive: true});
   fs.writeFileSync(
     sourcePath,
-    "CatchField<ActivityKind>.choices(itemAccent: (_) => accent)",
+    "CatchField<ActivityKind>.choices(itemAccentBuilder: (_) => accent)",
   );
 
   const result = scanHostEventFieldContracts({root});

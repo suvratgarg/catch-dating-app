@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.25.0
-updated: 2026-09-09
+version: 1.26.0
+updated: 2026-09-14
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -377,14 +377,14 @@ fall back to the passive boundary role plus disabled opacity.
 `CatchSurface.borderSpec` is reserved for a role with a justified color
 override. Raw `borderColor`/`borderWidth` remain deprecated migration shims.
 Higher-level controls (`CatchButton`, `CatchIconAction`, `CatchChip`,
-`CatchControlShell`, `CatchChoiceTile`, search, tabs, and field sections) own
+`CatchControlSurface`, `CatchChoiceTile`, search, tabs, and field sections) own
 their state-to-role mapping. Decorative `CustomPainter` illustration strokes
 are outside the UI-boundary system, but repeated artwork and progress geometry
 still uses named `CatchStroke` roles instead of feature-local literals.
 
 ### 7.2 Geometry is owned by the primitive
 
-Persistent offline/rehearsal context uses `CatchStatusStrip`: full-width,
+Persistent offline/rehearsal context uses `CatchBanner.statuses`: full-width,
 square-edged bands with a shared icon, label-over-detail and trailing action
 anatomy. The screen owner places them **below the complete primary tab rail**,
 or below the title when there are no tabs; they never split title from tabs.
@@ -505,7 +505,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   scanner-visible debt. Loading, empty, and error children inherit their
   section's divided, contained, or plain surface decision; state changes do not
   introduce a second border or switch a peer module to a different variant.
-  `CatchErrorBody` is therefore cardless in full-screen, inline, and compact
+  `CatchErrorState` is therefore cardless in full-screen, inline, and compact
   modes; its placement adapter supplies spacing while the parent owns any
   justified containment.
 - `CatchSection.containedFieldRows` treats its title, count, and trailing action
@@ -629,8 +629,8 @@ that detaches the explanation from the options it describes.
 - **Motion:** route motion through `CatchMotion` and
   `package:catch_ui/catch_ui.dart`. Use `catchSelectionHaptic()` for
   discrete choices, `catchTransitionHaptic()` for map/sheet state changes,
-  `CatchFadeScaleViewport` for calm card-to-detail routes, and
-  `CatchHeroViewport`/`CatchTicketHeroViewport` for ticket or polaroid flights. Avoid
+  `CatchRevealViewport` for calm card-to-detail routes, and
+  `CatchHeroViewport`/`CatchHeroViewport.ticket` for ticket or polaroid flights. Avoid
   raw `Duration(...)`, ad-hoc `Hero`, and direct `HapticFeedback` in product UI
   unless a new named motion primitive is being introduced.
 
@@ -651,8 +651,11 @@ the corresponding surface link. New or moved design-system components must add
 the link in the same change.
 
 Run `node tool/run.mjs check design:component-lexicon`. The checker remains a
-repo-level JavaScript gate, including for Flutter symbol existence; do not move
-this contract into the `catch_ui_lints` analyzer plugin.
+repo-level JavaScript gate. Its default command also checks shared Flutter API
+grammar with the syntax-only Dart collector and requires resolved Flutter
+dependencies. Website validation uses `--surfaces-only` for the Node-only
+symbol check; the registered gate and Flutter CI retain the full check. Do not
+move this contract into the `catch_ui_lints` analyzer plugin.
 
 Every component contract also carries either an `enforcement` decision or an
 expiring `waiver`. Enforcement metadata is executable: it generates raw-widget
@@ -663,7 +666,7 @@ is registered separately with shell, top-bar, and state policies and validated
 with analyzer resolution.
 
 Structural labels and status badges are separate semantic families. Use
-`catch.ui_label` (`CatchSectionLabel`, website `UiLabel`, admin
+`catch.ui_label` (`CatchSectionHeaderTitle`, website `UiLabel`, admin
 `AdminEyebrow`, web-ui `UiLabel`) for eyebrows and compact hierarchy context.
 Use `catch.badge` (`CatchBadge`, `StatusBadge`, `StatusChip`, `BadgeControl`)
 for status, state, counts, and alerts. The lexicon gate pins these mappings so a

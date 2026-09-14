@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.63.0
+version: 1.63.1
 updated: 2026-09-14
 owner: app_architecture
 status: active
@@ -1389,10 +1389,10 @@ Use `CatchAsyncBoundary` for simple body screens with one async value.
 Use `CatchAsyncBoundary.sliver` for simple sliver surfaces.
 
 When the loaded detail or form composition is known, render that same
-composition with representative branch data inside `CatchSkeletonized`.
+composition with representative branch data inside `CatchSkeleton.content`.
 Do not maintain a second tree of placeholder rows for a detail or form screen:
 section order, field geometry, typography changes, and responsive reflow must
-come from the production body. `CatchSkeletonRows` and `CatchSkeletonList`
+come from the production body. `CatchSkeleton.rows` and `CatchSkeleton.cards`
 remain appropriate for genuinely repeated collections whose item count and
 row data do not exist yet; they are not substitutes for a known screen body.
 

@@ -5866,7 +5866,7 @@
         "type": "test",
         "path": "tool/design/check_host_event_field_contracts.test.mjs",
         "contains": [
-          "flags activity choice fields without itemAccent",
+          "flags activity choice fields without itemAccentBuilder",
           "flags initially open event create fields",
           "flags event accordions seeded with an expanded field"
         ]
