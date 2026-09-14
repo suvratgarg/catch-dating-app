@@ -26,6 +26,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
@@ -110,7 +111,7 @@ void main() {
     expect(find.text('One-to-one conversations and replies.'), findsNothing);
     expect(find.text('Inbox'), findsOneWidget);
     expect(find.text('Sends'), findsOneWidget);
-    expect(find.byType(HostInboxScopeSelector), findsOneWidget);
+    expect(find.byType(HostInboxScopeMenu), findsOneWidget);
     expect(find.text('BOOKED · 1'), findsOneWidget);
     expect(find.text('PROSPECTIVE · 1'), findsOneWidget);
     expect(
@@ -455,7 +456,7 @@ void main() {
 
     expect(find.byType(HostCampaignComposer), findsOneWidget);
     expect(find.text('MESSAGE PAST ATTENDEES'), findsOneWidget);
-    expect(find.byType(HostInboxScopeSelector), findsNothing);
+    expect(find.byType(HostInboxScopeMenu), findsNothing);
     expect(find.byType(HostInboxAudienceRail), findsNothing);
   });
 
@@ -786,7 +787,7 @@ void main() {
       );
       await pumpFeatureUi(tester);
 
-      expect(find.byType(HostInboxScopeSelector), findsNothing);
+      expect(find.byType(HostInboxScopeMenu), findsNothing);
       expect(find.text('GENERAL INQUIRIES'), findsNothing);
       expect(find.text('No general inquiries'), findsOneWidget);
 

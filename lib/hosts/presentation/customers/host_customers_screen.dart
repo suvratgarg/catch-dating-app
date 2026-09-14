@@ -21,6 +21,7 @@ import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_campaign_policy.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_revenue.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';

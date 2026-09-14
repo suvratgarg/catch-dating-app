@@ -7927,7 +7927,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                     ],
                   ),
                   _widgetbook.WidgetbookComponent(
-                    name: 'HostInboxScopeSelector',
+                    name: 'HostInboxScopeMenu',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
                         name: 'Scope control states',

@@ -98,10 +98,6 @@
       "maxLines": 870
     },
     {
-      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
-      "maxLines": 873
-    },
-    {
       "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
       "maxLines": 933
     },
@@ -140,14 +136,6 @@
     {
       "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
       "maxLines": 837
-    },
-    {
-      "path": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
-      "maxLines": 828
-    },
-    {
-      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
-      "maxLines": 923
     },
     {
       "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
