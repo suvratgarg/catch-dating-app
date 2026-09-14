@@ -85,6 +85,7 @@ class EventAssistanceDepartureController
         .read(eventAssistanceDepartureRepositoryProvider)
         .confirm(action.change);
     requireDepartureAccount(ref, action.session.account);
+    action.change.requireResult(result);
     ref.invalidate(
       eventAssistanceDepartureForAccountProvider(
         action.session.view.scope,

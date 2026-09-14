@@ -242,14 +242,14 @@ void main() {
       editor.selectRoster(['guest-1']);
       final pending = editor.reviewRoster();
       await h.signIn('another-manager');
-      expect(h.state(session), isA<EventDepartureFormUnavailable>());
+      expect(h.state(session), isA<EventDepartureFormIdle>());
       final failure = expectLater(
         pending,
         throwsA(isA<BackendOperationException>()),
       );
       h.repository.completeReview(0);
       await failure;
-      expect(h.state(session), isA<EventDepartureFormUnavailable>());
+      expect(h.state(session), isA<EventDepartureFormIdle>());
       expect(h.repository.changes, isEmpty);
     },
   );

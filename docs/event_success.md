@@ -1131,6 +1131,15 @@ when the host changes selection or destination. A fresh roster review discards
 its earlier proof before reading. Confirmation freezes all controls and shares
 one request across duplicate triggers. Ambiguous failures retain the exact
 command for retry; source/permission conflicts require a newly loaded review.
+The editor is owned by group, with an explicit current-review handoff. Refreshing
+progress or closing and reopening its sheet cannot replace an unresolved decision.
+Both roster reads and confirmations coalesce reentrant triggers before publishing
+busy state. Unknown outcomes, malformed receipts and rate limiting retain the
+original command; only definitive rejection permits a new review. A temporary
+strong auth subscription retires a detached pending action after sign-out, including
+a same-account return. Old read completions cannot authorize a refreshed departure.
+Repository and controller boundaries validate receipt scope, actor and operation
+revision; a newer replay projection is kept separate from its original receipt.
 Success refreshes group progress and the Host assistance read. The Host widgets
 and their simulated rehearsal execution remain subsequent integration work.
 

@@ -39,6 +39,17 @@ final class DepartureSessionHarness {
 
   final auth = StreamController<String?>.broadcast();
   final automaticRetries = <Object>[];
+  final editorSubscriptions =
+      <ProviderSubscription<EventDepartureEditorState>>[];
+
+  Future<void> closeEditors() async {
+    for (final subscription in editorSubscriptions) {
+      subscription.close();
+    }
+    editorSubscriptions.clear();
+    await container.pump();
+  }
+
   final repository = DepartureSessionRepository();
   final guests = DepartureHostGuestsRepository();
   late final ProviderContainer container;
@@ -63,14 +74,14 @@ final class DepartureSessionHarness {
 
   EventAssistanceDepartureEditor editor([EventDepartureSession? reviewed]) {
     final provider = eventAssistanceDepartureEditorProvider(
-      reviewed ?? session,
+      (reviewed ?? session).view.scope,
     );
-    container.listen(provider, (_, _) {});
-    return container.read(provider.notifier);
+    editorSubscriptions.add(container.listen(provider, (_, _) {}));
+    return container.read(provider.notifier)..open(reviewed ?? session);
   }
 
-  EventDepartureEditorState state(EventDepartureSession reviewed) =>
-      container.read(eventAssistanceDepartureEditorProvider(reviewed));
+  EventDepartureEditorState state(EventDepartureSession reviewed) => container
+      .read(eventAssistanceDepartureEditorProvider(reviewed.view.scope));
   EventDepartureForm form(EventDepartureSession reviewed) =>
       state(reviewed) as EventDepartureForm;
 

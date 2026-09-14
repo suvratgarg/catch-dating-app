@@ -16,6 +16,8 @@ final class EventDepartureSession {
   }
   final EventDepartureAccount account;
   final EventAssistanceGroupProgressView view;
+  bool _current = true;
+  bool get isCurrent => _current;
 }
 
 const departureSessionChanged = BackendOperationException(
@@ -85,7 +87,12 @@ Future<EventDepartureSession> eventAssistanceDepartureForAccount(
       .watch(eventAssistanceDepartureRepositoryProvider)
       .fetch(scope, actorUid: account.uid);
   requireDepartureAccount(ref, account);
-  return EventDepartureSession._(account: account, view: view);
+  if (view.scope != scope) {
+    throw const FormatException('Foreign departure review.');
+  }
+  final session = EventDepartureSession._(account: account, view: view);
+  ref.onDispose(() => session._current = false);
+  return session;
 }
 
 // A fresh progress snapshot is an explicit host review, not a background

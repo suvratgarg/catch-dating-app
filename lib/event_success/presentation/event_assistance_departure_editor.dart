@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
@@ -24,8 +26,12 @@ sealed class EventDepartureEditorState {
   bool get canDismiss => switch (this) {
     EventDepartureForm(:final phase) =>
       phase != EventDepartureFormPhase.submitting,
-    EventDepartureFormUnavailable() => true,
+    EventDepartureFormIdle() || EventDepartureFormUnavailable() => true,
   };
+}
+
+final class EventDepartureFormIdle extends EventDepartureEditorState {
+  const EventDepartureFormIdle();
 }
 
 final class EventDepartureFormUnavailable extends EventDepartureEditorState {
@@ -68,7 +74,9 @@ final class EventDepartureForm extends EventDepartureEditorState {
       roster != null &&
       destination != null &&
       destination is! AssistanceFixedPlace;
-  bool get canReload => canDismiss && phase != EventDepartureFormPhase.saved;
+  bool get canReload =>
+      phase == EventDepartureFormPhase.choosing ||
+      phase == EventDepartureFormPhase.refreshRequired;
 
   EventDepartureForm _withPhase(
     EventDepartureFormPhase phase, {
@@ -88,46 +96,113 @@ final class EventDepartureForm extends EventDepartureEditorState {
   );
 }
 
+/// One group owns its unresolved departure across review refresh and closure.
 @riverpod
 class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
   Future<EventAssistanceGroupProgressResult>? _confirmation;
   Future<EventAssistanceDepartureRosterReview>? _review;
-  bool _revoked = false;
+  EventDeparturePendingAction? _pending;
+  EventDepartureAccount? _account;
+  int _epoch = 0;
+  void Function()? _releasePending;
 
   @override
-  EventDepartureEditorState build(EventDepartureSession session) {
+  EventDepartureEditorState build(EventAssistanceGroupScope scope) {
+    final auth = ref.watch(eventAssistanceDepartureAccountProvider);
     ref.watch(eventAssistanceDepartureControllerProvider);
-    ref.listen(eventAssistanceDepartureAccountProvider, (_, next) {
-      if (!identical(next.asData?.value, session.account)) {
-        _revoked = true;
-        state = const EventDepartureFormUnavailable._(departureSessionChanged);
-      }
+    _epoch++;
+    _account = null;
+    _confirmation = null;
+    _review = null;
+    _clearPending();
+    ref.onDispose(() {
+      _epoch++;
+      _clearPending();
     });
-    final account = ref.read(eventAssistanceDepartureAccountProvider);
-    if (_revoked ||
-        account.isLoading ||
-        account.hasError ||
-        !identical(account.asData?.value, session.account)) {
-      _revoked = true;
-      return const EventDepartureFormUnavailable._(departureSessionChanged);
+    if (auth.isLoading || auth.hasError || auth.asData == null) {
+      return EventDepartureFormUnavailable._(
+        auth.error ?? departureSessionChanged,
+      );
     }
-    return EventDepartureForm._(session: session);
+    _account = auth.requireValue;
+    return const EventDepartureFormIdle();
+  }
+
+  bool _current(EventDepartureAccount account, int epoch) {
+    if (!ref.mounted || epoch != _epoch || !identical(_account, account)) {
+      return false;
+    }
+    final auth = ref.read(eventAssistanceDepartureAccountProvider);
+    return !auth.isLoading &&
+        !auth.hasError &&
+        identical(auth.asData?.value, account);
+  }
+
+  void _requireReview(EventDepartureSession session) {
+    if (!_current(session.account, _epoch)) throw departureSessionChanged;
+    final page = ref.read(eventAssistanceDepartureProvider(scope));
+    if (session.view.scope != scope ||
+        !session.isCurrent ||
+        page.isLoading ||
+        page.hasError ||
+        !identical(page.asData?.value, session)) {
+      throw const ValidationException('Reload the current departure details.');
+    }
+  }
+
+  void open(EventDepartureSession session) {
+    if (!_current(session.account, _epoch)) throw departureSessionChanged;
+    if (session.view.scope != scope) {
+      throw const ValidationException('Choose the reviewed group.');
+    }
+    if (_pending != null || _confirmation != null || _review != null) return;
+    _requireReview(session);
+    state = EventDepartureForm._(session: session);
+  }
+
+  void reload() {
+    final form = _form;
+    if (form == null ||
+        !form.canReload ||
+        _pending != null ||
+        _confirmation != null ||
+        _review != null) {
+      return;
+    }
+    ref.read(eventAssistanceDepartureProvider(scope).notifier).reload();
+    state = const EventDepartureFormIdle();
   }
 
   EventDepartureForm? get _form => switch (state) {
-    final EventDepartureForm form when !_revoked => form,
-    EventDepartureForm() || EventDepartureFormUnavailable() => null,
+    final EventDepartureForm form when _current(form.session.account, _epoch) =>
+      form,
+    _ => null,
   };
 
-  void selectDestination(AssistanceJoiningTarget target) {
+  EventDepartureForm? get _editable {
     final form = _form;
-    if (form == null || !form.canEdit) return;
-    if (!session.view.destinations.any((item) => item.target == target)) {
+    if (form == null || !form.canEdit || _pending != null) return null;
+    try {
+      _requireReview(form.session);
+      return form;
+    } catch (error) {
+      state = form._withPhase(
+        EventDepartureFormPhase.refreshRequired,
+        error: error,
+      );
+      return null;
+    }
+  }
+
+  void selectDestination(AssistanceJoiningTarget target) {
+    final form = _editable;
+    if (form == null) return;
+    if (!form.session.view.destinations.any((item) => item.target == target)) {
       throw ArgumentError('Choose a destination from this event snapshot.');
     }
     if (form.destination == target) return;
     state = EventDepartureForm._(
-      session: session,
+      session: form.session,
       destination: target,
       selection: form.selection,
       roster: form.roster,
@@ -136,10 +211,10 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
 
   /// Null skips recording; an explicit empty selection records nobody.
   void selectRoster(Iterable<String>? attendeeIds) {
-    final form = _form;
-    if (form == null || !form.canEdit) return;
+    final form = _editable;
+    if (form == null) return;
     state = EventDepartureForm._(
-      session: session,
+      session: form.session,
       destination: form.destination,
       selection: attendeeIds == null
           ? null
@@ -148,17 +223,16 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
   }
 
   void setCheckpoint(AssistanceDepartureCheckpointRequest? request) {
-    final form = _form;
-    if (form == null || !form.canEdit) return;
+    final form = _editable;
+    if (form == null) return;
     if (request != null) {
       if (!form.canConfigureCheckpoint) {
         throw const ValidationException(
           'Review the departure roster and choose a route stop first.',
         );
       }
-      // Reuse command validation without creating a pending action or effect.
       EventAssistanceDepartureChange.prepare(
-        snapshot: session.view,
+        snapshot: form.session.view,
         operationId: 'departure:review',
         destination: form.destination!,
         roster: form.roster,
@@ -166,7 +240,7 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
       );
     }
     state = EventDepartureForm._(
-      session: session,
+      session: form.session,
       destination: form.destination,
       selection: form.selection,
       roster: form.roster,
@@ -175,51 +249,75 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
   }
 
   Future<EventAssistanceDepartureRosterReview> reviewRoster() {
-    if (_revoked) return Future.error(departureSessionChanged);
-    if (_review case final pending?) return pending;
     final form = _form;
-    if (form == null || !form.canReviewRoster) {
+    if (form == null) return Future.error(departureSessionChanged);
+    if (_review case final pending?) return pending;
+    if (!form.canReviewRoster) {
       return Future.error(
         const ValidationException(
           'Choose the people whose departure you observed.',
         ),
       );
     }
+    try {
+      _requireReview(form.session);
+    } catch (error, stack) {
+      state = form._withPhase(
+        EventDepartureFormPhase.refreshRequired,
+        error: error,
+      );
+      return Future.error(error, stack);
+    }
+    final epoch = _epoch;
+    final completion = Completer<EventAssistanceDepartureRosterReview>();
+    final tracked = completion.future;
+    _review = tracked;
     final reviewing = EventDepartureForm._(
-      session: session,
+      session: form.session,
       destination: form.destination,
       selection: form.selection,
       phase: EventDepartureFormPhase.reviewingRoster,
     );
     state = reviewing;
-    late final Future<EventAssistanceDepartureRosterReview> tracked;
-    tracked = _reviewRoster(reviewing).whenComplete(() {
-      if (identical(_review, tracked)) _review = null;
-    });
-    _review = tracked;
+    unawaited(
+      _reviewRoster(reviewing, epoch)
+          .then(
+            completion.complete,
+            onError: (Object error, StackTrace stack) =>
+                completion.completeError(error, stack),
+          )
+          .whenComplete(() {
+            if (identical(_review, tracked)) _review = null;
+          }),
+    );
     return tracked;
   }
 
   Future<EventAssistanceDepartureRosterReview> _reviewRoster(
     EventDepartureForm reviewing,
+    int epoch,
   ) async {
     try {
       final roster = await ref
           .read(eventAssistanceDepartureControllerProvider.notifier)
-          .reviewRoster(session, reviewing.selection!);
-      if (ref.mounted && !_revoked && identical(state, reviewing)) {
-        state = EventDepartureForm._(
-          session: session,
-          destination: reviewing.destination,
-          selection: reviewing.selection,
-          roster: roster,
-        );
+          .reviewRoster(reviewing.session, reviewing.selection!);
+      if (!_current(reviewing.session.account, epoch)) {
+        throw departureSessionChanged;
       }
+      _requireReview(reviewing.session);
+      _review = null;
+      state = EventDepartureForm._(
+        session: reviewing.session,
+        destination: reviewing.destination,
+        selection: reviewing.selection,
+        roster: roster,
+      );
       return roster;
     } catch (error) {
-      if (ref.mounted && !_revoked && identical(state, reviewing)) {
+      if (_current(reviewing.session.account, epoch)) {
+        _review = null;
         state = reviewing._withPhase(
-          _needsFreshReview(error)
+          _needsFreshReview(error) || !reviewing.session.isCurrent
               ? EventDepartureFormPhase.refreshRequired
               : EventDepartureFormPhase.choosing,
           error: error,
@@ -229,13 +327,13 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
     }
   }
 
-  /// One decision, one in-flight request and one operation ID across retries.
+  /// Retries retain the exact destination, observed roster and operation ID.
   Future<EventAssistanceGroupProgressResult> submit() {
-    if (_revoked) return Future.error(departureSessionChanged);
-    if (_confirmation case final pending?) return pending;
     final form = _form;
-    if (form?.result case final result?) return Future.value(result);
-    if (form == null || !form.canSubmit) {
+    if (form == null) return Future.error(departureSessionChanged);
+    if (_confirmation case final pending?) return pending;
+    if (form.result case final result?) return Future.value(result);
+    if (!form.canSubmit) {
       return Future.error(
         const ValidationException(
           'Review the departure details before confirming.',
@@ -244,16 +342,19 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
     }
     late final EventDeparturePendingAction action;
     try {
-      action =
-          form.action ??
-          ref
-              .read(eventAssistanceDepartureControllerProvider.notifier)
-              .prepare(
-                session: session,
-                destination: form.destination!,
-                roster: form.roster,
-                checkpoint: form.checkpoint,
-              );
+      if (_pending case final pending?) {
+        action = pending;
+      } else {
+        _requireReview(form.session);
+        action = ref
+            .read(eventAssistanceDepartureControllerProvider.notifier)
+            .prepare(
+              session: form.session,
+              destination: form.destination!,
+              roster: form.roster,
+              checkpoint: form.checkpoint,
+            );
+      }
     } catch (error, stack) {
       state = form._withPhase(
         EventDepartureFormPhase.refreshRequired,
@@ -261,38 +362,91 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
       );
       return Future.error(error, stack);
     }
+    final epoch = _epoch;
+    final completion = Completer<EventAssistanceGroupProgressResult>();
+    final tracked = completion.future;
+    _confirmation = tracked;
+    _pending = action;
+    _retainPending(form.session.account);
     final submitted = form._withPhase(
       EventDepartureFormPhase.submitting,
       action: action,
     );
     state = submitted;
-    late final Future<EventAssistanceGroupProgressResult> tracked;
-    tracked = _confirm(submitted, action).whenComplete(() {
-      if (identical(_confirmation, tracked)) _confirmation = null;
-    });
-    _confirmation = tracked;
+    unawaited(
+      _confirm(submitted, action, epoch)
+          .then(
+            completion.complete,
+            onError: (Object error, StackTrace stack) =>
+                completion.completeError(error, stack),
+          )
+          .whenComplete(() {
+            if (identical(_confirmation, tracked)) _confirmation = null;
+          }),
+    );
     return tracked;
+  }
+
+  void _retainPending(EventDepartureAccount account) {
+    if (_releasePending != null) return;
+    final lease = ref.keepAlive();
+    // A closed sheet may pause dependencies; this subscription still observes
+    // sign-out and same-UID reauthentication while an outcome is unresolved.
+    final auth = ref.container.listen(eventAssistanceDepartureAccountProvider, (
+      _,
+      next,
+    ) {
+      if (next.isLoading ||
+          next.hasError ||
+          !identical(next.asData?.value, account)) {
+        _epoch++;
+        _account = null;
+        _confirmation = null;
+        _review = null;
+        _clearPending();
+        if (ref.mounted) ref.invalidateSelf();
+      }
+    });
+    _releasePending = () {
+      auth.close();
+      lease.close();
+    };
+  }
+
+  void _clearPending() {
+    _pending = null;
+    final release = _releasePending;
+    _releasePending = null;
+    release?.call();
   }
 
   Future<EventAssistanceGroupProgressResult> _confirm(
     EventDepartureForm submitted,
     EventDeparturePendingAction action,
+    int epoch,
   ) async {
     try {
       final result = await ref
           .read(eventAssistanceDepartureControllerProvider.notifier)
           .confirm(action);
-      if (ref.mounted && !_revoked) {
-        state = submitted._withPhase(
-          EventDepartureFormPhase.saved,
-          result: result,
-        );
+      if (!_current(action.session.account, epoch)) {
+        throw departureSessionChanged;
       }
+      action.change.requireResult(result);
+      _clearPending();
+      _confirmation = null;
+      state = submitted._withPhase(
+        EventDepartureFormPhase.saved,
+        result: result,
+      );
       return result;
     } catch (error) {
-      if (ref.mounted && !_revoked) {
+      if (_current(action.session.account, epoch)) {
+        final definitive = _needsFreshReview(error);
+        if (definitive) _clearPending();
+        _confirmation = null;
         state = submitted._withPhase(
-          _needsFreshReview(error)
+          definitive
               ? EventDepartureFormPhase.refreshRequired
               : EventDepartureFormPhase.retryRequired,
           error: error,
@@ -308,9 +462,11 @@ bool _needsFreshReview(Object error) =>
     {
       'aborted',
       'permission-denied',
+      'unauthenticated',
       'sign-in-required',
       'session-changed',
       'failed-precondition',
       'not-found',
       'invalid-argument',
+      'callable-unavailable',
     }.contains(error.code);

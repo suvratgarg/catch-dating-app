@@ -66,7 +66,7 @@ void main() {
       await failure;
       expect(h.form(session).phase, EventDepartureFormPhase.retryRequired);
       expect(h.form(session).canEdit, isFalse);
-      expect(h.form(session).canReload, isTrue);
+      expect(h.form(session).canReload, isFalse);
       editor.selectRoster(null);
       editor.setCheckpoint(null);
       final retry = editor.submit();
@@ -159,14 +159,14 @@ void main() {
       final editor = h.editor()..selectDestination(departureStop);
       final first = editor.submit();
       await h.signIn('other-manager');
-      expect(h.state(session), isA<EventDepartureFormUnavailable>());
+      expect(h.state(session), isA<EventDepartureFormIdle>());
       final failure = expectLater(
         first,
         throwsA(isA<BackendOperationException>()),
       );
       h.repository.completeConfirmation(0);
       await failure;
-      expect(h.state(session), isA<EventDepartureFormUnavailable>());
+      expect(h.state(session), isA<EventDepartureFormIdle>());
       expect(
         h.repository.reads,
         hasLength(2),
@@ -190,7 +190,7 @@ void main() {
       await h.signIn();
       h.repository.completeRead(2);
       await h.container.pump();
-      expect(h.state(session), isA<EventDepartureFormUnavailable>());
+      expect(h.state(session), isA<EventDepartureFormIdle>());
       await expectLater(
         editor.submit(),
         throwsA(isA<BackendOperationException>()),
@@ -203,27 +203,31 @@ void main() {
     },
   );
 
-  test('an old completion cannot overwrite a newly loaded form', () async {
-    final old = h.session;
-    final editor = h.editor()..selectDestination(departureStop);
-    final first = editor.submit();
-    h.container
-        .read(eventAssistanceDepartureProvider(departureScope()).notifier)
-        .reload();
-    await h.container.pump();
-    await h.repository.waitForReads(2);
-    h.repository.completeRead(1);
-    await h.container.pump();
-    final fresh = h.session;
-    final next = h.editor();
-    next.selectDestination(departureStop);
-    next.selectRoster([]);
-    h.repository.completeConfirmation(0);
-    await first;
-    expect(h.form(old).phase, EventDepartureFormPhase.saved);
-    expect(h.form(fresh).phase, EventDepartureFormPhase.choosing);
-    expect(h.form(fresh).selection!.attendeeIds, isEmpty);
-    expect(h.form(fresh).roster, isNull);
-    expect(h.form(fresh).result, isNull);
-  });
+  test(
+    'a refreshed page preserves the unresolved departure until receipt',
+    () async {
+      final old = h.session;
+      final editor = h.editor()..selectDestination(departureStop);
+      final first = editor.submit();
+      h.container
+          .read(eventAssistanceDepartureProvider(departureScope()).notifier)
+          .reload();
+      await h.container.pump();
+      await h.repository.waitForReads(2);
+      h.repository.completeRead(1);
+      await h.container.pump();
+      final fresh = h.session;
+      final next = h.editor();
+      next.selectDestination(departureStop);
+      next.selectRoster([]);
+      h.repository.completeConfirmation(0);
+      await first;
+      expect(h.form(old).phase, EventDepartureFormPhase.saved);
+      expect(identical(next, editor), isTrue);
+      expect(h.form(fresh).session, same(old));
+      expect(h.form(fresh).phase, EventDepartureFormPhase.saved);
+      expect(h.form(fresh).selection, isNull);
+      expect(h.repository.changes, hasLength(1));
+    },
+  );
 }

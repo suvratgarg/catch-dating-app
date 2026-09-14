@@ -45,7 +45,7 @@ final class EventAssistanceDepartureControllerProvider
 }
 
 String _$eventAssistanceDepartureControllerHash() =>
-    r'3b855a869be5557f4e666bf01f351d24515a5274';
+    r'1ce9ea4244a1af9f251d85274b3c069e63ea231e';
 
 abstract class _$EventAssistanceDepartureController extends $Notifier<void> {
   void build();

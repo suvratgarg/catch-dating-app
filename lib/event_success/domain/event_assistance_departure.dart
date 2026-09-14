@@ -165,6 +165,26 @@ final class EventAssistanceDepartureChange {
   final EventAssistanceDepartureRosterReview? roster;
   final AssistanceDepartureCheckpointRequest? checkpoint;
 
+  void requireResult(EventAssistanceGroupProgressResult result) {
+    if (result.view.scope != snapshot.scope ||
+        result.view.actorUid != snapshot.actorUid ||
+        result.view.serverTime < snapshot.serverTime ||
+        result.outcome == AssistanceProgressOutcome.read ||
+        result.operationRevision != snapshot.revision + 1) {
+      throw const FormatException('Invalid departure confirmation receipt.');
+    }
+    // A replay may return later progress; only its operation revision is the
+    // receipt for this decision. Never compare later progress with this target.
+    if (result.view.revision == result.operationRevision &&
+        (result.view.progress?.destination != destination ||
+            result.view.progress?.sourceHash != snapshot.sourceHash ||
+            result.view.progress?.confirmedBy != snapshot.actorUid)) {
+      throw const FormatException(
+        'Departure receipt does not match the decision.',
+      );
+    }
+  }
+
   Map<String, Object?> get command => {
     'kind': 'confirmDeparture',
     'context': snapshot.scope.context,

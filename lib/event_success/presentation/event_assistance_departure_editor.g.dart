@@ -8,20 +8,23 @@ part of 'event_assistance_departure_editor.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// One group owns its unresolved departure across review refresh and closure.
 
 @ProviderFor(EventAssistanceDepartureEditor)
 final eventAssistanceDepartureEditorProvider =
     EventAssistanceDepartureEditorFamily._();
 
+/// One group owns its unresolved departure across review refresh and closure.
 final class EventAssistanceDepartureEditorProvider
     extends
         $NotifierProvider<
           EventAssistanceDepartureEditor,
           EventDepartureEditorState
         > {
+  /// One group owns its unresolved departure across review refresh and closure.
   EventAssistanceDepartureEditorProvider._({
     required EventAssistanceDepartureEditorFamily super.from,
-    required EventDepartureSession super.argument,
+    required EventAssistanceGroupScope super.argument,
   }) : super(
          retry: null,
          name: r'eventAssistanceDepartureEditorProvider',
@@ -65,7 +68,9 @@ final class EventAssistanceDepartureEditorProvider
 }
 
 String _$eventAssistanceDepartureEditorHash() =>
-    r'f5c713d9aaa809c975688d73467eac16d2adbf8b';
+    r'907decf6845a8f652f68112ca0b184b4f6740758';
+
+/// One group owns its unresolved departure across review refresh and closure.
 
 final class EventAssistanceDepartureEditorFamily extends $Family
     with
@@ -74,7 +79,7 @@ final class EventAssistanceDepartureEditorFamily extends $Family
           EventDepartureEditorState,
           EventDepartureEditorState,
           EventDepartureEditorState,
-          EventDepartureSession
+          EventAssistanceGroupScope
         > {
   EventAssistanceDepartureEditorFamily._()
     : super(
@@ -85,19 +90,24 @@ final class EventAssistanceDepartureEditorFamily extends $Family
         isAutoDispose: true,
       );
 
-  EventAssistanceDepartureEditorProvider call(EventDepartureSession session) =>
-      EventAssistanceDepartureEditorProvider._(argument: session, from: this);
+  /// One group owns its unresolved departure across review refresh and closure.
+
+  EventAssistanceDepartureEditorProvider call(
+    EventAssistanceGroupScope scope,
+  ) => EventAssistanceDepartureEditorProvider._(argument: scope, from: this);
 
   @override
   String toString() => r'eventAssistanceDepartureEditorProvider';
 }
 
+/// One group owns its unresolved departure across review refresh and closure.
+
 abstract class _$EventAssistanceDepartureEditor
     extends $Notifier<EventDepartureEditorState> {
-  late final _$args = ref.$arg as EventDepartureSession;
-  EventDepartureSession get session => _$args;
+  late final _$args = ref.$arg as EventAssistanceGroupScope;
+  EventAssistanceGroupScope get scope => _$args;
 
-  EventDepartureEditorState build(EventDepartureSession session);
+  EventDepartureEditorState build(EventAssistanceGroupScope scope);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {

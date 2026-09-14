@@ -92,11 +92,7 @@ class EventAssistanceDepartureRepository {
         expectedScope: change.snapshot.scope,
         expectedActorUid: change.snapshot.actorUid,
       );
-      if (result.outcome == AssistanceProgressOutcome.read ||
-          result.operationRevision != change.snapshot.revision + 1) {
-        throw const FormatException('Invalid departure confirmation receipt.');
-      }
-      // A replay's current progress may be newer than its original receipt.
+      change.requireResult(result);
       return result;
     },
     context: const BackendErrorContext(
