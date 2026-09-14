@@ -136,6 +136,11 @@ class EventAssistanceVisitSection extends StatelessWidget {
             ),
           ],
         ],
+        if (phase == EventAssistanceVisitPhase.saved &&
+            unavailableMessage != null) ...[
+          gapH8,
+          Text(unavailableMessage!),
+        ],
         if (error != null) ...[gapH12, CatchLocalizedErrorBanner(error!)],
         if (phase == EventAssistanceVisitPhase.retryRequired) ...[
           gapH12,

@@ -1383,6 +1383,34 @@ export interface EventRehearsalBootstrapCallableResponse {
               attendeeIds: string[];
             };
       } | null;
+      /**
+       * @maxItems 50
+       */
+      accountabilityReviews?: {
+        attendeeId: string;
+        visitHash: string;
+        sourceHash: string;
+        revision: number;
+        disposition: "returned" | "departed" | "unresolved";
+        availability:
+          | {
+              kind: "ready";
+            }
+          | {
+              kind: "unavailable";
+              reason:
+                | "notApplicable"
+                | "notCheckedIn"
+                | "departureNotRecorded"
+                | "notOnDeparture"
+                | "visitChanged"
+                | "setupChanged"
+                | "differentCheckpoint"
+                | "destinationNotRecorded"
+                | "notCheckpoint";
+            };
+        canResolve: boolean;
+      }[];
     } | null;
     /**
      * @maxItems 25

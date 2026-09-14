@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.107.0
+version: 1.108.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -1066,6 +1066,17 @@ immutable departure hash plus original visit evidence. Read queries bind session
 clock and group, order by progress revision, and use a 26-record lookahead for
 25-result pages. An explicitly selected older revision does not become current
 progress. Reset and expiry delete movement children with the other practice state.
+
+The movement command's `resolveAccountability` arm additionally pins checkpoint,
+original departure revision, attendee and expected accountability revision. Its
+source hash comes from that checkpoint's optional `accountabilityReviews`, with one
+row per original member. Missing legacy rows do not grant capability. The review
+verifies the original physical visit and current authority for the original group,
+including after membership transfer. A fresh visit or replacement actor is explicitly
+unavailable. The transaction reuses the visit-disposition reducer, writes only that
+actor plus the parent session/action receipt, and leaves movement, report, membership
+and attendance unchanged. The same group pending owner preserves exact retries;
+replay returns current outcome evidence without reapplying the original decision.
 
 
 `eventRehearsalMessages.movementBinding` contains the confirmed group ID,

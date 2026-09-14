@@ -1,12 +1,35 @@
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'event_rehearsal_checkpoint_visit_fixtures.dart';
 import 'event_rehearsal_movement_fixtures.dart';
 
 void main() {
+  test(
+    'checkpoint visit uses the generated group command with the original departure',
+    () async {
+      final f = _Functions();
+      final repo = EventRehearsalRepository(f);
+      final view = checkpointVisitReview('initial');
+      final change = RehearsalMovementChange(
+        command: RehearsalResolveCheckpointVisit(
+          snapshot: view,
+          visit: view.checkpoint!.accountabilityReviews.value!.last,
+          disposition: AssistanceVisitDisposition.departed,
+        ),
+        clientActionId: 'checkpoint_visit_fixture',
+      );
+      f.response = checkpointVisitResult(change, 'resolved');
+      final result = await repo.applyMovement(change);
+      expect(f.calls.single.name, 'controlEventRehearsal');
+      expect(f.calls.single.input, change.toJson());
+      expect(result.movementReview!.checkpoint!.progressRevision, 1);
+    },
+  );
   test(
     'movement getter uses only the reviewed generation and selected history',
     () async {

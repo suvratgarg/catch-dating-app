@@ -29247,6 +29247,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry checkpoint decision'**
   String get eventAssistanceCheckpointRequestRetry;
+
+  /// Section of original departure guests without a checkpoint arrival observation.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival still unconfirmed'**
+  String get eventAssistanceCheckpointVisitsTitle;
+
+  /// Explains the atomic visit outcome action available from checkpoint management.
+  ///
+  /// In en, this message translates to:
+  /// **'Review a guest to record whether they returned or left the event.'**
+  String get eventAssistanceCheckpointVisitsBody;
+
+  /// Legacy checkpoint projection omits visit outcome evidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit outcome is unavailable. Reload to review.'**
+  String get eventAssistanceCheckpointVisitUnknown;
+
+  /// Outcome before the selected departure cannot resolve its request.
+  ///
+  /// In en, this message translates to:
+  /// **'The recorded outcome predates this departure. Review their status again.'**
+  String get eventAssistanceCheckpointVisitBeforeDeparture;
+
+  /// Reopens the exact unconfirmed original departure visit decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Review guest status'**
+  String get eventAssistanceCheckpointVisitReview;
 }
 
 class _AppLocalizationsDelegate

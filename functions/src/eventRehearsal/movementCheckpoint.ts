@@ -1,3 +1,4 @@
+import {practiceCheckpointAccountability} from "./checkpointAccountability";
 import {operationContentHash as hash} from "../operations/durableActions";
 import {practiceGroupPermission} from "./groupStaff";
 import {checkpointCloseoutDecisionState, checkpointCloseoutEligibility} from
@@ -5,7 +6,7 @@ import {checkpointCloseoutDecisionState, checkpointCloseoutEligibility} from
 import type {EventRehearsalDocument as Session,
   EventRehearsalActorDocument as Actor} from
   "../shared/generated/firestoreAdminTypes";
-import {practiceAccountabilityView} from "./accountability";
+import {practiceVisitEvidence} from "./accountability";
 import {practiceCheckpointVisits, MovementSource, Movement, Review} from
   "./movementSource";
 import {practiceMovementId} from "./movementRecords";
@@ -21,7 +22,7 @@ function disposition(session: Session, source: MovementSource, record: Movement,
 ): NonNullable<Member["disposition"]> {
   if (member.visit.kind !== "current") return member.visit;
   const actor = actors.find((a) => a.actorId === member.attendeeId)!;
-  const review = practiceAccountabilityView(session, actor);
+  const review = practiceVisitEvidence(session, actor);
   if (review.disposition === "unresolved") return {kind: "unresolved"};
   const resolution = actor.visit!.resolution!;
   if (resolution.resolvedAtMillis < record.departure.confirmedAt) {
@@ -84,6 +85,8 @@ export function practiceCheckpointReview(session: Session,
   return {progressRevision: record.progressRevision, checkpointId, sourceHash,
     revision: report?.revision ?? 0, report, availability, departure,
     assignment, closeout,
+    accountabilityReviews: practiceCheckpointAccountability(session, source,
+      record, actors, availability, authority),
     request: !request ? null : complete ? {...request, state: "complete",
       ownerAvailability: "notRequired"} : state.kind === "closedOut" ?
       {...request, state: "closedOut", ownerAvailability: "notRequired"} :

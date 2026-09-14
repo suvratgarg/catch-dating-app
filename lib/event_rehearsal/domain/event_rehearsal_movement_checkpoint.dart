@@ -9,6 +9,7 @@ final class RehearsalMovementCheckpoint {
     this.request,
     this.assignment,
     this.closeout,
+    this.accountabilityReviews,
   );
   final RehearsalMovementRecord record;
   final String checkpointId, sourceHash;
@@ -18,6 +19,8 @@ final class RehearsalMovementCheckpoint {
   assignment;
   final AssistanceCheckpointSupplement<RehearsalCheckpointCloseoutReview>
   closeout;
+  final AssistanceCheckpointSupplement<List<RehearsalCheckpointVisitReview>>
+  accountabilityReviews;
   int get progressRevision => record.revision;
   int get revision => record.report?.revision ?? 0;
   RehearsalDeparture get departure => record.departure;
@@ -30,6 +33,7 @@ final class RehearsalMovementCheckpoint {
     required String sourceHash,
     required List<RehearsalMovementDestination> destinations,
     required RehearsalMovementRecord? selected,
+    required bool canResolveVisits,
   }) {
     final m = assistanceObject(raw);
     assistanceObject(m, {
@@ -43,6 +47,7 @@ final class RehearsalMovementCheckpoint {
       'departure',
       if (m.containsKey('assignment')) 'assignment',
       if (m.containsKey('closeout')) 'closeout',
+      if (m.containsKey('accountabilityReviews')) 'accountabilityReviews',
     });
     if (selected == null ||
         selected.departure.checkpointId == null ||
@@ -155,6 +160,17 @@ final class RehearsalMovementCheckpoint {
       request,
       assignment,
       closeout,
+      !m.containsKey('accountabilityReviews')
+          ? const AssistanceCheckpointNotProvided()
+          : AssistanceCheckpointProvided(
+              RehearsalCheckpointVisitReview.parseRoster(
+                m['accountabilityReviews'],
+                departure,
+                available,
+                session,
+                canResolveVisits,
+              ),
+            ),
     );
   }
 }

@@ -5841,6 +5841,95 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
                       "type": "null"
                     }
                   ]
+                },
+                "accountabilityReviews": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "attendeeId",
+                      "visitHash",
+                      "sourceHash",
+                      "revision",
+                      "disposition",
+                      "availability",
+                      "canResolve"
+                    ],
+                    "properties": {
+                      "attendeeId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "visitHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "sourceHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "disposition": {
+                        "enum": [
+                          "returned",
+                          "departed",
+                          "unresolved"
+                        ]
+                      },
+                      "availability": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "ready"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "unavailable"
+                              },
+                              "reason": {
+                                "enum": [
+                                  "notApplicable",
+                                  "notCheckedIn",
+                                  "departureNotRecorded",
+                                  "notOnDeparture",
+                                  "visitChanged",
+                                  "setupChanged",
+                                  "differentCheckpoint",
+                                  "destinationNotRecorded",
+                                  "notCheckpoint"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "canResolve": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
                 }
               }
             },

@@ -18454,4 +18454,23 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventAssistanceCheckpointRequestRetry =>
       'Retry checkpoint decision';
+
+  @override
+  String get eventAssistanceCheckpointVisitsTitle =>
+      'Arrival still unconfirmed';
+
+  @override
+  String get eventAssistanceCheckpointVisitsBody =>
+      'Review a guest to record whether they returned or left the event.';
+
+  @override
+  String get eventAssistanceCheckpointVisitUnknown =>
+      'Visit outcome is unavailable. Reload to review.';
+
+  @override
+  String get eventAssistanceCheckpointVisitBeforeDeparture =>
+      'The recorded outcome predates this departure. Review their status again.';
+
+  @override
+  String get eventAssistanceCheckpointVisitReview => 'Review guest status';
 }

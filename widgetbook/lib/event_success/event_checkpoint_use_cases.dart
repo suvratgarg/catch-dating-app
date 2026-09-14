@@ -3,7 +3,9 @@ import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_request_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_sheet.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_visit_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_departure_history_sheet.dart';
+import 'package:catch_dating_app/event_success/data/event_assistance_accountability_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_checkpoint_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_departure_history_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_departure_repository.dart';
@@ -12,6 +14,7 @@ import 'package:catch_dating_app/event_success/presentation/event_assistance_che
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_roster_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_sheet.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_visits_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_sheet.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -19,6 +22,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import 'event_assistance_preview_repositories.dart'
+    show AssistancePreviewLiveRepository;
 import 'event_checkpoint_preview_repositories.dart';
 import 'event_departure_preview_repositories.dart';
 
@@ -102,6 +107,21 @@ Widget assistanceLiveCheckpointRequest(BuildContext context) =>
 Widget assistancePracticeCheckpointRequest(BuildContext context) =>
     const _CheckpointPreview(surface: _Surface.practiceRequest);
 
+@widgetbook.UseCase(
+  name: 'Original guests with unconfirmed arrivals',
+  type: EventAssistanceCheckpointVisitsSection,
+  path: _path,
+)
+Widget assistanceCheckpointVisits(BuildContext context) =>
+    const _CheckpointPreview(surface: _Surface.practiceRequest);
+@widgetbook.UseCase(
+  name: 'Practice original departure visit outcome',
+  type: EventRehearsalCheckpointVisitSheet,
+  path: _path,
+)
+Widget assistancePracticeCheckpointVisit(BuildContext context) =>
+    const _CheckpointPreview(surface: _Surface.practiceVisit);
+
 enum _Surface {
   liveReport,
   practiceReport,
@@ -109,6 +129,7 @@ enum _Surface {
   practiceHistory,
   liveRequest,
   practiceRequest,
+  practiceVisit,
 }
 
 class _CheckpointPreview extends StatefulWidget {
@@ -133,7 +154,9 @@ class _CheckpointPreviewState extends State<_CheckpointPreview> {
       if (value.hasError) return Text('Preview unavailable: ${value.error}');
       if (!value.hasData) return const CatchSkeleton.rows();
       final fixtures = value.requireData;
-      final repository = widget.surface == _Surface.practiceRequest
+      final repository =
+          (widget.surface == _Surface.practiceRequest ||
+              widget.surface == _Surface.practiceVisit)
           ? CheckpointRequestPreviewPracticeRepository(fixtures[2])
           : CheckpointPreviewPracticeRepository(fixtures[1]);
       final selection = repository.snapshot.movementReview!.selection;
@@ -142,6 +165,26 @@ class _CheckpointPreviewState extends State<_CheckpointPreview> {
         progressRevision: 1,
       );
       final surface = switch (widget.surface) {
+        _Surface.practiceVisit => EventRehearsalCheckpointVisitSheet(
+          selection: reportSelection,
+          attendeeId: repository
+              .snapshot
+              .movementReview!
+              .checkpoint!
+              .accountabilityReviews
+              .value!
+              .last
+              .attendeeId,
+          guestName: repository
+              .snapshot
+              .movementReview!
+              .checkpoint!
+              .departure
+              .roster!
+              .members
+              .last
+              .displayName,
+        ),
         _Surface.liveRequest => EventAssistanceCheckpointRequestSheet(
           scope: checkpointPreviewScope,
           groupLabel: 'Everyone',
@@ -166,6 +209,9 @@ class _CheckpointPreviewState extends State<_CheckpointPreview> {
       };
       return ProviderScope(
         overrides: [
+          eventAssistanceAccountabilityRepositoryProvider.overrideWith(
+            (ref) => AssistancePreviewLiveRepository(),
+          ),
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
           eventRehearsalRepositoryProvider.overrideWith((ref) => repository),
           eventAssistanceDepartureRepositoryProvider.overrideWith(

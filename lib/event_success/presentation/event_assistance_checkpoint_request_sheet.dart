@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_visit_sheet.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -91,6 +93,40 @@ class EventAssistanceCheckpointRequestSheet extends ConsumerWidget {
                           total: available.members.length,
                         )
                       : null,
+                  members: available is AssistanceCheckpointRoster
+                      ? available.members
+                      : const [],
+                  guestNames: available is AssistanceCheckpointRoster
+                      ? {
+                          for (final m in available.members)
+                            m.attendeeId: ?m.displayName,
+                        }
+                      : const {},
+                  reviewableGuestIds: available is AssistanceCheckpointRoster
+                      ? {for (final m in available.members) m.attendeeId}
+                      : const {},
+                  onReviewGuest: (id) async {
+                    final member = (available as AssistanceCheckpointRoster)
+                        .members
+                        .singleWhere((m) => m.attendeeId == id);
+                    await showCatchBottomSheet<void>(
+                      context: context,
+                      builder: (_) => EventAssistanceVisitSheet(
+                        scope: EventAssistanceAccountabilityScope(
+                          group: scope.group,
+                          attendeeId: id,
+                          checkpoint: scope.checkpoint,
+                        ),
+                        guestName:
+                            member.displayName ??
+                            context.l10n.eventAssistanceCheckpointUnknownGuest,
+                      ),
+                    );
+                    if (context.mounted) {
+                      controller.reload();
+                      ref.read(query.notifier).reload();
+                    }
+                  },
                   phase:
                       phase == EventAssistanceCheckpointPhase.ready &&
                           !review.isCurrent

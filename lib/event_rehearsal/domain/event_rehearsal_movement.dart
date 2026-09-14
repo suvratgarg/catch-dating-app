@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
@@ -13,6 +14,7 @@ part 'event_rehearsal_movement_records.dart';
 part 'event_rehearsal_checkpoint_management_records.dart';
 part 'event_rehearsal_checkpoint_management_review.dart';
 part 'event_rehearsal_movement_checkpoint.dart';
+part 'event_rehearsal_checkpoint_visit.dart';
 
 typedef RehearsalMovementScope = ({
   String sessionId,
@@ -389,6 +391,12 @@ final class RehearsalMovementReview {
             sourceHash: sourceHash,
             destinations: destinations,
             selected: selected,
+            canResolveVisits:
+                staff?.canPerform(
+                  scope.groupId,
+                  AssistanceGroupPermission.resolveAccountability,
+                ) ??
+                true,
           );
     if ((selected?.departure.checkpointId != null) != (checkpoint != null)) {
       throw const FormatException('Selected departure checkpoint is missing.');

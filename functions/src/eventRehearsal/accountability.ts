@@ -29,10 +29,8 @@ type Command = Extract<
 >;
 
 /** Visit proof is independent of connectivity, seating and join intent. */
-export function practiceAccountabilityView(
-  session: Session,
-  actor: Actor,
-  authority?: PracticeCaseAuthority
+export function practiceVisitEvidence(
+  session: Session, actor: Actor
 ): Row {
   const visit = actor.visit;
   const now = session.virtualNow.toMillis();
@@ -40,18 +38,16 @@ export function practiceAccountabilityView(
   const valid =
     visit !== undefined &&
     validPracticeVisit(visit, session.virtualStartedAt.toMillis(), now);
-  const reason = !session.setup.moduleIds.includes("accountability") ?
-    "notApplicable" :
-    !visit ?
-      "visitNotRecorded" :
-      !valid ||
+  const reason = !visit ?
+    "visitNotRecorded" :
+    !valid ||
           attendance === "unknown" ||
           (attendance === "checkedIn") !==
             (visit.checkedInAtMillis !== null) ?
-        "invalidSource" :
-        attendance !== "checkedIn" ?
-          "notCheckedIn" :
-          null;
+      "invalidSource" :
+      attendance !== "checkedIn" ?
+        "notCheckedIn" :
+        null;
   const r =
     valid && visit.resolution?.visitRevision === visit.attendanceRevision ?
       visit.resolution :
@@ -90,6 +86,16 @@ export function practiceAccountabilityView(
       visit!.accountabilityRevision < Number.MAX_SAFE_INTEGER &&
       ["running", "paused", "complete"].includes(session.status),
   };
+  return row;
+}
+
+/** The general sweep requires its module; checkpoints have their own scope. */
+export function practiceAccountabilityView(session: Session, actor: Actor,
+  authority?: PracticeCaseAuthority): Row {
+  const evidence = practiceVisitEvidence(session, actor);
+  const row: Row = session.setup.moduleIds.includes("accountability") ?
+    evidence : {...evidence, canResolve: false, disposition: "unresolved",
+      availability: {kind: "unavailable", reason: "notApplicable"}};
   if (!authority || practiceIsManager(authority)) return row;
   const membership = practiceMembershipSource(session, actor);
   const groupId = practiceGroupPermission(actor.sessionId, session, authority,
@@ -130,6 +136,14 @@ export function resolvePracticeAccountability(
       "This practice guest has no current visit to resolve."
     );
   }
+  return applyPracticeVisitDisposition(session, actor,
+    command.payload.disposition, authority.actorUid);
+}
+
+/** Pure reducer; callers verify scope, source and authority first. */
+export function applyPracticeVisitDisposition(session: Session,
+  actor: Actor,
+  disposition: Command["payload"]["disposition"], actorUid: string): Actor {
   const visit = actor.visit!;
   const now = session.virtualNow.toMillis();
   const fields = accountabilityResolutionFields(
@@ -138,8 +152,8 @@ export function resolvePracticeAccountability(
       checkedInAt: Timestamp.fromMillis(visit.checkedInAtMillis!),
       accountabilityRevision: visit.accountabilityRevision,
     },
-    command.payload.disposition,
-    authority.actorUid,
+    disposition,
+    actorUid,
     Timestamp.fromMillis(now)
   );
   return {
@@ -155,7 +169,7 @@ export function resolvePracticeAccountability(
             visitRevision: visit.attendanceRevision,
             checkedInAtMillis: visit.checkedInAtMillis!,
             resolvedAtMillis: now,
-            resolvedBy: authority.actorUid,
+            resolvedBy: actorUid,
           },
     },
   };

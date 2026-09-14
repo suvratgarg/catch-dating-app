@@ -814,6 +814,30 @@
           },
           "sourceHash": "263a6d6c59ef9efc862f62bf6e706c75a4fd979f0683bcb99ed8684bb2656d06"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "47c6ff4180b30be9d0cd0ba79402937fca21d5829fd6d59076c8a049b1d720e8",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "70f014e54e3fbb6eb97e623098b09b29392474c61c0aa88495faec863418a7c5",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "host-2",
           "dueAt": 61000,
@@ -1315,6 +1339,30 @@
           },
           "sourceHash": "7fb1778706fd55bcbda70e528bff7c3cf083cb43761582b16690afc2b9586a06"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "47c6ff4180b30be9d0cd0ba79402937fca21d5829fd6d59076c8a049b1d720e8",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "70f014e54e3fbb6eb97e623098b09b29392474c61c0aa88495faec863418a7c5",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "host-2",
           "dueAt": 61000,
@@ -1818,6 +1866,31 @@
           },
           "sourceHash": "0ccf5789eb7067035d1e9fd3f74e466a24a58f92b90bd098e1fc95b31e9c6add"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "unavailable",
+              "reason": "visitChanged"
+            },
+            "sourceHash": "aab6c6eb22538e87c33560966a0f0db592a15f5c3b65525ce883bfe4d91f0c2f",
+            "canResolve": false
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "70f014e54e3fbb6eb97e623098b09b29392474c61c0aa88495faec863418a7c5",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "host-2",
           "dueAt": 61000,
@@ -2322,6 +2395,31 @@
           },
           "sourceHash": "9d4c0531accdd496328d932faa6b3b53f8f86d8a9ea374031e6f10cded5c9069"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "unavailable",
+              "reason": "visitChanged"
+            },
+            "sourceHash": "aab6c6eb22538e87c33560966a0f0db592a15f5c3b65525ce883bfe4d91f0c2f",
+            "canResolve": false
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "70f014e54e3fbb6eb97e623098b09b29392474c61c0aa88495faec863418a7c5",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "host-2",
           "dueAt": 61000,
@@ -2691,6 +2789,7 @@
         },
         "assignment": null,
         "closeout": null,
+        "accountabilityReviews": [],
         "request": null
       },
       "history": [
@@ -3105,6 +3204,7 @@
           },
           "sourceHash": "8daa00d51dbb19d4f58dd1ac5ac423d27a69e8849f387d317819a6686ed8002a"
         },
+        "accountabilityReviews": [],
         "request": {
           "responsibleOperatorId": "host-2",
           "dueAt": 61000,
@@ -4376,6 +4476,31 @@
           },
           "sourceHash": "9d4c0531accdd496328d932faa6b3b53f8f86d8a9ea374031e6f10cded5c9069"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "unavailable",
+              "reason": "visitChanged"
+            },
+            "sourceHash": "aab6c6eb22538e87c33560966a0f0db592a15f5c3b65525ce883bfe4d91f0c2f",
+            "canResolve": false
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "70f014e54e3fbb6eb97e623098b09b29392474c61c0aa88495faec863418a7c5",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "host-2",
           "dueAt": 61000,
@@ -5219,6 +5344,19 @@
           },
           "sourceHash": "41bf51b3413377807e2d6cd058331f069e55405f899a521385603f2f1f30b902"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "a503ed2e65ad8060ddee433c6a1589068332871c63df290d83045451874c5752",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "0aad8d40921415939879d6da0c6894daad5cd470bd1e22a3202dea90066debee",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "host-2",
           "dueAt": 61000,
@@ -5736,6 +5874,30 @@
           },
           "sourceHash": "384202e0db43e7cbc9b1e6b58aa457517f5027a78f2a468c694ccf6c63c8662a"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "15976c8a662823ae1b85001edd9842aaf5ddfdb4d5ab4a8149e4e9c652601720",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "c278a6fd81f13b401f50275996b595a617efcc04c248ff2a7f8a4564676cd4aa",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "host-1",
           "dueAt": 1801000,

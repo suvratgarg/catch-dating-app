@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/schema_contracts/generated/field_constrain
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_visits_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,10 @@ class EventAssistanceCheckpointRequestSection extends StatefulWidget {
     this.error,
     this.observationSummary,
     this.checkpointLabel,
+    this.members = const [],
+    this.guestNames = const {},
+    this.reviewableGuestIds = const {},
+    this.onReviewGuest,
   });
   final Object reviewIdentity;
   final String contextMessage;
@@ -37,6 +42,10 @@ class EventAssistanceCheckpointRequestSection extends StatefulWidget {
   final CheckpointRequestDecision? submittedDecision;
   final Object? error;
   final String? observationSummary, checkpointLabel;
+  final List<AssistanceCheckpointMember> members;
+  final Map<String, String> guestNames;
+  final Set<String> reviewableGuestIds;
+  final ValueChanged<String>? onReviewGuest;
   final ValueChanged<CheckpointRequestDecision> onConfirm;
   final VoidCallback onRetry, onReload, onDone;
   @override
@@ -110,6 +119,15 @@ class _EventAssistanceCheckpointRequestSectionState
           Text(summary, style: CatchTextStyles.labelL(context)),
         ],
         if (ready) ...[
+          if (widget.members.any((m) => !m.accountedFor)) ...[
+            gapH12,
+            EventAssistanceCheckpointVisitsSection(
+              members: widget.members,
+              names: widget.guestNames,
+              reviewableGuestIds: widget.reviewableGuestIds,
+              onReview: widget.onReviewGuest,
+            ),
+          ],
           gapH12,
           Text(
             widget.request == null

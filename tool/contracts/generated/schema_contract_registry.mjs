@@ -112511,6 +112511,95 @@ export const eventRehearsalMovementCallableResponseSchema = {
                   "type": "null"
                 }
               ]
+            },
+            "accountabilityReviews": {
+              "type": "array",
+              "maxItems": 50,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "attendeeId",
+                  "visitHash",
+                  "sourceHash",
+                  "revision",
+                  "disposition",
+                  "availability",
+                  "canResolve"
+                ],
+                "properties": {
+                  "attendeeId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "visitHash": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "sourceHash": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "disposition": {
+                    "enum": [
+                      "returned",
+                      "departed",
+                      "unresolved"
+                    ]
+                  },
+                  "availability": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "ready"
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "reason"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "const": "unavailable"
+                          },
+                          "reason": {
+                            "enum": [
+                              "notApplicable",
+                              "notCheckedIn",
+                              "departureNotRecorded",
+                              "notOnDeparture",
+                              "visitChanged",
+                              "setupChanged",
+                              "differentCheckpoint",
+                              "destinationNotRecorded",
+                              "notCheckpoint"
+                            ]
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "canResolve": {
+                    "type": "boolean"
+                  }
+                }
+              }
             }
           }
         },
@@ -158140,6 +158229,95 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                       "type": "null"
                     }
                   ]
+                },
+                "accountabilityReviews": {
+                  "type": "array",
+                  "maxItems": 50,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "attendeeId",
+                      "visitHash",
+                      "sourceHash",
+                      "revision",
+                      "disposition",
+                      "availability",
+                      "canResolve"
+                    ],
+                    "properties": {
+                      "attendeeId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 180
+                      },
+                      "visitHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "sourceHash": {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      "revision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "disposition": {
+                        "enum": [
+                          "returned",
+                          "departed",
+                          "unresolved"
+                        ]
+                      },
+                      "availability": {
+                        "oneOf": [
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "ready"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "kind",
+                              "reason"
+                            ],
+                            "properties": {
+                              "kind": {
+                                "const": "unavailable"
+                              },
+                              "reason": {
+                                "enum": [
+                                  "notApplicable",
+                                  "notCheckedIn",
+                                  "departureNotRecorded",
+                                  "notOnDeparture",
+                                  "visitChanged",
+                                  "setupChanged",
+                                  "differentCheckpoint",
+                                  "destinationNotRecorded",
+                                  "notCheckpoint"
+                                ]
+                              }
+                            }
+                          }
+                        ]
+                      },
+                      "canResolve": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
                 }
               }
             },
@@ -164127,6 +164305,70 @@ export const controlEventRehearsalCallablePayloadSchema = {
             "expectedSourceHash": {
               "type": "string",
               "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resolveAccountability"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "groupId",
+                "checkpointId",
+                "expectedProgressRevision",
+                "attendeeId",
+                "expectedAccountabilityRevision",
+                "disposition"
+              ],
+              "properties": {
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "checkpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "expectedProgressRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "expectedAccountabilityRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "disposition": {
+                  "enum": [
+                    "returned",
+                    "departed",
+                    "unresolved"
+                  ]
+                }
+              }
             }
           }
         }

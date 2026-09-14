@@ -8,6 +8,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_departure
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'event_rehearsal_checkpoint_visit_fixtures.dart';
 import 'event_rehearsal_movement_fixtures.dart';
 
 void main() {
@@ -113,17 +114,7 @@ void main() {
   test(
     'new observations cannot use a guest who has re-entered after departure',
     () {
-      final raw = movementBootstrap('reentered');
-      final c = movementObjectAt(raw, [
-        'movementReview',
-        'checkpoint',
-        'availability',
-        'members',
-        1,
-      ]);
-      c['visit'] = {'kind': 'unavailable', 'reason': 'visitChanged'};
-      c['disposition'] = {'kind': 'unavailable', 'reason': 'visitChanged'};
-      final r = EventRehearsalBootstrap.fromCallableData(raw).movementReview!;
+      final r = checkpointVisitReview('newVisit');
       expect(
         () => RehearsalRecordCheckpoint(
           snapshot: r,

@@ -78,8 +78,9 @@ class EventRehearsalCheckpointSheet extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(context.l10n.eventAssistanceDepartureOtherPending),
-                      if (command is RehearsalManageCheckpoint &&
-                          command.selectedRevision ==
+                      if ((command is RehearsalManageCheckpoint ||
+                              command is RehearsalResolveCheckpointVisit) &&
+                          command?.selectedRevision ==
                               selection.progressRevision)
                         CatchButton(
                           key: const ValueKey('checkpoint.manageRequest'),

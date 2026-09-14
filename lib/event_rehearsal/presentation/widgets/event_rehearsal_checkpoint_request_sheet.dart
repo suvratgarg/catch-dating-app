@@ -7,6 +7,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_visit_sheet.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show
@@ -51,6 +52,21 @@ class EventRehearsalCheckpointRequestSheet extends ConsumerWidget {
       }());
     }
 
+    Future<void> reviewGuest(String id, String name) async {
+      await showCatchBottomSheet<void>(
+        context: context,
+        builder: (_) => EventRehearsalCheckpointVisitSheet(
+          selection: selection,
+          attendeeId: id,
+          guestName: name,
+        ),
+      );
+      if (context.mounted) {
+        controller.reload();
+        ref.read(query.notifier).reload();
+      }
+    }
+
     return PopScope(
       canPop: state.canDismiss,
       child: CatchSheet(
@@ -68,7 +84,32 @@ class EventRehearsalCheckpointRequestSheet extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(context.l10n.eventAssistanceDepartureOtherPending),
-                      if (candidate.canRetry)
+                      if (command is RehearsalResolveCheckpointVisit &&
+                          command.selectedRevision ==
+                              selection.progressRevision)
+                        CatchButton(
+                          key: const ValueKey('checkpoint.visit.pending'),
+                          label:
+                              context.l10n.eventAssistanceCheckpointVisitReview,
+                          onPressed: candidate.canRetry
+                              ? () => reviewGuest(
+                                  command.visit.attendeeId,
+                                  command
+                                      .snapshot
+                                      .checkpoint!
+                                      .departure
+                                      .roster!
+                                      .members
+                                      .singleWhere(
+                                        (m) =>
+                                            m.attendeeId ==
+                                            command.visit.attendeeId,
+                                      )
+                                      .displayName,
+                                )
+                              : null,
+                        )
+                      else if (candidate.canRetry)
                         CatchButton(
                           label: context.l10n.eventAssistanceGroupRetry,
                           onPressed: () => run(controller.retry),
@@ -131,6 +172,27 @@ class EventRehearsalCheckpointRequestSheet extends ConsumerWidget {
                             : null,
                         contextMessage:
                             '${snapshot.groups.firstWhere((g) => g.groupId == snapshot.scope.groupId).label}\n${context.l10n.hostEventRehearsalAssistanceAs(name: role?.practiceOperatorId == null ? context.l10n.hostEventRehearsalHostRole : role?.operators[role.practiceOperatorId]?.displayName ?? context.l10n.hostEventRehearsalUnavailableRole)}',
+                        members: available is AssistanceCheckpointRoster
+                            ? available.members
+                            : const [],
+                        guestNames: {
+                          for (final m
+                              in checkpoint.departure.roster?.members ??
+                                  <RehearsalDepartureMember>[])
+                            m.attendeeId: m.displayName,
+                        },
+                        reviewableGuestIds: {
+                          for (final r
+                              in checkpoint.accountabilityReviews.value ??
+                                  <RehearsalCheckpointVisitReview>[])
+                            if (r.canResolve) r.attendeeId,
+                        },
+                        onReviewGuest: (id) => reviewGuest(
+                          id,
+                          checkpoint.departure.roster!.members
+                              .singleWhere((m) => m.attendeeId == id)
+                              .displayName,
+                        ),
                         phase:
                             phase == EventAssistanceCheckpointPhase.ready &&
                                 !review.isCurrent

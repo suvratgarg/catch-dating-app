@@ -43,11 +43,16 @@ export function harness(now = Date.now(), id: string = randomUUID()) {
   };
   const execute = async (command: Command,
     operationId: string = randomUUID()) => {
-    await db.runTransaction(async (tx) => {
+    const changedActors = await db.runTransaction(async (tx) => {
       const commit = await preparePracticeMovementCommand(db, tx, id, session,
         actors, command, authority, operationId);
       commit.commit();
+      return commit.actorChanges ?? [];
     });
+    for (const changed of changedActors) {
+      const index = actors.findIndex((a) => a.actorId === changed.actorId);
+      actors[index] = changed;
+    }
     session.runtimeRevision++; session.actionCount++;
   };
   const arrive = (i = 0) => actors[i] = applyRehearsalBehavior(actors[i],

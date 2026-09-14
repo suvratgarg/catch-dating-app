@@ -2141,6 +2141,70 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
             },
           },
         },
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'kind',
+            'payload',
+            'expectedSourceHash',
+          ],
+          'properties': <String, Object?>{
+            'kind': <String, Object?>{
+              'const': 'resolveAccountability',
+            },
+            'expectedSourceHash': <String, Object?>{
+              'type': 'string',
+              'pattern': '^[a-f0-9]{64}\$',
+            },
+            'payload': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'groupId',
+                'checkpointId',
+                'expectedProgressRevision',
+                'attendeeId',
+                'expectedAccountabilityRevision',
+                'disposition',
+              ],
+              'properties': <String, Object?>{
+                'groupId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                'checkpointId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 2000,
+                },
+                'expectedProgressRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 1,
+                  'maximum': 500,
+                },
+                'attendeeId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                },
+                'expectedAccountabilityRevision': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'disposition': <String, Object?>{
+                  'enum': <Object?>[
+                    'returned',
+                    'departed',
+                    'unresolved',
+                  ],
+                },
+              },
+            },
+          },
+        },
       ],
       'type': 'object',
     },

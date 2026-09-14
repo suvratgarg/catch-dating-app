@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
@@ -11,6 +12,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_observati
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
 part 'event_rehearsal_checkpoint_management_command.dart';
+part 'event_rehearsal_checkpoint_visit_command.dart';
 
 /// Group controls have no synthetic guest target. Each decision retains its
 /// reviewed generation, source and complete observation or selection set.
@@ -195,6 +197,8 @@ final class RehearsalMovementChange {
     }
     final record = next.selected!;
     switch (command) {
+      case final RehearsalResolveCheckpointVisit visit:
+        visit._requireResult(next, immediate);
       case final RehearsalManageCheckpoint management:
         management._requireResult(next, clientActionId, immediate);
       case RehearsalConfirmDeparture(

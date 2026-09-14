@@ -1,3 +1,4 @@
+import {preparePracticeCheckpointVisit} from "./checkpointAccountability";
 import {practiceCheckpointReview} from "./movementCheckpoint";
 import {preparePracticeCheckpointManagement} from "./movementManagement";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -82,7 +83,8 @@ export async function preparePracticeMovementCommand(db: Firestore,
   command: Command, authority: PracticeCaseAuthority, operationId: string) {
   requirePracticeGroupPermission(sessionId, session, authority,
     command.payload.groupId, command.kind === "confirmDeparture" ?
-      "confirmDeparture" : "recordCheckpoint");
+      "confirmDeparture" : command.kind === "resolveAccountability" ?
+        "resolveAccountability" : "recordCheckpoint");
   if (!["running", "paused", "complete"].includes(session.status) ||
       session.actionCount >= 500 || session.runtimeRevision >= 2147483647) {
     throw new HttpsError("failed-precondition", "Practice movement is closed.");
@@ -140,6 +142,12 @@ export async function preparePracticeMovementCommand(db: Firestore,
       checkpoint.checkpointId !== command.payload.checkpointId) {
     throw new HttpsError("failed-precondition",
       "Choose a saved checkpoint.");
+  }
+  if (command.kind === "resolveAccountability") {
+    const actor = preparePracticeCheckpointVisit(session, checkpoint, actors,
+      command, authority);
+    return {confirmedDeparture: null, actorChanges: [actor],
+      commit: () => undefined};
   }
   let updates: Partial<Pick<MovementRecords["page"][number],
     "report" | "assignment" | "closeout">>;

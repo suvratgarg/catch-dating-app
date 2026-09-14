@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_visit_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,6 +27,7 @@ void main() {
         assistancePracticeCheckpointHistory,
         assistanceLiveCheckpointRequest,
         assistancePracticeCheckpointRequest,
+        assistancePracticeCheckpointVisit,
       ]) {
         await tester.pumpWidget(
           MaterialApp(
@@ -46,8 +48,10 @@ void main() {
         }
         expect(tester.takeException(), isNull);
         expect(
-          preview == assistanceLiveCheckpoint ||
-                  preview == assistancePracticeCheckpoint
+          preview == assistancePracticeCheckpointVisit
+              ? find.byType(EventAssistanceVisitSection)
+              : preview == assistanceLiveCheckpoint ||
+                    preview == assistancePracticeCheckpoint
               ? find.byType(EventAssistanceCheckpointSection)
               : preview == assistanceLiveCheckpointRequest ||
                     preview == assistancePracticeCheckpointRequest

@@ -394,7 +394,8 @@ export async function controlEventRehearsalHandler(
           {...session, runtimeRevision: session.runtimeRevision + 1},
           actorSnaps.docs.map((doc) =>
             requireDoc<EventRehearsalActorDocument>(doc,
-              "EventRehearsalActorDocument")), commit.confirmedDeparture) : [];
+              "EventRehearsalActorDocument")), commit.confirmedDeparture) :
+        commit.actorChanges ?? [];
       const now = admin.firestore.Timestamp.now();
       if (session.expiresAt.toMillis() <= now.toMillis()) {
         throw new HttpsError("not-found", "This dress rehearsal has expired.");

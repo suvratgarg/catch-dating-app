@@ -492,6 +492,18 @@ export type ControlEventRehearsalCallablePayload = {
           decision: "close" | "reopen";
         };
         expectedSourceHash: string;
+      }
+    | {
+        kind: "resolveAccountability";
+        expectedSourceHash: string;
+        payload: {
+          groupId: string;
+          checkpointId: string;
+          expectedProgressRevision: number;
+          attendeeId: string;
+          expectedAccountabilityRevision: number;
+          disposition: "returned" | "departed" | "unresolved";
+        };
       };
   staff?: {
     operatorId: string;

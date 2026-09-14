@@ -44,3 +44,15 @@ export async function ready(group = false) {
     h.actors.map((a) => a.actorId), true), "departure_0001");
   return {...h, scope, current: () => h.read(scope)};
 }
+
+export function checkpointVisit(r: Review, attendeeId: string,
+  disposition: "returned" | "departed" | "unresolved" = "departed"
+): Extract<Command, {kind: "resolveAccountability"}> {
+  const c = r.checkpoint!;
+  const row = c.accountabilityReviews!.find((v) =>
+    v.attendeeId === attendeeId)!;
+  return {kind: "resolveAccountability", expectedSourceHash: row.sourceHash,
+    payload: {groupId: r.groupId, checkpointId: c.checkpointId,
+      expectedProgressRevision: c.progressRevision, attendeeId,
+      expectedAccountabilityRevision: row.revision, disposition}};
+}

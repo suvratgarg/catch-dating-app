@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.115.0
+version: 1.116.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -1398,8 +1398,29 @@ sheet closure. Reopening retries the original decision; it never creates a new o
 A confirmed related action may reload the settled observation form, while unknown
 outcomes cannot be cleared by reload. Normal and 2x-text tests cover the real parent
 entry, close, detached retry, fresh reopen and sign-out in both execution modes.
-Verified reporter selection and direct original-roster visit resolution remain the
-next controls to mount. This change sends no staff or guest messages.
+Original unconfirmed guests now appear as searchable, paged record rows with their
+visit outcomes. Both runtime adapters open the existing atomic visit section for
+the selected original departure. Resolved visits stay in the original denominator;
+only a separate arrival observation changes the arrival count. Live opens an
+authorized checkpoint-scoped visit read, including changed or missing records so
+an earlier pending decision remains reviewable. Practice uses the movement owner's
+new `RehearsalResolveCheckpointVisit` command and can reopen an unknown visit outcome
+from the parent request and observation sheets. Settled outcomes refresh closeout
+eligibility. The report itself is unchanged.
+
+The rehearsal checkpoint projection optionally supplies `accountabilityReviews` for
+every original departure member. Each row binds its original visit hash, current
+accountability revision, setup source, group and operator. A missing legacy
+projection grants no action. Current original-group duties govern historical work
+after a guest transfers, while a new physical visit or replaced actor cannot inherit
+the old scope. Like live mode, a recorded checkpoint enables these outcomes even
+when the general accountability sweep module is disabled. Missing legacy visit
+proof remains readable and explicitly unavailable. The control transaction changes only the selected actor's visit outcome
+and parent action receipt/counters; it neither moves the group nor records an arrival.
+Applied native confirmations verify unchanged movement/report facts and the selected
+outcome; exact replays show later corrections or explicit visit unavailability.
+Verified reporter selection remains the next control to mount. This change sends no
+staff or guest messages.
 
 ### Checkpoint reporter reassignment
 

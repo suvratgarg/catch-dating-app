@@ -453,6 +453,13 @@
               "type": "null"
             }
           ]
+        },
+        "accountabilityReviews": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "$ref": "#/definitions/CheckpointVisitReview"
+          }
         }
       }
     },
@@ -725,6 +732,66 @@
               "pattern": "^[a-f0-9]{64}$"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resolveAccountability"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "groupId",
+                "checkpointId",
+                "expectedProgressRevision",
+                "attendeeId",
+                "expectedAccountabilityRevision",
+                "disposition"
+              ],
+              "properties": {
+                "groupId": {
+                  "$ref": "event_common.schema.json#/definitions/documentId"
+                },
+                "checkpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "expectedProgressRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "attendeeId": {
+                  "$ref": "event_common.schema.json#/definitions/documentId"
+                },
+                "expectedAccountabilityRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "disposition": {
+                  "enum": [
+                    "returned",
+                    "departed",
+                    "unresolved"
+                  ]
+                }
+              }
+            }
+          }
         }
       ],
       "type": "object"
@@ -931,6 +998,50 @@
         },
         "eligibility": {
           "$ref": "event_assistance_checkpoint.schema.json#/definitions/CloseoutView/properties/eligibility"
+        }
+      }
+    },
+    "CheckpointVisitReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attendeeId",
+        "visitHash",
+        "sourceHash",
+        "revision",
+        "disposition",
+        "availability",
+        "canResolve"
+      ],
+      "properties": {
+        "attendeeId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
+        },
+        "visitHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "disposition": {
+          "enum": [
+            "returned",
+            "departed",
+            "unresolved"
+          ]
+        },
+        "availability": {
+          "$ref": "event_assistance_accountability.schema.json#/definitions/View/properties/availability"
+        },
+        "canResolve": {
+          "type": "boolean"
         }
       }
     }

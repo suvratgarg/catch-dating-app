@@ -4,7 +4,8 @@ import {randomUUID} from "node:crypto";
 import * as admin from "firebase-admin";
 import {operationContentHash as hash} from "../operations/durableActions";
 import {harness, departure, report, Command} from "./movementTestFixtures";
-import {reassign, closeout} from "./movementManagementTestFixtures";
+import {reassign, closeout, checkpointVisit} from
+  "./movementManagementTestFixtures";
 
 test("checkpoint management uses receipts and current authority", {
   skip: !process.env.FIRESTORE_EMULATOR_HOST,
@@ -15,7 +16,9 @@ test("checkpoint management uses receipts and current authority", {
   if (!admin.apps.length) admin.initializeApp({projectId: "demo-catch-rules"});
   const db = admin.firestore();
   const h = harness(); h.arrive(); h.arrive(1);
-  h.session.setup.moduleIds.push("accountability");
+  // A bar-crawl checkpoint does not require the general accountability sweep.
+  h.session.setup.moduleIds = h.session.setup.moduleIds.filter((m) =>
+    m !== "accountability");
   h.session.organizerId = "checkpoint-management-" + h.id;
   h.session.clubId = h.session.organizerId;
   const sessionRef = db.collection("eventRehearsals").doc(h.id);
@@ -49,15 +52,14 @@ test("checkpoint management uses receipts and current authority", {
   const partial = await control(request(input(report(current,
     [h.actors[0].actorId]))));
   current = partial.movementReview!;
-  const row = partial.accountabilityReviews!.rows.find((r) =>
+  const row = current.checkpoint!.accountabilityReviews!.find((r) =>
     r.attendeeId === h.actors[1].actorId)!;
-  await control(request({sessionId: h.id, expectedSetupRevision: 0,
-    expectedRevision: current.runtimeRevision, clientActionId: randomUUID(),
-    action: "assistance", assistance: {kind: "resolveAccountability",
-      actorId: row.attendeeId, expectedSourceHash: row.sourceHash,
-      payload: {attendeeId: row.attendeeId, episodeId: row.episodeId,
-        disposition: "departed"}}}));
-  current = await read(request(scope));
+  const visit = input(checkpointVisit(current, row.attendeeId));
+  const resolved = await Promise.all([control(request(visit)),
+    control(request(visit))]);
+  assert.ok(resolved.every((r) => r.session.actionCount === 4));
+  current = resolved[0].movementReview!;
+  assert.equal(current.checkpoint!.accountabilityReviews![1].revision, 1);
   const actorBefore = hash(JSON.parse(JSON.stringify(
     (await actorRef(row.attendeeId).get()).data())));
   const close = input(closeout(current));
@@ -72,6 +74,10 @@ test("checkpoint management uses receipts and current authority", {
     (await actorRef(row.attendeeId).get()).data()))), actorBefore);
   const reopen = input(closeout(current, "reopen"));
   current = (await control(request(reopen))).movementReview!;
+  const visitReplay = await control(request(visit));
+  assert.equal(visitReplay.session.actionCount, 6);
+  assert.equal(visitReplay.movementReview!.checkpoint!.request!.state,
+    "discrepancy");
   const replay = await control(request(close));
   assert.equal(replay.session.actionCount, 6);
   assert.equal(replay.movementReview?.checkpoint?.closeout?.revision, 2);

@@ -2051,6 +2051,95 @@ const schemaEventRehearsalMovementCallableResponseSchema = <String, Object?>{
                 },
               ],
             },
+            'accountabilityReviews': <String, Object?>{
+              'type': 'array',
+              'maxItems': 50,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'attendeeId',
+                  'visitHash',
+                  'sourceHash',
+                  'revision',
+                  'disposition',
+                  'availability',
+                  'canResolve',
+                ],
+                'properties': <String, Object?>{
+                  'attendeeId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'visitHash': <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^[a-f0-9]{64}\$',
+                  },
+                  'sourceHash': <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^[a-f0-9]{64}\$',
+                  },
+                  'revision': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 9007199254740991,
+                  },
+                  'disposition': <String, Object?>{
+                    'enum': <Object?>[
+                      'returned',
+                      'departed',
+                      'unresolved',
+                    ],
+                  },
+                  'availability': <String, Object?>{
+                    'oneOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'kind',
+                        ],
+                        'properties': <String, Object?>{
+                          'kind': <String, Object?>{
+                            'const': 'ready',
+                          },
+                        },
+                      },
+                      <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'kind',
+                          'reason',
+                        ],
+                        'properties': <String, Object?>{
+                          'kind': <String, Object?>{
+                            'const': 'unavailable',
+                          },
+                          'reason': <String, Object?>{
+                            'enum': <Object?>[
+                              'notApplicable',
+                              'notCheckedIn',
+                              'departureNotRecorded',
+                              'notOnDeparture',
+                              'visitChanged',
+                              'setupChanged',
+                              'differentCheckpoint',
+                              'destinationNotRecorded',
+                              'notCheckpoint',
+                            ],
+                          },
+                        },
+                      },
+                    ],
+                  },
+                  'canResolve': <String, Object?>{
+                    'type': 'boolean',
+                  },
+                },
+              },
+            },
           },
         },
         <String, Object?>{

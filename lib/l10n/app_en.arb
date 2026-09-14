@@ -24784,5 +24784,15 @@
   "eventAssistanceCheckpointRequestReassign": "Change responsible reporter",
   "@eventAssistanceCheckpointRequestReassign": {},
   "eventAssistanceCheckpointRequestRetry": "Retry checkpoint decision",
-  "@eventAssistanceCheckpointRequestRetry": {}
+  "@eventAssistanceCheckpointRequestRetry": {},
+  "eventAssistanceCheckpointVisitsTitle": "Arrival still unconfirmed",
+  "@eventAssistanceCheckpointVisitsTitle": {"description": "Section of original departure guests without a checkpoint arrival observation.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_assistance_checkpoint_visits_section"},
+  "eventAssistanceCheckpointVisitsBody": "Review a guest to record whether they returned or left the event.",
+  "@eventAssistanceCheckpointVisitsBody": {"description": "Explains the atomic visit outcome action available from checkpoint management.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_assistance_checkpoint_visits_section"},
+  "eventAssistanceCheckpointVisitUnknown": "Visit outcome is unavailable. Reload to review.",
+  "@eventAssistanceCheckpointVisitUnknown": {"description": "Legacy checkpoint projection omits visit outcome evidence.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_assistance_checkpoint_visits_section"},
+  "eventAssistanceCheckpointVisitBeforeDeparture": "The recorded outcome predates this departure. Review their status again.",
+  "@eventAssistanceCheckpointVisitBeforeDeparture": {"description": "Outcome before the selected departure cannot resolve its request.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_assistance_checkpoint_visits_section"},
+  "eventAssistanceCheckpointVisitReview": "Review guest status",
+  "@eventAssistanceCheckpointVisitReview": {"description": "Reopens the exact unconfirmed original departure visit decision.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_assistance_checkpoint_visits_section"}
 }

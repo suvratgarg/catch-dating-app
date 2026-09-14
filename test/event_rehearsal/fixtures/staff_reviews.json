@@ -2844,6 +2844,30 @@
           },
           "sourceHash": "72b20f0601aeff65a4572ffae05096e5d4d0cfaabdf6c84251ddcc92494de399"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "279668e402511488d7bc24032970f52639aac2af218e5a16bce241d7b9d206fc",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "d727e5eec98b9c3e4e4248f83a44ec8c7d076c0d35b71f0e0c817cdafdd5d9bf",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "958243f5b93a577af275b4a0bc54a2f0d0b29687548d83e85a553affeabe5088",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "239a31bb737e3a0b3be540ce2e8e364366e283f9e42e20c1eb2170a36d47649d",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
           "dueAt": 61000,
@@ -3734,6 +3758,30 @@
           },
           "sourceHash": "a09464147e44b739c27d787a832d008dc97b461aff31396398c7923e4b29b274"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "279668e402511488d7bc24032970f52639aac2af218e5a16bce241d7b9d206fc",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "d727e5eec98b9c3e4e4248f83a44ec8c7d076c0d35b71f0e0c817cdafdd5d9bf",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "958243f5b93a577af275b4a0bc54a2f0d0b29687548d83e85a553affeabe5088",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "239a31bb737e3a0b3be540ce2e8e364366e283f9e42e20c1eb2170a36d47649d",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
           "dueAt": 61000,
@@ -4631,6 +4679,30 @@
           },
           "sourceHash": "60afa8e7ffb35154ceb4e334fd401b216b207c36c764cfad645b98bcb67ddb1f"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "279668e402511488d7bc24032970f52639aac2af218e5a16bce241d7b9d206fc",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "d727e5eec98b9c3e4e4248f83a44ec8c7d076c0d35b71f0e0c817cdafdd5d9bf",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "958243f5b93a577af275b4a0bc54a2f0d0b29687548d83e85a553affeabe5088",
+            "revision": 1,
+            "disposition": "departed",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "d659af62ee051ea7d565217ba21897a574ab486bdbadc444930d2a43ef377d42",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
           "dueAt": 61000,
@@ -5538,6 +5610,30 @@
           },
           "sourceHash": "60afa8e7ffb35154ceb4e334fd401b216b207c36c764cfad645b98bcb67ddb1f"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "279668e402511488d7bc24032970f52639aac2af218e5a16bce241d7b9d206fc",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "3e8f178f2a7641ea6b96eb62df9dff0dae2d9b830b1b664b5aa37f1b04d1e1bd",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "958243f5b93a577af275b4a0bc54a2f0d0b29687548d83e85a553affeabe5088",
+            "revision": 1,
+            "disposition": "departed",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "4206ad5f6bbefda3ccf80269c0c8a9fb86abc50cb054ef824c057fceedb08fa6",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
           "dueAt": 61000,
@@ -7157,6 +7253,30 @@
           },
           "sourceHash": "60afa8e7ffb35154ceb4e334fd401b216b207c36c764cfad645b98bcb67ddb1f"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "279668e402511488d7bc24032970f52639aac2af218e5a16bce241d7b9d206fc",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "3e8f178f2a7641ea6b96eb62df9dff0dae2d9b830b1b664b5aa37f1b04d1e1bd",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "958243f5b93a577af275b4a0bc54a2f0d0b29687548d83e85a553affeabe5088",
+            "revision": 1,
+            "disposition": "departed",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "4206ad5f6bbefda3ccf80269c0c8a9fb86abc50cb054ef824c057fceedb08fa6",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
           "dueAt": 61000,
@@ -8775,6 +8895,30 @@
           },
           "sourceHash": "60afa8e7ffb35154ceb4e334fd401b216b207c36c764cfad645b98bcb67ddb1f"
         },
+        "accountabilityReviews": [
+          {
+            "attendeeId": "actor-01",
+            "visitHash": "279668e402511488d7bc24032970f52639aac2af218e5a16bce241d7b9d206fc",
+            "revision": 0,
+            "disposition": "unresolved",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "3e8f178f2a7641ea6b96eb62df9dff0dae2d9b830b1b664b5aa37f1b04d1e1bd",
+            "canResolve": true
+          },
+          {
+            "attendeeId": "actor-02",
+            "visitHash": "958243f5b93a577af275b4a0bc54a2f0d0b29687548d83e85a553affeabe5088",
+            "revision": 1,
+            "disposition": "departed",
+            "availability": {
+              "kind": "ready"
+            },
+            "sourceHash": "4206ad5f6bbefda3ccf80269c0c8a9fb86abc50cb054ef824c057fceedb08fa6",
+            "canResolve": true
+          }
+        ],
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
           "dueAt": 61000,

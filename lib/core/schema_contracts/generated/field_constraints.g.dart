@@ -32079,6 +32079,66 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviews = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsAvailabilityKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.availability.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsAvailabilityReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.availability.reason',
+    required: true,
+    enumValues: <String>['notApplicable', 'notCheckedIn', 'departureNotRecorded', 'notOnDeparture', 'visitChanged', 'setupChanged', 'differentCheckpoint', 'destinationNotRecorded', 'notCheckpoint'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsCanResolve = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.canResolve',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed', 'unresolved'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsVisitHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.visitHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeAssignedAt = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.assignedAt',
     required: true,
@@ -37734,6 +37794,66 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAccountabilityReviews = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsAttendeeId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.attendeeId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsAvailabilityKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.availability.kind',
+    required: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsAvailabilityReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.availability.reason',
+    required: true,
+    enumValues: <String>['notApplicable', 'notCheckedIn', 'departureNotRecorded', 'notOnDeparture', 'visitChanged', 'setupChanged', 'differentCheckpoint', 'destinationNotRecorded', 'notCheckpoint'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsCanResolve = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.canResolve',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsDisposition = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.disposition',
+    required: true,
+    enumValues: <String>['returned', 'departed', 'unresolved'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsVisitHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.visitHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRehearsalMovementCallableResponseCheckpointAssignmentChangeAssignedAt = CatchContractFieldConstraints(
@@ -95361,6 +95481,15 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.sourceHash': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsSourceHash,
     'eventRehearsalBootstrapCallableResponse.membershipReviews.rows.items.transferState': eventRehearsalBootstrapCallableResponseMembershipReviewsRowsItemsTransferState,
     'eventRehearsalBootstrapCallableResponse.movementReview.actorUid': eventRehearsalBootstrapCallableResponseMovementReviewActorUid,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviews,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.attendeeId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsAttendeeId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.availability.kind': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsAvailabilityKind,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.availability.reason': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsAvailabilityReason,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.canResolve': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsCanResolve,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.disposition': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsDisposition,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.revision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.accountabilityReviews.items.visitHash': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAccountabilityReviewsItemsVisitHash,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.assignedAt': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeAssignedAt,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.assignedBy': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeAssignedBy,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.assignment.change.operationId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAssignmentChangeOperationId,
@@ -96105,6 +96234,15 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMessageDocument.record.updatedAt': eventRehearsalMessageDocumentRecordUpdatedAt,
     'eventRehearsalMessageDocument.sessionId': eventRehearsalMessageDocumentSessionId,
     'eventRehearsalMovementCallableResponse.actorUid': eventRehearsalMovementCallableResponseActorUid,
+    'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviews,
+    'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.attendeeId': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsAttendeeId,
+    'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.availability.kind': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsAvailabilityKind,
+    'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.availability.reason': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsAvailabilityReason,
+    'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.canResolve': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsCanResolve,
+    'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.disposition': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsDisposition,
+    'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.revision': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsRevision,
+    'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.sourceHash': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsSourceHash,
+    'eventRehearsalMovementCallableResponse.checkpoint.accountabilityReviews.items.visitHash': eventRehearsalMovementCallableResponseCheckpointAccountabilityReviewsItemsVisitHash,
     'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.assignedAt': eventRehearsalMovementCallableResponseCheckpointAssignmentChangeAssignedAt,
     'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.assignedBy': eventRehearsalMovementCallableResponseCheckpointAssignmentChangeAssignedBy,
     'eventRehearsalMovementCallableResponse.checkpoint.assignment.change.operationId': eventRehearsalMovementCallableResponseCheckpointAssignmentChangeOperationId,

@@ -2138,6 +2138,70 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
               "pattern": "^[a-f0-9]{64}$"
             }
           }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "payload",
+            "expectedSourceHash"
+          ],
+          "properties": {
+            "kind": {
+              "const": "resolveAccountability"
+            },
+            "expectedSourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "payload": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "groupId",
+                "checkpointId",
+                "expectedProgressRevision",
+                "attendeeId",
+                "expectedAccountabilityRevision",
+                "disposition"
+              ],
+              "properties": {
+                "groupId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "checkpointId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 2000
+                },
+                "expectedProgressRevision": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                },
+                "attendeeId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180
+                },
+                "expectedAccountabilityRevision": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "disposition": {
+                  "enum": [
+                    "returned",
+                    "departed",
+                    "unresolved"
+                  ]
+                }
+              }
+            }
+          }
         }
       ],
       "type": "object"
