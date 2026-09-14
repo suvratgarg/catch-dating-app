@@ -18092,4 +18092,120 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventAssistanceGroupMissingName =>
       'Some hosts have no name on file and can’t be selected.';
+
+  @override
+  String get eventAssistanceDepartureTitle => 'Record departure';
+
+  @override
+  String get eventAssistanceDepartureBody =>
+      'Confirm after your group starts moving. This updates your confirmed destination; sending guest directions is a separate action.';
+
+  @override
+  String get eventAssistanceDepartureCurrent => 'Last confirmed destination';
+
+  @override
+  String get eventAssistanceDepartureUnrecorded => 'No departure recorded yet';
+
+  @override
+  String get eventAssistanceDepartureSourceChanged =>
+      'The event setup changed. Review the destination again.';
+
+  @override
+  String get eventAssistanceDepartureDestination => 'Where are you heading?';
+
+  @override
+  String get eventAssistanceDepartureRecordRoster => 'Record who is leaving';
+
+  @override
+  String get eventAssistanceDepartureRosterBody =>
+      'Select only people you saw leave with this group. Their current check-in and group are checked before saving.';
+
+  @override
+  String eventAssistanceDepartureSelected({required int count}) {
+    return '$count people selected';
+  }
+
+  @override
+  String get eventAssistanceDepartureSearch => 'Find a guest';
+
+  @override
+  String get eventAssistanceDepartureNoGuests => 'No matching guests';
+
+  @override
+  String get eventAssistanceDeparturePreviousPeople => 'Previous people';
+
+  @override
+  String get eventAssistanceDepartureNextPeople => 'Next people';
+
+  @override
+  String get eventAssistanceDepartureNobody =>
+      'An empty selection records that nobody left with you.';
+
+  @override
+  String get eventAssistanceDepartureRequestCheckpoint =>
+      'Request a checkpoint report';
+
+  @override
+  String get eventAssistanceDepartureReportMyself =>
+      'I will check this roster at the next stop.';
+
+  @override
+  String get eventAssistanceDepartureDeadline => 'Report by';
+
+  @override
+  String get eventAssistanceDepartureConfirm => 'Confirm departure';
+
+  @override
+  String get eventAssistanceDepartureUnavailable =>
+      'Departure is unavailable. Check that the event is live, a destination is configured, and you have a current group duty.';
+
+  @override
+  String get eventAssistanceDepartureReviewing =>
+      'Checking the selected roster…';
+
+  @override
+  String get eventAssistanceDepartureSaving => 'Recording departure…';
+
+  @override
+  String get eventAssistanceDepartureUnknown =>
+      'The result is unconfirmed. Retry to check this same departure.';
+
+  @override
+  String get eventAssistanceDepartureChanged =>
+      'The review changed. Reload before making a new departure decision.';
+
+  @override
+  String get eventAssistanceDepartureSaved => 'Departure recorded';
+
+  @override
+  String get eventAssistanceDepartureRosterSkipped =>
+      'Departure roster was not recorded';
+
+  @override
+  String eventAssistanceDepartureReportAt({required String time}) {
+    return 'You will report by $time';
+  }
+
+  @override
+  String get eventAssistanceDepartureRetry => 'Retry this departure';
+
+  @override
+  String get eventAssistanceDepartureReload => 'Reload departure details';
+
+  @override
+  String get eventAssistanceDepartureOtherPending =>
+      'Resolve the original group action before recording another departure.';
+
+  @override
+  String get eventAssistanceMovementTitle => 'Group movement';
+
+  @override
+  String get eventAssistanceMovementBody =>
+      'Record where your group is heading and who is travelling with you.';
+
+  @override
+  String get eventAssistanceMovementGroup => 'Group';
+
+  @override
+  String get eventAssistanceMovementEveryone => 'Everyone';
 }

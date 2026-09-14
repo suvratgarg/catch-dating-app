@@ -72,7 +72,7 @@ final class EventRehearsalMovementControllerProvider
 }
 
 String _$eventRehearsalMovementControllerHash() =>
-    r'f15e00e8ab04c0768e1ef54b7910094e82f03311';
+    r'675f02ce015681d1c0ee6f0600ffe3356d3cb462';
 
 /// A group owns one pending departure, report or checkpoint decision across
 /// refresh and sheet closure. It is never keyed to an arbitrary guest.

@@ -5454,5 +5454,477 @@
         }
       }
     ]
+  },
+  "uiDeparted": {
+    "review": {
+      "sessionId": "session-1",
+      "organizerId": "organizer-1",
+      "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+      "setupRevision": 0,
+      "runtimeRevision": 2,
+      "actorUid": "host-1",
+      "serverTime": 1000,
+      "groupId": "event:whole",
+      "groups": [
+        {
+          "groupId": "event:whole",
+          "label": "Whole event"
+        }
+      ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
+      "progress": {
+        "revision": 1,
+        "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+        "eventOpen": true,
+        "runtimeLive": true,
+        "destinations": [
+          {
+            "target": {
+              "kind": "fixedPlace",
+              "placeId": "meeting",
+              "lateEntry": "allowed"
+            },
+            "label": "Practice venue",
+            "text": "Join us at Practice venue."
+          },
+          {
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "one"
+            },
+            "label": "Stop one",
+            "text": "Join us at Stop one."
+          },
+          {
+            "target": {
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "two"
+            },
+            "label": "Stop two",
+            "text": "Join us at Stop two."
+          }
+        ],
+        "current": {
+          "sessionId": "session-1",
+          "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+          "groupId": "event:whole",
+          "progressRevision": 1,
+          "departure": {
+            "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+            "destination": {
+              "kind": "itineraryStop",
+              "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+              "stopId": "one"
+            },
+            "confirmedBy": "host-1",
+            "confirmedAt": 1000,
+            "operationId": "departure_ui_0001",
+            "roster": {
+              "members": [
+                {
+                  "attendeeId": "actor-01",
+                  "displayName": "Diya",
+                  "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+                  "episodeId": "episode:2d9f65dad9cf88acc9b8c6772273058bcac814012f0d48bc4e3918f8b5d205bf",
+                  "membershipHash": null
+                },
+                {
+                  "attendeeId": "actor-02",
+                  "displayName": "Kabir",
+                  "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+                  "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
+                  "membershipHash": null
+                }
+              ],
+              "selectionHash": "86e2d31ef44df89edaf44f24588e4e6026256d5e6d879b18145537d0b35a9c55"
+            },
+            "checkpointRequest": {
+              "responsibleOperatorId": "host-1",
+              "dueAt": 1801000
+            }
+          },
+          "report": null
+        },
+        "guidance": {
+          "revision": 1,
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "materialKey": "fd92a495de23e822521be3b6a785cfed215b732a44ef348d47be17b13d449e2d",
+          "text": "Join us at Stop one.",
+          "validUntil": 7200000
+        }
+      },
+      "roster": {
+        "members": [
+          {
+            "attendeeId": "actor-01",
+            "displayName": "Diya",
+            "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+            "episodeId": "episode:2d9f65dad9cf88acc9b8c6772273058bcac814012f0d48bc4e3918f8b5d205bf",
+            "membershipHash": null
+          },
+          {
+            "attendeeId": "actor-02",
+            "displayName": "Kabir",
+            "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+            "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
+            "membershipHash": null
+          }
+        ],
+        "unavailable": [],
+        "coverage": "boundedSession",
+        "sourceHash": "16e6fd85b577880967ddeb2cd5ed15d9b3189727af77a22b9a21a4b231e5b4b1"
+      },
+      "selected": {
+        "sessionId": "session-1",
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "groupId": "event:whole",
+        "progressRevision": 1,
+        "departure": {
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedBy": "host-1",
+          "confirmedAt": 1000,
+          "operationId": "departure_ui_0001",
+          "roster": {
+            "members": [
+              {
+                "attendeeId": "actor-01",
+                "displayName": "Diya",
+                "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+                "episodeId": "episode:2d9f65dad9cf88acc9b8c6772273058bcac814012f0d48bc4e3918f8b5d205bf",
+                "membershipHash": null
+              },
+              {
+                "attendeeId": "actor-02",
+                "displayName": "Kabir",
+                "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+                "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
+                "membershipHash": null
+              }
+            ],
+            "selectionHash": "86e2d31ef44df89edaf44f24588e4e6026256d5e6d879b18145537d0b35a9c55"
+          },
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-1",
+            "dueAt": 1801000
+          }
+        },
+        "report": null
+      },
+      "checkpoint": {
+        "progressRevision": 1,
+        "checkpointId": "one",
+        "sourceHash": "3857491c69ab3757b470eb692d7d3203ca737bf826942844b16aa3d6eb4886c4",
+        "revision": 0,
+        "report": null,
+        "availability": {
+          "kind": "ready",
+          "rosterId": "departure-roster:842af85bf35ef1d71c2211c6f8a6cf329c8f50914f6b869329f67b77a4f026c4",
+          "label": "Stop one",
+          "reportStatus": "unreported",
+          "members": [
+            {
+              "attendeeId": "actor-01",
+              "visit": {
+                "kind": "current"
+              },
+              "observation": "unconfirmed",
+              "disposition": {
+                "kind": "unresolved"
+              }
+            },
+            {
+              "attendeeId": "actor-02",
+              "visit": {
+                "kind": "current"
+              },
+              "observation": "unconfirmed",
+              "disposition": {
+                "kind": "unresolved"
+              }
+            }
+          ]
+        },
+        "departure": {
+          "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedBy": "host-1",
+          "confirmedAt": 1000,
+          "operationId": "departure_ui_0001",
+          "roster": {
+            "members": [
+              {
+                "attendeeId": "actor-01",
+                "displayName": "Diya",
+                "visitHash": "c25bd62091cca5520e5c32f5d1888f29bd1fdc59ca4b0b992613d1908ef79f00",
+                "episodeId": "episode:2d9f65dad9cf88acc9b8c6772273058bcac814012f0d48bc4e3918f8b5d205bf",
+                "membershipHash": null
+              },
+              {
+                "attendeeId": "actor-02",
+                "displayName": "Kabir",
+                "visitHash": "db214bda45251a7e8b740a1904465f0085870ed988b32db47b8a6c5cbfbe13da",
+                "episodeId": "episode:b77d18be4b8b5831c688f8c4da46218eb61de4bb128782b509a8f6ade33fef1f",
+                "membershipHash": null
+              }
+            ],
+            "selectionHash": "86e2d31ef44df89edaf44f24588e4e6026256d5e6d879b18145537d0b35a9c55"
+          },
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-1",
+            "dueAt": 1801000
+          }
+        },
+        "assignment": {
+          "revision": 0,
+          "change": null,
+          "sourceHash": "b4b15f35b2d66cd0b3b237a7f830424b80fb80a03b20addf94966f5e7c93d0ea"
+        },
+        "closeout": {
+          "revision": 0,
+          "change": null,
+          "state": {
+            "kind": "open"
+          },
+          "eligibility": {
+            "kind": "unavailable",
+            "reason": "reportMissing",
+            "attendeeIds": []
+          },
+          "sourceHash": "384202e0db43e7cbc9b1e6b58aa457517f5027a78f2a468c694ccf6c63c8662a"
+        },
+        "request": {
+          "responsibleOperatorId": "host-1",
+          "dueAt": 1801000,
+          "state": "awaitingReport",
+          "ownerAvailability": "current"
+        }
+      },
+      "history": [
+        {
+          "progressRevision": 1,
+          "destination": {
+            "kind": "itineraryStop",
+            "itineraryId": "practice:a3083c2052e51dc13f8a2048fd212e7f94b8b72d7fe9699193c37f0f30dcf0d3:itinerary",
+            "stopId": "one"
+          },
+          "confirmedAt": 1000,
+          "rosterSize": 2,
+          "reportRevision": 0,
+          "accountedForCount": 0,
+          "checkpointRequest": {
+            "responsibleOperatorId": "host-1",
+            "dueAt": 1801000
+          }
+        }
+      ],
+      "nextBeforeRevision": null
+    },
+    "session": {
+      "id": "session-1",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 1,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": null,
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "one",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "title": "Stop one",
+              "location": {
+                "name": "Stop one",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "two",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "title": "Stop two",
+              "location": {
+                "name": "Stop two",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 2,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 0,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86400,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 0,
+      "virtualNowMillis": 1000,
+      "expiresAtMillis": 86400000
+    },
+    "actors": [
+      {
+        "sessionId": "session-1",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "present",
+        "visit": {
+          "attendanceRevision": 1,
+          "checkedInAtMillis": 1000,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "checkIn",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": "table-1",
+        "lastActionAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "createdAt": {
+          "_seconds": 0,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      },
+      {
+        "sessionId": "session-1",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "present",
+        "visit": {
+          "attendanceRevision": 1,
+          "checkedInAtMillis": 1000,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "checkIn",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": "table-1",
+        "confirmedLayoutUnitId": "table-1",
+        "lastActionAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "createdAt": {
+          "_seconds": 0,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ]
   }
 }

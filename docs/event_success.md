@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.111.0
+version: 1.112.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -1140,8 +1140,33 @@ strong auth subscription retires a detached pending action after sign-out, inclu
 a same-account return. Old read completions cannot authorize a refreshed departure.
 Repository and controller boundaries validate receipt scope, actor and operation
 revision; a newer replay projection is kept separate from its original receipt.
-Success refreshes group progress and the Host assistance read. The Host widgets
-and their simulated rehearsal execution remain subsequent integration work.
+Success refreshes group progress and the Host assistance read.
+
+The shared Event Success runtime now mounts group movement for events with located
+itinerary stops. One configured group is selected automatically; pace-group hosts
+choose which group to review. The same departure sheet is connected to live
+callables or a generation-bound rehearsal movement controller. Scheduled destinations
+remain choices until the host explicitly confirms movement. The previous confirmed
+destination remains separate from a pending decision and a newer replay projection.
+
+Roster capture is optional and starts with nobody selected. Searchable, paged
+checkable rows record the people the host actually observed leaving, with a separate
+server review of attendance and accepted membership before live confirmation.
+An explicitly empty roster stays different from an omitted roster. Changing the
+destination or selected people clears the dependent checkpoint choice. The optional
+checkpoint request names the current operator and a bounded reporting deadline;
+confirmation records the request without inventing arrival observations. Selecting
+another authorized reporter, targeted live candidate projections and operator-only
+navigation remain subsequent work. Host entry currently uses the existing authorized
+event attendee read; rehearsal supplies its reviewed eligible synthetic candidates.
+
+The shared controls expose pending, uncertain, stale and saved states; reopening a
+sheet retains the exact unresolved operation. Both runtimes use the same form,
+searchable roster, selection semantics and confirmation action. Native tests cover
+normal and 2x text, the real rehearsal runtime entry, optional/empty rosters, checkpoint
+dependencies, detached retries and authentication transitions. The backend-produced
+movement fixture also exercises the shared self-reporter default. This change does
+not activate messaging or mount checkpoint observation and request-management UI.
 
 An existing link follows the workflow thread once a fresh instruction is
 published. Until then it returns `noInstructions`, and neither web nor native
@@ -1183,8 +1208,8 @@ resolves accountability or sends a message.
 This slice supplies the stable departure scope required by the typed checkpoint
 workflow. Acceptance covers atomic interruption/retry, exact-visit and source
 changes, scoped authority, bounds and emulator concurrency. Departure-roster
-corrections/additions during a leg, roster selection controls and rehearsal
-adapters remain separate implementation work.
+corrections/additions during a leg remain separate implementation work. The shared
+roster selection and rehearsal departure adapter are mounted as described above.
 No live automation or provider boundary is activated by this change.
 
 ### Checkpoint observations

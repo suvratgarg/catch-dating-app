@@ -52,9 +52,10 @@ RehearsalConfirmDeparture movementDeparture(RehearsalMovementReview review) =>
 Map<String, Object?> movementResult(
   RehearsalMovementChange change, {
   bool later = false,
+  String departureSample = 'departed',
 }) {
   final out = movementBootstrap(
-    change.command is RehearsalConfirmDeparture ? 'departed' : 'partial',
+    change.command is RehearsalConfirmDeparture ? departureSample : 'partial',
   );
   final raw = out['movementReview'] as Map<String, Object?>;
   if (change.command is RehearsalConfirmDeparture) {

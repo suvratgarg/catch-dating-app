@@ -28679,6 +28679,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Some hosts have no name on file and can’t be selected.'**
   String get eventAssistanceGroupMissingName;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Record departure'**
+  String get eventAssistanceDepartureTitle;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm after your group starts moving. This updates your confirmed destination; sending guest directions is a separate action.'**
+  String get eventAssistanceDepartureBody;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Last confirmed destination'**
+  String get eventAssistanceDepartureCurrent;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No departure recorded yet'**
+  String get eventAssistanceDepartureUnrecorded;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The event setup changed. Review the destination again.'**
+  String get eventAssistanceDepartureSourceChanged;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Where are you heading?'**
+  String get eventAssistanceDepartureDestination;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Record who is leaving'**
+  String get eventAssistanceDepartureRecordRoster;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Select only people you saw leave with this group. Their current check-in and group are checked before saving.'**
+  String get eventAssistanceDepartureRosterBody;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} people selected'**
+  String eventAssistanceDepartureSelected({required int count});
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a guest'**
+  String get eventAssistanceDepartureSearch;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching guests'**
+  String get eventAssistanceDepartureNoGuests;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous people'**
+  String get eventAssistanceDeparturePreviousPeople;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Next people'**
+  String get eventAssistanceDepartureNextPeople;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'An empty selection records that nobody left with you.'**
+  String get eventAssistanceDepartureNobody;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a checkpoint report'**
+  String get eventAssistanceDepartureRequestCheckpoint;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'I will check this roster at the next stop.'**
+  String get eventAssistanceDepartureReportMyself;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Report by'**
+  String get eventAssistanceDepartureDeadline;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm departure'**
+  String get eventAssistanceDepartureConfirm;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure is unavailable. Check that the event is live, a destination is configured, and you have a current group duty.'**
+  String get eventAssistanceDepartureUnavailable;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking the selected roster…'**
+  String get eventAssistanceDepartureReviewing;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording departure…'**
+  String get eventAssistanceDepartureSaving;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The result is unconfirmed. Retry to check this same departure.'**
+  String get eventAssistanceDepartureUnknown;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The review changed. Reload before making a new departure decision.'**
+  String get eventAssistanceDepartureChanged;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure recorded'**
+  String get eventAssistanceDepartureSaved;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure roster was not recorded'**
+  String get eventAssistanceDepartureRosterSkipped;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'You will report by {time}'**
+  String eventAssistanceDepartureReportAt({required String time});
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this departure'**
+  String get eventAssistanceDepartureRetry;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload departure details'**
+  String get eventAssistanceDepartureReload;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolve the original group action before recording another departure.'**
+  String get eventAssistanceDepartureOtherPending;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Group movement'**
+  String get eventAssistanceMovementTitle;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Record where your group is heading and who is travelling with you.'**
+  String get eventAssistanceMovementBody;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get eventAssistanceMovementGroup;
+
+  /// Host departure and checkpoint controls shared by live events and rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone'**
+  String get eventAssistanceMovementEveryone;
 }
 
 class _AppLocalizationsDelegate

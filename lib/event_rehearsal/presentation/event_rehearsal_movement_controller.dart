@@ -155,6 +155,18 @@ class EventRehearsalMovementController
     state = RehearsalMovementForm._(review);
   }
 
+  void reload() {
+    final form = state;
+    if (form is! RehearsalMovementForm ||
+        !form.canReload ||
+        _pending != null ||
+        _inFlight != null) {
+      return;
+    }
+    _refresh(form.review);
+    state = const RehearsalMovementIdle();
+  }
+
   Future<EventRehearsalBootstrap> submit(RehearsalMovementCommand command) {
     if (!ref.mounted) return Future.error(rehearsalReviewSessionChanged);
     final form = state;
@@ -285,12 +297,7 @@ class EventRehearsalMovementController
       ),
     );
     ref.invalidate(eventRehearsalProvider(scope.sessionId));
-    ref.invalidate(
-      eventRehearsalAssistanceForAccountProvider(
-        scope.sessionId,
-        account: review.account,
-      ),
-    );
+    ref.invalidate(eventRehearsalAssistanceForAccountProvider);
   }
 
   void _publish(RehearsalMovementForm form) {

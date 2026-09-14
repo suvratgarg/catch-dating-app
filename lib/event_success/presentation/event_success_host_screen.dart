@@ -25,6 +25,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_standings.da
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_groups_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_movement_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
@@ -438,6 +439,9 @@ class _EventSuccessHostSectionState
           : null,
       accountabilityAttendees:
           accountabilityAttendeesAsync.asData?.value ?? const [],
+      movementSection: event.itinerary.any((stop) => stop.location != null)
+          ? EventAssistanceLiveMovementSection(event: event)
+          : null,
       membershipSection: hasPaceGroups
           ? EventAssistanceLiveGroupsSection(
               event: event,
@@ -1212,6 +1216,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.accountabilityAttendees = const [],
     this.accountabilitySection,
     this.membershipSection,
+    this.movementSection,
     this.accountabilityMode,
     this.accountabilityError,
     this.loadingAccountability = false,
@@ -1289,6 +1294,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final List<EventAttendee> accountabilityAttendees;
   final Widget? accountabilitySection;
   final Widget? membershipSection;
+  final Widget? movementSection;
   final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
   final bool loadingAccountability;
@@ -1417,6 +1423,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         accountabilityAttendees: widget.accountabilityAttendees,
         accountabilitySection: widget.accountabilitySection,
         membershipSection: widget.membershipSection,
+        movementSection: widget.movementSection,
         accountabilityMode: widget.accountabilityMode,
         accountabilityError: widget.accountabilityError,
         loadingAccountability: widget.loadingAccountability,

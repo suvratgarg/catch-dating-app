@@ -327,7 +327,7 @@ test("Firestore movement uses parent receipts, current authority and reset", {
 
 test("native movement fixtures retain selected departures and real source " +
   "identities", async () => {
-  const h = harness(0, "session-1");
+  let h = harness(0, "session-1");
   h.session.virtualNow = admin.firestore.Timestamp.fromMillis(1000);
   const samples: Record<string, unknown> = {};
   const sample = async (name: string, scope?: MovementScope) => {
@@ -376,6 +376,19 @@ test("native movement fixtures retain selected departures and real source " +
   await h.execute(departure(r, [h.actors[0].actorId], true),
     "group_departure_1");
   await sample("groupDeparted", {groupId: "easy"});
+  // The shared Host sheet defaults to a self-owned report in 30 minutes.
+  h = harness(0, "session-1");
+  h.session.virtualNow = admin.firestore.Timestamp.fromMillis(1000);
+  h.arrive(); h.arrive(1);
+  const uiDeparture = departure(await h.read(),
+    h.actors.map((a) => a.actorId), true);
+  if (uiDeparture.kind !== "confirmDeparture") {
+    throw new Error("Expected departure");
+  }
+  uiDeparture.payload.checkpointRequest = {responsibleOperatorId: "host-1",
+    dueAt: h.session.virtualNow.toMillis() + 1800000};
+  await h.execute(uiDeparture, "departure_ui_0001");
+  await sample("uiDeparted");
   const path = "../test/event_rehearsal/fixtures/movement_reviews.json";
   // Update only deliberately, then both runtimes validate this shared fixture.
   if (process.env.UPDATE_REHEARSAL_MOVEMENT_FIXTURE === "1") {

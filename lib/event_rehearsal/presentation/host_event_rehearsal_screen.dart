@@ -10,6 +10,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_pr
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_groups_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_movement_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_practice_role_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
@@ -222,6 +223,20 @@ class _HostEventRehearsalScreenState
                           )
                           ? EventSuccessAccountability.sweep
                           : EventSuccessAccountability.none,
+                      movementSection:
+                          rehearsal.movementReview?.groups.isNotEmpty == true &&
+                              (rehearsal
+                                      .session
+                                      .setup
+                                      .movementSimulation
+                                      ?.itinerary
+                                      .any((stop) => stop.location != null) ??
+                                  false)
+                          ? EventRehearsalMovementSection(
+                              rehearsal: rehearsal,
+                              practiceOperatorId: selectedRole,
+                            )
+                          : null,
                       membershipSection:
                           (rehearsal.membershipReviews?.rows.any(
                                 (r) => r.facts.groups.isNotEmpty,

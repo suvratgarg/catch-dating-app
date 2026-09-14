@@ -31,6 +31,7 @@ class LiveTab extends StatelessWidget {
     this.accountabilityAttendees = const [],
     this.accountabilitySection,
     this.membershipSection,
+    this.movementSection,
     this.accountabilityMode,
     this.accountabilityError,
     this.loadingAccountability = false,
@@ -94,6 +95,7 @@ class LiveTab extends StatelessWidget {
   final List<EventAttendee> accountabilityAttendees;
   final Widget? accountabilitySection;
   final Widget? membershipSection;
+  final Widget? movementSection;
   final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
   final bool loadingAccountability;
@@ -519,12 +521,14 @@ class LiveTab extends StatelessWidget {
     final currentStepCards = compactLiveControls
         ? <Widget>[
             ?accountabilityCard(),
+            ?movementSection,
             ?membershipSection,
             ?presenceCard(),
             ?spatialMapCard(),
           ]
         : <Widget>[
             ?accountabilityCard(),
+            ?movementSection,
             ?membershipSection,
             ?presenceCard(),
             if (runtime.wingmanRequestsEnabled &&
