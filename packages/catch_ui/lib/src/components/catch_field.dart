@@ -389,7 +389,7 @@ class CatchField<T> extends StatefulWidget
     ValueChanged<bool>? onFocusChanged,
     FocusNode? focusNode,
     bool retainFocusOnSubmitted = false,
-    FormFieldValidator<String>? validator,
+    FormFieldValidator<String>? onValidate,
     TextInputType? keyboardType,
     TextInputAction? textInputAction,
     TextCapitalization textCapitalization = TextCapitalization.none,
@@ -452,7 +452,7 @@ class CatchField<T> extends StatefulWidget
          onFocusChanged: onFocusChanged,
          focusNode: focusNode,
          retainFocusOnSubmitted: retainFocusOnSubmitted,
-         validator: validator,
+         onValidate: onValidate,
          keyboardType: keyboardType,
          textInputAction: textInputAction,
          textCapitalization: textCapitalization,
@@ -561,9 +561,9 @@ class CatchField<T> extends StatefulWidget
     required String title,
     String? body,
     CatchContractFieldConstraints? contract,
-    String Function(T value)? contractValue,
+    String Function(T value)? contractValueBuilder,
     required List<T> values,
-    required String Function(T value) itemLabel,
+    required String Function(T value) itemLabelBuilder,
     required Set<T> selected,
     required ValueChanged<Set<T>>? onSelectionChanged,
     bool multi = false,
@@ -579,7 +579,7 @@ class CatchField<T> extends StatefulWidget
     bool addable = false,
     bool isOptional = false,
     String? helperText,
-    Color? Function(T item)? itemAccent,
+    Color? Function(T item)? itemAccentBuilder,
     IconData? icon,
     Color? iconColor,
     CatchFieldTone tone = CatchFieldTone.normal,
@@ -590,13 +590,13 @@ class CatchField<T> extends StatefulWidget
     final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
       contract,
       values,
-      contractValue,
+      contractValueBuilder,
       multi: multi,
     );
     final supportedSelection = selected.intersection(supportedValues.toSet());
     final selectedSummary = supportedValues
         .where(supportedSelection.contains)
-        .map(itemLabel)
+        .map(itemLabelBuilder)
         .join(' · ');
     return CatchField<T>.control(
       copy: copy,
@@ -610,8 +610,8 @@ class CatchField<T> extends StatefulWidget
         allowEmptySelection: allowEmptySelection,
         autoClose: !multi && onSubmit == null,
         mode: multi ? CatchChipMode.multiple : CatchChipMode.single,
-        itemLabelBuilder: itemLabel,
-        itemAccentBuilder: itemAccent,
+        itemLabelBuilder: itemLabelBuilder,
+        itemAccentBuilder: itemAccentBuilder,
         onChanged: enabled && !isLoading ? onSelectionChanged : null,
       ),
       open: open,
@@ -644,10 +644,10 @@ class CatchField<T> extends StatefulWidget
     required String title,
     String? body,
     CatchContractFieldConstraints? contract,
-    String Function(T value)? contractValue,
+    String Function(T value)? contractValueBuilder,
     required List<T> values,
-    required String Function(T value) itemTitle,
-    required String Function(T value) itemDescription,
+    required String Function(T value) itemTitleBuilder,
+    required String Function(T value) itemDescriptionBuilder,
     required T selected,
     required ValueChanged<T>? onChanged,
     bool? open,
@@ -668,7 +668,7 @@ class CatchField<T> extends StatefulWidget
     final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
       contract,
       values,
-      contractValue,
+      contractValueBuilder,
       multi: false,
     );
     assert(
@@ -685,7 +685,7 @@ class CatchField<T> extends StatefulWidget
       key: key,
       title: title,
       contract: contract,
-      body: body ?? itemTitle(selected),
+      body: body ?? itemTitleBuilder(selected),
       control: CatchChoiceInput<T>.described(
         values: supportedValues,
         selected: {selected},
@@ -693,8 +693,8 @@ class CatchField<T> extends StatefulWidget
         onChanged: enabled && !isLoading && onChanged != null
             ? (selection) => onChanged(selection.single)
             : null,
-        itemLabelBuilder: itemTitle,
-        itemSubtitleBuilder: itemDescription,
+        itemLabelBuilder: itemTitleBuilder,
+        itemSubtitleBuilder: itemDescriptionBuilder,
       ),
       open: open,
       initiallyOpen: initiallyOpen,
@@ -877,7 +877,7 @@ class CatchField<T> extends StatefulWidget
          isLoading: isLoading,
          initialValue: null,
          retainFocusOnSubmitted: false,
-         validator: null,
+         onValidate: null,
          obscureText: false,
          readOnly: false,
          autofocus: false,
@@ -947,7 +947,7 @@ class CatchField<T> extends StatefulWidget
     this.contract,
     String? contractExemption,
     required List<Object?> values,
-    required String Function(Object? item) itemLabel,
+    required String Function(Object? item) itemLabelBuilder,
     required Object? value,
     required ValueChanged<Object?>? onSelectChanged,
     required FormFieldValidator<Object?>? selectValidator,
@@ -976,7 +976,7 @@ class CatchField<T> extends StatefulWidget
        _config = (
          values: values,
          contractExemption: contractExemption,
-         itemLabel: itemLabel,
+         itemLabelBuilder: itemLabelBuilder,
          value: value,
          onSelectChanged: onSelectChanged,
          selectValidator: selectValidator,
@@ -993,14 +993,14 @@ class CatchField<T> extends StatefulWidget
     required String title,
     CatchContractFieldConstraints? contract,
     String? contractExemption,
-    String Function(T value)? contractValue,
+    String Function(T value)? contractValueBuilder,
     required List<T> values,
-    required String Function(T item) itemLabel,
+    required String Function(T item) itemLabelBuilder,
     T? value,
     String? hintText,
     Widget? prefixIcon,
     ValueChanged<T?>? onChanged,
-    FormFieldValidator<T>? validator,
+    FormFieldValidator<T>? onValidate,
     bool enabled = true,
     bool showLabel = true,
     CatchFieldSize size = CatchFieldSize.md,
@@ -1010,7 +1010,7 @@ class CatchField<T> extends StatefulWidget
     final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
       contract,
       values,
-      contractValue,
+      contractValueBuilder,
       multi: false,
     );
     assert(
@@ -1024,14 +1024,14 @@ class CatchField<T> extends StatefulWidget
       contract: contract,
       contractExemption: contractExemption,
       values: List<Object?>.unmodifiable(supportedValues),
-      itemLabel: (item) => itemLabel(item as T),
+      itemLabelBuilder: (item) => itemLabelBuilder(item as T),
       value: value,
       onSelectChanged: onChanged == null
           ? null
           : (item) => onChanged(item as T?),
-      selectValidator: validator == null
+      selectValidator: onValidate == null
           ? null
-          : (item) => validator(item as T?),
+          : (item) => onValidate(item as T?),
       placeholder: hintText,
       prefixIcon: prefixIcon,
       showLabel: showLabel,

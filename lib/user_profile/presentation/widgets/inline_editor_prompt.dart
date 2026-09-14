@@ -371,10 +371,11 @@ class _ProfileInlinePromptEntryEditorState
             number: widget.promptIndex + 1,
           ),
           contract: CatchContractConstraints.profilePromptAnswerPromptId,
-          contractValue: (value) => value,
+          contractValueBuilder: (value) => value,
           body: selectedDefinition.title,
           values: widget.availablePromptIds,
-          itemLabel: (promptId) => profilePromptDefinition(promptId).title,
+          itemLabelBuilder: (promptId) =>
+              profilePromptDefinition(promptId).title,
           selected: {_selectedPromptId},
           onSelectionChanged: (selection) {
             if (selection.isEmpty || questionSaving) return;

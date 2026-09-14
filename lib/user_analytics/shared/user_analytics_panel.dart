@@ -40,12 +40,12 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
             title: UserAnalyticsCopy.rangeTitle(context.l10n),
             contract: CatchContractConstraints
                 .userAnalyticsQueryCallablePayloadRangePreset,
-            contractValue: (value) => value.wireValue,
+            contractValueBuilder: (value) => value.wireValue,
             values: UserAnalyticsRangePreset.values
                 .where((preset) => preset != UserAnalyticsRangePreset.custom)
                 .toList(growable: false),
             value: _rangePreset,
-            itemLabel: (preset) =>
+            itemLabelBuilder: (preset) =>
                 UserAnalyticsCopy.rangeLabel(context.l10n, preset),
             prefixIcon: Icon(CatchIcons.calendarMonthOutlined),
             onChanged: (preset) {

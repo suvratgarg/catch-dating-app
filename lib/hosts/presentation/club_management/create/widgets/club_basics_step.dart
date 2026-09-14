@@ -90,11 +90,12 @@ class ClubBasicsStep extends StatelessWidget {
                   title: context.l10n.hostsOrganizerTypeLabel,
                   contract: CatchContractConstraints
                       .createClubCallablePayloadOrganizerType,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   body: _organizerTypeLabel(context, selectedOrganizerType),
                   icon: CatchIcons.groups3Outlined,
                   values: OrganizerType.values,
-                  itemLabel: (type) => _organizerTypeLabel(context, type),
+                  itemLabelBuilder: (type) =>
+                      _organizerTypeLabel(context, type),
                   selected: {selectedOrganizerType},
                   enabled: detailsEnabled,
                   onSelectionChanged: detailsEnabled
@@ -115,7 +116,7 @@ class ClubBasicsStep extends StatelessWidget {
                   enabled: detailsEnabled,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
-                  validator: (value) {
+                  onValidate: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return context
                           .l10n
@@ -140,13 +141,13 @@ class ClubBasicsStep extends StatelessWidget {
                       title: context.l10n.hostsClubBasicsStepTitleCity,
                       contract: CatchContractConstraints
                           .createClubCallablePayloadLocation,
-                      contractValue: (city) => city.effectiveMarketId,
+                      contractValueBuilder: (city) => city.effectiveMarketId,
                       body: selectedCity?.label,
                       icon: CatchIcons.locationCityOutlined,
                       values: defaultCityOptions
                           .where((city) => city.hostCreatable)
                           .toList(growable: false),
-                      itemLabel: (city) => city.label,
+                      itemLabelBuilder: (city) => city.label,
                       selected: selectedCity == null
                           ? const <CityOption>{}
                           : {selectedCity!},
@@ -178,7 +179,7 @@ class ClubBasicsStep extends StatelessWidget {
                       .hostsClubBasicsStepPlaceholderEGBandraKoramangala,
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
-                  validator: (value) {
+                  onValidate: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return context
                           .l10n

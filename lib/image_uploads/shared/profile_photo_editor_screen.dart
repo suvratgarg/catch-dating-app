@@ -254,9 +254,9 @@ class _ProfilePhotoEditorScreenState
                   .l10n
                   .imageUploadsProfilePhotoEditorScreenTitlePhotoPrompt,
               contract: CatchContractConstraints.photoPromptAnswerPromptId,
-              contractValue: (choice) => choice.id ?? '',
+              contractValueBuilder: (choice) => choice.id ?? '',
               values: promptChoices,
-              itemLabel: (choice) => choice.label,
+              itemLabelBuilder: (choice) => choice.label,
               selected: {selectedPromptChoice},
               onSelectionChanged: _saving || _deleting
                   ? null

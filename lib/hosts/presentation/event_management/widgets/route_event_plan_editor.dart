@@ -117,9 +117,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanMovementTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanMovementMode,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteMovementMode.values,
-                  itemLabel: (value) => _movementLabel(context, value),
+                  itemLabelBuilder: (value) => _movementLabel(context, value),
                   selected: {plan.movementMode},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(movementMode: selection.single),
@@ -135,9 +135,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanShapeTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanRouteShape,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteShape.values,
-                  itemLabel: (value) => _shapeLabel(context, value),
+                  itemLabelBuilder: (value) => _shapeLabel(context, value),
                   selected: {plan.routeShape},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(routeShape: selection.single),
@@ -153,9 +153,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanGroupTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanGroupStrategy,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteGroupStrategy.values,
-                  itemLabel: (value) => _groupLabel(context, value),
+                  itemLabelBuilder: (value) => _groupLabel(context, value),
                   selected: {plan.groupStrategy},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(groupStrategy: selection.single),
@@ -171,9 +171,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanCadenceTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopCadence,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteStopCadence.values,
-                  itemLabel: (value) => _cadenceLabel(context, value),
+                  itemLabelBuilder: (value) => _cadenceLabel(context, value),
                   selected: {plan.stopCadence},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(stopCadence: selection.single),
@@ -189,9 +189,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanStopsTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopKinds,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteStopKind.values,
-                  itemLabel: (value) => _stopLabel(context, value),
+                  itemLabelBuilder: (value) => _stopLabel(context, value),
                   selected: plan.stopKinds.toSet(),
                   multi: true,
                   onSelectionChanged: (selection) => widget.onChanged(
@@ -212,9 +212,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanRolesTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanRoleKinds,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteRoleKind.values,
-                  itemLabel: (value) => _roleLabel(context, value),
+                  itemLabelBuilder: (value) => _roleLabel(context, value),
                   selected: plan.roleKinds.toSet(),
                   multi: true,
                   onSelectionChanged: (selection) => widget.onChanged(
@@ -260,9 +260,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   body: context.l10n.hostsRouteEventPlanPaceGroupsBody,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroups,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: _PacePreset.values,
-                  itemLabel: (value) => _pacePresetLabel(context, value),
+                  itemLabelBuilder: (value) => _pacePresetLabel(context, value),
                   selected: _selectedPacePresets(plan),
                   multi: true,
                   onSelectionChanged: (selection) => widget.onChanged(
@@ -280,9 +280,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   body: context.l10n.hostsRouteEventPlanTrackingBody,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteLiveTrackingMode.values,
-                  itemLabel: (value) => _trackingLabel(context, value),
+                  itemLabelBuilder: (value) => _trackingLabel(context, value),
                   selected: {plan.liveTrackingPolicy.mode},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(

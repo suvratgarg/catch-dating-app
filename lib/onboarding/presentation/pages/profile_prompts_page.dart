@@ -217,10 +217,11 @@ class PromptField extends StatelessWidget {
           icon: CatchIcons.formatQuoteRounded,
           title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
           contract: CatchContractConstraints.profilePromptAnswerPromptId,
-          contractValue: (value) => value,
+          contractValueBuilder: (value) => value,
           body: definition.title,
           values: availablePromptIds,
-          itemLabel: (promptId) => profilePromptDefinition(promptId).title,
+          itemLabelBuilder: (promptId) =>
+              profilePromptDefinition(promptId).title,
           selected: {selectedPromptId},
           onSelectionChanged: enabled
               ? (selection) {

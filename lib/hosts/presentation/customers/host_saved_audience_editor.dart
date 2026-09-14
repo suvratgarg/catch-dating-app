@@ -197,7 +197,7 @@ class _HostSavedAudienceEditorFormState
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.next,
                             enabled: !_busy,
-                            validator: (value) => (value ?? '').trim().isEmpty
+                            onValidate: (value) => (value ?? '').trim().isEmpty
                                 ? context.l10n.hostSavedAudienceNameRequired
                                 : null,
                           ),
@@ -208,7 +208,7 @@ class _HostSavedAudienceEditorFormState
                             contractExemption:
                                 'Chooses the staticMembers-only definition or the dynamic predicate vocabulary, validated by the saved-audience callable.',
                             values: HostSavedAudienceMembershipMode.values,
-                            itemLabel: (value) =>
+                            itemLabelBuilder: (value) =>
                                 value == HostSavedAudienceMembershipMode.rules
                                 ? context.l10n.hostAudienceRuleMembership
                                 : context.l10n.hostAudienceStaticMembership,
@@ -234,9 +234,9 @@ class _HostSavedAudienceEditorFormState
                               title: context.l10n.hostSavedAudienceMatch,
                               contract: CatchContractConstraints
                                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin,
-                              contractValue: (value) => value.name,
+                              contractValueBuilder: (value) => value.name,
                               values: HostSavedAudienceJoin.values,
-                              itemLabel: (value) => switch (value) {
+                              itemLabelBuilder: (value) => switch (value) {
                                 HostSavedAudienceJoin.all =>
                                   context.l10n.hostSavedAudienceMatchAll,
                                 HostSavedAudienceJoin.any =>
@@ -602,9 +602,9 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           title: context.l10n.hostSavedAudienceRuleType,
           contract: CatchContractConstraints
               .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsKind,
-          contractValue: (value) => value.wireValue,
+          contractValueBuilder: (value) => value.wireValue,
           values: kinds,
-          itemLabel: (value) => _audienceRuleKindLabel(context, value),
+          itemLabelBuilder: (value) => _audienceRuleKindLabel(context, value),
           value: draft.kind,
           enabled: enabled,
           onChanged: (value) {
@@ -638,9 +638,9 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               title: context.l10n.hostSavedAudienceSegment,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentId,
-              contractValue: (value) => value.wireValue,
+              contractValueBuilder: (value) => value.wireValue,
               values: HostAudienceSegment.values,
-              itemLabel: (value) => _customerFilterLabel(
+              itemLabelBuilder: (value) => _customerFilterLabel(
                 context,
                 hostCustomerFilterForAudienceSegment(value),
               ),
@@ -657,9 +657,9 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               title: context.l10n.hostSavedAudienceTag,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagId,
-              contractValue: (value) => value.tagId,
+              contractValueBuilder: (value) => value.tagId,
               values: manualTags,
-              itemLabel: (value) => value.label,
+              itemLabelBuilder: (value) => value.label,
               value: manualTags
                   .where((tag) => tag.tagId == draft.manualTagId)
                   .firstOrNull,
@@ -678,9 +678,9 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               title: context.l10n.hostSavedAudienceAttendanceComparison,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
-              contractValue: (value) => value.name,
+              contractValueBuilder: (value) => value.name,
               values: HostSavedAudienceAttendanceOperator.values,
-              itemLabel: (value) => switch (value) {
+              itemLabelBuilder: (value) => switch (value) {
                 HostSavedAudienceAttendanceOperator.atLeast =>
                   context.l10n.hostSavedAudienceAtLeast,
                 HostSavedAudienceAttendanceOperator.atMost =>

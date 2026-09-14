@@ -107,7 +107,7 @@ class EventPolicyStep extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: (value) {
+                  onValidate: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return context
                           .l10n
@@ -154,7 +154,7 @@ class EventPolicyStep extends StatelessWidget {
                       ),
                     ],
                     textInputAction: TextInputAction.next,
-                    validator: (value) {
+                    onValidate: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return context
                             .l10n
@@ -179,15 +179,15 @@ class EventPolicyStep extends StatelessWidget {
                         context.l10n.hostsEventPolicyStepLabelAdmissionFormat,
                     contract: CatchContractConstraints
                         .createEventCallablePayloadEventPolicyAdmissionFormat,
-                    contractValue: (preset) => switch (preset) {
+                    contractValueBuilder: (preset) => switch (preset) {
                       EventAdmissionPreset.openCapacity => 'open',
                       EventAdmissionPreset.inviteOnly => 'inviteOnly',
                       EventAdmissionPreset.requestToJoin => 'manualApproval',
                       EventAdmissionPreset.balancedSingles => 'balancedRatio',
                     },
                     values: EventAdmissionPreset.values,
-                    itemTitle: (preset) => preset.title(context.l10n),
-                    itemDescription: (preset) =>
+                    itemTitleBuilder: (preset) => preset.title(context.l10n),
+                    itemDescriptionBuilder: (preset) =>
                         preset.description(context.l10n),
                     selected: admissionPreset,
                     onChanged: onAdmissionPresetChanged,
@@ -215,7 +215,7 @@ class EventPolicyStep extends StatelessWidget {
                         ),
                       ),
                     ],
-                    validator:
+                    onValidate:
                         admissionPreset == EventAdmissionPreset.inviteOnly
                         ? (value) => inviteCodeValidator(value, context.l10n)
                         : null,
@@ -257,7 +257,7 @@ class EventPolicyStep extends StatelessWidget {
                             FilteringTextInputFormatter.digitsOnly,
                           ],
                           textInputAction: TextInputAction.next,
-                          validator: cohortCapsEnabled
+                          onValidate: cohortCapsEnabled
                               ? (value) => positiveOptionalValidator(
                                   value,
                                   context.l10n,
@@ -283,7 +283,7 @@ class EventPolicyStep extends StatelessWidget {
                             FilteringTextInputFormatter.digitsOnly,
                           ],
                           textInputAction: TextInputAction.next,
-                          validator: cohortCapsEnabled
+                          onValidate: cohortCapsEnabled
                               ? (value) => positiveOptionalValidator(
                                   value,
                                   context.l10n,
@@ -335,7 +335,7 @@ class EventPolicyStep extends StatelessWidget {
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                         ],
-                        validator: crossPathsPairInventoryEnabled
+                        onValidate: crossPathsPairInventoryEnabled
                             ? (value) {
                                 final pairCapacity = int.tryParse(
                                   value?.trim() ?? '',
@@ -393,7 +393,7 @@ class EventPolicyStep extends StatelessWidget {
                             FilteringTextInputFormatter.digitsOnly,
                           ],
                           textInputAction: TextInputAction.next,
-                          validator: dynamicPricingEnabled
+                          onValidate: dynamicPricingEnabled
                               ? (value) => positiveRequiredValidator(
                                   value,
                                   context.l10n,
@@ -417,7 +417,7 @@ class EventPolicyStep extends StatelessWidget {
                             FilteringTextInputFormatter.digitsOnly,
                           ],
                           textInputAction: TextInputAction.next,
-                          validator: dynamicPricingEnabled
+                          onValidate: dynamicPricingEnabled
                               ? (value) => positiveRequiredValidator(
                                   value,
                                   context.l10n,
@@ -455,12 +455,13 @@ class EventPolicyStep extends StatelessWidget {
                             .hostsEventPolicyStepLabelCancellationPolicy,
                         contract: CatchContractConstraints
                             .createEventCallablePayloadEventPolicyCancellationPolicyId,
-                        contractValue: (value) => value.name,
+                        contractValueBuilder: (value) => value.name,
                         values: EventCancellationPolicyId.values
                             .where((value) => value.isApplicable)
                             .toList(growable: false),
-                        itemTitle: (policyId) => policyFor(policyId).title,
-                        itemDescription: (policyId) =>
+                        itemTitleBuilder: (policyId) =>
+                            policyFor(policyId).title,
+                        itemDescriptionBuilder: (policyId) =>
                             policyFor(policyId).attendeeSummary,
                         selected: cancellationPolicyId.isApplicable
                             ? cancellationPolicyId

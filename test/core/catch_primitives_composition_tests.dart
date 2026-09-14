@@ -148,7 +148,7 @@ void _registerCatchPrimitivesCompositionTests() {
                 title: 'City',
                 values: defaultCityOptions,
                 value: selected,
-                itemLabel: (city) => city.label,
+                itemLabelBuilder: (city) => city.label,
                 hintText: 'Select city',
                 showLabel: false,
                 onChanged: (value) => selected = value,

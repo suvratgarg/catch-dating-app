@@ -74,7 +74,7 @@ class _ProductionInteractionTransitionPageState
                           'Sunday Social',
                           'Bandra Runs',
                         ],
-                        itemLabel: _identity,
+                        itemLabelBuilder: _identity,
                         selected: _containedSelection,
                         onSelectionChanged: (selection) => setState(
                           () =>
@@ -115,7 +115,7 @@ class _ProductionInteractionTransitionPageState
                           'One day before',
                           'Off',
                         ],
-                        itemLabel: _identity,
+                        itemLabelBuilder: _identity,
                         selected: _dividedSelection,
                         onSelectionChanged: (selection) => setState(
                           () => _dividedSelection = Set.unmodifiable(selection),

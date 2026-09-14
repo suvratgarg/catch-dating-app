@@ -39,7 +39,7 @@ typedef _EditConfig = ({
   ValueChanged<bool>? onFocusChanged,
   FocusNode? focusNode,
   bool retainFocusOnSubmitted,
-  FormFieldValidator<String>? validator,
+  FormFieldValidator<String>? onValidate,
   TextInputType? keyboardType,
   TextInputAction? textInputAction,
   TextCapitalization textCapitalization,
@@ -81,7 +81,7 @@ typedef _EditConfig = ({
 typedef _SelectConfig = ({
   List<Object?> values,
   String? contractExemption,
-  String Function(Object? item) itemLabel,
+  String Function(Object? item) itemLabelBuilder,
   Object? value,
   ValueChanged<Object?>? onSelectChanged,
   FormFieldValidator<Object?>? selectValidator,

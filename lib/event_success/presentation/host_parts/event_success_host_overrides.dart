@@ -603,10 +603,10 @@ class GroupOverrideMemberEditor extends StatelessWidget {
                   .eventSuccessEventSuccessHostOverridesTitleGroupAttendee,
               contract: CatchContractConstraints
                   .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsParticipantUidsItems,
-              contractValue: (value) => value,
+              contractValueBuilder: (value) => value,
               values: participantUids,
               value: value,
-              itemLabel: participantLabel,
+              itemLabelBuilder: participantLabel,
               hintText: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesHinttextAttendee,
@@ -1190,10 +1190,10 @@ class RotationOverridePairEditor extends StatelessWidget {
                   .eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee,
               contract: CatchContractConstraints
                   .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidA,
-              contractValue: (value) => value,
+              contractValueBuilder: (value) => value,
               values: participantUids,
               value: pair.uidA,
-              itemLabel: participantLabel,
+              itemLabelBuilder: participantLabel,
               hintText: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesHinttextAttendee,
@@ -1215,10 +1215,10 @@ class RotationOverridePairEditor extends StatelessWidget {
                   .eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee,
               contract: CatchContractConstraints
                   .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidB,
-              contractValue: (value) => value,
+              contractValueBuilder: (value) => value,
               values: participantUids,
               value: pair.uidB,
-              itemLabel: participantLabel,
+              itemLabelBuilder: participantLabel,
               hintText: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesHinttextPartner,

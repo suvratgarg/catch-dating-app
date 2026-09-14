@@ -151,7 +151,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                           ],
                           placeholder: l10n.authPhoneFieldPlaceholder,
                           variant: CatchFieldVariant.bare,
-                          validator: (value) =>
+                          onValidate: (value) =>
                               AuthInput.phoneNumberIssue(value) == null
                               ? null
                               : l10n.authInvalidPhoneNumber,
@@ -264,7 +264,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                       ),
                     ],
                     placeholder: '98765 43210',
-                    validator: (value) =>
+                    onValidate: (value) =>
                         AuthInput.phoneNumberIssue(value) == null
                         ? null
                         : l10n.authInvalidPhoneNumber,

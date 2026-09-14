@@ -269,15 +269,15 @@ class _LaunchAccessApplicationFormState
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleCity,
               contract: CatchContractConstraints.accessApplicationDocumentCity,
-              contractValue: (city) => city.effectiveMarketId,
+              contractValueBuilder: (city) => city.effectiveMarketId,
               values: selectableCities,
               value: selectedCity,
-              itemLabel: (city) => city.label,
+              itemLabelBuilder: (city) => city.label,
               hintText: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenHinttextSelectCity,
               prefixIcon: Icon(CatchIcons.locationCityOutlined),
-              validator: (_) => draft.city.trim().isEmpty
+              onValidate: (_) => draft.city.trim().isEmpty
                   ? context.l10n.launchAccessValidationChooseCity
                   : null,
               onChanged: (city) {
@@ -438,7 +438,7 @@ class _LaunchAccessApplicationFormState
               maxLines: 4,
               minLines: 3,
               textCapitalization: TextCapitalization.sentences,
-              validator: (value) {
+              onValidate: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.length < 12) {
                   return context.l10n.launchAccessValidationTellUsMore;

@@ -162,7 +162,7 @@ class WhereStep extends ConsumerWidget {
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
               onChanged: onMeetingPointChanged,
-              validator: (value) {
+              onValidate: (value) {
                 if (startingPoint == null) return null;
                 return value == null || value.trim().isEmpty
                     ? context.l10n.hostsWhereStepVisiblecopyAddALocationName

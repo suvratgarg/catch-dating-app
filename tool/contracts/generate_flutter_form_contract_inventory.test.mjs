@@ -162,6 +162,8 @@ test("segmented choices cannot escape the missing-contract inventory", () => {
     assert.equal(result.summary.bySymbol.choiceInputSegmented, 2);
     assert.equal(result.summary.boundCallsites, 1);
     assert.equal(result.summary.unboundCallsites, 1);
+    assert.equal(result.callsites[0].contractValue, "(value) => value");
+    assert.equal(result.callsites[1].contractValue, null);
   } finally {
     fs.rmSync(root, {recursive: true, force: true});
   }

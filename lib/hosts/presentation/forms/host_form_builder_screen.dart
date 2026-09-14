@@ -1494,10 +1494,10 @@ class _FormSettings extends StatelessWidget {
             title: context.l10n.hostFormPurposeLabel,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionPurpose,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: HostFormPurpose.values,
             value: definition.purpose,
-            itemLabel: (value) => hostFormPurposeLabel(context, value),
+            itemLabelBuilder: (value) => hostFormPurposeLabel(context, value),
             onChanged: (value) => notifier.updateMetadata(purpose: value),
           ),
         ],
@@ -1511,10 +1511,10 @@ class _FormSettings extends StatelessWidget {
             title: context.l10n.hostFormIdentityLabel,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionIdentityPolicy,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: HostFormIdentityPolicy.values,
             value: definition.identityPolicy,
-            itemLabel: (value) => hostFormIdentityLabel(context, value),
+            itemLabelBuilder: (value) => hostFormIdentityLabel(context, value),
             onChanged: (value) =>
                 notifier.updateMetadata(identityPolicy: value),
           ),
@@ -1537,10 +1537,10 @@ class _FormSettings extends StatelessWidget {
             title: context.l10n.hostFormAppearancePreset,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionAppearancePreset,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: HostFormAppearancePreset.values,
             value: definition.appearancePreset,
-            itemLabel: (value) => _appearanceLabel(context, value),
+            itemLabelBuilder: (value) => _appearanceLabel(context, value),
             onChanged: (value) =>
                 notifier.updateMetadata(appearancePreset: value),
           ),
@@ -1675,10 +1675,10 @@ class _FormSettings extends StatelessWidget {
             title: context.l10n.hostFormCompletionActionLabel,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionCompletionActionKind,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: HostFormCompletionAction.values,
             value: definition.completionAction,
-            itemLabel: (value) => _completionActionLabel(context, value),
+            itemLabelBuilder: (value) => _completionActionLabel(context, value),
             onChanged: (value) => notifier.updateMetadata(
               completionAction: value,
               clearCompletionActionLabel:
@@ -1879,10 +1879,11 @@ class _QuestionEditFields extends StatelessWidget {
           title: context.l10n.hostFormQuestionType,
           contract: CatchContractConstraints
               .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsKind,
-          contractValue: (value) => value.name,
+          contractValueBuilder: (value) => value.name,
           values: HostFormQuestionKind.values,
           value: question.kind,
-          itemLabel: (value) => hostFormQuestionKindLabel(context, value),
+          itemLabelBuilder: (value) =>
+              hostFormQuestionKindLabel(context, value),
           onChanged: (value) =>
               notifier.updateQuestion(sectionIndex, questionIndex, kind: value),
         ),
@@ -1900,7 +1901,7 @@ class _QuestionEditFields extends StatelessWidget {
                 'a schema-backed field value.',
             values: List<int>.generate(sections.length, (index) => index),
             value: sectionIndex,
-            itemLabel: (index) => sections[index].title,
+            itemLabelBuilder: (index) => sections[index].title,
             onChanged: (targetSectionIndex) {
               if (targetSectionIndex == null ||
                   targetSectionIndex == sectionIndex) {
@@ -1953,10 +1954,10 @@ class _QuestionEditFields extends StatelessWidget {
           title: context.l10n.hostFormPrivacyLabel,
           contract: CatchContractConstraints
               .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrivacyClass,
-          contractValue: (value) => value.name,
+          contractValueBuilder: (value) => value.name,
           values: HostFormPrivacyClass.values,
           value: question.privacyClass,
-          itemLabel: (value) => _privacyLabel(context, value),
+          itemLabelBuilder: (value) => _privacyLabel(context, value),
           onChanged: (value) => notifier.updateQuestion(
             sectionIndex,
             questionIndex,
@@ -1970,10 +1971,10 @@ class _QuestionEditFields extends StatelessWidget {
           title: context.l10n.hostFormPrefillLabel,
           contract: CatchContractConstraints
               .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsPrefillPolicy,
-          contractValue: (value) => value.name,
+          contractValueBuilder: (value) => value.name,
           values: HostFormPrefillPolicy.values,
           value: question.prefillPolicy,
-          itemLabel: (value) => _prefillLabel(context, value),
+          itemLabelBuilder: (value) => _prefillLabel(context, value),
           onChanged: (value) => notifier.updateQuestion(
             sectionIndex,
             questionIndex,
@@ -1987,10 +1988,10 @@ class _QuestionEditFields extends StatelessWidget {
           title: context.l10n.hostFormPresentationLabel,
           contract: CatchContractConstraints
               .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsHostPresentation,
-          contractValue: (value) => value.name,
+          contractValueBuilder: (value) => value.name,
           values: HostFormPresentation.values,
           value: question.hostPresentation,
-          itemLabel: (value) => _presentationLabel(context, value),
+          itemLabelBuilder: (value) => _presentationLabel(context, value),
           onChanged: (value) => notifier.updateQuestion(
             sectionIndex,
             questionIndex,
@@ -2136,11 +2137,11 @@ class _QuestionValidationFormSchemaFields extends StatelessWidget {
             title: context.l10n.hostFormPatternLabel,
             contract: CatchContractConstraints
                 .organizerFormDraftDocumentDefinitionSectionsItemsQuestionsItemsValidationPatternPreset,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: HostFormPatternPreset.values,
             value: validation.patternPreset,
             hintText: context.l10n.hostFormPatternNone,
-            itemLabel: (value) => _patternLabel(context, value),
+            itemLabelBuilder: (value) => _patternLabel(context, value),
             onChanged: (value) {
               if (value != null) {
                 update(validation.copyWith(patternPreset: value));
@@ -2804,12 +2805,12 @@ Future<void> _showLogicRuleBuilder(
                   title: context.l10n.hostFormRuleQuestion,
                   contract: CatchContractConstraints
                       .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsQuestionId,
-                  contractValue: (value) => value,
+                  contractValueBuilder: (value) => value,
                   values: questions
                       .map((question) => question.questionId)
                       .toList(),
                   value: sourceId,
-                  itemLabel: (value) => questions
+                  itemLabelBuilder: (value) => questions
                       .firstWhere((question) => question.questionId == value)
                       .label,
                   onChanged: (value) => setState(() {
@@ -2825,10 +2826,11 @@ Future<void> _showLogicRuleBuilder(
                   title: context.l10n.hostFormRuleOperator,
                   contract: CatchContractConstraints
                       .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsOperator,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: operators,
                   value: operator,
-                  itemLabel: (value) => _logicOperatorLabel(context, value),
+                  itemLabelBuilder: (value) =>
+                      _logicOperatorLabel(context, value),
                   onChanged: (value) {
                     if (value != null) setState(() => operator = value);
                   },
@@ -2840,10 +2842,10 @@ Future<void> _showLogicRuleBuilder(
                     title: context.l10n.hostFormRuleValue,
                     contract: CatchContractConstraints
                         .organizerFormDraftDocumentDefinitionLogicRulesItemsConditionsItemsExpectedValuesItems,
-                    contractValue: (value) => value,
+                    contractValueBuilder: (value) => value,
                     values: choiceValues,
                     value: expectedChoice!,
-                    itemLabel: (value) =>
+                    itemLabelBuilder: (value) =>
                         source.kind == HostFormQuestionKind.boolean
                         ? value == 'true'
                               ? context.l10n.hostFormRuleTrue
@@ -2876,10 +2878,11 @@ Future<void> _showLogicRuleBuilder(
                   title: context.l10n.hostFormRuleAction,
                   contract: CatchContractConstraints
                       .organizerFormDraftDocumentDefinitionLogicRulesItemsAction,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: HostFormLogicAction.values,
                   value: action,
-                  itemLabel: (value) => _logicActionLabel(context, value),
+                  itemLabelBuilder: (value) =>
+                      _logicActionLabel(context, value),
                   onChanged: (value) {
                     if (value != null) setState(() => action = value);
                   },
@@ -2890,12 +2893,12 @@ Future<void> _showLogicRuleBuilder(
                     title: context.l10n.hostFormRuleTargetQuestion,
                     contract: CatchContractConstraints
                         .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetQuestionId,
-                    contractValue: (value) => value,
+                    contractValueBuilder: (value) => value,
                     values: targetQuestions
                         .map((question) => question.questionId)
                         .toList(),
                     value: targetQuestionId!,
-                    itemLabel: (value) => targetQuestions
+                    itemLabelBuilder: (value) => targetQuestions
                         .firstWhere((question) => question.questionId == value)
                         .label,
                     onChanged: (value) =>
@@ -2907,12 +2910,12 @@ Future<void> _showLogicRuleBuilder(
                     title: context.l10n.hostFormRuleTargetSection,
                     contract: CatchContractConstraints
                         .organizerFormDraftDocumentDefinitionLogicRulesItemsTargetSectionId,
-                    contractValue: (value) => value,
+                    contractValueBuilder: (value) => value,
                     values: targetSections
                         .map((section) => section.sectionId)
                         .toList(),
                     value: targetSectionId!,
-                    itemLabel: (value) => targetSections
+                    itemLabelBuilder: (value) => targetSections
                         .firstWhere((section) => section.sectionId == value)
                         .title,
                     onChanged: (value) =>

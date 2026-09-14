@@ -872,9 +872,9 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
                     ),
                     contract: CatchContractConstraints
                         .setEventSuccessAccountabilityResolutionCallablePayloadResolution,
-                    contractValue: (value) => value.name,
+                    contractValueBuilder: (value) => value.name,
                     values: _EventSuccessAccountabilitySelection.values,
-                    itemLabel: (value) =>
+                    itemLabelBuilder: (value) =>
                         _accountabilitySelectionLabel(context, value),
                     selected: {_accountabilitySelection(indexed.$2)},
                     onSelectionChanged: isResolving || onResolve == null

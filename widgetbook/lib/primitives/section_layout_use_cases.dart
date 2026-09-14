@@ -39,7 +39,7 @@ Widget fieldInteractionPlaneLayoutStates(BuildContext context) =>
                           copy: catchFieldCopy(context.l10n),
                           title: 'Reminder',
                           values: const ['Before', 'After'],
-                          itemLabel: (value) => value,
+                          itemLabelBuilder: (value) => value,
                           selected: const {'Before'},
                           onSelectionChanged: (_) {},
                           initiallyOpen: true,

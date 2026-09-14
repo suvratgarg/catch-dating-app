@@ -579,9 +579,9 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                     title: l10n.hostsHostPaymentAccountCardTitleBusinessType,
                     contract: CatchContractConstraints
                         .createRazorpayHostPaymentAccountCallablePayloadBusinessType,
-                    contractValue: (value) => value.wireValue,
+                    contractValueBuilder: (value) => value.wireValue,
                     values: RazorpayHostBusinessType.values,
-                    itemLabel: _businessTypeLabel,
+                    itemLabelBuilder: _businessTypeLabel,
                     value: _businessType,
                     enabled: !widget.pending,
                     onChanged: (value) {
@@ -829,7 +829,7 @@ class _RazorpaySetupInput extends StatelessWidget {
         keyboardType: keyboardType,
         obscureText: obscureText,
         maxLines: maxLines,
-        validator:
+        onValidate:
             validator ??
             (value) => value == null || value.trim().isEmpty
                 ? context.l10n.sharedValidationRequired

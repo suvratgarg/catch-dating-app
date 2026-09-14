@@ -169,7 +169,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 helperText: context
                     .l10n
                     .onboardingNameDobPageHelpertextDisplayedOnYourProfile,
-                validator: state.validateFirstName,
+                onValidate: state.validateFirstName,
               ),
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
@@ -184,7 +184,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 helperText: context
                     .l10n
                     .onboardingNameDobPageHelpertextPrivateWeNeverShow,
-                validator: state.validateLastName,
+                onValidate: state.validateLastName,
               ),
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
@@ -199,7 +199,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 suffixText: state.ageSuffix,
                 helperText:
                     context.l10n.onboardingNameDobPageHelpertextWeNeverShowYour,
-                validator: (_) => state.validateDateOfBirth(),
+                onValidate: (_) => state.validateDateOfBirth(),
               ),
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
@@ -218,7 +218,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 helperText:
                     context.l10n.onboardingNameDobPageHelpertextVerifiedViaOtp,
                 helperTone: CatchFieldSupportRowTone.success,
-                validator: state.validatePhoneNumber,
+                onValidate: state.validatePhoneNumber,
               ),
             ],
           ),

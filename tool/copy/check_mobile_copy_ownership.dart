@@ -69,6 +69,7 @@ const _copyArgumentNames = <String>{
   'tooltip',
   'validationMessage',
   'validator',
+  'onValidate',
   'wiringNotes',
 };
 
@@ -693,7 +694,7 @@ class DisplayState {
 
 Widget buildForm(BuildContext context) => Column(children: [
   CatchField.input(
-    validator: (_) => 'Please choose your city',
+    onValidate: (_) => 'Please choose your city',
   ),
   CatchButton(
     label: helper('wire-key'),

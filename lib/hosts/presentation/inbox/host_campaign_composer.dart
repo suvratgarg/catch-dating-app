@@ -229,9 +229,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 title: context.l10n.hostsHostAudienceMessageType,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadMessageClass,
-                contractValue: (value) => value.wireValue,
+                contractValueBuilder: (value) => value.wireValue,
                 values: _HostCampaignMessageClass.values,
-                itemLabel: (value) => _messageClassLabel(context, value),
+                itemLabelBuilder: (value) => _messageClassLabel(context, value),
                 value: _messageClass,
                 enabled: _campaign == null,
                 onChanged: (value) {
@@ -301,9 +301,10 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 title: context.l10n.hostSavedAudienceFieldLabel,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadSavedAudienceId,
-                contractValue: (audience) => audience.audienceId,
+                contractValueBuilder: (audience) => audience.audienceId,
                 values: audiences,
-                itemLabel: (audience) => _savedAudienceLabel(context, audience),
+                itemLabelBuilder: (audience) =>
+                    _savedAudienceLabel(context, audience),
                 value: selectedAudience,
                 enabled: _campaign == null,
                 onChanged: (value) => setState(() => _selectedAudience = value),
@@ -314,9 +315,10 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 title: context.l10n.hostsHostAudienceTemplate,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadTemplateId,
-                contractValue: (value) => value.templateId,
+                contractValueBuilder: (value) => value.templateId,
                 values: approved,
-                itemLabel: (value) => '${value.name} · ${value.language}',
+                itemLabelBuilder: (value) =>
+                    '${value.name} · ${value.language}',
                 value: template,
                 enabled: _campaign == null,
                 onChanged: (value) {
@@ -334,9 +336,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                   title: context.l10n.hostsHostAudienceLinkedEvent,
                   contract: CatchContractConstraints
                       .upsertOrganizerCampaignCallablePayloadEventId,
-                  contractValue: (event) => event.id,
+                  contractValueBuilder: (event) => event.id,
                   values: events,
-                  itemLabel: (event) =>
+                  itemLabelBuilder: (event) =>
                       '${event.title} · ${AppTimeFormatters.shortDate(event.startTime)}',
                   value: _eventIn(events, _selectedEvent),
                   hintText: context.l10n.hostsHostAudienceChooseEvent,
@@ -356,9 +358,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                     title: context.l10n.hostsHostAudienceInviteDestination,
                     contract: CatchContractConstraints
                         .upsertOrganizerCampaignCallablePayloadInviteDestinationKind,
-                    contractValue: (value) => value.wireValue,
+                    contractValueBuilder: (value) => value.wireValue,
                     values: _destinationsFor(event),
-                    itemLabel: (value) =>
+                    itemLabelBuilder: (value) =>
                         _inviteDestinationLabel(context, value),
                     value: _inviteDestination ?? _destinationsFor(event).first,
                     helperText: event.isExternalCompanion

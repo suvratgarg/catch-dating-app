@@ -201,9 +201,9 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   .eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults,
               contract: CatchContractConstraints
                   .eventSuccessPlanDocumentConversationGraphConsentMode,
-              contractValue: (value) => value.name,
+              contractValueBuilder: (value) => value.name,
               values: EventSuccessConversationGraphConsentMode.values,
-              itemTitle: (mode) => switch (mode) {
+              itemTitleBuilder: (mode) => switch (mode) {
                 EventSuccessConversationGraphConsentMode.optIn =>
                   context
                       .l10n
@@ -213,7 +213,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                       .l10n
                       .eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople,
               },
-              itemDescription: (mode) => switch (mode) {
+              itemDescriptionBuilder: (mode) => switch (mode) {
                 EventSuccessConversationGraphConsentMode.optIn =>
                   context
                       .l10n
@@ -360,9 +360,9 @@ class EventSuccessModuleRows extends StatelessWidget {
                   .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
               contract: CatchContractConstraints
                   .mobileFormStateEventSuccessQuestionnaireMode,
-              contractValue: (value) => value.name,
+              contractValueBuilder: (value) => value.name,
               values: _QuestionnaireMode.values,
-              itemTitle: (mode) => switch (mode) {
+              itemTitleBuilder: (mode) => switch (mode) {
                 _QuestionnaireMode.off =>
                   context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
                 _QuestionnaireMode.cluesOnly =>
@@ -372,7 +372,7 @@ class EventSuccessModuleRows extends StatelessWidget {
                       .l10n
                       .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
               },
-              itemDescription: (mode) => switch (mode) {
+              itemDescriptionBuilder: (mode) => switch (mode) {
                 _QuestionnaireMode.off =>
                   context
                       .l10n
@@ -428,9 +428,9 @@ class EventSuccessModuleRows extends StatelessWidget {
                   .eventSuccessEventSuccessSetupBodyLabelSwitchPartnersEvery,
               contract: CatchContractConstraints
                   .eventSuccessPlanDocumentStructureConfigRotationIntervalMinutes,
-              contractValue: (value) => value?.toString() ?? '',
+              contractValueBuilder: (value) => value?.toString() ?? '',
               values: const <int?>[null, 10, 15, 20, 30],
-              itemLabel: (value) => switch (value) {
+              itemLabelBuilder: (value) => switch (value) {
                 null =>
                   context.l10n.eventSuccessEventSuccessSetupBodyLabelNoTimer,
                 10 => context.l10n.eventSuccessEventSuccessSetupBodyLabel10Min,
@@ -462,9 +462,9 @@ class EventSuccessModuleRows extends StatelessWidget {
                   .eventSuccessEventSuccessSetupBodyLabelRevealCountdown,
               contract: CatchContractConstraints
                   .eventSuccessPlanDocumentStructureConfigRevealCountdownSeconds,
-              contractValue: (value) => value.toString(),
+              contractValueBuilder: (value) => value.toString(),
               values: const [0, 5, 10, 15],
-              itemLabel: (value) => switch (value) {
+              itemLabelBuilder: (value) => switch (value) {
                 0 => context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
                 5 => context.l10n.eventSuccessEventSuccessSetupBodyLabel5s,
                 10 => context.l10n.eventSuccessEventSuccessSetupBodyLabel10s,

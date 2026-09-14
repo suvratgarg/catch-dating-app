@@ -65,18 +65,18 @@ class _EventSuccessQuestionnaireConfigEditorState
                 .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentQuestionnaireConfigTemplateId,
-            contractValue: (value) => value,
+            contractValueBuilder: (value) => value,
             helperText: context.l10n
                 .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
                   length: previewPack.questions.length,
                 ),
             values: questionSetIds,
-            itemTitle: (id) => id == _customQuestionSetId
+            itemTitleBuilder: (id) => id == _customQuestionSetId
                 ? context
                       .l10n
                       .eventSuccessEventSuccessQuestionnaireConfigEditorLabelCustom
                 : templates.firstWhere((template) => template.id == id).title,
-            itemDescription: (id) => id == _customQuestionSetId
+            itemDescriptionBuilder: (id) => id == _customQuestionSetId
                 ? EventSuccessQuestionnairePackLibrary.resolve(
                     const EventSuccessQuestionnaireConfig.customTemplate(),
                   ).subtitle

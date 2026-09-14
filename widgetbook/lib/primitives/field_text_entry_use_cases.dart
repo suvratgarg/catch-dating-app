@@ -53,7 +53,7 @@ Widget fieldTextEntryStates(BuildContext context) {
         child: CatchField.input(
           copy: copy,
           title: 'Required name',
-          validator: (value) =>
+          onValidate: (value) =>
               value?.isNotEmpty == true ? null : 'Enter a name.',
         ),
       ),

@@ -46,10 +46,10 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
               .eventSuccessEventSuccessStructureConfigEditorTextGroupPeopleInto,
           contract: CatchContractConstraints
               .eventSuccessPlanDocumentStructureConfigUnitKind,
-          contractValue: (value) => value.name,
+          contractValueBuilder: (value) => value.name,
           values: EventSuccessUnitKind.values,
-          itemTitle: (kind) => kind.label,
-          itemDescription: (kind) => kind.setupHint,
+          itemTitleBuilder: (kind) => kind.label,
+          itemDescriptionBuilder: (kind) => kind.setupHint,
           selected: value.unitKind,
           enabled: enabled,
           onChanged: enabled ? (kind) => onChanged(_withUnitKind(kind)) : null,
@@ -89,16 +89,16 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             title: value.unitKind.countLabel,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigUnitCount,
-            contractValue: (value) => value.toString(),
+            contractValueBuilder: (value) => value.toString(),
             values: const [false, true],
-            itemTitle: (fixed) => fixed
+            itemTitleBuilder: (fixed) => fixed
                 ? context
                       .l10n
                       .eventSuccessEventSuccessStructureConfigEditorLabelFixed
                 : context
                       .l10n
                       .eventSuccessEventSuccessStructureConfigEditorLabelAuto,
-            itemDescription: (fixed) => fixed
+            itemDescriptionBuilder: (fixed) => fixed
                 ? context
                       .l10n
                       .eventSuccessEventSuccessStructureConfigEditorDetailSetTheNumberYourselfOrLetCatchWorkItOutFromAttendance
@@ -150,12 +150,12 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 .eventSuccessEventSuccessStructureConfigEditorTitleSpreadPeopleOutBy,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigBalanceActivityAttributes,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
             values: EventSuccessActivityAssignmentAttribute.values,
-            itemLabel: (attribute) => attribute.balanceLabel,
+            itemLabelBuilder: (attribute) => attribute.balanceLabel,
             selected: value.balanceActivityAttributes.toSet(),
             multi: true,
             enabled: enabled,
@@ -177,12 +177,12 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 .eventSuccessEventSuccessStructureConfigEditorTitleKeepSimilarPeopleTogetherBy,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigClusterActivityAttributes,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
             values: EventSuccessActivityAssignmentAttribute.values,
-            itemLabel: (attribute) => attribute.clusterLabel,
+            itemLabelBuilder: (attribute) => attribute.clusterLabel,
             selected: value.clusterActivityAttributes.toSet(),
             multi: true,
             enabled: enabled,
@@ -206,9 +206,9 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 .eventSuccessEventSuccessStructureConfigEditorTextMeetingTheSamePersonAgain,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigRotationRepeatStrategy,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: EventSuccessRotationRepeatStrategy.values,
-            itemLabel: (strategy) => strategy.label,
+            itemLabelBuilder: (strategy) => strategy.label,
             selected: {value.rotationRepeatStrategy},
             enabled: enabled,
             onSelectionChanged: enabled

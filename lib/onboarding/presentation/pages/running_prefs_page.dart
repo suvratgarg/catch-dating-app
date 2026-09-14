@@ -282,14 +282,14 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                       .onboardingRunningPrefsPageLabelFavouriteDistances,
                   contract: CatchContractConstraints
                       .updateUserProfilePatchActivityPreferencesRunningPreferredDistances,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   body: _orderedSelectionLabels(
                     PreferredDistance.values,
                     state.distances,
                     (value) => value.label,
                   ),
                   values: PreferredDistance.values,
-                  itemLabel: (value) => value.label,
+                  itemLabelBuilder: (value) => value.label,
                   selected: state.distances,
                   onSelectionChanged: state.requestControlsEnabled
                       ? callbacks.onDistancesChanged
@@ -305,14 +305,14 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   title: state.reasonLabel,
                   contract: CatchContractConstraints
                       .updateUserProfilePatchActivityPreferencesRunningRunningReasons,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   body: _orderedSelectionLabels(
                     RunReason.values,
                     state.reasons,
                     (value) => value.label,
                   ),
                   values: RunReason.values,
-                  itemLabel: (value) => value.label,
+                  itemLabelBuilder: (value) => value.label,
                   selected: state.reasons,
                   onSelectionChanged: state.requestControlsEnabled
                       ? callbacks.onReasonsChanged
@@ -328,14 +328,14 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   title: state.runTimesLabel,
                   contract: CatchContractConstraints
                       .updateUserProfilePatchActivityPreferencesRunningPreferredRunTimes,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   body: _orderedSelectionLabels(
                     PreferredRunTime.values,
                     state.runTimes,
                     (value) => value.label,
                   ),
                   values: PreferredRunTime.values,
-                  itemLabel: (value) => value.label,
+                  itemLabelBuilder: (value) => value.label,
                   selected: state.runTimes,
                   onSelectionChanged: state.requestControlsEnabled
                       ? callbacks.onRunTimesChanged

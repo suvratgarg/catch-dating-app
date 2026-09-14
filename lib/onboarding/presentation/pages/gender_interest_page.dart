@@ -145,10 +145,10 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                             context.l10n.onboardingGenderInterestPageLabelIAmA,
                         contract: CatchContractConstraints
                             .onboardingDraftDocumentGender,
-                        contractValue: (gender) => gender.name,
+                        contractValueBuilder: (gender) => gender.name,
                         body: _orderedGenderLabels(state.selectedGender),
                         values: Gender.values,
-                        itemLabel: (gender) => gender.label,
+                        itemLabelBuilder: (gender) => gender.label,
                         selected: state.selectedGender,
                         onSelectionChanged: state.requestControlsEnabled
                             ? (selection) {
@@ -174,10 +174,10 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                             .onboardingGenderInterestPageLabelShowMe,
                         contract: CatchContractConstraints
                             .onboardingDraftDocumentInterestedInGenders,
-                        contractValue: (gender) => gender.name,
+                        contractValueBuilder: (gender) => gender.name,
                         body: _orderedGenderLabels(state.interestedIn),
                         values: Gender.values,
-                        itemLabel: (gender) => gender.label,
+                        itemLabelBuilder: (gender) => gender.label,
                         selected: state.interestedIn,
                         onSelectionChanged: state.requestControlsEnabled
                             ? (selection) {

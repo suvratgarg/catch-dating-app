@@ -143,7 +143,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     icon: CatchIcons.eventAvailableOutlined,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
-                    validator: (value) {
+                    onValidate: (value) {
                       final normalized = value?.trim() ?? '';
                       if (normalized.isEmpty) {
                         return context
@@ -159,11 +159,11 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     title: context.l10n.hostsEventDetailsStepLabelActivityType,
                     contract: CatchContractConstraints
                         .createEventCallablePayloadEventFormatActivityKind,
-                    contractValue: (value) => value.name,
+                    contractValueBuilder: (value) => value.name,
                     body: widget.selectedActivityKind.label,
                     values: ActivityKind.eventCreationDefaults,
-                    itemLabel: (activityKind) => activityKind.label,
-                    itemAccent: (activityKind) =>
+                    itemLabelBuilder: (activityKind) => activityKind.label,
+                    itemAccentBuilder: (activityKind) =>
                         ActivityPalette.resolve(context, activityKind).accent,
                     selected: <ActivityKind>{widget.selectedActivityKind},
                     onSelectionChanged: (selection) {
@@ -189,7 +189,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       icon: CatchIcons.eventAvailableOutlined,
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.next,
-                      validator: (value) {
+                      onValidate: (value) {
                         final normalized = value?.trim() ?? '';
                         if (normalized.isEmpty) {
                           return context
@@ -217,11 +217,11 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                           .hostsEventDetailsStepLabelFormatStructure,
                       contract: CatchContractConstraints
                           .createEventCallablePayloadEventFormatInteractionModel,
-                      contractValue: (value) => value.name,
+                      contractValueBuilder: (value) => value.name,
                       body: widget.selectedInteractionModel.label,
                       values: EventInteractionModel.values,
-                      itemLabel: (model) => model.label,
-                      itemAccent: (_) => activity.accent,
+                      itemLabelBuilder: (model) => model.label,
+                      itemAccentBuilder: (_) => activity.accent,
                       selected: <EventInteractionModel>{
                         widget.selectedInteractionModel,
                       },
@@ -256,7 +256,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                         ),
                       ],
                       textInputAction: TextInputAction.next,
-                      validator: (value) {
+                      onValidate: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return context
                               .l10n
@@ -290,11 +290,11 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                               context.l10n.hostsEventDetailsStepLabelPaceLevel,
                           contract: CatchContractConstraints
                               .createEventCallablePayloadPace,
-                          contractValue: (value) => value.name,
+                          contractValueBuilder: (value) => value.name,
                           body: widget.selectedPace?.label,
                           values: PaceLevel.values,
-                          itemLabel: (pace) => pace.label,
-                          itemAccent: (_) => activity.accent,
+                          itemLabelBuilder: (pace) => pace.label,
+                          itemAccentBuilder: (_) => activity.accent,
                           selected: widget.selectedPace == null
                               ? const <PaceLevel>{}
                               : <PaceLevel>{widget.selectedPace!},

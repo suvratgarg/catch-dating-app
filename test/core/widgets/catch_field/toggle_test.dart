@@ -34,7 +34,7 @@ void main() {
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Languages',
                   values: const ['English', 'Hindi'],
-                  itemLabel: (value) => value,
+                  itemLabelBuilder: (value) => value,
                   selected: selected,
                   multi: true,
                   initiallyOpen: true,

@@ -2566,8 +2566,8 @@ Widget catchFieldContractStates(BuildContext context) {
           title: 'Run format',
           helperText: 'Pick the format guests will see.',
           values: const ['Social', 'Competitive'],
-          itemLabel: (value) => value,
-          itemAccent: (value) =>
+          itemLabelBuilder: (value) => value,
+          itemAccentBuilder: (value) =>
               value == 'Social' ? CatchTokens.of(context).primary : null,
           selected: const {'Social'},
           initiallyOpen: true,
@@ -2582,9 +2582,9 @@ Widget catchFieldContractStates(BuildContext context) {
           copy: copy,
           title: 'Admission format',
           values: const ['open', 'request'],
-          itemTitle: (value) =>
+          itemTitleBuilder: (value) =>
               value == 'open' ? 'Open capacity' : 'Request to join',
-          itemDescription: (value) => value == 'open'
+          itemDescriptionBuilder: (value) => value == 'open'
               ? 'Anyone eligible can book until the event reaches capacity.'
               : 'People request a spot and a host approves each booking.',
           selected: 'open',
@@ -2720,7 +2720,7 @@ Widget catchFieldContractStates(BuildContext context) {
               copy: copy,
               title: 'Workout',
               values: const ['Never', 'Often'],
-              itemLabel: (value) => value,
+              itemLabelBuilder: (value) => value,
               selected: const {},
               onSelectionChanged: (_) {},
               addable: true,
@@ -2860,7 +2860,7 @@ Widget catchFieldContractStates(BuildContext context) {
           title: 'Activity',
           values: const ['Run', 'Dinner', 'Pickleball'],
           value: 'Run',
-          itemLabel: (value) => value,
+          itemLabelBuilder: (value) => value,
           prefixIcon: Icon(CatchIcons.eventOutlined),
           onChanged: (_) {},
         ),
@@ -2872,7 +2872,7 @@ Widget catchFieldContractStates(BuildContext context) {
           title: 'Activity',
           values: const ['Run', 'Dinner', 'Pickleball'],
           value: 'Run',
-          itemLabel: (value) => value,
+          itemLabelBuilder: (value) => value,
           prefixIcon: Icon(CatchIcons.eventOutlined),
           enabled: false,
           onChanged: (_) {},
@@ -4114,7 +4114,7 @@ Widget catchSectionContractStates(BuildContext context) {
                   'Tamil',
                   'Gujarati',
                 ],
-                itemLabel: (value) => value,
+                itemLabelBuilder: (value) => value,
                 selected: const {'English', 'Hindi', 'Marathi'},
                 multi: true,
                 initiallyOpen: true,
@@ -8521,6 +8521,7 @@ Widget catchDialogContractStates(BuildContext context) {
     ],
   );
 }
+
 Widget catchAdaptivePickerBehaviorStates(BuildContext context) {
   return const CatchAdaptivePickerHarness();
 }
@@ -11018,7 +11019,7 @@ class _ChoiceFieldDemoState extends State<_ChoiceFieldDemo> {
       body: widget.body,
       icon: CatchIcons.languageOutlined,
       values: _values,
-      itemLabel: (value) => value,
+      itemLabelBuilder: (value) => value,
       selected: _selected,
       multi: true,
       allowEmptySelection: widget.allowEmptySelection,
@@ -11148,9 +11149,9 @@ class _SelectErrorFieldDemoState extends State<_SelectErrorFieldDemo> {
         copy: catchFieldCopy(context.l10n),
         title: 'Activity',
         values: const ['Run', 'Dinner', 'Pickleball'],
-        itemLabel: (value) => value,
+        itemLabelBuilder: (value) => value,
         prefixIcon: Icon(CatchIcons.eventOutlined),
-        validator: (value) => value == null ? 'Choose an activity.' : null,
+        onValidate: (value) => value == null ? 'Choose an activity.' : null,
         onChanged: (_) {},
       ),
     );

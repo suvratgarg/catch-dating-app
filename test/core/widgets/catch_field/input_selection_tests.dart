@@ -16,10 +16,11 @@ void _registerInputSelectionTests() {
             title: 'City',
             contractExemption: 'Fixture selection is not persisted.',
             values: defaultCityOptions,
-            itemLabel: (city) => city.label,
+            itemLabelBuilder: (city) => city.label,
             value: selected,
             prefixIcon: Icon(CatchIcons.locationOnOutlined),
-            validator: (value) => value == null ? 'Please select a city' : null,
+            onValidate: (value) =>
+                value == null ? 'Please select a city' : null,
             onChanged: (value) => selected = value,
           ),
         ),
@@ -85,7 +86,7 @@ void _registerInputSelectionTests() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'City',
               values: defaultCityOptions,
-              itemLabel: (city) => city.label,
+              itemLabelBuilder: (city) => city.label,
               value: selected,
               onChanged: (_) {},
             ),
@@ -120,7 +121,7 @@ void _registerInputSelectionTests() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             values: defaultCityOptions,
-            itemLabel: (city) => city.label,
+            itemLabelBuilder: (city) => city.label,
             value: selected,
             enabled: false,
             onChanged: (_) {},
@@ -167,9 +168,9 @@ void _registerInputSelectionTests() {
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'City',
                   values: values,
-                  itemLabel: (city) => city.label,
+                  itemLabelBuilder: (city) => city.label,
                   value: selected,
-                  validator: (value) =>
+                  onValidate: (value) =>
                       value == null ? 'Please select a city' : null,
                   onChanged: (value) {
                     if (value != null) selected = value;
@@ -219,10 +220,10 @@ void _registerInputSelectionTests() {
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Selection',
                   values: values,
-                  itemLabel: (value) => value,
+                  itemLabelBuilder: (value) => value,
                   value: selected,
                   onChanged: (_) => changes++,
-                  validator: (value) {
+                  onValidate: (value) {
                     validated = value;
                     return value == null ? 'Choose a value' : null;
                   },
@@ -269,7 +270,7 @@ void _registerInputSelectionTests() {
         copy: catchFieldCopy(AppLocalizationsEn()),
         title: 'Activity',
         values: const ['Run', 'Run'],
-        itemLabel: (value) => value,
+        itemLabelBuilder: (value) => value,
       ),
       throwsAssertionError,
     );
@@ -289,7 +290,7 @@ void _registerInputSelectionTests() {
             title: 'City',
             values: defaultCityOptions,
             value: selected,
-            itemLabel: (city) => city.label,
+            itemLabelBuilder: (city) => city.label,
             prefixIcon: Icon(CatchIcons.locationOnOutlined),
             showLabel: false,
             onChanged: (value) => selected = value,

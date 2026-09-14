@@ -98,7 +98,7 @@ mixin _CatchFieldProperties {
   FocusNode? get focusNode => _inputConfig?.focusNode;
   bool get retainFocusOnSubmitted =>
       _inputConfig?.retainFocusOnSubmitted ?? false;
-  FormFieldValidator<String>? get validator => _inputConfig?.validator;
+  FormFieldValidator<String>? get onValidate => _inputConfig?.onValidate;
   TextInputType? get keyboardType => _inputConfig?.keyboardType;
   TextInputAction? get textInputAction => _inputConfig?.textInputAction;
   TextCapitalization get textCapitalization =>
@@ -155,7 +155,7 @@ mixin _CatchFieldProperties {
 
   List<Object?>? get _selectValues => _selectConfig?.values;
   String Function(Object? item)? get _selectItemLabel =>
-      _selectConfig?.itemLabel;
+      _selectConfig?.itemLabelBuilder;
   Object? get _selectValue => _selectConfig?.value;
   ValueChanged<Object?>? get _onSelectChanged => _selectConfig?.onSelectChanged;
   FormFieldValidator<Object?>? get _selectValidator =>

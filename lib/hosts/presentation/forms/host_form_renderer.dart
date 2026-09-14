@@ -159,10 +159,10 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
             title: question.label,
             contract: CatchContractConstraints
                 .organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptions,
-            contractValue: (value) => value,
+            contractValueBuilder: (value) => value,
             body: question.helpText,
             values: values,
-            itemLabel: (value) => question.options
+            itemLabelBuilder: (value) => question.options
                 .firstWhere((option) => option.value == value)
                 .label,
             selected: selected,

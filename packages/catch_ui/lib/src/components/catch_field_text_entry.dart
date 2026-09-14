@@ -91,7 +91,7 @@ class CatchFieldTextEntry extends StatelessWidget {
         label: field.title ?? '',
         value: value ?? '',
         contract: field.contract,
-        explicitValidator: field.validator,
+        explicitValidator: field.onValidate,
       ),
       enabled: field.enabled,
       builder: (state) {

@@ -166,10 +166,12 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
         continue;
       }
       const contract = namedArgumentExpression(argumentsSource, "contract");
+      // Shared widgets name computations with Builder; domain descriptors
+      // retain their value-serializer property. Keep the inventory key stable.
       const contractValue = namedArgumentExpression(
         argumentsSource,
-        "contractValue",
-      );
+        "contractValueBuilder",
+      ) ?? namedArgumentExpression(argumentsSource, "contractValue");
       const minimumContract = namedArgumentExpression(
         argumentsSource,
         "minimumContract",

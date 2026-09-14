@@ -39,9 +39,9 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             title: context.l10n.hostSavedAudienceAttendanceComparison,
             contract: CatchContractConstraints
                 .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: HostSavedAudienceAttendanceOperator.values,
-            itemLabel: (value) =>
+            itemLabelBuilder: (value) =>
                 value == HostSavedAudienceAttendanceOperator.atLeast
                 ? context.l10n.hostSavedAudienceAtLeast
                 : context.l10n.hostSavedAudienceAtMost,
@@ -61,7 +61,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               ...supportedCurrencyDefinitions.map((c) => c.code),
               rule.currency,
             }.toList(),
-            itemLabel: (value) => value,
+            itemLabelBuilder: (value) => value,
             value: rule.currency,
             enabled: enabled,
             onChanged: (value) {
@@ -82,7 +82,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             enabled: enabled,
-            validator: (text) {
+            onValidate: (text) {
               final amount = parseMajorCurrencyAmountToMinorUnits(
                 text ?? '',
                 currencyCode: rule.currency,
@@ -111,7 +111,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             initialValue: rule.withinDays?.toString() ?? '',
             keyboardType: TextInputType.number,
             enabled: enabled,
-            validator: (text) {
+            onValidate: (text) {
               if ((text ?? '').trim().isEmpty) return null;
               final days = int.tryParse(text!.trim());
               return days == null || days < 1 || days > 3650
@@ -140,9 +140,9 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
           title: context.l10n.hostAudienceRuleNamedEvent,
           contract: CatchContractConstraints
               .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventId,
-          contractValue: (value) => value.id,
+          contractValueBuilder: (value) => value.id,
           values: options.events,
-          itemLabel: (value) => value.title,
+          itemLabelBuilder: (value) => value.title,
           value: options.events.where((e) => e.id == rule?.eventId).firstOrNull,
           enabled: enabled && options.events.isNotEmpty,
           hintText: context.l10n.hostAudienceChooseEvent,
@@ -166,9 +166,9 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               title: context.l10n.hostAudienceChooseForm,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsFormId,
-              contractValue: (value) => value.id,
+              contractValueBuilder: (value) => value.id,
               values: options.forms,
-              itemLabel: (value) => value.title,
+              itemLabelBuilder: (value) => value.title,
               value: options.forms
                   .where((f) => f.id == rule?.formId)
                   .firstOrNull,
@@ -194,9 +194,9 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               title: context.l10n.hostApplicationsReviewStatusFilter,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsReviewStatus,
-              contractValue: (value) => value.name,
+              contractValueBuilder: (value) => value.name,
               values: HostSavedAudienceApplicationStatus.values,
-              itemLabel: (value) =>
+              itemLabelBuilder: (value) =>
                   _audienceApplicationStatusLabel(context, value),
               value:
                   rule?.reviewStatus ??
@@ -238,10 +238,10 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             helperText: context.l10n.hostAudienceFilterableQuestionsHelp,
             contract: CatchContractConstraints
                 .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsQuestionId,
-            contractValue: (value) => value.questionId,
+            contractValueBuilder: (value) => value.questionId,
             values: options.questions,
             value: question,
-            itemLabel: (value) =>
+            itemLabelBuilder: (value) =>
                 '${value.formTitle} · v${value.version} · ${value.label}',
             enabled: enabled && options.questions.isNotEmpty,
             hintText: context.l10n.hostAudienceChooseQuestion,
@@ -270,7 +270,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
                   'Values come from the scoped immutable form version; '
                   'the callable validates the selected string or boolean again.',
               values: question.options,
-              itemLabel: (value) => _audienceAnswerLabel(context, value),
+              itemLabelBuilder: (value) => _audienceAnswerLabel(context, value),
               value: question.options
                   .where((o) => o.value == rule?.value)
                   .firstOrNull,

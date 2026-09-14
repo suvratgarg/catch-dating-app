@@ -112,7 +112,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                         body: _recommendationFor(_mode),
                         icon: CatchIcons.groups3Outlined,
                         values: EventSuccessMixPrototypeMode.values,
-                        itemLabel: _modeLabel,
+                        itemLabelBuilder: _modeLabel,
                         selected: {_mode},
                         onSelectionChanged: (selection) {
                           setState(() => _mode = selection.single);
@@ -126,7 +126,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                                 copy: catchFieldCopy(context.l10n),
                                 title: _unitSizeTitle(_mode),
                                 values: const [4, 6, 8, 10],
-                                itemLabel: (value) => '$value people',
+                                itemLabelBuilder: (value) => '$value people',
                                 selected: {_unitSize},
                                 onSelectionChanged: (selection) {
                                   setState(() => _unitSize = selection.single);
@@ -137,7 +137,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                               title: 'Group count',
                               body: 'Let Catch estimate it from attendance.',
                               values: const ['Automatic', 'Fixed'],
-                              itemLabel: (value) => value,
+                              itemLabelBuilder: (value) => value,
                               selected: {_groupCount},
                               onSelectionChanged: (selection) {
                                 setState(() => _groupCount = selection.single);
@@ -148,7 +148,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                                 copy: catchFieldCopy(context.l10n),
                                 title: 'Rotate every',
                                 values: const [null, 10, 15, 20, 30],
-                                itemLabel: (value) => value == null
+                                itemLabelBuilder: (value) => value == null
                                     ? 'Do not rotate'
                                     : '$value min',
                                 selected: {_rotationMinutes},
@@ -217,7 +217,7 @@ class _EventSuccessModuleConsolidationPrototypeState
                         title: 'Match clue questions',
                         body: _matchClueDescription(_matchClues),
                         values: _MatchCluePrototypeMode.values,
-                        itemLabel: _matchClueLabel,
+                        itemLabelBuilder: _matchClueLabel,
                         selected: {_matchClues},
                         onSelectionChanged: (selection) {
                           setState(() => _matchClues = selection.single);

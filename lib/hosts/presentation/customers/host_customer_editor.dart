@@ -248,7 +248,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
           autofillHints: const [AutofillHints.name],
           autofocus: autofocusName,
           enabled: enabled,
-          validator: (value) => (value ?? '').trim().isEmpty
+          onValidate: (value) => (value ?? '').trim().isEmpty
               ? context.l10n.hostCustomersNameRequired
               : null,
         ),
@@ -274,7 +274,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
             placeholder: '+919876543210',
             helperText: create ? null : context.l10n.hostCustomersPhoneHelp,
             enabled: enabled,
-            validator: (value) => _manualPhoneError(context, value),
+            onValidate: (value) => _manualPhoneError(context, value),
             onChanged: (_) => onContactMethodChanged(),
           ),
         ),
@@ -296,7 +296,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
             textInputAction: TextInputAction.done,
             autofillHints: const [AutofillHints.email],
             enabled: enabled,
-            validator: (value) => _manualEmailError(context, value),
+            onValidate: (value) => _manualEmailError(context, value),
             onChanged: (_) => onContactMethodChanged(),
             onSubmitted: (_) => onSubmitted(),
           ),

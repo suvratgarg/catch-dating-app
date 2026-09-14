@@ -215,13 +215,13 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   title: context.l10n.hostsEventItineraryFieldKind,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadItineraryItemsKind,
-                  contractValue: (value) =>
+                  contractValueBuilder: (value) =>
                       value == EventItineraryKind.breakTime
                       ? 'break'
                       : value.name,
                   values: EventItineraryKind.values,
                   selected: {kind},
-                  itemLabel: (value) => _kindLabel(context, value),
+                  itemLabelBuilder: (value) => _kindLabel(context, value),
                   onSelectionChanged: (selection) =>
                       setState(() => kind = selection.single),
                 ),

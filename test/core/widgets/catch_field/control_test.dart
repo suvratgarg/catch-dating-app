@@ -99,7 +99,7 @@ void main() {
           title: 'Distances',
           body: '5K and beyond',
           values: const ['5K', '10K'],
-          itemLabel: (value) => value,
+          itemLabelBuilder: (value) => value,
           selected: const {'5K', '10K'},
           multi: true,
           onSelectionChanged: (_) {},
@@ -122,8 +122,8 @@ void main() {
           title: 'Format',
           helperText: 'Pick the format guests will see.',
           values: const ['Social', 'Competitive'],
-          itemLabel: (value) => value,
-          itemAccent: (value) => value == 'Social' ? accent : null,
+          itemLabelBuilder: (value) => value,
+          itemAccentBuilder: (value) => value == 'Social' ? accent : null,
           selected: const {'Social'},
           initiallyOpen: true,
           onSelectionChanged: (_) {},
@@ -150,8 +150,9 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Admission format',
               values: const ['open', 'invite'],
-              itemTitle: (value) => value == 'open' ? 'Open' : 'Invite only',
-              itemDescription: (value) => value == 'open'
+              itemTitleBuilder: (value) =>
+                  value == 'open' ? 'Open' : 'Invite only',
+              itemDescriptionBuilder: (value) => value == 'open'
                   ? 'Anyone eligible can book until capacity.'
                   : 'Only people with the invite code can book.',
               selected: selected,
@@ -418,7 +419,7 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'City',
           values: const ['Indore', 'Mumbai'],
-          itemLabel: (value) => value,
+          itemLabelBuilder: (value) => value,
           selected: const {'Indore'},
           onSelectionChanged: (_) {},
           initiallyOpen: true,
@@ -561,7 +562,7 @@ void main() {
             title: 'Event title',
             placeholder: 'Short and memorable',
             helperText: 'Shows on event cards',
-            validator: (value) =>
+            onValidate: (value) =>
                 value == null || value.isEmpty ? "Title can't be empty" : null,
             onChanged: (value) => latestValue = value,
           ),
@@ -703,7 +704,7 @@ void main() {
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Activities',
                 values: const ['Run', 'Walk'],
-                itemLabel: (value) => value,
+                itemLabelBuilder: (value) => value,
                 selected: selected,
                 initiallyOpen: true,
                 onSelectionChanged: (next) {
@@ -730,7 +731,7 @@ void main() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Locked activities',
             values: const ['Run', 'Walk'],
-            itemLabel: (value) => value,
+            itemLabelBuilder: (value) => value,
             selected: selected,
             multi: true,
             enabled: false,

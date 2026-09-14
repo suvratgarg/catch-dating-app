@@ -172,9 +172,9 @@ class _EventSuccessLayoutAuthorSheetState
                   title: context.l10n.hostsEventSuccessStepRoomLayoutShape,
                   contract: CatchContractConstraints
                       .upsertEventSuccessLayoutCallablePayloadUnitsItemsShape,
-                  contractValue: (shape) => shape.wireName,
+                  contractValueBuilder: (shape) => shape.wireName,
                   values: EventSuccessLayoutShape.values,
-                  itemLabel: (shape) => _shapeLabel(context, shape),
+                  itemLabelBuilder: (shape) => _shapeLabel(context, shape),
                   value: _shape,
                   onChanged: (shape) {
                     if (shape != null) setState(() => _shape = shape);

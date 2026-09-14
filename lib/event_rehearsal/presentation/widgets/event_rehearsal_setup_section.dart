@@ -154,9 +154,9 @@ class _EventRehearsalSetupSectionState
                 title: context.l10n.hostEventRehearsalModules,
                 contract: CatchContractConstraints
                     .updateEventRehearsalSetupCallablePayloadSetupModuleIds,
-                contractValue: (module) => module.name,
+                contractValueBuilder: (module) => module.name,
                 values: EventRehearsalModule.values,
-                itemLabel: (module) =>
+                itemLabelBuilder: (module) =>
                     eventRehearsalModuleLabel(context.l10n, module),
                 selected: _modules,
                 multi: true,

@@ -71,7 +71,7 @@ void main() {
                 copy: _copy('Custom'),
                 title: 'Language',
                 values: const ['one'],
-                itemLabel: (value) => value,
+                itemLabelBuilder: (value) => value,
                 onChanged: (_) {},
               ),
             ],
