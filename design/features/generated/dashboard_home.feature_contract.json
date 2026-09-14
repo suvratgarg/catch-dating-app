@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/dashboard_home.feature.json",
   "generatedFor": "2026-08-18",
-  "sourceDigest": "sha256:77d987b6381e21f1c65e500e78ad4390a27dd629426326c0f33204b929dabf32",
+  "sourceDigest": "sha256:d53a70ef5535bb95521a8031cda5c0eb7f84385b04314d9ebaf4c0a58372f134",
   "resolvedDigest": "sha256:2986983e43512707f245e66a85aa7eab000d54169dd2383dc2f94b412f5fc532",
   "feature": {
     "id": "feature.dashboard_home",
@@ -39,7 +39,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/dashboard/dashboard_use_cases.dart"
+          "widgetbook/lib/dashboard/catalog/screen.dart"
         ],
         "actionOwners": [
           {
