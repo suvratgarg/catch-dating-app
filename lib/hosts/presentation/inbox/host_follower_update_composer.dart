@@ -132,7 +132,7 @@ class _HostFollowerUpdateComposerSheetState
                   .hostsHostClubToolsHelpertextValue1CharactersLeft(
                     value1: 500 - _controller.text.length,
                   ),
-              enabled: !_pending,
+              states: <WidgetState>{if (_pending) WidgetState.disabled},
               onChanged: (_) => setState(() {
                 _requestId = widget.requestIdFactory();
               }),

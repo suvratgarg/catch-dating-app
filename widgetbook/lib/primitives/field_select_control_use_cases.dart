@@ -57,7 +57,7 @@ Widget fieldSelectControlStates(BuildContext context) {
         values: values,
         itemLabelBuilder: (value) => value,
         value: 'Outside the city',
-        enabled: false,
+        states: const <WidgetState>{WidgetState.disabled},
       ),
       Form(
         key: formKey,

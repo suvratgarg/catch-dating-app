@@ -521,7 +521,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             contract: CatchContractConstraints
                                 .updateEventCallablePayloadFieldsMeetingPoint,
                             controller: _meetingPointController,
-                            enabled: screenState.canEdit,
+                            states: <WidgetState>{
+                              if (!screenState.canEdit) WidgetState.disabled,
+                            },
                             inputHint: context
                                 .l10n
                                 .hostsEditHostedEventScreenPlaceholderEGBandstandPromenade,
@@ -572,7 +574,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 .updateEventCallablePayloadFieldsLocationDetails,
                             isOptional: true,
                             controller: _locationDetailsController,
-                            enabled: screenState.canEdit,
+                            states: <WidgetState>{
+                              if (!screenState.canEdit) WidgetState.disabled,
+                            },
                             inputHint: context
                                 .l10n
                                 .hostsEditHostedEventScreenPlaceholderEGMeetOutside,
@@ -631,7 +635,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             contract: CatchContractConstraints
                                 .updateEventCallablePayloadFieldsName,
                             controller: _nameController,
-                            enabled: screenState.canEdit,
+                            states: <WidgetState>{
+                              if (!screenState.canEdit) WidgetState.disabled,
+                            },
                             inputHint: context
                                 .l10n
                                 .hostsEventDetailsStepPlaceholderEventName,
@@ -655,7 +661,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               contract: CatchContractConstraints
                                   .updateEventCallablePayloadFieldsDistanceKm,
                               controller: _distanceController,
-                              enabled: screenState.canEdit,
+                              states: <WidgetState>{
+                                if (!screenState.canEdit) WidgetState.disabled,
+                              },
                               inputHint: '10',
                               icon: CatchIcons.straightenOutlined,
                               keyboardType:
@@ -715,7 +723,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                       ),
                                     )
                                   : null,
-                              enabled: screenState.canEdit,
+                              states: <WidgetState>{
+                                if (!screenState.canEdit) WidgetState.disabled,
+                              },
                               icon: CatchIcons.speedOutlined,
                             ),
                           ],
@@ -729,7 +739,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 .updateEventCallablePayloadFieldsDescription,
                             isOptional: true,
                             controller: _descriptionController,
-                            enabled: screenState.canEdit,
+                            states: <WidgetState>{
+                              if (!screenState.canEdit) WidgetState.disabled,
+                            },
                             inputHint: context
                                 .l10n
                                 .hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect,

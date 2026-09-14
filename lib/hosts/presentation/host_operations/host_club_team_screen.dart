@@ -639,7 +639,10 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
           onSubmit: () => unawaited(_submitField(_displayNameField)),
           isLoading:
               widget.savingProfile && _accordion.isExpanded(_displayNameField),
-          enabled: !widget.savingProfile && widget.onSaveProfile != null,
+          states: <WidgetState>{
+            if (!(!widget.savingProfile && widget.onSaveProfile != null))
+              WidgetState.disabled,
+          },
           icon: CatchIcons.personOutlineRounded,
           textInputAction: TextInputAction.done,
           textCapitalization: TextCapitalization.words,
@@ -666,7 +669,10 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
           onSubmit: () => unawaited(_submitField(_roleTitleField)),
           isLoading:
               widget.savingProfile && _accordion.isExpanded(_roleTitleField),
-          enabled: !widget.savingProfile && widget.onSaveProfile != null,
+          states: <WidgetState>{
+            if (!(!widget.savingProfile && widget.onSaveProfile != null))
+              WidgetState.disabled,
+          },
           icon: CatchIcons.cardMembershipOutlined,
           textInputAction: TextInputAction.done,
           textCapitalization: TextCapitalization.words,
@@ -689,7 +695,10 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
               _cancelField(_bioField, widget.bioController, profile.bio ?? ''),
           onSubmit: () => unawaited(_submitField(_bioField)),
           isLoading: widget.savingProfile && _accordion.isExpanded(_bioField),
-          enabled: !widget.savingProfile && widget.onSaveProfile != null,
+          states: <WidgetState>{
+            if (!(!widget.savingProfile && widget.onSaveProfile != null))
+              WidgetState.disabled,
+          },
           icon: CatchIcons.chatBubbleOutlineRounded,
           minLines: 2,
           maxLines: 4,

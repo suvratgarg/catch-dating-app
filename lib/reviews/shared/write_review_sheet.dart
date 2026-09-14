@@ -203,7 +203,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
                   .createEventReviewCallablePayloadComment,
               isOptional: true,
               controller: _commentController,
-              enabled: !submitting,
+              states: <WidgetState>{if (submitting) WidgetState.disabled},
               maxLines: 3,
               placeholder: context
                   .l10n

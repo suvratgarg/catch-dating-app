@@ -290,7 +290,7 @@ class ProfileInlineTextValue extends StatelessWidget {
         autofillHints: autofillHints,
         maxLines: maxLines,
         minLines: minLines,
-        enabled: enabled,
+        states: <WidgetState>{if (!enabled) WidgetState.disabled},
         autofocus: true,
         showLabel: false,
         size: CatchFieldSize.floating,

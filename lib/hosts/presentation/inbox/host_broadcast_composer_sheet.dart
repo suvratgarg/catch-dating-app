@@ -219,7 +219,9 @@ class _HostBroadcastComposerSheetState
                       .hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate,
                   minLines: 3,
                   maxLines: 5,
-                  enabled: !mutation.isPending,
+                  states: <WidgetState>{
+                    if (mutation.isPending) WidgetState.disabled,
+                  },
                   textCapitalization: TextCapitalization.sentences,
                   onChanged: (_) => _handleContentChanged(),
                 ),

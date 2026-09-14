@@ -643,7 +643,7 @@ class _HostWhatsappHandoffSheetState
               contractExemption:
                   'Editable handoff copy is persisted only in the bounded '
                   'TTL manual-send task, then passed to the external app.',
-              enabled: !_opening,
+              states: <WidgetState>{if (_opening) WidgetState.disabled},
               onChanged: (_) => setState(() {}),
             ),
           ),

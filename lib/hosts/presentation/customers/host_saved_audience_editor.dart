@@ -196,7 +196,9 @@ class _HostSavedAudienceEditorFormState
                             controller: _nameController,
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.next,
-                            enabled: !_busy,
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
                             onValidate: (value) => (value ?? '').trim().isEmpty
                                 ? context.l10n.hostSavedAudienceNameRequired
                                 : null,
@@ -215,7 +217,9 @@ class _HostSavedAudienceEditorFormState
                             value: _static
                                 ? HostSavedAudienceMembershipMode.selectedPeople
                                 : HostSavedAudienceMembershipMode.rules,
-                            enabled: !_busy,
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
                             onChanged: (value) {
                               if (value != null) {
                                 setState(
@@ -243,7 +247,9 @@ class _HostSavedAudienceEditorFormState
                                   context.l10n.hostSavedAudienceMatchAny,
                               },
                               value: _join,
-                              enabled: !_busy,
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
                               onChanged: (value) {
                                 if (value != null) {
                                   setState(() => _join = value);
@@ -606,7 +612,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           values: kinds,
           itemLabelBuilder: (value) => _audienceRuleKindLabel(context, value),
           value: draft.kind,
-          enabled: enabled,
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
           onChanged: (value) {
             if (value != null) onChanged(draft.withKind(value, manualTags));
           },
@@ -645,7 +651,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
                 hostCustomerFilterForAudienceSegment(value),
               ),
               value: draft.segment,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) {
                 if (value != null) onChanged(draft.copyWith(segment: value));
               },
@@ -664,7 +670,9 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
                   .where((tag) => tag.tagId == draft.manualTagId)
                   .firstOrNull,
               hintText: context.l10n.hostSavedAudienceChooseTag,
-              enabled: enabled && manualTags.isNotEmpty,
+              states: <WidgetState>{
+                if (!(enabled && manualTags.isNotEmpty)) WidgetState.disabled,
+              },
               onChanged: (value) {
                 if (value != null) {
                   onChanged(draft.copyWith(manualTagId: value.tagId));
@@ -687,7 +695,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
                   context.l10n.hostSavedAudienceAtMost,
               },
               value: draft.operator,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) {
                 if (value != null) onChanged(draft.copyWith(operator: value));
               },
@@ -703,7 +711,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
                   context.l10n.hostSavedAudienceDecreaseCount,
               increaseSemanticLabel:
                   context.l10n.hostSavedAudienceIncreaseCount,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) =>
                   onChanged(draft.copyWith(amount: value.toInt())),
             ),
@@ -718,7 +726,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               unit: context.l10n.hostSavedAudienceDaysUnit,
               decreaseSemanticLabel: context.l10n.hostSavedAudienceDecreaseDays,
               increaseSemanticLabel: context.l10n.hostSavedAudienceIncreaseDays,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) =>
                   onChanged(draft.copyWith(amount: value.toInt())),
             ),

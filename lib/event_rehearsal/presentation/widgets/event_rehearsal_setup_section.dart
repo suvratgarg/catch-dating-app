@@ -89,7 +89,7 @@ class _EventRehearsalSetupSectionState
           contractExemption:
               'Rehearsal setup is submitted as one callable-owned snapshot.',
           open: _open,
-          enabled: editable,
+          states: <WidgetState>{if (!editable) WidgetState.disabled},
           isLoading: widget.isLoading,
           onOpenChanged: editable
               ? (open) => setState(() => _open = open)

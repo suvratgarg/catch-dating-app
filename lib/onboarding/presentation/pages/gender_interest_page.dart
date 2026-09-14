@@ -156,7 +156,10 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                                 field.didChange(selection);
                               }
                             : null,
-                        enabled: state.requestControlsEnabled,
+                        states: <WidgetState>{
+                          if (!state.requestControlsEnabled)
+                            WidgetState.disabled,
+                        },
                         initiallyOpen: true,
                         error: field.errorText,
                       ),
@@ -186,7 +189,10 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                               }
                             : null,
                         multi: true,
-                        enabled: state.requestControlsEnabled,
+                        states: <WidgetState>{
+                          if (!state.requestControlsEnabled)
+                            WidgetState.disabled,
+                        },
                         initiallyOpen: true,
                         error: field.errorText,
                       ),

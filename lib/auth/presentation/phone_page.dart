@@ -130,7 +130,10 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                               .onboardingDraftDocumentPhoneNumber,
                           showLabel: false,
                           controller: _phoneController,
-                          enabled: viewState.requestControlsEnabled,
+                          states: <WidgetState>{
+                            if (!viewState.requestControlsEnabled)
+                              WidgetState.disabled,
+                          },
                           keyboardType: TextInputType.phone,
                           textInputAction: TextInputAction.done,
                           autofillHints: const [
@@ -247,7 +250,10 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                     showLabel: false,
                     controller: _phoneController,
                     autofocus: viewState.shouldAutofocus,
-                    enabled: viewState.requestControlsEnabled,
+                    states: <WidgetState>{
+                      if (!viewState.requestControlsEnabled)
+                        WidgetState.disabled,
+                    },
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.done,
                     autofillHints: const [

@@ -152,7 +152,9 @@ class WhereStep extends ConsumerWidget {
               contract: CatchContractConstraints
                   .createEventCallablePayloadMeetingPoint,
               controller: meetingPointController,
-              enabled: !saveMutation.isPending,
+              states: <WidgetState>{
+                if (saveMutation.isPending) WidgetState.disabled,
+              },
               inputHint:
                   context.l10n.hostsWhereStepPlaceholderEGBandstandPromenade,
               helperText: startingPoint == null
@@ -177,7 +179,9 @@ class WhereStep extends ConsumerWidget {
                   .createEventCallablePayloadLocationDetails,
               isOptional: true,
               controller: locationDetailsController,
-              enabled: !saveMutation.isPending,
+              states: <WidgetState>{
+                if (saveMutation.isPending) WidgetState.disabled,
+              },
               inputHint: context.l10n.hostsWhereStepPlaceholderEGMeetOutside,
               helperText:
                   context.l10n.hostsWhereStepHelpertextGateEntranceFloorOr,

@@ -46,7 +46,7 @@ Widget fieldTextEntryStates(BuildContext context) {
         title: 'Private code',
         initialValue: '1234',
         obscureText: true,
-        enabled: false,
+        states: const <WidgetState>{WidgetState.disabled},
       ),
       Form(
         key: formKey,

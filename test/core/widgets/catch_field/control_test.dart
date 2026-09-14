@@ -734,7 +734,10 @@ void main() {
             itemLabelBuilder: (value) => value,
             selected: selected,
             multi: true,
-            enabled: false,
+            states: const <WidgetState>{
+              WidgetState.disabled,
+              WidgetState.focused,
+            },
             initiallyOpen: true,
             onSelectionChanged: (_) => reports += 1,
           ),

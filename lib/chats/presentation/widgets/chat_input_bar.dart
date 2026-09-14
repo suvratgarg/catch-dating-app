@@ -201,7 +201,9 @@ class _ChatComposer extends StatelessWidget {
                                     .chatsChatInputBarPlaceholderMessage,
                             size: CatchFieldSize.floating,
                             variant: CatchFieldVariant.bare,
-                            enabled: !hardDisabled,
+                            states: <WidgetState>{
+                              if (hardDisabled) WidgetState.disabled,
+                            },
                             autofocus: autofocus,
                             onSubmitted: (_) {
                               if (sendActionEnabled) onSend?.call();

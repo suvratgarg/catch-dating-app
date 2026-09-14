@@ -115,7 +115,9 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                             maxLines: 5,
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.done,
-                            enabled: !_saving,
+                            states: <WidgetState>{
+                              if (_saving) WidgetState.disabled,
+                            },
                             onSubmitted: (_) => unawaited(_submit()),
                           ),
                         ),
@@ -247,7 +249,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
           textInputAction: TextInputAction.next,
           autofillHints: const [AutofillHints.name],
           autofocus: autofocusName,
-          enabled: enabled,
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
           onValidate: (value) => (value ?? '').trim().isEmpty
               ? context.l10n.hostCustomersNameRequired
               : null,
@@ -273,7 +275,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
             autofillHints: const [AutofillHints.telephoneNumber],
             placeholder: '+919876543210',
             helperText: create ? null : context.l10n.hostCustomersPhoneHelp,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onValidate: (value) => _manualPhoneError(context, value),
             onChanged: (_) => onContactMethodChanged(),
           ),
@@ -295,7 +297,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             autofillHints: const [AutofillHints.email],
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onValidate: (value) => _manualEmailError(context, value),
             onChanged: (_) => onContactMethodChanged(),
             onSubmitted: (_) => onSubmitted(),

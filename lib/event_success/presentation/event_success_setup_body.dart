@@ -150,7 +150,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   setState(() => _hostGoalOpen = open && widget.editable),
               onCancel: _cancelHostGoal,
               onSubmit: _submitHostGoal,
-              enabled: widget.editable,
+              states: <WidgetState>{if (!widget.editable) WidgetState.disabled},
               inputHint: draft.hostGoal,
               minLines: 2,
               maxLines: 4,
@@ -175,7 +175,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   setState(() => _attendeePromptOpen = open && widget.editable),
               onCancel: _cancelAttendeePrompt,
               onSubmit: _submitAttendeePrompt,
-              enabled: widget.editable,
+              states: <WidgetState>{if (!widget.editable) WidgetState.disabled},
               inputHint: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff,
@@ -224,7 +224,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                       .eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved,
               },
               selected: draft.conversationGraphConsentMode,
-              enabled: widget.editable,
+              states: <WidgetState>{if (!widget.editable) WidgetState.disabled},
               onChanged: widget.editable
                   ? (mode) => widget.onChanged(
                       (current) =>
@@ -387,7 +387,7 @@ class EventSuccessModuleRows extends StatelessWidget {
                       .eventSuccessEventSuccessSetupBodyTextAnswersCreateCluesAndSoftlyGuidePairings,
               },
               selected: _questionnaireMode(_draft),
-              enabled: _editable,
+              states: <WidgetState>{if (!_editable) WidgetState.disabled},
               onChanged: _editable ? _onQuestionnaireModeChanged : null,
             ),
           )
@@ -439,7 +439,7 @@ class EventSuccessModuleRows extends StatelessWidget {
                 _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel30Min,
               },
               selected: {_draft.structureConfig.rotationIntervalMinutes},
-              enabled: _editable,
+              states: <WidgetState>{if (!_editable) WidgetState.disabled},
               onSelectionChanged: _editable
                   ? (selection) => _onDraftChanged(
                       (current) => current.copyWith(
@@ -471,7 +471,7 @@ class EventSuccessModuleRows extends StatelessWidget {
                 _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel15s,
               },
               selected: {_draft.structureConfig.revealCountdownSeconds},
-              enabled: _editable,
+              states: <WidgetState>{if (!_editable) WidgetState.disabled},
               onSelectionChanged: _editable
                   ? (selection) => _onDraftChanged(
                       (current) => current.copyWith(

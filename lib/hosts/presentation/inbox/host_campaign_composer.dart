@@ -221,7 +221,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                     .upsertOrganizerCampaignCallablePayloadName,
                 controller: _campaignNameController,
                 placeholder: context.l10n.hostsHostAudienceCampaignNameExample,
-                enabled: _campaign == null,
+                states: <WidgetState>{
+                  if (!(_campaign == null)) WidgetState.disabled,
+                },
               ),
               gapH12,
               CatchField<_HostCampaignMessageClass>.select(
@@ -233,7 +235,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 values: _HostCampaignMessageClass.values,
                 itemLabelBuilder: (value) => _messageClassLabel(context, value),
                 value: _messageClass,
-                enabled: _campaign == null,
+                states: <WidgetState>{
+                  if (!(_campaign == null)) WidgetState.disabled,
+                },
                 onChanged: (value) {
                   if (value != null) setState(() => _messageClass = value);
                 },
@@ -306,7 +310,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 itemLabelBuilder: (audience) =>
                     _savedAudienceLabel(context, audience),
                 value: selectedAudience,
-                enabled: _campaign == null,
+                states: <WidgetState>{
+                  if (!(_campaign == null)) WidgetState.disabled,
+                },
                 onChanged: (value) => setState(() => _selectedAudience = value),
               ),
               gapH12,
@@ -320,7 +326,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 itemLabelBuilder: (value) =>
                     '${value.name} · ${value.language}',
                 value: template,
-                enabled: _campaign == null,
+                states: <WidgetState>{
+                  if (!(_campaign == null)) WidgetState.disabled,
+                },
                 onChanged: (value) {
                   if (value == null) return;
                   setState(() {
@@ -343,7 +351,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                   value: _eventIn(events, _selectedEvent),
                   hintText: context.l10n.hostsHostAudienceChooseEvent,
                   helperText: context.l10n.hostsHostAudienceLinkedEventHelp,
-                  enabled: _campaign == null,
+                  states: <WidgetState>{
+                    if (!(_campaign == null)) WidgetState.disabled,
+                  },
                   onChanged: (value) => setState(() {
                     _selectedEvent = value;
                     _inviteDestination = value == null
@@ -370,7 +380,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                         : context
                               .l10n
                               .hostsHostAudienceCatchAttributionExplanation,
-                    enabled: _campaign == null,
+                    states: <WidgetState>{
+                      if (!(_campaign == null)) WidgetState.disabled,
+                    },
                     onChanged: (value) =>
                         setState(() => _inviteDestination = value),
                   ),
@@ -386,7 +398,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                         'Template-variable keys are provider-defined; the generated contract constrains the map, not each dynamic value field.',
                     controller: _controllerForVariable(variable),
                     maxLength: 240,
-                    enabled: _campaign == null,
+                    states: <WidgetState>{
+                      if (!(_campaign == null)) WidgetState.disabled,
+                    },
                   ),
                 ],
               gapH16,

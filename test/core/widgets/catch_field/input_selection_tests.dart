@@ -123,7 +123,7 @@ void _registerInputSelectionTests() {
             values: defaultCityOptions,
             itemLabelBuilder: (city) => city.label,
             value: selected,
-            enabled: false,
+            states: const <WidgetState>{WidgetState.disabled},
             onChanged: (_) {},
           ),
         ),

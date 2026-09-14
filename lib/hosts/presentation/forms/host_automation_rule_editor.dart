@@ -178,7 +178,9 @@ class _HostAutomationRuleEditorState
                           contract: CatchContractConstraints
                               .createOrganizerFormAutomationCallablePayloadName,
                           controller: _name,
-                          enabled: !_busy,
+                          states: <WidgetState>{
+                            if (_busy) WidgetState.disabled,
+                          },
                         ),
                         CatchField<HostFormAutomationTrigger>.select(
                           copy: catchFieldCopy(context.l10n),
@@ -196,7 +198,9 @@ class _HostAutomationRuleEditorState
                               .toList(),
                           itemLabelBuilder: (v) => _triggerLabel(context, v),
                           value: _trigger,
-                          enabled: !_busy,
+                          states: <WidgetState>{
+                            if (_busy) WidgetState.disabled,
+                          },
                           onChanged: (v) {
                             if (v == null) return;
                             setState(() {
@@ -239,7 +243,10 @@ class _HostAutomationRuleEditorState
                                           ?.title ??
                                       l.hostAutomationConfigured,
                             value: _formId ?? (formRequired ? null : ''),
-                            enabled: !_busy && widget.scopeFormId == null,
+                            states: <WidgetState>{
+                              if (!(!_busy && widget.scopeFormId == null))
+                                WidgetState.disabled,
+                            },
                             onChanged: (v) => setState(() {
                               _formId = v == '' ? null : v;
                               _condition = null;
@@ -271,7 +278,9 @@ class _HostAutomationRuleEditorState
                                           ?.title ??
                                       l.hostAutomationConfigured,
                             value: _eventId ?? '',
-                            enabled: !_busy,
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
                             onChanged: (v) =>
                                 setState(() => _eventId = v == '' ? null : v),
                           ),
@@ -284,7 +293,9 @@ class _HostAutomationRuleEditorState
                           helperText: l.hostAutomationDelayHelp,
                           controller: _delay,
                           keyboardType: TextInputType.number,
-                          enabled: !_busy,
+                          states: <WidgetState>{
+                            if (_busy) WidgetState.disabled,
+                          },
                           onValidate: (text) {
                             final value = int.tryParse(text?.trim() ?? '');
                             return value == null || value < 0 || value > 10080
@@ -307,7 +318,9 @@ class _HostAutomationRuleEditorState
                             values: questions,
                             itemLabelBuilder: (q) => q.label,
                             value: question,
-                            enabled: !_busy,
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
                             onChanged: (q) => setState(
                               () => _condition = q == null
                                   ? null
@@ -328,7 +341,10 @@ class _HostAutomationRuleEditorState
                             value: question?.options
                                 .where((a) => a.value == expected)
                                 .firstOrNull,
-                            enabled: !_busy && question != null,
+                            states: <WidgetState>{
+                              if (!(!_busy && question != null))
+                                WidgetState.disabled,
+                            },
                             onChanged: (a) {
                               if (a != null) {
                                 setState(
@@ -358,7 +374,9 @@ class _HostAutomationRuleEditorState
                             values: _allowedActions(_trigger),
                             itemLabelBuilder: (v) => _actionLabel(context, v),
                             value: action.kind,
-                            enabled: !_busy,
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
                             onChanged: (v) {
                               if (v != null) {
                                 setState(() => action.changeKind(v));
@@ -382,7 +400,9 @@ class _HostAutomationRuleEditorState
                                   )
                                   ? action.tagId
                                   : null,
-                              enabled: !_busy,
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
                               onChanged: (v) =>
                                   setState(() => action.tagId = v),
                             ),
@@ -403,7 +423,9 @@ class _HostAutomationRuleEditorState
                                   )
                                   ? action.eventId
                                   : null,
-                              enabled: !_busy,
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
                               onChanged: (v) =>
                                   setState(() => action.eventId = v),
                             ),
@@ -422,7 +444,9 @@ class _HostAutomationRuleEditorState
                                   .createOrganizerFormAutomationCallablePayloadActionsItemsWebhookUrl,
                               controller: action.url,
                               keyboardType: TextInputType.url,
-                              enabled: !_busy,
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
                               onValidate: (text) =>
                                   isHostAutomationWebhookUrl(text)
                                   ? null
@@ -436,7 +460,9 @@ class _HostAutomationRuleEditorState
                                   'Blank preserves an existing secret only for the same URL; otherwise 32 through 256 characters are required by the callable.',
                               controller: action.secret,
                               obscureText: true,
-                              enabled: !_busy,
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
                               helperText: l.hostAutomationSecretHelp,
                               onValidate: (text) {
                                 final value = text ?? '';
@@ -480,7 +506,10 @@ class _HostAutomationRuleEditorState
                                               m.campaignId == action.campaignId,
                                         )
                                         .firstOrNull,
-                                    enabled: !_busy && !action.loadingMessage,
+                                    states: <WidgetState>{
+                                      if (!(!_busy && !action.loadingMessage))
+                                        WidgetState.disabled,
+                                    },
                                     onChanged: (m) {
                                       if (m != null) {
                                         _selectMessage(action, m.campaignId);

@@ -51,7 +51,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
           itemTitleBuilder: (kind) => kind.label,
           itemDescriptionBuilder: (kind) => kind.setupHint,
           selected: value.unitKind,
-          enabled: enabled,
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
           onChanged: enabled ? (kind) => onChanged(_withUnitKind(kind)) : null,
         ),
         if (value.unitKind != EventSuccessUnitKind.wholeGroup)
@@ -77,7 +77,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             increaseSemanticLabel: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorSemanticIncreasePeoplePerUnit,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: enabled
                 ? (number) =>
                       onChanged(value.copyWith(unitSize: number.toInt()))
@@ -104,7 +104,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                       .eventSuccessEventSuccessStructureConfigEditorDetailSetTheNumberYourselfOrLetCatchWorkItOutFromAttendance
                 : autoUnitCountSummary,
             selected: value.unitCount != null,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: enabled
                 ? (fixed) => onChanged(
                     value.copyWith(
@@ -136,7 +136,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             increaseSemanticLabel: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseUnitCount,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: enabled
                 ? (number) =>
                       onChanged(value.copyWith(unitCount: number.toInt()))
@@ -158,7 +158,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             itemLabelBuilder: (attribute) => attribute.balanceLabel,
             selected: value.balanceActivityAttributes.toSet(),
             multi: true,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onSelectionChanged: enabled
                 ? (selection) => onChanged(
                     value.copyWith(
@@ -185,7 +185,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             itemLabelBuilder: (attribute) => attribute.clusterLabel,
             selected: value.clusterActivityAttributes.toSet(),
             multi: true,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onSelectionChanged: enabled
                 ? (selection) => onChanged(
                     value.copyWith(
@@ -210,7 +210,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             values: EventSuccessRotationRepeatStrategy.values,
             itemLabelBuilder: (strategy) => strategy.label,
             selected: {value.rotationRepeatStrategy},
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onSelectionChanged: enabled
                 ? (selection) => onChanged(
                     value.copyWith(rotationRepeatStrategy: selection.single),
@@ -241,7 +241,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             increaseSemanticLabel: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseMeetingsPerPair,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: enabled
                 ? (number) =>
                       onChanged(value.copyWith(maxPairMeetings: number.toInt()))

@@ -347,7 +347,7 @@ class TargetAttendeeControl extends StatelessWidget {
             context.l10n.eventSuccessEventSuccessHostSetupVisiblecopyToint(
               toInt: number.toInt(),
             ),
-        enabled: enabled,
+        states: <WidgetState>{if (!enabled) WidgetState.disabled},
         decreaseSemanticLabel: context
             .l10n
             .eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees,

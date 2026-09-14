@@ -143,7 +143,9 @@ class _HostStaticAudienceMembersEditorState
                       .listOrganizerContactsCallablePayloadQuery,
                   controller: _searchController,
                   textInputAction: TextInputAction.search,
-                  enabled: widget.enabled,
+                  states: <WidgetState>{
+                    if (!widget.enabled) WidgetState.disabled,
+                  },
                   onSubmitted: (value) => setState(() {
                     _search = value.trim().isEmpty ? null : value.trim();
                     _cursor = null;

@@ -2911,11 +2911,11 @@
             "dartType": "bool"
           },
           {
-            "name": "enabled",
-            "type": "bool",
+            "name": "states",
+            "type": "object",
             "required": false,
-            "default": true,
-            "dartType": "bool"
+            "dartType": "Set<WidgetState>",
+            "notes": "Caller-owned disabled and focus presentation states. Disabled suppresses interaction even when focus presentation is requested; native focus remains owned by the field. Empty restores ordinary enabled behavior."
           },
           {
             "name": "readOnly",

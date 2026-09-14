@@ -184,7 +184,7 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
         maxLines: descriptor.maxLines,
         minLines: descriptor.minLines,
         maxLength: descriptor.effectiveMaxLength,
-        enabled: !_saveState.saving,
+        states: <WidgetState>{if (_saveState.saving) WidgetState.disabled},
         error: error,
         onSubmitted: descriptor.maxLines == 1 ? (_) => _submit() : null,
       );

@@ -69,7 +69,6 @@ typedef _EditConfig = ({
   bool isOptional,
   String? helperText,
   CatchFieldSupportRowTone helperTone,
-  bool focused,
   bool explicitSave,
   bool? open,
   ValueChanged<bool>? onOpenChanged,

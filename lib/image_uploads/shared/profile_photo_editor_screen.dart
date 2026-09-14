@@ -285,7 +285,9 @@ class _ProfilePhotoEditorScreenState
                   _promptOpen = false;
                 });
               },
-              enabled: !_saving && !_deleting,
+              states: <WidgetState>{
+                if (!(!_saving && !_deleting)) WidgetState.disabled,
+              },
               icon: CatchIcons.autoAwesomeOutlined,
             ),
             gapH20,

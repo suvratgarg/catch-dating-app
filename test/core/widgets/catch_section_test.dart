@@ -1095,7 +1095,7 @@ void main() {
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Answer',
                 initialValue: 'The child owns this focus ring.',
-                focused: true,
+                states: const <WidgetState>{WidgetState.focused},
               ),
             ),
           ),

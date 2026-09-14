@@ -46,7 +46,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
                 ? context.l10n.hostSavedAudienceAtLeast
                 : context.l10n.hostSavedAudienceAtMost,
             value: rule.operator,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: (value) {
               if (value != null) onChanged(rule.copyWith(operator: value));
             },
@@ -63,7 +63,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             }.toList(),
             itemLabelBuilder: (value) => value,
             value: rule.currency,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: (value) {
               if (value != null && value != rule.currency) {
                 onChanged(rule.copyWith(currency: value, amountMinor: 0));
@@ -81,7 +81,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               currencyCode: rule.currency,
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onValidate: (text) {
               final amount = parseMajorCurrencyAmountToMinorUnits(
                 text ?? '',
@@ -110,7 +110,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
                 'Blank means lifetime (null); an entered value must be an integer from 1 to 3650, matching withinDays.',
             initialValue: rule.withinDays?.toString() ?? '',
             keyboardType: TextInputType.number,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onValidate: (text) {
               if ((text ?? '').trim().isEmpty) return null;
               final days = int.tryParse(text!.trim());
@@ -144,7 +144,9 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
           values: options.events,
           itemLabelBuilder: (value) => value.title,
           value: options.events.where((e) => e.id == rule?.eventId).firstOrNull,
-          enabled: enabled && options.events.isNotEmpty,
+          states: <WidgetState>{
+            if (!(enabled && options.events.isNotEmpty)) WidgetState.disabled,
+          },
           hintText: context.l10n.hostAudienceChooseEvent,
           onChanged: (value) {
             if (value != null) {
@@ -172,7 +174,10 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               value: options.forms
                   .where((f) => f.id == rule?.formId)
                   .firstOrNull,
-              enabled: enabled && options.forms.isNotEmpty,
+              states: <WidgetState>{
+                if (!(enabled && options.forms.isNotEmpty))
+                  WidgetState.disabled,
+              },
               hintText: context.l10n.hostAudienceChooseForm,
               onChanged: (value) {
                 if (value != null) {
@@ -201,7 +206,9 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               value:
                   rule?.reviewStatus ??
                   HostSavedAudienceApplicationStatus.submitted,
-              enabled: enabled && rule != null,
+              states: <WidgetState>{
+                if (!(enabled && rule != null)) WidgetState.disabled,
+              },
               onChanged: (value) {
                 if (value != null && rule != null) {
                   onChanged(
@@ -243,7 +250,10 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             value: question,
             itemLabelBuilder: (value) =>
                 '${value.formTitle} · v${value.version} · ${value.label}',
-            enabled: enabled && options.questions.isNotEmpty,
+            states: <WidgetState>{
+              if (!(enabled && options.questions.isNotEmpty))
+                WidgetState.disabled,
+            },
             hintText: context.l10n.hostAudienceChooseQuestion,
             onChanged: (value) {
               final answer = value?.options.firstOrNull;
@@ -274,7 +284,7 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               value: question.options
                   .where((o) => o.value == rule?.value)
                   .firstOrNull,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) {
                 if (value != null) {
                   onChanged(

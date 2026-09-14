@@ -229,7 +229,7 @@ class PromptField extends StatelessWidget {
                   onPromptChanged(selection.single);
                 }
               : null,
-          enabled: enabled,
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
         ),
         CatchField.input(
           copy: catchFieldCopy(context.l10n),
@@ -237,7 +237,7 @@ class PromptField extends StatelessWidget {
           title: context.l10n.onboardingProfilePromptsPageTitleAnswer,
           contract: CatchContractConstraints.profilePromptAnswerAnswer,
           controller: controller,
-          enabled: enabled,
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
           inputHint: definition.placeholder,
           helperText: context.l10n
               .onboardingProfilePromptsPageHelpertextLengthMaximumprofilepromptanswerlength(

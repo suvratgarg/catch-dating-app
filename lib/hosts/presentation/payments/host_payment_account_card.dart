@@ -583,7 +583,9 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                     values: RazorpayHostBusinessType.values,
                     itemLabelBuilder: _businessTypeLabel,
                     value: _businessType,
-                    enabled: !widget.pending,
+                    states: <WidgetState>{
+                      if (widget.pending) WidgetState.disabled,
+                    },
                     onChanged: (value) {
                       if (value != null) setState(() => _businessType = value);
                     },
@@ -825,7 +827,7 @@ class _RazorpaySetupInput extends StatelessWidget {
         title: title,
         controller: controller,
         contract: contract,
-        enabled: !pending,
+        states: <WidgetState>{if (pending) WidgetState.disabled},
         keyboardType: keyboardType,
         obscureText: obscureText,
         maxLines: maxLines,

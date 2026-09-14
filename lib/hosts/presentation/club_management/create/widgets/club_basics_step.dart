@@ -97,7 +97,9 @@ class ClubBasicsStep extends StatelessWidget {
                   itemLabelBuilder: (type) =>
                       _organizerTypeLabel(context, type),
                   selected: {selectedOrganizerType},
-                  enabled: detailsEnabled,
+                  states: <WidgetState>{
+                    if (!detailsEnabled) WidgetState.disabled,
+                  },
                   onSelectionChanged: detailsEnabled
                       ? (selection) {
                           if (selection.isNotEmpty) {
@@ -113,7 +115,9 @@ class ClubBasicsStep extends StatelessWidget {
                       CatchContractConstraints.createClubCallablePayloadName,
                   controller: nameController,
                   icon: CatchIcons.groupOutlined,
-                  enabled: detailsEnabled,
+                  states: <WidgetState>{
+                    if (!detailsEnabled) WidgetState.disabled,
+                  },
                   textCapitalization: TextCapitalization.words,
                   textInputAction: TextInputAction.next,
                   onValidate: (value) {
@@ -151,7 +155,9 @@ class ClubBasicsStep extends StatelessWidget {
                       selected: selectedCity == null
                           ? const <CityOption>{}
                           : {selectedCity!},
-                      enabled: detailsEnabled,
+                      states: <WidgetState>{
+                        if (!detailsEnabled) WidgetState.disabled,
+                      },
                       error: field.errorText,
                       onSelectionChanged: detailsEnabled
                           ? (selection) {
@@ -173,7 +179,9 @@ class ClubBasicsStep extends StatelessWidget {
                       CatchContractConstraints.createClubCallablePayloadArea,
                   controller: areaController,
                   icon: CatchIcons.locationOnOutlined,
-                  enabled: detailsEnabled,
+                  states: <WidgetState>{
+                    if (!detailsEnabled) WidgetState.disabled,
+                  },
                   inputHint: context
                       .l10n
                       .hostsClubBasicsStepPlaceholderEGBandraKoramangala,

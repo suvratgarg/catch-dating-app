@@ -295,7 +295,9 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                       ? callbacks.onDistancesChanged
                       : null,
                   multi: true,
-                  enabled: state.requestControlsEnabled,
+                  states: <WidgetState>{
+                    if (!state.requestControlsEnabled) WidgetState.disabled,
+                  },
                   initiallyOpen: true,
                   isOptional: true,
                 ),
@@ -318,7 +320,9 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                       ? callbacks.onReasonsChanged
                       : null,
                   multi: true,
-                  enabled: state.requestControlsEnabled,
+                  states: <WidgetState>{
+                    if (!state.requestControlsEnabled) WidgetState.disabled,
+                  },
                   initiallyOpen: true,
                   isOptional: true,
                 ),
@@ -341,7 +345,9 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                       ? callbacks.onRunTimesChanged
                       : null,
                   multi: true,
-                  enabled: state.requestControlsEnabled,
+                  states: <WidgetState>{
+                    if (!state.requestControlsEnabled) WidgetState.disabled,
+                  },
                   initiallyOpen: true,
                   isOptional: true,
                 ),

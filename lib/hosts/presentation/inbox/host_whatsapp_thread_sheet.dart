@@ -231,7 +231,9 @@ class _HostWhatsappThreadBody extends StatelessWidget {
           controller: replyController,
           maxLines: 4,
           minLines: 2,
-          enabled: thread.serviceWindowOpen && !sending,
+          states: <WidgetState>{
+            if (!(thread.serviceWindowOpen && !sending)) WidgetState.disabled,
+          },
           showLabel: false,
           inputHint: context.l10n.hostInboxWhatsappReplyHint,
         ),

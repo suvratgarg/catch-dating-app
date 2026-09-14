@@ -2,6 +2,8 @@ part of 'catch_field.dart';
 
 mixin _CatchFieldProperties {
   Record get _config;
+  Set<WidgetState> get states;
+  bool get enabled => !states.contains(WidgetState.disabled);
   CatchContractFieldConstraints? get contract;
   _RowConfig? get _rowConfig => switch (_config) {
     final _RowConfig config => config,
@@ -146,7 +148,7 @@ mixin _CatchFieldProperties {
     _ => CatchFieldSize.md,
   };
   TextAlign get textAlign => _inputConfig?.textAlign ?? TextAlign.start;
-  bool get focused => _editConfig?.focused ?? false;
+  bool get focused => states.contains(WidgetState.focused);
   bool get mono => _inputConfig?.mono ?? false;
   String? get prefixText => _inputConfig?.prefixText;
   String? get suffixText => _inputConfig?.suffixText;
