@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.60.0
+version: 1.61.0
 updated: 2026-09-09
 owner: app_architecture
 status: active
@@ -2355,6 +2355,10 @@ or implementation technique cannot justify a second shared implementation.
   `CatchField.select`. It owns a nullable selection and reconciles removed
   options; `CatchSelectionMenu` requires a supported current value and owns
   the adaptive trigger. Both delegate the panel to `CatchMenu`.
+  `CatchFieldTrailingRow` owns the field's bounded trailing lane; it composes
+  the status indicator and toggle input while `CatchFieldRow` owns the full
+  leading/body/trailing layout. Its native input suffix recipe retains clear
+  action precedence, fallback content and native target spacing.
   Header owns a heading assembly with optional supporting copy, count or
   actions; HeaderTitle owns the title itself. Section and sheet presentation
   recipes use `CatchSectionHeader.kicker` and `CatchSheetHeader.branded`.

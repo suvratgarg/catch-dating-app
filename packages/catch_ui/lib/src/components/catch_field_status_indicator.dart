@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 
 /// Animated saving/saved feedback for the `CatchField` trailing lane.
 ///
-/// Product surfaces normally receive this through `CatchFieldTrailing.status`
-/// or `CatchFieldTrailing.toggle`. It is public so the field family keeps a
+/// Product surfaces normally receive this through `CatchFieldTrailingRow.status`
+/// or `CatchFieldTrailingRow.toggle`. It is public so the field family keeps a
 /// cataloged, directly testable status contract instead of a private widget
 /// destination.
 class CatchFieldStatusIndicator extends StatefulWidget {

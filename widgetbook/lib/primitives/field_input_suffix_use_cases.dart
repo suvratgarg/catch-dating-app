@@ -7,7 +7,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Text-entry suffix and clear states',
-  type: CatchFieldTrailing,
+  type: CatchFieldTrailingRow,
   path: '[Core primitives]/Fields',
 )
 Widget fieldInputSuffixStates(BuildContext context) => WidgetbookCatalogFrame(

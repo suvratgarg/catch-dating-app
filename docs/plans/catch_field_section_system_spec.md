@@ -28,7 +28,7 @@ inputActions, add, select, choices, stepper`), with
 row/underline/bare variants, three sizes, three tones, and an explicit-save
 status lane (`idle/saving/saved`). Supporting public classes live in the
 same Dart library, split across bounded `part` files: `CatchFieldRow`,
-`CatchFieldContentRow`, `CatchFieldTrailing`,
+`CatchFieldContentRow`, `CatchFieldTrailingRow`,
 `CatchFieldSupportRow`, `CatchFieldActionBar`, `CatchFieldExplicitSaveControl`,
 `CatchFieldDisclosureDrawer`, `CatchFieldToggle`, `CatchFieldChoiceControl`,
 `CatchFieldVisibilityScope`, `CatchFieldInsetScope`, plus
@@ -441,7 +441,7 @@ Mechanical. `git diff` outside `lib/core/widgets/` + `test/` must be empty.
    - `catch_field_control.dart` — control/disclosure/choices/stepper
      internals.
    - `catch_field_lanes.dart` — the public lane/support classes
-     (`CatchFieldRow`, `CatchFieldContentRow`, `CatchFieldTrailing`,
+     (`CatchFieldRow`, `CatchFieldContentRow`, `CatchFieldTrailingRow`,
      `CatchFieldSupportRow`, `CatchFieldActionBar`,
      `CatchFieldExplicitSaveControl`, `CatchFieldDisclosureDrawer`,
      `CatchFieldSpinner`, `CatchFieldCommitButton`, `CatchFieldToggle`,

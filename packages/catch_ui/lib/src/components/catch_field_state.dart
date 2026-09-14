@@ -193,7 +193,7 @@ class _CatchFieldState extends State<CatchField>
               : _rowTrailingTopPadding;
           final Widget? rawTrailingSlot;
           if (_isToggle) {
-            rawTrailingSlot = CatchFieldTrailing.toggle(
+            rawTrailingSlot = CatchFieldTrailingRow.toggle(
               copy: widget.copy,
               value: widget.toggled,
               onChanged: _isSaving ? null : widget.onToggle,
@@ -206,17 +206,17 @@ class _CatchFieldState extends State<CatchField>
           } else if (_statusLaneActive &&
               !_visibleCommitBarOwnsSavingIndicator &&
               !_hasError) {
-            rawTrailingSlot = CatchFieldTrailing.status(
+            rawTrailingSlot = CatchFieldTrailingRow.status(
               copy: widget.copy,
               status: _effectiveStatus,
             );
           } else if (!_isSaving && widget.valid && !_hasError) {
-            rawTrailingSlot = CatchFieldTrailing.valid(topPadding: 0);
+            rawTrailingSlot = CatchFieldTrailingRow.valid(topPadding: 0);
           } else if (_usesRowTextEntryTrailing) {
             final fallbackContent = widget.action ?? widget.suffixIcon;
             final fallback = fallbackContent == null
                 ? null
-                : CatchFieldTrailing.custom(
+                : CatchFieldTrailingRow.custom(
                     topPadding: 0,
                     color: t.ink3,
                     child: fallbackContent,
@@ -230,7 +230,7 @@ class _CatchFieldState extends State<CatchField>
                   if (value.text.isEmpty) {
                     return fallback ?? const SizedBox.shrink();
                   }
-                  return CatchFieldTrailing.clear(
+                  return CatchFieldTrailingRow.clear(
                     tooltip: widget.copy.clearTooltip(_title),
                     onPressed: () {
                       _controller.clear();
@@ -242,7 +242,7 @@ class _CatchFieldState extends State<CatchField>
               );
             }
           } else if (_hasControl) {
-            rawTrailingSlot = CatchFieldTrailing.rotatingChevron(
+            rawTrailingSlot = CatchFieldTrailingRow.rotatingChevron(
               open: _isOpen,
               color: _active ? t.ink : t.ink3,
               topPadding: 0,
@@ -255,7 +255,7 @@ class _CatchFieldState extends State<CatchField>
                 valueText != null &&
                 valueText.isNotEmpty) {
               children.add(
-                CatchFieldTrailing.valueText(
+                CatchFieldTrailingRow.valueText(
                   text: valueText,
                   maxLines: widget.valueMaxLines,
                   topPadding: 0,
@@ -265,7 +265,7 @@ class _CatchFieldState extends State<CatchField>
 
             final custom = widget.action == null
                 ? null
-                : CatchFieldTrailing.custom(
+                : CatchFieldTrailingRow.custom(
                     topPadding: 0,
                     color: t.ink3,
                     child: widget.action!,
@@ -274,7 +274,7 @@ class _CatchFieldState extends State<CatchField>
 
             if (children.isEmpty) {
               rawTrailingSlot = includeChevron
-                  ? CatchFieldTrailing.fixedChevron(
+                  ? CatchFieldTrailingRow.fixedChevron(
                       color: t.ink3,
                       topPadding: 0,
                     )
@@ -297,7 +297,7 @@ class _CatchFieldState extends State<CatchField>
                       children: [
                         Flexible(child: group),
                         const SizedBox(width: CatchSpacing.s2),
-                        CatchFieldTrailing.fixedChevron(
+                        CatchFieldTrailingRow.fixedChevron(
                           color: t.ink3,
                           topPadding: 0,
                         ),
@@ -496,8 +496,9 @@ class _CatchFieldState extends State<CatchField>
             constraints: _usesPositionedClearTrailing
                 ? _rowConstraints.enforce(
                     BoxConstraints(
-                      minHeight:
-                          CatchFieldTrailing.clearTargetConstraints.minHeight,
+                      minHeight: CatchFieldTrailingRow
+                          .clearTargetConstraints
+                          .minHeight,
                     ),
                   )
                 : _rowConstraints,
@@ -523,11 +524,12 @@ class _CatchFieldState extends State<CatchField>
                         top: 0,
                         bottom: 0,
                         end: _rowHeaderPadding.right,
-                        width:
-                            CatchFieldTrailing.clearTargetConstraints.maxWidth,
+                        width: CatchFieldTrailingRow
+                            .clearTargetConstraints
+                            .maxWidth,
                         child: LayoutBuilder(
                           builder: (context, available) {
-                            final extent = CatchFieldTrailing
+                            final extent = CatchFieldTrailingRow
                                 .clearTargetConstraints
                                 .maxHeight;
                             final scaler = MediaQuery.textScalerOf(context);

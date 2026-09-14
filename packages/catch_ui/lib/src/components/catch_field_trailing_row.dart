@@ -10,18 +10,18 @@ import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_control_surface.dart';
 import 'package:flutter/material.dart';
 
-class CatchFieldTrailing extends StatelessWidget {
+class CatchFieldTrailingRow extends StatelessWidget {
   /// Shared clear-action allocation for the native target and its row slot.
   static BoxConstraints get clearTargetConstraints =>
       CatchControlMetrics.squareConstraints(CatchSpacing.s6);
 
-  factory CatchFieldTrailing.custom({
+  factory CatchFieldTrailingRow.custom({
     Key? key,
     required Widget child,
     Color? color,
     double topPadding = CatchSpacing.micro2,
   }) {
-    return CatchFieldTrailing._(
+    return CatchFieldTrailingRow._(
       key: key,
       topPadding: topPadding,
       builder: (context) {
@@ -42,20 +42,20 @@ class CatchFieldTrailing extends StatelessWidget {
   ///
   /// The field keeps InputDecoration.suffixIcon null when neither clear nor
   /// custom content is requested, so an absent suffix reserves no native slot.
-  factory CatchFieldTrailing.inputSuffix({
+  factory CatchFieldTrailingRow.inputSuffix({
     Key? key,
     required TextEditingController controller,
     required String clearTooltip,
-    Widget? action,
-    Widget? suffixIcon,
+    Widget? actions,
+    Widget? trailing,
     bool showClearButton = false,
     ValueChanged<String>? onChanged,
-  }) => CatchFieldTrailing._(
+  }) => CatchFieldTrailingRow._(
     key: key,
     topPadding: 0,
     builder: (context) {
       final t = CatchTokens.of(context);
-      final child = action ?? suffixIcon;
+      final child = actions ?? trailing;
       Widget? fallback;
       if (child != null) {
         fallback = IconTheme(
@@ -65,7 +65,7 @@ class CatchFieldTrailing extends StatelessWidget {
             child: child,
           ),
         );
-        if (action != null) {
+        if (actions != null) {
           fallback = Padding(
             padding: const EdgeInsets.only(left: CatchSpacing.s2),
             child: fallback,
@@ -90,13 +90,13 @@ class CatchFieldTrailing extends StatelessWidget {
     },
   );
 
-  factory CatchFieldTrailing.valueText({
+  factory CatchFieldTrailingRow.valueText({
     Key? key,
     required String text,
     int maxLines = 1,
     double topPadding = CatchSpacing.micro2,
   }) {
-    return CatchFieldTrailing._(
+    return CatchFieldTrailingRow._(
       key: key,
       topPadding: topPadding,
       builder: (context) {
@@ -121,11 +121,11 @@ class CatchFieldTrailing extends StatelessWidget {
     );
   }
 
-  factory CatchFieldTrailing.fixedChevron({
+  factory CatchFieldTrailingRow.fixedChevron({
     Key? key,
     Color? color,
     double topPadding = CatchSpacing.micro2,
-  }) => CatchFieldTrailing._(
+  }) => CatchFieldTrailingRow._(
     key: key,
     topPadding: topPadding,
     builder: (context) => Icon(
@@ -135,12 +135,12 @@ class CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory CatchFieldTrailing.rotatingChevron({
+  factory CatchFieldTrailingRow.rotatingChevron({
     Key? key,
     required bool open,
     Color? color,
     double topPadding = CatchSpacing.micro2,
-  }) => CatchFieldTrailing._(
+  }) => CatchFieldTrailingRow._(
     key: key,
     topPadding: topPadding,
     builder: (context) => AnimatedRotation(
@@ -155,7 +155,7 @@ class CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory CatchFieldTrailing.toggle({
+  factory CatchFieldTrailingRow.toggle({
     required CatchFieldCopy copy,
     Key? key,
     required bool value,
@@ -165,7 +165,7 @@ class CatchFieldTrailing extends StatelessWidget {
     String? semanticLabel,
     CatchFieldStatus status = CatchFieldStatus.idle,
     double topPadding = CatchSpacing.micro2,
-  }) => CatchFieldTrailing._(
+  }) => CatchFieldTrailingRow._(
     key: key,
     topPadding: topPadding,
     builder: (context) => Row(
@@ -188,12 +188,12 @@ class CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory CatchFieldTrailing.status({
+  factory CatchFieldTrailingRow.status({
     required CatchFieldCopy copy,
     Key? key,
     required CatchFieldStatus status,
     double topPadding = 0,
-  }) => CatchFieldTrailing._(
+  }) => CatchFieldTrailingRow._(
     key: key,
     topPadding: topPadding,
     builder: (context) => CatchFieldStatusIndicator(
@@ -203,12 +203,12 @@ class CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory CatchFieldTrailing.clear({
+  factory CatchFieldTrailingRow.clear({
     Key? key,
     required String tooltip,
     required VoidCallback onPressed,
     double topPadding = CatchSpacing.micro2,
-  }) => CatchFieldTrailing._(
+  }) => CatchFieldTrailingRow._(
     key: key,
     topPadding: topPadding,
     builder: (context) => IconButton(
@@ -229,10 +229,10 @@ class CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  factory CatchFieldTrailing.valid({
+  factory CatchFieldTrailingRow.valid({
     Key? key,
     double topPadding = CatchSpacing.micro2,
-  }) => CatchFieldTrailing._(
+  }) => CatchFieldTrailingRow._(
     key: key,
     topPadding: topPadding,
     builder: (context) => Icon(
@@ -242,7 +242,7 @@ class CatchFieldTrailing extends StatelessWidget {
     ),
   );
 
-  const CatchFieldTrailing._({
+  const CatchFieldTrailingRow._({
     super.key,
     required this.builder,
     this.topPadding = CatchSpacing.micro2,

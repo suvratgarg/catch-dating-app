@@ -8226,6 +8226,26 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:field-trailing-row-anatomy",
+      "patternFamilyId": "field-trailing-row-anatomy",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchFieldTrailingRow",
+      "members": [
+        {
+          "name": "CatchFieldTrailingRow",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFieldTrailing",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Owns the bounded trailing lane of a Field: value text, disclosure, toggle, validation, clear action and custom content share its typography and top alignment. CatchFieldRow arranges the entire leading/body/trailing row; this member composes CatchFieldStatusIndicator and CatchToggleInput without duplicating either. Native input suffixes preserve their separate fallback and clear-target geometry through a named constructor. The inputSuffix slots are actions and trailing, preserving action precedence and its leading gap.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
     }
   ]
 }

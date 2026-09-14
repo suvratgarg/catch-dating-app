@@ -78,7 +78,7 @@ export 'src/components/catch_field_support_row.dart';
 export 'src/components/catch_field_support_row_tone.dart';
 export 'src/components/catch_field_surface.dart';
 export 'src/components/catch_field_tone.dart';
-export 'src/components/catch_field_trailing.dart';
+export 'src/components/catch_field_trailing_row.dart';
 export 'src/components/catch_field_variant.dart';
 export 'src/components/catch_field_visibility_scope.dart';
 export 'src/components/catch_form_validation_copy.dart';

@@ -3616,7 +3616,7 @@ Widget catchFieldRowContractStates(BuildContext context) {
         child: _FieldWidth(
           child: CatchFieldRow.standard(
             body: Text('Trailing value row', style: textStyle),
-            trailing: CatchFieldTrailing.valueText(text: 'Private'),
+            trailing: CatchFieldTrailingRow.valueText(text: 'Private'),
           ),
         ),
       ),
@@ -3638,7 +3638,7 @@ Widget catchFieldRowContractStates(BuildContext context) {
         child: _FieldWidth(
           child: CatchFieldRow.standard(
             body: Text('Tap target row', style: textStyle),
-            trailing: CatchFieldTrailing.fixedChevron(),
+            trailing: CatchFieldTrailingRow.fixedChevron(),
             onTap: _noop,
           ),
         ),
@@ -3649,14 +3649,14 @@ Widget catchFieldRowContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchFieldTrailing,
+  type: CatchFieldTrailingRow,
   path: '[Core primitives]/Inputs',
 )
 Widget catchFieldTrailingContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return _ContractScreen(
-    title: 'CatchFieldTrailing',
+    title: 'Field trailing row',
     contractId: 'catch.field.trailing',
     states: const [
       'value-text',
@@ -3671,24 +3671,24 @@ Widget catchFieldTrailingContractStates(BuildContext context) {
     children: [
       _StateCard(
         label: 'value-text',
-        child: CatchFieldTrailing.valueText(text: 'Private'),
+        child: CatchFieldTrailingRow.valueText(text: 'Private'),
       ),
       _StateCard(
         label: 'fixed-chevron',
-        child: CatchFieldTrailing.fixedChevron(),
+        child: CatchFieldTrailingRow.fixedChevron(),
       ),
       _StateCard(
         label: 'rotating-chevron',
         child: _InlineWrap(
           children: [
-            CatchFieldTrailing.rotatingChevron(open: false),
-            CatchFieldTrailing.rotatingChevron(open: true),
+            CatchFieldTrailingRow.rotatingChevron(open: false),
+            CatchFieldTrailingRow.rotatingChevron(open: true),
           ],
         ),
       ),
       _StateCard(
         label: 'toggle',
-        child: CatchFieldTrailing.toggle(
+        child: CatchFieldTrailingRow.toggle(
           copy: catchFieldCopy(context.l10n),
           value: true,
           onChanged: (_) {},
@@ -3697,22 +3697,22 @@ Widget catchFieldTrailingContractStates(BuildContext context) {
       ),
       _StateCard(
         label: 'status',
-        child: CatchFieldTrailing.status(
+        child: CatchFieldTrailingRow.status(
           copy: catchFieldCopy(context.l10n),
           status: CatchFieldStatus.saved,
         ),
       ),
       _StateCard(
         label: 'clear',
-        child: CatchFieldTrailing.clear(
+        child: CatchFieldTrailingRow.clear(
           tooltip: 'Clear field',
           onPressed: _noop,
         ),
       ),
-      _StateCard(label: 'valid', child: CatchFieldTrailing.valid()),
+      _StateCard(label: 'valid', child: CatchFieldTrailingRow.valid()),
       _StateCard(
         label: 'custom',
-        child: CatchFieldTrailing.custom(
+        child: CatchFieldTrailingRow.custom(
           color: t.primary,
           child: const Text('Edit'),
         ),

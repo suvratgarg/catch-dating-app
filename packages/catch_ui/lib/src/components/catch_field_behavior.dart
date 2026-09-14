@@ -611,6 +611,6 @@ extension _CatchFieldBehavior on _CatchFieldState {
       ? CatchFieldTokens.trailingGap + CatchFieldTokens.disclosureGlyphExtent
       : _usesPositionedClearTrailing
       ? CatchFieldTokens.trailingGap +
-            CatchFieldTrailing.clearTargetConstraints.maxWidth
+            CatchFieldTrailingRow.clearTargetConstraints.maxWidth
       : 0.0;
 }

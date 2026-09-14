@@ -8,7 +8,7 @@ import 'package:catch_ui/src/components/catch_field_geometry_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_row.dart';
 import 'package:catch_ui/src/components/catch_field_size.dart';
 import 'package:catch_ui/src/components/catch_field_support_row_tone.dart';
-import 'package:catch_ui/src/components/catch_field_trailing.dart';
+import 'package:catch_ui/src/components/catch_field_trailing_row.dart';
 import 'package:catch_ui/src/components/catch_menu.dart';
 import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
@@ -232,7 +232,7 @@ class _CatchSelectionFieldState extends State<CatchSelectionField> {
                             child: Align(
                               widthFactor: 1,
                               heightFactor: 1,
-                              child: CatchFieldTrailing.rotatingChevron(
+                              child: CatchFieldTrailingRow.rotatingChevron(
                                 open: controller.isOpen,
                                 color: t.ink3,
                                 topPadding: 0,
@@ -240,7 +240,7 @@ class _CatchSelectionFieldState extends State<CatchSelectionField> {
                             ),
                           ),
                         )
-                      : CatchFieldTrailing.rotatingChevron(
+                      : CatchFieldTrailingRow.rotatingChevron(
                           open: controller.isOpen,
                           color: t.ink3,
                         ),

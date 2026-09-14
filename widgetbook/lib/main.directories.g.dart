@@ -2594,7 +2594,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldTrailing',
+            name: 'CatchFieldTrailingRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Text-entry suffix and clear states',
@@ -2818,7 +2818,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldTrailing',
+            name: 'CatchFieldTrailingRow',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',

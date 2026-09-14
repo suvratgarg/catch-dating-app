@@ -3053,7 +3053,7 @@
           "CatchTextStyles.fieldRowTitle",
           "CatchTextStyles.control",
           "CatchPlatformTokens.minimumInteractiveExtent",
-          "CatchFieldTrailing.clearTargetConstraints"
+          "CatchFieldTrailingRow.clearTargetConstraints"
         ],
         "goldens": [],
         "members": [
@@ -3200,7 +3200,7 @@
           },
           {
             "id": "catch.field.trailing",
-            "symbol": "CatchFieldTrailing",
+            "symbol": "CatchFieldTrailingRow",
             "summary": "Public trailing-slot member used by CatchField for value text, chevrons, toggles, clear actions, validation, and custom trailing content. CatchField composes non-centered trailing content into one lane after a single 18 px caption reserve and centers it within the 18.9 px value line. Saving progress appears here only when no explicit commit bar is visible. Its inputSuffix recipe preserves native text-entry clear and custom fallback behavior, including the close glyph and action/icon spacing; the field retains null allocation for an absent suffix.",
             "states": [
               "value-text",
@@ -3212,13 +3212,23 @@
               "valid",
               "custom"
             ],
-            "file": "packages/catch_ui/lib/src/components/catch_field_trailing.dart",
+            "file": "packages/catch_ui/lib/src/components/catch_field_trailing_row.dart",
             "governance": {
               "conceptRole": "member",
               "conceptId": "catch.field",
               "parentConceptId": "catch.field",
               "qualifier": "layout",
-              "decisionRef": "contract-family:catch.field"
+              "decisionRef": "pattern-family:field-trailing-row-anatomy"
+            },
+            "level": "L3",
+            "roleNoun": "Row",
+            "naming": {
+              "useCase": "FieldTrailing",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.row"
+              ],
+              "reason": "Owns the bounded trailing lane of a Field: value text, disclosure, toggle, validation, clear action and custom content share its typography and top alignment. CatchFieldRow arranges the entire leading/body/trailing row; this member composes CatchFieldStatusIndicator and CatchToggleInput without duplicating either. Native input suffixes preserve their separate fallback and clear-target geometry through a named constructor."
             }
           },
           {
@@ -3929,7 +3939,7 @@
           "CatchField.optionCards is the single-select explanatory counterpart to choices: the collapsed row derives the selected title, while every expanded option keeps its title and description inside one full-width CatchChoiceTile target. Use chips only when labels are terse and do not need per-option explanation.",
           "isOptional is visible and semantic copy only. allowEmptySelection independently governs whether the final selected option may be removed for single- and multi-choice controls.",
           "Every empty inactive editable row uses one canonical value lane: primary 14/600 'Add {field}' plus an optional inline ink3/500 suffix, with no separate caption. Direct and explicit-save text paths keep the same native editable mounted behind that presentation; focus restores the caption, input-only hint, and input-only units without a second tap or cursor reset. Addable disclosures use the same typography, row height, and icon alignment.",
-          "A populated labeled direct input reserves clear-action width from CatchFieldTrailing.clearTargetConstraints. Its overlaid target aligns toward the scaled value line and is clamped inside the row, without covering input text or changing an already sufficient collapsed-row height. Label-less compact clear inputs retain native suffix geometry.",
+          "A populated labeled direct input reserves clear-action width from CatchFieldTrailingRow.clearTargetConstraints. Its overlaid target aligns toward the scaled value line and is clamped inside the row, without covering input text or changing an already sufficient collapsed-row height. Label-less compact clear inputs retain native suffix geometry.",
           "Disclosure opening drives the nearest existing vertical scroll owner frame by frame with the same CatchMotion.base duration and curve, revealing the commit bar above CatchFieldVisibilityScope bottom obstruction as new extent becomes available, with a disclosure-bottom fallback when no commit bar exists. Rapid close cancels the drive, direct user scrolling wins, reduced motion jumps immediately, and a zero-duration final correction covers any residual collapsed-extent clamp. CatchField never creates or owns a ScrollController.",
           "Implemented handoff tranche: title/supporting-copy content rows with 2/3 clamps and a 3 px gap while legacy value rows retain 1/2 clamps; canonical editable-value typography; 16 px caret; labelL choice chips and fieldRowTitle stepper values; control-role commit labels; 15 px stepper glyph; 16/13 px spinners with a 7 px commit gap and 800 ms cadence; filled saved and warning error icons; directional underline sweep; 200 ms control-opacity reveal; animated toggle/Cancel states; post-tick-10 repeat acceleration; hardware-keyboard activation; shared chip focus chrome and transparent-offset stepper/commit rings; and semantic selected/action foregrounds.",
           "Owner-gated behavior remains unchanged for single-choice persistence, clearability, deselection, and save policy. The implemented 180 ms no-save-bar close behavior and standardized empty Add presentation are not authorization to change domain persistence semantics.",

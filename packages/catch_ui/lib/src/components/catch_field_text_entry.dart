@@ -273,11 +273,11 @@ class CatchFieldTextEntry extends StatelessWidget {
                         field.action == null &&
                         field.suffixIcon == null)
                 ? null
-                : CatchFieldTrailing.inputSuffix(
+                : CatchFieldTrailingRow.inputSuffix(
                     controller: controller,
                     clearTooltip: field.copy.clearTooltip(_title),
-                    action: field.action,
-                    suffixIcon: field.suffixIcon,
+                    actions: field.action,
+                    trailing: field.suffixIcon,
                     showClearButton: field.showClearButton,
                     onChanged: field.onChanged,
                   ),

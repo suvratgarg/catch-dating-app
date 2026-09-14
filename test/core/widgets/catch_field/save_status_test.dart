@@ -103,7 +103,7 @@ void main() {
     );
     expect(
       find.descendant(
-        of: find.byType(CatchFieldTrailing),
+        of: find.byType(CatchFieldTrailingRow),
         matching: find.byWidgetPredicate(
           (widget) =>
               widget is CatchLoadingIndicator &&
@@ -172,7 +172,7 @@ void main() {
     );
     expect(
       find.descendant(
-        of: find.byType(CatchFieldTrailing),
+        of: find.byType(CatchFieldTrailingRow),
         matching: find.byWidgetPredicate(
           (widget) =>
               widget is CatchLoadingIndicator &&
@@ -196,7 +196,7 @@ void main() {
     );
     expect(
       find.descendant(
-        of: find.byType(CatchFieldTrailing),
+        of: find.byType(CatchFieldTrailingRow),
         matching: find.byWidgetPredicate(
           (widget) =>
               widget is CatchLoadingIndicator &&

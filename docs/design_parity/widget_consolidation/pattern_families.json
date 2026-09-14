@@ -3892,6 +3892,34 @@
           "rationale": "Replace the generic Control suffix with the actual Field role; keep the same form-value and menu implementation."
         }
       ]
+    },
+    {
+      "id": "field-trailing-row-anatomy",
+      "title": "Field trailing lane anatomy",
+      "intent": "Name the field trailing layout member after its row responsibility while retaining the single status and toggle renderers.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.field",
+      "qualityReference": "CatchFieldTrailingRow",
+      "decisionSource": "owner-delegated:2026-09-09 source and rendered review",
+      "acceptedVisualDelta": [
+        "No production visual change. The contract gallery uses the readable heading Field trailing row; its intrinsic column slightly recenters at large text."
+      ],
+      "members": [
+        {
+          "symbol": "CatchFieldTrailingRow",
+          "disposition": "register",
+          "preview": "required",
+          "rationale": "Owns the bounded trailing lane of a Field: value text, disclosure, toggle, validation, clear action and custom content share its typography and top alignment. CatchFieldRow arranges the entire leading/body/trailing row; this member composes CatchFieldStatusIndicator and CatchToggleInput without duplicating either. Native input suffixes preserve their separate fallback and clear-target geometry through a named constructor."
+        },
+        {
+          "symbol": "CatchFieldTrailing",
+          "disposition": "unify",
+          "target": "CatchFieldTrailingRow",
+          "preview": "not-applicable",
+          "rationale": "Replace the positional-only name with its bounded row role; all constructors and rendering behavior remain shared."
+        }
+      ]
     }
   ]
 }
