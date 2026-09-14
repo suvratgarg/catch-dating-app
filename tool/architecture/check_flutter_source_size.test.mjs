@@ -68,7 +68,12 @@ test("generated exclusions follow known producer identities, not arbitrary gener
     assert.equal(isHandwrittenSource(file, ""), false);
   }
   const header = "// Auto generated File\n// DON'T EDIT BY HAND\n";
-  assert.equal(isHandwrittenSource("packages/phosphor_flutter/lib/src/phosphor_icons_bold.dart", header), false);
+  for (const file of ["packages/phosphor_flutter/lib/src/phosphor_icons_bold.dart",
+    "packages/phosphor_flutter/lib/src/phosphor_icons_base.dart",
+    "packages/phosphor_flutter/lib/src/phosphor_icons.dart",
+    "packages/phosphor_flutter/example/lib/constants/all_icons.dart"]) {
+    assert.equal(isHandwrittenSource(file, header), false);
+  }
   for (const file of ["lib/generated/handwritten.dart", "lib/example.dart", "packages/phosphor_flutter/lib/src/handwritten.dart"]) {
     assert.equal(isHandwrittenSource(file, header), true);
   }
