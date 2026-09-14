@@ -58,7 +58,7 @@ void main() {
       itemLabelBuilder: (value) => '$value',
       selected: const {2},
       onSelectionChanged: (_) {},
-      initiallyOpen: true,
+      disclosureMode: CatchFieldMode.localExpanded,
     );
     expect(Widget.canUpdate(numberField, choices), isTrue);
     await tester.pumpWidget(

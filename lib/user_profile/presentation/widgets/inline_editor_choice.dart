@@ -129,7 +129,9 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
         tone: widget.isAddAffordance || _selected == null
             ? CatchFieldTone.primary
             : CatchFieldTone.normal,
-        open: widget.isExpanded,
+        disclosureMode: widget.isExpanded
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: (expanded) {
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();
@@ -293,7 +295,9 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
         tone: widget.isAddAffordance || _selected.isEmpty
             ? CatchFieldTone.primary
             : CatchFieldTone.normal,
-        open: widget.isExpanded,
+        disclosureMode: widget.isExpanded
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: (expanded) {
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();

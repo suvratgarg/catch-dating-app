@@ -102,7 +102,7 @@ void main() {
                   title: 'Choice',
                   body: 'One',
 
-                  open: true,
+                  disclosureMode: CatchFieldMode.controlledExpanded,
                   onCancel: () {},
                   onSubmit: () {},
 

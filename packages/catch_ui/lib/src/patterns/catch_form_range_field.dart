@@ -102,7 +102,9 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
       body: widget.scope.isExpanded
           ? '${descriptor.labelText(_range.start)} - ${descriptor.labelText(_range.end)}'
           : descriptor.value,
-      open: widget.scope.isExpanded,
+      disclosureMode: widget.scope.isExpanded
+          ? CatchFieldMode.controlledExpanded
+          : CatchFieldMode.controlledCollapsed,
       onOpenChanged: (_) => widget.scope.toggle(),
       status: _saveState.saving
           ? CatchFieldStatus.saving

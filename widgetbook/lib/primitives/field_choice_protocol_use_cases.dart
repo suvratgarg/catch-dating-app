@@ -23,7 +23,7 @@ Widget fieldChoiceDisclosureProtocol(BuildContext context) {
           values: const ['Morning', 'Evening'],
           itemLabelBuilder: (value) => value,
           selected: {selected},
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onSelectionChanged: (values) =>
               setState(() => selected = values.single),
         ),
@@ -36,7 +36,7 @@ Widget fieldChoiceDisclosureProtocol(BuildContext context) {
               ? 'Start your day together.'
               : 'Meet after the working day.',
           selected: selected,
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onChanged: (value) => setState(() => selected = value),
         ),
       ],

@@ -42,7 +42,7 @@ Widget fieldInteractionPlaneLayoutStates(BuildContext context) =>
                           itemLabelBuilder: (value) => value,
                           selected: const {'Before'},
                           onSelectionChanged: (_) {},
-                          initiallyOpen: true,
+                          disclosureMode: CatchFieldMode.localExpanded,
                         ),
                       ],
                     ),

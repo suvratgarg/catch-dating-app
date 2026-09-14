@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 4.1.0
+version: 4.2.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -13,6 +13,10 @@ status: active
 `CatchFieldStatus` is the single save-state input for all field recipes. Saving
 locks disclosure controls and commit actions and supplies progress and
 accessibility feedback. Direct text-input edit permissions remain caller-owned.
+
+Disclosure controls use `CatchFieldMode` to distinguish local expansion from
+caller-controlled expansion. Switching back to local ownership preserves the
+last expansion. `inputActions` remains a caller-owned explicit-save editor.
 
 L0 token definitions live in `packages/catch_tokens` and are consumed through
 `package:catch_tokens/catch_tokens.dart`. Widgetbook foundation specimens in
@@ -457,7 +461,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventSuccessReportTabSkeleton</code> | <code>lib/event_success/presentation/event_success_host_screen.dart:1070</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessSetupControlsSkeleton</code> | <code>lib/event_success/presentation/event_success_host_screen.dart:1096</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessSetupTabSkeleton</code> | <code>lib/event_success/presentation/event_success_host_screen.dart:1018</code> | — | — | No class documentation or registry summary. |
-| <code>CustomQuestionnaireFields</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:155</code> | — | — | No class documentation or registry summary. |
+| <code>CustomQuestionnaireFields</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:157</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessQuestionnaireConfigEditor</code> | <code>lib/event_success/presentation/event_success_questionnaire_config_editor.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessRoomMap</code> | <code>lib/event_success/presentation/event_success_room_map.dart:36</code> | — | — | Shared normalized room map used by Host and attendee runtimes. |
 | <code>EventSuccessRoomSetupSection</code> | <code>lib/event_success/presentation/event_success_room_setup_section.dart:16</code> | — | — | Shared room-layout setup used by Create Event and post-creation Host Setup. |
@@ -764,12 +768,12 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostPrivateAccessCard</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:827</code> | — | — | No class documentation or registry summary. |
 | <code>HostPrivateAccessShell</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:943</code> | — | — | No class documentation or registry summary. |
 | <code>HostPublicRegistrationCard</code> | <code>lib/hosts/presentation/host_event_manage_screen.dart:1621</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsDualBar</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:609</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsEventList</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:714</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsEventTile</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:759</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsDualBar</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:611</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsEventList</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:716</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsEventTile</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:761</code> | — | — | No class documentation or registry summary. |
 | <code>HostAnalyticsReportView</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:256</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsReviewsPanel</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:812</code> | — | — | No class documentation or registry summary. |
-| <code>HostAnalyticsTrendPanel</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:486</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsReviewsPanel</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:814</code> | — | — | No class documentation or registry summary. |
+| <code>HostAnalyticsTrendPanel</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:488</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubInsightsPane</code> | <code>lib/hosts/presentation/host_operations/host_analytics.dart:17</code> | — | — | No class documentation or registry summary. |
 | <code>HostWhatsappSetupPane</code> | <code>lib/hosts/presentation/host_operations/host_audience.dart:3</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubEditTab</code> | <code>lib/hosts/presentation/host_operations/host_club_edit_tab.dart:25</code> | — | — | No class documentation or registry summary. |
@@ -866,7 +870,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>PhotoGrid</code> | <code>lib/image_uploads/shared/photo_grid.dart:31</code> | — | — | A 3×2 grid of photo slots for displaying and editing a user's profile photos. |
 | <code>PhotoSlot</code> | <code>lib/image_uploads/shared/photo_slot.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>StripedPhotoPlaceholder</code> | <code>lib/image_uploads/shared/photo_slot.dart:252</code> | — | — | No class documentation or registry summary. |
-| <code>ProfilePhotoEditorPreview</code> | <code>lib/image_uploads/shared/profile_photo_editor_screen.dart:386</code> | — | — | No class documentation or registry summary. |
+| <code>ProfilePhotoEditorPreview</code> | <code>lib/image_uploads/shared/profile_photo_editor_screen.dart:388</code> | — | — | No class documentation or registry summary. |
 | <code>LaunchAccessApplicationForm</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart:171</code> | — | — | No class documentation or registry summary. |
 | <code>LaunchAccessChoiceSkeleton</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart:137</code> | — | — | No class documentation or registry summary. |
 | <code>LaunchAccessLoadingBody</code> | <code>lib/launch_access/presentation/launch_access_application_screen.dart:92</code> | — | — | No class documentation or registry summary. |
@@ -991,7 +995,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>UserAnalyticsTrendPanel</code> | <code>lib/user_analytics/shared/user_analytics_panel.dart:301</code> | — | — | No class documentation or registry summary. |
 | <code>PreviewTabSkeletonSliverBody</code> | <code>lib/user_profile/presentation/profile_screen.dart:249</code> | — | — | No class documentation or registry summary. |
 | <code>PreviewTabSliverBody</code> | <code>lib/user_profile/presentation/profile_screen.dart:286</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileInlineMultiChoiceEntryEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_choice.dart:170</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileInlineMultiChoiceEntryEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_choice.dart:172</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileInlineSingleChoiceEntryEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_choice.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileInlineHeightEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_height.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileInlinePromptEntryEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_prompt.dart:21</code> | — | — | One contained prompt card: a staged question selector followed by a separate multiline answer that saves implicitly on blur. |

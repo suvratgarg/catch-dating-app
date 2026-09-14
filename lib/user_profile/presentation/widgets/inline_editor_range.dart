@@ -148,7 +148,9 @@ class _ProfileInlineRangeEditorState
         title: widget.title,
         contract: widget.minimumContract,
         body: body,
-        open: widget.isExpanded,
+        disclosureMode: widget.isExpanded
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: (expanded) {
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();

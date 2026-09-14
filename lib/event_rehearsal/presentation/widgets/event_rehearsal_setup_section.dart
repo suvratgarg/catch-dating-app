@@ -88,7 +88,9 @@ class _EventRehearsalSetupSectionState
               : context.l10n.hostEventRehearsalSetupFrozen,
           contractExemption:
               'Rehearsal setup is submitted as one callable-owned snapshot.',
-          open: _open,
+          disclosureMode: _open
+              ? CatchFieldMode.controlledExpanded
+              : CatchFieldMode.controlledCollapsed,
           states: <WidgetState>{if (!editable) WidgetState.disabled},
           status: widget.isLoading
               ? CatchFieldStatus.saving
@@ -162,7 +164,7 @@ class _EventRehearsalSetupSectionState
                     eventRehearsalModuleLabel(context.l10n, module),
                 selected: _modules,
                 mode: CatchChipMode.multiple,
-                initiallyOpen: true,
+                disclosureMode: CatchFieldMode.localExpanded,
                 onSelectionChanged: (selection) =>
                     setState(() => _modules = selection),
               ),

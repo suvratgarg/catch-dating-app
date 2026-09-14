@@ -28,7 +28,9 @@ void main() {
             return CatchField.control(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Capacity',
-              open: controlled ? true : null,
+              disclosureMode: controlled
+                  ? CatchFieldMode.controlledExpanded
+                  : CatchFieldMode.localCollapsed,
               onOpenChanged: (_) {},
               child: const Text('Capacity choices'),
             );
@@ -67,7 +69,9 @@ void main() {
             return CatchField.control(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Age range',
-              open: open,
+              disclosureMode: open
+                  ? CatchFieldMode.controlledExpanded
+                  : CatchFieldMode.controlledCollapsed,
               onOpenChanged: setOpen,
               child: TextField(focusNode: controlFocus),
             );
@@ -125,7 +129,7 @@ void main() {
           itemLabelBuilder: (value) => value,
           itemAccentBuilder: (value) => value == 'Social' ? accent : null,
           selected: const {'Social'},
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onSelectionChanged: (_) {},
         ),
       ),
@@ -156,7 +160,7 @@ void main() {
                   ? 'Anyone eligible can book until capacity.'
                   : 'Only people with the invite code can book.',
               selected: selected,
-              initiallyOpen: true,
+              disclosureMode: CatchFieldMode.localExpanded,
               onChanged: (value) => setState(() => selected = value),
             ),
           ),
@@ -208,7 +212,7 @@ void main() {
             max: 169,
             step: 2,
             unit: 'cm',
-            initiallyOpen: true,
+            disclosureMode: CatchFieldMode.localExpanded,
             decreaseSemanticLabel: 'Decrease height',
             increaseSemanticLabel: 'Increase height',
             onChanged: (next) => setState(() => value = next),
@@ -373,7 +377,7 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           body: '168 cm',
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
 
           onCancel: _noop,
           onSubmit: _noop,
@@ -423,7 +427,7 @@ void main() {
           itemLabelBuilder: (value) => value,
           selected: const {'Indore'},
           onSelectionChanged: (_) {},
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
         ),
       ),
     );
@@ -449,7 +453,7 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
 
           onCancel: () => cancelCount++,
           onSubmit: () {},
@@ -476,7 +480,7 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
 
           onCancel: () {},
           onSubmit: () => submitCount++,
@@ -504,7 +508,7 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          open: true,
+          disclosureMode: CatchFieldMode.controlledExpanded,
           onOpenChanged: openChanges.add,
 
           onCancel: () {},
@@ -711,7 +715,7 @@ void main() {
                 values: const ['Run', 'Walk'],
                 itemLabelBuilder: (value) => value,
                 selected: selected,
-                initiallyOpen: true,
+                disclosureMode: CatchFieldMode.localExpanded,
                 onSelectionChanged: (next) {
                   reports += 1;
                   setState(() => selected = next);
@@ -743,7 +747,7 @@ void main() {
               WidgetState.disabled,
               WidgetState.focused,
             },
-            initiallyOpen: true,
+            disclosureMode: CatchFieldMode.localExpanded,
             onSelectionChanged: (_) => reports += 1,
           ),
         ),
@@ -772,7 +776,7 @@ void main() {
               valueLabelBuilder: (next) => '${next.toInt()} guests',
               decreaseSemanticLabel: 'Decrease guests',
               increaseSemanticLabel: 'Increase guests',
-              initiallyOpen: true,
+              disclosureMode: CatchFieldMode.localExpanded,
               onChanged: (next) => setState(() => value = next.toInt()),
             ),
           ),
@@ -803,7 +807,7 @@ void main() {
             value: value,
             decreaseSemanticLabel: 'Decrease duration',
             increaseSemanticLabel: 'Increase duration',
-            initiallyOpen: true,
+            disclosureMode: CatchFieldMode.localExpanded,
             onChanged: (next) => setState(() => value = next),
           ),
         ),
@@ -860,7 +864,7 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Preferred group size',
               body: 'Four people for a comfortable conversation',
-              initiallyOpen: true,
+              disclosureMode: CatchFieldMode.localExpanded,
               child: CatchStepper(
                 value: 4,
                 decreaseSemanticLabel: 'Decrease group size',

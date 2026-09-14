@@ -82,7 +82,9 @@ class _AccordionFieldsState extends State<_AccordionFields> {
             itemLabelBuilder: (value) => value,
             selected: const {'Default'},
             onSelectionChanged: (_) {},
-            open: _controller.isExpanded(title),
+            disclosureMode: _controller.isExpanded(title)
+                ? CatchFieldMode.controlledExpanded
+                : CatchFieldMode.controlledCollapsed,
             onOpenChanged: (open) {
               if (open) {
                 _controller.toggle(title);
@@ -103,7 +105,7 @@ Widget _openField(BuildContext context) => CatchField<String>.choices(
   itemLabelBuilder: (value) => value,
   selected: const {'Before'},
   onSelectionChanged: (_) {},
-  initiallyOpen: true,
+  disclosureMode: CatchFieldMode.localExpanded,
 );
 
 @widgetbook.UseCase(
@@ -295,7 +297,9 @@ class _ObstructedDisclosureState extends State<_ObstructedDisclosure> {
                     itemLabelBuilder: (value) => value,
                     selected: const {'Before'},
                     onSelectionChanged: (_) {},
-                    open: _open,
+                    disclosureMode: _open
+                        ? CatchFieldMode.controlledExpanded
+                        : CatchFieldMode.controlledCollapsed,
                     onOpenChanged: (open) => setState(() => _open = open),
                     onCancel: () => setState(() => _open = false),
                     onSubmit: () => setState(() => _open = false),

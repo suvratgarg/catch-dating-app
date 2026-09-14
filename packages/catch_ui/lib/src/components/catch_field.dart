@@ -469,9 +469,8 @@ class CatchField<T> extends StatefulWidget
        );
 
   /// A row-owned disclosure control. The row remains stable while [child]
-  /// reveals below it. Use [open] for caller-owned edit flows or
-  /// [initiallyOpen] for local disclosure state. Save and error state remain
-  /// caller-owned.
+  /// reveals below it. [disclosureMode] selects caller-owned expansion or
+  /// the initial local state. Save and error state remain caller-owned.
   const CatchField.control({
     required this.copy,
     super.key,
@@ -480,8 +479,7 @@ class CatchField<T> extends StatefulWidget
     this.contract,
     String? contractExemption,
     required Widget this.child,
-    bool? open,
-    bool initiallyOpen = false,
+    CatchFieldMode disclosureMode = CatchFieldMode.localCollapsed,
     ValueChanged<bool>? onOpenChanged,
     VoidCallback? onCancel,
     VoidCallback? onSubmit,
@@ -510,8 +508,7 @@ class CatchField<T> extends StatefulWidget
          contractExemption: contractExemption,
          titleMaxLines: titleMaxLines,
          bodyMaxLines: bodyMaxLines,
-         open: open,
-         initiallyOpen: initiallyOpen,
+         disclosureMode: disclosureMode,
          onOpenChanged: onOpenChanged,
          onCancel: onCancel,
          onSubmit: onSubmit,
@@ -540,8 +537,7 @@ class CatchField<T> extends StatefulWidget
     required ValueChanged<Set<T>>? onSelectionChanged,
     CatchChipMode mode = CatchChipMode.single,
     bool allowEmptySelection = false,
-    bool? open,
-    bool initiallyOpen = false,
+    CatchFieldMode disclosureMode = CatchFieldMode.localCollapsed,
     ValueChanged<bool>? onOpenChanged,
     VoidCallback? onCancel,
     VoidCallback? onSubmit,
@@ -576,8 +572,7 @@ class CatchField<T> extends StatefulWidget
       contract: contract,
       body: body ?? (selectedSummary.isEmpty ? null : selectedSummary),
 
-      open: open,
-      initiallyOpen: initiallyOpen,
+      disclosureMode: disclosureMode,
       onOpenChanged: onOpenChanged,
       onCancel: onCancel,
       onSubmit: onSubmit,
@@ -625,8 +620,7 @@ class CatchField<T> extends StatefulWidget
     required String Function(T value) itemDescriptionBuilder,
     required T selected,
     required ValueChanged<T>? onChanged,
-    bool? open,
-    bool initiallyOpen = false,
+    CatchFieldMode disclosureMode = CatchFieldMode.localCollapsed,
     ValueChanged<bool>? onOpenChanged,
     VoidCallback? onCancel,
     VoidCallback? onSubmit,
@@ -661,8 +655,7 @@ class CatchField<T> extends StatefulWidget
       contract: contract,
       body: body ?? itemTitleBuilder(selected),
 
-      open: open,
-      initiallyOpen: initiallyOpen,
+      disclosureMode: disclosureMode,
       onOpenChanged: onOpenChanged,
       onCancel: onCancel,
       onSubmit: onSubmit,
@@ -707,8 +700,7 @@ class CatchField<T> extends StatefulWidget
     String Function(num value)? valueLabelBuilder,
     required String decreaseSemanticLabel,
     required String increaseSemanticLabel,
-    bool? open,
-    bool initiallyOpen = false,
+    CatchFieldMode disclosureMode = CatchFieldMode.localCollapsed,
     ValueChanged<bool>? onOpenChanged,
     VoidCallback? onCancel,
     VoidCallback? onSubmit,
@@ -746,8 +738,7 @@ class CatchField<T> extends StatefulWidget
       contract: contract,
       body: body,
 
-      open: open,
-      initiallyOpen: initiallyOpen,
+      disclosureMode: disclosureMode,
       onOpenChanged: onOpenChanged,
       onCancel: onCancel,
       onSubmit: onSubmit,

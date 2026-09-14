@@ -169,7 +169,9 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                     onSelectionChanged: (selection) {
                       widget.onActivityKindChanged(selection.single);
                     },
-                    open: _accordion.isExpanded(_activityField),
+                    disclosureMode: _accordion.isExpanded(_activityField)
+                        ? CatchFieldMode.controlledExpanded
+                        : CatchFieldMode.controlledCollapsed,
                     onOpenChanged: (open) => _setOpen(_activityField, open),
                     icon: activity.glyph,
                     iconColor: activity.accent,
@@ -228,7 +230,9 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       onSelectionChanged: (selection) {
                         widget.onInteractionModelChanged(selection.single);
                       },
-                      open: _accordion.isExpanded(_interactionField),
+                      disclosureMode: _accordion.isExpanded(_interactionField)
+                          ? CatchFieldMode.controlledExpanded
+                          : CatchFieldMode.controlledCollapsed,
                       onOpenChanged: (open) =>
                           _setOpen(_interactionField, open),
                       icon: CatchIcons.tuneRounded,
@@ -306,7 +310,9 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                             field.didChange(next);
                           },
                           allowEmptySelection: true,
-                          open: _accordion.isExpanded(_paceField),
+                          disclosureMode: _accordion.isExpanded(_paceField)
+                              ? CatchFieldMode.controlledExpanded
+                              : CatchFieldMode.controlledCollapsed,
                           onOpenChanged: (open) => _setOpen(_paceField, open),
                           icon: CatchIcons.speedOutlined,
                           iconColor: activity.accent,

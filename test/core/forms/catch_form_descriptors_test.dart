@@ -44,7 +44,9 @@ void main() {
               build: (context, scope) => CatchField.control(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Custom',
-                open: scope.isExpanded,
+                disclosureMode: scope.isExpanded
+                    ? CatchFieldMode.controlledExpanded
+                    : CatchFieldMode.controlledCollapsed,
                 onOpenChanged: (_) => scope.toggle(),
                 child: const Text('Custom control'),
               ),

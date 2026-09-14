@@ -127,7 +127,9 @@ class _ProfileInlineHeightEditorState
         tone: widget.isAddAffordance
             ? CatchFieldTone.primary
             : CatchFieldTone.normal,
-        open: widget.isExpanded,
+        disclosureMode: widget.isExpanded
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: (expanded) {
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();

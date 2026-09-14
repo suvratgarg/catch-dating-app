@@ -15,13 +15,13 @@
     },
     {
       "path": "design_system/claude_design_handoff_request.json",
-      "sha256": "2e497c941181ccd693fba037b2df812a3a670e2f73a9c0a0d32d2c390af793c4",
+      "sha256": "faba7325a474b7d02b7761e3f27ad205370fa491b348879e41698c24054bfcbd",
       "bytes": 4980
     },
     {
       "path": "design_system/components.json",
-      "sha256": "c86e40533b74f54e17efc48e53f8435948ea1cd3989dd4d590ed6534a0dc6c1f",
-      "bytes": 606965
+      "sha256": "38b50218e4566b13a7694531cbbce4b494819e3dc9c1d477a86ce4e1dd6d8e5a",
+      "bytes": 607651
     },
     {
       "path": "design_system/design_language.txt",

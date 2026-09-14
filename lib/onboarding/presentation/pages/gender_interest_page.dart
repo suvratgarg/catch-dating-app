@@ -160,7 +160,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                           if (!state.requestControlsEnabled)
                             WidgetState.disabled,
                         },
-                        initiallyOpen: true,
+                        disclosureMode: CatchFieldMode.localExpanded,
                         error: field.errorText,
                       ),
                     ),
@@ -193,7 +193,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                           if (!state.requestControlsEnabled)
                             WidgetState.disabled,
                         },
-                        initiallyOpen: true,
+                        disclosureMode: CatchFieldMode.localExpanded,
                         error: field.errorText,
                       ),
                     ),

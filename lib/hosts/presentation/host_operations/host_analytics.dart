@@ -396,7 +396,9 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                     'Disclosure-only analytics layout; no editable value is '
                     'submitted or persisted.',
                 body: context.l10n.hostsHostAnalyticsBodyCheckoutChatsAndSaves,
-                open: _moreMetricsOpen,
+                disclosureMode: _moreMetricsOpen
+                    ? CatchFieldMode.controlledExpanded
+                    : CatchFieldMode.controlledCollapsed,
                 onOpenChanged: (open) {
                   setState(() => _moreMetricsOpen = open);
                 },

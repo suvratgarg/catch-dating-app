@@ -206,7 +206,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                     maxPace: state.maxPaceLabel,
                   ),
                   icon: CatchIcons.directionsRunRounded,
-                  initiallyOpen: true,
+                  disclosureMode: CatchFieldMode.localExpanded,
                   child: Column(
                     children: [
                       Row(
@@ -298,7 +298,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   states: <WidgetState>{
                     if (!state.requestControlsEnabled) WidgetState.disabled,
                   },
-                  initiallyOpen: true,
+                  disclosureMode: CatchFieldMode.localExpanded,
                   isOptional: true,
                 ),
                 CatchField<RunReason>.choices(
@@ -323,7 +323,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   states: <WidgetState>{
                     if (!state.requestControlsEnabled) WidgetState.disabled,
                   },
-                  initiallyOpen: true,
+                  disclosureMode: CatchFieldMode.localExpanded,
                   isOptional: true,
                 ),
                 CatchField<PreferredRunTime>.choices(
@@ -348,7 +348,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   states: <WidgetState>{
                     if (!state.requestControlsEnabled) WidgetState.disabled,
                   },
-                  initiallyOpen: true,
+                  disclosureMode: CatchFieldMode.localExpanded,
                   isOptional: true,
                 ),
               ],

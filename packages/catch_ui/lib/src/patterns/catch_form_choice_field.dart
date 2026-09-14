@@ -119,7 +119,9 @@ class _CatchFormChoiceFieldState<P, T>
       addable: addable,
       isOptional: descriptor.showOptionalLabel,
       tone: addable ? CatchFieldTone.primary : CatchFieldTone.normal,
-      open: widget.scope.isExpanded,
+      disclosureMode: widget.scope.isExpanded
+          ? CatchFieldMode.controlledExpanded
+          : CatchFieldMode.controlledCollapsed,
       onOpenChanged: (_) => widget.scope.toggle(),
       status: _saveState.status,
       error: error == null ? null : widget.errorTextBuilder(context, error),

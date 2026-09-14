@@ -460,7 +460,7 @@ void main() {
               selected: const {'English'},
               onSelectionChanged: (_) {},
               mode: CatchChipMode.multiple,
-              initiallyOpen: true,
+              disclosureMode: CatchFieldMode.localExpanded,
             ),
           ),
         ),

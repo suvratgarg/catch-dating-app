@@ -129,7 +129,7 @@ void main() {
                   CatchField.control(
                     copy: catchFieldCopy(AppLocalizationsEn()),
                     title: 'Catch bookings',
-                    open: true,
+                    disclosureMode: CatchFieldMode.controlledExpanded,
                     onOpenChanged: (_) {},
                     child: const Text('Choice controls'),
                   ),

@@ -168,7 +168,9 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
             selected: <EventRuntimeWalkInPolicy>{widget.runtimeWalkInPolicy},
             onSelectionChanged: (selection) =>
                 widget.onRuntimeWalkInPolicyChanged?.call(selection.single),
-            open: _accordion.isExpanded(_walkInPolicyField),
+            disclosureMode: _accordion.isExpanded(_walkInPolicyField)
+                ? CatchFieldMode.controlledExpanded
+                : CatchFieldMode.controlledCollapsed,
             onOpenChanged: (open) => _setOpen(_walkInPolicyField, open),
             icon: CatchIcons.peopleOutline,
           ),
@@ -211,7 +213,9 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               onSelectionChanged: (selection) => widget
                   .onExternalBookingProviderChanged
                   ?.call(selection.single),
-              open: _accordion.isExpanded(_externalProviderField),
+              disclosureMode: _accordion.isExpanded(_externalProviderField)
+                  ? CatchFieldMode.controlledExpanded
+                  : CatchFieldMode.controlledCollapsed,
               onOpenChanged: (open) => _setOpen(_externalProviderField, open),
               icon: CatchIcons.linkOutlined,
             ),

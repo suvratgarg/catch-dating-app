@@ -84,7 +84,9 @@ class _EventSuccessQuestionnaireConfigEditorState
                       .firstWhere((template) => template.id == id)
                       .subtitle,
             selected: previewId,
-            open: _questionSetOpen,
+            disclosureMode: _questionSetOpen
+                ? CatchFieldMode.controlledExpanded
+                : CatchFieldMode.controlledCollapsed,
             onOpenChanged: _setQuestionSetOpen,
             onCancel: _cancelQuestionSet,
             onSubmit: _submitQuestionSet,

@@ -162,7 +162,9 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
           minAge: minLabel,
           maxAge: maxLabel,
         ),
-        initiallyOpen: widget.initiallyOpen,
+        disclosureMode: widget.initiallyOpen
+            ? CatchFieldMode.localExpanded
+            : CatchFieldMode.localCollapsed,
         states: <WidgetState>{if (!widget.enabled) WidgetState.disabled},
         icon: CatchIcons.cakeOutlined,
         child: CatchRangeInput(

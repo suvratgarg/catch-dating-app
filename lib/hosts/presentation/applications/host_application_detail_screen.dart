@@ -264,11 +264,13 @@ class _HostApplicationDetailScreenState
                       title: context.l10n.hostApplicationReviewTitle,
                       contractExemption:
                           'Disclosure for review actions; the nested note uses the generated review payload binding.',
-                      initiallyOpen:
+                      disclosureMode:
                           application.reviewStatus ==
-                              HostApplicationReviewStatus.submitted ||
-                          application.reviewStatus ==
-                              HostApplicationReviewStatus.inReview,
+                                  HostApplicationReviewStatus.submitted ||
+                              application.reviewStatus ==
+                                  HostApplicationReviewStatus.inReview
+                          ? CatchFieldMode.localExpanded
+                          : CatchFieldMode.localCollapsed,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [

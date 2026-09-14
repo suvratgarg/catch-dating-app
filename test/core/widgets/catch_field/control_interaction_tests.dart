@@ -15,7 +15,9 @@ void _registerControlInteractionTests() {
               CatchField.control(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Height',
-                open: open,
+                disclosureMode: open
+                    ? CatchFieldMode.controlledExpanded
+                    : CatchFieldMode.controlledCollapsed,
                 onOpenChanged: (value) => setState(() => open = value),
 
                 onCancel: () {
@@ -62,7 +64,9 @@ void _registerControlInteractionTests() {
               CatchField.control(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Height',
-                open: open,
+                disclosureMode: open
+                    ? CatchFieldMode.controlledExpanded
+                    : CatchFieldMode.controlledCollapsed,
                 onOpenChanged: (value) => setState(() => open = value),
 
                 onCancel: () {
@@ -165,7 +169,9 @@ void _registerControlInteractionTests() {
                       copy: catchFieldCopy(AppLocalizationsEn()),
                       title: 'Diet',
                       body: 'Jain',
-                      open: open,
+                      disclosureMode: open
+                          ? CatchFieldMode.controlledExpanded
+                          : CatchFieldMode.controlledCollapsed,
                       onOpenChanged: setOpen,
 
                       onCancel: () => setOpen(false),
@@ -222,7 +228,9 @@ void _registerControlInteractionTests() {
                     copy: catchFieldCopy(AppLocalizationsEn()),
                     title: 'Diet',
                     body: 'Jain',
-                    open: open,
+                    disclosureMode: open
+                        ? CatchFieldMode.controlledExpanded
+                        : CatchFieldMode.controlledCollapsed,
                     onOpenChanged: (value) => setState(() => open = value),
 
                     onCancel: _noop,
@@ -287,7 +295,9 @@ void _registerControlInteractionTests() {
                       copy: catchFieldCopy(AppLocalizationsEn()),
                       title: 'Diet',
                       body: 'Jain',
-                      open: open,
+                      disclosureMode: open
+                          ? CatchFieldMode.controlledExpanded
+                          : CatchFieldMode.controlledCollapsed,
                       onOpenChanged: (value) => setState(() => open = value),
 
                       onCancel: _noop,

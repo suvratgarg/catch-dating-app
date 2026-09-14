@@ -124,7 +124,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(movementMode: selection.single),
                   ),
-                  open: _accordion.isExpanded(_movementField),
+                  disclosureMode: _accordion.isExpanded(_movementField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_movementField, open),
                   icon: CatchIcons.syncAltRounded,
                   iconColor: accent,
@@ -142,7 +144,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(routeShape: selection.single),
                   ),
-                  open: _accordion.isExpanded(_shapeField),
+                  disclosureMode: _accordion.isExpanded(_shapeField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_shapeField, open),
                   icon: CatchIcons.mapOutlined,
                   iconColor: accent,
@@ -160,7 +164,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(groupStrategy: selection.single),
                   ),
-                  open: _accordion.isExpanded(_groupField),
+                  disclosureMode: _accordion.isExpanded(_groupField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_groupField, open),
                   icon: CatchIcons.groups2Outlined,
                   iconColor: accent,
@@ -178,7 +184,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(stopCadence: selection.single),
                   ),
-                  open: _accordion.isExpanded(_cadenceField),
+                  disclosureMode: _accordion.isExpanded(_cadenceField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_cadenceField, open),
                   icon: CatchIcons.ruleFolderOutlined,
                   iconColor: accent,
@@ -201,7 +209,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                           .toList(growable: false),
                     ),
                   ),
-                  open: _accordion.isExpanded(_stopsField),
+                  disclosureMode: _accordion.isExpanded(_stopsField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_stopsField, open),
                   icon: CatchIcons.tableRestaurantOutlined,
                   iconColor: accent,
@@ -224,7 +234,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                           .toList(growable: false),
                     ),
                   ),
-                  open: _accordion.isExpanded(_rolesField),
+                  disclosureMode: _accordion.isExpanded(_rolesField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_rolesField, open),
                   icon: CatchIcons.peopleOutline,
                   iconColor: accent,
@@ -268,7 +280,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(paceGroups: _paceGroupsFor(selection)),
                   ),
-                  open: _accordion.isExpanded(_paceGroupsField),
+                  disclosureMode: _accordion.isExpanded(_paceGroupsField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_paceGroupsField, open),
                   icon: CatchIcons.speedOutlined,
                   iconColor: accent,
@@ -293,7 +307,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ),
                     ),
                   ),
-                  open: _accordion.isExpanded(_trackingField),
+                  disclosureMode: _accordion.isExpanded(_trackingField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_trackingField, open),
                   icon: CatchIcons.locationOnOutlined,
                   iconColor: accent,

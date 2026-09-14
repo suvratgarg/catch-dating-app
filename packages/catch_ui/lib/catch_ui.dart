@@ -69,6 +69,7 @@ export 'src/components/catch_field_interaction_plane_scope.dart';
 export 'src/components/catch_field_label_text.dart';
 export 'src/components/catch_field_label_text_size.dart';
 export 'src/components/catch_field_lanes.dart';
+export 'src/components/catch_field_mode.dart';
 export 'src/components/catch_field_motion.dart';
 export 'src/components/catch_field_row.dart';
 export 'src/components/catch_field_size.dart';

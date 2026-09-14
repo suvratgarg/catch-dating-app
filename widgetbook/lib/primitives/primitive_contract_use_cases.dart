@@ -2570,7 +2570,7 @@ Widget catchFieldContractStates(BuildContext context) {
           itemAccentBuilder: (value) =>
               value == 'Social' ? CatchTokens.of(context).primary : null,
           selected: const {'Social'},
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onSelectionChanged: (_) {},
         ),
       ),
@@ -2588,7 +2588,7 @@ Widget catchFieldContractStates(BuildContext context) {
               ? 'Anyone eligible can book until the event reaches capacity.'
               : 'People request a spot and a host approves each booking.',
           selected: 'open',
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onChanged: (_) {},
           icon: CatchIcons.howToRegOutlined,
         ),
@@ -4117,7 +4117,7 @@ Widget catchSectionContractStates(BuildContext context) {
                 itemLabelBuilder: (value) => value,
                 selected: const {'English', 'Hindi', 'Marathi'},
                 mode: CatchChipMode.multiple,
-                initiallyOpen: true,
+                disclosureMode: CatchFieldMode.localExpanded,
                 onSelectionChanged: (_) {},
                 onCancel: _noop,
                 onSubmit: _noop,
@@ -11024,7 +11024,9 @@ class _ChoiceFieldDemoState extends State<_ChoiceFieldDemo> {
       mode: CatchChipMode.multiple,
       allowEmptySelection: widget.allowEmptySelection,
       isOptional: widget.isOptional,
-      initiallyOpen: widget.initiallyOpen,
+      disclosureMode: widget.initiallyOpen
+          ? CatchFieldMode.localExpanded
+          : CatchFieldMode.localCollapsed,
       onSelectionChanged: (selection) {
         setState(() => _selected = selection);
       },
@@ -11055,7 +11057,7 @@ class _StepperFieldDemoState extends State<_StepperFieldDemo> {
       min: 120,
       max: 220,
       unit: 'cm',
-      initiallyOpen: true,
+      disclosureMode: CatchFieldMode.localExpanded,
       decreaseSemanticLabel: 'Decrease height',
       increaseSemanticLabel: 'Increase height',
       onChanged: (value) => setState(() => _value = value),

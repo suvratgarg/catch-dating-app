@@ -37,7 +37,7 @@ void main() {
                   itemLabelBuilder: (value) => value,
                   selected: selected,
                   mode: CatchChipMode.multiple,
-                  initiallyOpen: true,
+                  disclosureMode: CatchFieldMode.localExpanded,
                   onSelectionChanged: (next) => setState(() => selected = next),
                   onCancel: () {},
                   onSubmit: () {},
@@ -48,7 +48,7 @@ void main() {
                   value: height,
                   min: 160,
                   max: 180,
-                  initiallyOpen: true,
+                  disclosureMode: CatchFieldMode.localExpanded,
                   decreaseSemanticLabel: 'Decrease height',
                   increaseSemanticLabel: 'Increase height',
                   onChanged: (next) => setState(() => height = next.toInt()),
@@ -152,7 +152,7 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onOpenChanged: openChanges.add,
 
           onCancel: () {},
@@ -184,7 +184,7 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          open: true,
+          disclosureMode: CatchFieldMode.controlledExpanded,
           onOpenChanged: openChanges.add,
           child: Focus(
             focusNode: controlFocus,

@@ -2755,14 +2755,22 @@
             "name": "open",
             "type": "bool",
             "required": false,
-            "dartType": "bool?"
+            "dartType": "bool",
+            "notes": "Required only by inputActions, whose explicit-save edit lifecycle is always caller-owned. Disclosure controls use disclosureMode instead."
           },
           {
-            "name": "initiallyOpen",
-            "type": "bool",
+            "name": "disclosureMode",
+            "type": "enum",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "default": "localCollapsed",
+            "dartType": "CatchFieldMode",
+            "values": [
+              "localCollapsed",
+              "localExpanded",
+              "controlledCollapsed",
+              "controlledExpanded"
+            ],
+            "notes": "Control, choices, optionCards and stepper share one disclosure-ownership axis. Local modes seed expansion and let field taps update it. Controlled modes notify the caller and await its next mode. Releasing control preserves the last expansion. Selection cardinality remains a separate CatchChipMode axis."
           },
           {
             "name": "addable",

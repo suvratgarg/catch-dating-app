@@ -61,7 +61,7 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
               icon: CatchIcons.scienceOutlined,
               contractExemption:
                   'Synthetic behaviors are callable-owned rehearsal commands.',
-              initiallyOpen: true,
+              disclosureMode: CatchFieldMode.localExpanded,
               child: CatchFieldLanes.divided(
                 children: [
                   _EventRehearsalActorPicker(
@@ -342,8 +342,10 @@ class EventRehearsalRecapSection extends StatelessWidget {
         icon: CatchIcons.factCheckOutlined,
         contractExemption:
             'Recap and deterministic reproduction are rehearsal projections.',
-        initiallyOpen:
-            rehearsal.session.status == EventRehearsalStatus.complete,
+        disclosureMode:
+            rehearsal.session.status == EventRehearsalStatus.complete
+            ? CatchFieldMode.localExpanded
+            : CatchFieldMode.localCollapsed,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

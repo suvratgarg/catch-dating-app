@@ -466,7 +466,9 @@ Widget _mixedContainedSection(
         itemLabelBuilder: _identityString,
         selected: selected,
         onSelectionChanged: onSelectionChanged,
-        open: open,
+        disclosureMode: open
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: onOpenChanged,
       ),
       CatchField.nav(
@@ -497,7 +499,9 @@ Widget _mixedDividedSection(
     itemLabelBuilder: _identityString,
     selected: selected,
     onSelectionChanged: onSelectionChanged,
-    open: open,
+    disclosureMode: open
+        ? CatchFieldMode.controlledExpanded
+        : CatchFieldMode.controlledCollapsed,
     onOpenChanged: onOpenChanged,
   );
   final deliveryField = CatchField.nav(
@@ -1320,7 +1324,9 @@ Widget _canonicalInteractionSection(
       itemLabelBuilder: _identityString,
       selected: selected,
       onSelectionChanged: onSelectionChanged,
-      open: open,
+      disclosureMode: open
+          ? CatchFieldMode.controlledExpanded
+          : CatchFieldMode.controlledCollapsed,
       onOpenChanged: onOpenChanged,
     ),
     CatchField.nav(

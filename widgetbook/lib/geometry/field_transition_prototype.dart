@@ -80,7 +80,9 @@ class _ProductionInteractionTransitionPageState
                           () =>
                               _containedSelection = Set.unmodifiable(selection),
                         ),
-                        open: _containedOpen,
+                        disclosureMode: _containedOpen
+                            ? CatchFieldMode.controlledExpanded
+                            : CatchFieldMode.controlledCollapsed,
                         onOpenChanged: (open) =>
                             setState(() => _containedOpen = open),
                       ),
@@ -120,7 +122,9 @@ class _ProductionInteractionTransitionPageState
                         onSelectionChanged: (selection) => setState(
                           () => _dividedSelection = Set.unmodifiable(selection),
                         ),
-                        open: _dividedOpen,
+                        disclosureMode: _dividedOpen
+                            ? CatchFieldMode.controlledExpanded
+                            : CatchFieldMode.controlledCollapsed,
                         onOpenChanged: (open) =>
                             setState(() => _dividedOpen = open),
                       ),

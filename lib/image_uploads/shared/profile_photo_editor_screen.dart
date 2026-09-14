@@ -264,7 +264,9 @@ class _ProfilePhotoEditorScreenState
                       if (selection.isEmpty) return;
                       setState(() => _draftPromptId = selection.single.id);
                     },
-              open: _promptOpen,
+              disclosureMode: _promptOpen
+                  ? CatchFieldMode.controlledExpanded
+                  : CatchFieldMode.controlledCollapsed,
               onOpenChanged: _saving || _deleting
                   ? null
                   : (open) {

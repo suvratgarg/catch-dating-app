@@ -386,7 +386,9 @@ class _ProfileInlinePromptEntryEditorState
               clearSaveError();
             });
           },
-          open: widget.isExpanded,
+          disclosureMode: widget.isExpanded
+              ? CatchFieldMode.controlledExpanded
+              : CatchFieldMode.controlledCollapsed,
           onOpenChanged: (expanded) {
             if (expanded == widget.isExpanded || questionSaving) {
               return;

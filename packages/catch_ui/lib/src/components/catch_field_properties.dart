@@ -64,10 +64,15 @@ mixin _CatchFieldProperties {
   String? get toggleContractExemption => _toggleConfig?.contractExemption;
 
   /// Control revealed by a navigation-mode disclosure field.
-  bool get initiallyOpen => _controlConfig?.initiallyOpen ?? false;
+  bool get initiallyOpen =>
+      _controlConfig?.disclosureMode == CatchFieldMode.localExpanded;
 
   /// Caller-owned disclosure state; null keeps expansion local.
-  bool? get open => _controlConfig?.open ?? _editConfig?.open;
+  bool? get open => switch (_controlConfig?.disclosureMode) {
+    CatchFieldMode.controlledExpanded => true,
+    CatchFieldMode.controlledCollapsed => false,
+    _ => _editConfig?.open,
+  };
   ValueChanged<bool>? get onOpenChanged =>
       _controlConfig?.onOpenChanged ?? _editConfig?.onOpenChanged;
   bool get _explicitSaveInput => _editConfig?.explicitSave ?? false;

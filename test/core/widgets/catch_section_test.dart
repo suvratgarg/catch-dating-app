@@ -155,7 +155,7 @@ void main() {
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Second',
                   body: 'B',
-                  initiallyOpen: true,
+                  disclosureMode: CatchFieldMode.localExpanded,
                   child: const Text('Second control'),
                 ),
                 CatchField.read(
@@ -997,7 +997,9 @@ void main() {
                       key: ValueKey('active-row-$index'),
                       title: 'Row $index',
                       body: 'Value $index',
-                      open: index == activeIndex,
+                      disclosureMode: index == activeIndex
+                          ? CatchFieldMode.controlledExpanded
+                          : CatchFieldMode.controlledCollapsed,
                       onOpenChanged: (_) {},
                       child: Text('Control $index'),
                     ),
