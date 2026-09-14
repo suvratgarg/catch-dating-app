@@ -1482,7 +1482,7 @@ class _FormSettings extends StatelessWidget {
             initialValue: definition.description,
             contractExemption:
                 'The backend form definition validates this optional description.',
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             maxLines: 3,
             onBlur: (value) => notifier.updateMetadata(
               description: value.trim(),
@@ -1550,7 +1550,7 @@ class _FormSettings extends StatelessWidget {
               key: ValueKey('form-activity-${definition.activityKind}'),
               title: context.l10n.hostFormActivityKind,
               initialValue: definition.activityKind,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               contractExemption:
                   'The backend form definition validates activity labels.',
               onBlur: (value) => notifier.updateMetadata(
@@ -1582,7 +1582,7 @@ class _FormSettings extends StatelessWidget {
             key: ValueKey('form-limit-${definition.responseLimit}'),
             title: context.l10n.hostFormResponseLimit,
             initialValue: definition.responseLimit?.toString(),
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             keyboardType: TextInputType.number,
             contractExemption: 'The form contract validates response limits.',
             onBlur: (value) => notifier.updateMetadata(
@@ -1595,7 +1595,7 @@ class _FormSettings extends StatelessWidget {
             key: ValueKey('form-closed-${definition.closedMessage}'),
             title: context.l10n.hostFormClosedMessage,
             initialValue: definition.closedMessage,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             maxLines: 3,
             contractExemption: 'The form contract validates closed copy.',
             onBlur: (value) => notifier.updateMetadata(
@@ -1661,7 +1661,7 @@ class _FormSettings extends StatelessWidget {
             ),
             title: context.l10n.hostFormCompletionMessageLabel,
             initialValue: definition.completionMessage,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             maxLines: 3,
             contractExemption:
                 'The backend form definition validates completion copy.',
@@ -1922,7 +1922,7 @@ class _QuestionEditFields extends StatelessWidget {
           ),
           title: context.l10n.hostFormQuestionHelpLabel,
           initialValue: question.helpText,
-          isOptional: true,
+          labelMode: CatchFieldLabelTextMode.optional,
           maxLines: 3,
           contractExemption: 'The form contract validates question help.',
           onBlur: (value) => notifier.updateQuestion(
@@ -2304,7 +2304,7 @@ class _NumberFormSchemaField extends StatelessWidget {
       key: ValueKey('$fieldKey-$questionId-$value'),
       title: title,
       initialValue: value?.toString(),
-      isOptional: true,
+      labelMode: CatchFieldLabelTextMode.optional,
       keyboardType: TextInputType.numberWithOptions(
         decimal: decimal,
         signed: decimal,
@@ -2343,7 +2343,7 @@ class _TextValidationFormSchemaField extends StatelessWidget {
       key: ValueKey('$fieldKey-$questionId-$value'),
       title: title,
       initialValue: value,
-      isOptional: true,
+      labelMode: CatchFieldLabelTextMode.optional,
       contractExemption: 'The form contract validates this answer rule.',
       onBlur: (text) => onChanged(text.trim().isEmpty ? null : text.trim()),
     ),

@@ -10,6 +10,7 @@ import 'package:catch_ui/src/components/catch_contract_field_constraints.dart';
 import 'package:catch_ui/src/components/catch_contract_field_policy.dart';
 import 'package:catch_ui/src/components/catch_field_choice_picked_notification.dart';
 import 'package:catch_ui/src/components/catch_field_label_text.dart';
+import 'package:catch_ui/src/components/catch_field_label_text_mode.dart';
 import 'package:catch_ui/src/components/catch_option.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
@@ -570,7 +571,9 @@ class _CatchChoiceInputState<T> extends State<CatchChoiceInput<T>> {
               CatchFieldLabelText(
                 copy: form.copy,
                 label: label,
-                isOptional: form.isOptional,
+                mode: form.isOptional
+                    ? CatchFieldLabelTextMode.optional
+                    : CatchFieldLabelTextMode.visible,
                 hasError: field.hasError,
               ),
               gapH8,

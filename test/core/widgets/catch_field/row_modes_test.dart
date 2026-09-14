@@ -402,7 +402,7 @@ void main() {
           selected: const {},
           onSelectionChanged: (_) {},
           addable: true,
-          isOptional: true,
+          labelMode: CatchFieldLabelTextMode.optional,
           onCancel: () {},
           onSubmit: () {},
         ),

@@ -226,7 +226,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               contract: CatchContractConstraints
                   .createEventCallablePayloadExternalOriginExternalEventUrl,
               controller: widget.externalEventUrlController,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               inputHint:
                   context.l10n.hostsEventDetailsStepExternalEventUrlPlaceholder,
               icon: CatchIcons.linkRounded,
@@ -253,7 +253,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               contract: CatchContractConstraints
                   .createEventCallablePayloadExternalOriginExternalEventId,
               controller: widget.externalEventIdController,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               inputHint:
                   context.l10n.hostsEventDetailsStepExternalEventIdPlaceholder,
               icon: CatchIcons.confirmationNumberOutlined,

@@ -186,7 +186,7 @@ class _ChatComposer extends StatelessWidget {
                             title: context.l10n.chatsChatInputBarTitleMessage,
                             contract: CatchContractConstraints
                                 .createChatMessageClientWriteDataText,
-                            showLabel: false,
+                            labelMode: CatchFieldLabelTextMode.hidden,
                             controller: controller,
                             focusNode: focusNode,
                             // Sending keeps the native editor focused.

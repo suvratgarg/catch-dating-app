@@ -1,5 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_badge.dart';
+import 'package:catch_ui/src/components/catch_field_label_text_mode.dart';
 import 'package:catch_ui/src/components/catch_field_label_text_size.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,7 @@ class CatchFieldLabelText extends StatelessWidget {
     super.key,
     required this.label,
     required this.copy,
-    this.isOptional = false,
+    this.mode = CatchFieldLabelTextMode.visible,
     this.hasError = false,
     this.size = CatchFieldLabelTextSize.sm,
   }) : inlineOptional = false,
@@ -35,7 +36,7 @@ class CatchFieldLabelText extends StatelessWidget {
     required this.label,
     required this.copy,
     required this.style,
-    this.isOptional = false,
+    this.mode = CatchFieldLabelTextMode.visible,
     this.hasError = false,
     this.maxLines = 1,
   }) : inlineOptional = true,
@@ -43,7 +44,8 @@ class CatchFieldLabelText extends StatelessWidget {
 
   final String label;
   final CatchFieldLabelTextCopy copy;
-  final bool isOptional;
+  final CatchFieldLabelTextMode mode;
+  bool get isOptional => mode.isOptional;
   final bool hasError;
   final CatchFieldLabelTextSize size;
   final bool inlineOptional;
@@ -52,6 +54,12 @@ class CatchFieldLabelText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!mode.showsLabel) {
+      return Semantics(
+        label: isOptional ? copy.optionalSemantics(label) : label,
+        child: const SizedBox.shrink(),
+      );
+    }
     final t = CatchTokens.of(context);
     final showOptionalBadge =
         isOptional && MediaQuery.textScalerOf(context).scale(1) < 1.5;

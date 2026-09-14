@@ -225,7 +225,7 @@ void _registerCatchPrimitivesCompositionTests() {
         CatchFieldLabelText(
           copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
           label: 'Instagram',
-          isOptional: true,
+          mode: CatchFieldLabelTextMode.optional,
         ),
       ),
     );

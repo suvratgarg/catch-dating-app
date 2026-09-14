@@ -378,7 +378,7 @@ class _LaunchAccessApplicationFormState
                   .launchAccessLaunchAccessApplicationScreenTitleInviteCode,
               contract:
                   CatchContractConstraints.accessApplicationDocumentInviteCode,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: _inviteCodeController,
               textCapitalization: TextCapitalization.characters,
               leading: Icon(CatchIcons.confirmationNumberOutlined),
@@ -397,7 +397,7 @@ class _LaunchAccessApplicationFormState
                   .launchAccessLaunchAccessApplicationScreenTitleInstagram,
               contract: CatchContractConstraints
                   .accessApplicationDocumentInstagramHandle,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: _instagramController,
               prefixText: '@',
               textInputAction: TextInputAction.next,
@@ -416,7 +416,7 @@ class _LaunchAccessApplicationFormState
                   .launchAccessLaunchAccessApplicationScreenTitleWhoReferredYou,
               contract: CatchContractConstraints
                   .accessApplicationDocumentReferralSource,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: _referralController,
               textCapitalization: TextCapitalization.words,
               onChanged: (value) {

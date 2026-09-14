@@ -572,7 +572,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 .hostsEditHostedEventScreenTitleExtraDirections,
                             contract: CatchContractConstraints
                                 .updateEventCallablePayloadFieldsLocationDetails,
-                            isOptional: true,
+                            labelMode: CatchFieldLabelTextMode.optional,
                             controller: _locationDetailsController,
                             states: <WidgetState>{
                               if (!screenState.canEdit) WidgetState.disabled,
@@ -737,7 +737,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 .hostsEditHostedEventScreenTitleDescription,
                             contract: CatchContractConstraints
                                 .updateEventCallablePayloadFieldsDescription,
-                            isOptional: true,
+                            labelMode: CatchFieldLabelTextMode.optional,
                             controller: _descriptionController,
                             states: <WidgetState>{
                               if (!screenState.canEdit) WidgetState.disabled,
@@ -1320,7 +1320,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       .hostsEditHostedEventScreenTitleMaxStraightMen,
                   contract: CatchContractConstraints
                       .updateEventCallablePayloadFieldsConstraintsMaxMen,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   controller: maxMenController,
                   icon: CatchIcons.maleOutlined,
                   keyboardType: TextInputType.number,
@@ -1337,7 +1337,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       .hostsEditHostedEventScreenTitleMaxStraightWomen,
                   contract: CatchContractConstraints
                       .updateEventCallablePayloadFieldsConstraintsMaxWomen,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   controller: maxWomenController,
                   icon: CatchIcons.femaleOutlined,
                   keyboardType: TextInputType.number,

@@ -86,7 +86,7 @@ class _InputData implements CatchFieldInputConfiguration {
   @override
   final CatchTextInputVariant inputVariant = CatchTextInputVariant.plain;
   @override
-  final bool isOptional = false;
+  final CatchFieldLabelTextMode labelMode = CatchFieldLabelTextMode.visible;
   @override
   final TextInputType? keyboardType = null;
   @override
@@ -115,8 +115,6 @@ class _InputData implements CatchFieldInputConfiguration {
   final VoidCallback? onEditingComplete = null;
   @override
   final bool showClearButton = false;
-  @override
-  final bool showLabel = true;
   @override
   final CatchFieldSize size = CatchFieldSize.md;
   @override

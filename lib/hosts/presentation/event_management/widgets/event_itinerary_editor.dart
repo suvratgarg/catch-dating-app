@@ -196,7 +196,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                       .createEventCallablePayloadItineraryItemsDurationMinutes,
                   controller: duration,
                   keyboardType: TextInputType.number,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   icon: CatchIcons.timerOutlined,
                 ),
                 CatchField.input(
@@ -207,7 +207,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                       .createEventCallablePayloadItineraryItemsDescription,
                   controller: description,
                   maxLines: 3,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   icon: CatchIcons.descriptionOutlined,
                 ),
                 CatchField<EventItineraryKind>.choices(

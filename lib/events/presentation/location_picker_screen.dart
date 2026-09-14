@@ -443,7 +443,7 @@ class PlaceSearchPanel extends StatelessWidget {
                 context.l10n.eventsLocationPickerScreenTitleSearchForAMeeting,
             contract:
                 CatchContractConstraints.placesAutocompleteCallablePayloadInput,
-            showLabel: false,
+            labelMode: CatchFieldLabelTextMode.hidden,
             controller: controller,
             onChanged: onChanged,
             textInputAction: TextInputAction.search,

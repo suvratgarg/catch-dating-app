@@ -282,7 +282,7 @@ class _HostApplicationDetailScreenState
                             controller: _reviewNoteController,
                             contract: CatchContractConstraints
                                 .reviewOrganizerApplicationCallablePayloadReviewNote,
-                            isOptional: true,
+                            labelMode: CatchFieldLabelTextMode.optional,
                             maxLines: 3,
                           ),
                           gapH12,

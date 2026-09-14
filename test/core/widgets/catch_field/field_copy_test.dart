@@ -22,7 +22,7 @@ void main() {
             title: 'Name',
             initialValue: 'Original',
             variant: CatchFieldVariant.underline,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             showClearButton: true,
           ),
         ),

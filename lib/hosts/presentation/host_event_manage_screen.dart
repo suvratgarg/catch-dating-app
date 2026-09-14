@@ -1369,7 +1369,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                     title: context.l10n.hostsHostEventManageScreenTitleSource,
                     contract: CatchContractConstraints
                         .createEventInviteLinkCallablePayloadSource,
-                    isOptional: true,
+                    labelMode: CatchFieldLabelTextMode.optional,
                     controller: sourceController,
                     placeholder: context
                         .l10n

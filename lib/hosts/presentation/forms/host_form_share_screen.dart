@@ -382,7 +382,7 @@ Future<_TrackedLinkInput?> _showTrackedLinkDialog(BuildContext context) async {
                 .createOrganizerFormShareLinkCallablePayloadSource,
             inputHint: context.l10n.hostFormTrackedLinkSourceHint,
             textInputAction: TextInputAction.done,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
           ),
         ],
       ),

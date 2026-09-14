@@ -177,7 +177,7 @@ class WhereStep extends ConsumerWidget {
               title: context.l10n.hostsWhereStepTitleExtraDirections,
               contract: CatchContractConstraints
                   .createEventCallablePayloadLocationDetails,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: locationDetailsController,
               states: <WidgetState>{
                 if (saveMutation.isPending) WidgetState.disabled,

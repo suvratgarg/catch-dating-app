@@ -125,7 +125,9 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
         contractValueBuilder: widget.contractValue,
         emptyValueText: widget.emptyValueText,
         addable: widget.isAddAffordance,
-        isOptional: widget.showOptionalLabel,
+        labelMode: widget.showOptionalLabel
+            ? CatchFieldLabelTextMode.optional
+            : CatchFieldLabelTextMode.visible,
         tone: widget.isAddAffordance || _selected == null
             ? CatchFieldTone.primary
             : CatchFieldTone.normal,
@@ -291,7 +293,9 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
         contractValueBuilder: widget.contractValue,
         emptyValueText: widget.emptyValueText,
         addable: widget.isAddAffordance,
-        isOptional: widget.showOptionalLabel,
+        labelMode: widget.showOptionalLabel
+            ? CatchFieldLabelTextMode.optional
+            : CatchFieldLabelTextMode.visible,
         tone: widget.isAddAffordance || _selected.isEmpty
             ? CatchFieldTone.primary
             : CatchFieldTone.normal,

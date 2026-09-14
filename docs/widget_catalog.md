@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 4.4.0
+version: 4.5.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -25,6 +25,11 @@ need to retain focus, such as message composers, supply `onEditingComplete`;
 `inputMode` reuses native text-input permissions for editing, focus and
 selection. Display-only values stay outside the focus order; read-only inputs
 can support selection or an explicit picker action.
+
+`CatchFieldLabelTextMode` owns label visibility and optional wording. Content
+and disclosure rows keep a visible label; direct inputs may hide it while
+retaining one accessible native input name, including optional wording. The
+mode does not change validation requirements or selection clearing.
 
 L0 token definitions live in `packages/catch_tokens` and are consumed through
 `package:catch_tokens/catch_tokens.dart`. Widgetbook foundation specimens in
@@ -131,7 +136,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchButtonContentRow</code> | <code>packages/catch_ui/lib/src/components/catch_button_content_row.dart:4</code> | <code>Row</code> | <code>catch.button</code> | Button content row with optional leading media, centered label and natural-height wrapping; interaction and busy state remain Button-owned. |
 | <code>CatchChip</code> | <code>packages/catch_ui/lib/src/components/catch_chip.dart:24</code> | <code>Chip</code> | <code>catch.chip</code> | Canonical compact-label primitive for facts, choices, activities, and removable values. |
 | <code>CatchChoiceButton</code> | <code>packages/catch_ui/lib/src/components/catch_choice_button.dart:9</code> | <code>Button</code> | <code>catch.chip.field</code> | Direct option renderer with platform-sized activation, selected/disabled semantics, and preserved custom spoken-label actions. Underline and operational labels retain a defensive one-line ellipsis fallback; CatchChoiceInput.segmented measures full content and enables scrolling before that fallback is needed. Summary labels wrap. |
-| <code>CatchChoiceInput</code> | <code>packages/catch_ui/lib/src/components/catch_choice_input.dart:26</code> | <code>Input</code> | <code>catch.chip.field</code> | Checked choices with caller-owned values and shared selection policy. |
+| <code>CatchChoiceInput</code> | <code>packages/catch_ui/lib/src/components/catch_choice_input.dart:27</code> | <code>Input</code> | <code>catch.chip.field</code> | Checked choices with caller-owned values and shared selection policy. |
 | <code>CatchChoiceTile</code> | <code>packages/catch_ui/lib/src/components/catch_choice_tile.dart:12</code> | <code>Tile</code> | <code>catch.chip.field</code> | One mutually exclusive choice with optional explanatory copy. |
 | <code>CatchCodeInput</code> | <code>packages/catch_ui/lib/src/components/catch_code_input.dart:16</code> | <code>Input</code> | <code>catch.code_input</code> | Canonical editable one-time-code input with synchronized visual digits. |
 | <code>CatchCodeInputRow</code> | <code>packages/catch_ui/lib/src/components/catch_code_input_row.dart:8</code> | <code>Row</code> | <code>catch.code_input</code> | Token-styled row of verification-code cells. |
@@ -151,12 +156,12 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>CatchField</code> | <code>packages/catch_ui/lib/src/components/catch_field.dart:26</code> | <code>Field</code> | <code>catch.field</code> | Design-system `Field`: the unified field primitive for row, text-entry, navigation, toggle, disclosure-control, add, validation, and helper states. Stack fields in a CatchSection when the surrounding section owns box or divider chrome. |
 | <code>CatchFieldActionRow</code> | <code>packages/catch_ui/lib/src/components/catch_field_action_row.dart:6</code> | <code>Row</code> | <code>catch.field</code> | Trailing Cancel/Done group used by explicit-save field drawers. |
 | <code>CatchFieldCommitButton</code> | <code>packages/catch_ui/lib/src/components/catch_field_commit_button.dart:10</code> | <code>Button</code> | <code>catch.field</code> | Exact Cancel/Done action used by a disclosed `CatchField` editor. |
-| <code>CatchFieldContentRow</code> | <code>packages/catch_ui/lib/src/components/catch_field_content_row.dart:15</code> | <code>Row</code> | <code>catch.field</code> | Field content with two explicit hierarchies: title/description and caption/value. The enclosing field owns interaction; this member owns text lanes and support. |
+| <code>CatchFieldContentRow</code> | <code>packages/catch_ui/lib/src/components/catch_field_content_row.dart:16</code> | <code>Row</code> | <code>catch.field</code> | Field content with two explicit hierarchies: title/description and caption/value. The enclosing field owns interaction; this member owns text lanes and support. |
 | <code>CatchFieldDrawer</code> | <code>packages/catch_ui/lib/src/components/catch_field_drawer.dart:8</code> | <code>Drawer</code> | <code>catch.field</code> | Full-row disclosure below a field header, including its supporting content. |
 | <code>CatchFieldGeometryScope</code> | <code>packages/catch_ui/lib/src/components/catch_field_geometry_scope.dart:23</code> | <code>Scope</code> | <code>catch.field</code> | Ambient contract for field-row content and interaction geometry. |
-| <code>CatchFieldInput</code> | <code>packages/catch_ui/lib/src/components/catch_field_input.dart:59</code> | <code>Input</code> | <code>catch.field</code> | Native input, validation, and text-entry chrome owned by a CatchField. |
+| <code>CatchFieldInput</code> | <code>packages/catch_ui/lib/src/components/catch_field_input.dart:58</code> | <code>Input</code> | <code>catch.field</code> | Native input, validation, and text-entry chrome owned by a CatchField. |
 | <code>CatchFieldInteractionPlaneScope</code> | <code>packages/catch_ui/lib/src/components/catch_field_interaction_plane_scope.dart:10</code> | <code>Scope</code> | <code>catch.field</code> | Internal page/lane paint extent published by semantic body primitives. |
-| <code>CatchFieldLabelText</code> | <code>packages/catch_ui/lib/src/components/catch_field_label_text.dart:21</code> | <code>Text</code> | <code>catch.field</code> | Field-owned visible label and localized optional accessibility description. |
+| <code>CatchFieldLabelText</code> | <code>packages/catch_ui/lib/src/components/catch_field_label_text.dart:22</code> | <code>Text</code> | <code>catch.field</code> | Field-owned visible label and localized optional accessibility description. |
 | <code>CatchFieldLanes</code> | <code>packages/catch_ui/lib/src/components/catch_field_lanes.dart:17</code> | <code>FieldLanes</code> | <code>catch.field</code> | Explicit composition boundary for reusable Field rows that do not own a titled or surfaced `CatchSection`. |
 | <code>CatchFieldRow</code> | <code>packages/catch_ui/lib/src/components/catch_field_row.dart:6</code> | <code>Row</code> | <code>catch.field</code> | Field row anatomy with leading, body and trailing lanes; the parent owns geometry. |
 | <code>CatchFieldStatusIndicator</code> | <code>packages/catch_ui/lib/src/components/catch_field_status_indicator.dart:14</code> | <code>Indicator</code> | <code>catch.field</code> | Animated saving/saved feedback for the `CatchField` trailing lane. |
@@ -1003,7 +1008,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>UserAnalyticsTrendPanel</code> | <code>lib/user_analytics/shared/user_analytics_panel.dart:301</code> | — | — | No class documentation or registry summary. |
 | <code>PreviewTabSkeletonSliverBody</code> | <code>lib/user_profile/presentation/profile_screen.dart:249</code> | — | — | No class documentation or registry summary. |
 | <code>PreviewTabSliverBody</code> | <code>lib/user_profile/presentation/profile_screen.dart:286</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileInlineMultiChoiceEntryEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_choice.dart:172</code> | — | — | No class documentation or registry summary. |
+| <code>ProfileInlineMultiChoiceEntryEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_choice.dart:174</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileInlineSingleChoiceEntryEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_choice.dart:19</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileInlineHeightEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_height.dart:16</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileInlinePromptEntryEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_prompt.dart:21</code> | — | — | One contained prompt card: a staged question selector followed by a separate multiline answer that saves implicitly on blur. |

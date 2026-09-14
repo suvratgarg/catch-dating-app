@@ -299,7 +299,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                     if (!state.requestControlsEnabled) WidgetState.disabled,
                   },
                   disclosureMode: CatchFieldMode.localExpanded,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
                 CatchField<RunReason>.choices(
                   copy: catchFieldCopy(context.l10n),
@@ -324,7 +324,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                     if (!state.requestControlsEnabled) WidgetState.disabled,
                   },
                   disclosureMode: CatchFieldMode.localExpanded,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
                 CatchField<PreferredRunTime>.choices(
                   copy: catchFieldCopy(context.l10n),
@@ -349,7 +349,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                     if (!state.requestControlsEnabled) WidgetState.disabled,
                   },
                   disclosureMode: CatchFieldMode.localExpanded,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
               ],
             ),

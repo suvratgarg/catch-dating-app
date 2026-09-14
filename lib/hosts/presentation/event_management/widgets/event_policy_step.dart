@@ -246,7 +246,7 @@ class EventPolicyStep extends StatelessWidget {
                               .hostsEventPolicyStepTitleMaxStraightMen,
                           contract: CatchContractConstraints
                               .createEventCallablePayloadConstraintsMaxMen,
-                          isOptional: true,
+                          labelMode: CatchFieldLabelTextMode.optional,
                           controller: maxMenController,
                           inputHint: context
                               .l10n
@@ -272,7 +272,7 @@ class EventPolicyStep extends StatelessWidget {
                               .hostsEventPolicyStepTitleMaxStraightWomen,
                           contract: CatchContractConstraints
                               .createEventCallablePayloadConstraintsMaxWomen,
-                          isOptional: true,
+                          labelMode: CatchFieldLabelTextMode.optional,
                           controller: maxWomenController,
                           inputHint: context
                               .l10n

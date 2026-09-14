@@ -483,7 +483,7 @@ Widget catchFieldLabelTextCatalogStates(BuildContext context) {
             CatchFieldLabelText(
               copy: catchFieldLabelTextCopy(context.l10n),
               label: 'Note',
-              isOptional: true,
+              mode: CatchFieldLabelTextMode.optional,
             ),
             CatchFieldLabelText(
               copy: catchFieldLabelTextCopy(context.l10n),
@@ -503,7 +503,7 @@ Widget catchFieldLabelTextCatalogStates(BuildContext context) {
         child: CatchFieldLabelText.inline(
           copy: catchFieldLabelTextCopy(context.l10n),
           label: 'Religion',
-          isOptional: true,
+          mode: CatchFieldLabelTextMode.optional,
           style: CatchTextStyles.fieldRowTitle(context),
         ),
       ),

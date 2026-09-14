@@ -36,6 +36,32 @@ const constraint = CatchContractFieldConstraints(
 const key = ValueKey('identity');
 const slot = SizedBox(width: 44);
 void main() {
+  test('row constructors reject hidden label modes', () {
+    for (final mode in [
+      CatchFieldLabelTextMode.hidden,
+      CatchFieldLabelTextMode.hiddenOptional,
+    ]) {
+      expect(
+        () => CatchField.content(
+          copy: copy,
+          title: 'Title',
+          body: 'Body',
+          labelMode: mode,
+        ),
+        throwsAssertionError,
+      );
+      expect(
+        () => CatchField.control(
+          copy: copy,
+          title: 'Title',
+          labelMode: mode,
+          child: slot,
+        ),
+        throwsAssertionError,
+      );
+    }
+  });
+
   test('const input configuration preserves caller bounds and defaults', () {
     const field = CatchField.input(
       copy: copy,

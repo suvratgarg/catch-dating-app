@@ -201,7 +201,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
               title: context.l10n.reviewsWriteReviewSheetTitleReview,
               contract: CatchContractConstraints
                   .createEventReviewCallablePayloadComment,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: _commentController,
               states: <WidgetState>{if (submitting) WidgetState.disabled},
               maxLines: 3,

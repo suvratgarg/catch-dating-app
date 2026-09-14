@@ -54,7 +54,7 @@ class CreateClubPhotosPicker extends StatelessWidget {
                   copy: catchFieldLabelTextCopy(context.l10n),
                   label:
                       context.l10n.hostsCreateClubPhotosPickerLabelClubPhotos,
-                  isOptional: true,
+                  mode: CatchFieldLabelTextMode.optional,
                 ),
                 gapH4,
                 Text(
@@ -179,7 +179,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
         CatchFieldLabelText(
           copy: catchFieldLabelTextCopy(context.l10n),
           label: context.l10n.hostsCreateClubPhotosPickerLabelClubProfileImage,
-          isOptional: true,
+          mode: CatchFieldLabelTextMode.optional,
         ),
         gapH8,
         content,

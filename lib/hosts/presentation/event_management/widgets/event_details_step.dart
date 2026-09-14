@@ -347,7 +347,7 @@ class _EventDetailsStepState extends State<EventDetailsStep> {
                       title: context.l10n.hostsEventDetailsStepTitleDescription,
                       contract: CatchContractConstraints
                           .createEventCallablePayloadDescription,
-                      isOptional: true,
+                      labelMode: CatchFieldLabelTextMode.optional,
                       controller: widget.descriptionController,
                       inputHint: context
                           .l10n

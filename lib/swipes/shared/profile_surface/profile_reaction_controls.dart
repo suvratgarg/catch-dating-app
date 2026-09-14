@@ -189,7 +189,7 @@ class _ProfileReactionCommentSheetState
             title: context.l10n.swipesProfileReactionControlsTitleComment,
             contract: CatchContractConstraints
                 .createProfileDecisionClientWriteDataComment,
-            showLabel: false,
+            labelMode: CatchFieldLabelTextMode.hidden,
             controller: _controller,
             placeholder: context
                 .l10n

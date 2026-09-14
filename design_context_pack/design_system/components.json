@@ -2521,7 +2521,7 @@
                 "type": "BOOLEAN",
                 "defaultValue": false,
                 "sourceProps": [
-                  "isOptional"
+                  "labelMode"
                 ]
               },
               {
@@ -2529,7 +2529,7 @@
                 "type": "TEXT",
                 "defaultValue": " · Optional",
                 "sourceProps": [
-                  "isOptional"
+                  "labelMode"
                 ]
               },
               {
@@ -2781,12 +2781,18 @@
             "notes": "Disclosure-field opt-in to the shared single-line empty Add presentation. Direct editable row inputs derive the same presentation automatically while empty and inactive."
           },
           {
-            "name": "isOptional",
-            "type": "bool",
+            "name": "labelMode",
+            "type": "enum",
             "required": false,
-            "default": false,
-            "dartType": "bool",
-            "notes": "Presentation and accessibility copy only; renders the inline ' · Optional' suffix and never controls whether a selection may be cleared."
+            "default": "visible",
+            "dartType": "CatchFieldLabelTextMode",
+            "values": [
+              "visible",
+              "optional",
+              "hidden",
+              "hiddenOptional"
+            ],
+            "notes": "Label presentation and localized optional semantics, independent of validation or selection clearing. Content and disclosure rows require visible or optional; direct inputs additionally accept hidden and hiddenOptional while preserving one native editable accessibility name. Select retains its existing showLabel option."
           },
           {
             "name": "allowEmptySelection",
@@ -2794,7 +2800,7 @@
             "required": false,
             "default": false,
             "dartType": "bool",
-            "notes": "CatchField.choices selection policy for both single and multi controls. Independent from isOptional."
+            "notes": "CatchField.choices selection policy for both single and multi controls. Independent from labelMode."
           },
           {
             "name": "onOpenChanged",
@@ -3162,13 +3168,15 @@
           {
             "id": "catch.field.form_field_label",
             "symbol": "CatchFieldLabelText",
-            "summary": "Field label and localized optional semantics; default and inline recipes share one Text role, with an explicit size axis.",
+            "summary": "Field label and localized optional semantics; default and inline recipes share one Text role, with explicit size and label modes. Hidden modes retain the caller-provided spoken label without painting text.",
             "states": [
               "default",
               "optional",
               "inline-optional-suffix",
               "error",
-              "large"
+              "large",
+              "hidden",
+              "hidden-optional"
             ],
             "file": "packages/catch_ui/lib/src/components/catch_field_label_text.dart",
             "governance": {

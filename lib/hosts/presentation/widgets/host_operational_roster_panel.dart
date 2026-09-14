@@ -1942,7 +1942,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   helperText: widget.suggestedRevenueAmountMinor == null
                       ? context.l10n.hostsOperationalRosterRevenueFallbackHelp
                       : context.l10n

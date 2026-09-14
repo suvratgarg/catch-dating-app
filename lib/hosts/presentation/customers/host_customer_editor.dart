@@ -92,7 +92,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                     title: context.l10n.hostCustomersInitialNote,
                     contractExemption:
                         'Disclosure for the nested initial-note input, which uses the generated create-contact binding.',
-                    isOptional: true,
+                    labelMode: CatchFieldLabelTextMode.optional,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -110,7 +110,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                             contract: CatchContractConstraints
                                 .createOrganizerContactCallablePayloadInitialNote,
                             controller: _noteController,
-                            isOptional: true,
+                            labelMode: CatchFieldLabelTextMode.optional,
                             minLines: 3,
                             maxLines: 5,
                             textCapitalization: TextCapitalization.sentences,
@@ -269,7 +269,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
                 : CatchContractConstraints
                       .mutateOrganizerContactCallablePayloadPhoneE164,
             controller: phoneController,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             keyboardType: TextInputType.phone,
             textInputAction: TextInputAction.next,
             autofillHints: const [AutofillHints.telephoneNumber],
@@ -293,7 +293,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
                 : CatchContractConstraints
                       .mutateOrganizerContactCallablePayloadEmail,
             controller: emailController,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             autofillHints: const [AutofillHints.email],

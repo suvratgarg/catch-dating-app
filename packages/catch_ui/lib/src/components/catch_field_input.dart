@@ -22,7 +22,7 @@ abstract interface class CatchFieldInputConfiguration {
   CatchFieldSupportRowTone get helperTone;
   List<TextInputFormatter>? get inputFormatters;
   CatchTextInputVariant get inputVariant;
-  bool get isOptional;
+  CatchFieldLabelTextMode get labelMode;
   TextInputType? get keyboardType;
   Widget? get leading;
   String? get leadingUnit;
@@ -37,7 +37,6 @@ abstract interface class CatchFieldInputConfiguration {
   CatchTextInputMode get inputMode;
   VoidCallback? get onEditingComplete;
   bool get showClearButton;
-  bool get showLabel;
   CatchFieldSize get size;
   Set<WidgetState> get states;
   String? get suffixText;
@@ -107,7 +106,9 @@ class CatchFieldInput extends StatelessWidget {
     final effectiveVariant = valueEmphasis
         ? CatchFieldVariant.bare
         : configuration.variant;
-    final effectiveShowLabel = valueEmphasis ? false : configuration.showLabel;
+    final effectiveShowLabel = valueEmphasis
+        ? false
+        : configuration.labelMode.showsLabel;
     final includeSupport = !explicitSave;
     final inputHintOverride = explicitSave && !inlineAddAtRest
         ? expanded
@@ -128,7 +129,7 @@ class CatchFieldInput extends StatelessWidget {
         : null;
     final addSemanticLabel = emptyValueText == null
         ? null
-        : configuration.isOptional
+        : configuration.labelMode.isOptional
         ? configuration.copy.label.optionalSemantics(emptyValueText!)
         : emptyValueText;
     final semanticLabelOverride = explicitSave && inlineAddAtRest
@@ -183,11 +184,16 @@ class CatchFieldInput extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               )
             : null;
-        final effectiveSemanticLabel = !rowBody
+        final semanticLabel = !rowBody
             ? semanticLabelOverride
             : inlineAddAtRest && addText != null
             ? addSemanticLabel!
             : _title;
+        final effectiveSemanticLabel =
+            configuration.labelMode == CatchFieldLabelTextMode.hiddenOptional &&
+                semanticLabel != null
+            ? configuration.copy.label.optionalSemantics(semanticLabel)
+            : semanticLabel;
 
         final effectiveFocused =
             focusNode.hasFocus ||
@@ -414,13 +420,17 @@ class CatchFieldInput extends StatelessWidget {
           final body = CatchFieldContentRow.value(
             labelCopy: configuration.copy.label,
             titleMaxLines: configuration.titleMaxLines,
-            isOptional: configuration.isOptional && configuration.showLabel,
+            isOptional:
+                configuration.labelMode.isOptional &&
+                configuration.labelMode.showsLabel,
             badgeLabel: configuration.badgeLabel,
             badgeTone: configuration.badgeTone,
             tone: configuration.tone,
             helperTone: configuration.helperTone,
             headerTrailingReserve: headerTrailingReserve,
-            label: configuration.showLabel && !inlineAddAtRest ? _title : null,
+            label: configuration.labelMode.showsLabel && !inlineAddAtRest
+                ? _title
+                : null,
             supportText: supportText,
             counterText:
                 configuration.maxLength != null &&
@@ -500,7 +510,11 @@ class CatchFieldInput extends StatelessWidget {
                   context,
                   color: _fieldLabelColor(t, hasError: hasError),
                 ),
-                isOptional: configuration.isOptional && configuration.showLabel,
+                mode:
+                    configuration.labelMode.isOptional &&
+                        configuration.labelMode.showsLabel
+                    ? CatchFieldLabelTextMode.optional
+                    : CatchFieldLabelTextMode.visible,
               ),
               const SizedBox(height: CatchSpacing.s2),
             ],
@@ -531,7 +545,7 @@ class CatchFieldInput extends StatelessWidget {
   String? get _title => configuration.title;
   bool get _hasInputValue => controller.text.isNotEmpty;
   bool get _textEntryCanCollapse =>
-      configuration.showLabel && (_title?.isNotEmpty ?? false);
+      configuration.labelMode.showsLabel && (_title?.isNotEmpty ?? false);
   bool _textEntryExpandedWith({required bool hasError}) =>
       !_textEntryCanCollapse ||
       _hasInputValue ||
@@ -547,11 +561,12 @@ class CatchFieldInput extends StatelessWidget {
       !configuration.autofocus &&
       emptyValueText != null;
   bool get _compactTextEntry =>
-      configuration.size == CatchFieldSize.floating && !configuration.showLabel;
+      configuration.size == CatchFieldSize.floating &&
+      !configuration.labelMode.showsLabel;
   bool get _usesRowPrefixIcon =>
       configuration.variant != CatchFieldVariant.underline &&
       !_compactTextEntry &&
-      configuration.showLabel &&
+      configuration.labelMode.showsLabel &&
       configuration.leading != null;
   bool get _usesRowTextEntryTrailing =>
       configuration.variant != CatchFieldVariant.underline &&
@@ -568,7 +583,7 @@ class CatchFieldInput extends StatelessWidget {
   bool _useFloatingLabel(CatchFieldVariant variant, bool showLabel) {
     return !_explicitSave &&
         showLabel &&
-        !configuration.isOptional &&
+        !configuration.labelMode.isOptional &&
         variant == CatchFieldVariant.underline;
   }
 

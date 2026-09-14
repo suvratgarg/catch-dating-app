@@ -2714,7 +2714,7 @@ Widget catchFieldContractStates(BuildContext context) {
               copy: copy,
               title: 'Job title',
               icon: CatchIcons.workOutline,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
             ),
             CatchField<String>.choices(
               copy: copy,
@@ -2724,7 +2724,7 @@ Widget catchFieldContractStates(BuildContext context) {
               selected: const {},
               onSelectionChanged: (_) {},
               addable: true,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               icon: CatchIcons.fitnessCenterOutlined,
             ),
           ],
@@ -11023,7 +11023,9 @@ class _ChoiceFieldDemoState extends State<_ChoiceFieldDemo> {
       selected: _selected,
       mode: CatchChipMode.multiple,
       allowEmptySelection: widget.allowEmptySelection,
-      isOptional: widget.isOptional,
+      labelMode: widget.isOptional
+          ? CatchFieldLabelTextMode.optional
+          : CatchFieldLabelTextMode.visible,
       disclosureMode: widget.initiallyOpen
           ? CatchFieldMode.localExpanded
           : CatchFieldMode.localCollapsed,

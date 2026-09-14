@@ -294,7 +294,7 @@ class ProfileInlineTextValue extends StatelessWidget {
         minLines: minLines,
         states: <WidgetState>{if (!enabled) WidgetState.disabled},
         autofocus: true,
-        showLabel: false,
+        labelMode: CatchFieldLabelTextMode.hidden,
         size: CatchFieldSize.floating,
         variant: CatchFieldVariant.underline,
         onSubmitted: onSubmitted,

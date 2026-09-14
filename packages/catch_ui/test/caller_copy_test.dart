@@ -51,7 +51,7 @@ void main() {
                 child: CatchFieldLabelText(
                   label: 'Nom',
                   copy: copy,
-                  isOptional: true,
+                  mode: CatchFieldLabelTextMode.optional,
                 ),
               ),
             ),
@@ -73,7 +73,7 @@ void main() {
             body: CatchFieldLabelText.inline(
               label: 'Nom',
               copy: copy,
-              isOptional: true,
+              mode: CatchFieldLabelTextMode.optional,
               style: const TextStyle(fontSize: 16),
             ),
           ),
@@ -84,6 +84,42 @@ void main() {
       semantics.dispose();
     }
   });
+
+  for (final (mode, spokenLabel) in [
+    (CatchFieldLabelTextMode.hidden, 'Nom'),
+    (CatchFieldLabelTextMode.hiddenOptional, 'Nom, facultatif'),
+  ]) {
+    testWidgets('${mode.name} retains spoken copy without painting a label', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CatchFieldLabelText(
+                label: 'Nom',
+                copy: CatchFieldLabelTextCopy(
+                  optionalLabel: 'Facultatif',
+                  optionalSuffix: ' (facultatif)',
+                  optionalSemantics: (label) => '$label, facultatif',
+                ),
+                mode: mode,
+              ),
+            ),
+          ),
+        );
+        expect(find.text('Nom'), findsNothing);
+        expect(tester.getSize(find.byType(CatchFieldLabelText)), Size.zero);
+        expect(
+          tester.getSemantics(find.byType(CatchFieldLabelText)).label,
+          spokenLabel,
+        );
+      } finally {
+        semantics.dispose();
+      }
+    });
+  }
 
   testWidgets('framework recovery and debug disclosure use caller copy', (
     tester,

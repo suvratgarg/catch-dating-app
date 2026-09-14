@@ -128,7 +128,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                           title: l10n.authPhoneFieldLabel,
                           contract: CatchContractConstraints
                               .onboardingDraftDocumentPhoneNumber,
-                          showLabel: false,
+                          labelMode: CatchFieldLabelTextMode.hidden,
                           controller: _phoneController,
                           states: <WidgetState>{
                             if (!viewState.requestControlsEnabled)
@@ -247,7 +247,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                     title: l10n.authPhoneFieldLabel,
                     contract: CatchContractConstraints
                         .onboardingDraftDocumentPhoneNumber,
-                    showLabel: false,
+                    labelMode: CatchFieldLabelTextMode.hidden,
                     controller: _phoneController,
                     autofocus: viewState.shouldAutofocus,
                     states: <WidgetState>{

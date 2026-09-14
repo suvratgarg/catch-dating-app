@@ -234,7 +234,7 @@ class _HostWhatsappThreadBody extends StatelessWidget {
           states: <WidgetState>{
             if (!(thread.serviceWindowOpen && !sending)) WidgetState.disabled,
           },
-          showLabel: false,
+          labelMode: CatchFieldLabelTextMode.hidden,
           inputHint: context.l10n.hostInboxWhatsappReplyHint,
         ),
       ),

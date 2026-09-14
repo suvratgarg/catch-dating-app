@@ -36,7 +36,7 @@ void main() {
             title: 'Code',
             initialValue: 'ABC',
             focusNode: focus,
-            showLabel: false,
+            labelMode: CatchFieldLabelTextMode.hidden,
             inputMode: mode,
           ),
         ),
@@ -308,7 +308,7 @@ void main() {
                   key: inputKey,
                   title: 'Job title',
                   icon: CatchIcons.workOutline,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
                 CatchField.input(
                   copy: catchFieldCopy(AppLocalizationsEn()),
@@ -316,7 +316,7 @@ void main() {
                   title: 'Review',
                   minLines: 2,
                   maxLines: 4,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
                 CatchField<String>.choices(
                   copy: catchFieldCopy(AppLocalizationsEn()),
@@ -327,7 +327,7 @@ void main() {
                   selected: const {},
                   onSelectionChanged: (_) {},
                   addable: true,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   icon: CatchIcons.fitnessCenterOutlined,
                 ),
               ],
@@ -482,7 +482,7 @@ void main() {
         CatchField.input(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Bio',
-          isOptional: true,
+          labelMode: CatchFieldLabelTextMode.optional,
           placeholder: 'Share a little about yourself',
         ),
       ),
@@ -811,7 +811,7 @@ void main() {
             child: CatchField.input(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Search',
-              showLabel: false,
+              labelMode: CatchFieldLabelTextMode.hidden,
               placeholder: 'Search by name',
               size: CatchFieldSize.compact,
               leading: Icon(CatchIcons.searchRounded, size: 18),
@@ -845,7 +845,7 @@ void main() {
           child: CatchField.input(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Search for a meeting point',
-            showLabel: false,
+            labelMode: CatchFieldLabelTextMode.hidden,
             placeholder: 'Search for a meeting point',
             size: CatchFieldSize.floating,
           ),

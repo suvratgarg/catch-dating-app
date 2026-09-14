@@ -75,27 +75,43 @@ void main() {
     expect(focusNode.hasFocus, isTrue);
   });
 
-  testWidgets('hidden label merges into one native editable semantics node', (
-    tester,
-  ) async {
-    final controller = TextEditingController();
-    final focusNode = FocusNode();
-    final semantics = tester.ensureSemantics();
-    addTearDown(controller.dispose);
-    addTearDown(focusNode.dispose);
+  for (final mode in [
+    CatchFieldLabelTextMode.hidden,
+    CatchFieldLabelTextMode.hiddenOptional,
+  ]) {
+    testWidgets('${mode.name} merges into one native editable semantics node', (
+      tester,
+    ) async {
+      final controller = TextEditingController();
+      final focusNode = FocusNode();
+      final semantics = tester.ensureSemantics();
+      addTearDown(controller.dispose);
+      addTearDown(focusNode.dispose);
 
-    await _pumpField(tester, controller: controller, focusNode: focusNode);
+      await _pumpField(
+        tester,
+        controller: controller,
+        focusNode: focusNode,
+        labelMode: mode,
+      );
 
-    final editableNode = tester.getSemantics(find.byType(TextField));
-    expect(editableNode.flagsCollection.isTextField, isTrue);
-    expect(editableNode.label, 'Message');
-    expect(
-      editableNode.getSemanticsData().hasAction(SemanticsAction.tap),
-      isTrue,
-    );
-    expect(find.bySemanticsLabel('Message'), findsOne);
-    semantics.dispose();
-  });
+      final editableNode = tester.getSemantics(find.byType(TextField));
+      expect(editableNode.flagsCollection.isTextField, isTrue);
+      final label = mode == CatchFieldLabelTextMode.hiddenOptional
+          ? catchFieldCopy(
+              AppLocalizationsEn(),
+            ).label.optionalSemantics('Message')
+          : 'Message';
+      expect(editableNode.label, label);
+      expect(find.text('Message'), findsNothing);
+      expect(
+        editableNode.getSemanticsData().hasAction(SemanticsAction.tap),
+        isTrue,
+      );
+      expect(find.bySemanticsLabel(label), findsOne);
+      semantics.dispose();
+    });
+  }
 
   testWidgets(
     'empty optional input exposes one Add semantic and restores its field label on focus',
@@ -115,7 +131,7 @@ void main() {
               title: 'Job title',
               controller: controller,
               focusNode: focusNode,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
             ),
           ),
         ),
@@ -410,7 +426,7 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Religion',
               body: 'Christian',
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               child: const SizedBox(height: 80),
             ),
           ),
@@ -697,6 +713,7 @@ Future<void> _pumpField(
   required TextEditingController controller,
   required FocusNode focusNode,
   VoidCallback? onEditingComplete,
+  CatchFieldLabelTextMode labelMode = CatchFieldLabelTextMode.hidden,
   ValueChanged<String>? onSubmitted,
   ValueChanged<String>? onBlur,
 }) {
@@ -708,7 +725,7 @@ Future<void> _pumpField(
           child: CatchField.input(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Message',
-            showLabel: false,
+            labelMode: labelMode,
             inputHint: 'Message…',
             controller: controller,
             focusNode: focusNode,

@@ -117,7 +117,9 @@ class _CatchFormChoiceFieldState<P, T>
       helperText: descriptor.helperText,
       itemAccentBuilder: descriptor.itemAccent,
       addable: addable,
-      isOptional: descriptor.showOptionalLabel,
+      labelMode: descriptor.showOptionalLabel
+          ? CatchFieldLabelTextMode.optional
+          : CatchFieldLabelTextMode.visible,
       tone: addable ? CatchFieldTone.primary : CatchFieldTone.normal,
       disclosureMode: widget.scope.isExpanded
           ? CatchFieldMode.controlledExpanded

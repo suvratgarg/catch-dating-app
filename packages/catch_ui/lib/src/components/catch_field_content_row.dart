@@ -4,6 +4,7 @@ import 'package:catch_ui/src/components/catch_field_content_row_mode.dart';
 import 'package:catch_ui/src/components/catch_field_content_row_status.dart';
 import 'package:catch_ui/src/components/catch_field_emphasis.dart';
 import 'package:catch_ui/src/components/catch_field_label_text.dart';
+import 'package:catch_ui/src/components/catch_field_label_text_mode.dart';
 import 'package:catch_ui/src/components/catch_field_support_row.dart';
 import 'package:catch_ui/src/components/catch_field_support_row_tone.dart';
 import 'package:catch_ui/src/components/catch_field_tone.dart';
@@ -113,7 +114,9 @@ class CatchFieldContentRow extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
             maxLines: titleMaxLines,
-            isOptional: isOptional,
+            mode: isOptional
+                ? CatchFieldLabelTextMode.optional
+                : CatchFieldLabelTextMode.visible,
           ),
           if (normalizedBody.isNotEmpty) ...[
             const SizedBox(height: CatchFieldTokens.contentBodyTopGap),
@@ -227,7 +230,9 @@ class CatchFieldContentRow extends StatelessWidget {
                               label: labelText,
                               style: effectiveLabelStyle,
                               maxLines: titleMaxLines,
-                              isOptional: isOptional,
+                              mode: isOptional
+                                  ? CatchFieldLabelTextMode.optional
+                                  : CatchFieldLabelTextMode.visible,
                             ),
                           ),
                           const SizedBox(width: CatchSpacing.s2),
@@ -242,7 +247,9 @@ class CatchFieldContentRow extends StatelessWidget {
                         label: labelText,
                         style: effectiveLabelStyle,
                         maxLines: titleMaxLines,
-                        isOptional: isOptional,
+                        mode: isOptional
+                            ? CatchFieldLabelTextMode.optional
+                            : CatchFieldLabelTextMode.visible,
                       ),
               ),
             ),

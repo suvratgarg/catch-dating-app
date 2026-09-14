@@ -125,17 +125,18 @@ mixin _CatchFieldProperties {
       _inputConfig?.inputMode ?? CatchTextInputMode.editable;
   bool get readOnly => inputMode.readOnlyText;
   bool get autofocus => _inputConfig?.autofocus ?? false;
-  bool get isOptional => switch (_config) {
-    final _RowConfig config => config.isOptional,
-    final _EditConfig config => config.isOptional,
-    final _ControlConfig config => config.isOptional,
-    _ => false,
+  CatchFieldLabelTextMode get labelMode => switch (_config) {
+    final _RowConfig config => config.labelMode,
+    final _EditConfig config => config.labelMode,
+    final _ControlConfig config => config.labelMode,
+    final _SelectConfig config =>
+      config.showLabel
+          ? CatchFieldLabelTextMode.visible
+          : CatchFieldLabelTextMode.hidden,
+    _ => CatchFieldLabelTextMode.visible,
   };
-  bool get showLabel => switch (_config) {
-    final _EditConfig config => config.showLabel,
-    final _SelectConfig config => config.showLabel,
-    _ => true,
-  };
+  bool get isOptional => labelMode.isOptional;
+  bool get showLabel => labelMode.showsLabel;
   String? get helperText => switch (_config) {
     final _ToggleConfig config => config.helperText,
     final _EditConfig config => config.helperText,
