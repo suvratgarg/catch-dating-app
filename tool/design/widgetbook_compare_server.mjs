@@ -1467,7 +1467,6 @@ function buildCandidates() {
       names: [
         "CatchTopBar",
         "ChatEventContextHeader",
-        "CatchStatusBar",
       ],
     },
     {

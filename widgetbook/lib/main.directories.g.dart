@@ -2330,22 +2330,6 @@ final directories = <_widgetbook.WidgetbookNode>[
         ],
       ),
       _widgetbook.WidgetbookFolder(
-        name: 'Device chrome',
-        children: [
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchStatusBar',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchStatusBarContractStates,
-              ),
-            ],
-          ),
-        ],
-      ),
-      _widgetbook.WidgetbookFolder(
         name: 'Dialogs',
         children: [
           _widgetbook.WidgetbookComponent(

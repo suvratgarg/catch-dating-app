@@ -607,56 +607,6 @@ void _registerCatchPrimitivesAsyncFeedbackTests() {
     );
   });
 
-  testWidgets('CatchStatusBar renders handoff light and surface states', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(const CatchStatusBar(time: '10:24', surface: true)),
-    );
-
-    final time = tester.widget<Text>(find.text('10:24'));
-    final surface = tester.widget<ColoredBox>(
-      find.descendant(
-        of: find.byType(CatchStatusBar),
-        matching: find.byType(ColoredBox),
-      ),
-    );
-    final iconTheme = tester.widget<IconTheme>(
-      find.descendant(
-        of: find.byType(CatchStatusBar),
-        matching: find.byType(IconTheme),
-      ),
-    );
-
-    expect(surface.color, CatchTokens.editorialLight.surface);
-    expect(time.style?.fontSize, CatchLayout.statusBarTimeFontSize);
-    expect(time.style?.fontWeight, FontWeight.w700);
-    expect(time.style?.color, CatchTokens.editorialLight.ink);
-    expect(iconTheme.data.color, CatchTokens.editorialLight.ink);
-    expect(find.byIcon(CatchIcons.statusCellSignal), findsOneWidget);
-    expect(find.byIcon(CatchIcons.statusWifi), findsOneWidget);
-    expect(find.byIcon(CatchIcons.statusBattery), findsOneWidget);
-  });
-
-  testWidgets('CatchStatusBar renders paper ink on dark wow surfaces', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(const CatchStatusBar(tone: CatchStatusBarTone.dark)),
-    );
-
-    final time = tester.widget<Text>(find.text('9:41'));
-    final iconTheme = tester.widget<IconTheme>(
-      find.descendant(
-        of: find.byType(CatchStatusBar),
-        matching: find.byType(IconTheme),
-      ),
-    );
-
-    expect(time.style?.color, CatchTokens.editorialDark.ink);
-    expect(iconTheme.data.color, CatchTokens.editorialDark.ink);
-  });
-
   testWidgets('CatchSurface supports padding, fixed size, and tap handling', (
     tester,
   ) async {

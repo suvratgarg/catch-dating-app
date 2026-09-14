@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.86.0
+version: 3.87.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -338,7 +338,6 @@ Widgetbook callers.
 | `CatchEmptyStateIcon` | `packages/catch_ui/lib/src/components/catch_empty_state_icon.dart:5` | Direct empty-state icon renderer for plain and bubble glyph treatments. Keeps icon sizing/container sizing tokenized while allowing `CatchEmptyState` and primitive contract states to review the icon branch directly. |
 | `CatchDaySectionHeader` | `packages/catch_ui/lib/src/components/catch_day_section_header.dart:12` | Sticky day-section header for chronological feeds. Use `CatchDaySectionHeaderDelegate` when the parent owns a flat `CustomScrollView` and pinned day headers are needed; the delegate binds the child height to its sliver extent so pinned geometry stays valid under constrained sheets. |
 | `CatchDaySectionHeaderCount` | `packages/catch_ui/lib/src/components/catch_day_section_header_count.dart:5` | Direct animated count renderer used by `CatchDaySectionHeader`. Keeps the numeric meta style, count-keyed switcher, and slide/fade count transition reviewable without a private widget-returning helper. |
-| `CatchStatusBar` | `packages/catch_ui/lib/src/components/catch_status_bar.dart` | Handoff `StatusBar`: phone-frame iOS status row with bold mono time, Phosphor fill signal/wifi/battery glyphs, light/dark tone support, and optional surface fill for mock frames and design previews. |
 | `CatchEventCard.ticket` | `lib/core/widgets/catch_event_activity_cards.dart:17` | Ticket-style production event card backed by `EventActivityVisualSpec`. Used by Explore recommendations so each event type shares the same activity-coded backdrop, shared `CatchClockIndicator`, shared `CatchTicketStatusBadge`, centralized capacity copy, and optional full-card Hero transition into event detail. |
 | `CatchEventThumbnail` | `lib/core/widgets/catch_event_thumbnail.dart:17` | Shared event image primitive. Renders uploaded photos by default, falls back to `EventActivityBackdrop`, supports `preferActivityArtwork` for surfaces that should stay color-coded by event type even when a photo exists, and exposes fallback icon/pattern tuning for large hero bands. |
 | `CatchEventThumbnailActivityFallback` | `lib/core/widgets/catch_event_thumbnail.dart:91` | Direct activity-art fallback renderer used by `CatchEventThumbnail` for no-photo, loading, and failed-photo states. Receives activity kind and fallback icon/pattern tuning explicitly so thumbnail fallback anatomy is reviewable without private widget helpers. |

@@ -3941,6 +3941,27 @@
           "rationale": "Owns a controlled browse query, local text controller and focus, clear-before-close behavior, and the fixed or transient header search lifecycle. CatchField owns labelled form values, validation and commit orchestration; SelectionField owns a discrete nullable choice. Search recipes reuse one CatchTextInput configuration while retaining their established field and animated header surfaces."
         }
       ]
+    },
+    {
+      "id": "platform-status-bar-preview-retirement",
+      "title": "Retire unused simulated device status bar",
+      "intent": "Keep operating-system chrome out of the production component contract corpus when no application mounts the simulation.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "platform-system-chrome",
+      "qualityReference": "CatchStatusBar",
+      "decisionSource": "owner-delegated:2026-09-14 complete caller census and preview review",
+      "acceptedVisualDelta": [
+        "Remove the unused status-bar contract gallery and its four golden images. Production UI has no callers and no visual change."
+      ],
+      "members": [
+        {
+          "symbol": "CatchStatusBar",
+          "disposition": "discard",
+          "preview": "not-applicable",
+          "rationale": "The complete caller census finds zero production consumers: only the isolated Widgetbook contract and its two tests mount this simulated clock/signal/battery row. The operating system owns those indicators. Retire the unused shared Widget, standalone contract, preview and corresponding baselines; application top bars keep their separate navigation responsibility."
+        }
+      ]
     }
   ]
 }

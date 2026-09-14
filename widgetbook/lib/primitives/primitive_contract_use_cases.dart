@@ -7800,49 +7800,6 @@ Widget catchToggleInputContractStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchStatusBar,
-  path: '[Core primitives]/Device chrome',
-)
-Widget catchStatusBarContractStates(BuildContext context) {
-  return _ContractScreen(
-    title: 'CatchStatusBar',
-    contractId: 'catch.status_bar',
-    states: const ['light', 'dark', 'surface', 'custom-time'],
-    children: const [
-      _StateCard(
-        label: 'light',
-        child: SizedBox(
-          width: WidgetbookPreviewLayout.phoneChromeWidth,
-          child: CatchStatusBar(),
-        ),
-      ),
-      _StateCard(
-        label: 'dark',
-        child: SizedBox(
-          width: WidgetbookPreviewLayout.phoneChromeWidth,
-          child: CatchStatusBar(tone: CatchStatusBarTone.dark),
-        ),
-      ),
-      _StateCard(
-        label: 'surface',
-        child: SizedBox(
-          width: WidgetbookPreviewLayout.phoneChromeWidth,
-          child: CatchStatusBar(surface: true),
-        ),
-      ),
-      _StateCard(
-        label: 'custom-time',
-        child: SizedBox(
-          width: WidgetbookPreviewLayout.phoneChromeWidth,
-          child: CatchStatusBar(time: '7:24'),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Contract states',
   type: CatchStepHeader,
   path: '[Core primitives]/Navigation',
 )

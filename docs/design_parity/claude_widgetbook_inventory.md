@@ -1,7 +1,7 @@
 ---
 doc_id: claude_widgetbook_inventory
-version: 0.2.0
-updated: 2026-09-09
+version: 0.3.0
+updated: 2026-09-14
 owner: product_design_parity
 status: active
 ---
@@ -854,6 +854,11 @@ model as separate primitives.
 - Track visual divergences in the design parity matrix rather than scattering
   notes across source comments.
 
+Phase 4 resolved the device-chrome question on 2026-09-14: `CatchStatusBar`
+had no production callers and only preview/test consumers. Its simulated
+clock, signal and battery contract is retired; real status indicators remain
+owned by the operating system.
+
 ## Open Questions
 
 1. Should Claude dashboard, messaging, profile, club, and host components be
@@ -865,7 +870,5 @@ model as separate primitives.
 3. Should token specimen pages live in Widgetbook, or should they be generated
    from `design/tokens/catch.tokens.json` separately and linked from
    Widgetbook?
-4. Should `CatchStatusBar` remain a local preview, given that it models device
-   chrome rather than a product component?
-5. Should `CatchMetricStrip` and `CatchMetricStrip` be consolidated before visual
+4. Should `CatchMetricStrip` and `CatchMetricStrip` be consolidated before visual
    parity work starts?

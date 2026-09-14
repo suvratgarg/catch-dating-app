@@ -8262,6 +8262,21 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-14",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:platform-status-bar-preview-retirement",
+      "patternFamilyId": "platform-status-bar-preview-retirement",
+      "decision": "discard-unused-preview",
+      "members": [
+        {
+          "name": "CatchStatusBar",
+          "action": "delete"
+        }
+      ],
+      "rationale": "The complete caller census finds zero production consumers: only the isolated Widgetbook contract and its two tests mount this simulated clock/signal/battery row. The operating system owns those indicators. Retire the unused shared Widget, standalone contract, preview and corresponding baselines; application top bars keep their separate navigation responsibility.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-14",
+      "status": "implemented"
     }
   ]
 }
