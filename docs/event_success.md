@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.117.0
+version: 1.118.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -559,6 +559,20 @@ deduplicates pending submissions, and allows an uncertain retry only with that
 exact command. Conflicts or lost authority require a new review. Success refreshes
 the queue without retaining the old actionable page while it loads. Reads retry
 only on explicit reload; neither the page nor the editor fabricates settlement.
+
+The case editor is keyed by the stable event/case scope, with an explicit `open`
+review. Retiring a page disables its unsubmitted decisions; opening a fresh page
+cannot replace a submitted or uncertain command. A temporary strong auth subscription
+keeps account changes visible while the sheet is detached. Exact retry is distinct
+from new submission, and unknown outcomes prohibit reload. The state owner validates
+the typed result against its own command before clearing uncertainty.
+
+`EventAssistancePendingCases` holds only account-bound discovery references to these
+case owners. This allows the queue to recover an uncertain save even when the server
+has already moved that case out of the open page. It stores no second command or
+receipt. Each successful or definitively rejected operation removes only its own
+reference; account changes retire the index. Tests cover missing rows, multiple
+pending cases, detached retries, reentrant taps and same-UID sign-in replacement.
 
 Handling never changes attendance, participation, allocations, guest intention,
 message delivery, consent or the restricted safety queue. Check-in, a new guest

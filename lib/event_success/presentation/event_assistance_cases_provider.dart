@@ -9,21 +9,25 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'event_assistance_cases_provider.g.dart';
 
 final class EventAssistanceCasesSession {
-  const EventAssistanceCasesSession._(this.account, this.page);
+  EventAssistanceCasesSession._(this.account, this.page);
+  bool _current = true;
+  bool get isCurrent => _current;
   final EventAssistanceAccount account;
   final EventAssistanceCasesPage page;
 
   EventAssistanceCaseReview review(AssistanceOpenHostCase request) {
-    if (!page.cases.any((row) => identical(row, request))) {
+    if (!isCurrent || !page.cases.any((row) => identical(row, request))) {
       throw ArgumentError('Review a request from this page snapshot.');
     }
-    return EventAssistanceCaseReview._(account, request);
+    return EventAssistanceCaseReview._(this, request);
   }
 }
 
 final class EventAssistanceCaseReview {
-  const EventAssistanceCaseReview._(this.account, this.request);
-  final EventAssistanceAccount account;
+  const EventAssistanceCaseReview._(this.session, this.request);
+  final EventAssistanceCasesSession session;
+  EventAssistanceAccount get account => session.account;
+  bool get isCurrent => session.isCurrent;
   final AssistanceOpenHostCase request;
 }
 
@@ -95,7 +99,9 @@ Future<EventAssistanceCasesSession> eventAssistanceCasesForAccount(
       .watch(eventAssistanceCasesRepositoryProvider)
       .fetch(query);
   requireCaseReviewAccount(ref, account);
-  return EventAssistanceCasesSession._(account, page);
+  final session = EventAssistanceCasesSession._(account, page);
+  ref.onDispose(() => session._current = false);
+  return session;
 }
 
 Duration? _noCaseReadRetry(int retryCount, Object error) => null;

@@ -1,0 +1,29 @@
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_case_scope.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'event_assistance_pending_cases.g.dart';
+
+/// Discovery references only. Each case editor owns its command and retry.
+/// A server page may omit a case whose save succeeded without confirmation.
+// keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
+@Riverpod(keepAlive: true)
+class EventAssistancePendingCases extends _$EventAssistancePendingCases {
+  AuthenticatedSession? _account;
+  @override
+  Set<EventAssistanceCaseScope> build() {
+    final auth = ref.watch(authenticatedSessionProvider);
+    _account = auth.isLoading || auth.hasError ? null : auth.asData?.value;
+    return const {};
+  }
+
+  void retain(EventAssistanceCaseScope scope, AuthenticatedSession account) {
+    if (!identical(_account, account)) return;
+    state = Set.unmodifiable({...state, scope});
+  }
+
+  void release(EventAssistanceCaseScope scope, AuthenticatedSession? account) {
+    if (!identical(_account, account) || !state.contains(scope)) return;
+    state = Set.unmodifiable({...state}..remove(scope));
+  }
+}

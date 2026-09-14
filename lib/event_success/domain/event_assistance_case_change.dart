@@ -103,13 +103,27 @@ final class EventAssistanceCaseResult {
       scope: scope,
       serverTime: serverTime,
     );
+    final result = EventAssistanceCaseResult._(
+      outcome: outcome,
+      operationRevision: operationRevision,
+      view: view,
+    );
+    result.requireChange(expectedChange);
+    return result;
+  }
+
+  /// Verify the operation again at the state owner, including injected repositories.
+  void requireChange(EventAssistanceCaseChange expectedChange) {
+    final snapshot = expectedChange.snapshot;
+    final serverTime = view.observedAt;
     final currentRevision = switch (view) {
       AssistanceOpenHostCase(:final revision) ||
       AssistanceClosedHostCase(:final revision) ||
       AssistanceStaleHostCase(:final revision) => revision,
       AssistanceLegacyHostCase() => null,
     };
-    if (serverTime < snapshot.observedAt ||
+    if (view.scope != snapshot.scope ||
+        serverTime < snapshot.observedAt ||
         operationRevision != snapshot.revision + 1 ||
         currentRevision == null ||
         currentRevision < operationRevision ||
@@ -138,11 +152,6 @@ final class EventAssistanceCaseResult {
     }
     // Replayed receipts may accompany a later resolution or stale identity.
     // Their original operation revision never replaces the current view.
-    return EventAssistanceCaseResult._(
-      outcome: outcome,
-      operationRevision: operationRevision,
-      view: view,
-    );
   }
 }
 

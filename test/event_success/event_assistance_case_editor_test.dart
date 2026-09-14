@@ -49,16 +49,16 @@ void main() {
     review = session.review(
       session.page.cases.single as AssistanceOpenHostCase,
     );
-    final provider = eventAssistanceCaseEditorProvider(review);
+    final provider = eventAssistanceCaseEditorProvider(review.request.scope);
     subscription = container.listen(provider, (_, _) {});
-    editor = container.read(provider.notifier);
+    editor = container.read(provider.notifier)..open(review);
   });
   tearDown(() async {
     container.dispose();
     await auth.close();
   });
   AssistanceCaseEditorState state() =>
-      container.read(eventAssistanceCaseEditorProvider(review));
+      container.read(eventAssistanceCaseEditorProvider(review.request.scope));
   AssistanceCaseForm form() => state() as AssistanceCaseForm;
 
   test(
@@ -121,7 +121,7 @@ void main() {
   );
 
   test(
-    'uncertain failures allow only an identical retry or fresh review',
+    'uncertain failures retain only the identical decision for retry',
     () async {
       editor.select(AssistanceCaseDecision.transfer('host-2'));
       final first = editor.submit();
@@ -135,13 +135,14 @@ void main() {
       await expectedFailure;
       final original = repository.writes.single.change;
       expect(form().phase, AssistanceCaseEditorPhase.retryRequired);
-      expect(form().canSubmit, isTrue);
+      expect(form().canSubmit, isFalse);
+      expect(form().canRetry, isTrue);
       expect(form().canEdit, isFalse);
       expect(form().canDismiss, isTrue);
-      expect(form().canReload, isTrue);
+      expect(form().canReload, isFalse);
       editor.select(const AssistanceCaseDecision.resolve());
       expect(form().decision, isA<AssistanceCaseTransfer>());
-      final retry = editor.submit();
+      final retry = editor.retry();
       final repeated = repository.writes.last;
       expect(repeated.change, same(original));
       expect(repeated.change.command, original.command);
@@ -217,10 +218,10 @@ void main() {
     () async {
       editor.select(const AssistanceCaseDecision.resolve());
       await signIn(null);
-      expect(state(), isA<AssistanceCaseFormUnavailable>());
+      expect(state(), isNot(isA<AssistanceCaseForm>()));
       expect(state().canDismiss, isTrue);
       await signIn('host-1');
-      expect(state(), isA<AssistanceCaseFormUnavailable>());
+      expect(state(), isNot(isA<AssistanceCaseForm>()));
       await expectLater(
         editor.submit(),
         throwsA(
@@ -252,10 +253,10 @@ void main() {
         ),
       );
       await signIn('host-2');
-      expect(state(), isA<AssistanceCaseFormUnavailable>());
+      expect(state(), isNot(isA<AssistanceCaseForm>()));
       write.result.complete(caseResult(write.change));
       await failure;
-      expect(state(), isA<AssistanceCaseFormUnavailable>());
+      expect(state(), isNot(isA<AssistanceCaseForm>()));
       expect(container.read(queue).hasValue, isFalse);
       repository.reads.last.result.complete(casesPage());
       await container.pump();
@@ -279,7 +280,7 @@ void main() {
     },
   );
 
-  test('a new page review has independent draft state', () async {
+  test('a new page review replaces only an unsubmitted draft', () async {
     editor.select(AssistanceCaseDecision.transfer('host-2'));
     container.read(queue.notifier).reload();
     await container.pump();
@@ -290,9 +291,11 @@ void main() {
     final nextReview = nextSession.review(
       nextSession.page.cases.single as AssistanceOpenHostCase,
     );
-    final next = eventAssistanceCaseEditorProvider(nextReview);
+    final next = eventAssistanceCaseEditorProvider(nextReview.request.scope);
     container.listen(next, (_, _) {});
+    expect(container.read(next.notifier), same(editor));
+    editor.open(nextReview);
     expect((container.read(next) as AssistanceCaseForm).decision, isNull);
-    expect(form().decision, isA<AssistanceCaseTransfer>());
+    expect(form().decision, isNull);
   });
 }

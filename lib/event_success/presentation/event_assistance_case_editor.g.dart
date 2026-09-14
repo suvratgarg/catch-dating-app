@@ -8,25 +8,22 @@ part of 'event_assistance_case_editor.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// One reviewed case decision. No implicit default, changed retry, or local
-/// optimistic settlement; the response always supplies the current case state.
+/// One case owns one pending decision across page refresh and sheet closure.
 
 @ProviderFor(EventAssistanceCaseEditor)
 final eventAssistanceCaseEditorProvider = EventAssistanceCaseEditorFamily._();
 
-/// One reviewed case decision. No implicit default, changed retry, or local
-/// optimistic settlement; the response always supplies the current case state.
+/// One case owns one pending decision across page refresh and sheet closure.
 final class EventAssistanceCaseEditorProvider
     extends
         $NotifierProvider<
           EventAssistanceCaseEditor,
           AssistanceCaseEditorState
         > {
-  /// One reviewed case decision. No implicit default, changed retry, or local
-  /// optimistic settlement; the response always supplies the current case state.
+  /// One case owns one pending decision across page refresh and sheet closure.
   EventAssistanceCaseEditorProvider._({
     required EventAssistanceCaseEditorFamily super.from,
-    required EventAssistanceCaseReview super.argument,
+    required EventAssistanceCaseScope super.argument,
   }) : super(
          retry: null,
          name: r'eventAssistanceCaseEditorProvider',
@@ -70,10 +67,9 @@ final class EventAssistanceCaseEditorProvider
 }
 
 String _$eventAssistanceCaseEditorHash() =>
-    r'1660792e75dbeefc54c5c29c6b09661248a7f3c0';
+    r'eae53a24e6b0239a311ba87b17e871118d88ad34';
 
-/// One reviewed case decision. No implicit default, changed retry, or local
-/// optimistic settlement; the response always supplies the current case state.
+/// One case owns one pending decision across page refresh and sheet closure.
 
 final class EventAssistanceCaseEditorFamily extends $Family
     with
@@ -82,7 +78,7 @@ final class EventAssistanceCaseEditorFamily extends $Family
           AssistanceCaseEditorState,
           AssistanceCaseEditorState,
           AssistanceCaseEditorState,
-          EventAssistanceCaseReview
+          EventAssistanceCaseScope
         > {
   EventAssistanceCaseEditorFamily._()
     : super(
@@ -93,25 +89,23 @@ final class EventAssistanceCaseEditorFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One reviewed case decision. No implicit default, changed retry, or local
-  /// optimistic settlement; the response always supplies the current case state.
+  /// One case owns one pending decision across page refresh and sheet closure.
 
-  EventAssistanceCaseEditorProvider call(EventAssistanceCaseReview review) =>
-      EventAssistanceCaseEditorProvider._(argument: review, from: this);
+  EventAssistanceCaseEditorProvider call(EventAssistanceCaseScope scope) =>
+      EventAssistanceCaseEditorProvider._(argument: scope, from: this);
 
   @override
   String toString() => r'eventAssistanceCaseEditorProvider';
 }
 
-/// One reviewed case decision. No implicit default, changed retry, or local
-/// optimistic settlement; the response always supplies the current case state.
+/// One case owns one pending decision across page refresh and sheet closure.
 
 abstract class _$EventAssistanceCaseEditor
     extends $Notifier<AssistanceCaseEditorState> {
-  late final _$args = ref.$arg as EventAssistanceCaseReview;
-  EventAssistanceCaseReview get review => _$args;
+  late final _$args = ref.$arg as EventAssistanceCaseScope;
+  EventAssistanceCaseScope get scope => _$args;
 
-  AssistanceCaseEditorState build(EventAssistanceCaseReview review);
+  AssistanceCaseEditorState build(EventAssistanceCaseScope scope);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
