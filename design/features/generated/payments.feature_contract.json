@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/payments.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ff49455e7af2180caafaad070d47ce286abfc50c4649f5e311dd8356a54e0976",
-  "resolvedDigest": "sha256:45b028daf9cdc7992fea2782cda6d740323305baddf60a3d717d28b8ae7f3fdd",
+  "resolvedDigest": "sha256:497ec7c02a0750296a71e4f463720d2778f3c8cb2d23a1479391ab4ecfdad22a",
   "feature": {
     "id": "feature.payments",
     "name": "Payments",
@@ -1419,7 +1419,9 @@
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
                 "CatchBadge.privacy",
-                "CatchBadge.status"
+                "CatchBadge.status",
+                "CatchBadge.ticketStatus",
+                "CatchBadge.optional"
               ]
             }
           },
@@ -1427,10 +1429,10 @@
             "id": "catch.sheet",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchBottomSheetScaffold",
-              "file": "packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart",
+              "symbol": "CatchSheet",
+              "file": "packages/catch_ui/lib/src/components/catch_sheet.dart",
               "constructors": [
-                "CatchBottomSheetScaffold"
+                "CatchSheet"
               ]
             }
           },
@@ -1443,7 +1445,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -1500,7 +1504,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

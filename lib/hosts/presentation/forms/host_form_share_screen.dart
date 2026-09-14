@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -46,33 +46,39 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostFormShare,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncValueView<HostFormShareAssets>(
+        child: CatchAsyncBoundary<HostFormShareAssets>(
           value: ref.watch(provider),
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 5),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.forms,
-            onRetry: () => ref.invalidate(provider),
-          ),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 5),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.forms,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, assets) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchAsyncValueView<HostFormEditorState>(
+              CatchAsyncBoundary<HostFormEditorState>(
                 value: ref.watch(editorProvider),
                 onRetry: () => ref.read(editorProvider.notifier).reload(),
-                loadingBuilder: (_) => const CatchSkeletonRows(count: 1),
-                errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-                  error,
-                  context: AppErrorContext.forms,
-                  mode: CatchErrorStateMode.compact,
-                  onRetry: () => ref.read(editorProvider.notifier).reload(),
-                ),
+                loadingBuilder: (_) => const CatchSkeleton.rows(count: 1),
+                errorBuilder: (_, error, _, onBoundaryRetry) =>
+                    CatchLocalizedErrorState(
+                      error,
+                      context: AppErrorContext.forms,
+                      mode: CatchErrorStateMode.compact,
+                      onRetry: onBoundaryRetry,
+                    ),
                 builder: (context, editor) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -114,7 +120,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                           child: Builder(
                             builder: (originContext) => CatchButton(
                               label: context.l10n.hostFormShareLink,
-                              shape: CatchButtonShape.rounded,
+                              mode: CatchButtonMode.rounded,
                               fullWidth: true,
                               onPressed: () =>
                                   _share(originContext, assets.canonicalUrl),
@@ -125,7 +131,7 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
                         Expanded(
                           child: CatchButton(
                             label: context.l10n.hostFormCopyLink,
-                            shape: CatchButtonShape.rounded,
+                            mode: CatchButtonMode.rounded,
                             fullWidth: true,
                             variant: CatchButtonVariant.secondary,
                             onPressed: () => _copy(
@@ -217,9 +223,9 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
   Future<void> _showQr(HostFormShareAssets assets) =>
       showCatchBottomSheet<void>(
         context: context,
-        builder: (context) => CatchBottomSheetScaffold(
+        builder: (context) => CatchSheet(
           title: context.l10n.hostAudienceShowQr,
-          scrollable: true,
+          mode: CatchSheetMode.scrollable,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -254,11 +260,11 @@ class _HostFormShareScreenState extends ConsumerState<HostFormShareScreen> {
   Future<void> _showEmbed(HostFormShareAssets assets) =>
       showCatchBottomSheet<void>(
         context: context,
-        builder: (context) => CatchBottomSheetScaffold(
+        builder: (context) => CatchSheet(
           title: context.l10n.hostFormEmbed,
           subtitle: context.l10n.hostFormEmbedHelp,
-          scrollable: true,
-          action: CatchButton(
+          mode: CatchSheetMode.scrollable,
+          footer: CatchButton(
             label: context.l10n.hostFormCopyEmbed,
             fullWidth: true,
             onPressed: () =>
@@ -335,7 +341,7 @@ Future<_TrackedLinkInput?> _showTrackedLinkDialog(BuildContext context) async {
   final source = TextEditingController();
   final result = await showDialog<_TrackedLinkInput>(
     context: context,
-    builder: (dialogContext) => CatchFormDialog(
+    builder: (dialogContext) => CatchDialog(
       title: context.l10n.hostFormTrackedLinkTitle,
       actions: [
         CatchButton(
@@ -376,7 +382,7 @@ Future<_TrackedLinkInput?> _showTrackedLinkDialog(BuildContext context) async {
                 .createOrganizerFormShareLinkCallablePayloadSource,
             inputHint: context.l10n.hostFormTrackedLinkSourceHint,
             textInputAction: TextInputAction.done,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
           ),
         ],
       ),

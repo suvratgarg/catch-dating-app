@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/profile_self.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:bfed475ac25dc07e694db31463094024ab59429fa05a43ed9eb224c6860c82ae",
-  "resolvedDigest": "sha256:c5a844268934f9995340a34155477f9ffafcc2373c8bfd735ea46a5499a5e5f3",
+  "sourceDigest": "sha256:146da37ee696c103a01a459f36dbe7a33fbe4c65a1a87575dee16c1715955f4a",
+  "resolvedDigest": "sha256:44d6ed1ae5ed4eee500ffeddd50a4e2926b4c4d79cee901db1c769ae630192af",
   "feature": {
     "id": "feature.profile_self",
     "name": "Self Profile",
@@ -64,7 +64,7 @@
         "componentContracts": [
           "catch.field",
           "catch.icon_button",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.range_slider",
           "catch.section",
           "catch.surface",
@@ -1188,23 +1188,27 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },
           {
-            "id": "catch.option_group",
-            "kind": "composite",
+            "id": "catch.chip.field",
+            "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
+              "symbol": "CatchChoiceInput",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
               "constructors": [
-                "CatchOptionGroup"
+                "CatchChoiceInput",
+                "CatchChoiceInput.described",
+                "CatchChoiceInput.segmented",
+                "CatchChoiceInput.form"
               ]
             }
           },
@@ -1212,10 +1216,10 @@
             "id": "catch.range_slider",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchRangeSlider",
-              "file": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
+              "symbol": "CatchRangeInput",
+              "file": "packages/catch_ui/lib/src/components/catch_range_input.dart",
               "constructors": [
-                "CatchRangeSlider"
+                "CatchRangeInput"
               ]
             }
           },
@@ -1231,7 +1235,8 @@
                 "CatchSection.containedFieldRows",
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
-                "CatchSection.plain"
+                "CatchSection.plain",
+                "CatchSection.horizontal"
               ]
             }
           },
@@ -1244,8 +1249,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -1256,7 +1260,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

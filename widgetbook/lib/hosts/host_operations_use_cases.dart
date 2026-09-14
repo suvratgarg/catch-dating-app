@@ -357,7 +357,7 @@ Widget hostSavedAudiencesStates(BuildContext context) {
       ],
       child: CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const CatchTabRail<String>(
+        actions: const CatchPageTabBar<String>(
           selected: 'audiences',
           options: [
             CatchOption(value: 'people', label: 'People'),
@@ -1956,7 +1956,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
 )
 @widgetbook.UseCase(
   name: 'Skeleton states',
-  type: CatchSkeletonRows,
+  type: CatchSkeleton,
   path: '[P1 product surfaces]/Host operations/Components',
 )
 @widgetbook.UseCase(
@@ -1990,17 +1990,9 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
         label: 'row and settings groups',
         child: Column(
           children: [
-            CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.mediaTile,
-              count: 2,
-              divided: true,
-            ),
+            CatchSkeleton.mediaRows(count: 2, divided: true),
             gapH12,
-            CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.icon,
-              count: 2,
-              divided: true,
-            ),
+            CatchSkeleton.iconRows(count: 2, divided: true),
           ],
         ),
       ),
@@ -2010,7 +2002,7 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
           children: [
             HostAnalyticsReportSkeleton(),
             gapH12,
-            CatchSkeletonRows(
+            CatchSkeleton.rows(
               count: 3,
               titleWidth: CatchLayout.skeletonTextSectionWidth,
             ),
@@ -2218,33 +2210,18 @@ Widget _hostAnalyticsExactCatalog(BuildContext context, String focus) {
 Widget _hostAnalyticsPreviewFor(String focus) {
   final report = HostOperationsFixtures.analyticsReport;
   return switch (focus) {
-    'CatchAnalyticsBar' => const SizedBox(
+    'CatchBarIndicator' => const SizedBox(
       height: WidgetbookPreviewLayout.smallPreviewExtent,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Expanded(child: CatchAnalyticsBar(value: 18, maxValue: 42)),
+          Expanded(child: CatchBarIndicator(value: 18, maxValue: 42)),
           gapW8,
-          Expanded(child: CatchAnalyticsBar(value: 32, maxValue: 42)),
+          Expanded(child: CatchBarIndicator(value: 32, maxValue: 42)),
           gapW8,
-          Expanded(child: CatchAnalyticsBar(value: 42, maxValue: 42)),
+          Expanded(child: CatchBarIndicator(value: 42, maxValue: 42)),
         ],
       ),
-    ),
-    'CatchAnalyticsDataQualityList' => CatchAnalyticsDataQualityList(
-      rows: [
-        for (final row in report.dataQuality)
-          CatchDataQualityRowData(
-            status: switch (row.state) {
-              HostAnalyticsDataQualityState.ok => CatchMetricStatus.ready,
-              HostAnalyticsDataQualityState.partial =>
-                CatchMetricStatus.partial,
-              HostAnalyticsDataQualityState.missing =>
-                CatchMetricStatus.missing,
-            },
-            detail: row.detail,
-          ),
-      ],
     ),
     'HostAnalyticsEventList' => HostAnalyticsEventList(
       events: report.topEvents,
@@ -2420,11 +2397,13 @@ Widget _hostHomePreviewFor(BuildContext context, String focus) {
       title: 'No clubs yet',
       message: 'Create a club to start hosting events.',
       padding: EdgeInsets.zero,
-      action: CatchButton(
-        label: 'Create club',
-        icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-        onPressed: () {},
-      ),
+      actions: [
+        CatchButton(
+          label: 'Create club',
+          leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+          onPressed: () {},
+        ),
+      ],
     ),
     'HostOrganizerAvatar' => HostOrganizerAvatar(
       club: club.copyWith(
@@ -2478,11 +2457,13 @@ Widget hostEmptyStateStates(BuildContext context) {
             message:
                 'Create a club to publish events, manage attendees, and run Event Success.',
             padding: EdgeInsets.zero,
-            action: CatchButton(
-              label: 'Create club',
-              icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-              onPressed: () {},
-            ),
+            actions: [
+              CatchButton(
+                label: 'Create club',
+                leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+                onPressed: () {},
+              ),
+            ],
           ),
         ),
       ),
@@ -2494,24 +2475,26 @@ Widget hostEmptyStateStates(BuildContext context) {
             message:
                 'Create an event for ${HostOperationsFixtures.primaryClub.name} to start filling the host dashboard.',
             padding: EdgeInsets.zero,
-            action: Wrap(
-              alignment: WrapAlignment.center,
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: [
-                CatchButton(
-                  label: 'New event',
-                  icon: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
-                  onPressed: () {},
-                ),
-                CatchButton(
-                  label: 'Events',
-                  variant: CatchButtonVariant.secondary,
-                  size: CatchButtonSize.sm,
-                  onPressed: () {},
-                ),
-              ],
-            ),
+            actions: [
+              Wrap(
+                alignment: WrapAlignment.center,
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: [
+                  CatchButton(
+                    label: 'New event',
+                    leading: Icon(CatchIcons.addRounded, size: CatchIcon.sm),
+                    onPressed: () {},
+                  ),
+                  CatchButton(
+                    label: 'Events',
+                    variant: CatchButtonVariant.secondary,
+                    size: CatchButtonSize.sm,
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),
@@ -2523,12 +2506,14 @@ Widget hostEmptyStateStates(BuildContext context) {
             message:
                 'Create a professional host identity before editing profile details.',
             padding: EdgeInsets.zero,
-            action: CatchButton(
-              label: 'Create host profile',
-              icon: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
-              isLoading: true,
-              onPressed: null,
-            ),
+            actions: [
+              CatchButton(
+                label: 'Create host profile',
+                leading: Icon(CatchIcons.businessOutlined, size: CatchIcon.md),
+                status: CatchButtonStatus.loading,
+                onPressed: null,
+              ),
+            ],
           ),
         ),
       ),
@@ -5065,7 +5050,7 @@ Widget stepperFooterCatalogStates(BuildContext context) {
         label: 'review needs information',
         child: _DeviceFrame(
           child: StepperFooter(
-            body: CatchFormReviewBody(
+            body: CatchFormReviewPageBody(
               fieldCopy: catchFieldCopy(context.l10n),
               statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
               message:
@@ -5074,17 +5059,17 @@ Widget stepperFooterCatalogStates(BuildContext context) {
                 CatchFormStepReviewItem(
                   index: 0,
                   title: 'Event basics',
-                  status: CatchFormStepStatus.complete,
+                  status: CatchFormStepRowListStatus.complete,
                 ),
                 CatchFormStepReviewItem(
                   index: 1,
                   title: 'Meeting location',
-                  status: CatchFormStepStatus.needsInformation,
+                  status: CatchFormStepRowListStatus.needsInformation,
                 ),
                 CatchFormStepReviewItem(
                   index: 2,
                   title: 'Live event guide',
-                  status: CatchFormStepStatus.optional,
+                  status: CatchFormStepRowListStatus.optional,
                 ),
               ],
               onStepSelected: (_) {},
@@ -5653,20 +5638,11 @@ Widget hostStrictHostActionRowCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Exact catalog',
-  type: CatchAnalyticsBar,
+  type: CatchBarIndicator,
   path: '[P1 product surfaces]/Host operations/Strict coverage',
 )
-Widget hostStrictCatchAnalyticsBarCatalogStates(BuildContext context) =>
-    _hostAnalyticsExactCatalog(context, 'CatchAnalyticsBar');
-
-@widgetbook.UseCase(
-  name: 'Exact catalog',
-  type: CatchAnalyticsDataQualityList,
-  path: '[P1 product surfaces]/Host operations/Strict coverage',
-)
-Widget hostStrictCatchAnalyticsDataQualityListCatalogStates(
-  BuildContext context,
-) => _hostAnalyticsExactCatalog(context, 'CatchAnalyticsDataQualityList');
+Widget hostStrictCatchBarIndicatorCatalogStates(BuildContext context) =>
+    _hostAnalyticsExactCatalog(context, 'CatchBarIndicator');
 
 @widgetbook.UseCase(
   name: 'Exact catalog',

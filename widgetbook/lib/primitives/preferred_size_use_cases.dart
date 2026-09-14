@@ -23,7 +23,7 @@ Widget scaledHeaderReservationStates(BuildContext context) =>
             size: const Size(360, 300),
             child: Builder(
               builder: (context) {
-                final rail = CatchTabRail<String>(
+                final rail = CatchPageTabBar<String>(
                   selected: 'people',
                   options: const [
                     CatchOption(value: 'people', label: 'People'),
@@ -34,12 +34,14 @@ Widget scaledHeaderReservationStates(BuildContext context) =>
                 final CatchScaledPreferredSize header = nested
                     ? CatchTopBar(
                         title: 'Audience',
-                        leadingType: CatchTopBarLeading.none,
-                        bottom: rail,
+                        navigation: const CatchTopBarNavigation(
+                          mode: CatchTopBarNavigationMode.none,
+                        ),
+                        footer: rail,
                       )
                     : rail;
-                return CatchScreenScaffold.workspace(
-                  appBar: header,
+                return CatchScaffold.workspace(
+                  title: header,
                   body: Align(
                     alignment: Alignment.topCenter,
                     child: ColoredBox(

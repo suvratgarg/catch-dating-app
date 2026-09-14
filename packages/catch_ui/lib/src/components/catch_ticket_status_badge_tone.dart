@@ -1,1 +1,0 @@
-enum CatchTicketStatusBadgeTone { soft, dark }

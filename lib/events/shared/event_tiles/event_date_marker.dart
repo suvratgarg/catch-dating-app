@@ -112,7 +112,7 @@ class WeekMarker extends StatelessWidget {
                   ),
                 ),
                 gapH4,
-                CatchStatusDot(
+                CatchStatusIndicator(
                   color: hasEvent ? t.primary : Colors.transparent,
                   size: 4,
                 ),
@@ -185,7 +185,7 @@ class MonthMarker extends StatelessWidget {
                         child: dayText,
                       ),
                 gapH4,
-                CatchStatusDot(
+                CatchStatusIndicator(
                   color: hasEvent && enabled ? t.primary : Colors.transparent,
                   size: 4,
                 ),

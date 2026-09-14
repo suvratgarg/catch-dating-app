@@ -47,7 +47,7 @@
         ],
         "componentContracts": [
           "catch.button",
-          "catch.error_banner",
+          "catch.banner",
           "catch.error_state",
           "catch.event_card",
           "catch.icon_button",

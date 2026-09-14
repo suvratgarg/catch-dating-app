@@ -33,7 +33,7 @@ void main() {
           const LocationPickerScreen(loadMapTiles: false),
         );
 
-        expect(find.byType(CatchScreenScaffold), findsOneWidget);
+        expect(find.byType(CatchScaffold), findsOneWidget);
         expect(find.text('Pick starting point'), findsNothing);
         expect(find.byTooltip('Back'), findsOneWidget);
         expect(find.text('Choose meeting location'), findsNothing);
@@ -45,13 +45,13 @@ void main() {
           findsOneWidget,
         );
         expect(find.byType(CatchField), findsOneWidget);
-        final backButtonSize = tester.getSize(find.byType(CatchIconButton));
+        final backButtonSize = tester.getSize(find.byType(CatchIconAction));
         final searchFieldSize = tester.getSize(find.byType(CatchField));
         final targetExtent = defaultTargetPlatform == TargetPlatform.iOS
             ? 44.0
             : 48.0;
         expect(
-          CatchControlMetrics.minHeight(CatchControlSize.floating),
+          CatchControlMetrics.minHeight(CatchControlSurfaceSize.floating),
           targetExtent,
         );
         expect(searchFieldSize.height, targetExtent);

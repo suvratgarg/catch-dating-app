@@ -188,7 +188,9 @@ class _ProfileDirectTextEntryFieldState
         textInputAction: TextInputAction.done,
         textCapitalization: widget.textCapitalization,
         autofillHints: widget.autofillHints,
-        readOnly: isSaving,
+        inputMode: isSaving
+            ? CatchTextInputMode.inactiveWithoutSelection
+            : CatchTextInputMode.editable,
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: errorText,
         onFocusChanged: _handleFocusChanged,
@@ -290,9 +292,9 @@ class ProfileInlineTextValue extends StatelessWidget {
         autofillHints: autofillHints,
         maxLines: maxLines,
         minLines: minLines,
-        enabled: enabled,
+        states: <WidgetState>{if (!enabled) WidgetState.disabled},
         autofocus: true,
-        showLabel: false,
+        labelMode: CatchFieldLabelTextMode.hidden,
         size: CatchFieldSize.floating,
         variant: CatchFieldVariant.underline,
         onSubmitted: onSubmitted,

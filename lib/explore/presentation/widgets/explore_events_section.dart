@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
@@ -77,11 +77,11 @@ List<Widget> buildExploreEventsSlivers(
               maxHeight: 1200,
               child: Padding(
                 padding: _exploreEventsErrorPadding,
-                child: CatchLocalizedInlineErrorState(
+                child: CatchLocalizedErrorState(
                   error,
                   context: AppErrorContext.event,
                   onRetry: onRetry,
-                  compact: true,
+                  mode: CatchErrorStateMode.compact,
                 ),
               ),
             ),
@@ -256,7 +256,7 @@ class ExploreFeedContentSliver extends StatelessWidget {
             child: Padding(
               padding: resultCountPadding,
               child: Builder(
-                builder: (context) => CatchMonoLabel(
+                builder: (context) => CatchMetadataText(
                   sectionState.resultCountLabel,
                   color: CatchTokens.of(context).ink3,
                 ),

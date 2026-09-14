@@ -152,7 +152,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
           )
         : ColoredBox(color: t.bg);
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       body: Stack(
         children: [
           Positioned.fill(child: mapLayer),
@@ -394,7 +394,7 @@ class MapPickerSearchRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchIconAction(
+        CatchIconAction.toolbar(
           icon: CatchIcons.arrowBackIosNewRounded,
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           backgroundColor: t.surface.withValues(
@@ -443,7 +443,7 @@ class PlaceSearchPanel extends StatelessWidget {
                 context.l10n.eventsLocationPickerScreenTitleSearchForAMeeting,
             contract:
                 CatchContractConstraints.placesAutocompleteCallablePayloadInput,
-            showLabel: false,
+            labelMode: CatchFieldLabelTextMode.hidden,
             controller: controller,
             onChanged: onChanged,
             textInputAction: TextInputAction.search,
@@ -453,9 +453,9 @@ class PlaceSearchPanel extends StatelessWidget {
                 .eventsLocationPickerScreenPlaceholderSearchForAMeeting,
             errorText: errorText,
             size: CatchFieldSize.floating,
-            prefixIcon: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
+            leading: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
             suffixText: stateText,
-            suffixIcon: isPending
+            trailing: isPending
                 ? const Center(
                     child: SizedBox.square(
                       dimension: CatchIcon.md,
@@ -472,7 +472,7 @@ class PlaceSearchPanel extends StatelessWidget {
           gapH8,
           CatchSurface(
             padding: EdgeInsets.zero,
-            elevation: CatchSurfaceElevation.overlay,
+            emphasis: CatchSurfaceEmphasis.floating,
             borderColor: t.line,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxHeight: 260),
@@ -594,7 +594,7 @@ class SelectedPointPanel extends StatelessWidget {
 
     return CatchSurface(
       padding: CatchInsets.content,
-      elevation: CatchSurfaceElevation.overlay,
+      emphasis: CatchSurfaceEmphasis.floating,
       borderColor: t.line,
       radius: CatchRadius.md,
       backgroundColor: t.surface.withValues(

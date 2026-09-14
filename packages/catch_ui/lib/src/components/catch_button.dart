@@ -1,24 +1,32 @@
+import 'dart:math' as math;
+
 import 'package:catch_tokens/catch_tokens.dart';
-import 'package:catch_ui/src/components/catch_button_label.dart';
-import 'package:catch_ui/src/components/catch_button_loading_dots.dart';
+import 'package:catch_ui/src/components/catch_button_content_row.dart';
+import 'package:catch_ui/src/components/catch_count_badge.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
+import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:catch_ui/src/primitives/catch_row_press_surface.dart';
+import 'package:catch_ui/src/primitives/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 enum CatchButtonVariant { primary, secondary, ghost, danger, light }
 
 enum CatchButtonSize { sm, md, lg }
 
-/// Named button geometry. Pill remains the product default; rounded is for
-/// editorial/full-width actions whose container should read as a bar.
-enum CatchButtonShape { pill, rounded }
+/// Pill geometry is the default; rounded mode reads as a full-width action bar.
+enum CatchButtonMode { pill, rounded }
 
-/// Canonical Catch button primitive.
+enum CatchButtonStatus { idle, loading }
+
+enum CatchButtonTone { primary, neutral, danger }
+
+/// Canonical labelled action with command, selection and floating recipes.
 ///
-/// Use [variant] for visual hierarchy and [size] for density. Screens should
-/// configure this widget rather than creating bespoke Material button styles.
-/// Interactive targets retain the platform minimum around compact visuals;
-/// labels reflow naturally in both width modes without shrinking their text.
+/// The default recipe owns CTA hierarchy, density, busy status and geometry.
+/// Named recipes keep toolbar, current-value and counted floating behavior
+/// explicit while preserving one labelled-action owner. Labels retain platform
+/// text size; each recipe owns its wrapping and minimum interactive target.
 class CatchButton extends StatefulWidget {
   const CatchButton({
     super.key,
@@ -26,9 +34,9 @@ class CatchButton extends StatefulWidget {
     required this.onPressed,
     this.variant = CatchButtonVariant.primary,
     this.size = CatchButtonSize.md,
-    this.shape = CatchButtonShape.pill,
-    this.icon,
-    this.isLoading = false,
+    this.mode = CatchButtonMode.pill,
+    this.leading,
+    this.status = CatchButtonStatus.idle,
     this.fullWidth = false,
     this.isInteractive = true,
     this.semanticsLabel,
@@ -38,17 +46,30 @@ class CatchButton extends StatefulWidget {
     this.borderColor,
   }) : _selectionTooltip = null,
        _selection = false,
+       _text = false,
+       tone = CatchButtonTone.primary,
+       disabledForegroundColor = null,
+       disabledBackgroundColor = null,
+       side = null,
+       shape = null,
+       textStyle = null,
+       leadingGap = CatchSpacing.micro6,
+       focusNode = null,
+       tapTargetSize = null,
+       minimumSize = const Size.square(CatchSpacing.s10),
+       padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
        _command = false,
-       iconAtEnd = false;
+       trailing = null,
+       _floatingIcon = null,
+       value = null,
+       count = null;
 
-  /// A bounded current-value trigger for compact chrome, not a command/CTA.
-  /// Keeps the platform text size, ellipsizes only the visible selection, and
-  /// exposes the full value through the button semantics and tooltip.
+  /// Bounded current-value trigger with a full-value tooltip and semantics.
   const CatchButton.selection({
     super.key,
     required this.label,
     required this.onPressed,
-    this.icon,
+    this.leading,
     this.semanticsLabel,
     String? tooltip,
     this.backgroundColor,
@@ -56,32 +77,61 @@ class CatchButton extends StatefulWidget {
     this.borderColor,
   }) : _selectionTooltip = tooltip,
        _selection = true,
+       _text = false,
+       tone = CatchButtonTone.primary,
+       disabledForegroundColor = null,
+       disabledBackgroundColor = null,
+       side = null,
+       shape = null,
+       textStyle = null,
+       leadingGap = CatchSpacing.micro6,
+       focusNode = null,
+       tapTargetSize = null,
+       minimumSize = const Size.square(CatchSpacing.s10),
+       padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
        _command = false,
-       iconAtEnd = false,
+       trailing = null,
+       _floatingIcon = null,
+       value = null,
+       count = null,
        variant = CatchButtonVariant.secondary,
        size = CatchButtonSize.sm,
-       shape = CatchButtonShape.pill,
-       isLoading = false,
+       mode = CatchButtonMode.pill,
+       status = CatchButtonStatus.idle,
        fullWidth = false,
        isInteractive = true,
        accentColor = null;
 
-  /// Unboxed toolbar command with natural-height text and a platform-sized
-  /// hit area. Useful for paired sort/filter commands and inline record actions.
+  /// Unboxed toolbar command with natural-height text and optional edge media.
   const CatchButton.command({
     super.key,
     required this.label,
     required this.onPressed,
-    this.icon,
-    this.iconAtEnd = false,
+    this.leading,
+    this.trailing,
     this.semanticsLabel,
   }) : _selectionTooltip = null,
        _selection = false,
+       _text = false,
+       tone = CatchButtonTone.primary,
+       disabledForegroundColor = null,
+       disabledBackgroundColor = null,
+       side = null,
+       shape = null,
+       textStyle = null,
+       leadingGap = CatchSpacing.micro6,
+       focusNode = null,
+       tapTargetSize = null,
+       minimumSize = const Size.square(CatchSpacing.s10),
+       padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
        _command = true,
+       _floatingIcon = null,
+       value = null,
+       count = null,
        variant = CatchButtonVariant.ghost,
        size = CatchButtonSize.md,
-       shape = CatchButtonShape.rounded,
-       isLoading = false,
+       mode = CatchButtonMode.rounded,
+       status = CatchButtonStatus.idle,
        fullWidth = false,
        isInteractive = true,
        accentColor = null,
@@ -89,24 +139,149 @@ class CatchButton extends StatefulWidget {
        foregroundColor = null,
        borderColor = null;
 
+  /// Raised floating action with optional value text and a typed count badge.
+  CatchButton.floating({
+    super.key,
+    IconData? icon,
+    required this.label,
+    this.value,
+    int count = 0,
+    required VoidCallback this.onPressed,
+    this.semanticsLabel,
+  }) : assert(label.trim().isNotEmpty, 'label must not be empty'),
+       assert(count >= 0, 'count must not be negative'),
+       assert(
+         semanticsLabel == null || semanticsLabel.trim().isNotEmpty,
+         'semanticsLabel must not be empty when provided',
+       ),
+       count = count,
+       _floatingIcon = icon,
+       _selectionTooltip = null,
+       _selection = false,
+       _text = false,
+       tone = CatchButtonTone.primary,
+       disabledForegroundColor = null,
+       disabledBackgroundColor = null,
+       side = null,
+       shape = null,
+       textStyle = null,
+       leadingGap = CatchSpacing.micro6,
+       focusNode = null,
+       tapTargetSize = null,
+       minimumSize = const Size.square(CatchSpacing.s10),
+       padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
+       _command = false,
+       leading = null,
+       trailing = null,
+       variant = CatchButtonVariant.secondary,
+       size = CatchButtonSize.md,
+       mode = CatchButtonMode.pill,
+       status = CatchButtonStatus.idle,
+       fullWidth = false,
+       isInteractive = true,
+       accentColor = null,
+       backgroundColor = null,
+       foregroundColor = null,
+       borderColor = null;
+
+  /// Inline or dialog action with native text-button feedback and focus.
+  const CatchButton.text({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.tone = CatchButtonTone.primary,
+    this.foregroundColor,
+    this.backgroundColor,
+    this.disabledForegroundColor,
+    this.disabledBackgroundColor,
+    this.side,
+    this.shape,
+    this.textStyle,
+    this.leading,
+    this.leadingGap = CatchSpacing.micro6,
+    this.focusNode,
+    this.tapTargetSize,
+    this.minimumSize = const Size.square(CatchSpacing.s10),
+    this.padding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
+  }) : _text = true,
+       _selectionTooltip = null,
+       _selection = false,
+       _command = false,
+       _floatingIcon = null,
+       value = null,
+       count = null,
+       trailing = null,
+       variant = CatchButtonVariant.ghost,
+       size = CatchButtonSize.md,
+       mode = CatchButtonMode.rounded,
+       status = CatchButtonStatus.idle,
+       fullWidth = false,
+       isInteractive = true,
+       semanticsLabel = null,
+       accentColor = null,
+       borderColor = null;
+
+  final bool _text;
   final String? _selectionTooltip;
   final bool _selection;
   final bool _command;
-  final bool iconAtEnd;
+  final IconData? _floatingIcon;
+
+  /// Minimum width for a text-only standard action without breaking its label.
+  /// Dialog action reflow uses the same typography and padding as this recipe.
+  static double minimumLabelWidth(
+    BuildContext context,
+    String label, {
+    CatchButtonSize size = CatchButtonSize.md,
+  }) {
+    final spec = _ButtonSizeSpec.from(size);
+    final painter = TextPainter(
+      text: TextSpan(text: label, style: spec.textStyle(context)),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      locale: Localizations.maybeLocaleOf(context),
+    )..layout();
+    final width = painter.width.ceilToDouble() + spec.padding * 2;
+    painter.dispose();
+    return math.max(CatchPlatformTokens.minimumInteractiveExtent, width);
+  }
 
   final String label;
   final VoidCallback? onPressed;
   final CatchButtonVariant variant;
   final CatchButtonSize size;
-  final CatchButtonShape shape;
-  final Widget? icon;
-  final bool isLoading;
+  final CatchButtonMode mode;
+  final CatchButtonStatus status;
+  final Widget? leading;
+  final Widget? trailing;
   final bool fullWidth;
   final bool isInteractive;
   final String? semanticsLabel;
 
-  /// Activity pigment for a primary button. The foreground is paired to white
-  /// unless [foregroundColor] is supplied explicitly.
+  /// Floating recipe's secondary text, preserving caller casing and wrapping.
+  final String? value;
+
+  /// Floating count; zero hides the badge, while other recipes carry no count.
+  final int? count;
+
+  final CatchButtonTone tone;
+  final Color? disabledForegroundColor;
+  final Color? disabledBackgroundColor;
+  final BorderSide? side;
+  final OutlinedBorder? shape;
+  final TextStyle? textStyle;
+  final double leadingGap;
+  final FocusNode? focusNode;
+  final MaterialTapTargetSize? tapTargetSize;
+  final Size minimumSize;
+  final EdgeInsetsGeometry padding;
+
+  /// Whether this recipe is a text action suitable for a compact action row.
+  bool get isTextAction => _text;
+
+  bool get isLoading => status == CatchButtonStatus.loading;
+
+  /// Activity pigment for a primary button, paired to white unless overridden.
   final Color? accentColor;
   final Color? backgroundColor;
   final Color? foregroundColor;
@@ -127,6 +302,150 @@ class _CatchButtonState extends State<CatchButton> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    if (widget._text) {
+      final color =
+          widget.foregroundColor ??
+          switch (widget.tone) {
+            CatchButtonTone.primary => t.primary,
+            CatchButtonTone.neutral => t.ink2,
+            CatchButtonTone.danger => t.danger,
+          };
+      final effectiveDisabledColor = widget.disabledForegroundColor ?? t.ink3;
+      final effectiveColor = widget.onPressed == null
+          ? effectiveDisabledColor
+          : color;
+      final effectiveTextStyle =
+          widget.textStyle ?? CatchTextStyles.labelL(context);
+      final labelText = Text(
+        widget.label,
+        textAlign: TextAlign.center,
+        style: effectiveTextStyle.copyWith(color: effectiveColor),
+      );
+
+      return TextButton(
+        onPressed: widget.onPressed,
+        focusNode: widget.focusNode,
+        style: TextButton.styleFrom(
+          foregroundColor: color,
+          backgroundColor: widget.backgroundColor,
+          disabledForegroundColor: effectiveDisabledColor,
+          disabledBackgroundColor: widget.disabledBackgroundColor,
+          minimumSize: Size(
+            math.max(
+              widget.minimumSize.width,
+              CatchPlatformTokens.minimumInteractiveExtent,
+            ),
+            math.max(
+              widget.minimumSize.height,
+              CatchPlatformTokens.minimumInteractiveExtent,
+            ),
+          ),
+          // Compact density must not subtract pixels from the platform floor.
+          visualDensity: VisualDensity.standard,
+          padding: widget.padding,
+          tapTargetSize: widget.tapTargetSize,
+          side: widget.side,
+          shape: widget.shape,
+          textStyle: effectiveTextStyle,
+        ),
+        child: widget.leading == null
+            ? labelText
+            : Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  widget.leading!,
+                  SizedBox(width: widget.leadingGap),
+                  Flexible(child: labelText),
+                ],
+              ),
+      );
+    }
+    if (widget.count != null) {
+      final icon = widget._floatingIcon;
+      final label = widget.label;
+      final value = widget.value;
+      final count = widget.count!;
+      final content = LayoutBuilder(
+        builder: (context, constraints) {
+          final labelText = Text(
+            label,
+            style: CatchTextStyles.control(context, color: t.ink),
+          );
+          final valueText = value == null || value.isEmpty
+              ? null
+              : Text(
+                  value,
+                  style: CatchTextStyles.control(context, color: t.ink),
+                );
+          return ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: CatchPlatformTokens.minimumInteractiveExtent,
+              minWidth: CatchPlatformTokens.minimumInteractiveExtent,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (icon != null)
+                  Icon(icon, size: CatchLayout.countPillIconSize, color: t.ink),
+                if (icon != null) gapW8,
+                if (constraints.hasBoundedWidth)
+                  Flexible(child: labelText)
+                else
+                  labelText,
+                if (valueText != null) ...[
+                  gapW6,
+                  Text(
+                    '·',
+                    style: CatchTextStyles.buttonSm(context, color: t.ink3),
+                  ),
+                  gapW6,
+                  if (constraints.hasBoundedWidth)
+                    Flexible(child: valueText)
+                  else
+                    valueText,
+                ],
+              ],
+            ),
+          );
+        },
+      );
+
+      final pill = CatchSurface(
+        radius: CatchRadius.pill,
+        emphasis: CatchSurfaceEmphasis.raised,
+        backgroundColor: t.floatingPillFill,
+        borderRole: _focused ? CatchBorderRole.focus : CatchBorderRole.control,
+        padding: EdgeInsets.only(
+          left: CatchSpacing.s4,
+          right: count > 0
+              ? CatchCountBadge.labelWidth(context, count) + CatchSpacing.s1
+              : CatchSpacing.s4,
+        ),
+        onTap: widget.onPressed,
+        onFocusChange: (focused) {
+          if (_focused != focused) setState(() => _focused = focused);
+        },
+        child: content,
+      );
+
+      final countedPill = CatchCountBadge(
+        count: count,
+        offset: const Offset(CatchSpacing.s1, -CatchSpacing.s1),
+        child: pill,
+      );
+
+      if (widget.semanticsLabel == null) return countedPill;
+      return Semantics(
+        container: true,
+        button: true,
+        enabled: true,
+        label: widget.semanticsLabel,
+        excludeSemantics: true,
+        onTap: widget.onPressed,
+        child: countedPill,
+      );
+    }
     if (widget._command) {
       return Semantics(
         button: true,
@@ -150,8 +469,8 @@ class _CatchButtonState extends State<CatchButton> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (widget.icon != null && !widget.iconAtEnd) ...[
-                      widget.icon!,
+                    if (widget.leading != null) ...[
+                      widget.leading!,
                       const SizedBox(width: CatchSpacing.s2),
                     ],
                     Flexible(
@@ -163,9 +482,9 @@ class _CatchButtonState extends State<CatchButton> {
                         ),
                       ),
                     ),
-                    if (widget.icon != null && widget.iconAtEnd) ...[
+                    if (widget.trailing != null) ...[
                       const SizedBox(width: CatchSpacing.s2),
-                      widget.icon!,
+                      widget.trailing!,
                     ],
                   ],
                 ),
@@ -181,7 +500,7 @@ class _CatchButtonState extends State<CatchButton> {
     final transitionDuration = reduceMotion
         ? CatchMotion.none
         : CatchMotion.fast;
-    final radius = widget.shape == CatchButtonShape.pill
+    final radius = widget.mode == CatchButtonMode.pill
         ? CatchRadius.pill
         : CatchRadius.md;
     var palette = _ButtonPalette.from(widget.variant, t);
@@ -238,11 +557,11 @@ class _CatchButtonState extends State<CatchButton> {
             switchInCurve: CatchMotion.standardCurve,
             switchOutCurve: CatchMotion.standardCurve,
             child: widget.isLoading
-                ? CatchButtonLoadingDots(color: palette.foreground)
-                : CatchButtonLabel(
+                ? CatchLoadingIndicator.dots(color: palette.foreground)
+                : CatchButtonContentRow(
                     label: widget.label,
                     color: palette.foreground,
-                    icon: widget.icon,
+                    leading: widget.leading,
                     gap: spec.gap,
                     fullWidth: widget.fullWidth,
                     allowMultiline: !widget._selection,

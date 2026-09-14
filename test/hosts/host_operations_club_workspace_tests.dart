@@ -13,7 +13,7 @@ void _registerHostOperationsClubWorkspaceTests() {
           findsOneWidget,
         );
         expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-        expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+        expect(find.byType(CatchStateViewport), findsOneWidget);
         expect(find.byType(CatchErrorScaffold), findsNothing);
         expect(find.byType(HostLoadingScreen), findsNothing);
         expect(find.byType(CatchRouteScaffold), findsNothing);
@@ -23,7 +23,7 @@ void _registerHostOperationsClubWorkspaceTests() {
                 find.byType(CatchRootScreenPageScrollView),
               )
               .bodyLayout,
-          CatchScreenBodyLayout.standard,
+          CatchPageBodyMode.standard,
         );
       }
 
@@ -89,7 +89,7 @@ void _registerHostOperationsClubWorkspaceTests() {
       expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
       expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
       expect(find.byType(CatchSliverEmptyState), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
       expect(find.byKey(const ValueKey('host-club-tab-rail')), findsOneWidget);
       expect(find.text('Organizer'), findsOneWidget);
       expect(find.text('No hosted organizers yet'), findsOneWidget);
@@ -109,7 +109,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.byType(CatchErrorScaffold), findsNothing);
     expect(find.text('Today'), findsOneWidget);
     expect(find.text('Sign in required'), findsOneWidget);
@@ -126,7 +126,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.byType(CatchErrorScaffold), findsNothing);
     expect(find.text('Today'), findsOneWidget);
   });
@@ -248,11 +248,11 @@ void _registerHostOperationsClubWorkspaceTests() {
 
       expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
       expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
       expect(find.text('Saket Run Club'), findsNothing);
       expect(
         find.ancestor(
-          of: find.byType(CatchErrorBody),
+          of: find.byType(CatchErrorState),
           matching: find.byType(Center),
         ),
         findsNothing,
@@ -379,7 +379,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.byType(CatchErrorScaffold), findsNothing);
     expect(find.text('Events'), findsOneWidget);
     expect(find.text('Sign in required'), findsOneWidget);
@@ -396,7 +396,7 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.bySubtype<CatchSliverErrorState>(), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.byType(CatchErrorScaffold), findsNothing);
     expect(find.text('Events'), findsOneWidget);
   });
@@ -419,8 +419,8 @@ void _registerHostOperationsClubWorkspaceTests() {
 
     expect(find.text('No upcoming events'), findsOneWidget);
     final emptyState = find.byType(CatchEmptyState);
-    final content = find.byType(CatchEmptyStateContent);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    final content = find.byType(CatchEmptyState);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(
       find.ancestor(of: emptyState, matching: find.byType(Center)),
       findsNothing,
@@ -609,12 +609,12 @@ void _registerHostOperationsClubWorkspaceTests() {
           find.descendant(of: maySection, matching: find.byType(CatchDivider)),
         )
         .toList();
-    expect(mayDividers.map((divider) => divider.role), [
-      CatchDividerRole.fieldRow,
+    expect(mayDividers.map((divider) => divider.variant), [
+      CatchDividerVariant.fieldRow,
     ]);
     final tokens = CatchTokens.of(tester.element(maySection));
     expect(
-      CatchDivider.colorFor(tokens, mayDividers.last.role),
+      CatchDivider.colorFor(tokens, mayDividers.last.variant),
       tokens.line.withValues(
         alpha: tokens.line.a * CatchOpacity.fieldRowDivider,
       ),
@@ -623,7 +623,8 @@ void _registerHostOperationsClubWorkspaceTests() {
       of: maySection,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider && widget.role == CatchDividerRole.fieldRow,
+            widget is CatchDivider &&
+            widget.variant == CatchDividerVariant.fieldRow,
       ),
     );
     expect(
@@ -764,14 +765,12 @@ void _registerHostOperationsClubWorkspaceTests() {
     expect(find.text('Groups'), findsOneWidget);
     expect(find.text('Campaigns'), findsNothing);
     expect(
-      tester
-          .widget<CatchScreenHeaderTitle>(find.byType(CatchScreenHeaderTitle))
-          .eyebrow,
+      tester.widget<CatchScreenHeader>(find.byType(CatchScreenHeader)).kicker,
       isNull,
     );
     expect(
       find.descendant(
-        of: find.byType(CatchScreenTopBar),
+        of: find.byType(CatchTopBar),
         matching: find.byKey(
           const ValueKey<String>('host-customers-add-customer'),
         ),

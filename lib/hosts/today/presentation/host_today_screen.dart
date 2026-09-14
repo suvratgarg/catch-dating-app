@@ -95,8 +95,8 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
 
     return switch (routeState.status) {
       HostTodayRouteStatus.authRequired => CatchRootScreenScaffold.standard(
-        header: HostTodayHeader(now: _clockNow),
-        slivers: [
+        title: HostTodayHeader(now: _clockNow),
+        children: [
           CatchSliverErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
@@ -108,16 +108,16 @@ class _HostTodayScreenState extends ConsumerState<HostTodayScreen> {
         ],
       ),
       HostTodayRouteStatus.loading => CatchRootScreenScaffold.standard(
-        header: HostTodayHeader(now: _clockNow),
-        slivers: const [
-          CatchSliverStateViewport(
+        title: HostTodayHeader(now: _clockNow),
+        children: const [
+          CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],
       ),
       HostTodayRouteStatus.error => CatchRootScreenScaffold.standard(
-        header: HostTodayHeader(now: _clockNow),
-        slivers: [
+        title: HostTodayHeader(now: _clockNow),
+        children: [
           CatchLocalizedSliverErrorState(
             routeState.error!,
             context: routeState.errorContext,
@@ -312,18 +312,20 @@ class HostTodayOrganizerEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchRootScreenScaffold.standard(
-      header: const HostTodayHeader(),
-      slivers: [
+      title: const HostTodayHeader(),
+      children: [
         CatchSliverEmptyState(
           icon: CatchIcons.groupsOutlined,
           title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
           message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-          action: CatchButton(
-            label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-            icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-            size: CatchButtonSize.sm,
-            onPressed: onCreateOrganizer,
-          ),
+          actions: [
+            CatchButton(
+              label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+              leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+              size: CatchButtonSize.sm,
+              onPressed: onCreateOrganizer,
+            ),
+          ],
         ),
       ],
     );

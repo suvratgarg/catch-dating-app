@@ -42,16 +42,20 @@ class _HostApplicationDetailScreenState
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostAudienceApplicationTitle,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
-      bottomNavigationBar:
+      footer:
           loaded != null &&
               loaded.reviewStatus != HostApplicationReviewStatus.withdrawn &&
               loaded.dataAccessState != 'revokedParticipantGrant' &&
               (loaded.reviewStatus != HostApplicationReviewStatus.approved ||
                   loaded.contactId != null)
-          ? CatchBottomAction(
+          ? CatchDockSurface.primary(
               buttonKey: ValueKey(
                 loaded.reviewStatus == HostApplicationReviewStatus.approved
                     ? 'host-application-open-person'
@@ -81,16 +85,17 @@ class _HostApplicationDetailScreenState
             )
           : null,
       body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncValueView<HostApplicationDetail>(
+        child: CatchAsyncBoundary<HostApplicationDetail>(
           value: detail,
           onRetry: _invalidateDetail,
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.applications,
-            onRetry: _invalidateDetail,
-          ),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.applications,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, application) {
             if (_loadedRevision != application.revision) {
               _loadedRevision = application.revision;
@@ -104,7 +109,7 @@ class _HostApplicationDetailScreenState
                     name: application.applicantDisplayName,
                     seed: application.applicationId,
                   ),
-                  metadata: Text(
+                  meta: Text(
                     hostApplicationContextLabel(
                       context,
                       formId: application.formId,
@@ -114,13 +119,13 @@ class _HostApplicationDetailScreenState
                     ),
                     style: CatchTextStyles.supporting(context),
                   ),
-                  contextContent: Text(
+                  body: Text(
                     context.l10n.hostApplicationsSubmittedOn(
                       date: DateFormat.yMMMd().format(application.submittedAt),
                     ),
                     style: CatchTextStyles.recordContext(context),
                   ),
-                  status: CatchBadge.status(
+                  trailing: CatchBadge.status(
                     label: hostApplicationStatusLabel(
                       context,
                       application.reviewStatus,
@@ -146,7 +151,7 @@ class _HostApplicationDetailScreenState
                   style: CatchTextStyles.supporting(context),
                 ),
                 gapH24,
-                CatchTabRail<bool>(
+                CatchPageTabBar<bool>(
                   options: [
                     CatchOption(
                       value: false,
@@ -259,12 +264,14 @@ class _HostApplicationDetailScreenState
                       title: context.l10n.hostApplicationReviewTitle,
                       contractExemption:
                           'Disclosure for review actions; the nested note uses the generated review payload binding.',
-                      initiallyOpen:
+                      disclosureMode:
                           application.reviewStatus ==
-                              HostApplicationReviewStatus.submitted ||
-                          application.reviewStatus ==
-                              HostApplicationReviewStatus.inReview,
-                      control: Column(
+                                  HostApplicationReviewStatus.submitted ||
+                              application.reviewStatus ==
+                                  HostApplicationReviewStatus.inReview
+                          ? CatchFieldMode.localExpanded
+                          : CatchFieldMode.localCollapsed,
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           CatchField.input(
@@ -275,7 +282,7 @@ class _HostApplicationDetailScreenState
                             controller: _reviewNoteController,
                             contract: CatchContractConstraints
                                 .reviewOrganizerApplicationCallablePayloadReviewNote,
-                            isOptional: true,
+                            labelMode: CatchFieldLabelTextMode.optional,
                             maxLines: 3,
                           ),
                           gapH12,
@@ -287,9 +294,11 @@ class _HostApplicationDetailScreenState
                                 label: context.l10n.hostApplicationMarkInReview,
                                 variant: CatchButtonVariant.secondary,
                                 size: CatchButtonSize.sm,
-                                isLoading:
-                                    _savingStatus ==
-                                    HostApplicationReviewStatus.inReview,
+                                status:
+                                    (_savingStatus ==
+                                        HostApplicationReviewStatus.inReview)
+                                    ? CatchButtonStatus.loading
+                                    : CatchButtonStatus.idle,
                                 onPressed: _savingStatus == null
                                     ? () => _review(
                                         application,
@@ -301,9 +310,11 @@ class _HostApplicationDetailScreenState
                                 label: context.l10n.hostApplicationWaitlist,
                                 variant: CatchButtonVariant.secondary,
                                 size: CatchButtonSize.sm,
-                                isLoading:
-                                    _savingStatus ==
-                                    HostApplicationReviewStatus.waitlisted,
+                                status:
+                                    (_savingStatus ==
+                                        HostApplicationReviewStatus.waitlisted)
+                                    ? CatchButtonStatus.loading
+                                    : CatchButtonStatus.idle,
                                 onPressed: _savingStatus == null
                                     ? () => _review(
                                         application,
@@ -315,9 +326,11 @@ class _HostApplicationDetailScreenState
                                 label: context.l10n.hostApplicationDecline,
                                 variant: CatchButtonVariant.danger,
                                 size: CatchButtonSize.sm,
-                                isLoading:
-                                    _savingStatus ==
-                                    HostApplicationReviewStatus.declined,
+                                status:
+                                    (_savingStatus ==
+                                        HostApplicationReviewStatus.declined)
+                                    ? CatchButtonStatus.loading
+                                    : CatchButtonStatus.idle,
                                 onPressed: _savingStatus == null
                                     ? () => _review(
                                         application,
@@ -407,25 +420,25 @@ class _HostApplicationOutreachSection extends StatelessWidget {
       if (outreach.phoneE164 case final phone?)
         CatchButton.command(
           label: context.l10n.hostApplicationCall,
-          icon: Icon(CatchIcons.phoneOutlined, size: CatchIcon.sm),
+          leading: Icon(CatchIcons.phoneOutlined, size: CatchIcon.sm),
           onPressed: () => onOpen(Uri(scheme: 'tel', path: phone)),
         ),
       if (outreach.email case final email?)
         CatchButton.command(
           label: context.l10n.hostApplicationEmail,
-          icon: Icon(CatchIcons.emailOutlined, size: CatchIcon.sm),
+          leading: Icon(CatchIcons.emailOutlined, size: CatchIcon.sm),
           onPressed: () => onOpen(Uri(scheme: 'mailto', path: email)),
         ),
       if (outreach.instagramUrl case final url?)
         CatchButton.command(
           label: context.l10n.hostApplicationInstagram,
-          icon: Icon(CatchIcons.openInNewRounded, size: CatchIcon.sm),
+          leading: Icon(CatchIcons.openInNewRounded, size: CatchIcon.sm),
           onPressed: () => onOpen(Uri.parse(url)),
         ),
       if (outreach.linkedinUrl case final url?)
         CatchButton.command(
           label: context.l10n.hostApplicationLinkedin,
-          icon: Icon(CatchIcons.openInNewRounded, size: CatchIcon.sm),
+          leading: Icon(CatchIcons.openInNewRounded, size: CatchIcon.sm),
           onPressed: () => onOpen(Uri.parse(url)),
         ),
     ];

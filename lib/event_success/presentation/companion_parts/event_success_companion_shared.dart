@@ -50,7 +50,7 @@ class CompanionStageScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final stageTheme = _stageTheme;
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       key: const ValueKey('eventSuccessCompanionStage'),
       backgroundColor: stageTheme.background,
       body: CatchSurface(
@@ -85,7 +85,7 @@ class CompanionStageScaffold extends StatelessWidget {
               ),
             ),
             SafeArea(
-              child: CatchFillViewportScrollView(
+              child: CatchScrollView(
                 scrollViewKey: EventSuccessCompanionKeys.scrollView,
                 maxContentWidth: CatchLayout.maxContentWidth,
                 padding: _companionMomentStagePadding,
@@ -133,10 +133,10 @@ class CompanionPaperScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       key: const ValueKey('eventSuccessCompanionPaper'),
       backgroundColor: t.bg,
-      bottomNavigationBar: showSelfCheckIn
+      footer: showSelfCheckIn
           ? SafeArea(
               minimum: CatchInsets.pageBody.copyWith(
                 top: CatchSpacing.s2,
@@ -150,7 +150,7 @@ class CompanionPaperScaffold extends StatelessWidget {
             )
           : null,
       body: SafeArea(
-        child: CatchFillViewportScrollView(
+        child: CatchScrollView(
           scrollViewKey: EventSuccessCompanionKeys.scrollView,
           maxContentWidth: CatchLayout.maxContentWidth,
           padding: CatchInsets.pageBody.copyWith(
@@ -200,9 +200,9 @@ class PaperCompanionNav extends StatelessWidget {
           children: [
             Tooltip(
               message: MaterialLocalizations.of(context).backButtonTooltip,
-              child: CatchIconButton(
-                background: Colors.transparent,
-                onTap: canPop ? () => _popCompanion(context) : null,
+              child: CatchIconAction(
+                backgroundColor: Colors.transparent,
+                onPressed: canPop ? () => _popCompanion(context) : null,
                 child: Icon(
                   CatchIcons.arrowBackRounded,
                   size: CatchIcon.md,
@@ -742,8 +742,10 @@ class PaperSelfCheckInBar extends StatelessWidget {
     return CatchButton(
       label:
           context.l10n.eventSuccessEventSuccessCompanionSharedLabelIMHereCheck,
-      icon: Icon(CatchIcons.locationOnOutlined),
-      isLoading: actionState.isCheckingIn,
+      leading: Icon(CatchIcons.locationOnOutlined),
+      status: (actionState.isCheckingIn)
+          ? CatchButtonStatus.loading
+          : CatchButtonStatus.idle,
       onPressed: actionState.isCheckingIn
           ? null
           : () => unawaited(_scanAndCheckIn(context)),
@@ -983,9 +985,11 @@ class StageNav extends StatelessWidget {
         Tooltip(
           message:
               context.l10n.eventSuccessEventSuccessCompanionSharedMessageBack,
-          child: CatchIconButton(
-            background: foreground.withValues(alpha: CatchOpacity.subtleFill),
-            onTap: canPop ? () => _popCompanion(context) : null,
+          child: CatchIconAction(
+            backgroundColor: foreground.withValues(
+              alpha: CatchOpacity.subtleFill,
+            ),
+            onPressed: canPop ? () => _popCompanion(context) : null,
             child: Icon(
               CatchIcons.arrowBackRounded,
               size: CatchIcon.md,

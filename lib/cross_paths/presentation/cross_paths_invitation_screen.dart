@@ -37,8 +37,12 @@ class CrossPathsInvitationScreen extends ConsumerWidget {
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.crossPathsInvitationScreenTitle,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standard(
         child: invitationAsync.when(
@@ -55,7 +59,7 @@ class CrossPathsInvitationScreen extends ConsumerWidget {
                       context.l10n.crossPathsInvitationScreenUnavailableTitle,
                   message:
                       context.l10n.crossPathsInvitationScreenUnavailableBody,
-                  secondaryAction: const CatchErrorBackAction(),
+                  actions: const [CatchErrorBackButton()],
                 )
               : _InvitationDetail(invitation: invitation),
         ),
@@ -76,7 +80,7 @@ class _InvitationDetail extends ConsumerWidget {
       return CatchErrorState(
         title: context.l10n.crossPathsInvitationScreenUnavailableTitle,
         message: context.l10n.crossPathsInvitationScreenUnavailableBody,
-        secondaryAction: const CatchErrorBackAction(),
+        actions: const [CatchErrorBackButton()],
       );
     }
     final otherUid = invitation.senderUid == uid
@@ -115,7 +119,7 @@ class _InvitationDetail extends ConsumerWidget {
       return CatchErrorState(
         title: context.l10n.crossPathsInvitationScreenUnavailableTitle,
         message: context.l10n.crossPathsInvitationScreenUnavailableBody,
-        secondaryAction: const CatchErrorBackAction(),
+        actions: const [CatchErrorBackButton()],
       );
     }
     return _InvitationDetailBody(
@@ -154,13 +158,14 @@ class _InvitationDetailBody extends ConsumerWidget {
     );
     final analytics = ref.read(appAnalyticsProvider);
     final photo = profile.primaryPhotoThumbnailUrl;
-    return CatchResponsiveSectionLayout(
+    return CatchSectionList.responsive(
+      emptyStateOmitted: true,
       sectionGap: CatchSpacing.s4,
-      sections: [
-        CatchResponsiveSectionItem(
-          child: CatchPersonPolaroid(
+      items: [
+        CatchSectionListItem(
+          child: CatchPolaroid(
             media: photo == null
-                ? CatchNetworkImageFallback(icon: CatchIcons.personOutlined)
+                ? CatchImageFallbackSurface(icon: CatchIcons.personOutlined)
                 : CatchNetworkImage(photo),
             kicker: context.l10n.crossPathsExploreCardLabelCrossPaths,
             name: '${profile.name}, ${profile.age}',
@@ -173,7 +178,7 @@ class _InvitationDetailBody extends ConsumerWidget {
             ),
           ),
         ),
-        CatchResponsiveSectionItem(
+        CatchSectionListItem(
           child: CatchSurface.card(
             padding: CatchInsets.content,
             child: Column(
@@ -192,14 +197,14 @@ class _InvitationDetailBody extends ConsumerWidget {
           ),
         ),
         if (pairHold != null)
-          CatchResponsiveSectionItem(
+          CatchSectionListItem(
             child: _PairHoldPanel(
               hold: pairHold!,
               event: event,
               currentUid: currentUid,
             ),
           ),
-        CatchResponsiveSectionItem(
+        CatchSectionListItem(
           child: _InvitationActions(
             invitation: invitation,
             isRecipient: isRecipient,
@@ -311,7 +316,9 @@ class _InvitationActions extends StatelessWidget {
           CatchButton(
             label: context.l10n.crossPathsInvitationScreenActionAccept,
             fullWidth: true,
-            isLoading: loading,
+            status: (loading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: () => onRespond(true),
           ),
           gapH10,
@@ -328,7 +335,7 @@ class _InvitationActions extends StatelessWidget {
       return CatchButton(
         label: context.l10n.crossPathsInvitationActionCancel,
         fullWidth: true,
-        isLoading: loading,
+        status: (loading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         variant: CatchButtonVariant.secondary,
         onPressed: onCancel,
       );
@@ -352,7 +359,9 @@ class _InvitationActions extends StatelessWidget {
             label: context.l10n.crossPathsInvitationScreenActionCancelPlan,
             fullWidth: true,
             variant: CatchButtonVariant.secondary,
-            isLoading: loading,
+            status: (loading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: onCancel,
           ),
         ],
@@ -443,7 +452,9 @@ class _PairHoldPanelState extends ConsumerState<_PairHoldPanel> {
               key: const ValueKey('cross-paths-pair-complete-booking'),
               label: context.l10n.crossPathsPairInventoryActionCompleteBooking,
               fullWidth: true,
-              isLoading: _booking,
+              status: (_booking)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: _booking ? null : _completeBooking,
             ),
           ] else if (active) ...[

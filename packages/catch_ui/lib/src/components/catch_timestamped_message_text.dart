@@ -35,71 +35,83 @@ class CatchTimestampedMessageText extends StatelessWidget {
           text: TextSpan(text: text, style: textStyle),
           textDirection: direction,
           textScaler: textScaler,
-        )..layout(maxWidth: maxWidth);
+        );
         final timestampPainter = TextPainter(
           text: TextSpan(text: timestamp, style: timestampStyle),
           textDirection: direction,
           textScaler: textScaler,
-        )..layout(maxWidth: maxWidth);
-        final messageLines = messagePainter.computeLineMetrics();
-        final timestampLines = timestampPainter.computeLineMetrics();
+        );
+        try {
+          messagePainter.layout(maxWidth: maxWidth);
+          timestampPainter.layout(maxWidth: maxWidth);
+          final messageLines = messagePainter.computeLineMetrics();
+          final timestampLines = timestampPainter.computeLineMetrics();
 
-        if (messageLines.isEmpty) {
-          return Align(
-            alignment: AlignmentDirectional.centerEnd,
-            child: Text(timestamp, style: timestampStyle),
+          if (messageLines.isEmpty) {
+            return Align(
+              alignment: AlignmentDirectional.centerEnd,
+              child: Text(timestamp, style: timestampStyle),
+            );
+          }
+
+          final longestLineWidth = messageLines.fold<double>(
+            0,
+            (width, line) => math.max(width, line.width),
           );
-        }
-
-        final longestLineWidth = messageLines.fold<double>(
-          0,
-          (width, line) => math.max(width, line.width),
-        );
-        final lastLine = messageLines.last;
-        final timestampWidth = timestampPainter.width;
-        final timestampHeight = timestampPainter.height;
-        final fitsInline =
-            lastLine.width + inlineGap + timestampWidth <= maxWidth;
-        final desiredWidth = fitsInline
-            ? math.max(
-                longestLineWidth,
-                lastLine.width + inlineGap + timestampWidth,
+          final lastLine = messageLines.last;
+          final timestampWidth = timestampPainter.width;
+          final timestampHeight = timestampPainter.height;
+          final fitsInline =
+              lastLine.width + inlineGap + timestampWidth <= maxWidth;
+          final desiredWidth = fitsInline
+              ? math.max(
+                  longestLineWidth,
+                  lastLine.width + inlineGap + timestampWidth,
+                )
+              : math.max(longestLineWidth, timestampWidth);
+          final width = math.min(maxWidth, desiredWidth);
+          final timestampBaseline = timestampLines.isEmpty
+              ? timestampHeight
+              : timestampLines.first.baseline;
+          final inlineTop = (lastLine.baseline - timestampBaseline)
+              .clamp(
+                0.0,
+                math.max(0.0, messagePainter.height - timestampHeight),
               )
-            : math.max(longestLineWidth, timestampWidth);
-        final width = math.min(maxWidth, desiredWidth);
-        final timestampBaseline = timestampLines.isEmpty
-            ? timestampHeight
-            : timestampLines.first.baseline;
-        final inlineTop = (lastLine.baseline - timestampBaseline)
-            .clamp(0.0, math.max(0.0, messagePainter.height - timestampHeight))
-            .toDouble();
-        final timestampTop = fitsInline
-            ? inlineTop
-            : messagePainter.height + stackedGap;
-        final height = fitsInline
-            ? math.max(messagePainter.height, timestampTop + timestampHeight)
-            : messagePainter.height + stackedGap + timestampHeight;
+              .toDouble();
+          final timestampTop = fitsInline
+              ? inlineTop
+              : messagePainter.height + stackedGap;
+          final height = fitsInline
+              ? math.max(messagePainter.height, timestampTop + timestampHeight)
+              : messagePainter.height + stackedGap + timestampHeight;
 
-        return SizedBox(
-          width: width,
-          height: height,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              PositionedDirectional(
-                start: 0,
-                top: 0,
-                width: width,
-                child: Text(text, style: textStyle),
-              ),
-              PositionedDirectional(
-                end: 0,
-                top: timestampTop,
-                child: Text(timestamp, style: timestampStyle),
-              ),
-            ],
-          ),
-        );
+          return SizedBox(
+            width: width,
+            height: height,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                PositionedDirectional(
+                  start: 0,
+                  top: 0,
+                  width: width,
+                  child: Text(text, style: textStyle),
+                ),
+                PositionedDirectional(
+                  end: 0,
+                  top: timestampTop,
+                  child: Text(timestamp, style: timestampStyle),
+                ),
+              ],
+            ),
+          );
+        } finally {
+          // These painters only measure this build; the returned Text widgets
+          // own their separate render resources.
+          messagePainter.dispose();
+          timestampPainter.dispose();
+        }
       },
     );
   }

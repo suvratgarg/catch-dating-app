@@ -146,7 +146,7 @@ void main() {
     );
 
     expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
-    expect(find.byType(CatchDistanceRing), findsOneWidget);
+    expect(find.byType(CatchDistanceOverlay), findsOneWidget);
     expect(find.text('No mapped events yet'), findsNothing);
   });
 
@@ -363,7 +363,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchDistanceRing), findsOneWidget);
+    expect(find.byType(CatchDistanceOverlay), findsOneWidget);
     expect(find.text('Within 3 km · tap to change'), findsOneWidget);
     await tester.tap(find.text('Within 3 km · tap to change'));
     expect(ringTaps, 1);

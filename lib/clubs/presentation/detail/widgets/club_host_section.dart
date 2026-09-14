@@ -112,7 +112,7 @@ class ClubHostRow extends StatelessWidget {
 
     final row = Row(
       children: [
-        CatchPersonAvatar(
+        CatchAvatar(
           name: host.displayName,
           imageUrl: host.avatarUrl,
           size: CatchSpacing.s10,
@@ -159,9 +159,9 @@ class ClubHostRow extends StatelessWidget {
           gapW8,
           Tooltip(
             message: context.l10n.clubsClubHostSectionMessageMessageHost,
-            child: CatchIconButton(
+            child: CatchIconAction(
               key: ValueKey<String>('club-host-message-${host.uid}'),
-              onTap: onMessage,
+              onPressed: onMessage,
               child: Icon(
                 CatchIcons.chatBubbleOutlineRounded,
                 size: CatchIcon.control,

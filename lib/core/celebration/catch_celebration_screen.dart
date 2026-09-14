@@ -128,11 +128,11 @@ class _CatchCelebrationScreenState
                         alignment: Alignment.centerRight,
                         child: !showCloseButton || widget.onClose == null
                             ? gapH44
-                            : CatchIconButton(
-                                background: _celebrationCream.withValues(
+                            : CatchIconAction(
+                                backgroundColor: _celebrationCream.withValues(
                                   alpha: 0.22,
                                 ),
-                                onTap: widget.onClose,
+                                onPressed: widget.onClose,
                                 child: Icon(
                                   CatchIcons.closeRounded,
                                   color: _celebrationInk,
@@ -189,7 +189,7 @@ class _CatchCelebrationScreenState
                         key: widget.primaryAction.key,
                         label: widget.primaryAction.label,
                         onPressed: widget.primaryAction.onPressed,
-                        icon: widget.primaryAction.icon,
+                        leading: widget.primaryAction.icon,
                         variant: CatchButtonVariant.light,
                         fullWidth: true,
                         backgroundColor: _celebrationCream,
@@ -201,7 +201,7 @@ class _CatchCelebrationScreenState
                           key: secondaryAction.key,
                           label: secondaryAction.label,
                           onPressed: secondaryAction.onPressed,
-                          icon: secondaryAction.icon,
+                          leading: secondaryAction.icon,
                           variant: secondaryAction.variant,
                           fullWidth: true,
                           backgroundColor: _celebrationCream.withValues(
@@ -222,8 +222,8 @@ class _CatchCelebrationScreenState
         ),
       ),
     );
-    return CatchScreenScaffold.standalone(
-      safeArea: CatchScreenSafeArea.none,
+    return CatchScaffold.standalone(
+      safeArea: CatchScaffoldPlacement.none,
       extendBody: true,
       body: body,
     );
@@ -289,9 +289,9 @@ class PaperCelebrationScaffold extends StatelessWidget {
                   if (showCloseButton && onClose != null) ...[
                     Align(
                       alignment: Alignment.centerRight,
-                      child: CatchIconButton(
-                        background: t.primarySoft,
-                        onTap: onClose,
+                      child: CatchIconAction(
+                        backgroundColor: t.primarySoft,
+                        onPressed: onClose,
                         child: Icon(CatchIcons.closeRounded, color: t.primary),
                       ),
                     ),
@@ -352,7 +352,7 @@ class PaperCelebrationScaffold extends StatelessWidget {
                     key: primaryAction.key,
                     label: primaryAction.label,
                     onPressed: primaryAction.onPressed,
-                    icon: primaryAction.icon,
+                    leading: primaryAction.icon,
                     fullWidth: true,
                     backgroundColor: t.primary,
                     foregroundColor: t.primaryInk,
@@ -363,7 +363,7 @@ class PaperCelebrationScaffold extends StatelessWidget {
                       key: secondaryAction.key,
                       label: secondaryAction.label,
                       onPressed: secondaryAction.onPressed,
-                      icon: secondaryAction.icon,
+                      leading: secondaryAction.icon,
                       variant: secondaryAction.variant,
                       fullWidth: true,
                       backgroundColor: Colors.transparent,
@@ -378,8 +378,8 @@ class PaperCelebrationScaffold extends StatelessWidget {
         },
       ),
     );
-    return CatchScreenScaffold.stepFlow(
-      safeArea: CatchScreenSafeArea.none,
+    return CatchScaffold.stepFlow(
+      safeArea: CatchScaffoldPlacement.none,
       backgroundColor: t.bg,
       body: body,
     );

@@ -265,7 +265,7 @@ class HostTeamHostActionDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchConfirmDialog<bool>(
+    return CatchDialog<bool>.confirmation(
       title: confirmation.title(context.l10n),
       message: confirmation.message(context.l10n),
       actions: confirmation.actions(context.l10n),
@@ -296,13 +296,13 @@ class HostTeamOwnerHostRow extends StatelessWidget {
         body: host.role == ClubHostRole.owner
             ? context.l10n.clubsClubIdentityAtomsLabelOwner
             : context.l10n.clubsClubIdentityAtomsLabelHost,
-        leading: CatchPersonAvatar(
+        leading: CatchAvatar(
           name: host.displayName,
           imageUrl: host.avatarUrl,
           size: 42,
         ),
         leadingExtent: 42,
-        action: canManage
+        actions: canManage
             ? CatchActionMenu<String>(
                 key: ValueKey('host-team-actions-${host.uid}'),
                 tooltip: context
@@ -426,18 +426,18 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
     final isSaving = widget.actionState.isSaving || _saving;
     final errorMessage = _errorMessage ?? widget.actionState.errorMessage;
 
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsHostTeamManagementSectionTitleAddHost,
       subtitle: context
           .l10n
           .hostsHostTeamManagementSectionSubtitleEnterThePhoneNumber,
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsHostTeamManagementSectionLabelAddHost,
         onPressed: isSaving ? null : () => unawaited(_submit()),
-        isLoading: isSaving,
+        status: (isSaving) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         fullWidth: true,
-        icon: Icon(CatchIcons.personAddAlt1Rounded),
+        leading: Icon(CatchIcons.personAddAlt1Rounded),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -450,7 +450,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
               contract: CatchContractConstraints
                   .addClubHostCallablePayloadPhoneNumber,
               controller: _controller,
-              prefixIcon: Icon(CatchIcons.phoneOutlined),
+              leading: Icon(CatchIcons.phoneOutlined),
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => unawaited(_submit()),
@@ -458,7 +458,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
           ),
           if (errorMessage != null) ...[
             gapH12,
-            CatchErrorBanner(message: errorMessage),
+            CatchBanner.error(message: errorMessage),
           ],
         ],
       ),

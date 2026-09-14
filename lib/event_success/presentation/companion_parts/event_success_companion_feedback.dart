@@ -69,7 +69,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
               ),
               CatchPrivacyBadge(
                 copy: catchPrivacyBadgeCopy(context.l10n),
-                kind: CatchPrivacyBadgeKind.catchPrivate,
+                variant: CatchPrivacyBadgeVariant.catchPrivate,
               ),
             ],
           ),
@@ -140,7 +140,9 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                   : context
                         .l10n
                         .eventSuccessEventSuccessCompanionFeedbackLabelUpdateFeedback,
-              isLoading: saving,
+              status: (saving)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: saving ? null : _submit,
               fullWidth: true,
             ),
@@ -219,8 +221,8 @@ class RatingRow extends StatelessWidget {
           child: Text(label, style: CatchTextStyles.sectionTitle(context)),
         ),
         for (var i = 1; i <= 5; i++)
-          CatchIconAction(
-            size: CatchIconButton.defaultSize,
+          CatchIconAction.toolbar(
+            size: CatchIconAction.defaultSize,
             tooltip: context.l10n
                 .eventSuccessEventSuccessCompanionFeedbackTooltipLabelI(
                   label: label,
@@ -256,8 +258,8 @@ class CounterRow extends StatelessWidget {
             style: CatchTextStyles.sectionTitle(context),
           ),
         ),
-        CatchIconAction(
-          size: CatchIconButton.defaultSize,
+        CatchIconAction.toolbar(
+          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessCompanionFeedbackTooltipDecreasePeopleMet,
@@ -271,8 +273,8 @@ class CounterRow extends StatelessWidget {
           ),
           style: CatchTextStyles.sectionTitle(context),
         ),
-        CatchIconAction(
-          size: CatchIconButton.defaultSize,
+        CatchIconAction.toolbar(
+          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessCompanionFeedbackTooltipIncreasePeopleMet,

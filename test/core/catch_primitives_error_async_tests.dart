@@ -20,7 +20,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
       find.text('Something went wrong. Please try again.'),
       findsOneWidget,
     );
-    expect(find.byType(CatchErrorBody), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsOneWidget);
     expect(find.text('Try again'), findsOneWidget);
     expect(find.textContaining('StackTrace'), findsNothing);
 
@@ -47,11 +47,11 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     await pumpMode(CatchErrorStateMode.inline);
     expect(find.byType(CatchSurface), findsNothing);
-    expect(find.byType(CatchErrorBody), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsOneWidget);
 
     await pumpMode(CatchErrorStateMode.compact);
     expect(find.byType(CatchSurface), findsNothing);
-    expect(find.byType(CatchErrorBody), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsOneWidget);
   });
 
   testWidgets('CatchErrorState honors an explicit recovery callback', (
@@ -82,16 +82,17 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     tester,
   ) async {
     var alternateCount = 0;
-    Widget alternateAction() => CatchErrorBackAction(
+    Widget alternateAction() => CatchErrorBackButton(
       label: 'Go back',
       onPressed: () => alternateCount += 1,
     );
 
     await tester.pumpWidget(
       _wrap(
-        CatchLocalizedInlineErrorState(
+        CatchLocalizedErrorState(
           const PermissionException('Unavailable.'),
-          secondaryAction: alternateAction(),
+          actions: [alternateAction()],
+          mode: CatchErrorStateMode.inline,
         ),
       ),
     );
@@ -103,7 +104,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
         theme: AppTheme.light,
         home: CatchLocalizedErrorScaffold(
           const PermissionException('Unavailable.'),
-          secondaryAction: alternateAction(),
+          actions: [alternateAction()],
         ),
       ),
     );
@@ -118,7 +119,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
             slivers: [
               CatchLocalizedSliverErrorState(
                 const PermissionException('Unavailable.'),
-                secondaryAction: alternateAction(),
+                actions: [alternateAction()],
               ),
             ],
           ),
@@ -148,7 +149,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     expect(find.text('Messages unavailable'), findsOneWidget);
     expect(find.text('Unable to load messages.'), findsOneWidget);
-    expect(find.byType(CatchErrorBody), findsOneWidget);
+    expect(find.byType(CatchErrorState), findsOneWidget);
   });
 
   testWidgets(
@@ -178,7 +179,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
       final scaffold = find.byKey(const ValueKey('box-state-scaffold'));
       final offset =
-          tester.getCenter(find.byType(CatchEmptyStateContent)).dy -
+          tester.getCenter(find.byType(CatchEmptyState)).dy -
           tester.getCenter(scaffold).dy;
       expect(offset, closeTo(-50, 1));
     },
@@ -216,7 +217,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
       final emptyOffset = await pumpState(
         const CatchSliverEmptyState(title: 'Nothing here'),
-        find.byType(CatchEmptyStateContent),
+        find.byType(CatchEmptyState),
       );
       expect(emptyOffset, closeTo(-50, 1));
 
@@ -225,18 +226,18 @@ void _registerCatchPrimitivesErrorAsyncTests() {
           title: 'Unavailable',
           message: 'Try again later.',
         ),
-        find.byType(CatchErrorBody),
+        find.byType(CatchErrorState),
       );
       expect(errorOffset, closeTo(-50, 1));
     },
   );
 
-  testWidgets('CatchAsyncValueView uses branded default error state', (
+  testWidgets('CatchAsyncBoundary uses branded default error state', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: AsyncError<int>(StateError('load failed'), StackTrace.empty),
           builder: (context, value) => Text('$value'),
         ),
@@ -250,16 +251,16 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     );
   });
 
-  testWidgets('CatchAsyncValueView supports context-aware state builders', (
+  testWidgets('CatchAsyncBoundary supports context-aware state builders', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: AsyncError<int>(StateError('load failed'), StackTrace.empty),
           builder: (context, value) => Text('$value'),
           loadingBuilder: (context) => const Text('Loading custom state'),
-          errorBuilder: (context, error, stackTrace) =>
+          errorBuilder: (context, error, stackTrace, onBoundaryRetry) =>
               Text('Custom error: $error'),
         ),
       ),
@@ -270,7 +271,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: const AsyncLoading<int>(),
           builder: (context, value) => Text('$value'),
           loadingBuilder: (context) => const Text('Loading custom state'),
@@ -282,7 +283,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
   });
 
   testWidgets(
-    'CatchAsyncValueView never replays a previous error while retrying',
+    'CatchAsyncBoundary never replays a previous error while retrying',
     (tester) async {
       final failure = StateError('previous failure');
       // Riverpod exposes combined retry states to consumers but keeps this
@@ -294,12 +295,12 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
       await tester.pumpWidget(
         _wrap(
-          CatchAsyncValueView<int>(
+          CatchAsyncBoundary<int>(
             value: retrying,
             initialLoadTimeout: null,
             builder: (context, value) => Text('Customer count: $value'),
             loadingBuilder: (context) => const Text('Loading customers'),
-            errorBuilder: (context, error, stackTrace) =>
+            errorBuilder: (context, error, stackTrace, onBoundaryRetry) =>
                 Text('Customers unavailable: $error'),
           ),
         ),
@@ -310,12 +311,12 @@ void _registerCatchPrimitivesErrorAsyncTests() {
 
       await tester.pumpWidget(
         _wrap(
-          CatchAsyncValueView<int>(
+          CatchAsyncBoundary<int>(
             value: const AsyncData<int>(2),
             initialLoadTimeout: null,
             builder: (context, value) => Text('Customer count: $value'),
             loadingBuilder: (context) => const Text('Loading customers'),
-            errorBuilder: (context, error, stackTrace) =>
+            errorBuilder: (context, error, stackTrace, onBoundaryRetry) =>
                 Text('Customers unavailable: $error'),
           ),
         ),
@@ -327,14 +328,14 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     },
   );
 
-  testWidgets('CatchAsyncValueView replaces an expired skeleton with retry', (
+  testWidgets('CatchAsyncBoundary replaces an expired skeleton with retry', (
     tester,
   ) async {
     const initialLoadTimeout = Duration(milliseconds: 10);
     var retryCount = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: const AsyncLoading<int>(),
           initialLoadTimeout: initialLoadTimeout,
           onRetry: () => retryCount += 1,
@@ -361,24 +362,23 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     expect(find.text('Loading custom state'), findsOneWidget);
   });
 
-  testWidgets('CatchAsyncValueView keeps custom error ownership on timeout', (
+  testWidgets('CatchAsyncBoundary keeps custom error ownership on timeout', (
     tester,
   ) async {
     const initialLoadTimeout = Duration(milliseconds: 10);
     var retryCount = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: const AsyncLoading<int>(),
           initialLoadTimeout: initialLoadTimeout,
           onRetry: () => retryCount += 1,
           builder: (context, value) => Text('$value'),
           loadingBuilder: (_) => const Text('Loading route state'),
-          errorBuilderWithRetry: (context, error, stackTrace, onRetry) =>
-              TextButton(
-                onPressed: onRetry,
-                child: const Text('Retry route-owned timeout'),
-              ),
+          errorBuilder: (context, error, stackTrace, onRetry) => TextButton(
+            onPressed: onRetry,
+            child: const Text('Retry route-owned timeout'),
+          ),
         ),
       ),
     );
@@ -400,7 +400,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
   });
 
   testWidgets(
-    'CatchAsyncValueSliver keeps custom error ownership on timeout retry',
+    'CatchAsyncBoundary keeps custom error ownership on timeout retry',
     (tester) async {
       const initialLoadTimeout = Duration(milliseconds: 10);
       var retryCount = 0;
@@ -410,23 +410,22 @@ void _registerCatchPrimitivesErrorAsyncTests() {
           home: Scaffold(
             body: CustomScrollView(
               slivers: [
-                CatchAsyncValueSliver<int>(
+                CatchAsyncBoundary<int>.sliver(
                   value: const AsyncLoading<int>(),
                   initialLoadTimeout: initialLoadTimeout,
                   onRetry: () => retryCount += 1,
                   builder: (context, value) =>
                       SliverToBoxAdapter(child: Text('$value')),
-                  sliverLoadingBuilder: (_) => const SliverToBoxAdapter(
+                  loadingBuilder: (_) => const SliverToBoxAdapter(
                     child: Text('Loading sliver state'),
                   ),
-                  sliverErrorBuilderWithRetry:
-                      (context, error, stackTrace, onRetry) =>
-                          SliverToBoxAdapter(
-                            child: TextButton(
-                              onPressed: onRetry,
-                              child: const Text('Retry sliver timeout'),
-                            ),
-                          ),
+                  errorBuilder: (context, error, stackTrace, onRetry) =>
+                      SliverToBoxAdapter(
+                        child: TextButton(
+                          onPressed: onRetry,
+                          child: const Text('Retry sliver timeout'),
+                        ),
+                      ),
                 ),
               ],
             ),
@@ -451,13 +450,20 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     },
   );
 
-  testWidgets('CatchAsyncScreenLoading uses shared screen body and skeletons', (
+  testWidgets('CatchScreenSkeleton uses shared screen body and skeletons', (
     tester,
   ) async {
-    await tester.pumpWidget(_wrap(const CatchAsyncScreenLoading(count: 2)));
+    await tester.pumpWidget(_wrap(const CatchScreenSkeleton(count: 2)));
 
-    expect(find.byType(CatchScreenBody), findsOneWidget);
-    expect(find.byType(CatchSkeletonList), findsOneWidget);
+    expect(find.byType(CatchPageBody), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSkeleton &&
+            widget.variant == CatchSkeletonVariant.cards,
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('CatchSkeleton.box renders a fixed-size skeleton piece', (
@@ -577,7 +583,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     },
   );
 
-  testWidgets('CatchMutationErrorBanner renders mutation errors inline', (
+  testWidgets('localized banner mutation recipe renders errors inline', (
     tester,
   ) async {
     final mutation = Mutation<void>();
@@ -606,7 +612,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
                       },
                       child: const Text('Save'),
                     ),
-                    CatchMutationErrorBanner(
+                    CatchLocalizedErrorBanner.mutation(
                       mutation: state,
                       onRetry: () => retryCount++,
                     ),
@@ -619,12 +625,12 @@ void _registerCatchPrimitivesErrorAsyncTests() {
       ),
     );
 
-    expect(find.byType(CatchErrorBanner), findsNothing);
+    expect(find.byType(CatchBanner), findsNothing);
 
     await tester.tap(find.text('Save'));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchErrorBanner), findsOneWidget);
+    expect(find.byType(CatchBanner), findsOneWidget);
     expect(
       find.text('The request timed out. Please try again.'),
       findsOneWidget,
@@ -636,7 +642,7 @@ void _registerCatchPrimitivesErrorAsyncTests() {
     expect(retryCount, 1);
   });
 
-  testWidgets('CatchMutationErrorListeners handles multiple mutations', (
+  testWidgets('shared subscription handles multiple mutation failures', (
     tester,
   ) async {
     final saveMutation = Mutation<void>();
@@ -648,9 +654,13 @@ void _registerCatchPrimitivesErrorAsyncTests() {
           theme: AppTheme.light,
           home: Scaffold(
             body: Consumer(
-              builder: (context, ref, _) => CatchMutationErrorListeners(
-                mutations: [saveMutation, deleteMutation],
-                child: Column(
+              builder: (context, ref, _) {
+                listenToCatchMutationErrors(
+                  context,
+                  ref,
+                  mutations: [saveMutation, deleteMutation],
+                );
+                return Column(
                   children: [
                     TextButton(
                       onPressed: () async {
@@ -673,8 +683,8 @@ void _registerCatchPrimitivesErrorAsyncTests() {
                       child: const Text('Delete'),
                     ),
                   ],
-                ),
-              ),
+                );
+              },
             ),
           ),
         ),

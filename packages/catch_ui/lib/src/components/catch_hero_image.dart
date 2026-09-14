@@ -1,0 +1,44 @@
+import 'package:catch_ui/src/primitives/catch_graded_image.dart';
+import 'package:catch_ui/src/primitives/catch_image_fallback_surface.dart';
+import 'package:catch_ui/src/primitives/catch_media_overlay.dart';
+import 'package:catch_ui/src/primitives/catch_network_image.dart';
+import 'package:flutter/material.dart';
+
+class CatchHeroImage extends StatelessWidget {
+  const CatchHeroImage({
+    super.key,
+    this.imageUrl,
+    this.semanticLabel,
+    this.showScrim = true,
+  });
+
+  final String? imageUrl;
+  final String? semanticLabel;
+  final bool showScrim;
+
+  static bool hasImage(String? imageUrl) =>
+      imageUrl != null && imageUrl.trim().isNotEmpty;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedImageUrl = imageUrl?.trim();
+
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        if (hasImage(resolvedImageUrl))
+          CatchGradedImage(
+            child: CatchNetworkImage(
+              resolvedImageUrl!,
+              semanticLabel: semanticLabel,
+              errorBuilder: (context, _, _) =>
+                  const CatchImageFallbackSurface.hero(),
+            ),
+          )
+        else
+          const CatchImageFallbackSurface.hero(),
+        if (showScrim) const CatchMediaOverlay.detailHero(),
+      ],
+    );
+  }
+}

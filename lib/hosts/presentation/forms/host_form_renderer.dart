@@ -132,7 +132,9 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
             contractExemption:
                 'Organizer-authored fields are validated by the versioned form contract.',
             helperText: question.helpText,
-            isOptional: optional,
+            labelMode: optional
+                ? CatchFieldLabelTextMode.optional
+                : CatchFieldLabelTextMode.visible,
             maxLines: question.kind == HostFormQuestionKind.longText ? 5 : 1,
             keyboardType: _keyboardType(question.kind),
             onChanged: (value) => onChanged(
@@ -159,16 +161,20 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
             title: question.label,
             contract: CatchContractConstraints
                 .organizerFormVersionDocumentDefinitionSectionsItemsQuestionsItemsOptions,
-            contractValue: (value) => value,
+            contractValueBuilder: (value) => value,
             body: question.helpText,
             values: values,
-            itemLabel: (value) => question.options
+            itemLabelBuilder: (value) => question.options
                 .firstWhere((option) => option.value == value)
                 .label,
             selected: selected,
-            multi: question.kind == HostFormQuestionKind.multiChoice,
+            mode: question.kind == HostFormQuestionKind.multiChoice
+                ? CatchChipMode.multiple
+                : CatchChipMode.single,
             allowEmptySelection: optional,
-            isOptional: optional,
+            labelMode: optional
+                ? CatchFieldLabelTextMode.optional
+                : CatchFieldLabelTextMode.visible,
             onSelectionChanged: (values) => onChanged(
               question.kind == HostFormQuestionKind.multiChoice
                   ? values.toList(growable: false)

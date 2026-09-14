@@ -163,19 +163,19 @@ class HostCustomerDetailOverview extends StatelessWidget {
         MediaQuery.textScalerOf(context).scale(1) >=
         CatchRecordTokens.largeTextBreakpoint;
     final metrics = <Widget>[
-      CatchStatColumn(
+      CatchMetricTile(
         value: '${customer.traits.attendedEventCount}',
         label: context.l10n.hostsHostAudienceAttended,
       ),
       if (customer.revenue.amounts.isEmpty ||
           customer.revenue.coverage == HostCustomerRevenueCoverage.unavailable)
-        CatchStatColumn(
+        CatchMetricTile(
           value: '—',
           label: context.l10n.hostCustomersDetailRevenue,
         ),
       if (customer.revenue.coverage != HostCustomerRevenueCoverage.unavailable)
         for (final amount in customer.revenue.amounts)
-          CatchStatColumn(
+          CatchMetricTile(
             value: NumberFormat.simpleCurrency(
               name: amount.currency,
             ).format(amount.amountMinor / 100),
@@ -227,7 +227,7 @@ class HostCustomerDetailOverview extends StatelessWidget {
             title: context.l10n.hostCustomersDetailAttendance,
             contractExemption:
                 'Read-only disclosure of derived attendance metrics; no scalar value is persisted.',
-            control: HostCustomerAttendanceCard(customer: customer),
+            child: HostCustomerAttendanceCard(customer: customer),
           ),
           CatchButton.command(
             key: const ValueKey('host-customer-revenue-breakdown'),

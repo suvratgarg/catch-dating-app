@@ -18,14 +18,14 @@ void main() {
       container: container,
       child: const OnboardingScreen(),
     );
-    expect(find.byType(CatchScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchScaffold), findsOneWidget);
 
     container
         .read(onboardingControllerProvider.notifier)
         .goToStep(OnboardingStep.nameDob);
     await pumpOnboardingUi(tester);
 
-    expect(find.byType(CatchScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchScaffold), findsOneWidget);
     expect(find.text("What's your name?"), findsOneWidget);
   });
 }

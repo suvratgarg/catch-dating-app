@@ -266,7 +266,9 @@ Future<void> _selectMenuChoice(WidgetTester tester, String label) async {
 }
 
 Finder _menuChoice(String label) => find.descendant(
-  of: find.byType(CatchMenu<Object?>),
+  of: find.byWidgetPredicate(
+    (widget) => widget is CatchMenu<Object?> && widget.builder == null,
+  ),
   matching: find.text(label),
 );
 

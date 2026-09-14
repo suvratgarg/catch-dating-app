@@ -274,16 +274,8 @@ void _registerExploreScreenFiltersTests() {
         ),
       );
       expect(detailGroup.children[2], isA<ClubScheduleSection>());
-      expect(detailGroup.children[3], isA<CatchDetailSliverSectionList>());
-      final trailingSections =
-          detailGroup.children[3] as CatchDetailSliverSectionList;
-      expect(
-        trailingSections.sections.whereType<CatchSection>().map(
-          (section) => section.title,
-        ),
-        contains('Reviews'),
-      );
-
+      expect(detailGroup.children[3], isA<CatchSectionList>());
+      final trailingSections = detailGroup.children[3] as CatchSectionList;
       for (
         var i = 0;
         i < 12 && find.text('Most recent.').evaluate().isEmpty;
@@ -292,6 +284,18 @@ void _registerExploreScreenFiltersTests() {
         await tester.drag(find.byType(CustomScrollView), const Offset(0, -400));
         await _pumpClubUi(tester);
       }
+
+      expect(
+        tester
+            .widgetList<CatchSection>(
+              find.descendant(
+                of: find.byWidget(trailingSections),
+                matching: find.byType(CatchSection),
+              ),
+            )
+            .map((section) => section.title),
+        contains('Reviews'),
+      );
 
       expect(find.text('Most recent.'), findsOneWidget);
       expect(find.text('Second recent.'), findsOneWidget);
@@ -651,7 +655,7 @@ void _registerExploreScreenFiltersTests() {
       await tester.pump(midSearchMorphFrame);
 
       final morphingSearchWidth = tester.getSize(_topLevelSearchField()).width;
-      expect(morphingSearchWidth, greaterThan(CatchIconButton.navSize));
+      expect(morphingSearchWidth, greaterThan(CatchIconAction.navSize));
 
       await _pumpClubUi(tester);
 
@@ -824,7 +828,9 @@ void _registerExploreScreenFiltersTests() {
     expect(find.text('Map'), findsOneWidget);
     expect(
       find.descendant(
-        of: find.byType(CatchCountPill),
+        of: find.byWidgetPredicate(
+          (widget) => widget is CatchButton && widget.count != null,
+        ),
         matching: find.text('1'),
       ),
       findsOneWidget,

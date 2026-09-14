@@ -9,12 +9,13 @@ const DEFAULT_OUTPUT =
   "build/reports/flutter_form_contract_inventory.json";
 const EDITABLE_SYMBOLS = new Set([
   "choices",
-  "chipField",
+  "choiceInputForm",
+  "choiceInputDescribed",
   "control",
   "input",
   "inputActions",
-  "optionCard",
-  "optionGroup",
+  "choiceTile",
+  "choiceInputSegmented",
   "optionCards",
   "rangeSlider",
   "searchField",
@@ -85,19 +86,19 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
       symbol: (match) => match[1],
     },
     {
-      expression: /CatchChipField(?:<[^>]+>)?\s*\(/g,
-      symbol: () => "chipField",
+      expression: /CatchChoiceInput(?:<[^>]+>)?\.(form|described)\s*\(/g,
+      symbol: (match) => match[1] === "form" ? "choiceInputForm" : "choiceInputDescribed",
     },
     {
-      expression: /CatchOptionGroup(?:<[^>]+>)?\s*\(/g,
-      symbol: () => "optionGroup",
+      expression: /CatchChoiceInput(?:<[^>]+>)?\.segmented\s*\(/g,
+      symbol: () => "choiceInputSegmented",
     },
     {
-      expression: /CatchOptionCard\s*\(/g,
-      symbol: () => "optionCard",
+      expression: /CatchChoiceTile\s*\(/g,
+      symbol: () => "choiceTile",
     },
     {
-      expression: /CatchRangeSlider\s*\(/g,
+      expression: /CatchRangeInput\s*\(/g,
       symbol: () => "rangeSlider",
     },
     {
@@ -109,7 +110,7 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
       symbol: () => "topBarSearch",
     },
     {
-      expression: /CatchOtpCodeField\s*\(/g,
+      expression: /CatchCodeInput\s*\(/g,
       symbol: () => "otpCodeField",
     },
     {
@@ -117,7 +118,7 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
       symbol: () => "selectableChip",
     },
     {
-      expression: /CatchToggle\s*\(/g,
+      expression: /CatchToggleInput\s*\(/g,
       symbol: () => "directToggle",
     },
     {
@@ -165,10 +166,12 @@ export function scanCatchFieldCalls({source, file = "fixture.dart"}) {
         continue;
       }
       const contract = namedArgumentExpression(argumentsSource, "contract");
+      // Shared widgets name computations with Builder; domain descriptors
+      // retain their value-serializer property. Keep the inventory key stable.
       const contractValue = namedArgumentExpression(
         argumentsSource,
-        "contractValue",
-      );
+        "contractValueBuilder",
+      ) ?? namedArgumentExpression(argumentsSource, "contractValue");
       const minimumContract = namedArgumentExpression(
         argumentsSource,
         "minimumContract",

@@ -65,8 +65,8 @@ class _CatchFieldState extends State<CatchField>
   Widget build(BuildContext context) {
     final textEntry = !_isEdit
         ? null
-        : CatchFieldTextEntry(
-            field: widget,
+        : CatchFieldInput(
+            configuration: widget,
             formFieldKey: _fieldKey,
             controller: _controller,
             focusNode: _focusNode,
@@ -74,10 +74,10 @@ class _CatchFieldState extends State<CatchField>
             onValidationErrorChanged: _setTextEntryValidationError,
             onSubmitted: _handleSubmitted,
             mode: _usesUnderlineChrome
-                ? CatchFieldTextEntryMode.standalone
+                ? CatchFieldInputMode.standalone
                 : widget._explicitSaveInput
-                ? CatchFieldTextEntryMode.explicitSave
-                : CatchFieldTextEntryMode.row,
+                ? CatchFieldInputMode.explicitSave
+                : CatchFieldInputMode.row,
             states: {
               if (_active) WidgetState.selected,
               if (_focused) WidgetState.focused,
@@ -92,27 +92,27 @@ class _CatchFieldState extends State<CatchField>
     final Widget field;
     switch (widget._config) {
       case _SelectConfig _:
-        field = CatchFieldSelectControl(
+        field = CatchSelectionField(
           copy: widget.copy,
           title: _title,
           values: widget._selectValues!,
-          itemLabel: widget._selectItemLabel!,
+          itemLabelBuilder: widget._selectItemLabel!,
           value: widget._selectValue,
           onChanged: widget._onSelectChanged,
-          validator: widget._selectValidator,
+          onValidate: widget._selectValidator,
           menuController: _menuController,
           focusNode: _focusNode,
           enabled: widget.enabled,
           showLabel: widget.showLabel,
           size: widget.size,
           placeholder: widget.placeholder,
-          prefixIcon: widget.prefixIcon,
+          leading: widget.leading,
           error: _displayError,
           helperText: widget.helperText,
           helperTone: widget.helperTone,
           status: _active
-              ? CatchFieldValueContentStatus.active
-              : CatchFieldValueContentStatus.idle,
+              ? CatchFieldContentRowStatus.active
+              : CatchFieldContentRowStatus.idle,
         );
       case _EditConfig _ when _usesUnderlineChrome:
         field = textEntry!;
@@ -127,7 +127,7 @@ class _CatchFieldState extends State<CatchField>
               size: CatchIcon.md,
               color: t.primary,
             ),
-            content: Text(
+            body: Text(
               _title ?? '',
               style: CatchTextStyles.fieldRowValue(
                 context,
@@ -141,7 +141,7 @@ class _CatchFieldState extends State<CatchField>
               _isEdit &&
               !widget._explicitSaveInput &&
               widget.enabled &&
-              (!widget.readOnly || widget.onTap != null);
+              (widget.inputMode.canRequestFocus || widget.onTap != null);
           final canToggleRow =
               _isToggle && widget.onToggle != null && !_isSaving;
           final canExpand =
@@ -193,30 +193,30 @@ class _CatchFieldState extends State<CatchField>
               : _rowTrailingTopPadding;
           final Widget? rawTrailingSlot;
           if (_isToggle) {
-            rawTrailingSlot = CatchFieldTrailing.toggle(
+            rawTrailingSlot = CatchFieldTrailingRow.toggle(
               copy: widget.copy,
               value: widget.toggled,
               onChanged: _isSaving ? null : widget.onToggle,
               contract: widget.contract,
               contractExemption: widget.toggleContractExemption,
               semanticLabel: _title,
-              status: _effectiveStatus,
+              status: widget.status,
               topPadding: 0,
             );
           } else if (_statusLaneActive &&
               !_visibleCommitBarOwnsSavingIndicator &&
               !_hasError) {
-            rawTrailingSlot = CatchFieldTrailing.status(
+            rawTrailingSlot = CatchFieldTrailingRow.status(
               copy: widget.copy,
-              status: _effectiveStatus,
+              status: widget.status,
             );
           } else if (!_isSaving && widget.valid && !_hasError) {
-            rawTrailingSlot = CatchFieldTrailing.valid(topPadding: 0);
+            rawTrailingSlot = CatchFieldTrailingRow.valid(topPadding: 0);
           } else if (_usesRowTextEntryTrailing) {
-            final fallbackContent = widget.action ?? widget.suffixIcon;
+            final fallbackContent = widget.actions ?? widget.trailing;
             final fallback = fallbackContent == null
                 ? null
-                : CatchFieldTrailing.custom(
+                : CatchFieldTrailingRow.custom(
                     topPadding: 0,
                     color: t.ink3,
                     child: fallbackContent,
@@ -230,7 +230,7 @@ class _CatchFieldState extends State<CatchField>
                   if (value.text.isEmpty) {
                     return fallback ?? const SizedBox.shrink();
                   }
-                  return CatchFieldTrailing.clear(
+                  return CatchFieldTrailingRow.clear(
                     tooltip: widget.copy.clearTooltip(_title),
                     onPressed: () {
                       _controller.clear();
@@ -242,7 +242,7 @@ class _CatchFieldState extends State<CatchField>
               );
             }
           } else if (_hasControl) {
-            rawTrailingSlot = CatchFieldTrailing.rotatingChevron(
+            rawTrailingSlot = CatchFieldTrailingRow.rotatingChevron(
               open: _isOpen,
               color: _active ? t.ink : t.ink3,
               topPadding: 0,
@@ -255,7 +255,7 @@ class _CatchFieldState extends State<CatchField>
                 valueText != null &&
                 valueText.isNotEmpty) {
               children.add(
-                CatchFieldTrailing.valueText(
+                CatchFieldTrailingRow.valueText(
                   text: valueText,
                   maxLines: widget.valueMaxLines,
                   topPadding: 0,
@@ -263,18 +263,18 @@ class _CatchFieldState extends State<CatchField>
               );
             }
 
-            final custom = widget.action == null
+            final custom = !widget._hasRowActions
                 ? null
-                : CatchFieldTrailing.custom(
+                : CatchFieldTrailingRow.custom(
                     topPadding: 0,
                     color: t.ink3,
-                    child: widget.action!,
+                    child: widget.actions!,
                   );
             if (custom != null) children.add(custom);
 
             if (children.isEmpty) {
               rawTrailingSlot = includeChevron
-                  ? CatchFieldTrailing.fixedChevron(
+                  ? CatchFieldTrailingRow.fixedChevron(
                       color: t.ink3,
                       topPadding: 0,
                     )
@@ -297,7 +297,7 @@ class _CatchFieldState extends State<CatchField>
                       children: [
                         Flexible(child: group),
                         const SizedBox(width: CatchSpacing.s2),
-                        CatchFieldTrailing.fixedChevron(
+                        CatchFieldTrailingRow.fixedChevron(
                           color: t.ink3,
                           topPadding: 0,
                         ),
@@ -325,7 +325,7 @@ class _CatchFieldState extends State<CatchField>
                   ),
                 );
           final Widget? leadingSlot;
-          if (widget.leading != null) {
+          if (widget._hasRowLeading) {
             final extent = widget.leadingExtent;
             leadingSlot = extent == null
                 ? widget.leading
@@ -354,7 +354,7 @@ class _CatchFieldState extends State<CatchField>
                     : t.ink2,
                 size: CatchFieldRow.leadingSlotIconSize,
               ),
-              child: widget.prefixIcon!,
+              child: widget.leading!,
             );
           } else {
             leadingSlot = null;
@@ -382,7 +382,7 @@ class _CatchFieldState extends State<CatchField>
             final inlineAddAtRest =
                 error?.isNotEmpty != true && _inlineTextAddAtRest;
             final input = IgnorePointer(ignoring: !_isOpen, child: textEntry);
-            rowBody = CatchFieldValueContent(
+            rowBody = CatchFieldContentRow.value(
               labelCopy: widget.copy.label,
               titleMaxLines: widget.titleMaxLines,
               isOptional: widget.isOptional && widget.showLabel,
@@ -392,13 +392,13 @@ class _CatchFieldState extends State<CatchField>
               helperTone: widget.helperTone,
               headerTrailingReserve: _contentTrailingReserve,
               label: inlineAddAtRest ? null : _title,
-              valueWidget: input,
+              body: input,
               status: error?.isNotEmpty == true
-                  ? CatchFieldValueContentStatus.error
+                  ? CatchFieldContentRowStatus.error
                   : _active
-                  ? CatchFieldValueContentStatus.active
-                  : CatchFieldValueContentStatus.idle,
-              labelStyle: CatchFieldValueContent.captionStyle(
+                  ? CatchFieldContentRowStatus.active
+                  : CatchFieldContentRowStatus.idle,
+              labelStyle: CatchFieldContentRow.captionStyle(
                 context,
                 color: error?.isNotEmpty == true
                     ? t.danger
@@ -460,7 +460,7 @@ class _CatchFieldState extends State<CatchField>
             final error = _displayError?.trim();
             final hasValue = value != null && value.isNotEmpty;
 
-            rowBody = CatchFieldValueContent(
+            rowBody = CatchFieldContentRow.value(
               labelCopy: widget.copy.label,
               titleMaxLines: widget.titleMaxLines,
               isOptional: widget.isOptional && widget.showLabel,
@@ -482,22 +482,23 @@ class _CatchFieldState extends State<CatchField>
                   ? CatchFieldEmphasis.title
                   : CatchFieldEmphasis.body,
               mode: !_hasValue
-                  ? CatchFieldValueContentMode.placeholder
-                  : CatchFieldValueContentMode.value,
+                  ? CatchFieldContentRowMode.placeholder
+                  : CatchFieldContentRowMode.value,
               valueMaxLines: widget.bodyMaxLines,
               status: error?.isNotEmpty == true
-                  ? CatchFieldValueContentStatus.error
+                  ? CatchFieldContentRowStatus.error
                   : _active
-                  ? CatchFieldValueContentStatus.active
-                  : CatchFieldValueContentStatus.idle,
+                  ? CatchFieldContentRowStatus.active
+                  : CatchFieldContentRowStatus.idle,
             );
           }
           final rowContent = CatchFieldRow.standard(
             constraints: _usesPositionedClearTrailing
                 ? _rowConstraints.enforce(
                     BoxConstraints(
-                      minHeight:
-                          CatchFieldTrailing.clearTargetConstraints.minHeight,
+                      minHeight: CatchFieldTrailingRow
+                          .clearTargetConstraints
+                          .minHeight,
                     ),
                   )
                 : _rowConstraints,
@@ -512,7 +513,7 @@ class _CatchFieldState extends State<CatchField>
                 ? _expansionMotionDuration(context)
                 : Duration.zero,
             paddingCurve: CatchMotion.standardCurve,
-            content: rowBody,
+            body: rowBody,
           );
           final row = positionsTrailing && trailingSlot != null
               ? Stack(
@@ -523,11 +524,12 @@ class _CatchFieldState extends State<CatchField>
                         top: 0,
                         bottom: 0,
                         end: _rowHeaderPadding.right,
-                        width:
-                            CatchFieldTrailing.clearTargetConstraints.maxWidth,
+                        width: CatchFieldTrailingRow
+                            .clearTargetConstraints
+                            .maxWidth,
                         child: LayoutBuilder(
                           builder: (context, available) {
-                            final extent = CatchFieldTrailing
+                            final extent = CatchFieldTrailingRow
                                 .clearTargetConstraints
                                 .maxHeight;
                             final scaler = MediaQuery.textScalerOf(context);
@@ -627,16 +629,9 @@ class _CatchFieldState extends State<CatchField>
             final disclosureStartPadding =
                 rowPadding.left +
                 (_hasLeadingSlot ? _leadingTextLaneInset : 0.0);
-            final disclosureControl = widget._explicitSaveInput
-                ? CatchFieldExplicitSaveControl(
-                    supporting: widget._supporting,
-                    feedback: widget._feedback,
-                    secondaryAction: widget._secondaryAction,
-                  )
-                : widget.control;
             final actionBar = widget._onSubmit == null
                 ? null
-                : CatchFieldActionBar(
+                : CatchFieldActionRow(
                     cancelLabel: widget.copy.cancelLabel,
                     doneLabel: widget.copy.doneLabel,
                     savingLabel: widget.copy.savingLabel,
@@ -652,12 +647,14 @@ class _CatchFieldState extends State<CatchField>
               children: [
                 keyboardTarget,
                 if (_hasControl)
-                  CatchFieldDisclosureDrawer(
+                  CatchFieldDrawer(
                     open: _isOpen,
                     offstage: _disclosureOffstage,
                     revealTargetKey: _disclosureRevealTargetKey,
-                    control: disclosureControl!,
-                    actionBar: actionBar,
+                    body: widget.child,
+                    meta: widget._explicitSaveInput ? widget.meta : null,
+                    actions: widget._explicitSaveInput ? widget.actions : null,
+                    footer: actionBar,
                     startPadding: disclosureStartPadding,
                     endPadding: rowPadding.right,
                     bottomPadding: rowPadding.bottom,

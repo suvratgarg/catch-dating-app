@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -67,10 +67,14 @@ class _HostApplicationsScreenState
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostApplicationsTitle,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
         actions: [
-          CatchAdaptiveSelectionMenu<HostApplicationSort>(
+          CatchSelectionMenu<HostApplicationSort>.adaptive(
             title: context.l10n.hostApplicationsSort,
             value: _sort,
             items: [
@@ -81,11 +85,11 @@ class _HostApplicationsScreenState
                 ),
             ],
             onSelected: (sort) => setState(() => _sort = sort),
-            builder: (context, selected, open, toggle) => CatchIconButton.icon(
+            builder: (context, selected, open, toggle) => CatchIconAction.icon(
               icon: CatchIcons.sort,
               tooltip: context.l10n.hostApplicationsSort,
               active: open,
-              onTap: toggle,
+              onPressed: toggle,
             ),
           ),
         ],
@@ -108,7 +112,7 @@ class _HostApplicationsScreenState
               ),
               gapH12,
             ],
-            CatchOptionGroup<String>(
+            CatchChoiceInput<String>.segmented(
               options: [
                 CatchOption(
                   value: 'all',
@@ -131,7 +135,7 @@ class _HostApplicationsScreenState
                     ].contains(_status)
                   ? _status!.name
                   : null,
-              variant: CatchOptionGroupVariant.summary,
+              variant: CatchChoiceInputVariant.summary,
               contractExemption:
                   'Local application review lens; status is passed to the governed request.',
               onChanged: (value) => setState(
@@ -163,12 +167,12 @@ class _HostApplicationsScreenState
               label: _status == null
                   ? context.l10n.hostApplicationsReviewStatusFilter
                   : hostApplicationStatusLabel(context, _status!),
-              icon: Icon(CatchIcons.tune),
+              leading: Icon(CatchIcons.tune),
               onPressed: _chooseStatus,
             ),
             gapH16,
             Expanded(
-              child: CatchAsyncValueView<HostApplicationsDirectoryState>(
+              child: CatchAsyncBoundary<HostApplicationsDirectoryState>(
                 value: directory,
                 onRetry: () => ref.invalidate(
                   hostApplicationsDirectoryControllerProvider(request),
@@ -176,15 +180,14 @@ class _HostApplicationsScreenState
                 initialLoadTimeout: null,
                 loadingBuilder: (_) => ListView(
                   padding: EdgeInsets.zero,
-                  children: const [CatchSkeletonRows(count: 6)],
+                  children: const [CatchSkeleton.rows(count: 6)],
                 ),
-                errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-                  error,
-                  context: AppErrorContext.applications,
-                  onRetry: () => ref.invalidate(
-                    hostApplicationsDirectoryControllerProvider(request),
-                  ),
-                ),
+                errorBuilder: (_, error, _, onBoundaryRetry) =>
+                    CatchLocalizedErrorState(
+                      error,
+                      context: AppErrorContext.applications,
+                      onRetry: onBoundaryRetry,
+                    ),
                 builder: (context, state) {
                   if (state.applications.isEmpty) {
                     return CatchEmptyState(
@@ -213,7 +216,9 @@ class _HostApplicationsScreenState
                         CatchButton(
                           label: context.l10n.hostApplicationsLoadMore,
                           variant: CatchButtonVariant.secondary,
-                          isLoading: state.loadingMore,
+                          status: (state.loadingMore)
+                              ? CatchButtonStatus.loading
+                              : CatchButtonStatus.idle,
                           fullWidth: true,
                           onPressed: state.loadingMore
                               ? null
@@ -247,7 +252,7 @@ class _HostApplicationsScreenState
             CatchButton.command(
               key: const ValueKey('host-applications-import'),
               label: context.l10n.hostApplicationsImport,
-              icon: Icon(CatchIcons.downloadRounded),
+              leading: Icon(CatchIcons.downloadRounded),
               onPressed: _importing ? null : _pickImport,
             ),
           ],
@@ -342,10 +347,10 @@ class _HostApplicationImportSheet extends StatelessWidget {
   final HostApplicationImportDraft draft;
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostApplicationsImportTitle,
     subtitle: context.l10n.hostApplicationsImportSubtitle,
-    action: CatchButton(
+    footer: CatchButton(
       label: context.l10n.hostApplicationsImportAction(
         count: draft.rows.length,
       ),
@@ -409,7 +414,7 @@ class _HostApplicationListFrame extends StatelessWidget {
               name: application.applicantDisplayName,
               seed: application.applicationId,
             ),
-            metadata: Text(
+            meta: Text(
               hostApplicationContextLabel(
                 context,
                 formId: application.formId,
@@ -419,11 +424,11 @@ class _HostApplicationListFrame extends StatelessWidget {
               ),
               style: CatchTextStyles.supporting(context),
             ),
-            contextContent: Text(
+            body: Text(
               '${_sourceLabel(context, application.sourceKind)} · ${DateFormat.yMMMd().format(application.submittedAt)}',
               style: CatchTextStyles.recordContext(context),
             ),
-            status: CatchBadge.status(
+            trailing: CatchBadge.status(
               label: hostApplicationStatusLabel(
                 context,
                 application.reviewStatus,

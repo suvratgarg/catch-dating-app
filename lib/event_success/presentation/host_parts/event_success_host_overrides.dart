@@ -112,8 +112,10 @@ class MicroPodsHostCard extends StatelessWidget {
               label: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods,
-              icon: Icon(CatchIcons.autoAwesomeOutlined),
-              isLoading: actionState.isGenerating,
+              leading: Icon(CatchIcons.autoAwesomeOutlined),
+              status: (actionState.isGenerating)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: actionState.isGenerating || onGenerate == null
                   ? null
                   : () => unawaited(onGenerate!()),
@@ -132,9 +134,11 @@ class MicroPodsHostCard extends StatelessWidget {
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelRegenerate,
-                    icon: Icon(CatchIcons.autoAwesomeOutlined),
+                    leading: Icon(CatchIcons.autoAwesomeOutlined),
                     variant: CatchButtonVariant.secondary,
-                    isLoading: actionState.isGenerating,
+                    status: (actionState.isGenerating)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     onPressed: actionState.isGenerating || onGenerate == null
                         ? null
                         : () => unawaited(onGenerate!()),
@@ -147,7 +151,7 @@ class MicroPodsHostCard extends StatelessWidget {
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelEditGroups,
-                    icon: Icon(CatchIcons.editOutlined),
+                    leading: Icon(CatchIcons.editOutlined),
                     onPressed: () => _showGroupOverrideSheet(
                       context: context,
                       event: event,
@@ -220,12 +224,12 @@ class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
   Widget build(BuildContext context) {
     final validationError = _validationError;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.eventSuccessEventSuccessHostOverridesTitleEditGroups,
       subtitle: context
           .l10n
           .eventSuccessEventSuccessHostOverridesSubtitleHostOverride,
-      action: Column(
+      footer: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[
@@ -249,8 +253,10 @@ class _GroupOverrideSheetState extends State<GroupOverrideSheet> {
             label: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesLabelSaveOverrides,
-            icon: Icon(CatchIcons.checkRounded),
-            isLoading: _isSaving,
+            leading: Icon(CatchIcons.checkRounded),
+            status: (_isSaving)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed:
                 _isSaving ||
                     validationError != null ||
@@ -440,7 +446,7 @@ class GroupOverrideRoundEditor extends StatelessWidget {
                 label: context
                     .l10n
                     .eventSuccessEventSuccessHostOverridesLabelAddGroup,
-                icon: Icon(CatchIcons.addRounded),
+                leading: Icon(CatchIcons.addRounded),
                 size: CatchButtonSize.sm,
                 variant: CatchButtonVariant.secondary,
                 onPressed: onAddGroup,
@@ -524,8 +530,8 @@ class GroupOverrideUnitEditor extends StatelessWidget {
                 ),
               ),
               gapW8,
-              CatchIconAction(
-                size: CatchIconButton.defaultSize,
+              CatchIconAction.toolbar(
+                size: CatchIconAction.defaultSize,
                 tooltip: context
                     .l10n
                     .eventSuccessEventSuccessHostOverridesTooltipRemoveGroup,
@@ -557,7 +563,7 @@ class GroupOverrideUnitEditor extends StatelessWidget {
             label: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesLabelAddAttendee,
-            icon: Icon(CatchIcons.personAddAlt1Rounded),
+            leading: Icon(CatchIcons.personAddAlt1Rounded),
             size: CatchButtonSize.sm,
             variant: CatchButtonVariant.secondary,
             onPressed: onAddMember,
@@ -597,10 +603,10 @@ class GroupOverrideMemberEditor extends StatelessWidget {
                   .eventSuccessEventSuccessHostOverridesTitleGroupAttendee,
               contract: CatchContractConstraints
                   .overrideEventSuccessGroupsCallablePayloadRoundsItemsGroupsItemsParticipantUidsItems,
-              contractValue: (value) => value,
+              contractValueBuilder: (value) => value,
               values: participantUids,
               value: value,
-              itemLabel: participantLabel,
+              itemLabelBuilder: participantLabel,
               hintText: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesHinttextAttendee,
@@ -610,8 +616,8 @@ class GroupOverrideMemberEditor extends StatelessWidget {
           ),
         ),
         gapW8,
-        CatchIconAction(
-          size: CatchIconButton.defaultSize,
+        CatchIconAction.toolbar(
+          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee,
@@ -776,8 +782,10 @@ class RotationsHostCard extends StatelessWidget {
               label: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesLabelGenerateRotations,
-              icon: Icon(CatchIcons.autoAwesomeOutlined),
-              isLoading: actionState.isGenerating,
+              leading: Icon(CatchIcons.autoAwesomeOutlined),
+              status: (actionState.isGenerating)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: actionState.isGenerating || onGenerate == null
                   ? null
                   : () => unawaited(onGenerate!()),
@@ -796,9 +804,11 @@ class RotationsHostCard extends StatelessWidget {
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelRegenerate,
-                    icon: Icon(CatchIcons.autoAwesomeOutlined),
+                    leading: Icon(CatchIcons.autoAwesomeOutlined),
                     variant: CatchButtonVariant.secondary,
-                    isLoading: actionState.isGenerating,
+                    status: (actionState.isGenerating)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     onPressed: actionState.isGenerating || onGenerate == null
                         ? null
                         : () => unawaited(onGenerate!()),
@@ -811,7 +821,7 @@ class RotationsHostCard extends StatelessWidget {
                     label: context
                         .l10n
                         .eventSuccessEventSuccessHostOverridesLabelEditRotations,
-                    icon: Icon(CatchIcons.editOutlined),
+                    leading: Icon(CatchIcons.editOutlined),
                     onPressed: () => _showRotationOverrideSheet(
                       context: context,
                       event: event,
@@ -831,8 +841,10 @@ class RotationsHostCard extends StatelessWidget {
                   .eventSuccessLiveControlPublishRotationRoundLabel(
                     roundNumber: nextRoundIndex + 1,
                   ),
-              icon: Icon(CatchIcons.sendRounded),
-              isLoading: actionState.isGenerating,
+              leading: Icon(CatchIcons.sendRounded),
+              status: (actionState.isGenerating)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: actionState.isGenerating || onPublish == null
                   ? null
                   : () => unawaited(
@@ -921,13 +933,13 @@ class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
   Widget build(BuildContext context) {
     final validationError = _validationError;
     final maxHeight = MediaQuery.sizeOf(context).height * 0.68;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title:
           context.l10n.eventSuccessEventSuccessHostOverridesTitleEditRotations,
       subtitle: context
           .l10n
           .eventSuccessEventSuccessHostOverridesSubtitleHostOverride,
-      action: Column(
+      footer: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (_saveError != null) ...[
@@ -951,8 +963,10 @@ class _RotationOverrideSheetState extends State<RotationOverrideSheet> {
             label: context
                 .l10n
                 .eventSuccessEventSuccessHostOverridesLabelSaveOverrides,
-            icon: Icon(CatchIcons.checkRounded),
-            isLoading: _isSaving,
+            leading: Icon(CatchIcons.checkRounded),
+            status: (_isSaving)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed:
                 _isSaving ||
                     validationError != null ||
@@ -1115,7 +1129,7 @@ class RotationOverrideRoundEditor extends StatelessWidget {
                 label: context
                     .l10n
                     .eventSuccessEventSuccessHostOverridesLabelAddPair,
-                icon: Icon(CatchIcons.addRounded),
+                leading: Icon(CatchIcons.addRounded),
                 size: CatchButtonSize.sm,
                 variant: CatchButtonVariant.secondary,
                 onPressed: onAddPair,
@@ -1176,10 +1190,10 @@ class RotationOverridePairEditor extends StatelessWidget {
                   .eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee,
               contract: CatchContractConstraints
                   .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidA,
-              contractValue: (value) => value,
+              contractValueBuilder: (value) => value,
               values: participantUids,
               value: pair.uidA,
-              itemLabel: participantLabel,
+              itemLabelBuilder: participantLabel,
               hintText: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesHinttextAttendee,
@@ -1201,10 +1215,10 @@ class RotationOverridePairEditor extends StatelessWidget {
                   .eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee,
               contract: CatchContractConstraints
                   .overrideEventSuccessRotationsCallablePayloadRoundsItemsPairingsItemsUidB,
-              contractValue: (value) => value,
+              contractValueBuilder: (value) => value,
               values: participantUids,
               value: pair.uidB,
-              itemLabel: participantLabel,
+              itemLabelBuilder: participantLabel,
               hintText: context
                   .l10n
                   .eventSuccessEventSuccessHostOverridesHinttextPartner,
@@ -1217,8 +1231,8 @@ class RotationOverridePairEditor extends StatelessWidget {
           ),
         ),
         gapW8,
-        CatchIconAction(
-          size: CatchIconButton.defaultSize,
+        CatchIconAction.toolbar(
+          size: CatchIconAction.defaultSize,
           tooltip: context
               .l10n
               .eventSuccessEventSuccessHostOverridesTooltipRemovePair,

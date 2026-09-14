@@ -50,52 +50,68 @@ void main() {
     expect(focusNode.hasFocus, isFalse);
   });
 
-  testWidgets('retainFocusOnSubmitted preserves native editing focus', (
+  testWidgets('onEditingComplete retains focus before submission', (
     tester,
   ) async {
     final controller = TextEditingController(text: 'Value');
     final focusNode = FocusNode();
     addTearDown(controller.dispose);
     addTearDown(focusNode.dispose);
-    var submissions = 0;
+    final events = <String>[];
 
     await _pumpField(
       tester,
       controller: controller,
       focusNode: focusNode,
-      retainFocusOnSubmitted: true,
-      onSubmitted: (_) => submissions++,
+      onEditingComplete: () => events.add('complete'),
+      onSubmitted: (_) => events.add('submit'),
     );
     await tester.tap(find.byType(TextField));
     await tester.pump();
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
 
-    expect(submissions, 1);
+    expect(events, ['complete', 'submit']);
     expect(focusNode.hasFocus, isTrue);
   });
 
-  testWidgets('hidden label merges into one native editable semantics node', (
-    tester,
-  ) async {
-    final controller = TextEditingController();
-    final focusNode = FocusNode();
-    final semantics = tester.ensureSemantics();
-    addTearDown(controller.dispose);
-    addTearDown(focusNode.dispose);
+  for (final mode in [
+    CatchFieldLabelTextMode.hidden,
+    CatchFieldLabelTextMode.hiddenOptional,
+  ]) {
+    testWidgets('${mode.name} merges into one native editable semantics node', (
+      tester,
+    ) async {
+      final controller = TextEditingController();
+      final focusNode = FocusNode();
+      final semantics = tester.ensureSemantics();
+      addTearDown(controller.dispose);
+      addTearDown(focusNode.dispose);
 
-    await _pumpField(tester, controller: controller, focusNode: focusNode);
+      await _pumpField(
+        tester,
+        controller: controller,
+        focusNode: focusNode,
+        labelMode: mode,
+      );
 
-    final editableNode = tester.getSemantics(find.byType(TextField));
-    expect(editableNode.flagsCollection.isTextField, isTrue);
-    expect(editableNode.label, 'Message');
-    expect(
-      editableNode.getSemanticsData().hasAction(SemanticsAction.tap),
-      isTrue,
-    );
-    expect(find.bySemanticsLabel('Message'), findsOne);
-    semantics.dispose();
-  });
+      final editableNode = tester.getSemantics(find.byType(TextField));
+      expect(editableNode.flagsCollection.isTextField, isTrue);
+      final label = mode == CatchFieldLabelTextMode.hiddenOptional
+          ? catchFieldCopy(
+              AppLocalizationsEn(),
+            ).label.optionalSemantics('Message')
+          : 'Message';
+      expect(editableNode.label, label);
+      expect(find.text('Message'), findsNothing);
+      expect(
+        editableNode.getSemanticsData().hasAction(SemanticsAction.tap),
+        isTrue,
+      );
+      expect(find.bySemanticsLabel(label), findsOne);
+      semantics.dispose();
+    });
+  }
 
   testWidgets(
     'empty optional input exposes one Add semantic and restores its field label on focus',
@@ -115,7 +131,7 @@ void main() {
               title: 'Job title',
               controller: controller,
               focusNode: focusNode,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
             ),
           ),
         ),
@@ -355,8 +371,8 @@ void main() {
         home: Scaffold(
           body: SizedBox(
             width: 390,
-            child: CatchScreenBody(
-              scrollable: false,
+            child: CatchPageBody.screen(
+              variant: CatchPageBodyVariant.fixed,
               pt: 0,
               pb: 0,
               child: CatchSection.fieldRows(
@@ -410,8 +426,8 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Religion',
               body: 'Christian',
-              isOptional: true,
-              control: const SizedBox(height: 80),
+              labelMode: CatchFieldLabelTextMode.optional,
+              child: const SizedBox(height: 80),
             ),
           ),
         ),
@@ -456,11 +472,11 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Languages',
               values: const ['English', 'Hindi'],
-              itemLabel: (value) => value,
+              itemLabelBuilder: (value) => value,
               selected: const {'English'},
               onSelectionChanged: (_) {},
-              multi: true,
-              initiallyOpen: true,
+              mode: CatchChipMode.multiple,
+              disclosureMode: CatchFieldMode.localExpanded,
             ),
           ),
         ),
@@ -484,7 +500,7 @@ void main() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             values: const ['Indore', 'Mumbai'],
-            itemLabel: (value) => value,
+            itemLabelBuilder: (value) => value,
             value: 'Indore',
             onChanged: (_) {},
           ),
@@ -511,7 +527,7 @@ void main() {
             title: 'Religion',
             body: 'Christian',
             error: 'Choose a religion',
-            control: const SizedBox(height: 80),
+            child: const SizedBox(height: 80),
           ),
         ),
       ),
@@ -696,7 +712,8 @@ Future<void> _pumpField(
   WidgetTester tester, {
   required TextEditingController controller,
   required FocusNode focusNode,
-  bool retainFocusOnSubmitted = false,
+  VoidCallback? onEditingComplete,
+  CatchFieldLabelTextMode labelMode = CatchFieldLabelTextMode.hidden,
   ValueChanged<String>? onSubmitted,
   ValueChanged<String>? onBlur,
 }) {
@@ -708,11 +725,11 @@ Future<void> _pumpField(
           child: CatchField.input(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Message',
-            showLabel: false,
+            labelMode: labelMode,
             inputHint: 'Message…',
             controller: controller,
             focusNode: focusNode,
-            retainFocusOnSubmitted: retainFocusOnSubmitted,
+            onEditingComplete: onEditingComplete,
             textInputAction: TextInputAction.done,
             variant: CatchFieldVariant.bare,
             onSubmitted: onSubmitted,

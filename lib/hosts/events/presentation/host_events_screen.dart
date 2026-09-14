@@ -49,10 +49,10 @@ class HostEventsScreen extends ConsumerWidget {
 
     return switch (routeState.status) {
       HostEventsRouteStatus.authRequired => CatchRootScreenScaffold.standard(
-        header: CatchScreenHeaderTitle.block(
+        title: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        slivers: [
+        children: [
           CatchSliverErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
@@ -64,20 +64,20 @@ class HostEventsScreen extends ConsumerWidget {
         ],
       ),
       HostEventsRouteStatus.loading => CatchRootScreenScaffold.standard(
-        header: CatchScreenHeaderTitle.block(
+        title: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        slivers: const [
-          CatchSliverStateViewport(
+        children: const [
+          CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],
       ),
       HostEventsRouteStatus.error => CatchRootScreenScaffold.standard(
-        header: CatchScreenHeaderTitle.block(
+        title: CatchScreenHeader.block(
           title: context.l10n.hostsHostEventsListTextEvents,
         ),
-        slivers: [
+        children: [
           CatchLocalizedSliverErrorState(
             routeState.error!,
             context: routeState.errorContext,
@@ -194,21 +194,23 @@ class _HostEventsRouteScaffoldState
       );
     }
     return CatchRootScreenScaffold.standard(
-      header: CatchScreenHeaderTitle.block(
+      title: CatchScreenHeader.block(
         title: context.l10n.hostsHostEventsListTextEvents,
       ),
-      slivers: [
+      children: [
         CatchSliverEmptyState(
           icon: CatchIcons.groupsOutlined,
           title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
           message: context.l10n.hostsHostEventsScaffoldBodyCreateAClubTo,
-          action: CatchButton(
-            label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
-            icon: Icon(CatchIcons.addRounded, size: CatchIcon.md),
-            size: CatchButtonSize.sm,
-            onPressed: () =>
-                context.pushNamed(Routes.hostCreateClubScreen.name),
-          ),
+          actions: [
+            CatchButton(
+              label: context.l10n.hostsHostEventsScaffoldLabelCreateClub,
+              leading: Icon(CatchIcons.addRounded, size: CatchIcon.md),
+              size: CatchButtonSize.sm,
+              onPressed: () =>
+                  context.pushNamed(Routes.hostCreateClubScreen.name),
+            ),
+          ],
         ),
       ],
     );

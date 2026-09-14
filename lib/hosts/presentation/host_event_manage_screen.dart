@@ -7,12 +7,11 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart'
     show EventAdmissionFormat;
@@ -381,7 +380,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               contractExemption:
                   'Read and management disclosure for an existing event; it '
                   'does not submit a scalar field value.',
-              control: Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   HostEventSummaryCard(club: club, event: event),
@@ -416,7 +415,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   'value is submitted or persisted.',
               body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
               icon: CatchIcons.qrCode2Rounded,
-              control: HostEventCheckInQrPanel(event: event),
+              child: HostEventCheckInQrPanel(event: event),
             ),
           ],
         ),
@@ -457,52 +456,56 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
     final topBarTitleMaxLines = MediaQuery.textScalerOf(context).scale(1) >= 1.4
         ? 3
         : 1;
-    return CatchMutationErrorListener(
-      mutation: HostEventManageController.sharePrivateLinkMutation,
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [HostEventManageController.sharePrivateLinkMutation],
       errorContext: AppErrorContext.event,
-      child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          large: false,
-          title: screenState.eventTitle,
-          eyebrow: topBarEyebrow,
+    );
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        size: CatchTopBarSize.compact,
+        title: screenState.eventTitle,
+        eyebrow: topBarEyebrow,
+        titleMaxLines: topBarTitleMaxLines,
+        height: CatchTopBar.workspaceHeightFor(
+          context: context,
+          hasEyebrow: true,
           titleMaxLines: topBarTitleMaxLines,
-          height: CatchTopBar.workspaceHeightFor(
-            context: context,
-            hasEyebrow: true,
-            titleMaxLines: topBarTitleMaxLines,
-          ),
-          allowContentHeightExpansion: true,
-          contentCrossAxisAlignment: CrossAxisAlignment.start,
-          leading: CatchIconAction(
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            icon: CatchIcons.arrowBackIosNewRounded,
-            onPressed: onBackToSuccess,
-          ),
-          actions: [
-            CatchTopBarPrimaryAction(
-              label: context.l10n.hostsHostEventRosterDrawerTitle,
-              icon: CatchIcons.groupsRounded,
-              onPressed: () => _setRosterOpen(true, screenState.phase),
-            ),
-          ],
-          divider: scrolledUnder,
         ),
-        body: CatchRouteBody.fullBleed(
-          child: HostEventRosterDrawer(
-            open: _rosterOpen,
-            bookedCount: bookedCount,
-            showHandle: false,
-            onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
-            onMessageGuests: () => _openEventMessages(club, event),
-            bodyMaxWidth: screenState.phase == HostEventWorkspacePhase.runtime
-                ? CatchLayout.hostEventLiveWorkspaceMaxContentWidth
-                : CatchLayout.maxContentWidth,
-            body: workspaceBody,
-            roster: ListView(
-              key: const ValueKey<String>('host_event_roster_drawer.scroll'),
-              padding: CatchInsets.pageBody,
-              children: rosterChildren,
-            ),
+        mode: CatchTopBarMode.content,
+        contentCrossAxisAlignment: CrossAxisAlignment.start,
+        leading: CatchIconAction.toolbar(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          icon: CatchIcons.arrowBackIosNewRounded,
+          onPressed: onBackToSuccess,
+        ),
+        actions: [
+          CatchTopBarPrimaryButton(
+            label: context.l10n.hostsHostEventRosterDrawerTitle,
+            icon: CatchIcons.groupsRounded,
+            onPressed: () => _setRosterOpen(true, screenState.phase),
+          ),
+        ],
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
+      ),
+      body: CatchRouteBody.fullBleed(
+        child: HostEventRosterDrawer(
+          open: _rosterOpen,
+          bookedCount: bookedCount,
+          showHandle: false,
+          onOpenChanged: (open) => _setRosterOpen(open, screenState.phase),
+          onMessageGuests: () => _openEventMessages(club, event),
+          bodyMaxWidth: screenState.phase == HostEventWorkspacePhase.runtime
+              ? CatchLayout.hostEventLiveWorkspaceMaxContentWidth
+              : CatchLayout.maxContentWidth,
+          body: workspaceBody,
+          roster: ListView(
+            key: const ValueKey<String>('host_event_roster_drawer.scroll'),
+            padding: CatchInsets.pageBody,
+            children: rosterChildren,
           ),
         ),
       ),
@@ -856,7 +859,7 @@ class HostPrivateAccessCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchAsyncValueView<EventPrivateAccess?>(
+    return CatchAsyncBoundary<EventPrivateAccess?>(
       value: accessAsync,
       onRetry: onRetryPrivateAccess,
       loadingBuilder: (_) => HostPrivateAccessShell(
@@ -875,11 +878,11 @@ class HostPrivateAccessCard extends StatelessWidget {
           ],
         ),
       ),
-      errorBuilder: (_, error, _) => CatchLocalizedInlineErrorState(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.event,
-        compact: true,
-        onRetry: onRetryPrivateAccess,
+        mode: CatchErrorStateMode.compact,
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, access) {
         final privateAccessState = HostPrivateAccessDisplayState.resolve(
@@ -1040,10 +1043,12 @@ class HostPrivateAccessBody extends StatelessWidget {
                   ? null
                   : () => onSharePrivateLink(linkAction.inviteLink!),
               variant: CatchButtonVariant.secondary,
-              icon: Icon(
+              leading: Icon(
                 CatchIcons.platformShare(platform: Theme.of(context).platform),
               ),
-              isLoading: shareMutation.isPending,
+              status: (shareMutation.isPending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               fullWidth: true,
             ),
             gapH18,
@@ -1098,8 +1103,10 @@ class HostInviteLinksList extends StatelessWidget {
           ? null
           : () => unawaited(_createNamedLink(context)),
       variant: CatchButtonVariant.secondary,
-      icon: Icon(CatchIcons.addRounded),
-      isLoading: state.createPending,
+      leading: Icon(CatchIcons.addRounded),
+      status: (state.createPending)
+          ? CatchButtonStatus.loading
+          : CatchButtonStatus.idle,
     );
     final heading = Text(
       context.l10n.hostsHostEventManageScreenTextNamedInviteLinks,
@@ -1109,7 +1116,7 @@ class HostInviteLinksList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchViewportBreakpoint(
+        CatchViewport.atWidth(
           breakpoint: ComponentBreakpoints.hostInviteLinksHeaderStackBreakpoint,
           compactBuilder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1139,19 +1146,20 @@ class HostInviteLinksList extends StatelessWidget {
           ),
         ],
         gapH12,
-        CatchAsyncValueView<List<EventInviteLink>>(
+        CatchAsyncBoundary<List<EventInviteLink>>(
           value: linksAsync,
           onRetry: onRetry,
           loadingBuilder: (_) => Text(
             context.l10n.hostsHostEventManageScreenTextLoadingInviteLinks,
             style: CatchTextStyles.supporting(context, color: t.ink2),
           ),
-          errorBuilder: (_, error, _) => CatchLocalizedInlineErrorState(
-            error,
-            context: AppErrorContext.event,
-            compact: true,
-            onRetry: onRetry,
-          ),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.event,
+                mode: CatchErrorStateMode.compact,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, links) => links.isEmpty
               ? Text(
                   state.emptyCopy,
@@ -1252,11 +1260,13 @@ class HostInviteLinkRow extends StatelessWidget {
       children: [
         Tooltip(
           message: context.l10n.hostsHostEventManageScreenMessageCopyLink,
-          child: CatchIconButton(
-            onTap: rowState.actionsDisabled
+          child: CatchIconAction(
+            onPressed: rowState.actionsDisabled
                 ? null
                 : () => onCopyInviteLink(link),
-            disabled: rowState.actionsDisabled,
+            status: (rowState.actionsDisabled)
+                ? CatchIconActionStatus.disabled
+                : CatchIconActionStatus.enabled,
             child: Icon(CatchIcons.contentCopyRounded, size: CatchIcon.sm),
           ),
         ),
@@ -1264,11 +1274,13 @@ class HostInviteLinkRow extends StatelessWidget {
           gapW8,
           Tooltip(
             message: context.l10n.hostsHostEventManageScreenMessageDisableLink,
-            child: CatchIconButton(
-              onTap: rowState.actionsDisabled
+            child: CatchIconAction(
+              onPressed: rowState.actionsDisabled
                   ? null
                   : () => onDisableInviteLink(link),
-              disabled: rowState.actionsDisabled,
+              status: (rowState.actionsDisabled)
+                  ? CatchIconActionStatus.disabled
+                  : CatchIconActionStatus.enabled,
               child: Icon(
                 CatchIcons.hourglassDisabledRounded,
                 size: CatchIcon.sm,
@@ -1283,7 +1295,7 @@ class HostInviteLinkRow extends StatelessWidget {
       child: CatchSurface(
         padding: CatchInsets.contentDense,
         borderColor: t.line,
-        child: CatchViewportBreakpoint(
+        child: CatchViewport.atWidth(
           breakpoint: ComponentBreakpoints.hostInviteLinkRowStackBreakpoint,
           compactBuilder: (context) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1316,14 +1328,14 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
         builder: (context, setState) {
           final label = labelController.text.trim();
           final source = sourceController.text.trim();
-          return CatchFormDialog(
+          return CatchDialog(
             title: context.l10n.hostsHostEventManageScreenTitleNewInviteLink,
             actions: [
-              CatchTextButton(
+              CatchButton.text(
                 label: context.l10n.hostsHostEventManageScreenLabelCancel,
                 onPressed: () => Navigator.of(context).pop(),
               ),
-              CatchTextButton(
+              CatchButton.text(
                 label: context.l10n.hostsHostEventManageScreenLabelCreate,
                 onPressed: label.isEmpty
                     ? null
@@ -1357,7 +1369,7 @@ Future<HostInviteLinkDraft?> _showInviteLinkDialog(BuildContext context) async {
                     title: context.l10n.hostsHostEventManageScreenTitleSource,
                     contract: CatchContractConstraints
                         .createEventInviteLinkCallablePayloadSource,
-                    isOptional: true,
+                    labelMode: CatchFieldLabelTextMode.optional,
                     controller: sourceController,
                     placeholder: context
                         .l10n
@@ -1645,7 +1657,7 @@ class HostPublicRegistrationCard extends StatelessWidget {
         contractExemption:
             'Disclosure and mutation surface for server-owned public event '
             'registration; the field itself does not persist a scalar value.',
-        control: Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Align(
@@ -1681,7 +1693,9 @@ class HostPublicRegistrationCard extends StatelessWidget {
                           !enabled)
                   ? null
                   : () => onChanged(!enabled),
-              isLoading: mutation.isPending,
+              status: (mutation.isPending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               variant: enabled
                   ? CatchButtonVariant.secondary
                   : CatchButtonVariant.primary,
@@ -1782,7 +1796,7 @@ class HostEventSummaryRow extends StatelessWidget {
 
     return Column(
       children: [
-        CatchViewportBreakpoint(
+        CatchViewport.atWidth(
           breakpoint: ComponentBreakpoints.hostEventSummaryRowStackBreakpoint,
           compactBuilder: (context) => Row(
             crossAxisAlignment: CrossAxisAlignment.start,

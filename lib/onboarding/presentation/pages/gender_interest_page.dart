@@ -120,7 +120,9 @@ class OnboardingGenderInterestStep extends StatelessWidget {
         footer: CatchButton(
           label: context.l10n.onboardingGenderInterestPageLabelContinue,
           onPressed: state.canSubmit ? callbacks.onContinue : null,
-          isLoading: state.isSaving,
+          status: (state.isSaving)
+              ? CatchButtonStatus.loading
+              : CatchButtonStatus.idle,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),
@@ -143,10 +145,10 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                             context.l10n.onboardingGenderInterestPageLabelIAmA,
                         contract: CatchContractConstraints
                             .onboardingDraftDocumentGender,
-                        contractValue: (gender) => gender.name,
+                        contractValueBuilder: (gender) => gender.name,
                         body: _orderedGenderLabels(state.selectedGender),
                         values: Gender.values,
-                        itemLabel: (gender) => gender.label,
+                        itemLabelBuilder: (gender) => gender.label,
                         selected: state.selectedGender,
                         onSelectionChanged: state.requestControlsEnabled
                             ? (selection) {
@@ -154,8 +156,11 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                                 field.didChange(selection);
                               }
                             : null,
-                        enabled: state.requestControlsEnabled,
-                        initiallyOpen: true,
+                        states: <WidgetState>{
+                          if (!state.requestControlsEnabled)
+                            WidgetState.disabled,
+                        },
+                        disclosureMode: CatchFieldMode.localExpanded,
                         error: field.errorText,
                       ),
                     ),
@@ -172,10 +177,10 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                             .onboardingGenderInterestPageLabelShowMe,
                         contract: CatchContractConstraints
                             .onboardingDraftDocumentInterestedInGenders,
-                        contractValue: (gender) => gender.name,
+                        contractValueBuilder: (gender) => gender.name,
                         body: _orderedGenderLabels(state.interestedIn),
                         values: Gender.values,
-                        itemLabel: (gender) => gender.label,
+                        itemLabelBuilder: (gender) => gender.label,
                         selected: state.interestedIn,
                         onSelectionChanged: state.requestControlsEnabled
                             ? (selection) {
@@ -183,9 +188,12 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                                 field.didChange(selection);
                               }
                             : null,
-                        multi: true,
-                        enabled: state.requestControlsEnabled,
-                        initiallyOpen: true,
+                        mode: CatchChipMode.multiple,
+                        states: <WidgetState>{
+                          if (!state.requestControlsEnabled)
+                            WidgetState.disabled,
+                        },
+                        disclosureMode: CatchFieldMode.localExpanded,
                         error: field.errorText,
                       ),
                     ),
@@ -194,7 +202,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
               ),
               if (state.hasSaveError)
                 CatchSection.plain(
-                  child: CatchErrorBanner(message: state.saveErrorMessage!),
+                  child: CatchBanner.error(message: state.saveErrorMessage!),
                 ),
             ],
           ),

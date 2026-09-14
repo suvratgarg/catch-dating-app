@@ -51,7 +51,7 @@ void main() {
 
       await pumpAuthScreen(tester, container: container, appRole: AppRole.host);
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
+      expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.byType(HostAuthFlowFrame), findsOneWidget);
       expect(find.byType(CatchStartupBrandStage), findsOneWidget);
       expect(find.byType(HostAuthCard), findsOneWidget);
@@ -61,13 +61,20 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(CatchStepHeader), findsNothing);
-      expect(find.byType(CatchBottomDock), findsNothing);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.utility,
+        ),
+        findsNothing,
+      );
 
       final sendButton = tester.widget<CatchButton>(
         find.byKey(AuthFormKeys.sendCode),
       );
       expect(sendButton.onPressed, isNull);
-      expect(sendButton.shape, CatchButtonShape.rounded);
+      expect(sendButton.mode, CatchButtonMode.rounded);
     });
 
     testWidgets('Host reveals OTP inline and keeps the brand anchor fixed', (
@@ -159,9 +166,16 @@ void main() {
 
       await pumpAuthScreen(tester, container: container);
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
-      expect(find.byType(CatchScreenBody), findsOneWidget);
-      expect(find.byType(CatchBottomDock), findsOneWidget);
+      expect(find.byType(CatchScaffold), findsOneWidget);
+      expect(find.byType(CatchPageBody), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.utility,
+        ),
+        findsOneWidget,
+      );
       expect(find.byType(CatchStepHeader), findsOneWidget);
       expect(find.text("What's your number?"), findsOneWidget);
       expect(find.text('Send code'), findsOneWidget);

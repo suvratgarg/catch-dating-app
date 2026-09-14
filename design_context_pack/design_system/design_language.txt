@@ -1,7 +1,7 @@
 ---
 doc_id: design_language
-version: 1.12.0
-updated: 2026-09-06
+version: 1.26.0
+updated: 2026-09-14
 owner: ui_elevation_initiative
 status: active # identity locked; Phase 0–1 complete (bundled optical-sized fonts, B&W tokens, ActivityPalette routing, matte grade, anti-drift gates); Phase 2 flagship Profile built
 ---
@@ -221,7 +221,7 @@ Use `CatchPersonRow.directory` for identity plus rich metadata/context/status;
 `CatchRecordRow` for activity/event inventory, historical evidence or provenance; and `CatchField` for an
 editable value or setting. Record text has natural height. Status moves below
 content at enlarged text sizes. `CatchBadge.status` is a passive rounded rectangle
-with readable categorical tones. `CatchOptionGroupVariant.summary` is a tappable
+with readable categorical tones. `CatchChoiceInput.segmentedVariant.summary` is a tappable
 rounded rectangle with selected semantics; `CatchButton.command` owns the paired
 sort/filter action treatment. Color communicates positive, attention, or affinity
 meaning and does not introduce a brand accent. These recipes supersede the
@@ -303,7 +303,7 @@ tiers within one list.
   approved. Real cover photography or deterministic `OrganizerPosterArtwork`
   fills the media lane, while provenance/authority remains explicit overlay
   state rather than being implied by visual polish.
-- **Polaroid → people: canonical.** `CatchPersonPolaroid` reserves the instant
+- **Polaroid → people: canonical.** `CatchPolaroid` reserves the instant
   photograph for a person: portrait media, quiet identity caption, and optional
   context overlay. The shared Profile hero is the reference adopter. A future
   Cross Paths rail may attach the relevant event-ticket stub, but it must not
@@ -376,15 +376,15 @@ fall back to the passive boundary role plus disabled opacity.
 `CatchSurface.borderRole` is the normal low-level adapter;
 `CatchSurface.borderSpec` is reserved for a role with a justified color
 override. Raw `borderColor`/`borderWidth` remain deprecated migration shims.
-Higher-level controls (`CatchButton`, `CatchIconButton`, `CatchChip`,
-`CatchControlShell`, `CatchOptionCard`, search, tabs, and field sections) own
+Higher-level controls (`CatchButton`, `CatchIconAction`, `CatchChip`,
+`CatchControlSurface`, `CatchChoiceTile`, search, tabs, and field sections) own
 their state-to-role mapping. Decorative `CustomPainter` illustration strokes
 are outside the UI-boundary system, but repeated artwork and progress geometry
 still uses named `CatchStroke` roles instead of feature-local literals.
 
 ### 7.2 Geometry is owned by the primitive
 
-Persistent offline/rehearsal context uses `CatchStatusStrip`: full-width,
+Persistent offline/rehearsal context uses `CatchBanner.statuses`: full-width,
 square-edged bands with a shared icon, label-over-detail and trailing action
 anatomy. The screen owner places them **below the complete primary tab rail**,
 or below the title when there are no tabs; they never split title from tabs.
@@ -404,7 +404,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
 - Notice identity is supplied by its feature adapter through `CatchNoticeData`:
   localized title/message, semantic tone, optional icon, optional
   `CatchPersonAvatarItem`, and an optional theme-derived `accentColor`. A person
-  replaces the status glyph and reuses `CatchPersonAvatar` for circular photos
+  replaces the status glyph and reuses `CatchAvatar` for circular photos
   and initials fallback. The shared notice still owns typography, icon/avatar
   extent, spacing, surface and tint derivation. Do not create separate visual
   match/message widgets merely to change copy, identity or color. A color
@@ -416,30 +416,37 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   the top safe area and never shifts route content. Reduced motion skips entry;
   accessible navigation holds the card, and pointer/hover/focus interaction
   pauses auto-dismiss. Ordinary inline notices retain their existing controls.
-- Primary screen CTA placement routes through the `CatchBottomAction` family.
-  `CatchBottomAction` owns one floating Cupertino or anchored Material action;
-  `CatchBottomActionOverlay` owns pinned multi-action form controls over a soft
-  fade and blur while the form remains visible and scrollable beneath them.
-  `CatchBottomDock` is a required-child utility plane for chat inputs and
-  compact action strips, not a second CTA family.
-- Top-bar action grouping routes through `CatchTopBarActionGroup`; callers do
+- Persistent control docking routes through `CatchDockSurface`. Its default
+  constructor hosts utility content; `primary` owns floating Cupertino or
+  anchored Material action chrome. `primaryContent` reuses the same action body
+  when its caller already supplies a surface. `CatchBottomActionOverlay` owns
+  pinned multi-action form controls over a soft fade and blur. It measures
+  wrapped or stacked controls and optional metadata before sizing the usable
+  form viewport. The fade reaches the page background above the controls so
+  body text cannot bleed through transparent actions. Form-step terminal
+  padding clears the fade; callers do not estimate action or safe-area heights.
+- Top-bar action grouping routes through `CatchTopBarActionRow`; callers do
   not compose parallel header rows. A primary root-screen action uses
-  `CatchTopBarPrimaryAction`, which owns the compact 40 px bordered icon and
-  wider labelled-button variants. Semantic text, icon-only, and overflow
-  actions use `CatchTopBarTextAction`, `CatchIconAction`, and
-  `CatchTopBarMenuAction`. Do not pass a body-style `CatchButton` directly into
+  `CatchTopBarPrimaryButton`, which owns a compact quiet icon target with the
+  platform minimum hit extent and wider labelled-button variants. Semantic text, icon-only, and overflow
+  actions use `CatchButton.text`, `CatchIconAction`, and
+  `CatchActionMenu`. Do not pass a body-style `CatchButton` directly into
   any top-bar `actions` slot.
 - Screen hierarchy follows one control per level. Shell destinations express
-  product-level navigation; pinned `CatchTabRail` / `CatchRootScreenScaffold.withPrimaryRail`
+  product-level navigation; pinned `CatchPageTabBar` / `CatchRootScreenScaffold.withPrimaryRail`
   tabs switch peer views within one destination. A small fixed set of terse,
-  mutually-exclusive filters uses `CatchOptionGroup`; longer, numerous, or
-  dynamic mutually-exclusive filters use `CatchAdaptiveSelectionControl` so
+  mutually-exclusive filters uses `CatchChoiceInput.segmented`; longer, numerous, or
+  dynamic mutually-exclusive filters use `CatchSelectionMenu.control` so
   options do not disappear beyond the viewport. Selectable chips express
   independent binary or multi-select values, not scalar scope or lifecycle
   rails. A query that searches the whole active view belongs to that screen's
   top bar through expanding `CatchTopBarSearch`, while a permanently visible
   `CatchSearchField.expanded` is reserved for a search-first browse toolbar.
   Feature-local pill groups do not substitute for peer-view tabs.
+  Destination buttons use `CatchNavigationButton`: bottom shared-indicator and
+  side-rail layouts are named recipes. Pointer previews never change committed
+  route semantics; rail buttons expose a screen-reader tap action. Icon counts
+  use `CatchCountBadge.navigationIcon` in both placements.
 - Pushed utility/list and identity chrome routes through
   `CatchRouteScaffold`; it owns the page surface and shows a divider only when
   vertical content has actually scrolled beneath the compact bar. Root tab
@@ -459,11 +466,11 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   8 pt title-to-rail handoff, a minimum 44 pt iOS / 48 dp Android rail that
   grows with text scale, and the same 16 pt body start.
   `CatchInsets.pageBody`, `CatchInsets.primaryRailTitleBlock`, and
-  `CatchTabRail.minimumHeight` / `heightFor` own those values. Full bleed removes only the
+  `CatchPageTabBar.minimumHeight` / `heightFor` own those values. Full bleed removes only the
   outer inset; named nested lanes such as `CatchInsets.chatListGutter` keep
   Consumer Chats and Host Inbox on the same 20 pt horizontal rhythm.
 - Every full-screen composition terminates in
-  `CatchScreenScaffold.standalone`, `.stepFlow`, or `.workspace`; higher-level
+  `CatchScaffold.standalone`, `.stepFlow`, or `.workspace`; higher-level
   root, tabbed, and pushed-route owners delegate to that role. Only the
   canonical primitive may construct a Material `Scaffold`. The composition gate
   reconciles route, coverage, and registry membership; resolves declared
@@ -498,7 +505,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   scanner-visible debt. Loading, empty, and error children inherit their
   section's divided, contained, or plain surface decision; state changes do not
   introduce a second border or switch a peer module to a different variant.
-  `CatchErrorBody` is therefore cardless in full-screen, inline, and compact
+  `CatchErrorState` is therefore cardless in full-screen, inline, and compact
   modes; its placement adapter supplies spacing while the parent owns any
   justified containment.
 - `CatchSection.containedFieldRows` treats its title, count, and trailing action
@@ -534,6 +541,7 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   `CatchFormRowList` sections. An existing surface may opt the complete section
   into on-blur commit while it awaits a reviewed product migration; individual
   row descriptors cannot mix policies or choose their own commit chrome.
+
 
 The API boundary is the first enforcement layer: duplicate placement variants
 are deleted rather than kept as aliases. Component contracts, Widgetbook
@@ -605,7 +613,8 @@ selection rule above.
 Mutually exclusive options with per-option guidance use
 `CatchField.optionCards`: the selected title owns the collapsed value, and
 each expanded title plus description stays inside one clickable
-`CatchOptionCard`. Do not put only the selected description in the field body;
+`CatchChoiceTile`. Standalone groups use `CatchChoiceInput.described` so they
+share selection and spacing with the field recipe. Do not put only the selected description in the field body;
 that detaches the explanation from the options it describes.
 
 - **Sizing:** constraints over constant heights/widths; min/max constraints, intrinsics,
@@ -620,8 +629,8 @@ that detaches the explanation from the options it describes.
 - **Motion:** route motion through `CatchMotion` and
   `package:catch_ui/catch_ui.dart`. Use `catchSelectionHaptic()` for
   discrete choices, `catchTransitionHaptic()` for map/sheet state changes,
-  `CatchFadeScaleViewport` for calm card-to-detail routes, and
-  `CatchHeroViewport`/`CatchTicketHeroViewport` for ticket or polaroid flights. Avoid
+  `CatchRevealViewport` for calm card-to-detail routes, and
+  `CatchHeroViewport`/`CatchHeroViewport.ticket` for ticket or polaroid flights. Avoid
   raw `Duration(...)`, ad-hoc `Hero`, and direct `HapticFeedback` in product UI
   unless a new named motion primitive is being introduced.
 
@@ -642,8 +651,11 @@ the corresponding surface link. New or moved design-system components must add
 the link in the same change.
 
 Run `node tool/run.mjs check design:component-lexicon`. The checker remains a
-repo-level JavaScript gate, including for Flutter symbol existence; do not move
-this contract into the `catch_ui_lints` analyzer plugin.
+repo-level JavaScript gate. Its default command also checks shared Flutter API
+grammar with the syntax-only Dart collector and requires resolved Flutter
+dependencies. Website validation uses `--surfaces-only` for the Node-only
+symbol check; the registered gate and Flutter CI retain the full check. Do not
+move this contract into the `catch_ui_lints` analyzer plugin.
 
 Every component contract also carries either an `enforcement` decision or an
 expiring `waiver`. Enforcement metadata is executable: it generates raw-widget
@@ -654,7 +666,7 @@ is registered separately with shell, top-bar, and state policies and validated
 with analyzer resolution.
 
 Structural labels and status badges are separate semantic families. Use
-`catch.ui_label` (`CatchSectionLabel`, website `UiLabel`, admin
+`catch.ui_label` (`CatchSectionHeaderTitle`, website `UiLabel`, admin
 `AdminEyebrow`, web-ui `UiLabel`) for eyebrows and compact hierarchy context.
 Use `catch.badge` (`CatchBadge`, `StatusBadge`, `StatusChip`, `BadgeControl`)
 for status, state, counts, and alerts. The lexicon gate pins these mappings so a

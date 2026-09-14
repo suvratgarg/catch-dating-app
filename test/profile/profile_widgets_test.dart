@@ -245,10 +245,11 @@ Finder _promptAnswerEditableText(int index) => find.descendant(
   matching: find.byType(EditableText),
 );
 
-Finder _profileOptionGroup() => find.byType(CatchOptionGroup<SelfProfileTab>);
+Finder _profileOptionGroup() => find.byType(CatchChoiceInput<SelfProfileTab>);
 
 Finder _catchChip(String label) => find.byWidgetPredicate(
-  (widget) => widget is CatchFieldChoiceChip && widget.label == label,
+  (widget) =>
+      widget is CatchChip && widget.mode != null && widget.label == label,
 );
 
 int _loadingCatchButtonCount(WidgetTester tester) => find
@@ -353,7 +354,7 @@ class _ProfileHeaderHarnessState extends State<_ProfileHeaderHarness>
         child: CustomScrollView(
           slivers: [
             ...CatchSliverHeader(
-              title: const CatchScreenHeaderTitle.block(
+              title: const CatchScreenHeader.block(
                 title: 'Your profile',
                 actions: [ProfileSettingsButton()],
               ),

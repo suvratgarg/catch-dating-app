@@ -83,22 +83,24 @@ class HostPaymentAccountCard extends StatelessWidget {
       ),
       builder: (sheetContext) {
         final sheetTokens = CatchTokens.of(sheetContext);
-        return CatchBottomSheetScaffold(
+        return CatchSheet(
           title: context.l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
           subtitle: isRazorpay
               ? context
                     .l10n
                     .hostsHostPaymentAccountCardSubtitlePoweredByRazorpay
               : context.l10n.hostsHostPaymentAccountCardSubtitlePoweredByStripe,
-          action: CatchButton(
+          footer: CatchButton(
             label: isRazorpay
                 ? context
                       .l10n
                       .hostsHostPaymentAccountCardLabelContinueToRazorpay
                 : context.l10n.hostsHostPaymentAccountCardLabelContinueToStripe,
-            icon: Icon(CatchIcons.openInNewRounded),
+            leading: Icon(CatchIcons.openInNewRounded),
             fullWidth: true,
-            isLoading: onboardingPending,
+            status: (onboardingPending)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: onboardingPending
                 ? null
                 : () {
@@ -541,14 +543,16 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     const gap = SizedBox(height: CatchSpacing.s3);
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       keyboardSafe: true,
       title: l10n.hostsHostPaymentAccountCardTitleSetUpPayouts,
       subtitle: l10n.hostsHostPaymentAccountCardSubtitlePoweredByRazorpay,
-      action: CatchButton(
+      footer: CatchButton(
         label: l10n.hostsHostPaymentAccountCardLabelSubmitRazorpay,
         fullWidth: true,
-        isLoading: widget.pending,
+        status: (widget.pending)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
         onPressed: widget.pending || !_termsAccepted ? null : _submit,
       ),
       child: ConstrainedBox(
@@ -575,11 +579,13 @@ class _RazorpaySetupSheetState extends State<_RazorpaySetupSheet> {
                     title: l10n.hostsHostPaymentAccountCardTitleBusinessType,
                     contract: CatchContractConstraints
                         .createRazorpayHostPaymentAccountCallablePayloadBusinessType,
-                    contractValue: (value) => value.wireValue,
+                    contractValueBuilder: (value) => value.wireValue,
                     values: RazorpayHostBusinessType.values,
-                    itemLabel: _businessTypeLabel,
+                    itemLabelBuilder: _businessTypeLabel,
                     value: _businessType,
-                    enabled: !widget.pending,
+                    states: <WidgetState>{
+                      if (widget.pending) WidgetState.disabled,
+                    },
                     onChanged: (value) {
                       if (value != null) setState(() => _businessType = value);
                     },
@@ -821,11 +827,13 @@ class _RazorpaySetupInput extends StatelessWidget {
         title: title,
         controller: controller,
         contract: contract,
-        enabled: !pending,
+        states: <WidgetState>{if (pending) WidgetState.disabled},
         keyboardType: keyboardType,
-        obscureText: obscureText,
+        inputVariant: obscureText
+            ? CatchTextInputVariant.obscured
+            : CatchTextInputVariant.plain,
         maxLines: maxLines,
-        validator:
+        onValidate:
             validator ??
             (value) => value == null || value.trim().isEmpty
                 ? context.l10n.sharedValidationRequired

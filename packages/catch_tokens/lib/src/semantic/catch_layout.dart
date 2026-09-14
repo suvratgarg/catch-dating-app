@@ -186,7 +186,6 @@ abstract final class CatchLayout {
   static const double celebrationPaperActionTopGap = CatchSpacing.s6;
   static const double celebrationDetailLabelWidth = 78.0;
   static const double bottomActionScrimHeight = 128.0;
-  static const double bottomActionOverlayScrimHeight = 160.0;
   static const double floatingControlExtent = 48.0;
   static const double selectionBadgeRadius = 14.0;
   static const double badgeMdVerticalPadding =
@@ -197,6 +196,14 @@ abstract final class CatchLayout {
   static const double badgeActionIconSize = 15.0;
   static const double activityAvatarDefaultSize = 40.0;
   static const double activityAvatarInitialsScale = 0.32;
+  static const double personAvatarInitialsScale = 0.34;
+  static const double avatarCountFontScale = 0.30;
+  static const double avatarVeilGlyphScale = 0.38;
+  static const double avatarObscuringBlurSigma = 3.5;
+  static const double avatarObscuringScale = 1.16;
+  // A label rectangle stays inside the circular frame, including its corners.
+  static const double avatarLabelContentScale = 0.7;
+  static const double activityAvatarGradientRotationDegrees = 150.0;
   static const double activityAvatarRingSpread = 2.0;
   static const double activityAvatarTextureStrokeWidth = 2.0;
   static const double activityAvatarTextureStride = 13.0;

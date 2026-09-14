@@ -156,9 +156,9 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
               onThreadSelected: (preview) =>
                   _openThread(preview, splitView: splitView),
             )
-          : CatchSliverContentWidth(
+          : CatchViewport.sliverLane(
               maxExtent: CatchLayout.hostMessagingSendsPageMaxExtent,
-              sliver: _HostCampaignWorkspaceSliver(
+              child: _HostCampaignWorkspaceSliver(
                 uidState: uidState,
                 uid: uid,
                 clubsState: clubsState,
@@ -191,7 +191,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             compactForPrimaryRail: true,
           ),
         ),
-        primaryRail: HostMessagingWorkspaceRail(
+        actions: HostMessagingWorkspaceRail(
           selected: _workspace,
           onChanged: _campaignBusy ? null : _selectWorkspace,
         ),
@@ -201,7 +201,7 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
               scrollKey: PageStorageKey<String>(
                 'host-messaging-${_workspace.name}',
               ),
-              slivers: [workspaceSliver],
+              children: [workspaceSliver],
             ),
           ),
         ),
@@ -223,18 +223,18 @@ class _HostInboxScreenState extends ConsumerState<HostInboxScreen> {
             embedded: true,
           );
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       backgroundColor: t.bg,
       body: isInbox
-          ? CatchAdaptiveMasterDetailLayout(
+          ? CatchMasterDetailViewport.adaptive(
               minimumExpandedWidth: CatchLayout.hostMessagingSplitViewMinWidth,
-              masterBuilder: buildMaster,
-              detail: detail,
+              leadingBuilder: buildMaster,
+              body: detail,
             )
-          : CatchMasterDetailLayout(
+          : CatchMasterDetailViewport(
               expanded: false,
-              master: buildMaster(context, false),
-              detail: detail,
+              leading: buildMaster(context, false),
+              body: detail,
             ),
     );
   }
@@ -551,7 +551,7 @@ class _HostNoOrganizerSliver extends StatelessWidget {
   const _HostNoOrganizerSliver();
 
   @override
-  Widget build(BuildContext context) => CatchSliverStateViewport(
+  Widget build(BuildContext context) => CatchStateViewport.sliver(
     child: CatchEmptyState(
       icon: CatchIcons.groupsOutlined,
       title: context.l10n.hostsHostEventsScaffoldTitleCreateYourFirstClub,
@@ -564,15 +564,17 @@ class _HostAuthRequiredSliver extends StatelessWidget {
   const _HostAuthRequiredSliver();
 
   @override
-  Widget build(BuildContext context) => CatchSliverStateViewport(
+  Widget build(BuildContext context) => CatchStateViewport.sliver(
     child: CatchEmptyState(
       icon: CatchIcons.lockOutlineRounded,
       title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
       message: context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
-      action: CatchButton(
-        label: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
-        onPressed: () => context.go(Routes.authScreen.path),
-      ),
+      actions: [
+        CatchButton(
+          label: context.l10n.hostsHostAuthRequiredScreenVisiblecopySignIn,
+          onPressed: () => context.go(Routes.authScreen.path),
+        ),
+      ],
     ),
   );
 }
@@ -589,14 +591,14 @@ class HostMessagingWorkspaceRail extends StatelessWidget
   final ValueChanged<HostMessagingWorkspace>? onChanged;
 
   @override
-  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+  Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
 
   @override
   Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchTabRail.heightFor(context));
+      Size.fromHeight(CatchPageTabBar.heightFor(context));
 
   @override
-  Widget build(BuildContext context) => CatchTabRail<HostMessagingWorkspace>(
+  Widget build(BuildContext context) => CatchPageTabBar<HostMessagingWorkspace>(
     key: const ValueKey<String>('host-messaging-workspace-rail'),
     selected: selected,
     options: [
@@ -650,7 +652,7 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
     return SliverToBoxAdapter(
       child: Padding(
         padding: CatchInsets.pageHorizontal,
-        child: CatchMenuAnchor<HostInboxScope>(
+        child: CatchMenu<HostInboxScope>.anchored(
           controller: _menuController,
           alignmentOffset: const Offset(0, CatchSpacing.s1),
           items: [
@@ -659,7 +661,7 @@ class _HostInboxScopeSelectorState extends State<HostInboxScopeSelector> {
                 value: scope,
                 label: _scopeMenuLabel(scope, eventsById),
                 selected: scope == selectedScope,
-                role: CatchMenuItemRole.choice,
+                variant: CatchMenuItemVariant.choice,
               ),
           ],
           onSelected: (scope, _) {
@@ -769,10 +771,10 @@ class HostInboxAudienceRail extends StatelessWidget {
     return SliverToBoxAdapter(
       child: Padding(
         padding: CatchInsets.pageHorizontal,
-        child: CatchOptionGroup<HostInboxAudienceSegment>(
+        child: CatchChoiceInput<HostInboxAudienceSegment>.segmented(
           contract:
               CatchContractConstraints.mobileFormStateHostInboxAudienceSegment,
-          contractValue: (segment) => segment.name,
+          contractValueBuilder: (segment) => segment.name,
           selected: workspace.selectedSegment,
           options: [
             CatchOption(
@@ -790,7 +792,7 @@ class HostInboxAudienceRail extends StatelessWidget {
                   ),
             ),
           ],
-          variant: CatchOptionGroupVariant.mono,
+          variant: CatchChoiceInputVariant.mono,
           onChanged: onChanged,
         ),
       ),
@@ -862,7 +864,7 @@ class HostInboxWorkspaceSliver extends StatelessWidget {
             ),
           ),
         if (workspace.threads.isEmpty && whatsappThreads.isEmpty)
-          CatchSliverStateViewport(
+          CatchStateViewport.sliver(
             child: workspace.query.isNotEmpty && workspace.hasUnfilteredThreads
                 ? const ChatsEmptyState.noHostSearchResults()
                 : workspace.isGeneral

@@ -87,17 +87,17 @@ class CatchEventCard extends StatelessWidget {
                             left: CatchSpacing.s3,
                             child: Align(
                               alignment: Alignment.centerRight,
-                              child: CatchTicketStatusBadge(
+                              child: CatchBadge.ticketStatus(
                                 label: status,
                                 color: visual.accent,
-                                tone: CatchTicketStatusBadgeTone.dark,
+                                emphasis: CatchBadgeEmphasis.strong,
                               ),
                             ),
                           ),
                       ],
                     ),
                   ),
-                  const CatchTicketPerforatedDivider(),
+                  const CatchTicketDivider(),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(
                       CatchSpacing.s4,
@@ -111,7 +111,7 @@ class CatchEventCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            CatchTicketClock(
+                            CatchClockIndicator(
                               accent: visual.accent,
                               time:
                                   clockTime ?? _parseClockTimeLabel(timeLabel),
@@ -125,7 +125,7 @@ class CatchEventCard extends StatelessWidget {
                             ),
                             gapW10,
                             Expanded(
-                              child: CatchMonoLabel(
+                              child: CatchMetadataText(
                                 context.l10n
                                     .coreCatchEventActivityCardsVisiblecopyTimelabelCountdownlabel(
                                       timeLabel: timeLabel,
@@ -151,7 +151,7 @@ class CatchEventCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: CatchTextStyles.eventDisplay(
                             context,
-                            step: CatchDisplayStep.s,
+                            step: CatchTextStylesSize.s,
                             height: 1.02,
                           ),
                         ),
@@ -166,7 +166,7 @@ class CatchEventCard extends StatelessWidget {
                           ),
                         ),
                         gapH12,
-                        CatchMonoLabel(capacityLabel, color: t.ink2),
+                        CatchMetadataText(capacityLabel, color: t.ink2),
                       ],
                     ),
                   ),
@@ -197,7 +197,7 @@ Widget _buildOutlineStamp(BuildContext context, String label) {
           horizontal: CatchSpacing.s2,
           vertical: CatchSpacing.s1,
         ),
-        child: CatchMonoLabel(label, color: t.accent, uppercase: true),
+        child: CatchMetadataText(label, color: t.accent, uppercase: true),
       ),
     ),
   );

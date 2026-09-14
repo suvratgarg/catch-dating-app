@@ -1,0 +1,1 @@
+enum CatchEmptyStateVariant { stacked, inline }

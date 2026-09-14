@@ -36,16 +36,16 @@ void main() {
         ),
       );
 
-      expect(find.byType(CatchIconButton), findsOneWidget);
+      expect(find.byType(CatchIconAction), findsOneWidget);
       expect(
-        tester.getSize(find.byType(CatchIconButton)).shortestSide,
-        greaterThanOrEqualTo(CatchIconButton.defaultSize),
+        tester.getSize(find.byType(CatchIconAction)).shortestSide,
+        greaterThanOrEqualTo(CatchIconAction.defaultSize),
       );
       expect(toggleSemantics().properties.button, isTrue);
       expect(toggleSemantics().properties.toggled, isTrue);
       expect(toggleSemantics().properties.enabled, isTrue);
 
-      await tester.tap(find.byType(CatchIconButton));
+      await tester.tap(find.byType(CatchIconAction));
       await tester.pump();
       expect(taps, 1);
 
@@ -56,7 +56,7 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
       expect(
-        tester.widget<CatchIconButton>(find.byType(CatchIconButton)).onTap,
+        tester.widget<CatchIconAction>(find.byType(CatchIconAction)).onPressed,
         isNull,
       );
       await tester.pump();

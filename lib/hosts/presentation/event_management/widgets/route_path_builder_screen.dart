@@ -54,8 +54,12 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostsRoutePathBuilderTitle,
-        leadingType: CatchTopBarLeading.close,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.close,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.fullBleed(
         child: Stack(
@@ -104,7 +108,7 @@ class _RoutePathBuilderScreenState extends State<RoutePathBuilderScreen> {
                 child: CatchSurface(
                   backgroundColor: t.surface,
                   borderColor: t.line,
-                  elevation: CatchSurfaceElevation.overlay,
+                  emphasis: CatchSurfaceEmphasis.floating,
                   padding: CatchInsets.content,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,

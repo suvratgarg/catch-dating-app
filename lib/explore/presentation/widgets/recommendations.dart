@@ -13,7 +13,7 @@ class Recommendations extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchHorizontalRail(
+    return CatchSection.horizontal(
       title: title ?? context.l10n.exploreRecommendationsTitleForYou,
       itemCount: recommendations.length,
       itemBuilder: (context, i) =>

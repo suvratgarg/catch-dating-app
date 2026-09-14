@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -69,10 +69,14 @@ class _HostFormAutomationsScreenState
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostFormAutomationsTitle,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
         actions: [
-          CatchIconAction(
+          CatchIconAction.toolbar(
             key: const ValueKey('automation-create'),
             icon: CatchIcons.add,
             tooltip: context.l10n.hostAutomationNew,
@@ -84,16 +88,17 @@ class _HostFormAutomationsScreenState
         ],
       ),
       body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncValueView<HostFormAutomationsState>(
+        child: CatchAsyncBoundary<HostFormAutomationsState>(
           value: automations,
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 7),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.forms,
-            onRetry: () => ref.invalidate(provider),
-          ),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 7),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.forms,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, state) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -162,13 +167,13 @@ class _HostFormAutomationsScreenState
                     title: context.l10n.hostAudienceAutomationShortcuts,
                     contractExemption:
                         'Action group that creates server-validated automation presets; no scalar field value is persisted.',
-                    control: Wrap(
+                    child: Wrap(
                       spacing: CatchSpacing.s3,
                       runSpacing: CatchSpacing.s3,
                       children: [
                         CatchButton.command(
                           label: context.l10n.hostFormAutomationNotifyPreset,
-                          icon: Icon(CatchIcons.notificationsNoneRounded),
+                          leading: Icon(CatchIcons.notificationsNoneRounded),
                           onPressed: state.mutatingRuleIds.contains('new')
                               ? null
                               : () => _createPreset(
@@ -183,7 +188,7 @@ class _HostFormAutomationsScreenState
                         ),
                         CatchButton.command(
                           label: context.l10n.hostFormAutomationCrmPreset,
-                          icon: Icon(CatchIcons.peopleOutlineRounded),
+                          leading: Icon(CatchIcons.peopleOutlineRounded),
                           onPressed: state.mutatingRuleIds.contains('new')
                               ? null
                               : () => _createPreset(
@@ -220,7 +225,7 @@ class _HostFormAutomationsScreenState
                             'Read-only disclosure of a server-owned automation run outcome; no scalar value is persisted.',
                         body:
                             '${_runStatusLabel(context, run.status)} · ${AppTimeFormatters.compactRelativeTime(run.createdAt)}',
-                        control: Text(
+                        child: Text(
                           _runBody(context, run),
                           style: CatchTextStyles.recordBody(context),
                         ),
@@ -238,7 +243,9 @@ class _HostFormAutomationsScreenState
                     label: context.l10n.hostFormAutomationsLoadMore,
                     variant: CatchButtonVariant.secondary,
                     fullWidth: true,
-                    isLoading: state.loadingMore,
+                    status: (state.loadingMore)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     onPressed: state.loadingMore
                         ? null
                         : () => ref.read(provider.notifier).loadMore(),

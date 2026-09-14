@@ -6390,6 +6390,1893 @@
       "decidedBy": "owner-authorized -> codex",
       "date": "2026-09-02",
       "status": "executed-screen-composition-completion"
+    },
+    {
+      "clusterId": "pattern-family:code-entry-canonical-input",
+      "patternFamilyId": "code-entry-canonical-input",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchCodeInput",
+      "members": [
+        {
+          "name": "CatchCodeInput",
+          "action": "keep"
+        },
+        {
+          "name": "CatchOtpCodeField",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchCodeInputRow",
+          "action": "keep"
+        },
+        {
+          "name": "CatchCodeInputCell",
+          "action": "absorb",
+          "target": "CatchCodeDigitSurface"
+        },
+        {
+          "name": "CatchCodeInputCaret",
+          "action": "absorb",
+          "target": "CatchCodeCaretIndicator"
+        }
+      ],
+      "rationale": "Source review found that the old CatchCodeInput only forwarded to CatchCodeInputRow and had no production construction sites, while CatchOtpCodeField owned filtering, exact contract length, SMS autofill, paste, submission, and accessible text entry. The editable implementation now owns CatchCodeInput; display-only states mount the existing row directly. Digit surface and caret indicator remain explicit anatomy with their own closed roles. Controller listening repairs stale visible digits after programmatic updates without changing the pinned state rendering. CatchCodeInputStatus replaces validation booleans across this family while caret and focus remain independent.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:inline-feedback-canonical-banner",
+      "patternFamilyId": "inline-feedback-canonical-banner",
+      "decision": "unify-canonical-contract",
+      "canonicalSymbol": "CatchBanner",
+      "members": [
+        {
+          "name": "CatchBanner",
+          "action": "keep"
+        },
+        {
+          "name": "CatchErrorBanner",
+          "action": "absorb",
+          "target": "CatchBanner.error / CatchBanner.errorWithRetry"
+        },
+        {
+          "name": "CatchInlineMessageSurface",
+          "action": "absorb",
+          "target": "CatchBanner"
+        },
+        {
+          "name": "CatchSurface",
+          "action": "keep",
+          "detail": "Remove its duplicated message constructor; retain low-level paint."
+        },
+        {
+          "name": "CatchNotice",
+          "action": "keep",
+          "detail": "Transient delivery, dismissal/open behavior and person payload remain distinct."
+        }
+      ],
+      "rationale": "Rendered review pins five semantic message tones and compact error/retry recipes before edits. CatchSurface.message and CatchInlineMessageSurface independently built the same icon/title/message row; CatchErrorBanner only supplied its error recipe. One CatchBanner now owns that renderer with semantic tone and named error constructors. All production callers and app copy adapters migrate without a forwarding alias; the existing catch.error_banner registry identity is renamed catch.banner, and feature references move in the same slice. Error mapping stays app-owned. The message duration parameter now reaches the reduced-motion-aware surface instead of being dropped.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered family review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:toggle-canonical-input",
+      "patternFamilyId": "toggle-canonical-input",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchToggleInput",
+      "members": [
+        {
+          "name": "CatchToggle",
+          "action": "absorb",
+          "target": "CatchToggleInput"
+        },
+        {
+          "name": "CatchFieldToggle",
+          "action": "absorb",
+          "target": "CatchToggleInput.field"
+        }
+      ],
+      "rationale": "The field wrapper had one production construction site and only forwarded every argument to the existing CatchToggle.field recipe. Remove that extra identity and retain the shared normal/field implementation under the explicit Toggle Input role. The new implementation is byte-identical after symbol renames; both original geometry images, keyboard/save/semantics behavior, platform touch targets and affected Host flows pass. The duplicate field preview is folded into the canonical contract with no lost production state. The lint canonical-control name and existing form-policy path follow the rename; lint-plugin validation remains CI-only.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:typography-role-boundaries",
+      "patternFamilyId": "typography-role-boundaries",
+      "decision": "retain-distinct-with-canonical-names",
+      "canonicalSymbol": "CatchSectionHeaderTitle",
+      "members": [
+        {
+          "name": "CatchKicker",
+          "action": "absorb",
+          "target": "CatchKickerText"
+        },
+        {
+          "name": "CatchMonoLabel",
+          "action": "absorb",
+          "target": "CatchMetadataText"
+        },
+        {
+          "name": "CatchSectionLabel",
+          "action": "absorb",
+          "target": "CatchSectionHeaderTitle"
+        }
+      ],
+      "rationale": "The typography engine and source semantics establish three responsibilities: kicker typography, compact factual metadata, and a structural heading with Semantics(header: true). Preserve their rendering and rename by responsibility. The kicker fieldSection choice changes weight and tracking, so the enum becomes CatchKickerTextVariant. The same physical heading was registered as both catch.ui_label and catch.section.label; retain the cross-stack catch.ui_label identity as anatomy of catch.section and remove its duplicate member registration. A seeded regression rejects duplicate physical Widget identities. Menu and Image metadata also records reviewed complementary contracts: action vs selected-value menus share their menu renderer, and image loading vs treatment compose without duplicate loading implementations.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:icon-presentation-canonical-tile",
+      "patternFamilyId": "icon-presentation-canonical-tile",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchIconTile",
+      "members": [
+        {
+          "name": "CatchIconTile",
+          "action": "keep"
+        },
+        {
+          "name": "CatchEmptyStateIcon",
+          "action": "absorb",
+          "target": "CatchIconTile.empty"
+        },
+        {
+          "name": "CatchErrorIcon",
+          "action": "absorb",
+          "target": "CatchIconTile.error"
+        }
+      ],
+      "rationale": "The three source implementations each displayed a glyph in plain or decorated containment without interaction. One CatchIconTile now owns that renderer. Named empty and error recipes preserve palette, border absence, glyph and container defaults, custom sizing and the error recipe centering. CatchIconTileVariant replaces the empty-specific style enum; the two duplicate Widget classes and registry members are deleted. Error/empty compositions retain their own copy, actions and layout. Four pinned production images remain unchanged, eight focused root tests pass, and thirteen gallery/enumeration tests pass twice. All absorbed visual states are present on the canonical gallery page.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:primitive-role-boundaries",
+      "patternFamilyId": "primitive-role-boundaries",
+      "decision": "retain-distinct-with-canonical-names",
+      "canonicalSymbol": "CatchControlSurface",
+      "members": [
+        {
+          "name": "CatchBottomSheetGrabber",
+          "action": "absorb",
+          "target": "CatchSheetDragIndicator"
+        },
+        {
+          "name": "CatchNetworkImageFallback",
+          "action": "absorb",
+          "target": "CatchImageFallbackSurface"
+        },
+        {
+          "name": "CatchPageDots",
+          "action": "absorb",
+          "target": "CatchPageIndicator"
+        },
+        {
+          "name": "CatchStatusDot",
+          "action": "absorb",
+          "target": "CatchStatusIndicator"
+        },
+        {
+          "name": "CatchFractionalMaxWidth",
+          "action": "absorb",
+          "target": "CatchFractionalViewport"
+        },
+        {
+          "name": "CatchPagerFocusBoundary",
+          "action": "absorb",
+          "target": "CatchPagerFocusViewport"
+        },
+        {
+          "name": "CatchControlShell",
+          "action": "absorb",
+          "target": "CatchControlSurface"
+        }
+      ],
+      "rationale": "Source comparison distinguishes passive status/page/drag indicators, image-fallback paint, local width/focus viewport protocols and interactive control containment. Six renamed primitives retain byte-identical source after symbol substitution. CatchControlSurface replaces four booleans with enabled, semanticButton and a typed resting/focused/error status, preserving error-first border precedence, disabled fill, focused shadow and minimum extents. Control shape becomes its Variant axis; size and tone use the canonical component prefix. All callers migrate without aliases. Four pinned production images include every enabled/error/focus combination and remain unchanged. The row-press surface retains its separate hover/keyboard/press ownership; no general surface or indicator implementation is duplicated.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:media-readability-canonical-overlay",
+      "patternFamilyId": "media-readability-canonical-overlay",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchMediaOverlay",
+      "members": [
+        {
+          "name": "CatchScrim",
+          "action": "absorb",
+          "target": "CatchMediaOverlay"
+        },
+        {
+          "name": "CatchEventThumbnailScrimOverlay",
+          "action": "absorb",
+          "target": "CatchMediaOverlay.thumbnail"
+        }
+      ],
+      "rationale": "The two implementations used identical pointer-transparent vertical-gradient rendering and differed only in recipe data. Keep hero, photo-frame and tinted-hero constructors, absorb thumbnail variants, and keep event/image selection in the app. Both original gradient images match twice; five gallery/enumeration tests also pass twice, including unchanged production thumbnail pages. A new direct-mount regression first failed on the unchanged origin/main implementation because its none variant supplied only one gradient color; the canonical recipe uses two transparent stops and the same test now proves successful painting and pointer transparency. Remove the duplicate Widget and registry member; every supported recipe is on the canonical gallery page.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:reveal-animation-canonical-viewport",
+      "patternFamilyId": "reveal-animation-canonical-viewport",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchRevealViewport",
+      "members": [
+        {
+          "name": "CatchFadeScaleViewport",
+          "action": "absorb",
+          "target": "CatchRevealViewport"
+        },
+        {
+          "name": "CatchMapRevealViewport",
+          "action": "absorb",
+          "target": "CatchRevealViewport.stationary"
+        },
+        {
+          "name": "CatchTicketHeroViewport",
+          "action": "absorb",
+          "target": "CatchHeroViewport.ticket"
+        },
+        {
+          "name": "CatchHeroViewport",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Three source wrappers shared external animation inputs and derived curves, while the ticket wrapper only configured the existing Hero. One Stateful reveal renderer now owns the curve and releases it on input replacement and unmount. A regression first reproduced growing status-listener counts in both former route wrappers and now passes. Four forward/reverse pose images captured from original implementations with motion explicitly enabled remain unchanged in two consecutive comparisons. Reduced motion consistently exposes resting content; this is an accepted accessibility correction for content and flight recipes. Preserve stationary native media, veil geometry, curve selection, ticket tag, transparent Material and gesture-flight behavior. Shared-element identity remains a separate Hero responsibility.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:passive-badge-recipe-consolidation",
+      "patternFamilyId": "passive-badge-recipe-consolidation",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchBadge",
+      "members": [
+        {
+          "name": "CatchTicketStatusBadge",
+          "action": "absorb",
+          "target": "CatchBadge.ticketStatus"
+        },
+        {
+          "name": "CatchFormFieldOptionalBadge",
+          "action": "absorb",
+          "target": "CatchBadge.optional"
+        },
+        {
+          "name": "CatchPersonUnreadCountPill",
+          "action": "absorb",
+          "target": "CatchCountBadge.label"
+        },
+        {
+          "name": "CatchPersonNewMatchDot",
+          "action": "absorb",
+          "target": "CatchStatusIndicator"
+        },
+        {
+          "name": "CatchInlineStatus",
+          "action": "absorb",
+          "target": "CatchStatusRow"
+        },
+        {
+          "name": "CatchDaySectionHeaderCount",
+          "action": "absorb",
+          "target": "CatchCountText"
+        },
+        {
+          "name": "CatchPrivacyBadge",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Source review finds ticket-status and optional-field chrome differ only in metrics and palette; named recipes now share CatchBadge rendering. Unread and new-match wrappers receive fully resolved copy from their callers and add only semantics around existing count/dot renderers; their semantic exclusion moves into those renderers, preserving zero hiding, 99+ clamping, label semantics and dot dimensions. Delete four duplicate Widgets and registry members. A wrapping status Row remains distinct from contained Badge chrome. Uncapped animated count Text remains distinct from clamped badges and arbitrary metadata; its reduced-motion output now settles immediately. Keep the privacy adapter because it maps typed visibility to three caller-resolved labels/icons, and rename its enum axis to Variant. Count-bearing actions remain interactive and are not passive badges. Four original images at both text scales pass repeated comparisons; focused caller and accessibility tests pass. Prior repair dispositions for unread/new-match wrappers are superseded by this source-reviewed direct mount.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex-rule:R2+K3",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:empty-error-canonical-states",
+      "patternFamilyId": "empty-error-canonical-states",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchErrorState",
+      "members": [
+        {
+          "name": "CatchErrorBody",
+          "action": "absorb",
+          "target": "CatchErrorState"
+        },
+        {
+          "name": "CatchInlineErrorState",
+          "action": "absorb",
+          "target": "CatchErrorState"
+        },
+        {
+          "name": "CatchEmptyStateContent",
+          "action": "absorb",
+          "target": "CatchEmptyState"
+        },
+        {
+          "name": "CatchLocalizedInlineErrorState",
+          "action": "absorb",
+          "target": "CatchLocalizedErrorState"
+        }
+      ],
+      "rationale": "CatchErrorBody and CatchEmptyStateContent only supply the owning states with their renderers. InlineErrorState and its localized peer only forward a typed mode. Move rendering into the canonical states and remove all four Widgets and registry members. Error mode preserves full-screen, inline and compact output; EmptyState layout becomes its Variant axis. Use an actions list on both families and their root/sliver/localized adapters, retaining the existing one-action geometry and retry behavior. Original gallery images remain unchanged in consecutive comparisons. Separate sliver, root and localized contracts retain their protocol and dependency boundaries. The prior K3 example treating inline forwarding as necessary API ergonomics is superseded by this reviewed typed-mode contract.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:skeleton-canonical-recipes",
+      "patternFamilyId": "skeleton-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSkeleton",
+      "members": [
+        {
+          "name": "CatchSkeletonized",
+          "action": "absorb",
+          "target": "CatchSkeleton.content"
+        },
+        {
+          "name": "CatchSkeletonList",
+          "action": "absorb",
+          "target": "CatchSkeleton.cards"
+        },
+        {
+          "name": "CatchSkeletonRows",
+          "action": "absorb",
+          "target": "CatchSkeleton.rows"
+        },
+        {
+          "name": "CatchSkeletonBoxRow",
+          "action": "absorb",
+          "target": "CatchSkeleton.boxes"
+        },
+        {
+          "name": "CatchSkeletonChips",
+          "action": "absorb",
+          "target": "CatchSkeleton.chips"
+        },
+        {
+          "name": "CatchAsyncScreenLoading",
+          "action": "absorb",
+          "target": "CatchScreenSkeleton"
+        },
+        {
+          "name": "CatchAsyncSliverLoading",
+          "action": "absorb",
+          "target": "CatchSliverSkeleton"
+        }
+      ],
+      "rationale": "All five recipe Widgets belonged to the existing skeleton concept and delegated visual paint to the same engine. CatchSkeleton now exposes content, cards, rows, mediaRows, iconRows, boxes and chips constructors. Preserve const construction using private record configuration; callers cannot combine unrelated recipe arguments. Replace the row-leading enum with named row recipes. Keep screen and sliver adapters because they own page-body and RenderSliver protocols, and name them CatchScreenSkeleton and CatchSliverSkeleton. They do not consume asynchronous state. Original row-recipe images and the canonical multi-recipe gallery remain unchanged; motion, reduced-motion, semantics and pointer-blocking tests pass. Indeterminate progress and asynchronous data/error selection remain separate concepts. This supersedes the old list-member registration disposition without recombining the decompressed loading concepts.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:header-canonical-recipes",
+      "patternFamilyId": "header-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSectionHeader",
+      "members": [
+        {
+          "name": "CatchSectionKicker",
+          "action": "absorb",
+          "target": "CatchSectionHeader.kicker"
+        },
+        {
+          "name": "CatchPlainSheetHeader",
+          "action": "absorb",
+          "target": "CatchSheetHeader"
+        },
+        {
+          "name": "CatchBrandedSheetHeader",
+          "action": "absorb",
+          "target": "CatchSheetHeader.branded"
+        },
+        {
+          "name": "CatchScreenHeaderTitle",
+          "action": "absorb",
+          "target": "CatchScreenHeader"
+        },
+        {
+          "name": "CatchCollapsedSliverTitle",
+          "action": "absorb",
+          "target": "CatchCollapsedHeaderTitle"
+        },
+        {
+          "name": "CatchDaySectionHeader",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStepHeader",
+          "action": "keep"
+        }
+      ],
+      "rationale": "The section kicker owns the same section-heading responsibility with a count/trailing recipe, so it becomes CatchSectionHeader.kicker with title and textVariant arguments. Plain and branded sheet headers differ only by glyph, alignment and text metrics; CatchSheetHeader and its branded constructor share rendering. Delete two duplicate Widgets and registry members. Screen-header assembly owns multiple lanes and uses the Header role; the collapse-triggered title uses HeaderTitle because it only reacts to inherited collapse progress. Keep chronological sticky headers and step-progress headers for their distinct behavior. Four original images cover both text scales, both themes and three collapse poses. Source callers, navigation-chrome contracts and Widgetbook cases move with the APIs. The proposal fixture only updates its production-header call; its proposal content and disposition remain unchanged.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:divider-canonical-recipes",
+      "patternFamilyId": "divider-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchDivider",
+      "members": [
+        {
+          "name": "CatchMetricStripDivider",
+          "action": "absorb",
+          "target": "CatchDivider.vertical"
+        },
+        {
+          "name": "CatchTicketPerforatedDivider",
+          "action": "absorb",
+          "target": "CatchTicketDivider"
+        }
+      ],
+      "rationale": "The metric divider paints the same line token and hairline as a section separator, with only vertical orientation and a 36 px extent. Consolidate it into CatchDivider.vertical and use CatchDivider.section in the metric reflow path. CatchDividerVariant replaces the nonconforming Role axis. Retain the ticket divider as CatchTicketDivider: its dashed perforation reserves notch insets, supports a selected vertical band and uses the ticket line token. These are concrete ticket anatomy requirements, not another continuous separator. Original images at both themes and text scales cover horizontal, indented, colored and vertical rules, metric-row reflow and ticket geometry. Delete the redundant metric Widget and registry member.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:metadata-row-canonical-recipes",
+      "patternFamilyId": "metadata-row-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchMetaRow",
+      "members": [
+        {
+          "name": "CatchMetaDotRow",
+          "action": "absorb",
+          "target": "CatchMetaRow.group"
+        },
+        {
+          "name": "CatchMetaEntryFlow",
+          "action": "absorb",
+          "target": "CatchMetaRow.flow"
+        },
+        {
+          "name": "CatchMetaEntryView",
+          "action": "absorb",
+          "target": "CatchMetaRow.entry"
+        },
+        {
+          "name": "CatchRecordRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Default icon/label metadata and compact entries render the same passive icon/text responsibility with different existing typography and gaps. CatchMetaRow owns both recipes and composes its flow and group constructors for dot-separated facts and a strong trailing value. The three former Widgets are removed, along with their metric-strip registry members; metadata has its existing canonical concept. Preserve const constructors and original normal/scaled, LTR/RTL images. RecordRow remains distinct because it owns heading, context, prose and optional navigation/disclosure. This supersedes the separate metadata-member registrations while preserving the earlier single-row versus record boundary.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:metric-canonical-recipes",
+      "patternFamilyId": "metric-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchMetricTile",
+      "members": [
+        {
+          "name": "CatchStatColumn",
+          "action": "absorb",
+          "target": "CatchMetricTile"
+        },
+        {
+          "name": "CatchMetricStripCell",
+          "action": "absorb",
+          "target": "CatchMetricTile.compact"
+        },
+        {
+          "name": "CatchMetricStrip",
+          "action": "absorb",
+          "target": "CatchMetricSection"
+        },
+        {
+          "name": "CatchAnalyticsMetricGrid",
+          "action": "absorb",
+          "target": "CatchMetricSection.dataQuality"
+        },
+        {
+          "name": "CatchAnalyticsMetricTile",
+          "action": "absorb",
+          "target": "CatchDataQualityMetricTile"
+        }
+      ],
+      "rationale": "Simple value/label columns and compact value/unit cells now share CatchMetricTile, retaining natural-height display and bounded compact recipes. Metric rail and grid arrangements become CatchMetricSection and its dataQuality constructor. Keep CatchDataQualityMetricTile as a concrete use case: explicit completeness status, badge copy, warning border/fill and optional explanation are distinct from scalar display. This supersedes the earlier feature-qualified analytics metric name and separate cell/grid member registrations. Rename the data value objects to CatchMetricValue and CatchMetricData, with CatchMetricDataStatus naming its actual owner. Typed Tile Variant/Mode axes replace monoValue/surface booleans; the default constructor has two booleans. Five former Widgets become three canonical Widgets without aliases or new private renderers. Original normal/scaled light/dark metric images pass unchanged; application consumers preserve their payload mapping, item limits, keys and large-text behavior.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:button-content-loading-recipes",
+      "patternFamilyId": "button-content-loading-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchLoadingIndicator",
+      "members": [
+        {
+          "name": "CatchButtonLoadingDots",
+          "action": "absorb",
+          "target": "CatchLoadingIndicator.dots"
+        },
+        {
+          "name": "CatchButtonLabel",
+          "action": "absorb",
+          "target": "CatchButtonContentRow"
+        }
+      ],
+      "rationale": "Button loading dots express the same indeterminate activity contract as the circular loading indicator. Consolidate the static three-dot recipe into CatchLoadingIndicator.dots, preserving dimensions, opacity sequence and the existing stable key. Remove the former Widget and button-family member registration. Name the noninteractive icon/text arrangement CatchButtonContentRow and use the approved leading slot. CatchButton continues to own focus, gestures, busy disabling and switching. Original normal/scaled light/dark images and primitive behavior tests preserve the existing rendering; this is a helper consolidation, not completion of the wider Button/IconAction API review.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:count-badge-child-constraints",
+      "patternFamilyId": "count-badge-child-constraints",
+      "decision": "repair-canonical",
+      "canonicalSymbol": "CatchCountBadge",
+      "members": [
+        {
+          "name": "CatchCountBadge",
+          "action": "repair"
+        }
+      ],
+      "rationale": "The full button-family capture exposed a detached marker when a parent imposes a tight width: count zero preserves the full-width child, but the default loose Stack shrinks a nonzero-count child and leaves the marker at the far edge. The seeded geometry test measures 80 px instead of the required 320 px before the fix. Forward parent constraints through the overlay so the painted child and badge share the same boundary, without adding intrinsic layout passes. Loose-width behavior, count formatting and pointer passthrough remain unchanged. This corrects the shared badge owner before the floating-button migration.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:labelled-button-canonical-recipes",
+      "patternFamilyId": "labelled-button-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchButton",
+      "members": [
+        {
+          "name": "CatchCountPill",
+          "action": "absorb",
+          "target": "CatchButton.floating"
+        }
+      ],
+      "rationale": "The labelled floating control is a Button recipe, retaining its raised surface, typed count, optional value, required action, focus border, semantic override and platform target. CatchButton.floating absorbs the former Widget and State; delete the redundant primary contract and route Explore references to catch.button. Icon-only controls remain distinct as the earlier compact-control review required. CatchButtonStatus replaces the loading boolean, CatchButtonMode replaces the nonconforming Shape axis, and leading/trailing replace widget icon plus iconAtEnd. The default constructor now has two booleans. A syntax-selected migration updates only these constructors and their typed footer geometry forwarding. The original normal/scaled light/dark button-family and anatomy images remain unchanged after migration, including the separately fixed badge constraints.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:compact-action-canonical-recipes",
+      "patternFamilyId": "compact-action-canonical-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchButton + CatchIconAction",
+      "members": [
+        {
+          "name": "CatchTextButton",
+          "action": "absorb",
+          "target": "CatchButton.text"
+        },
+        {
+          "name": "CatchIconButton",
+          "action": "absorb",
+          "target": "CatchIconAction"
+        }
+      ],
+      "rationale": "Text actions have the same labelled action responsibility as Button; native Material interaction remains a named recipe. The previous icon Action wrapper adds only tooltip, navigation glyph and color defaults around IconButton, so one IconAction now owns all icon-only recipes. Preserve all existing paint, keyboard/focus, target-size and semantic behavior. Replace icon disabled/fill booleans with owning Status/Emphasis axes, preserving adaptive versus explicit glyph fill. Both public components stay below 800 lines; remove both redundant files, exports and registry members.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:anchored-menu-recipe",
+      "patternFamilyId": "anchored-menu-recipe",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchMenu",
+      "members": [
+        {
+          "name": "CatchMenuAnchor",
+          "action": "absorb",
+          "target": "CatchMenu.anchored"
+        }
+      ],
+      "rationale": "Move the existing anchored overlay implementation and viewport value object into the canonical Menu owner. Preserve its shell obstruction, menu/trigger width, flipping, scroll bounds and callbacks; allocate the anchor key only for the anchored recipe. Existing panel assertions distinguish the passive panel from the anchor by its builder contract. The removed file has no alias or second renderer.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:adaptive-selection-menu-recipes",
+      "patternFamilyId": "adaptive-selection-menu-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSelectionMenu",
+      "members": [
+        {
+          "name": "CatchAdaptiveSelectionMenu",
+          "action": "absorb",
+          "target": "CatchSelectionMenu.adaptive"
+        },
+        {
+          "name": "CatchAdaptiveSelectionControl",
+          "action": "absorb",
+          "target": "CatchSelectionMenu.control"
+        }
+      ],
+      "rationale": "One selected-value owner now exposes anchored, adaptive and standard-button recipes. Keep caller trigger builders, typed choice data, compact-sheet presentation, wider anchored presentation, selection haptics and callback behavior. The two wrapper Widgets and exports are deleted. The standard trigger computation uses the closed labelBuilder naming rule.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:toolbar-text-button-recipe",
+      "patternFamilyId": "toolbar-text-button-recipe",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchButton",
+      "members": [
+        {
+          "name": "CatchTopBarTextAction",
+          "action": "absorb",
+          "target": "CatchButton.text"
+        }
+      ],
+      "rationale": "Delete the exact delegation wrapper and use CatchButton.text at its callers. Preserve omitted callbacks as disabled actions. The action row recognizes the immutable text-recipe marker; other Button recipes still fail its geometry guard. Source enforcement now probes both a permitted text recipe and a rejected named floating recipe, preventing constructor spelling from bypassing the same existing restriction.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-08",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:toolbar-overflow-menu",
+      "patternFamilyId": "toolbar-overflow-menu",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchActionMenu",
+      "members": [
+        {
+          "name": "CatchTopBarMenuAction",
+          "action": "absorb",
+          "target": "CatchActionMenu"
+        }
+      ],
+      "rationale": "Source comparison confirms identical items, callback, tooltip, enabled state, icon variant and fallback icon. Delete the wrapper and use ActionMenu directly; retain the short-command limits, disabled explanations, anchor geometry and selection behavior at the existing owner.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:top-bar-action-row",
+      "patternFamilyId": "top-bar-action-row",
+      "decision": "rename-in-place",
+      "canonicalSymbol": "CatchTopBarActionRow",
+      "members": [
+        {
+          "name": "CatchTopBarActionGroup",
+          "action": "rename",
+          "target": "CatchTopBarActionRow"
+        }
+      ],
+      "rationale": "The parent TopBar owns route title and navigation chrome. This member arranges its action targets with one shared gap and minimum-width calculation, allows the native text recipe, and rejects pill buttons that bypass the responsive primary action. It adds layout constraints, not another action implementation. Render and interaction bodies are unchanged. The lint reference and every source caller move with the member; no alias remains.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:top-bar-primary-button",
+      "patternFamilyId": "top-bar-primary-button",
+      "decision": "rename-in-place",
+      "canonicalSymbol": "CatchTopBarPrimaryButton",
+      "members": [
+        {
+          "name": "CatchTopBarPrimaryAction",
+          "action": "rename",
+          "target": "CatchTopBarPrimaryButton"
+        }
+      ],
+      "rationale": "The shared Button renders one chosen control recipe. This top-bar member switches between a quiet icon target on compact windows and a labelled small button on wider windows, owning the breakpoint and toolbar allocation while preserving one callback and accessible label. That responsive chrome contract is distinct from choosing another Button style. Compared with both TopBar and Button, it remains a complementary layout-aware operation; all painting stays delegated to the existing button and icon recipes.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:error-back-button",
+      "patternFamilyId": "error-back-button",
+      "decision": "rename-in-place",
+      "canonicalSymbol": "CatchErrorBackButton",
+      "members": [
+        {
+          "name": "CatchErrorBackAction",
+          "action": "rename",
+          "target": "CatchErrorBackButton"
+        }
+      ],
+      "rationale": "The parent error state presents a failure and offers explicit recovery. This member supplies the terminal route-exit operation with inherited Material back copy and Navigator.maybePop defaults, while respecting an explicit label or callback. It delegates all button painting to CatchButton with its secondary variant; it does not own a second button renderer or retry behavior. All call sites and error-policy steering use the new symbol; no compatibility export remains.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:selection-and-wheel-picker-sheets",
+      "patternFamilyId": "selection-and-wheel-picker-sheets",
+      "decision": "keep-complementary-operations",
+      "canonicalSymbol": "CatchWheelPickerSheet",
+      "members": [
+        {
+          "name": "CatchPickerSheet",
+          "action": "rename",
+          "target": "CatchWheelPickerSheet"
+        },
+        {
+          "name": "CatchSelectionSheet",
+          "action": "keep",
+          "target": "CatchSelectionSheet"
+        }
+      ],
+      "rationale": "Compared both complete widgets and the date/time callers: wheel edits stay local until Done and Cancel returns no committed value; choice rows return immediately. Their distinct interaction contracts justify WheelPicker and Selection under the same Sheet role. Row rendering remains shared with the Menu family and both existing bodies stay unchanged.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:quantitative-bar-indicators",
+      "patternFamilyId": "quantitative-bar-indicators",
+      "decision": "consolidate-renderer-and-repair",
+      "canonicalSymbol": "CatchBarSeriesIndicator",
+      "members": [
+        {
+          "name": "CatchMiniBarChart",
+          "action": "rename-and-compose",
+          "target": "CatchBarSeriesIndicator"
+        },
+        {
+          "name": "CatchAnalyticsBar",
+          "action": "rename-and-generalize",
+          "target": "CatchBarIndicator"
+        }
+      ],
+      "rationale": "Complete source and rendered comparison found duplicate fractional-fill logic and a zero-width series painter. The seeded paint-size probe measured [0, 0, 0] widths before repair. One BarIndicator now owns ratio bounds, width allocation and typed rounded/square rendering; BarSeriesIndicator owns the series frame, maximum and semantics. Page/loading comparisons establish distinct indicator use cases. The reviewed visual delta restores the previously invisible series; standalone bars retain their output.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:inline-feedback-canonical-banner",
+      "patternFamilyId": "inline-feedback-canonical-banner",
+      "decision": "discard-unused-renderer",
+      "canonicalSymbol": "CatchBanner",
+      "members": [
+        {
+          "name": "CatchAnalyticsDataQualityList",
+          "action": "discard",
+          "target": "CatchBanner"
+        },
+        {
+          "name": "CatchDataQualityRowData",
+          "action": "discard"
+        }
+      ],
+      "rationale": "Source review finds zero app callers for either the status-list widget or its payload. Existing light/dark and scaled previews show another persistent icon-and-message surface, already owned by Banner. Delete the unused public API, registry concept, strict Host preview and redundant contract preview. Keep the three readiness messages using Banner success/warning tones; no production screen or Banner renderer changes. Historical work orders remain historical.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:avatar-initials-surface",
+      "patternFamilyId": "avatar-initials-surface",
+      "decision": "absorb-into-one-renderer",
+      "canonicalSymbol": "CatchAvatarInitialsSurface",
+      "members": [
+        {
+          "name": "CatchActivityInitialsPlaceholder",
+          "action": "absorb",
+          "target": "CatchAvatarInitialsSurface.activity"
+        },
+        {
+          "name": "CatchInitialsAvatarPlaceholder",
+          "action": "absorb",
+          "target": "CatchAvatarInitialsSurface"
+        }
+      ],
+      "rationale": "Both implementations paint the initials layer of one avatar and duplicate its expanded stack, centered label and typography. Preserve quiet person identity versus activity-context pigment with named recipes and an owning Variant enum. The parent still owns photos, failure fallback, clipping, rings, privacy treatment and status. Move the existing 0.34 person scale and 150-degree activity rotation into the layout token owner without changing values. Delete both old Widgets and exports; migrate all package, test and catalog callers.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:canonical-avatar-recipes",
+      "patternFamilyId": "canonical-avatar-recipes",
+      "decision": "consolidate-renderer-and-repair",
+      "canonicalSymbol": "CatchAvatar",
+      "members": [
+        {
+          "name": "CatchPersonAvatar",
+          "action": "rename",
+          "target": "CatchAvatar"
+        },
+        {
+          "name": "CatchVeiledPersonAvatar",
+          "action": "absorb",
+          "target": "CatchAvatar.veiled"
+        },
+        {
+          "name": "CatchPersonAvatarShell",
+          "action": "rename-and-share",
+          "target": "CatchAvatarViewport"
+        }
+      ],
+      "rationale": "Source and rendered review show one identity-image responsibility, including the existing activity and count variants. The veiled renderer duplicates the parent clipping/ring frame and becomes a recipe. The seeded glyph-layout probe finds wrapping and clipped bounds before repair, including three-line localized count copy. Share a bounded label viewport across initials and count content, retain full semantic copy, and keep each old fill and image/fallback operation. Replace the nonconforming Shape axis and the third constructor boolean with AvatarVariant and AvatarStatus; migrate syntax-selected arguments and delete the old exports.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:avatar-row-layout",
+      "patternFamilyId": "avatar-row-layout",
+      "decision": "rename-layout-member",
+      "canonicalSymbol": "CatchAvatarRow",
+      "members": [
+        {
+          "name": "CatchPersonAvatarStack",
+          "action": "rename",
+          "target": "CatchAvatarRow"
+        }
+      ],
+      "rationale": "The row already delegates every visible identity, veil and count to Avatar. It owns collection geometry rather than another identity renderer or factual metadata row. Keep the stable parent/member ids and all production behavior, migrate both event callers and tests, replace the stale square-row claim with supported edge states, and remove the unregistered unused duplicate Avatar catalog helper.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:avatar-viewport-obscuring",
+      "patternFamilyId": "avatar-viewport-obscuring",
+      "decision": "absorb-anatomy-recipe",
+      "canonicalSymbol": "CatchAvatarViewport",
+      "members": [
+        {
+          "name": "CatchObscuredAvatarContent",
+          "action": "absorb",
+          "target": "CatchAvatarViewport.obscured"
+        }
+      ],
+      "rationale": "The sole production caller immediately clips this wrapper inside AvatarViewport. Move the same render objects inside the same SizedBox/clip order as a named recipe. Preserve the parent branch choices: photos and ordinary initials may be obscured; the existing activity-only fallback, count and veil paths retain their original behavior. The public Mode enum describes clip, label or obscured operation. Delete the obsolete member API and catalog page; retain the owning viewport member id.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:surface-recipe-and-emphasis",
+      "patternFamilyId": "surface-recipe-and-emphasis",
+      "decision": "remove-redundant-axis-and-name-emphasis",
+      "canonicalSymbol": "CatchSurface",
+      "members": [
+        {
+          "name": "CatchSurfaceRole",
+          "action": "delete-unused-rendering-input"
+        },
+        {
+          "name": "CatchSurfaceElevation",
+          "action": "rename-axis",
+          "target": "CatchSurfaceEmphasis"
+        }
+      ],
+      "rationale": "Source review finds no render read of Surface.role; its sole production assignment is redundant with explicit section padding, radius and tone. Retain card/tinted named constructors and remove the unused marker and obsolete lint branches. Shadow prominence uses the approved Emphasis axis with an exact mapping onto the same CatchElevation token lists. Migrate all inventoried package/app/catalog callers and section configuration; retain Material/Flutter elevation arguments unchanged. Existing golden baselines must pass without updates.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:section-surface-boundary",
+      "patternFamilyId": "section-surface-boundary",
+      "decision": "name-boundary-and-type-state",
+      "canonicalSymbol": "CatchSectionSurface",
+      "members": [
+        {
+          "name": "CatchSectionFocusSurface",
+          "action": "rename-and-type-state",
+          "target": "CatchSectionSurface"
+        }
+      ],
+      "rationale": "This member owns a whole contained section, including ordinary content and clipped field groups; focus is a state rather than a use-case distinction. Use Flutter WidgetState.focused/error, matching the field surface state vocabulary while preserving simultaneous states and error precedence. Field-group construction omits generic surface settings that its old branch ignored. Preserve the stable contract id, clip key, field geometry publication and feature-construction lint; delete the old public symbol/file and migrate every inventoried test and preview reference.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:field-state-surface",
+      "patternFamilyId": "field-state-surface",
+      "decision": "absorb-focus-paint-recipe",
+      "canonicalSymbol": "CatchFieldSurface",
+      "members": [
+        {
+          "name": "CatchFieldFocusOutline",
+          "action": "absorb",
+          "target": "CatchFieldSurface.focusTarget"
+        }
+      ],
+      "rationale": "Source and rendered review separate field paint from group boundaries and from the generic RowPressSurface interaction owner. Row paint and small-target outline are two passive operations of the same field-state paint member. Preserve both algorithms through named construction and Flutter WidgetState.focused. Move the exact focus painter with its keys and geometry; migrate commit/stepper controls and keyboard tests, then remove the old class, export, registry member and redundant preview.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:loading-indicator-recipes",
+      "patternFamilyId": "loading-indicator-recipes",
+      "decision": "absorb-inline-loading-recipe",
+      "canonicalSymbol": "CatchLoadingIndicator",
+      "members": [
+        {
+          "name": "CatchFieldSpinner",
+          "action": "absorb",
+          "target": "CatchLoadingIndicator.inline"
+        }
+      ],
+      "rationale": "Both components render indeterminate activity. Preserve the compact Phosphor animation through an inline named recipe alongside circular and static dots. Allocate and dispose rotation only for inline, including keyed recipe changes. The field still owns saving/saved state, disabled actions and localized announcements; skeleton loading remains its separate content-layout contract. Delete the old class/export/member and migrate every inventoried caller and direct preview.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:number-stepper",
+      "patternFamilyId": "number-stepper",
+      "decision": "one-renderer-and-explicit-action-recipe",
+      "canonicalSymbol": "CatchStepper",
+      "members": [
+        {
+          "name": "CatchFieldStepper",
+          "action": "absorb",
+          "target": "CatchStepper"
+        },
+        {
+          "name": "CatchFieldRepeatButton",
+          "action": "rename",
+          "target": "CatchStepperRepeatButton"
+        },
+        {
+          "name": "CatchNumberStepper",
+          "action": "replace",
+          "target": "CatchStepper"
+        }
+      ],
+      "rationale": "The two minus/value/plus controls have the same responsibility. The compact field implementation supplies stronger press-and-hold, keyboard-focus and pointer-cancellation contracts; adopt it for one numeric concept. Preserve custom callbacks as actions with the same renderer, separated from bounded onChanged stepping. Retire the unused full-width renderer and duplicate field-member preview; migrate live Field callers without changing their geometry or cadence. Name formatting computations valueLabelBuilder, move repeat-button ownership and preserve all states in the canonical gallery. Keep the old generic control's support for fractional steps: the canonical arithmetic normalizes at caller-supplied decimal precision and clamps endpoints, with probes for 0.005, 0.1 + 0.2 and scientific notation.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:field-disclosure-actions",
+      "patternFamilyId": "field-disclosure-actions",
+      "decision": "one-drawer-layout-and-explicit-action-roles",
+      "canonicalSymbol": "CatchFieldDrawer",
+      "members": [
+        {
+          "name": "CatchFieldExplicitSaveControl",
+          "action": "absorb",
+          "target": "CatchFieldDrawer"
+        },
+        {
+          "name": "CatchFieldDisclosureDrawer",
+          "action": "rename",
+          "target": "CatchFieldDrawer"
+        },
+        {
+          "name": "CatchFieldActionBar",
+          "action": "rename",
+          "target": "CatchFieldActionRow"
+        }
+      ],
+      "rationale": "The explicit-save wrapper only stacks drawer metadata, feedback and a secondary action. Flatten that exact order and spacing into the canonical drawer using standard slots, preserving the final action footer and hidden focus/pointer/semantics lifecycle. Name the fixed Cancel/Done group as FieldActionRow and use leading. Retain CommitButton as the Button.text configuration and SupportRow as root validation output; parent field state keeps save/cancel behavior and error placement.",
+      "decidedBy": "owner-delegated:2026-09-08 -> codex source and rendered review",
+      "date": "2026-09-09",
+      "status": "implemented-source-pending-phase-4-ci"
+    },
+    {
+      "clusterId": "pattern-family:page-tab-navigation",
+      "patternFamilyId": "page-tab-navigation",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchPageTabBar",
+      "members": [
+        {
+          "name": "CatchTabRail",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchTabControllerRail",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchTopBarTabBar",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchTopBarTabLabel",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Owner-delegated Phase 4 semantic review supersedes the older separate top-bar/control-adapter decisions. Production uses one option renderer; page placement gets one API and a controlled recipe. Retire the unconsumed alternate renderer and label. Bottom navigation remains a distinct route-destination contract.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:segmented-choice-input",
+      "patternFamilyId": "segmented-choice-input",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchChoiceInput",
+      "members": [
+        {
+          "name": "CatchOptionGroup",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchOptionGroupItem",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Owner-delegated Phase 4 source review found the same typed selection responsibility in form choices, inline scopes, broadcast recipients and event action settings. Segmented now shares the canonical input algorithm while retaining selected semantics, all visual variants and scrolling/pager geometry; its target is registered ChoiceButton anatomy.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:navigation-destination-button",
+      "patternFamilyId": "navigation-destination-button",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchNavigationButton",
+      "members": [
+        {
+          "name": "CatchTabBarButton",
+          "action": "absorb"
+        },
+        {
+          "name": "AppShellSideNavigationButton",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchTabBarIcon",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Owner-delegated semantic review combines presentation-neutral bottom and side destination buttons under one contract with named layout recipes, and absorbs their icon box into the existing count badge. Keep the parent-positioned indicator as public navigation anatomy. Repair missing rail semantic activation without changing paint.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:horizontal-section-collection",
+      "patternFamilyId": "horizontal-section-collection",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSection",
+      "members": [
+        {
+          "name": "CatchHorizontalRail",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchHorizontalRailBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchHorizontalRailItem",
+          "action": "delete"
+        },
+        {
+          "name": "CatchVerticalSection",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Owner-delegated source review found a horizontal section recipe, a useful scroll viewport, a trivial private-to-family item selector and a vertical alternative with zero production callers. Consolidate the recipe under Section, retain the viewport with deterministic naming and delete the redundant identities.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:step-instructions-and-progress",
+      "patternFamilyId": "step-instructions-and-progress",
+      "decision": "keep-distinct-and-retire-unused",
+      "canonicalSymbol": "CatchStepRowList",
+      "members": [
+        {
+          "name": "CatchJourneySteps",
+          "action": "rename"
+        },
+        {
+          "name": "CatchJourneyStepNode",
+          "action": "delete"
+        },
+        {
+          "name": "CatchStepProgress",
+          "action": "delete"
+        },
+        {
+          "name": "CatchFormRowList",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStepHeader",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Source callers and rendered contract states establish three different responsibilities: instructions, editable field orchestration and current-step header progress. Preserve them, name the instructional RowList deterministically, inline its decorative node and remove the standalone progress renderer with no production callers.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:person-identity-and-index-rows",
+      "patternFamilyId": "person-identity-and-index-rows",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchPersonRow",
+      "members": [
+        {
+          "name": "CatchHostRow",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchPersonChatLayout",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchPersonRosterLayout",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchPersonChatTrailing",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Source and consistent-context render review establish one person identity contract. Contact callbacks justify a recipe, while chat and roster bodies share title/context rendering inside the parent. Index selection and record facts retain independently reviewed Row use cases; restore IndexRow semantic activation.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:bounded-modal-dialogs",
+      "patternFamilyId": "bounded-modal-dialogs",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchDialog",
+      "members": [
+        {
+          "name": "CatchConfirmDialog",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFormDialog",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Source and consistent-context render review show duplicate Dialog/Surface/title chrome. One CatchDialog retains slotted content with trailing actions and a typed confirmation constructor with centered copy and equal-width or stacked actions. Keep adaptive launchers and typed route results, remove both old classes and exports, and preserve all preview states under the stable confirmation contract ID. Repair existing mid-word action wrapping by measuring labels through the button contract and stacking choices when they cannot fit.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:sheet-content-and-scroll-ownership",
+      "patternFamilyId": "sheet-content-and-scroll-ownership",
+      "decision": "keep-distinct-and-retire-unused",
+      "canonicalSymbol": "CatchSheet",
+      "members": [
+        {
+          "name": "CatchBottomSheetScaffold",
+          "action": "rename"
+        },
+        {
+          "name": "CatchDraggableSheetShell",
+          "action": "delete"
+        }
+      ],
+      "rationale": "Owner-delegated source and rendered-state review establish one sheet surface with two scroll-ownership modes. Preserve all production callers and paint through CatchSurface, rename action to footer, and remove the extra draggable shell with zero production callers. Focused tests assert reachable actions, rendered keyboard clearance and a single body-owned scroll viewport.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:share-media-preview-and-attribution",
+      "patternFamilyId": "share-media-preview-and-attribution",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchShareCardSheet",
+      "members": [
+        {
+          "name": "CatchShareCardSheet",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSheetShare",
+          "action": "rename"
+        },
+        {
+          "name": "CatchShareCardFooter",
+          "action": "rename"
+        }
+      ],
+      "rationale": "Source and consistent-context render review establish complementary contracts: transparent capturable preview, app-owned external export and branding on the exported media. Retain their shared ownership boundaries, standardize card slots as media and name the adapter/attribution row by their responsibility. All feature callers continue through the same renderer and export controller.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:persistent-dock-and-primary-action",
+      "patternFamilyId": "persistent-dock-and-primary-action",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchDockSurface",
+      "members": [
+        {
+          "name": "CatchBottomDock",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBottomAction",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBottomActionContent",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBottomActionOverlay",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Source and consistent-context rendered review identify overlapping dock chrome and one repeated primary-action body. Combine them under required-child, primary and primaryContent recipes with one widget identity. Keep the scroll-fade overlay as a complementary pattern. The pre-gallery-change visual trial passed all selected original images; platform-bound geometry and terminal-clearance tests cover the preserved ownership differences.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:hero-image-and-fallback-recipes",
+      "patternFamilyId": "hero-image-and-fallback-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchHeroImage",
+      "members": [
+        {
+          "name": "CatchDetailHeroBackdrop",
+          "action": "rename"
+        },
+        {
+          "name": "CatchDetailHeroFallback",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchImageFallbackSurface",
+          "action": "keep"
+        },
+        {
+          "name": "CatchGradedImage",
+          "action": "keep"
+        },
+        {
+          "name": "CatchNetworkImage",
+          "action": "keep"
+        }
+      ],
+      "rationale": "The hero is an assembly over existing loading and grading operations. Its standalone no-photo renderer has no separate production caller or behavior and becomes the hero recipe of ImageFallbackSurface. Keep the neutral fallback recipe and source-loading contract. Repair the shared grade at its owner: equivalent per-stage color matrices retain opaque photo colors while preserving image alpha and preventing tint from painting neighboring content. The hero gallery distinguishes a real bundled photo from image failure.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:distance-overlay-and-label-recipe",
+      "patternFamilyId": "distance-overlay-and-label-recipe",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchDistanceOverlay",
+      "members": [
+        {
+          "name": "CatchDistanceRing",
+          "action": "rename"
+        },
+        {
+          "name": "CatchDistanceRingViewport",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchDistanceRingLabel",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "One distance annotation combines the fitted and fixed ring paths, with a shared label-only recipe for native geographic circles. The label retains its passive annotation state and optional action, so it does not acquire general button command, disabled or busy behavior. CatchSurface continues to own interaction and paint. Native circle projection and app callbacks stay unchanged. Correct long-label clipping by constraining the ring annotation to its resolved diameter and allowing natural text reflow.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:notice-overlay-and-action-delivery",
+      "patternFamilyId": "notice-overlay-and-action-delivery",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchNoticeOverlay",
+      "members": [
+        {
+          "name": "CatchNoticeHost",
+          "action": "rename"
+        },
+        {
+          "name": "CatchNotice",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Source and rendered review preserve the notice renderer and name the distinct queue adapter by its Overlay role. Merge the duplicate notice leaves and ordinary/arrival interaction timing. Repair measured long-copy overflow and truncation, use the shared icon action, and provide the root Tooltip ancestor. F6 reaches the nonmodal notice from the route and returns focus without interrupting typing. Canonical snackbar publication, contextual persistent errors and feature navigation retain their existing owners.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:localized-error-banner-mutation-recipe",
+      "patternFamilyId": "localized-error-banner-mutation-recipe",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchLocalizedErrorBanner",
+      "members": [
+        {
+          "name": "CatchMutationErrorBanner",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBanner",
+          "action": "keep"
+        }
+      ],
+      "rationale": "The mutation adapter only selects MutationError and delegates to the localized banner. Combine this as a const-capable named constructor with one mapping/rendering path; callers keep their mutation subscriptions. Honor the existing architecture contract by preserving explicit recovery even when exception metadata marks the error nonretryable; absent callbacks still create no action. Source inventory covers every constructor caller and the matching mutation-error scanner moves with the API.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:mutation-error-subscriptions",
+      "patternFamilyId": "mutation-error-subscriptions",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "listenToCatchMutationErrors",
+      "members": [
+        {
+          "name": "CatchMutationErrorListener",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchMutationErrorListeners",
+          "action": "absorb"
+        },
+        {
+          "name": "showCatchErrorSnackBar",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Both Widgets only subscribe and return their child. One nonvisual build-scoped operation preserves keyed handles, conditional branches and error context across 18 production wrapper calls. Deduplicate repeated handles; publish only pending-to-error transitions through the existing snackbar owner. Preserve explicit recovery callbacks, and combine the two retired previews into the error-feedback gallery.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:async-state-boundary",
+      "patternFamilyId": "async-state-boundary",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchAsyncBoundary",
+      "members": [
+        {
+          "name": "CatchAsyncValueView",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchAsyncValueSliver",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Box and sliver APIs duplicate state selection, timeout and recovery logic. One AsyncBoundary role describes that responsibility; skeleton, error content, paint and geometric viewports keep distinct owners. Named sliver construction preserves the rendering protocol. A typed retention set preserves all eight combinations of refresh, reload and terminal-error data retention. Custom errors receive the deadline-resetting recovery callback, and disabling or changing the timeout cancels the old timer. Source inventory covers 61 production calls across 44 files.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:form-field-draft-editing",
+      "patternFamilyId": "form-field-draft-editing",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchFormChoiceField",
+      "members": [
+        {
+          "name": "CatchFormSingleChoiceRowEditor",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFormMultiChoiceRowEditor",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Both choice editors duplicate the same draft/save/error lifecycle. Named single and multiple constructors preserve typed descriptor and patch signatures while sharing one renderer. Text and range editing retain distinct Field names and concrete responsibility comparisons. All four old editor classes are deleted. Three production form lists across two files keep their descriptors, keys, save delegates and commit policy. A reproduced stale range draft now follows changed authoritative values.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:field-content-and-labels",
+      "patternFamilyId": "field-content-and-labels",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchFieldContentRow",
+      "members": [
+        {
+          "name": "CatchFieldValueContent",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFieldContentRow",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Title/description and caption/value are field-content hierarchies, not independent concepts. One const component with a named value constructor preserves both layouts and all custom body, optional, badge, counter, validation and trailing geometry. Label Text, outer FieldRow and FieldLanes keep explicit responsibility comparisons. The support palette moves to its existing support-row owner, and all old value-content and form-label classes and paths are removed.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:framework-error-fallback",
+      "patternFamilyId": "framework-error-fallback",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchFrameworkErrorState",
+      "members": [
+        {
+          "name": "CatchFrameworkErrorState",
+          "action": "keep"
+        },
+        {
+          "name": "CatchErrorState",
+          "action": "keep"
+        },
+        {
+          "name": "CatchErrorDetailsAccordion",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Framework build failure replaces a broken subtree using its own minimal Material, safe-area, scrolling and safe-copy boundary, with optional diagnostics and no app recovery or providers. Normal error state presents actions within a functioning tree. The shared icon and typography stay canonical; diagnostic disclosure uses the existing Accordion role and now honors reduced motion. Old View and DebugDetails symbols and paths are deleted, and production callers and previews move in the same slice.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:local-viewport-recipes",
+      "patternFamilyId": "local-viewport-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchViewport",
+      "members": [
+        {
+          "name": "CatchViewport",
+          "action": "keep"
+        },
+        {
+          "name": "CatchViewportBreakpoint",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchViewportSliver",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSceneViewport",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchMasterDetailLayout",
+          "action": "rename"
+        },
+        {
+          "name": "CatchAdaptiveMasterDetailLayout",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Local size classes, explicit thresholds, sliver geometry and capped scene geometry share the Viewport owner through named const constructors. Master/detail composition retains an explicit comparison because it arranges pane width and a divider, and its adaptive recipe delegates to the same pane renderer while forwarding the measured split state to the route. Five old Widget classes and files are removed, every caller migrates, and all direct geometry previews remain registered.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:section-list-placement-recipes",
+      "patternFamilyId": "section-list-placement-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSectionList",
+      "members": [
+        {
+          "name": "CatchSectionList",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSectionStack",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchDetailSliverSectionList",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchResponsiveSectionLayout",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchResponsiveSectionPage",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Five public section-list Widgets become one const component. Plain and inset sequences share spacing; sliver preserves detail insets; responsive preserves complete-section ordering and field interaction policy; page delegates to the existing scroll, gutter and terminal-clearance owners. Every constructor explicitly requires an empty policy. Four obsolete Widget files are deleted and all callers migrate.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:page-body-layout-recipes",
+      "patternFamilyId": "page-body-layout-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchPageBody",
+      "members": [
+        {
+          "name": "CatchPageBody",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScrollView",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFieldInteractionPlaneScope",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScreenBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFormStepBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSliverPageBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSliverScreenBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFillViewportScrollView",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFieldInteractionPlane",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Five page-body Widgets consolidate into named PageBody recipes. Screen scrolling reuses the canonical viewport-filling ScrollView; a typed variant preserves fixed bodies. The existing inherited field scope absorbs padding-derived publication, preserving directional accumulation and explicit ancestor policies. Six old Widget classes/files are removed, callers and geometry checks migrate, and runtime tests measure actual gutters, scroll bounds and terminal clearance.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:terminal-viewport-recipes",
+      "patternFamilyId": "terminal-viewport-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchScrollTerminalGap",
+      "members": [
+        {
+          "name": "CatchScrollTerminalGap",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStateViewport",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScrollTerminalPadding",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSliverTerminalPadding",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchSliverStateViewport",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Unify box/sliver wrappers into one terminal gap and one state viewport. Both consume the same existing tab obstruction contract without conflating trailing scroll clearance with visible-area placement. Remove the three superseded Widget files and migrate direct previews and callers.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:top-bar-recipes",
+      "patternFamilyId": "top-bar-recipes",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchTopBar",
+      "members": [
+        {
+          "name": "CatchTopBar",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScreenTopBar",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "One stateful renderer now owns compact, identity, root-title and primary-rail recipes. Typed navigation combines mode, appearance and callback; size, tone, emphasis, mode and typography variant replace overlapping flags. The unused custom-title supplemental-text flag is removed. Body/footer slots use the closed vocabulary and source checks require the actual constructor arguments.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:numeric-range-input",
+      "patternFamilyId": "numeric-range-input",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchRangeInput",
+      "members": [
+        {
+          "name": "CatchRangeInput",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRangeSlider",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Source review found one range implementation and no production single-value Slider. Ordered numeric endpoint editing differs from text editing and choice-set selection, so the Range use case remains explicit under Input. The native range renderer, schema limits and separate draft/commit callbacks are preserved; spoken-value formatting uses the builder vocabulary.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:canonical-polaroid",
+      "patternFamilyId": "canonical-polaroid",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchPolaroid",
+      "members": [
+        {
+          "name": "CatchPolaroid",
+          "action": "keep"
+        },
+        {
+          "name": "CatchPersonPolaroid",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "The source tree contains one Polaroid renderer. Its role already selects the portrait-and-caption person material, so an unqualified canonical name prevents feature-prefixed copies without changing entity responsibilities or rendering. Update active owner documentation with the source rename.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:clock-time-indicator",
+      "patternFamilyId": "clock-time-indicator",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchClockIndicator",
+      "members": [
+        {
+          "name": "CatchClockIndicator",
+          "action": "keep"
+        },
+        {
+          "name": "CatchTicketClock",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "The existing analog painter displays supplied time, while other Indicator contracts show loading, page position or status. Keep that concrete distinction, remove the caller-specific Ticket qualifier, and place this single visual job at L2. Preserve all painter geometry and caller semantics.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:canonical-ticket-hero",
+      "patternFamilyId": "canonical-ticket-hero",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchTicket",
+      "members": [
+        {
+          "name": "CatchTicket",
+          "action": "keep"
+        },
+        {
+          "name": "CatchTicketHeroLayout",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Use the most specific Ticket role for the sole ticket media/body assembly, with hero as a named recipe. Own the existing canonical perforation rather than exposing an arbitrary divider slot. Event Detail owns its domain content, spotlight colors, hero transition and outer surface; generic Viewport owns no ticket anatomy.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:section-row-list-anatomy",
+      "patternFamilyId": "section-row-list-anatomy",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchSectionRowList",
+      "members": [
+        {
+          "name": "CatchSectionRowList",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSectionBody",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Section composes the sole row stack and divider-placement renderer; this is anatomy rather than a competing Section. The RowList role describes its output. FormRowList coordinates typed editing and saves; StepRowList renders numbered instructions. Preserve all section geometry, direct-child precedence and enum modes.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:persistent-feedback-canonical-banner",
+      "patternFamilyId": "persistent-feedback-canonical-banner",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchBanner",
+      "members": [
+        {
+          "name": "CatchBanner",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStatusStrip",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchBannerStatusScope",
+          "action": "keep"
+        },
+        {
+          "name": "CatchStatusStripScope",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Persistent status bands and inline feedback share icon, copy and action anatomy. Retain the distinct statuses constructor and typed publication scope with the resolved placement guard. The same renderer preserves inline/error containment and status tint, contrast and wrapping; layouts retain all pinning and one-time publication behavior.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:local-viewport-sliver-lane",
+      "patternFamilyId": "local-viewport-sliver-lane",
+      "decision": "absorb-into-existing",
+      "canonicalSymbol": "CatchViewport",
+      "members": [
+        {
+          "name": "CatchViewport",
+          "action": "keep"
+        },
+        {
+          "name": "CatchSliverContentWidth",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Readable sliver width is local viewport geometry, not a second page body. CatchViewport.sliverLane shares the sliver measurement path, passes compact content directly and retains the same equal flexible sides plus constrained center on wide layouts. PageBody still owns gutters; Host Sends retains its existing width token.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:form-review-navigation-roles",
+      "patternFamilyId": "form-review-navigation-roles",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchFormReviewPageBody",
+      "members": [
+        {
+          "name": "CatchFormReviewPageBody",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFormStepRowList",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFormReviewBody",
+          "action": "absorb"
+        },
+        {
+          "name": "CatchFormStepOverview",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "K1 preserves the final-review page composition and the navigable form-step rows it mounts. Source and rendered comparison distinguish the passive numbered StepRowList and the editing/saving FormRowList. Replace the ungrammatical names in one slice and bind completion status to its FormStepRowList owner; retain copy, field/badge rendering, scroll geometry and navigation.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:canonical-scaffold-and-root-scroll-owners",
+      "patternFamilyId": "canonical-scaffold-and-root-scroll-owners",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchScaffold",
+      "members": [
+        {
+          "name": "CatchScaffold",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRouteScaffold",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRootScreenScaffold",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRootScreenScrollView",
+          "action": "keep"
+        },
+        {
+          "name": "CatchRootScreenPageScrollView",
+          "action": "keep"
+        },
+        {
+          "name": "CatchScreenScaffold",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "K1 preserves the root and route compositions that delegate to the sole Material scaffold renderer, and the paired outer/inner root scroll owners. The base responsibility receives the unqualified Scaffold name. Canonical title, children and footer slots replace framework-specific public labels; typed placement options name their actual renderer owner. Keep header pinning, safe areas, status consumption, refresh, scroll offsets, keyboard resizing and scaled preferred-size forwarding unchanged.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:validated-selection-field-owner",
+      "patternFamilyId": "validated-selection-field-owner",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchSelectionField",
+      "members": [
+        {
+          "name": "CatchSelectionField",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFieldSelectControl",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Owns the labelled, nullable single-choice form field, including validation and normalization when options or caller values change. CatchField.select supplies focus and dismissal controllers and delegates this field member. SelectionMenu requires a current supported value and owns an adaptive selection trigger without form validation; both share CatchMenu as the panel renderer. The label computation uses itemLabelBuilder, the icon slot uses leading, and form validation uses onValidate.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:field-trailing-row-anatomy",
+      "patternFamilyId": "field-trailing-row-anatomy",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchFieldTrailingRow",
+      "members": [
+        {
+          "name": "CatchFieldTrailingRow",
+          "action": "keep"
+        },
+        {
+          "name": "CatchFieldTrailing",
+          "action": "absorb"
+        }
+      ],
+      "rationale": "Owns the bounded trailing lane of a Field: value text, disclosure, toggle, validation, clear action and custom content share its typography and top alignment. CatchFieldRow arranges the entire leading/body/trailing row; this member composes CatchFieldStatusIndicator and CatchToggleInput without duplicating either. Native input suffixes preserve their separate fallback and clear-target geometry through a named constructor. The inputSuffix slots are actions and trailing, preserving action precedence and its leading gap.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-09",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:search-field-query-owner",
+      "patternFamilyId": "search-field-query-owner",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchSearchField",
+      "members": [
+        {
+          "name": "CatchSearchField",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Owns a controlled browse query, local text controller and focus, clear-before-close behavior, and the fixed or transient header search lifecycle. CatchField owns labelled form values, validation and commit orchestration; SelectionField owns a discrete nullable choice. Search recipes reuse one CatchTextInput configuration while retaining their established field and animated header surfaces. Remove the repeated native input construction and replace the expansion boolean with CatchSearchFieldStatus, keeping autofocus and enabled as the two independent booleans.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-14",
+      "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:platform-status-bar-preview-retirement",
+      "patternFamilyId": "platform-status-bar-preview-retirement",
+      "decision": "discard-unused-preview",
+      "members": [
+        {
+          "name": "CatchStatusBar",
+          "action": "delete"
+        }
+      ],
+      "rationale": "The complete caller census finds zero production consumers: only the isolated Widgetbook contract and its two tests mount this simulated clock/signal/battery row. The operating system owns those indicators. Retire the unused shared Widget, standalone contract, preview and corresponding baselines; application top bars keep their separate navigation responsibility.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-14",
+      "status": "implemented"
     }
   ]
 }

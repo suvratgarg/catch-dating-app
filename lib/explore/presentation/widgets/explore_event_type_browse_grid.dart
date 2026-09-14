@@ -111,7 +111,7 @@ class ActivityTypeRows extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: ComponentBreakpoints.eventTypeGridTwoColumnBreakpoint,
       compactBuilder: (context) => Column(
         children: [
@@ -218,7 +218,7 @@ class ActivityTypeRow extends StatelessWidget {
           ),
       title: visual.label,
       titleStyle: CatchTextStyles.titleL(context, color: foreground),
-      leading: CatchStatusDot(
+      leading: CatchStatusIndicator(
         color: visual.accent,
         size: CatchLayout.eventTypeIndexDotSize,
       ),

@@ -2,24 +2,24 @@
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_primary_rail.dart';
+import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_body.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_scroll_view.dart';
-import 'package:catch_ui/src/patterns/catch_root_screen_top_edge.dart';
-import 'package:catch_ui/src/patterns/catch_screen_body_layout.dart';
-import 'package:catch_ui/src/patterns/catch_screen_scaffold.dart';
+import 'package:catch_ui/src/patterns/catch_root_screen_scroll_view_placement.dart';
+import 'package:catch_ui/src/patterns/catch_scaffold.dart';
 import 'package:flutter/material.dart';
 
 /// Full-screen owner for a root destination with scroll-content title chrome.
 ///
-/// Root feature screens provide semantic header content and body slivers. This
+/// Root feature screens provide semantic header content and body sliver children. This
 /// scaffold owns the page surface, safe area, vertical scroll owner, body
 /// geometry, responsive content lane, field obstruction, refresh behavior,
 /// and terminal clearance above adaptive shell navigation.
 class CatchRootScreenScaffold extends StatelessWidget {
   const CatchRootScreenScaffold.standard({
     super.key,
-    required Widget header,
-    required List<Widget> slivers,
+    required Widget title,
+    required List<Widget> children,
     this.scrollKey,
     this.controller,
     this.physics,
@@ -28,21 +28,21 @@ class CatchRootScreenScaffold extends StatelessWidget {
     this.maxContentExtent = CatchLayout.screenPageMaxExtent,
     this.semanticsLabel,
     this.semanticsHint,
-    this.topEdge = CatchRootScreenTopEdge.safeArea,
-  }) : _header = header,
+    this.topEdge = CatchRootScreenScrollViewPlacement.safeArea,
+  }) : _title = title,
        _primaryRailHeader = null,
-       bodyLayout = CatchScreenBodyLayout.standard,
-       slivers = slivers,
-       primaryRail = null,
+       bodyLayout = CatchPageBodyMode.standard,
+       children = children,
+       actions = null,
        body = null,
        constrainToContentWidth = true,
-       assert(slivers.length > 0),
+       assert(children.length > 0),
        assert(maxContentExtent > 0);
 
   const CatchRootScreenScaffold.fullBleed({
     super.key,
-    required Widget header,
-    required List<Widget> slivers,
+    required Widget title,
+    required List<Widget> children,
     this.scrollKey,
     this.controller,
     this.physics,
@@ -50,18 +50,19 @@ class CatchRootScreenScaffold extends StatelessWidget {
     this.onRefresh,
     this.semanticsLabel,
     this.semanticsHint,
-    this.topEdge = CatchRootScreenTopEdge.safeArea,
-  }) : _header = header,
+    this.topEdge = CatchRootScreenScrollViewPlacement.safeArea,
+  }) : _title = title,
        _primaryRailHeader = null,
-       bodyLayout = CatchScreenBodyLayout.fullBleed,
-       slivers = slivers,
-       primaryRail = null,
+       bodyLayout = CatchPageBodyMode.fullBleed,
+       children = children,
+       actions = null,
        body = null,
        constrainToContentWidth = false,
        maxContentExtent = CatchLayout.screenPageMaxExtent,
-       assert(slivers.length > 0);
+       assert(children.length > 0);
 
   /// Root composition with a scroll-away header and pinned primary rail.
+  /// [actions] accepts only a typed primary control rail.
   ///
   /// The rail is optional at the root-system level but required by this named
   /// constructor, which closes the body over root-page scroll owners and keeps
@@ -69,28 +70,31 @@ class CatchRootScreenScaffold extends StatelessWidget {
   const CatchRootScreenScaffold.withPrimaryRail({
     super.key,
     required CatchRootScreenHeader header,
-    required this.primaryRail,
+    required CatchPrimaryRail actions,
     required this.body,
     this.scrollKey,
     this.controller,
     this.physics,
     this.semanticsLabel,
     this.semanticsHint,
-    this.topEdge = CatchRootScreenTopEdge.safeArea,
-  }) : _header = null,
+    this.topEdge = CatchRootScreenScrollViewPlacement.safeArea,
+  }) : _title = null,
        _primaryRailHeader = header,
+       actions = actions,
        bodyLayout = null,
-       slivers = null,
+       children = null,
        primary = null,
        onRefresh = null,
        constrainToContentWidth = false,
        maxContentExtent = CatchLayout.screenPageMaxExtent;
 
-  final Widget? _header;
+  final Widget? _title;
   final CatchRootScreenHeader? _primaryRailHeader;
-  final CatchScreenBodyLayout? bodyLayout;
-  final List<Widget>? slivers;
-  final CatchPrimaryRail? primaryRail;
+  final CatchPageBodyMode? bodyLayout;
+
+  /// Sliver children of the standard/fullBleed recipes; the rail recipe uses body.
+  final List<Widget>? children;
+  final CatchPrimaryRail? actions;
   final CatchRootScreenBody? body;
   final Key? scrollKey;
   final ScrollController? controller;
@@ -101,15 +105,15 @@ class CatchRootScreenScaffold extends StatelessWidget {
   final double maxContentExtent;
   final String? semanticsLabel;
   final String? semanticsHint;
-  final CatchRootScreenTopEdge topEdge;
+  final CatchRootScreenScrollViewPlacement topEdge;
 
   @override
   Widget build(BuildContext context) {
-    if (primaryRail != null) {
-      return CatchScreenScaffold.workspace(
+    if (actions != null) {
+      return CatchScaffold.workspace(
         body: CatchRootScreenScrollView.withPrimaryRail(
           header: _primaryRailHeader!,
-          primaryRail: primaryRail!,
+          actions: actions!,
           body: body!,
           scrollKey: scrollKey,
           controller: controller,
@@ -120,11 +124,10 @@ class CatchRootScreenScaffold extends StatelessWidget {
         ),
       );
     }
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       body: switch (bodyLayout!) {
-        CatchScreenBodyLayout.standard => CatchRootScreenScrollView.standard(
-          header: _header!,
-          slivers: slivers!,
+        CatchPageBodyMode.standard => CatchRootScreenScrollView.standard(
+          title: _title!,
           scrollKey: scrollKey,
           controller: controller,
           physics: physics,
@@ -134,10 +137,10 @@ class CatchRootScreenScaffold extends StatelessWidget {
           semanticsLabel: semanticsLabel,
           semanticsHint: semanticsHint,
           topEdge: topEdge,
+          children: children!,
         ),
-        CatchScreenBodyLayout.fullBleed => CatchRootScreenScrollView.fullBleed(
-          header: _header!,
-          slivers: slivers!,
+        CatchPageBodyMode.fullBleed => CatchRootScreenScrollView.fullBleed(
+          title: _title!,
           scrollKey: scrollKey,
           controller: controller,
           physics: physics,
@@ -146,6 +149,7 @@ class CatchRootScreenScaffold extends StatelessWidget {
           semanticsLabel: semanticsLabel,
           semanticsHint: semanticsHint,
           topEdge: topEdge,
+          children: children!,
         ),
       },
     );

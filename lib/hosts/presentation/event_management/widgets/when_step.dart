@@ -91,7 +91,7 @@ class WhenStep extends StatelessWidget {
               min: CatchBusinessRules.eventMinDurationMinutes,
               max: CatchBusinessRules.eventMaxDurationMinutes,
               step: CatchBusinessRules.eventDurationStepMinutes,
-              formatter: (value) => formatDuration(value.round()),
+              valueLabelBuilder: (value) => formatDuration(value.round()),
               decreaseSemanticLabel:
                   context.l10n.hostsWhenStepVisiblecopyDecreaseDuration,
               increaseSemanticLabel:

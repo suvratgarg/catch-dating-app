@@ -43,7 +43,7 @@ void main() {
           drive: (tester) async {
             Finder summaryChoice(String name) => find.byWidgetPredicate(
               (widget) =>
-                  widget is CatchOptionGroupItem<HostCustomerFilter> &&
+                  widget is CatchChoiceButton<HostCustomerFilter> &&
                   widget.option.value.name == name,
             );
 
@@ -120,7 +120,7 @@ void main() {
                 'avatar': rect(
                   find.descendant(
                     of: finder,
-                    matching: find.byType(CatchPersonAvatar),
+                    matching: find.byType(CatchAvatar),
                   ),
                 ),
                 'nameLine': rect(

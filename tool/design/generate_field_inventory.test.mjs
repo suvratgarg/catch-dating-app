@@ -77,6 +77,10 @@ test("extracts every current facade and semantic slot", () => {
   );
   assert.ok(facades.find((entry) => entry.mode === "input").slots.includes("error"));
   assert.ok(facades.find((entry) => entry.mode === "choices").slots.includes("control"));
+  assert.ok(facades.find((entry) => entry.mode === "control").slots.includes("control"));
+  assert.ok(facades.find((entry) => entry.mode === "select").slots.includes("error"));
+  assert.ok(facades.find((entry) => entry.mode === "read").slots.includes("actions"));
+  assert.ok(facades.find((entry) => entry.mode === "inputActions").slots.includes("feedback"));
   assert.deepEqual(extractCatchSectionVariants(sectionSource), [
     "divided",
     "fieldRows",
@@ -84,6 +88,7 @@ test("extracts every current facade and semantic slot", () => {
     "containedFieldGroups",
     "contained",
     "plain",
+    "horizontal",
   ]);
   assert.deepEqual(extractCatchSectionContract(sectionSource).slots, [
     "title",
@@ -110,11 +115,11 @@ test("known-bad deleted facade changes generated inventory", () => {
 test("known-bad added slot parameter changes generated inventory", () => {
   const changed = source.replace(
     "const CatchField.read({",
-    "const CatchField.read({\n    Widget? feedback,",
+    "const CatchField.read({\n    Widget? trailing,",
   );
   const read = extractCatchFieldFacades(changed).find((entry) => entry.mode === "read");
-  assert.ok(read.parameters.some((parameter) => parameter.name === "feedback"));
-  assert.ok(read.slots.includes("feedback"));
+  assert.ok(read.parameters.some((parameter) => parameter.name === "trailing"));
+  assert.ok(read.slots.includes("suffix"));
 });
 
 test("rejects a facade without owner-reviewed use-when metadata", () => {
@@ -131,13 +136,26 @@ test("private named initializing formals retain public parameter and slot names"
   const facades = extractCatchFieldFacades(`
     const CatchField.inputActions({
       required String this.title,
-      this._supporting,
-      this._secondaryAction,
-      this._feedback,
+      this._meta,
+      this._actions,
+      this._child,
     });
   `);
   assert.deepEqual(facades[0].parameters.map(({name}) => name), [
-    "title", "supporting", "secondaryAction", "feedback",
+    "title", "meta", "actions", "child",
   ]);
   assert.deepEqual(facades[0].slots, ["title", "support", "feedback", "actions"]);
+});
+
+test("canonical slots retain their recipe-specific placement without former aliases", () => {
+  const facades = extractCatchFieldFacades(`
+    const CatchField.input({this.leading, this.trailing, this.actions, this.onValidate});
+    const CatchField.control({this.child});
+    const CatchField.inputActions({this.meta, this.actions, this.child});
+  `);
+  assert.deepEqual(facades.map(({slots}) => slots), [
+    ["prefix", "suffix", "error", "actions"],
+    ["control"],
+    ["support", "feedback", "actions"],
+  ]);
 });

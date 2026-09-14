@@ -70,8 +70,12 @@ class HostClubSpokeResolver extends ConsumerWidget {
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: title,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -88,11 +92,15 @@ class HostClubSpokeResolver extends ConsumerWidget {
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: title,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorBody(
+          child: CatchErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
                 context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
@@ -105,21 +113,25 @@ class HostClubSpokeResolver extends ConsumerWidget {
     }
 
     final clubsAsync = ref.watch(_hostClubsForUserProvider(uid));
-    return CatchAsyncValueView<List<Club>>(
+    return CatchAsyncBoundary<List<Club>>(
       value: clubsAsync,
       onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
       loadingBuilder: (_) => HostLoadingScreen(title: title),
-      errorBuilder: (_, error, _) => CatchRouteScaffold(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: title,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.club,
-            onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+            onRetry: onBoundaryRetry,
           ),
         ),
       ),
@@ -129,8 +141,12 @@ class HostClubSpokeResolver extends ConsumerWidget {
           return CatchRouteScaffold(
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title: title,
-              leadingType: CatchTopBarLeading.back,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: CatchRouteBody.standardViewport(
               child: CatchLocalizedErrorState(
@@ -168,11 +184,15 @@ class HostClubSpokeScaffold extends StatelessWidget {
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: title,
         subtitle: club.name,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standardSections(
-        sections: [CatchResponsiveSectionItem(child: child)],
+        sections: [CatchSectionListItem(child: child)],
       ),
     );
   }

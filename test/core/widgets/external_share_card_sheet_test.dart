@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_sheet_share.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -118,14 +118,14 @@ Widget _subject({
 }) => MaterialApp(
   theme: AppTheme.light,
   home: Scaffold(
-    body: CatchSheetShare(
+    body: CatchExternalShareSheet(
       share: share,
       fileName: 'preview.png',
       buttonLabel: 'Share preview',
       footnote: 'Preview only',
       pixelRatio: 1,
       onShareIntent: onShareIntent,
-      card: const SizedBox.square(
+      media: const SizedBox.square(
         dimension: 120,
         child: ColoredBox(color: Colors.blue),
       ),

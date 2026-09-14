@@ -50,11 +50,11 @@ class CreateClubPhotosPicker extends StatelessWidget {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CatchFormFieldLabel(
-                  copy: catchFormFieldLabelCopy(context.l10n),
+                CatchFieldLabelText(
+                  copy: catchFieldLabelTextCopy(context.l10n),
                   label:
                       context.l10n.hostsCreateClubPhotosPickerLabelClubPhotos,
-                  isOptional: true,
+                  mode: CatchFieldLabelTextMode.optional,
                 ),
                 gapH4,
                 Text(
@@ -146,7 +146,7 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                 spacing: CatchSpacing.s1,
                 runSpacing: CatchSpacing.s1,
                 children: [
-                  CatchTextButton(
+                  CatchButton.text(
                     label: hasImage
                         ? context
                               .l10n
@@ -156,12 +156,12 @@ class CreateClubProfileImagePicker extends StatelessWidget {
                     padding: EdgeInsets.zero,
                   ),
                   if (hasImage)
-                    CatchTextButton(
+                    CatchButton.text(
                       label: context
                           .l10n
                           .hostsCreateClubPhotosPickerActionRemoveLogo,
                       onPressed: onRemove,
-                      tone: CatchTextButtonTone.danger,
+                      tone: CatchButtonTone.danger,
                       padding: EdgeInsets.zero,
                     ),
                 ],
@@ -176,10 +176,10 @@ class CreateClubProfileImagePicker extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchFormFieldLabel(
-          copy: catchFormFieldLabelCopy(context.l10n),
+        CatchFieldLabelText(
+          copy: catchFieldLabelTextCopy(context.l10n),
           label: context.l10n.hostsCreateClubPhotosPickerLabelClubProfileImage,
-          isOptional: true,
+          mode: CatchFieldLabelTextMode.optional,
         ),
         gapH8,
         content,

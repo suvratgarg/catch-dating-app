@@ -40,14 +40,14 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
             title: UserAnalyticsCopy.rangeTitle(context.l10n),
             contract: CatchContractConstraints
                 .userAnalyticsQueryCallablePayloadRangePreset,
-            contractValue: (value) => value.wireValue,
+            contractValueBuilder: (value) => value.wireValue,
             values: UserAnalyticsRangePreset.values
                 .where((preset) => preset != UserAnalyticsRangePreset.custom)
                 .toList(growable: false),
             value: _rangePreset,
-            itemLabel: (preset) =>
+            itemLabelBuilder: (preset) =>
                 UserAnalyticsCopy.rangeLabel(context.l10n, preset),
-            prefixIcon: Icon(CatchIcons.calendarMonthOutlined),
+            leading: Icon(CatchIcons.calendarMonthOutlined),
             onChanged: (preset) {
               if (preset == null) return;
               setState(() => _rangePreset = preset);
@@ -85,12 +85,13 @@ class UserAnalyticsReportView extends StatelessWidget {
       return const UserAnalyticsEmptyState();
     }
 
-    return CatchSectionStack(
+    return CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       children: [
         CatchSection.divided(
           first: true,
-          child: CatchAnalyticsMetricGrid(
+          child: CatchMetricSection.dataQuality(
             metrics: [
               for (final metric in report.summaryCards)
                 _userMetricCardData(metric, context.l10n),
@@ -148,7 +149,8 @@ class UserAnalyticsReportSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchSectionStack(
+    return CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       children: [
         CatchSection.divided(
@@ -327,7 +329,7 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: UserAnalyticsCopy.trendMetricLabel(
                       context.l10n,
                       'caughtYou',
@@ -336,7 +338,7 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: UserAnalyticsCopy.trendMetricLabel(
                       context.l10n,
                       'mutualCatches',
@@ -356,7 +358,7 @@ class UserAnalyticsTrendPanel extends StatelessWidget {
                     if (point != points.first)
                       const SizedBox(width: CatchSpacing.micro6),
                     Expanded(
-                      child: CatchAnalyticsBar(
+                      child: CatchBarIndicator(
                         value: point.metrics['caughtYou'] ?? 0,
                         maxValue: maxCaughtYou,
                       ),
@@ -453,11 +455,11 @@ IconData _metricIcon(String id) => switch (id) {
   _ => CatchIcons.autoGraphRounded,
 };
 
-CatchMetricCardData _userMetricCardData(
+CatchMetricData _userMetricCardData(
   UserAnalyticsMetricCard metric,
   AppLocalizations l10n,
 ) {
-  return CatchMetricCardData(
+  return CatchMetricData(
     icon: _metricIcon(metric.id),
     value: _formatMetricValue(metric),
     label: UserAnalyticsCopy.metricLabel(
@@ -471,9 +473,9 @@ CatchMetricCardData _userMetricCardData(
       fallback: metric.caption,
     ),
     status: switch (metric.status) {
-      UserAnalyticsMetricStatus.ready => CatchMetricStatus.ready,
-      UserAnalyticsMetricStatus.partial => CatchMetricStatus.partial,
-      UserAnalyticsMetricStatus.missing => CatchMetricStatus.missing,
+      UserAnalyticsMetricStatus.ready => CatchMetricDataStatus.ready,
+      UserAnalyticsMetricStatus.partial => CatchMetricDataStatus.partial,
+      UserAnalyticsMetricStatus.missing => CatchMetricDataStatus.missing,
     },
     partialBadgeLabel: _userAnalyticsPartialBadgeLabel(l10n),
     missingBadgeLabel: _userAnalyticsMissingBadgeLabel(l10n),

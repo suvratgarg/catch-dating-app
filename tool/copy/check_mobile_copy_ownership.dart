@@ -69,6 +69,7 @@ const _copyArgumentNames = <String>{
   'tooltip',
   'validationMessage',
   'validator',
+  'onValidate',
   'wiringNotes',
 };
 
@@ -76,16 +77,16 @@ const _copyConstructors = <String>{
   'AutoSizeText',
   'CatchButton',
   'CatchEmptyState',
-  'CatchErrorBanner',
+  'CatchBanner',
   'CatchErrorState',
-  'CatchFormFieldLabel',
-  'CatchKicker',
+  'CatchFieldLabelText',
+  'CatchKickerText',
   'CatchNoticeData',
   'CatchPageHeader',
   'CatchSectionHeader',
-  'CatchShareCardFooter',
+  'CatchAttributionRow',
   'CatchShareCardSheet',
-  'CatchSheetShare',
+  'CatchExternalShareSheet',
   'CatchText',
   'CelebrationDetail',
   'CupertinoActionSheetAction',
@@ -657,7 +658,7 @@ const route = '/events';
     throw StateError('Mobile copy scanner self-test failed: $findings');
   }
   const shareAdapterSource = '''
-Widget share() => CatchSheetShare(
+Widget share() => CatchExternalShareSheet(
   buttonLabel: 'Share this card',
   footnote: 'Visible sharing information',
 );
@@ -693,7 +694,7 @@ class DisplayState {
 
 Widget buildForm(BuildContext context) => Column(children: [
   CatchField.input(
-    validator: (_) => 'Please choose your city',
+    onValidate: (_) => 'Please choose your city',
   ),
   CatchButton(
     label: helper('wire-key'),

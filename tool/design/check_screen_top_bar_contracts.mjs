@@ -10,12 +10,12 @@ const architectureAdoptionPath =
 const screenChromeArchitectureId = "ARCH-SCREEN-CHROME-001";
 const appBarPattern = /\bappBar\s*:\s*([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/gu;
 const routeTopBarBuilderPattern =
-  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchScreenTopBar|CatchTopBar(?:\.identity)?)/gu;
+  /\btopBarBuilder\s*:\s*\([^)]*\)\s*=>\s*(CatchTopBar\.screen|CatchTopBar(?:\.identity)?)/gu;
 const canonicalRouteScaffoldPath =
   "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart";
 const canonicalScreenScaffoldPath =
-  "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart";
-const canonicalScreenScaffoldSymbol = "CatchScreenScaffold";
+  "packages/catch_ui/lib/src/patterns/catch_scaffold.dart";
+const canonicalScreenScaffoldSymbol = "CatchScaffold";
 const rawChromePattern =
   /\b(AppBar|SliverAppBar|CupertinoNavigationBar|CupertinoSliverNavigationBar)\s*\(/gu;
 const manualHeaderClassPattern =
@@ -23,23 +23,23 @@ const manualHeaderClassPattern =
 const screenChromeClassPattern =
   /\bclass\s+([_$A-Za-z][\w$]*(?:Screen|Scaffold|Header|TopBar|HeaderContent))\b/gu;
 const manualHeaderOwnerPattern =
-  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
+  /\b(CatchScreenHeader(?:\.block)?|CatchTopBar\.screen|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?|CatchStepHeader|CatchTextStyles\.(?:headline[A-Za-z]*|titleL))\s*\(/gu;
 const canonicalRootOwners = new Set([
-  "CatchScreenHeaderTitle",
-  "CatchScreenHeaderTitle.block",
-  "CatchScreenTopBar",
+  "CatchScreenHeader",
+  "CatchScreenHeader.block",
+  "CatchTopBar.screen",
   "CatchRootScreenHeader.title",
 ]);
 const topBarActionOwnerPattern =
-  /\b(CatchScreenHeaderTitle(?:\.block)?|CatchScreenTopBar|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
-const directPillActionPattern = /\bCatchButton\s*\(/u;
+  /\b(CatchScreenHeader(?:\.block)?|CatchTopBar\.screen|CatchRootScreenHeader\.title|CatchTopBar(?:\.identity)?)\s*\(/gu;
+const directPillActionPattern = /\bCatchButton(?:\.(?!text\b)[A-Za-z_$][\w$]*)?\s*\(/u;
 const rootTitleStylePattern = /\bCatchTextStyles\.headline[A-Za-z]*\s*\(/gu;
 const rootTextScaleOverridePattern =
   /\b(?:TextScaler\.|textScaler\s*:)/gu;
 const rolePolicies = new Map([
   [
     "screen",
-    {expression: "CatchScreenTopBar", owner: "CatchScreenTopBar"},
+    {expression: "CatchTopBar.screen", owner: "CatchTopBar.screen"},
   ],
   ["compact", {expression: "CatchTopBar", owner: "CatchTopBar"}],
   [
@@ -58,7 +58,7 @@ const validSurfacePolicies = new Set(["CatchRouteScaffold"]);
 const validTitlePolicies = new Set(["sharedRoute", "routeOrIdentity"]);
 const canonicalWorkspaceOwners = new Set([
   "CatchTopBar",
-  "CatchScreenTopBar",
+  "CatchTopBar.screen",
 ]);
 const rawHeroExpressions = new Set([
   "SliverAppBar",
@@ -75,9 +75,9 @@ const manualHeaderRoleOwners = new Map([
   [
     "screen",
     new Set([
-      "CatchScreenHeaderTitle",
-      "CatchScreenHeaderTitle.block",
-      "CatchScreenTopBar",
+      "CatchScreenHeader",
+      "CatchScreenHeader.block",
+      "CatchTopBar.screen",
       "CatchRootScreenHeader.title",
     ]),
   ],
@@ -228,8 +228,8 @@ function checkTopBarActionFamilies({root, findings}) {
         line: lineNumberAt(source, callStart),
         message:
           `${match[1]} receives CatchButton as a direct top-bar action. ` +
-          "Use CatchTopBarPrimaryAction, CatchIconAction, " +
-          "CatchTopBarTextAction, or CatchTopBarMenuAction so top-bar " +
+          "Use CatchTopBarPrimaryButton, CatchIconAction, " +
+          "CatchButton.text, or CatchActionMenu so top-bar " +
           "geometry and compact behavior stay canonical.",
       });
     }
@@ -304,7 +304,7 @@ function checkCanonicalScreenScaffoldAppBar({root, findings}) {
       message:
         `${canonicalScreenScaffoldSymbol}.build must contain exactly one ` +
         "returned Scaffold whose top-level appBar argument forwards the " +
-        "class appBar field directly or through its canonical scaled-size adapter. " +
+        "class title field directly or through its canonical scaled-size adapter. " +
         "Only that exact infrastructure " +
         "declaration is exempt from per-screen chrome registration.",
     });
@@ -325,7 +325,7 @@ function findCanonicalScreenScaffoldAppBarIndex(source) {
   );
   if (classOpenBrace < 0) return null;
   const classBody = readBalanced(source, classOpenBrace, "{", "}");
-  if (!/\bfinal\s+PreferredSizeWidget\?\s+appBar\s*;/u.test(classBody)) {
+  if (!/\bfinal\s+PreferredSizeWidget\?\s+title\s*;/u.test(classBody)) {
     return null;
   }
 
@@ -351,10 +351,10 @@ function findCanonicalScreenScaffoldAppBarIndex(source) {
   const argument = readNamedArgument(scaffoldCall, "appBar");
   const compactArgument = argument?.replace(/\s+/gu, "");
   const scaledForwarder =
-    "switch(appBar){finalCatchScaledPreferredSizescaled=>PreferredSize(" +
+    "switch(title){finalCatchScaledPreferredSizescaled=>PreferredSize(" +
     "preferredSize:scaled.preferredSizeFor(context),child:scaled,)," +
     "finalbar=>bar,}";
-  if (argument !== "appBar" && compactArgument !== scaledForwarder) return null;
+  if (argument !== "title" && compactArgument !== scaledForwarder) return null;
 
   const appBarMatches = [...scaffoldCall.matchAll(appBarPattern)];
   if (appBarMatches.length !== 1) return null;
@@ -401,7 +401,22 @@ function collectAppBars(root, {canonicalScreenScaffoldAppBarIndex = null} = {}) 
         };
       },
     );
-    const matches = [...directMatches, ...builderMatches];
+    const scaffoldTitles = [...source.matchAll(/\bCatchScaffold\.workspace\s*\(/gu)]
+      .flatMap((match) => {
+        const start = match.index ?? 0;
+        const openParen = start + match[0].lastIndexOf("(");
+        const call = readBalanced(source, openParen, "(", ")");
+        // Only this canonical preferred-size slot is screen chrome. A title
+        // nested in its body or in another component is not an app bar.
+        const value = readNamedArgument(call, "title");
+        const expression = value?.match(/^([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)?)/u)?.[1];
+        return expression == null ? [] : [{
+          expression,
+          line: lineNumberAt(source, start),
+          value,
+        }];
+      });
+    const matches = [...directMatches, ...builderMatches, ...scaffoldTitles];
     if (matches.length > 0) result.set(relativePath, matches);
   }
   return result;
@@ -667,7 +682,7 @@ function checkContract({root, contract, appBars, findings}) {
         path: contract.path,
         message:
           "Screen-title routes cannot override contentPadding or height; " +
-          "CatchScreenTopBar owns the approved zero-inset geometry.",
+          "CatchTopBar.screen owns the approved zero-inset geometry.",
       });
     }
   }
@@ -694,9 +709,7 @@ function checkContract({root, contract, appBars, findings}) {
     contract.owner === "CatchTopBar"
   ) {
     const customTitleBypasses = appBars.filter((appBar) =>
-      /\b(?:titleStyle|titleWidget|titleWidgetIncludesSupplementalText)\s*:/u.test(
-        appBar.value,
-      ),
+      ['titleStyle', 'body'].some((name) => topBarArgument(appBar.value, name) != null),
     );
     if (customTitleBypasses.length > 0) {
       findings.push({
@@ -710,9 +723,9 @@ function checkContract({root, contract, appBars, findings}) {
     }
 
     const routeTitleModeBypasses = appBars.filter((appBar) => {
-      const pinsCompactMode = /\blarge\s*:\s*false\b/u.test(appBar.value);
-      const declaresLargeMode = /\blarge\s*:/u.test(appBar.value);
-      const kickerInfersLargeMode = /\bkicker\s*:/u.test(appBar.value);
+      const pinsCompactMode = topBarArgument(appBar.value, 'size') === 'CatchTopBarSize.compact';
+      const declaresLargeMode = topBarArgument(appBar.value, 'size') != null;
+      const kickerInfersLargeMode = topBarArgument(appBar.value, 'kicker') != null;
       return (
         (declaresLargeMode && !pinsCompactMode) ||
         (kickerInfersLargeMode && !pinsCompactMode) ||
@@ -725,14 +738,14 @@ function checkContract({root, contract, appBars, findings}) {
         path: contract.path,
         message:
           "Compact route typography cannot enter CatchTopBar large mode. " +
-          "Workspace bars, and compact bars with a kicker, must pin large: false.",
+          "Workspace bars, and compact bars with a kicker, must select size: CatchTopBarSize.compact.",
       });
     }
 
     const titlePolicy = contract.titlePolicy ?? "sharedRoute";
     if (titlePolicy === "sharedRoute") {
       const identityOverrides = appBars.filter((appBar) =>
-        /\btitleRole\s*:/u.test(appBar.value),
+        topBarArgument(appBar.value, 'variant') != null,
       );
       if (identityOverrides.length > 0) {
         findings.push({
@@ -740,7 +753,7 @@ function checkContract({root, contract, appBars, findings}) {
           path: contract.path,
           message:
             "This route is registered for shared route-title typography. " +
-            "Any explicit titleRole requires a routeOrIdentity policy.",
+            "Any explicit typography variant requires a routeOrIdentity policy.",
         });
       }
     }
@@ -748,15 +761,11 @@ function checkContract({root, contract, appBars, findings}) {
     if (titlePolicy === "routeOrIdentity") {
       const missingIdentityRole = appBars.filter(
         (appBar) =>
-          !/\btitleRole\s*:[\s\S]*CatchTopBarTitleRole\.identity\b/u.test(
-            appBar.value,
-          ),
+          !/\bCatchTopBarVariant\.identity\b/u.test(topBarArgument(appBar.value, 'variant') ?? ''),
       );
       const missingRouteFallback = appBars.filter(
         (appBar) =>
-          !/\btitleRole\s*:[\s\S]*CatchTopBarTitleRole\.route\b/u.test(
-            appBar.value,
-          ),
+          !/\bCatchTopBarVariant\.route\b/u.test(topBarArgument(appBar.value, 'variant') ?? ''),
       );
       if (missingIdentityRole.length > 0) {
         findings.push({
@@ -764,7 +773,7 @@ function checkContract({root, contract, appBars, findings}) {
           path: contract.path,
           message:
             "A routeOrIdentity title policy must explicitly select " +
-            "CatchTopBarTitleRole.identity when user-authored identity content is present.",
+            "CatchTopBarVariant.identity when user-authored identity content is present.",
         });
       }
       if (missingRouteFallback.length > 0) {
@@ -773,7 +782,7 @@ function checkContract({root, contract, appBars, findings}) {
           path: contract.path,
           message:
             "A routeOrIdentity title policy must explicitly select " +
-            "CatchTopBarTitleRole.route while identity content is unavailable.",
+            "CatchTopBarVariant.route while identity content is unavailable.",
         });
       }
     }
@@ -782,8 +791,7 @@ function checkContract({root, contract, appBars, findings}) {
   if (contract.leading === "back") {
     const appBarsWithoutBack = appBars.filter(
       (appBar) =>
-        !/\bleadingType\s*:\s*CatchTopBarLeading\.back\b/u.test(appBar.value) &&
-        !/\bshowBackButton\s*:\s*true\b/u.test(appBar.value),
+        topBarNavigationMode(appBar.value) !== 'CatchTopBarNavigationMode.back',
     );
     if (appBarsWithoutBack.length > 0) {
       findings.push({
@@ -791,15 +799,15 @@ function checkContract({root, contract, appBars, findings}) {
         path: contract.path,
         message:
           "This pushed route requires an explicit back affordance; use " +
-          "leadingType: CatchTopBarLeading.back (or showBackButton: true).",
+          "navigation: CatchTopBarNavigation(mode: CatchTopBarNavigationMode.back).",
       });
     }
   }
   if (contract.leading === "backUnlessEmbedded") {
     const conditionalBackPattern =
-      /\bleadingType\s*:\s*[\w.]*embedded\s*\?\s*CatchTopBarLeading\.none\s*:\s*CatchTopBarLeading\.back\b/u;
+      /^[\w.]*embedded\s*\?\s*CatchTopBarNavigationMode\.none\s*:\s*CatchTopBarNavigationMode\.back$/u;
     const appBarsWithoutConditionalBack = appBars.filter(
-      (appBar) => !conditionalBackPattern.test(appBar.value),
+      (appBar) => !conditionalBackPattern.test(topBarNavigationMode(appBar.value) ?? ''),
     );
     if (appBarsWithoutConditionalBack.length > 0) {
       findings.push({
@@ -811,6 +819,18 @@ function checkContract({root, contract, appBars, findings}) {
       });
     }
   }
+}
+
+
+function topBarArgument(value, name) {
+  const start = value.indexOf('(');
+  return start < 0 ? null : readNamedArgument(readBalanced(value, start, '(', ')'), name);
+}
+
+function topBarNavigationMode(value) {
+  const navigation = topBarArgument(value, 'navigation');
+  if (navigation == null || !/^(?:const\s+)?CatchTopBarNavigation\s*\(/u.test(navigation)) return null;
+  return topBarArgument(navigation, 'mode');
 }
 
 function validateManifest(manifest, findings, manifestPath) {
@@ -1524,7 +1544,7 @@ function checkRootHeaderSurface({root, rootHeader, surface, findings}) {
   }
   rootTextScaleOverridePattern.lastIndex = 0;
 
-  const geometryPattern = surface.owner.startsWith("CatchScreenHeaderTitle")
+  const geometryPattern = surface.owner.startsWith("CatchScreenHeader")
     ? /\bpadding\s*:/u
     : /\b(?:contentPadding|height)\s*:/u;
   if (ownerCalls.some((call) => geometryPattern.test(call))) {

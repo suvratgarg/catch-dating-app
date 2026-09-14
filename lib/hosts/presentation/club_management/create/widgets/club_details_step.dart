@@ -46,7 +46,7 @@ class ClubDetailsStep extends StatelessWidget {
                   maxLines: 4,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.newline,
-                  validator: (value) {
+                  onValidate: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return context
                           .l10n

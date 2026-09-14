@@ -26,7 +26,7 @@ class HostSavedAudiencesWorkspace extends ConsumerWidget
           ref.invalidate(hostAllSavedAudiencesProvider(organizerId));
           await ref.read(hostAllSavedAudiencesProvider(organizerId).future);
         },
-        slivers: [
+        children: [
           HostSavedAudiencesDirectory(
             organizerId: organizerId,
             query: query,
@@ -78,7 +78,7 @@ class _HostSavedAudiencesDirectoryState
               label: _byName
                   ? context.l10n.hostCustomersSortName
                   : context.l10n.hostAudienceRecentlyChecked,
-              icon: Icon(CatchIcons.sort),
+              leading: Icon(CatchIcons.sort),
               onPressed: () => setState(() => _byName = !_byName),
             ),
             CatchButton.command(
@@ -90,25 +90,25 @@ class _HostSavedAudiencesDirectoryState
                 _HostSavedAudienceMembership.all =>
                   context.l10n.hostAudienceAllGroups,
               },
-              icon: Icon(CatchIcons.tune),
+              leading: Icon(CatchIcons.tune),
               onPressed: _chooseMembership,
             ),
           ],
         ),
         gapH16,
-        CatchAsyncValueView<HostSavedAudiencePage>(
+        CatchAsyncBoundary<HostSavedAudiencePage>(
           value: audiences,
           onRetry: () =>
               ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.customers,
-            mode: CatchErrorStateMode.compact,
-            onRetry: () =>
-                ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
-          ),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 4),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.customers,
+                mode: CatchErrorStateMode.compact,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, page) {
             final visible =
                 _matchingSavedAudiences(page.audiences, query)
@@ -134,7 +134,7 @@ class _HostSavedAudiencesDirectoryState
               first: true,
               title: context.l10n.hostSavedAudiencesManage,
               count: visible.length,
-              trailing: CatchTextButton(
+              trailing: CatchButton.text(
                 key: const ValueKey('host-saved-audience-create'),
                 label: context.l10n.hostSavedAudienceNew,
                 onPressed: onCreate,
@@ -153,7 +153,7 @@ class _HostSavedAudiencesDirectoryState
                                 _membership == _HostSavedAudienceMembership.all
                             ? context.l10n.hostSavedAudiencesEmptyBody
                             : context.l10n.hostSavedAudiencesSearchEmptyBody,
-                        layout: CatchEmptyStateLayout.inline,
+                        variant: CatchEmptyStateVariant.inline,
                       ),
                     ]
                   : [

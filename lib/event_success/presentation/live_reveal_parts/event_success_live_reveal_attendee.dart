@@ -205,7 +205,9 @@ class EventSuccessLiveRevealAttendeeCard extends StatelessWidget {
                       variant: optedOut
                           ? CatchButtonVariant.primary
                           : CatchButtonVariant.secondary,
-                      isLoading: isSavingOptOut,
+                      status: (isSavingOptOut)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                       onPressed: isSavingOptOut || onIncludeChanged == null
                           ? null
                           : () => onIncludeChanged!(optedOut),

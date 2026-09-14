@@ -60,22 +60,22 @@ void main() {
         dividerBox.color,
         CatchDivider.colorFor(
           CatchTokens.editorialLight,
-          CatchDividerRole.fieldSection,
+          CatchDividerVariant.fieldSection,
         ),
       );
       final sectionDividers = tester
           .widgetList<CatchDivider>(find.byType(CatchDivider))
           .toList(growable: false);
-      expect(sectionDividers.map((divider) => divider.role), [
-        CatchDividerRole.section,
-        CatchDividerRole.fieldSection,
+      expect(sectionDividers.map((divider) => divider.variant), [
+        CatchDividerVariant.section,
+        CatchDividerVariant.fieldSection,
       ]);
       expect(
         sectionDividers
             .map(
               (divider) => CatchDivider.colorFor(
                 CatchTokens.editorialLight,
-                divider.role,
+                divider.variant,
               ),
             )
             .toSet(),
@@ -155,8 +155,8 @@ void main() {
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Second',
                   body: 'B',
-                  initiallyOpen: true,
-                  control: const Text('Second control'),
+                  disclosureMode: CatchFieldMode.localExpanded,
+                  child: const Text('Second control'),
                 ),
                 CatchField.read(
                   copy: catchFieldCopy(AppLocalizationsEn()),
@@ -190,12 +190,12 @@ void main() {
         CatchTokens.editorialDark,
       ]) {
         expect(
-          CatchDivider.colorFor(tokens, CatchDividerRole.fieldSection),
+          CatchDivider.colorFor(tokens, CatchDividerVariant.fieldSection),
           tokens.line,
         );
         final rowColor = CatchDivider.colorFor(
           tokens,
-          CatchDividerRole.fieldRow,
+          CatchDividerVariant.fieldRow,
         );
         expect(
           rowColor.a,
@@ -359,7 +359,7 @@ void main() {
     expect(find.text('Aanya'), findsOneWidget);
     expect(find.text('+ Add bio'), findsOneWidget);
     expect(find.text('Delete account'), findsOneWidget);
-    expect(find.byType(CatchKicker), findsOneWidget);
+    expect(find.byType(CatchKickerText), findsOneWidget);
     expect(find.bySemanticsLabel('Visible'), findsOneWidget);
 
     await tester.tap(find.byKey(const ValueKey('catch-field-toggle')));
@@ -381,7 +381,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(CatchKicker), findsOneWidget);
+      expect(find.byType(CatchKickerText), findsOneWidget);
       expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
       expect(find.text('Body copy'), findsOneWidget);
       expect(
@@ -393,12 +393,13 @@ void main() {
     }
   });
 
-  testWidgets('CatchSectionStack lets Section own the handoff rhythm', (
+  testWidgets('CatchSectionList lets Section own the handoff rhythm', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchSectionStack(
+        const CatchSectionList.inset(
+          emptyStateOmitted: true,
           children: [
             CatchSection.divided(
               title: 'First',
@@ -411,12 +412,17 @@ void main() {
       ),
     );
 
-    final stack = tester.widget<CatchSectionStack>(
-      find.byType(CatchSectionStack),
+    final sections = find.byType(CatchSection);
+    expect(
+      tester.getBottomLeft(sections.first).dy,
+      tester.getTopLeft(sections.last).dy,
     );
-
-    expect(stack.gap, 0);
-    expect(stack.padding, CatchInsets.pageBody);
+    final padding = CatchInsets.pageBody.resolve(TextDirection.ltr);
+    final list = find.byType(CatchSectionList);
+    expect(
+      tester.getTopLeft(sections.first).dx - tester.getTopLeft(list).dx,
+      padding.left,
+    );
     expect(find.byType(Divider), findsNothing);
     expect(find.text('SECOND'), findsOneWidget);
   });
@@ -439,15 +445,13 @@ void main() {
               children: [
                 CatchSection.divided(
                   title: 'The plan',
-                  leadAccent: activityAccent,
-                  lead: true,
+                  titleColor: activityAccent,
                   first: true,
                   child: const Text('Lead body'),
                 ),
-                CatchSection.divided(
+                const CatchSection.divided(
                   title: 'Details',
-                  leadAccent: activityAccent,
-                  child: const Text('Neutral body'),
+                  child: Text('Neutral body'),
                 ),
               ],
             );
@@ -489,8 +493,7 @@ void main() {
       findsOneWidget,
     );
     final surface = tester.widget<CatchSurface>(find.byType(CatchSurface));
-    expect(surface.role, CatchSurfaceRole.card);
-    expect(surface.elevation, CatchSurfaceElevation.card);
+    expect(surface.emphasis, CatchSurfaceEmphasis.subtle);
   });
 
   testWidgets(
@@ -519,7 +522,7 @@ void main() {
 
       final surfaceFinder = find
           .descendant(
-            of: find.byType(CatchSectionFocusSurface),
+            of: find.byType(CatchSectionSurface),
             matching: find.byType(AnimatedContainer),
           )
           .first;
@@ -631,7 +634,7 @@ void main() {
       final surfaceRect = tester.getRect(
         find
             .descendant(
-              of: find.byType(CatchSectionFocusSurface),
+              of: find.byType(CatchSectionSurface),
               matching: find.byType(AnimatedContainer),
             )
             .first,
@@ -668,7 +671,7 @@ void main() {
 
       final surfaceFinder = find
           .descendant(
-            of: find.byType(CatchSectionFocusSurface),
+            of: find.byType(CatchSectionSurface),
             matching: find.byType(AnimatedContainer),
           )
           .first;
@@ -690,7 +693,7 @@ void main() {
       );
       final divider = tester.widget<CatchDivider>(dividerFinder);
       final dividerRect = tester.getRect(dividerFinder);
-      expect(divider.role, CatchDividerRole.section);
+      expect(divider.variant, CatchDividerVariant.section);
       expect(
         dividerRect.left - surfaceRect.left,
         CatchStroke.hairline + CatchFieldTokens.rowHorizontalPadding,
@@ -766,7 +769,7 @@ void main() {
       for (final rowCount in [1, 3]) {
         await pumpRows(rowCount);
 
-        final clipFinder = find.byKey(CatchSectionFocusSurface.rowGroupClipKey);
+        final clipFinder = find.byKey(CatchSectionSurface.rowGroupClipKey);
         final clip = tester.widget<ClipRRect>(clipFinder);
         expect(clip.clipBehavior, Clip.hardEdge);
         expect(
@@ -910,7 +913,7 @@ void main() {
       final surface = tester.widget<AnimatedContainer>(
         find
             .descendant(
-              of: find.byType(CatchSectionFocusSurface),
+              of: find.byType(CatchSectionSurface),
               matching: find.byType(AnimatedContainer),
             )
             .first,
@@ -929,7 +932,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         const CatchSection.containedFieldRows(
-          focused: true,
+          states: {WidgetState.focused},
           child: Text('Section body'),
         ),
       ),
@@ -938,7 +941,7 @@ void main() {
     final surface = tester.widget<AnimatedContainer>(
       find
           .descendant(
-            of: find.byType(CatchSectionFocusSurface),
+            of: find.byType(CatchSectionSurface),
             matching: find.byType(AnimatedContainer),
           )
           .first,
@@ -955,8 +958,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         const CatchSection.containedFieldRows(
-          focused: true,
-          hasError: true,
+          states: {WidgetState.focused, WidgetState.error},
           child: Text('Section body'),
         ),
       ),
@@ -964,7 +966,7 @@ void main() {
     final errorSurface = tester.widget<AnimatedContainer>(
       find
           .descendant(
-            of: find.byType(CatchSectionFocusSurface),
+            of: find.byType(CatchSectionSurface),
             matching: find.byType(AnimatedContainer),
           )
           .first,
@@ -995,9 +997,11 @@ void main() {
                       key: ValueKey('active-row-$index'),
                       title: 'Row $index',
                       body: 'Value $index',
-                      open: index == activeIndex,
+                      disclosureMode: index == activeIndex
+                          ? CatchFieldMode.controlledExpanded
+                          : CatchFieldMode.controlledCollapsed,
                       onOpenChanged: (_) {},
-                      control: Text('Control $index'),
+                      child: Text('Control $index'),
                     ),
                 ],
               ),
@@ -1012,7 +1016,7 @@ void main() {
           final surface = tester.widget<AnimatedContainer>(
             find
                 .descendant(
-                  of: find.byType(CatchSectionFocusSurface),
+                  of: find.byType(CatchSectionSurface),
                   matching: find.byType(AnimatedContainer),
                 )
                 .first,
@@ -1031,9 +1035,7 @@ void main() {
             of: activeOverlayFinder,
             matching: find.byType(CatchField),
           );
-          final clipFinder = find.byKey(
-            CatchSectionFocusSurface.rowGroupClipKey,
-          );
+          final clipFinder = find.byKey(CatchSectionSurface.rowGroupClipKey);
           expect(activeOverlayFinder, findsOneWidget);
           expect(activeFieldFinder, findsOneWidget);
           expect(
@@ -1045,9 +1047,7 @@ void main() {
           );
           final activeDecoration = activeOverlay.decoration! as BoxDecoration;
           final activeOverlayRect = tester.getRect(activeOverlayFinder);
-          final surfaceRect = tester.getRect(
-            find.byType(CatchSectionFocusSurface),
-          );
+          final surfaceRect = tester.getRect(find.byType(CatchSectionSurface));
           final activeFieldRect = tester.getRect(activeFieldFinder);
 
           expect(background.border, isNull);
@@ -1085,29 +1085,26 @@ void main() {
   );
 
   testWidgets(
-    'CatchSectionFocusSurface field rows own active edge geometry directly',
+    'CatchSectionSurface field rows own active edge geometry directly',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
           SizedBox(
             width: 360,
-            child: CatchSectionFocusSurface(
+            child: CatchSectionSurface.fieldRows(
               padding: EdgeInsets.zero,
-              focused: false,
-              hasError: false,
-              fieldRows: true,
               child: CatchField.input(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Answer',
                 initialValue: 'The child owns this focus ring.',
-                focused: true,
+                states: const <WidgetState>{WidgetState.focused},
               ),
             ),
           ),
         ),
       );
 
-      final surfaceRect = tester.getRect(find.byType(CatchSectionFocusSurface));
+      final surfaceRect = tester.getRect(find.byType(CatchSectionSurface));
       final fieldRect = tester.getRect(find.byType(CatchField));
       final activeOverlayRect = tester.getRect(
         find.byKey(const ValueKey('catch-field-active-overlay')),
@@ -1171,7 +1168,6 @@ void main() {
 }
 
 void _noop() {}
-
 Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
   return MaterialApp(
     theme: theme ?? AppTheme.light,

@@ -44,8 +44,12 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: routeTitle,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -65,11 +69,15 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: routeTitle,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
-          child: CatchErrorBody(
+          child: CatchErrorState(
             title: context.l10n.hostsHostAuthRequiredScreenTitleSignInRequired,
             message:
                 context.l10n.hostsHostAuthRequiredScreenMessageSignInToManage,
@@ -89,8 +97,12 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: routeTitle,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -110,8 +122,12 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
       return CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: routeTitle,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
@@ -136,86 +152,90 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
     final editableProfile = actions.profileForEdit;
     if (editableProfile != null) _syncProfileControllers(editableProfile);
 
-    return CatchMutationErrorListeners(
+    listenToCatchMutationErrors(
+      context,
+      ref,
       mutations: [
         HostProfileController.ensureProfileMutation,
         HostProfileController.saveProfileMutation,
       ],
       errorContext: AppErrorContext.profile,
-      child: CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchTopBar(
-          title: routeTitle,
-          subtitle: club.name,
-          leading: CatchIconAction(
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            icon: CatchIcons.arrowBackIosNewRounded,
-            onPressed: _leaveTeam,
-          ),
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
-          bottom: CatchTabControllerRail<HostTeamMode>(
-            controller: _tabController,
-            options: [
-              CatchOption(
-                value: HostTeamMode.edit,
-                label: context.l10n.hostsHostClubTeamScreenLabelEdit,
-              ),
-              CatchOption(
-                value: HostTeamMode.preview,
-                label: context.l10n.hostsHostClubTeamScreenLabelPreview,
-              ),
-            ],
-          ),
+    );
+    return CatchRouteScaffold(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar(
+        title: routeTitle,
+        subtitle: club.name,
+        leading: CatchIconAction.toolbar(
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          icon: CatchIcons.arrowBackIosNewRounded,
+          onPressed: _leaveTeam,
         ),
-        body: CatchRouteBody.paged(
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
+        footer: CatchPageTabBar<HostTeamMode>.controlled(
           controller: _tabController,
-          pages: [
-            CatchRouteBody.standardConstrained(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  HostTeamProfileSection(
-                    state: state.profile,
-                    editMode: actions.editMode,
-                    creatingProfile: actions.creatingProfile,
-                    onRetry: () =>
-                        ref.invalidate(watchHostProfileProvider(uid)),
-                    onCreateProfile: actions.canCreateProfile
-                        ? () => unawaited(_createHostProfile())
-                        : null,
-                    displayNameController: _displayNameController,
-                    roleTitleController: _roleTitleController,
-                    bioController: _bioController,
-                    savingProfile: saveMutation.isPending,
-                    onSaveProfile:
-                        actions.canEditProfile && !saveMutation.isPending
-                        ? _saveProfile
-                        : null,
-                  ),
-                  HostTeamManagementSection(
-                    club: club,
-                    currentUid: uid,
-                    canManage: club.isOwnedBy(uid),
-                  ),
-                  HostTeamHostedClubsSection(
-                    actions: actions,
-                    state: state.clubs,
-                    onRetry: () =>
-                        ref.invalidate(_hostClubsForUserProvider(uid)),
-                    onOpenClub: _openHostedClub,
-                  ),
-                ],
-              ),
+          options: [
+            CatchOption(
+              value: HostTeamMode.edit,
+              label: context.l10n.hostsHostClubTeamScreenLabelEdit,
             ),
-            CatchRouteBody.standardConstrained(
-              child: HostTeamProfessionalProfilePreview(
-                state: state.profile,
-                clubs: clubs,
-                onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
-              ),
+            CatchOption(
+              value: HostTeamMode.preview,
+              label: context.l10n.hostsHostClubTeamScreenLabelPreview,
             ),
           ],
         ),
+      ),
+      body: CatchRouteBody.paged(
+        controller: _tabController,
+        pages: [
+          CatchRouteBody.standardConstrained(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                HostTeamProfileSection(
+                  state: state.profile,
+                  editMode: actions.editMode,
+                  creatingProfile: actions.creatingProfile,
+                  onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
+                  onCreateProfile: actions.canCreateProfile
+                      ? () => unawaited(_createHostProfile())
+                      : null,
+                  displayNameController: _displayNameController,
+                  roleTitleController: _roleTitleController,
+                  bioController: _bioController,
+                  savingProfile: saveMutation.isPending,
+                  onSaveProfile:
+                      actions.canEditProfile && !saveMutation.isPending
+                      ? _saveProfile
+                      : null,
+                ),
+                HostTeamManagementSection(
+                  club: club,
+                  currentUid: uid,
+                  canManage: club.isOwnedBy(uid),
+                ),
+                HostTeamHostedClubsSection(
+                  actions: actions,
+                  state: state.clubs,
+                  onRetry: () => ref.invalidate(_hostClubsForUserProvider(uid)),
+                  onOpenClub: _openHostedClub,
+                ),
+              ],
+            ),
+          ),
+          CatchRouteBody.standardConstrained(
+            child: HostTeamProfessionalProfilePreview(
+              state: state.profile,
+              clubs: clubs,
+              onRetry: () => ref.invalidate(watchHostProfileProvider(uid)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -252,7 +272,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
             ),
       );
     } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
+      // listenToCatchMutationErrors owns user-facing error display.
       return false;
     }
     if (!mounted) return true;
@@ -271,7 +291,7 @@ class _HostClubTeamScreenState extends ConsumerState<HostClubTeamScreen>
             tx.get(hostProfileControllerProvider.notifier).ensureProfile(),
       );
     } catch (_) {
-      // CatchMutationErrorListener owns user-facing error display.
+      // listenToCatchMutationErrors owns user-facing error display.
       return;
     }
     if (!mounted) return;
@@ -330,7 +350,7 @@ class HostTeamProfessionalProfilePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostTeamProfileLoading() => const CatchSkeletonRows(
+      HostTeamProfileLoading() => const CatchSkeleton.rows(
         count: 4,
         divided: true,
       ),
@@ -377,7 +397,7 @@ class _HostTeamProfessionalProfileContent extends StatelessWidget {
           padding: CatchInsets.cardContent,
           child: Column(
             children: [
-              CatchPersonAvatar(
+              CatchAvatar(
                 size: CatchSpacing.s16,
                 name: profile.displayName,
                 imageUrl: profile.avatarUrl,
@@ -464,10 +484,7 @@ class HostTeamProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (state) {
-      HostTeamProfileLoading() => const CatchSkeletonRows(
-        leading: CatchSkeletonRowLeading.icon,
-        divided: true,
-      ),
+      HostTeamProfileLoading() => const CatchSkeleton.iconRows(divided: true),
       HostTeamProfileError(:final error) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.profile,
@@ -486,7 +503,7 @@ class HostTeamProfileSection extends StatelessWidget {
                       .l10n
                       .hostsHostClubTeamScreenVisiblecopyCreateHostProfile,
             icon: CatchIcons.businessOutlined,
-            action: creatingProfile
+            actions: creatingProfile
                 ? const SizedBox.square(
                     dimension: CatchIcon.md,
                     child: CatchLoadingIndicator(
@@ -620,9 +637,14 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
             profile.displayName,
           ),
           onSubmit: () => unawaited(_submitField(_displayNameField)),
-          isLoading:
-              widget.savingProfile && _accordion.isExpanded(_displayNameField),
-          enabled: !widget.savingProfile && widget.onSaveProfile != null,
+          status:
+              widget.savingProfile && _accordion.isExpanded(_displayNameField)
+              ? CatchFieldStatus.saving
+              : CatchFieldStatus.idle,
+          states: <WidgetState>{
+            if (!(!widget.savingProfile && widget.onSaveProfile != null))
+              WidgetState.disabled,
+          },
           icon: CatchIcons.personOutlineRounded,
           textInputAction: TextInputAction.done,
           textCapitalization: TextCapitalization.words,
@@ -647,9 +669,13 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
             profile.roleTitle ?? '',
           ),
           onSubmit: () => unawaited(_submitField(_roleTitleField)),
-          isLoading:
-              widget.savingProfile && _accordion.isExpanded(_roleTitleField),
-          enabled: !widget.savingProfile && widget.onSaveProfile != null,
+          status: widget.savingProfile && _accordion.isExpanded(_roleTitleField)
+              ? CatchFieldStatus.saving
+              : CatchFieldStatus.idle,
+          states: <WidgetState>{
+            if (!(!widget.savingProfile && widget.onSaveProfile != null))
+              WidgetState.disabled,
+          },
           icon: CatchIcons.cardMembershipOutlined,
           textInputAction: TextInputAction.done,
           textCapitalization: TextCapitalization.words,
@@ -671,8 +697,13 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
           onCancel: () =>
               _cancelField(_bioField, widget.bioController, profile.bio ?? ''),
           onSubmit: () => unawaited(_submitField(_bioField)),
-          isLoading: widget.savingProfile && _accordion.isExpanded(_bioField),
-          enabled: !widget.savingProfile && widget.onSaveProfile != null,
+          status: widget.savingProfile && _accordion.isExpanded(_bioField)
+              ? CatchFieldStatus.saving
+              : CatchFieldStatus.idle,
+          states: <WidgetState>{
+            if (!(!widget.savingProfile && widget.onSaveProfile != null))
+              WidgetState.disabled,
+          },
           icon: CatchIcons.chatBubbleOutlineRounded,
           minLines: 2,
           maxLines: 4,
@@ -755,11 +786,7 @@ class HostTeamHostedClubsSection extends StatelessWidget {
     final t = CatchTokens.of(context);
     final sectionChildren = switch (state) {
       HostTeamHostedClubsLoading() => const <Widget>[
-        CatchSkeletonRows(
-          leading: CatchSkeletonRowLeading.icon,
-          count: 2,
-          divided: true,
-        ),
+        CatchSkeleton.iconRows(count: 2, divided: true),
       ],
       HostTeamHostedClubsError(:final error) => <Widget>[
         CatchLocalizedErrorState(

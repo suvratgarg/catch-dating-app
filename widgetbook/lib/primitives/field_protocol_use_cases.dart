@@ -79,10 +79,12 @@ class _AccordionFieldsState extends State<_AccordionFields> {
             copy: catchFieldCopy(context.l10n),
             title: title,
             values: const ['Default', 'Custom'],
-            itemLabel: (value) => value,
+            itemLabelBuilder: (value) => value,
             selected: const {'Default'},
             onSelectionChanged: (_) {},
-            open: _controller.isExpanded(title),
+            disclosureMode: _controller.isExpanded(title)
+                ? CatchFieldMode.controlledExpanded
+                : CatchFieldMode.controlledCollapsed,
             onOpenChanged: (open) {
               if (open) {
                 _controller.toggle(title);
@@ -100,10 +102,10 @@ Widget _openField(BuildContext context) => CatchField<String>.choices(
   copy: catchFieldCopy(context.l10n),
   title: 'Reminder',
   values: const ['Before', 'After'],
-  itemLabel: (value) => value,
+  itemLabelBuilder: (value) => value,
   selected: const {'Before'},
   onSelectionChanged: (_) {},
-  initiallyOpen: true,
+  disclosureMode: CatchFieldMode.localExpanded,
 );
 
 @widgetbook.UseCase(
@@ -115,7 +117,7 @@ Widget fieldGeometryStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Field geometry',
   catalogId: 'catch.field.geometry_scope',
   children: [
-    for (final gutter in CatchFieldGutterOwnership.values) ...[
+    for (final gutter in CatchFieldGeometryScopeMode.values) ...[
       Text('${gutter.name} gutter', style: CatchTextStyles.bodyM(context)),
       CatchFieldGeometryScope(
         gutterOwnership: gutter,
@@ -126,14 +128,14 @@ Widget fieldGeometryStates(BuildContext context) => WidgetbookCatalogFrame(
         ),
       ),
     ],
-    for (final shape in CatchFieldInteractionShape.values) ...[
+    for (final shape in CatchFieldGeometryScopeVariant.values) ...[
       Text(shape.name, style: CatchTextStyles.bodyM(context)),
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
         child: CatchFieldInteractionPlaneScope(
           outsets: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
           child: CatchFieldGeometryScope(
-            gutterOwnership: CatchFieldGutterOwnership.container,
+            gutterOwnership: CatchFieldGeometryScopeMode.container,
             interactionShape: shape,
             child: _openField(context),
           ),
@@ -163,7 +165,7 @@ Widget fieldInteractionPlaneStates(BuildContext context) =>
             child: CatchFieldInteractionPlaneScope(
               outsets: EdgeInsets.symmetric(horizontal: outset),
               child: CatchSection.fieldRows(
-                interaction: CatchDividedFieldInteraction.fullBleed,
+                interaction: CatchDividedFieldInteractionScopeMode.fullBleed,
                 children: [_openField(context)],
               ),
             ),
@@ -182,10 +184,11 @@ Widget dividedFieldInteractionStates(BuildContext context) =>
       title: 'Divided section policy',
       catalogId: 'catch.field.divided_interaction_scope',
       children: [
-        for (final interaction in CatchDividedFieldInteraction.values) ...[
+        for (final interaction
+            in CatchDividedFieldInteractionScopeMode.values) ...[
           Text(interaction.name, style: CatchTextStyles.bodyM(context)),
-          CatchScreenBody(
-            scrollable: false,
+          CatchPageBody.screen(
+            variant: CatchPageBodyVariant.fixed,
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: CatchDividedFieldInteractionScope(
               interaction: interaction,
@@ -213,19 +216,19 @@ Widget responsiveFieldInteractionStates(BuildContext context) =>
           ),
           WidgetbookLayoutViewport(
             size: Size(width, width < 660 ? 560 : 280),
-            child: CatchScreenBody(
-              scrollable: false,
-              child: CatchResponsiveSectionLayout(
-                composition:
-                    CatchResponsiveSectionComposition.adaptiveTwoColumn,
+            child: CatchPageBody.screen(
+              variant: CatchPageBodyVariant.fixed,
+              child: CatchSectionList.responsive(
+                emptyStateOmitted: true,
+                mode: CatchSectionListMode.adaptiveTwoColumn,
                 fieldInteractionPolicy:
                     const CatchResponsiveFieldInteractionPolicy(),
-                sections: [
+                items: [
                   for (final lane in [
-                    CatchResponsiveSectionLane.primary,
-                    CatchResponsiveSectionLane.secondary,
+                    CatchSectionListPlacement.primary,
+                    CatchSectionListPlacement.secondary,
                   ])
-                    CatchResponsiveSectionItem(
+                    CatchSectionListItem(
                       lane: lane,
                       child: CatchSection.fieldRows(
                         children: [_openField(context)],
@@ -291,10 +294,12 @@ class _ObstructedDisclosureState extends State<_ObstructedDisclosure> {
                     copy: catchFieldCopy(context.l10n),
                     title: 'Reminder',
                     values: const ['Before', 'After'],
-                    itemLabel: (value) => value,
+                    itemLabelBuilder: (value) => value,
                     selected: const {'Before'},
                     onSelectionChanged: (_) {},
-                    open: _open,
+                    disclosureMode: _open
+                        ? CatchFieldMode.controlledExpanded
+                        : CatchFieldMode.controlledCollapsed,
                     onOpenChanged: (open) => setState(() => _open = open),
                     onCancel: () => setState(() => _open = false),
                     onSubmit: () => setState(() => _open = false),
@@ -395,7 +400,7 @@ Widget searchCopyDefaultAndOverriddenStates(BuildContext context) {
       CatchSearchField.expanding(copy: copy, onCloseSearch: () {}),
       CatchSearchField.expanding(
         copy: copy,
-        expanded: false,
+        status: CatchSearchFieldStatus.collapsed,
         onOpenSearch: () {},
       ),
     ],

@@ -99,7 +99,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
         draft.structureConfig.unitKind != EventSuccessUnitKind.wholeGroup;
     final formatActions = <Widget>[
       if (widget.editable)
-        CatchTextButton(
+        CatchButton.text(
           key: const ValueKey('eventSuccessCustomizeTools'),
           label: _customizingTools
               ? context
@@ -112,10 +112,10 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               setState(() => _customizingTools = !_customizingTools),
         ),
       if (widget.showResetToRecommended && widget.onResetToRecommended != null)
-        CatchTextButton(
+        CatchButton.text(
           label: context.l10n.eventSuccessEventSuccessSetupBodyLabelReset,
           onPressed: widget.onResetToRecommended,
-          tone: CatchTextButtonTone.neutral,
+          tone: CatchButtonTone.neutral,
         ),
     ];
 
@@ -132,7 +132,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               title: context.l10n.eventSuccessEventSuccessSetupBodyTitleFormat,
               body: draft.playbook.summary,
               valueText: profile.formatLabel,
-              action: formatActions.isEmpty
+              actions: formatActions.isEmpty
                   ? null
                   : Wrap(spacing: CatchSpacing.s2, children: formatActions),
             ),
@@ -150,7 +150,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   setState(() => _hostGoalOpen = open && widget.editable),
               onCancel: _cancelHostGoal,
               onSubmit: _submitHostGoal,
-              enabled: widget.editable,
+              states: <WidgetState>{if (!widget.editable) WidgetState.disabled},
               inputHint: draft.hostGoal,
               minLines: 2,
               maxLines: 4,
@@ -175,11 +175,11 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   setState(() => _attendeePromptOpen = open && widget.editable),
               onCancel: _cancelAttendeePrompt,
               onSubmit: _submitAttendeePrompt,
-              enabled: widget.editable,
+              states: <WidgetState>{if (!widget.editable) WidgetState.disabled},
               inputHint: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff,
-              supporting: Text(
+              meta: Text(
                 context.l10n
                     .eventSuccessEventSuccessSetupBodyTextAttendeesWillSeeText(
                       text: _attendeePromptPreview(
@@ -201,9 +201,9 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                   .eventSuccessEventSuccessSetupBodyTitleConversationCheckDefaults,
               contract: CatchContractConstraints
                   .eventSuccessPlanDocumentConversationGraphConsentMode,
-              contractValue: (value) => value.name,
+              contractValueBuilder: (value) => value.name,
               values: EventSuccessConversationGraphConsentMode.values,
-              itemTitle: (mode) => switch (mode) {
+              itemTitleBuilder: (mode) => switch (mode) {
                 EventSuccessConversationGraphConsentMode.optIn =>
                   context
                       .l10n
@@ -213,7 +213,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                       .l10n
                       .eventSuccessEventSuccessSetupBodyLabelPreselectAssignedPeople,
               },
-              itemDescription: (mode) => switch (mode) {
+              itemDescriptionBuilder: (mode) => switch (mode) {
                 EventSuccessConversationGraphConsentMode.optIn =>
                   context
                       .l10n
@@ -224,7 +224,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
                       .eventSuccessEventSuccessSetupBodyTextAssignedPeopleStartSelectedAndCanBeRemoved,
               },
               selected: draft.conversationGraphConsentMode,
-              enabled: widget.editable,
+              states: <WidgetState>{if (!widget.editable) WidgetState.disabled},
               onChanged: widget.editable
                   ? (mode) => widget.onChanged(
                       (current) =>
@@ -360,9 +360,9 @@ class EventSuccessModuleRows extends StatelessWidget {
                   .eventSuccessEventSuccessSetupBodyTextMatchClueQuestions,
               contract: CatchContractConstraints
                   .mobileFormStateEventSuccessQuestionnaireMode,
-              contractValue: (value) => value.name,
+              contractValueBuilder: (value) => value.name,
               values: _QuestionnaireMode.values,
-              itemTitle: (mode) => switch (mode) {
+              itemTitleBuilder: (mode) => switch (mode) {
                 _QuestionnaireMode.off =>
                   context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
                 _QuestionnaireMode.cluesOnly =>
@@ -372,7 +372,7 @@ class EventSuccessModuleRows extends StatelessWidget {
                       .l10n
                       .eventSuccessEventSuccessSetupBodyLabelCluesSoftPairing,
               },
-              itemDescription: (mode) => switch (mode) {
+              itemDescriptionBuilder: (mode) => switch (mode) {
                 _QuestionnaireMode.off =>
                   context
                       .l10n
@@ -387,7 +387,7 @@ class EventSuccessModuleRows extends StatelessWidget {
                       .eventSuccessEventSuccessSetupBodyTextAnswersCreateCluesAndSoftlyGuidePairings,
               },
               selected: _questionnaireMode(_draft),
-              enabled: _editable,
+              states: <WidgetState>{if (!_editable) WidgetState.disabled},
               onChanged: _editable ? _onQuestionnaireModeChanged : null,
             ),
           )
@@ -428,9 +428,9 @@ class EventSuccessModuleRows extends StatelessWidget {
                   .eventSuccessEventSuccessSetupBodyLabelSwitchPartnersEvery,
               contract: CatchContractConstraints
                   .eventSuccessPlanDocumentStructureConfigRotationIntervalMinutes,
-              contractValue: (value) => value?.toString() ?? '',
+              contractValueBuilder: (value) => value?.toString() ?? '',
               values: const <int?>[null, 10, 15, 20, 30],
-              itemLabel: (value) => switch (value) {
+              itemLabelBuilder: (value) => switch (value) {
                 null =>
                   context.l10n.eventSuccessEventSuccessSetupBodyLabelNoTimer,
                 10 => context.l10n.eventSuccessEventSuccessSetupBodyLabel10Min,
@@ -439,7 +439,7 @@ class EventSuccessModuleRows extends StatelessWidget {
                 _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel30Min,
               },
               selected: {_draft.structureConfig.rotationIntervalMinutes},
-              enabled: _editable,
+              states: <WidgetState>{if (!_editable) WidgetState.disabled},
               onSelectionChanged: _editable
                   ? (selection) => _onDraftChanged(
                       (current) => current.copyWith(
@@ -462,16 +462,16 @@ class EventSuccessModuleRows extends StatelessWidget {
                   .eventSuccessEventSuccessSetupBodyLabelRevealCountdown,
               contract: CatchContractConstraints
                   .eventSuccessPlanDocumentStructureConfigRevealCountdownSeconds,
-              contractValue: (value) => value.toString(),
+              contractValueBuilder: (value) => value.toString(),
               values: const [0, 5, 10, 15],
-              itemLabel: (value) => switch (value) {
+              itemLabelBuilder: (value) => switch (value) {
                 0 => context.l10n.eventSuccessEventSuccessSetupBodyLabelOff,
                 5 => context.l10n.eventSuccessEventSuccessSetupBodyLabel5s,
                 10 => context.l10n.eventSuccessEventSuccessSetupBodyLabel10s,
                 _ => context.l10n.eventSuccessEventSuccessSetupBodyLabel15s,
               },
               selected: {_draft.structureConfig.revealCountdownSeconds},
-              enabled: _editable,
+              states: <WidgetState>{if (!_editable) WidgetState.disabled},
               onSelectionChanged: _editable
                   ? (selection) => _onDraftChanged(
                       (current) => current.copyWith(

@@ -39,13 +39,13 @@ class SwipeHubScreen extends ConsumerWidget {
     final slivers = <Widget>[CatchesHubStateView(state: state)];
     if (!showHubChrome) {
       return CatchRootScreenScaffold.fullBleed(
-        header: const SizedBox.shrink(),
-        slivers: slivers,
+        title: const SizedBox.shrink(),
+        children: slivers,
       );
     }
     return CatchRootScreenScaffold.standard(
-      header: CatchScreenHeaderTitle.block(
-        eyebrow: context.l10n.swipesSwipeHubScreenTitleCatches,
+      title: CatchScreenHeader.block(
+        kicker: context.l10n.swipesSwipeHubScreenTitleCatches,
         title: context.l10n.swipesSwipeHubScreenTextAfterTheEvent,
         actions: [
           CatchIconTile(
@@ -53,13 +53,13 @@ class SwipeHubScreen extends ConsumerWidget {
             iconColor: t.primary,
             backgroundColor: t.primarySoft,
             borderColor: t.primarySoft,
-            size: CatchIconButton.navSize,
+            size: CatchIconAction.navSize,
             iconSize: CatchIcon.md,
             radius: CatchRadius.pill,
           ),
         ],
       ),
-      slivers: slivers,
+      children: slivers,
     );
   }
 }
@@ -73,7 +73,7 @@ class CatchesHubStateView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return switch (state) {
       CatchesHubAccessLoading() => const SliverToBoxAdapter(
-        child: CatchSkeletonList(),
+        child: CatchSkeleton.cards(),
       ),
       CatchesHubAccessError(:final error) => CatchLocalizedSliverErrorState(
         error,
@@ -84,7 +84,7 @@ class CatchesHubStateView extends ConsumerWidget {
         child: SizedBox.shrink(),
       ),
       CatchesHubEventsLoading() => const SliverToBoxAdapter(
-        child: CatchSkeletonList(),
+        child: CatchSkeleton.cards(),
       ),
       CatchesHubEventsError(:final uid, :final error) =>
         CatchLocalizedSliverErrorState(
@@ -92,7 +92,7 @@ class CatchesHubStateView extends ConsumerWidget {
           context: AppErrorContext.event,
           onRetry: () => ref.invalidate(watchAttendedEventsProvider(uid)),
         ),
-      CatchesHubEmpty() => CatchSliverStateViewport(
+      CatchesHubEmpty() => CatchStateViewport.sliver(
         child: CatchesHubEmptyState(
           onFindEvent: () => context.go(Routes.exploreScreen.path),
         ),
@@ -301,11 +301,13 @@ class CatchesHubEmptyState extends StatelessWidget {
             icon: CatchIcons.directionsRunRounded,
             title: context.l10n.swipesSwipeHubScreenTitleNoActiveCatches,
             message: context.l10n.swipesSwipeHubScreenMessageBookAGroupEvent,
-            action: CatchButton(
-              label: context.l10n.swipesSwipeHubScreenLabelFindAnEvent,
-              onPressed: onFindEvent,
-              variant: CatchButtonVariant.secondary,
-            ),
+            actions: [
+              CatchButton(
+                label: context.l10n.swipesSwipeHubScreenLabelFindAnEvent,
+                onPressed: onFindEvent,
+                variant: CatchButtonVariant.secondary,
+              ),
+            ],
           ),
           gapH18,
           CatchSurface(

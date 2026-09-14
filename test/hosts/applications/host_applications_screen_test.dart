@@ -48,7 +48,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchOptionGroup<String>), findsOneWidget);
+    expect(find.byType(CatchChoiceInput<String>), findsOneWidget);
     expect(requests.last.reviewStatus, isNull);
     expect(find.text('Sunday run applications'), findsOneWidget);
     await tester.tap(find.text('New applications'));

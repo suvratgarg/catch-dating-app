@@ -257,12 +257,12 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             title: context.l10n.hostsClubHostDefaultsStepTextDefaultActivity,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsPrimaryActivityKind,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             helperText:
                 context.l10n.hostsClubHostDefaultsStepTextNewEventsStartFrom,
             values: ActivityKind.eventCreationDefaults,
-            itemLabel: (value) => value.label,
-            itemAccent: (value) =>
+            itemLabelBuilder: (value) => value.label,
+            itemAccentBuilder: (value) =>
                 ActivityPalette.resolve(context, value).accent,
             selected: {activityKind},
             onSelectionChanged: (selection) =>
@@ -276,10 +276,11 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
             title: context.l10n.hostsClubHostDefaultsStepLabelAdmissionFormat,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsEventPolicyAdmissionPreset,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: visibleAdmissionPresets,
-            itemTitle: (preset) => preset.label(context.l10n),
-            itemDescription: (preset) => preset.description(context.l10n),
+            itemTitleBuilder: (preset) => preset.label(context.l10n),
+            itemDescriptionBuilder: (preset) =>
+                preset.description(context.l10n),
             selected: selectedAdmissionPreset,
             onChanged: (preset) {
               _emit(
@@ -527,12 +528,13 @@ class _PolicyDefaultsCardState extends State<ClubPolicyDefaultsCard> {
                 context.l10n.hostsClubHostDefaultsStepLabelCancellationPolicy,
             contract: CatchContractConstraints
                 .createClubCallablePayloadHostDefaultsEventPolicyCancellationPolicyId,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: EventCancellationPolicyId.values
                 .where((value) => value.isApplicable)
                 .toList(growable: false),
-            itemTitle: (policyId) => policyFor(policyId).title,
-            itemDescription: (policyId) => policyFor(policyId).attendeeSummary,
+            itemTitleBuilder: (policyId) => policyFor(policyId).title,
+            itemDescriptionBuilder: (policyId) =>
+                policyFor(policyId).attendeeSummary,
             selected: defaults.cancellationPolicyId,
             onChanged: (policyId) => _emit(
               (current) => current.copyWith(cancellationPolicyId: policyId),

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
@@ -38,10 +38,10 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
       contactId: contactId,
     );
     final provider = hostApplicationsDirectoryControllerProvider(request);
-    return CatchAsyncValueView<HostApplicationsDirectoryState>(
+    return CatchAsyncBoundary<HostApplicationsDirectoryState>(
       value: ref.watch(provider),
       onRetry: () => ref.invalidate(provider),
-      loadingBuilder: (_) => const CatchSkeletonRows(count: 2),
+      loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
       builder: (context, state) => Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -81,7 +81,9 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
           if (state.nextCursor != null)
             CatchButton(
               label: context.l10n.hostCustomersLoadMore,
-              isLoading: state.loadingMore,
+              status: (state.loadingMore)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               variant: CatchButtonVariant.ghost,
               onPressed: state.canLoadMore
                   ? () => ref.read(provider.notifier).loadMore()
@@ -95,7 +97,7 @@ class HostCustomerApplicationsPanel extends ConsumerWidget {
                 title: context.l10n.hostCustomersLatestSubmittedDetails,
                 contractExemption:
                     'Read-only disclosure of a grant-filtered application snapshot; no scalar value is persisted.',
-                control: HostCustomerApplicationSnapshot(
+                child: HostCustomerApplicationSnapshot(
                   organizerId: organizerId,
                   applicationId: state.applications.first.applicationId,
                   onOpen: () =>
@@ -130,10 +132,10 @@ class HostCustomerApplicationSnapshot extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final provider = hostApplicationDetailProvider(organizerId, applicationId);
-    return CatchAsyncValueView<HostApplicationDetail>(
+    return CatchAsyncBoundary<HostApplicationDetail>(
       value: ref.watch(provider),
       onRetry: () => ref.invalidate(provider),
-      loadingBuilder: (_) => const CatchSkeletonRows(count: 2),
+      loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
       builder: (context, detail) => CatchSection.fieldRows(
         key: const ValueKey('host-customer-submitted-fields'),
         title: context.l10n.hostCustomersLatestSubmittedDetails,

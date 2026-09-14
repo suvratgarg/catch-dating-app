@@ -419,3 +419,24 @@ test("CLI supports --check with custom --file and --repo-root", (t) => {
   assert.match(result.stdout, /Widget pattern families OK/u);
   assert.match(result.stdout, /1 families, 4 members/u);
 });
+
+test('generated type arguments retain the registered component identity', (t) => {
+  const {root} = createFixture(t);
+  writeFile(root, 'widgetbook/lib/main.directories.g.dart', `
+    final directories = [
+      WidgetbookComponent(
+        name: 'CatchChip<Map<String, int>, dynamic>',
+        useCases: const [],
+      ),
+    ];
+  `);
+  assert.deepEqual(checkPatternFamilies({repoRoot: root}).errors, []);
+  writeFile(root, 'widgetbook/lib/main.directories.g.dart', `
+    final directories = [
+      WidgetbookComponent(name: 'AnotherChip<dynamic>', useCases: const []),
+      WidgetbookCategory(name: 'CatchChip', children: const []),
+    ];
+  `);
+  assert.ok(checkPatternFamilies({repoRoot: root}).errors.some((error) =>
+    error.includes("'CatchChip' is missing")));
+});

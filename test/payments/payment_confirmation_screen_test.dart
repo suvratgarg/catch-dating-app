@@ -125,7 +125,7 @@ void main() {
         club: club,
       );
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
+      expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.text('Checkout is waiting'), findsOneWidget);
       expect(find.textContaining('Finish payment in Stripe'), findsOneWidget);
       expect(find.text('Pending'), findsOneWidget);
@@ -202,7 +202,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
+      expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
     });
 
@@ -222,7 +222,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
+      expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.text('Event not found'), findsOneWidget);
       expect(find.text('This event is no longer available.'), findsOneWidget);
     });

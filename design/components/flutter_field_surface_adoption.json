@@ -10,9 +10,9 @@
     "design/screens/catch.screens.json"
   ],
   "legacySymbols": [
-    "CatchFormFieldLabel",
+    "CatchFieldLabelText",
     "CatchSelectChip",
-    "CatchChipField",
+    "CatchChoiceInput.form",
     "CatchNumberStepper",
     "HostPickerTile",
     "MapPinTile"
@@ -221,8 +221,8 @@
         {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "HostBroadcastComposerSheet"}
       ],
       "anchors": [
-        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchOptionGroup", "expected": 1},
-        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchOptionCard", "expected": 1},
+        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchChoiceInput.segmented", "expected": 1},
+        {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchChoiceInput.described", "expected": 1},
         {"file": "lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart", "symbol": "CatchField.input", "expected": 1}
       ],
       "targetModes": ["CatchField.choices", "CatchField.control", "CatchField.input"],
@@ -244,8 +244,8 @@
         {"file": "lib/auth/presentation/otp_page.dart", "symbol": "OtpPage"}
       ],
       "anchors": [
-        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "CatchFormFieldLabel", "expected": 1},
-        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "CatchOtpCodeField", "expected": 2}
+        {"file": "lib/auth/presentation/phone_page.dart", "symbol": "CatchFieldLabelText", "expected": 1},
+        {"file": "lib/auth/presentation/otp_page.dart", "symbol": "CatchCodeInput", "expected": 2}
       ],
       "targetModes": ["CatchSection.fieldRows", "CatchField.control"],
       "preserve": ["country picker", "OTP semantics", "autofill", "auth timing and focus behavior"],
@@ -265,7 +265,7 @@
         {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "LaunchAccessApplicationForm"}
       ],
       "anchors": [
-        {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchChipField", "expected": 3},
+        {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchChoiceInput.form", "expected": 3},
         {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchField.select", "expected": 1},
         {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchField.toggle", "expected": 1},
         {"file": "lib/launch_access/presentation/launch_access_application_screen.dart", "symbol": "CatchField.input", "expected": 4}
@@ -280,7 +280,7 @@
       "id": "FIELD-SURFACE-EXCLUSION-CREATE-CLUB-PHOTOS",
       "reason": "The create-club photo widgets remain specialized children inside the completed CatchSection migration.",
       "anchors": [
-        {"file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart", "symbol": "CatchFormFieldLabel", "expected": 2}
+        {"file": "lib/hosts/presentation/club_management/create/widgets/create_club_photos_picker.dart", "symbol": "CatchFieldLabelText", "expected": 2}
       ]
     },
     {

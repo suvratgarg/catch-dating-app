@@ -93,7 +93,7 @@ class _CrossPathsExploreCardState extends State<CrossPathsExploreCard> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchMonoLabel(
+        CatchMetadataText(
           context.l10n.crossPathsExploreCardLabelPeopleYouCouldMeet,
           color: t.ink3,
           uppercase: true,
@@ -104,11 +104,11 @@ class _CrossPathsExploreCardState extends State<CrossPathsExploreCard> {
           label: profileSemantics,
           onTap: widget.onProfileSelected,
           child: ExcludeSemantics(
-            child: CatchPersonPolaroid(
+            child: CatchPolaroid(
               onTap: widget.onProfileSelected,
               showArrow: true,
               media: primaryPhotoUrl == null
-                  ? CatchNetworkImageFallback(icon: CatchIcons.personOutlined)
+                  ? CatchImageFallbackSurface(icon: CatchIcons.personOutlined)
                   : CatchNetworkImage(primaryPhotoUrl),
               kicker: context.l10n.crossPathsExploreCardLabelCrossPaths,
               name: '$firstName, ${profile.age}',
@@ -200,7 +200,7 @@ class CrossPathsEventContextCard extends StatelessWidget {
           gapH10,
           CatchButton(
             label: context.l10n.crossPathsExploreCardActionSeeEvent,
-            icon: Icon(CatchIcons.forwardArrow, size: CatchIcon.sm),
+            leading: Icon(CatchIcons.forwardArrow, size: CatchIcon.sm),
             size: CatchButtonSize.sm,
             variant: CatchButtonVariant.secondary,
             fullWidth: true,
@@ -284,7 +284,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  const CatchBottomSheetGrabber(),
+                  const CatchSheetDragIndicator(),
                   gapH8,
                   Row(
                     children: [
@@ -294,12 +294,12 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                           style: CatchTextStyles.titleL(context),
                         ),
                       ),
-                      CatchIconButton.icon(
+                      CatchIconAction.icon(
                         icon: CatchIcons.closeRounded,
-                        variant: CatchIconButtonVariant.plain,
+                        variant: CatchIconActionVariant.plain,
                         tooltip:
                             context.l10n.crossPathsProfilePreviewTooltipClose,
-                        onTap: () => Navigator.of(context).pop(),
+                        onPressed: () => Navigator.of(context).pop(),
                       ),
                     ],
                   ),
@@ -338,7 +338,7 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                         invitation,
                         pairInvitationEnabled: pairInvitationEnabled,
                       ),
-                      icon: Icon(
+                      leading: Icon(
                         invitation?.status ==
                                 CrossPathsInvitationStatus.accepted
                             ? CatchIcons.chatBubbleOutlineRounded
@@ -346,7 +346,9 @@ class CrossPathsProfilePreviewSheet extends ConsumerWidget {
                         size: CatchIcon.sm,
                       ),
                       fullWidth: true,
-                      isLoading: mutation.isLoading,
+                      status: (mutation.isLoading)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                       variant:
                           invitation?.status ==
                               CrossPathsInvitationStatus.pending

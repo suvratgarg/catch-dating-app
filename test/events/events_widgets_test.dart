@@ -52,10 +52,10 @@ void main() {
         Scaffold(
           body: Column(
             children: [
-              CatchFormFieldLabel(
-                copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+              CatchFieldLabelText(
+                copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
                 label: 'Distance',
-                large: true,
+                size: CatchFieldLabelTextSize.lg,
               ),
               _TestPickerTile(
                 icon: CatchIcons.calendarTodayOutlined,
@@ -75,13 +75,13 @@ void main() {
                 selectedLabel: 'Bandra Fort',
                 onTap: () {},
               ),
-              CatchNumberStepper(
+              CatchStepper.actions(
                 value: 75,
                 onDecrease: () => decreased = true,
                 onIncrease: () => increased = true,
-                decreaseTooltip: 'Decrease duration',
-                increaseTooltip: 'Increase duration',
-                formatValue: (minutes) => '${minutes.round()} min',
+                decreaseSemanticLabel: 'Decrease duration',
+                increaseSemanticLabel: 'Increase duration',
+                valueLabelBuilder: (minutes) => '${minutes.round()} min',
               ),
             ],
           ),
@@ -96,15 +96,13 @@ void main() {
       expect(find.text('75 min'), findsOneWidget);
       expect(
         tester
-            .getSize(find.widgetWithText(CatchControlShell, 'Select a date'))
+            .getSize(find.widgetWithText(CatchControlSurface, 'Select a date'))
             .height,
         CatchControlMetrics.mdMinHeight,
       );
       expect(
-        tester
-            .getSize(find.widgetWithText(CatchNumberStepper, '75 min'))
-            .height,
-        CatchControlMetrics.mdMinHeight,
+        tester.getSize(find.widgetWithText(CatchStepper, '75 min')).height,
+        CatchStepperRepeatButton.hitExtent,
       );
       expect(
         tester.getSize(find.widgetWithText(MapPinTile, 'Choose on map')).height,
@@ -189,7 +187,7 @@ void main() {
         expect(find.text('AGE 21–35'), findsOneWidget);
         expect(find.text('MAX 8 MEN'), findsOneWidget);
         expect(find.text('MAX 10 WOMEN'), findsOneWidget);
-        expect(find.byType(CatchMetricStrip), findsOneWidget);
+        expect(find.byType(CatchMetricSection), findsOneWidget);
         expect(find.text('5.5'), findsOneWidget);
         expect(find.text('Pace level'), findsOneWidget);
         expect(find.text('3/20'), findsOneWidget);
@@ -398,7 +396,7 @@ void main() {
           ],
         );
 
-        expect(find.byType(CatchScreenScaffold), findsOneWidget);
+        expect(find.byType(CatchScaffold), findsOneWidget);
         expect(find.byType(EventLocationMapLoadingBody), findsOneWidget);
         expect(find.byType(CatchSkeleton), findsWidgets);
         expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -734,7 +732,7 @@ void main() {
       expect(find.text('Start time must be in the future'), findsOneWidget);
     });
 
-    testWidgets('agenda and progress widgets render and handle selection', (
+    testWidgets('agenda and action widgets render and handle selection', (
       tester,
     ) async {
       final now = DateTime(2026, 5, 5);
@@ -753,21 +751,16 @@ void main() {
         Scaffold(
           body: ListView(
             children: [
-              CatchStepProgress(
-                currentStep: 1,
-                totalSteps: 4,
-                counterLabelBuilder: (step, total) => '$step/$total',
-              ),
               CatchButton(
                 label: 'Next',
                 onPressed: () => footerTapped = true,
                 fullWidth: true,
-                icon: Icon(CatchIcons.arrowForwardRounded),
+                leading: Icon(CatchIcons.arrowForwardRounded),
               ),
               const CatchButton(
                 label: 'Schedule event',
                 onPressed: _noop,
-                isLoading: true,
+                status: CatchButtonStatus.loading,
                 fullWidth: true,
               ),
               SizedBox(
@@ -841,7 +834,14 @@ void main() {
         expect(tester.takeException(), isNull);
         expect(find.text('Previous'), findsOneWidget);
         expect(find.text('Schedule event'), findsOneWidget);
-        expect(find.byType(CatchBottomDock), findsNothing);
+        expect(
+          find.byWidgetPredicate(
+            (widget) =>
+                widget is CatchDockSurface &&
+                widget.variant == CatchDockSurfaceVariant.utility,
+          ),
+          findsNothing,
+        );
         expect(find.byType(Divider), findsNothing);
         expect(find.byType(BackdropFilter), findsOneWidget);
 
@@ -863,9 +863,12 @@ void main() {
         final actionsRect = tester.getRect(
           find.byKey(const ValueKey('catch_bottom_action_overlay.actions')),
         );
+        final overlayRect = tester.getRect(
+          find.byType(CatchBottomActionOverlay),
+        );
         expect(scrimRect.top, lessThan(bodyRect.bottom));
-        expect(actionsRect.top, lessThan(bodyRect.bottom));
-        expect(actionsRect.bottom, lessThanOrEqualTo(bodyRect.bottom));
+        expect(actionsRect.top, bodyRect.bottom);
+        expect(actionsRect.bottom, lessThanOrEqualTo(overlayRect.bottom));
         expect(actionsRect.top, greaterThan(scrimRect.top));
         expect(actionsRect.left, greaterThanOrEqualTo(CatchSpacing.screenPx));
         expect(
@@ -1156,10 +1159,10 @@ class _TestPickerTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchControlShell(
+    return CatchControlSurface(
       onTap: onTap,
-      tone: CatchControlTone.raised,
-      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+      tone: CatchControlSurfaceTone.raised,
+      padding: CatchControlMetrics.contentPadding(CatchControlSurfaceSize.md),
       semanticButton: true,
       child: Row(
         children: [

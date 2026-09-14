@@ -339,12 +339,12 @@ class _HostCustomerHistoryFiltersState
     children: [
       Align(
         alignment: AlignmentDirectional.centerStart,
-        child: CatchAdaptiveSelectionControl<HostCustomerHistoryKind>(
+        child: CatchSelectionMenu<HostCustomerHistoryKind>.control(
           title: context.l10n.hostCustomersTimeline,
           tooltip: context.l10n.hostCustomersTimeline,
           buttonKey: const ValueKey('host-customer-history-filter'),
           value: selected,
-          triggerLabel: (item) => item.label,
+          labelBuilder: (item) => item.label,
           onSelected: (value) => setState(() => selected = value),
           items: [
             CatchSelectionMenuItem(

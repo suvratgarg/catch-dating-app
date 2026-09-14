@@ -72,7 +72,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_ui/catch_ui.dart' as spacing;
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
@@ -174,21 +174,20 @@ class CatchUiLintProbe extends StatelessWidget {
         const CatchSectionList(children: [SizedBox.shrink()]),
         const CatchField.read(title: 'Outside section'),
         const CatchFieldGeometryScope(
-          gutterOwnership: CatchFieldGutterOwnership.container,
+          gutterOwnership: CatchFieldGeometryScopeMode.container,
           child: SizedBox.shrink(),
         ),
-        const CatchFieldInteractionPlane(
+        CatchFieldInteractionPlaneScope.fromPadding(
+          context: context,
           padding: EdgeInsets.all(16),
           child: SizedBox.shrink(),
         ),
-        const CatchSectionFocusSurface(
+        const CatchSectionSurface(
           padding: EdgeInsets.zero,
-          focused: false,
-          hasError: false,
           child: SizedBox.shrink(),
         ),
         const CatchFieldLanes.single(
-          gutterOwnership: CatchFieldGutterOwnership.container,
+          gutterOwnership: CatchFieldGeometryScopeMode.container,
           child: CatchField.read(title: 'Feature-owned gutter'),
         ),
         const CatchSection.fieldRows(
@@ -271,7 +270,7 @@ class _ProviderProbe extends ConsumerWidget {
           '$repositoryValue',
           style: CatchTextStyles.supporting(context, color: tokens.ink),
         ),
-        CatchAsyncValueView<int>(
+        CatchAsyncBoundary<int>(
           value: asyncValue,
           builder: (_, value) => Text('$value'),
         ),
@@ -397,6 +396,29 @@ expect_code_count \
   "seeded violation corpus" \
   "catch_no_shell_local_measurement" \
   1
+
+probe_path="$probe_root/lib/hosts/presentation/error_recovery_lint_probe.dart"
+stage_probe "canonical error recovery rejects empty actions" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/catch_ui.dart' as ui;
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
+import 'package:flutter/material.dart';
+
+final missingRecovery = CatchErrorState(title: 'Error', message: 'Try again');
+final emptyRecovery = CatchErrorState(title: 'Error', message: 'Try again', actions: const []);
+final nullRecovery = CatchErrorState(title: 'Error', message: 'Try again', onRetry: null);
+final emptySliverRecovery = CatchSliverErrorState(title: 'Error', message: 'Try again', actions: const []);
+final explicitFullScreen = CatchErrorState(title: 'Error', message: 'Try again', mode: CatchErrorStateMode.fullScreen);
+final inline = CatchErrorState(title: 'Error', message: 'Try again', mode: CatchErrorStateMode.inline);
+final compact = CatchErrorState(title: 'Error', message: 'Try again', mode: ui.CatchErrorStateMode.compact);
+final localizedInline = CatchLocalizedErrorState(Exception('Error'), mode: CatchErrorStateMode.inline);
+final localizedCompact = CatchLocalizedErrorState(Exception('Error'), mode: ui.CatchErrorStateMode.compact);
+void recover() {}
+final retry = CatchErrorState(title: 'Error', message: 'Try again', onRetry: recover, retryLabel: 'Retry');
+final exit = CatchErrorState(title: 'Error', message: 'Try again', actions: [CatchButton.text(label: 'Back', onPressed: recover)]);
+final sliverExit = CatchSliverErrorState(title: 'Error', message: 'Try again', actions: [CatchButton.text(label: 'Back', onPressed: recover)]);
+DART
+expect_probe exact catch_error_state_requires_action 5
 
 probe_path="$probe_root/lib/hosts/presentation/host_async_state_lint_probe.dart"
 stage_probe "Host route-edge async-state violation" <<'DART'
@@ -545,7 +567,7 @@ expect_code_count \
 
 stage_probe "mutation pending per-mutation clean case" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -569,12 +591,14 @@ class CatchUiMutationProbe extends ConsumerWidget {
     if (saveMutation.hasError) {
       return Text('Failed', style: CatchTextStyles.supporting(context));
     }
-    return CatchMutationErrorListener(
-      mutation: deleteMutationHandle,
-      child: Text(
-        deleteMutation.isPending ? 'Deleting' : 'Ready',
-        style: CatchTextStyles.supporting(context),
-      ),
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [deleteMutationHandle],
+    );
+    return Text(
+      deleteMutation.isPending ? 'Deleting' : 'Ready',
+      style: CatchTextStyles.supporting(context),
     );
   }
 }
@@ -645,24 +669,24 @@ DART
   expect_probe exact catch_use_canonical_feedback 9
   stage_probe "status placement $feedback_scope" <<'DART'
 import 'package:catch_ui/catch_ui.dart' as ui;
-typedef StripAlias = ui.CatchStatusStrip;
+typedef StripAlias = ui.CatchBanner;
 List<Object> forbiddenPlacement() => [
-  const ui.CatchStatusStrip(statuses: []),
-  const StripAlias(statuses: []),
-  ui.CatchStatusStrip.new,
+  const ui.CatchBanner.statuses(statuses: []),
+  const StripAlias.statuses(statuses: []),
+  ui.CatchBanner.statuses,
 ];
 DART
   expect_code_count "status placement $feedback_scope" "catch_status_strip_is_layout_owned" 3
   expect_probe exact catch_status_strip_is_layout_owned 3
   stage_probe "arrival placement $feedback_scope" <<'DART'
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart' as ui;
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart' as ui;
 import 'package:firebase_messaging/firebase_messaging.dart' as fcm;
 import 'package:flutter/widgets.dart';
-typedef NoticeHostAlias = ui.CatchNoticeHost;
+typedef NoticeOverlayAlias = ui.CatchNoticeOverlay;
 List<Object> forbiddenArrivals() => [
-  const ui.CatchNoticeHost(child: SizedBox()),
-  const NoticeHostAlias(child: SizedBox()),
-  ui.CatchNoticeHost.new,
+  const ui.CatchNoticeOverlay(child: SizedBox()),
+  const NoticeOverlayAlias(child: SizedBox()),
+  ui.CatchNoticeOverlay.new,
   fcm.FirebaseMessaging.onMessage,
 ];
 DART
@@ -672,9 +696,9 @@ done
 
 probe_path="$probe_root/lib/app.dart"
 stage_probe "global arrival host owner" <<'DART'
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:flutter/widgets.dart';
-final host = CatchNoticeHost(child: const SizedBox());
+final host = CatchNoticeOverlay(child: const SizedBox());
 DART
 expect_probe exact catch_notice_host_is_app_owned 0
 
@@ -689,23 +713,23 @@ for status_owner in \
   "packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart" \
   "lib/core/widgets/catch_tabbed_screen.dart" \
   "packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart" \
-  "packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart"; do
+  "packages/catch_ui/lib/src/patterns/catch_scaffold.dart"; do
   probe_path="$probe_root/$status_owner"
   stage_probe "status owner $status_owner" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
-final status = CatchStatusStrip(statuses: const []);
+final status = CatchBanner.statuses(statuses: const []);
 DART
   expect_probe exact catch_status_strip_is_layout_owned 0
 done
 
 for non_status_owner in \
   "lib/core/widgets/catch_route_scaffold.dart" \
-  "lib/core/widgets/catch_screen_scaffold.dart" \
+  "lib/core/widgets/catch_scaffold.dart" \
   "packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart"; do
   probe_path="$probe_root/$non_status_owner"
   stage_probe "retired or delegating status non-owner $non_status_owner" <<'DART'
 import 'package:catch_ui/catch_ui.dart';
-final status = CatchStatusStrip(statuses: const []);
+final status = CatchBanner.statuses(statuses: const []);
 DART
   expect_probe exact catch_status_strip_is_layout_owned 1
 done
@@ -715,7 +739,7 @@ stage_probe "canonical feedback owner" <<'DART'
 import 'package:flutter/material.dart';
 import 'package:catch_ui/catch_ui.dart';
 
-final misplaced = CatchStatusStrip(statuses: const []);
+final misplaced = CatchBanner.statuses(statuses: const []);
 
 void owner(BuildContext context) {
   ScaffoldMessenger.of(context).showSnackBar(
@@ -751,7 +775,7 @@ import 'package:catch_ui/catch_ui.dart' as ui;
 
 class SnackBar {}
 class MaterialBanner {}
-class CatchStatusStrip {}
+class CatchBanner { CatchBanner.statuses(); }
 class ScaffoldMessengerState {
   void showSnackBar(Object notice) {}
   void showMaterialBanner(Object notice) {}
@@ -765,8 +789,10 @@ List<Object> allowedFeedback(material.BuildContext context) {
   messenger.showMaterialBanner(MaterialBanner());
   return [
     SnackBar.new, MaterialBanner.new, messenger.showSnackBar,
-    CatchStatusStrip(), CatchStatusStrip.new,
-    const ui.CatchStatusStripScope(statuses: [], child: material.SizedBox()),
+    CatchBanner.statuses(), CatchBanner.statuses,
+    const ui.CatchBanner(message: 'Inline'), ui.CatchBanner.new,
+    ui.CatchBanner.error, ui.CatchBanner.errorWithRetry,
+    const ui.CatchBannerStatusScope(statuses: [], child: material.SizedBox()),
   ];
 }
 DART
@@ -795,7 +821,7 @@ done
 
 # Menu overlays are owned by the exact package anchor, not neighboring files.
 for menu_scope in \
-  "packages/catch_ui/lib/src/components/catch_menu_anchor.dart" \
+  "packages/catch_ui/lib/src/components/catch_menu.dart" \
   "packages/catch_ui/lib/src/components/menu_anchor_consumer.dart" \
   "lib/core/widgets/catch_menu.dart"; do
   probe_path="$probe_root/$menu_scope"
@@ -804,7 +830,7 @@ import 'package:flutter/material.dart';
 
 Widget menuProbe() => MenuAnchor(menuChildren: const []);
 DART
-  if [[ "$menu_scope" == "packages/catch_ui/lib/src/components/catch_menu_anchor.dart" ]]; then
+  if [[ "$menu_scope" == "packages/catch_ui/lib/src/components/catch_menu.dart" ]]; then
     expect_probe exact catch_no_raw_button_control 0
     expect_probe clean
   else

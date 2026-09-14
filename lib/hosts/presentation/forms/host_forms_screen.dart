@@ -5,8 +5,8 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
@@ -127,7 +127,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
         slivers: const [
-          CatchSliverStateViewport(
+          CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],
@@ -170,7 +170,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         selected: _view,
         scrollKey: const PageStorageKey<String>('host-forms-route-state'),
         slivers: const [
-          CatchSliverStateViewport(
+          CatchStateViewport.sliver(
             child: HostRouteLoadingBody(padding: EdgeInsets.zero),
           ),
         ],
@@ -205,7 +205,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
         title: context.l10n.hostNavigationAudience,
         actions: activeSearchIsForms
             ? [
-                CatchTopBarPrimaryAction(
+                CatchTopBarPrimaryButton(
                   key: const ValueKey('host-forms-create'),
                   label: context.l10n.hostFormsCreate,
                   icon: CatchIcons.add,
@@ -229,7 +229,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           onSubmitted: (value) => _applySearch(_view, value),
         ),
       ),
-      primaryRail: HostAudienceTabRail(
+      actions: HostAudienceTabRail(
         selected: _view,
         selectionAnimation: _tabController.animation!,
         animationOffset: 2,
@@ -256,7 +256,7 @@ class _HostFormsScreenState extends ConsumerState<HostFormsScreen>
           CatchRootScreenPageSpec.scroll(
             page: CatchRootScreenPageScrollView.standard(
               scrollKey: const PageStorageKey<String>('host-forms-responses'),
-              slivers: [
+              children: [
                 SliverToBoxAdapter(
                   child: HostFormResponsesPanel(
                     organizerId: selectedClub.id,
@@ -472,10 +472,10 @@ class _HostFormsLibraryPage extends ConsumerWidget
     return CatchRootScreenPageScrollView.standard(
       scrollKey: const PageStorageKey<String>('host-forms-library'),
       maxContentExtent: CatchLayout.hostFormsDirectoryPageMaxExtent,
-      slivers: [
+      children: [
         SliverList.list(
           children: [
-            CatchOptionGroup<HostFormLifecycleStatus?>(
+            CatchChoiceInput<HostFormLifecycleStatus?>.segmented(
               options: [
                 CatchOption(
                   value: null,
@@ -494,7 +494,7 @@ class _HostFormsLibraryPage extends ConsumerWidget
                   ),
               ],
               selected: status,
-              variant: CatchOptionGroupVariant.summary,
+              variant: CatchChoiceInputVariant.summary,
               contractExemption:
                   'The lifecycle rail maps All to no status and every other '
                   'option to one item in the statuses array contract.',
@@ -511,31 +511,30 @@ class _HostFormsLibraryPage extends ConsumerWidget
                   label: purpose == null
                       ? context.l10n.hostAudienceAllPurposes
                       : hostFormPurposeLabel(context, purpose!),
-                  icon: Icon(CatchIcons.descriptionOutlined),
+                  leading: Icon(CatchIcons.descriptionOutlined),
                   onPressed: () => _selectPurpose(context),
                 ),
                 CatchButton.command(
                   label: context.l10n.hostCustomersFilters,
-                  icon: Icon(CatchIcons.tune),
+                  leading: Icon(CatchIcons.tune),
                   onPressed: () => _selectStatus(context),
                 ),
               ],
             ),
             gapH8,
-            CatchAsyncValueView<HostFormsDirectoryState>(
+            CatchAsyncBoundary<HostFormsDirectoryState>(
               value: directory,
               onRetry: () =>
                   ref.invalidate(hostFormsDirectoryControllerProvider(request)),
               initialLoadTimeout: null,
-              loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-              errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.forms,
-                mode: CatchErrorStateMode.compact,
-                onRetry: () => ref.invalidate(
-                  hostFormsDirectoryControllerProvider(request),
-                ),
-              ),
+              loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
+              errorBuilder: (_, error, _, onBoundaryRetry) =>
+                  CatchLocalizedErrorState(
+                    error,
+                    context: AppErrorContext.forms,
+                    mode: CatchErrorStateMode.compact,
+                    onRetry: onBoundaryRetry,
+                  ),
               builder: (context, state) {
                 if (state.forms.isEmpty) {
                   final unfiltered =
@@ -548,13 +547,15 @@ class _HostFormsLibraryPage extends ConsumerWidget
                     message: unfiltered
                         ? context.l10n.hostFormsEmptyBody
                         : context.l10n.hostFormsNoMatchesBody,
-                    action: unfiltered
-                        ? CatchButton(
-                            label: context.l10n.hostFormsCreate,
-                            size: CatchButtonSize.sm,
-                            onPressed: onCreate,
-                          )
-                        : null,
+                    actions: [
+                      ?unfiltered
+                          ? CatchButton(
+                              label: context.l10n.hostFormsCreate,
+                              size: CatchButtonSize.sm,
+                              onPressed: onCreate,
+                            )
+                          : null,
+                    ],
                   );
                 }
                 return Column(
@@ -601,7 +602,9 @@ class _HostFormsLibraryPage extends ConsumerWidget
                       CatchButton(
                         label: context.l10n.hostFormsLoadMore,
                         variant: CatchButtonVariant.secondary,
-                        isLoading: state.loadingMore,
+                        status: (state.loadingMore)
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
                         fullWidth: true,
                         onPressed: state.loadingMore
                             ? null
@@ -821,12 +824,14 @@ class HostFormsNoOrganizer extends StatelessWidget {
           icon: CatchIcons.descriptionOutlined,
           title: context.l10n.hostFormsNoOrganizerTitle,
           message: context.l10n.hostFormsNoOrganizerBody,
-          action: CatchButton(
-            label: context.l10n.hostFormsCreateOrganizer,
-            size: CatchButtonSize.sm,
-            onPressed: () =>
-                context.pushNamed(Routes.hostCreateClubScreen.name),
-          ),
+          actions: [
+            CatchButton(
+              label: context.l10n.hostFormsCreateOrganizer,
+              size: CatchButtonSize.sm,
+              onPressed: () =>
+                  context.pushNamed(Routes.hostCreateClubScreen.name),
+            ),
+          ],
         ),
       ],
     );

@@ -556,7 +556,7 @@ class IncludeMeToggle extends StatelessWidget {
             style: CatchTextStyles.labelL(context, color: t.surface),
           ),
         ),
-        CatchToggle(
+        CatchToggleInput(
           contract: CatchContractConstraints
               .mobileFormStateEventSuccessLiveCardIncluded,
           value: included,
@@ -632,8 +632,10 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
                   label: context
                       .l10n
                       .eventSuccessEventSuccessCompanionLiveCardsLabelScanHostQr,
-                  icon: Icon(CatchIcons.qrCodeScannerRounded),
-                  isLoading: busy,
+                  leading: Icon(CatchIcons.qrCodeScannerRounded),
+                  status: (busy)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   onPressed: busy ? null : () => _scanHostQr(context),
                   fullWidth: true,
                 ),
@@ -643,7 +645,9 @@ class _SelfCheckInCardState extends State<SelfCheckInCard> {
                       .l10n
                       .eventSuccessEventSuccessCompanionLiveCardsLabelCheckIn,
                   variant: CatchButtonVariant.ghost,
-                  isLoading: busy,
+                  status: (busy)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   onPressed: busy ? null : () => _scanHostQr(context),
                   fullWidth: true,
                 ),
@@ -717,8 +721,8 @@ class _EventCheckInQrScannerSheetState
                   message: context
                       .l10n
                       .eventSuccessEventSuccessCompanionLiveCardsMessageClose,
-                  child: CatchIconButton(
-                    onTap: () => Navigator.of(context).maybePop(),
+                  child: CatchIconAction(
+                    onPressed: () => Navigator.of(context).maybePop(),
                     child: Icon(
                       CatchIcons.closeRounded,
                       size: CatchIcon.md,
@@ -919,8 +923,8 @@ class StageCueLine extends StatelessWidget {
                       : context
                             .l10n
                             .eventSuccessEventSuccessCompanionLiveCardsMessageCopyCue,
-                  child: CatchIconButton(
-                    onTap: () => _copyCue(context, cue),
+                  child: CatchIconAction(
+                    onPressed: () => _copyCue(context, cue),
                     child: Icon(
                       CatchIcons.contentCopyRounded,
                       size: CatchIcon.md,

@@ -966,7 +966,7 @@ class EventSuccessHostResourceError extends StatelessWidget {
       EventSuccessHostRetryIntent.spatialLayout =>
         context.l10n.eventSuccessHostResourceRoomLayout,
     };
-    return CatchInlineErrorState(
+    return CatchErrorState(
       title: context.l10n.eventSuccessHostResourceUnavailableTitle(
         resource: resource,
       ),
@@ -974,7 +974,9 @@ class EventSuccessHostResourceError extends StatelessWidget {
       icon: descriptor.icon,
       retryLabel: descriptor.retryLabel,
       onRetry: onRetry,
-      compact: compact,
+      mode: (compact)
+          ? CatchErrorStateMode.compact
+          : CatchErrorStateMode.inline,
     );
   }
 }
@@ -995,7 +997,7 @@ class EventSuccessHostSectionSkeleton extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (showTabs) ...[
-          const CatchSkeletonBoxRow(
+          const CatchSkeleton.boxes(
             count: 3,
             height: CatchLayout.controlCompactMinHeight,
             radius: CatchRadius.sm,
@@ -1018,7 +1020,8 @@ class EventSuccessSetupTabSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchSectionStack(
+    return const CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s3,
       children: [
@@ -1043,7 +1046,8 @@ class EventSuccessLiveTabSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchSectionStack(
+    return const CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s3,
       children: [
@@ -1052,7 +1056,7 @@ class EventSuccessLiveTabSkeleton extends StatelessWidget {
           textLines: 2,
           trailingCount: 2,
         ),
-        CatchSkeletonRows(titleWidth: CatchLayout.skeletonTextTitleWidth),
+        CatchSkeleton.rows(titleWidth: CatchLayout.skeletonTextTitleWidth),
         EventSuccessSkeletonSurface(
           titleWidth: CatchLayout.skeletonTextLongWidth,
           textLines: 3,
@@ -1068,7 +1072,8 @@ class EventSuccessReportTabSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchSectionStack(
+    return const CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       gap: CatchSpacing.s3,
       children: [

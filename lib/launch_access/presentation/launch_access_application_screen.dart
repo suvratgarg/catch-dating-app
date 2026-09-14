@@ -2,7 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/mutation_error_util.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -26,11 +26,15 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
         title: context
             .l10n
             .launchAccessLaunchAccessApplicationScreenTitleApplyForAccess,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standard(
-        child: CatchAsyncValueView<String?>(
+        child: CatchAsyncBoundary<String?>(
           value: uidAsync,
           builder: (context, uid) {
             if (uid == null || uid.isEmpty) {
@@ -49,7 +53,7 @@ class LaunchAccessApplicationScreen extends ConsumerWidget {
             final applicationAsync = ref.watch(
               watchLaunchAccessApplicationProvider(uid),
             );
-            return CatchAsyncValueView<LaunchAccessApplication?>(
+            return CatchAsyncBoundary<LaunchAccessApplication?>(
               value: applicationAsync,
               loadingBuilder: (_) => const LaunchAccessLoadingBody(),
               errorContext: AppErrorContext.auth,
@@ -265,15 +269,15 @@ class _LaunchAccessApplicationFormState
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenTitleCity,
               contract: CatchContractConstraints.accessApplicationDocumentCity,
-              contractValue: (city) => city.effectiveMarketId,
+              contractValueBuilder: (city) => city.effectiveMarketId,
               values: selectableCities,
               value: selectedCity,
-              itemLabel: (city) => city.label,
+              itemLabelBuilder: (city) => city.label,
               hintText: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenHinttextSelectCity,
-              prefixIcon: Icon(CatchIcons.locationCityOutlined),
-              validator: (_) => draft.city.trim().isEmpty
+              leading: Icon(CatchIcons.locationCityOutlined),
+              onValidate: (_) => draft.city.trim().isEmpty
                   ? context.l10n.launchAccessValidationChooseCity
                   : null,
               onChanged: (city) {
@@ -283,38 +287,35 @@ class _LaunchAccessApplicationFormState
               },
             ),
             gapH24,
-            CatchChipField<LaunchAccessRole>(
-              copy: catchFormFieldLabelCopy(context.l10n),
-              itemLabel: (value) => value.label,
+            CatchChoiceInput<LaunchAccessRole>.form(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelJoiningAs,
               contract: CatchContractConstraints.accessApplicationDocumentRole,
-              contractValue: (value) => value.name,
               values: LaunchAccessRole.values,
               selected: {draft.role},
-              multiSelect: false,
               onChanged: (next) {
                 LaunchAccessController.submitMutation.reset(ref);
                 ref
                     .read(launchAccessControllerProvider.notifier)
                     .setRole(next.firstOrNull ?? LaunchAccessRole.member);
               },
+              mode: CatchChipMode.single,
+              itemLabelBuilder: (value) => value.label,
+              contractValueBuilder: (value) => value.name,
             ),
             gapH24,
-            CatchChipField<LaunchAccessEventType>(
-              copy: catchFormFieldLabelCopy(context.l10n),
-              itemLabel: (value) => value.label,
+            CatchChoiceInput<LaunchAccessEventType>.form(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelEventsYouWouldShow,
               contract:
                   CatchContractConstraints.accessApplicationDocumentEventTypes,
-              contractValue: (value) => value.name,
               values: LaunchAccessEventType.values,
               selected: draft.eventTypes,
-              multiSelect: true,
-              validator: (_) => draft.eventTypes.isEmpty
+              onValidate: (_) => draft.eventTypes.isEmpty
                   ? context.l10n.launchAccessValidationChooseEventType
                   : null,
               onChanged: (next) {
@@ -323,21 +324,21 @@ class _LaunchAccessApplicationFormState
                     .read(launchAccessControllerProvider.notifier)
                     .setEventTypes(next);
               },
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              contractValueBuilder: (value) => value.name,
             ),
             gapH24,
-            CatchChipField<LaunchAccessAvailabilityWindow>(
-              copy: catchFormFieldLabelCopy(context.l10n),
-              itemLabel: (value) => value.label,
+            CatchChoiceInput<LaunchAccessAvailabilityWindow>.form(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenLabelBestTimes,
               contract: CatchContractConstraints
                   .accessApplicationDocumentAvailabilityWindows,
-              contractValue: (value) => value.name,
               values: LaunchAccessAvailabilityWindow.values,
               selected: draft.availabilityWindows,
-              multiSelect: true,
-              validator: (_) => draft.availabilityWindows.isEmpty
+              onValidate: (_) => draft.availabilityWindows.isEmpty
                   ? context.l10n.launchAccessValidationChooseTime
                   : null,
               onChanged: (next) {
@@ -346,6 +347,9 @@ class _LaunchAccessApplicationFormState
                     .read(launchAccessControllerProvider.notifier)
                     .setAvailabilityWindows(next);
               },
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              contractValueBuilder: (value) => value.name,
             ),
             gapH24,
             CatchField.toggle(
@@ -374,10 +378,10 @@ class _LaunchAccessApplicationFormState
                   .launchAccessLaunchAccessApplicationScreenTitleInviteCode,
               contract:
                   CatchContractConstraints.accessApplicationDocumentInviteCode,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: _inviteCodeController,
               textCapitalization: TextCapitalization.characters,
-              prefixIcon: Icon(CatchIcons.confirmationNumberOutlined),
+              leading: Icon(CatchIcons.confirmationNumberOutlined),
               onChanged: (value) {
                 LaunchAccessController.submitMutation.reset(ref);
                 ref
@@ -393,7 +397,7 @@ class _LaunchAccessApplicationFormState
                   .launchAccessLaunchAccessApplicationScreenTitleInstagram,
               contract: CatchContractConstraints
                   .accessApplicationDocumentInstagramHandle,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: _instagramController,
               prefixText: '@',
               textInputAction: TextInputAction.next,
@@ -412,7 +416,7 @@ class _LaunchAccessApplicationFormState
                   .launchAccessLaunchAccessApplicationScreenTitleWhoReferredYou,
               contract: CatchContractConstraints
                   .accessApplicationDocumentReferralSource,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: _referralController,
               textCapitalization: TextCapitalization.words,
               onChanged: (value) {
@@ -434,7 +438,7 @@ class _LaunchAccessApplicationFormState
               maxLines: 4,
               minLines: 3,
               textCapitalization: TextCapitalization.sentences,
-              validator: (value) {
+              onValidate: (value) {
                 final trimmed = value?.trim() ?? '';
                 if (trimmed.length < 12) {
                   return context.l10n.launchAccessValidationTellUsMore;
@@ -450,7 +454,7 @@ class _LaunchAccessApplicationFormState
             ),
             if (mutation.hasError) ...[
               gapH16,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: mutationErrorMessage(mutation, l10n: context.l10n),
               ),
             ],
@@ -464,7 +468,9 @@ class _LaunchAccessApplicationFormState
                         .l10n
                         .launchAccessLaunchAccessApplicationScreenLabelUpdateApplication,
               onPressed: mutation.isPending ? null : _submit,
-              isLoading: mutation.isPending,
+              status: (mutation.isPending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               fullWidth: true,
               size: CatchButtonSize.lg,
             ),

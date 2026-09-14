@@ -27,14 +27,14 @@ void main() {
 
     expect(passCount, 1);
     expect(find.byTooltip('Pass'), findsOneWidget);
-    final renderer = tester.widget<CatchIconButton>(
-      find.byType(CatchIconButton),
+    final renderer = tester.widget<CatchIconAction>(
+      find.byType(CatchIconAction),
     );
-    expect(renderer.variant, CatchIconButtonVariant.float);
+    expect(renderer.variant, CatchIconActionVariant.float);
     expect(renderer.size, CatchLayout.passButtonExtent);
   });
 
-  testWidgets('pass and reaction adapters share CatchIconButton rendering', (
+  testWidgets('pass and reaction adapters share CatchIconAction rendering', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -57,15 +57,15 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchIconButton), findsNWidgets(2));
+    expect(find.byType(CatchIconAction), findsNWidgets(2));
     expect(find.byType(CircularProgressIndicator), findsNWidgets(2));
-    final renderers = tester.widgetList<CatchIconButton>(
-      find.byType(CatchIconButton),
+    final renderers = tester.widgetList<CatchIconAction>(
+      find.byType(CatchIconAction),
     );
     expect(renderers.map((button) => button.size), [
       CatchLayout.passButtonExtent,
       CatchLayout.reactionControlExtent,
     ]);
-    expect(renderers.every((button) => button.onTap == null), isTrue);
+    expect(renderers.every((button) => button.onPressed == null), isTrue);
   });
 }

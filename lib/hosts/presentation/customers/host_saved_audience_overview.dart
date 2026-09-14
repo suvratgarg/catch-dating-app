@@ -55,12 +55,16 @@ class HostSavedAudienceOverview extends ConsumerWidget {
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostAudienceGroupTitle,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
-      bottomNavigationBar: current == null
+      footer: current == null
           ? null
-          : CatchBottomAction(
+          : CatchDockSurface.primary(
               buttonKey: const ValueKey('host-saved-audience-message'),
               label: context.l10n.hostAudienceOpenInbox,
               onPressed:
@@ -122,16 +126,17 @@ class HostSavedAudienceOverview extends ConsumerWidget {
               ),
             ),
             gapH24,
-            CatchAsyncValueView<HostSavedAudienceMembersState>(
+            CatchAsyncBoundary<HostSavedAudienceMembersState>(
               value: members,
               initialLoadTimeout: null,
               onRetry: () => ref.invalidate(provider),
-              loadingBuilder: (_) => const CatchSkeletonRows(count: 4),
-              errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-                error,
-                context: AppErrorContext.customers,
-                onRetry: () => ref.invalidate(provider),
-              ),
+              loadingBuilder: (_) => const CatchSkeleton.rows(count: 4),
+              errorBuilder: (_, error, _, onBoundaryRetry) =>
+                  CatchLocalizedErrorState(
+                    error,
+                    context: AppErrorContext.customers,
+                    onRetry: onBoundaryRetry,
+                  ),
               builder: (context, state) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -139,7 +144,7 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                     first: true,
                     title: context.l10n.hostSavedAudienceMembers,
                     count: state.preview.matchCount,
-                    trailing: CatchTextButton(
+                    trailing: CatchButton.text(
                       key: const ValueKey(
                         'host-saved-audience-refresh-preview',
                       ),

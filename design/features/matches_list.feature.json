@@ -43,7 +43,7 @@
           "catch.badge",
           "catch.button",
           "catch.field",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.surface",
           "catch.top_bar"
         ],

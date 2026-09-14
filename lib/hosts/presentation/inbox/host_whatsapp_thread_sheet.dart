@@ -102,7 +102,7 @@ class _HostWhatsappThreadSheetState
   @override
   Widget build(BuildContext context) => FutureBuilder<HostWhatsappThreadDetail>(
     future: _thread,
-    builder: (context, snapshot) => CatchBottomSheetScaffold(
+    builder: (context, snapshot) => CatchSheet(
       title:
           snapshot.data?.displayName ?? context.l10n.hostInboxWhatsappChannel,
       subtitle: context.l10n.hostInboxWhatsappChannel,
@@ -111,7 +111,7 @@ class _HostWhatsappThreadSheetState
         child: switch (snapshot.connectionState) {
           ConnectionState.none || ConnectionState.waiting
               when snapshot.data == null =>
-            const CatchSkeletonRows(),
+            const CatchSkeleton.rows(),
           _ when snapshot.hasError => CatchLocalizedErrorState(
             snapshot.error!,
             context: AppErrorContext.chat,
@@ -231,15 +231,17 @@ class _HostWhatsappThreadBody extends StatelessWidget {
           controller: replyController,
           maxLines: 4,
           minLines: 2,
-          enabled: thread.serviceWindowOpen && !sending,
-          showLabel: false,
+          states: <WidgetState>{
+            if (!(thread.serviceWindowOpen && !sending)) WidgetState.disabled,
+          },
+          labelMode: CatchFieldLabelTextMode.hidden,
           inputHint: context.l10n.hostInboxWhatsappReplyHint,
         ),
       ),
       gapH8,
       CatchButton(
         label: context.l10n.hostInboxWhatsappReply,
-        isLoading: sending,
+        status: (sending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         onPressed: !thread.serviceWindowOpen || sending ? null : onSend,
       ),
     ],

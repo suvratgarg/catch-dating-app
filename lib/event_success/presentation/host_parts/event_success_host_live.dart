@@ -153,8 +153,8 @@ class LiveTab extends StatelessWidget {
       final body = EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          CatchSurface.message(
-            messageIcon: isPreEvent
+          CatchBanner(
+            icon: isPreEvent
                 ? CatchIcons.cloudUploadOutlined
                 : CatchIcons.lockClockRounded,
             title: isPreEvent
@@ -206,8 +206,8 @@ class LiveTab extends StatelessWidget {
       final body = EventSuccessHostTabBody(
         embedded: embedded,
         children: [
-          CatchSurface.message(
-            messageIcon: CatchIcons.ruleFolderOutlined,
+          CatchBanner(
+            icon: CatchIcons.ruleFolderOutlined,
             title: context
                 .l10n
                 .eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected,
@@ -427,19 +427,19 @@ class LiveTab extends StatelessWidget {
                 : EventSuccessSpatialLayoutState.ready(spatialLayout!)
           : spatialLayoutState;
       final roomBody = switch (effectiveSpatialLayoutState.status) {
-        EventSuccessSpatialLayoutStatus.notApplicable => CatchSurface.message(
-          messageIcon: CatchIcons.gridViewRounded,
+        EventSuccessSpatialLayoutStatus.notApplicable => CatchBanner(
+          icon: CatchIcons.gridViewRounded,
           title: context.l10n.eventSuccessRoomWorkspaceWholeGroupTitle,
           message: context.l10n.eventSuccessRoomWorkspaceWholeGroupBody,
         ),
-        EventSuccessSpatialLayoutStatus.unconfigured => CatchSurface.message(
-          messageIcon: CatchIcons.gridViewRounded,
-          messageTone: CatchSurfaceMessageTone.warning,
+        EventSuccessSpatialLayoutStatus.unconfigured => CatchBanner(
+          icon: CatchIcons.gridViewRounded,
+          tone: CatchBannerTone.warning,
           title: context.l10n.eventSuccessRoomWorkspaceUnconfiguredTitle,
           message: context.l10n.eventSuccessRoomWorkspaceUnconfiguredBody,
         ),
-        EventSuccessSpatialLayoutStatus.loading => CatchSurface.message(
-          messageIcon: CatchIcons.syncRounded,
+        EventSuccessSpatialLayoutStatus.loading => CatchBanner(
+          icon: CatchIcons.syncRounded,
           title: context.l10n.eventSuccessRoomWorkspaceLoadingTitle,
           message: context.l10n.eventSuccessRoomWorkspaceLoadingBody,
         ),
@@ -481,8 +481,8 @@ class LiveTab extends StatelessWidget {
             ),
             if (spatialAssignments.isEmpty) ...[
               gapH16,
-              CatchSurface.message(
-                messageIcon: CatchIcons.groupsOutlined,
+              CatchBanner(
+                icon: CatchIcons.groupsOutlined,
                 title: context.l10n.eventSuccessRoomWorkspaceWaitingTitle,
                 message: context.l10n.eventSuccessRoomWorkspaceWaitingBody,
               ),
@@ -666,7 +666,9 @@ class LiveTab extends StatelessWidget {
                 .l10n
                 .eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete,
             variant: CatchButtonVariant.secondary,
-            isLoading: actionState.isCompleting,
+            status: (actionState.isCompleting)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: actionState.isCompleting || onCompleteGuide == null
                 ? null
                 : () => unawaited(completeGuide()),
@@ -705,18 +707,18 @@ class _EventSuccessRoomWorkspaceSummary extends StatelessWidget {
     final t = CatchTokens.of(context);
     final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     final metrics = [
-      CatchStatColumn(
+      CatchMetricTile(
         value: '$placedCount',
         label: context.l10n.eventSuccessRoomWorkspacePlaced,
         center: !largeText,
       ),
-      CatchStatColumn(
+      CatchMetricTile(
         value: '$unconfirmedCount',
         label: context.l10n.eventSuccessRoomWorkspaceUnconfirmed,
         center: !largeText,
         highlight: unconfirmedCount > 0,
       ),
-      CatchStatColumn(
+      CatchMetricTile(
         value: '$attentionCount',
         label: context.l10n.eventSuccessRoomWorkspaceNeedsAttention,
         center: !largeText,
@@ -870,9 +872,9 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
                     ),
                     contract: CatchContractConstraints
                         .setEventSuccessAccountabilityResolutionCallablePayloadResolution,
-                    contractValue: (value) => value.name,
+                    contractValueBuilder: (value) => value.name,
                     values: _EventSuccessAccountabilitySelection.values,
-                    itemLabel: (value) =>
+                    itemLabelBuilder: (value) =>
                         _accountabilitySelectionLabel(context, value),
                     selected: {_accountabilitySelection(indexed.$2)},
                     onSelectionChanged: isResolving || onResolve == null
@@ -887,7 +889,9 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
                               ),
                             );
                           },
-                    isLoading: isResolving,
+                    status: isResolving
+                        ? CatchFieldStatus.saving
+                        : CatchFieldStatus.idle,
                   ),
               ],
             ),
@@ -1020,7 +1024,9 @@ class _EventSuccessPresenceCard extends StatelessWidget {
                           .l10n
                           .eventSuccessEventSuccessHostLiveLabelPlaceNextRound,
                       size: CatchButtonSize.sm,
-                      isLoading: resolvingLateArrival,
+                      status: (resolvingLateArrival)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                       onPressed:
                           resolvingLateArrival || onResolveLateArrival == null
                           ? null
@@ -1287,14 +1293,14 @@ class LiveNowConsole extends StatelessWidget {
       ],
     );
 
-    final previousAction = CatchIconButton.icon(
+    final previousAction = CatchIconAction.icon(
       key: ValueKey(
         context
             .l10n
             .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
       ),
       icon: CatchIcons.arrowBackRounded,
-      onTap: onPrevious,
+      onPressed: onPrevious,
       tooltip: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
     );
 
@@ -1308,7 +1314,7 @@ class LiveNowConsole extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     controlRoomBody(showVenue: true),
-                    CatchBottomAction(
+                    CatchDockSurface.primary(
                       label: primaryLabel,
                       onPressed: primaryAction,
                       isLoading: isPrimaryLoading,
@@ -1318,7 +1324,7 @@ class LiveNowConsole extends StatelessWidget {
                             .l10n
                             .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
                       ),
-                      leadingContent: previousAction,
+                      leading: previousAction,
                     ),
                   ],
                 ),
@@ -1331,7 +1337,7 @@ class LiveNowConsole extends StatelessWidget {
                       child: controlRoomBody(showVenue: true),
                     ),
                   ),
-                  CatchBottomAction(
+                  CatchDockSurface.primary(
                     label: primaryLabel,
                     onPressed: primaryAction,
                     isLoading: isPrimaryLoading,
@@ -1341,7 +1347,7 @@ class LiveNowConsole extends StatelessWidget {
                           .l10n
                           .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
                     ),
-                    leadingContent: previousAction,
+                    leading: previousAction,
                   ),
                 ],
               ),
@@ -1368,7 +1374,7 @@ class LiveNowConsole extends StatelessWidget {
                       showVenue: true,
                     ),
                   ),
-                  CatchBottomAction(
+                  CatchDockSurface.primary(
                     label: primaryLabel,
                     onPressed: primaryAction,
                     isLoading: isPrimaryLoading,
@@ -1378,7 +1384,7 @@ class LiveNowConsole extends StatelessWidget {
                           .l10n
                           .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
                     ),
-                    leadingContent: previousAction,
+                    leading: previousAction,
                   ),
                 ],
               ),
@@ -1396,7 +1402,7 @@ class LiveNowConsole extends StatelessWidget {
       if (largeText) {
         return compactLayout;
       }
-      return CatchViewportBreakpoint(
+      return CatchViewport.atWidth(
         breakpoint: ComponentBreakpoints.hostEventLiveSupportingPaneBreakpoint,
         compactBuilder: (_) => compactLayout,
         expandedBuilder: (_) => expandedLayout,
@@ -1529,10 +1535,10 @@ class _EventSuccessExclusionAlertCardState
             top: CatchSpacing.s3,
             bottom: CatchSpacing.s2,
           ),
-          child: CatchSurface.message(
+          child: CatchBanner(
             key: const ValueKey('event_success.exclusion_alert'),
-            messageIcon: CatchIcons.personSearchOutlined,
-            messageTone: CatchSurfaceMessageTone.warning,
+            icon: CatchIcons.personSearchOutlined,
+            tone: CatchBannerTone.warning,
             title: context.l10n.eventSuccessControlRoomExclusionAlertTitle,
             message: context.l10n.eventSuccessControlRoomExclusionAlertBody(
               count: alertCount,
@@ -1740,7 +1746,7 @@ class LiveStepNavigation extends StatelessWidget {
                   plan.activeStepIndex + 1,
                 ),
               ));
-    return CatchBottomActionContent(
+    return CatchDockSurface.primaryContent(
       label: nextLabel,
       onPressed: onNext,
       isLoading: isLoading,
@@ -1750,14 +1756,14 @@ class LiveStepNavigation extends StatelessWidget {
             .l10n
             .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton,
       ),
-      leadingContent: CatchIconButton.icon(
+      leading: CatchIconAction.icon(
         key: ValueKey(
           context
               .l10n
               .eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton,
         ),
         icon: CatchIcons.arrowBackRounded,
-        onTap: onPrevious,
+        onPressed: onPrevious,
         tooltip: context.l10n.eventSuccessEventSuccessHostLiveLabelPrevious,
       ),
     );
@@ -1805,11 +1811,11 @@ String _runOfShowBeatLabel(
 Future<void> _showControlRoomFallback(BuildContext context) {
   return showCatchBottomSheet<void>(
     context: context,
-    builder: (sheetContext) => CatchBottomSheetScaffold(
+    builder: (sheetContext) => CatchSheet(
       title: context.l10n.eventSuccessControlRoomFallbackTitle,
       subtitle: context.l10n.eventSuccessControlRoomFallbackSubtitle,
       glyph: CatchIcons.helpOutlineRounded,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.eventSuccessControlRoomFallbackDone,
         onPressed: () => Navigator.of(sheetContext).pop(),
         fullWidth: true,

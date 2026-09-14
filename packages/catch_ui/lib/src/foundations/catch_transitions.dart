@@ -15,7 +15,7 @@ void catchTransitionHaptic() {
 /// Hero flight tag builder for event/club ticket transitions.
 ///
 /// Construct a consistent Hero tag from a prefix and an id so the card and
-/// detail page share the same tag automatically. Use the CatchTicketHeroViewport as the
+/// detail page share the same tag automatically. Use the CatchHeroViewport.ticket as the
 /// wrapping widget for the shared ticket-Hero animation.
 Object catchTicketHeroTag(String prefix, String id) =>
     '$prefix-ticket-hero-$id';

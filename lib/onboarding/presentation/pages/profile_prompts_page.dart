@@ -152,7 +152,9 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
           CatchButton(
             label: context.l10n.onboardingProfilePromptsPageLabelContinue,
             onPressed: state.canSubmit ? callbacks.onContinue : null,
-            isLoading: state.isCompleting,
+            status: (state.isCompleting)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
           ),
         ],
       ),
@@ -175,7 +177,7 @@ class OnboardingProfilePromptsStep extends StatelessWidget {
               ),
             if (state.hasCompleteError)
               CatchSection.plain(
-                child: CatchErrorBanner(message: state.completeErrorMessage!),
+                child: CatchBanner.error(message: state.completeErrorMessage!),
               ),
           ],
         ),
@@ -215,10 +217,11 @@ class PromptField extends StatelessWidget {
           icon: CatchIcons.formatQuoteRounded,
           title: context.l10n.onboardingProfilePromptsPageTitleProfilePrompt,
           contract: CatchContractConstraints.profilePromptAnswerPromptId,
-          contractValue: (value) => value,
+          contractValueBuilder: (value) => value,
           body: definition.title,
           values: availablePromptIds,
-          itemLabel: (promptId) => profilePromptDefinition(promptId).title,
+          itemLabelBuilder: (promptId) =>
+              profilePromptDefinition(promptId).title,
           selected: {selectedPromptId},
           onSelectionChanged: enabled
               ? (selection) {
@@ -226,7 +229,7 @@ class PromptField extends StatelessWidget {
                   onPromptChanged(selection.single);
                 }
               : null,
-          enabled: enabled,
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
         ),
         CatchField.input(
           copy: catchFieldCopy(context.l10n),
@@ -234,7 +237,7 @@ class PromptField extends StatelessWidget {
           title: context.l10n.onboardingProfilePromptsPageTitleAnswer,
           contract: CatchContractConstraints.profilePromptAnswerAnswer,
           controller: controller,
-          enabled: enabled,
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
           inputHint: definition.placeholder,
           helperText: context.l10n
               .onboardingProfilePromptsPageHelpertextLengthMaximumprofilepromptanswerlength(

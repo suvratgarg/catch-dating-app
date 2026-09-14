@@ -44,7 +44,7 @@ class WidgetbookCatalogFrame extends StatelessWidget {
                 children: [
                   Text(title, style: CatchTextStyles.headline(context)),
                   gapH4,
-                  CatchMonoLabel(catalogId, color: tokens.ink3),
+                  CatchMetadataText(catalogId, color: tokens.ink3),
                   gapH20,
                   for (final child in children) ...[
                     child,

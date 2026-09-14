@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_renderer.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
@@ -26,11 +26,15 @@ class HostFormPreviewScreen extends ConsumerWidget {
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostAudienceQuestionPreview,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncValueView<HostFormEditorState>(
+        child: CatchAsyncBoundary<HostFormEditorState>(
           value: state,
           onRetry: () => ref
               .read(
@@ -38,19 +42,13 @@ class HostFormPreviewScreen extends ConsumerWidget {
               )
               .reload(),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.forms,
-            onRetry: () => ref
-                .read(
-                  hostFormEditorControllerProvider(
-                    organizerId,
-                    formId,
-                  ).notifier,
-                )
-                .reload(),
-          ),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 8),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.forms,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, value) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

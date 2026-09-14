@@ -122,23 +122,27 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
         icon: widget.icon,
         title: widget.label,
         contract: widget.contract,
-        contractValue: widget.contractValue,
+        contractValueBuilder: widget.contractValue,
         emptyValueText: widget.emptyValueText,
         addable: widget.isAddAffordance,
-        isOptional: widget.showOptionalLabel,
+        labelMode: widget.showOptionalLabel
+            ? CatchFieldLabelTextMode.optional
+            : CatchFieldLabelTextMode.visible,
         tone: widget.isAddAffordance || _selected == null
             ? CatchFieldTone.primary
             : CatchFieldTone.normal,
-        open: widget.isExpanded,
+        disclosureMode: widget.isExpanded
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: (expanded) {
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();
         },
-        isLoading: isSaving,
+
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
         values: widget.values,
-        itemLabel: (value) => value.label,
+        itemLabelBuilder: (value) => value.label,
         selected: {?_selected},
         allowEmptySelection: widget.allowEmptySelection,
         onSelectionChanged: (selection) {
@@ -286,25 +290,29 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
         icon: widget.icon,
         title: widget.label,
         contract: widget.contract,
-        contractValue: widget.contractValue,
+        contractValueBuilder: widget.contractValue,
         emptyValueText: widget.emptyValueText,
         addable: widget.isAddAffordance,
-        isOptional: widget.showOptionalLabel,
+        labelMode: widget.showOptionalLabel
+            ? CatchFieldLabelTextMode.optional
+            : CatchFieldLabelTextMode.visible,
         tone: widget.isAddAffordance || _selected.isEmpty
             ? CatchFieldTone.primary
             : CatchFieldTone.normal,
-        open: widget.isExpanded,
+        disclosureMode: widget.isExpanded
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: (expanded) {
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();
         },
-        isLoading: isSaving,
+
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
         values: widget.values,
-        itemLabel: (value) => value.label,
+        itemLabelBuilder: (value) => value.label,
         selected: _selected,
-        multi: true,
+        mode: CatchChipMode.multiple,
         allowEmptySelection: widget.allowEmptySelection,
         onSelectionChanged: (selection) {
           _savedStatusTimer?.cancel();

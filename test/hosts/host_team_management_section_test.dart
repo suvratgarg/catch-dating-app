@@ -55,7 +55,7 @@ void main() {
     await tester.tap(addHostRow);
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchBottomSheetScaffold), findsOneWidget);
+    expect(find.byType(CatchSheet), findsOneWidget);
     expect(find.text('Add host'), findsWidgets);
     expect(
       find.text('Enter the phone number on their Catch profile.'),
@@ -162,7 +162,7 @@ void main() {
               matching: find.byType(CatchDivider),
             ),
           )
-          .where((divider) => divider.role == CatchDividerRole.section),
+          .where((divider) => divider.variant == CatchDividerVariant.section),
       hasLength(1),
     );
     expect(find.text('Owner Host'), findsOneWidget);

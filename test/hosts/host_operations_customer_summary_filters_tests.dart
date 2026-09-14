@@ -37,7 +37,7 @@ void _registerHostOperationsCustomerSummaryFiltersTests() {
     final summary = find.byType(HostCustomersSummary);
     final choices = find.descendant(
       of: summary,
-      matching: find.byType(CatchOptionGroupItem<HostCustomerFilter>),
+      matching: find.byType(CatchChoiceButton<HostCustomerFilter>),
     );
     expect(choices, findsNWidgets(3));
     final contactsTile = _customerSummaryChoice(HostCustomerFilter.all);
@@ -64,6 +64,6 @@ void _registerHostOperationsCustomerSummaryFiltersTests() {
 Finder _customerSummaryChoice(HostCustomerFilter filter) =>
     find.byWidgetPredicate(
       (widget) =>
-          widget is CatchOptionGroupItem<HostCustomerFilter> &&
+          widget is CatchChoiceButton<HostCustomerFilter> &&
           widget.option.value == filter,
     );

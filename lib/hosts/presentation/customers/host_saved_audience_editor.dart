@@ -25,25 +25,28 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
       );
     }
     final audiences = ref.watch(hostAllSavedAudiencesProvider(organizerId));
-    return CatchAsyncValueView<HostSavedAudiencePage>(
+    return CatchAsyncBoundary<HostSavedAudiencePage>(
       value: audiences,
       onRetry: () => ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
       initialLoadTimeout: null,
       loadingBuilder: (_) =>
           HostLoadingScreen(title: context.l10n.hostSavedAudiencesManage),
-      errorBuilder: (_, error, _) => CatchRouteScaffold(
-        topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
           context: context,
           title: context.l10n.hostSavedAudiencesManage,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.customers,
-            onRetry: () =>
-                ref.invalidate(hostAllSavedAudiencesProvider(organizerId)),
+            onRetry: onBoundaryRetry,
           ),
         ),
       ),
@@ -53,11 +56,15 @@ class HostSavedAudienceEditorScreen extends ConsumerWidget {
             .firstOrNull;
         if (audience == null) {
           return CatchRouteScaffold(
-            topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+            topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
               context: context,
               title: context.l10n.hostSavedAudiencesManage,
-              leadingType: CatchTopBarLeading.back,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: CatchRouteBody.standardViewport(
               child: CatchLocalizedErrorState(
@@ -135,15 +142,19 @@ class _HostSavedAudienceEditorFormState
       canPop: !_busy,
       child: CatchRouteScaffold(
         resizeToAvoidBottomInset: true,
-        topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+        topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
           context: context,
           title: editing
               ? context.l10n.hostAudienceEditGroup
               : context.l10n.hostSavedAudienceNew,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
-        bottomNavigationBar: CatchBottomAction(
+        footer: CatchDockSurface.primary(
           label: editing
               ? context.l10n.hostAudienceSaveCheckMembership
               : context.l10n.hostAudienceCreateCheckMembership,
@@ -152,7 +163,7 @@ class _HostSavedAudienceEditorFormState
           onPressed: _busy ? null : _save,
         ),
         body: CatchRouteBody.standard(
-          child: CatchAsyncValueView<HostSavedAudienceFilterOptions>(
+          child: CatchAsyncBoundary<HostSavedAudienceFilterOptions>(
             value: options,
             errorContext: AppErrorContext.customers,
             onRetry: () => ref.invalidate(
@@ -169,9 +180,10 @@ class _HostSavedAudienceEditorFormState
                   .toList();
               return Form(
                 key: _formKey,
-                child: CatchResponsiveSectionLayout(
-                  sections: [
-                    CatchResponsiveSectionItem(
+                child: CatchSectionList.responsive(
+                  emptyStateOmitted: true,
+                  items: [
+                    CatchSectionListItem(
                       child: CatchSection.fieldRows(
                         title: context.l10n.hostSavedAudienceDetails,
                         children: [
@@ -184,8 +196,10 @@ class _HostSavedAudienceEditorFormState
                             controller: _nameController,
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.next,
-                            enabled: !_busy,
-                            validator: (value) => (value ?? '').trim().isEmpty
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
+                            onValidate: (value) => (value ?? '').trim().isEmpty
                                 ? context.l10n.hostSavedAudienceNameRequired
                                 : null,
                           ),
@@ -196,14 +210,16 @@ class _HostSavedAudienceEditorFormState
                             contractExemption:
                                 'Chooses the staticMembers-only definition or the dynamic predicate vocabulary, validated by the saved-audience callable.',
                             values: HostSavedAudienceMembershipMode.values,
-                            itemLabel: (value) =>
+                            itemLabelBuilder: (value) =>
                                 value == HostSavedAudienceMembershipMode.rules
                                 ? context.l10n.hostAudienceRuleMembership
                                 : context.l10n.hostAudienceStaticMembership,
                             value: _static
                                 ? HostSavedAudienceMembershipMode.selectedPeople
                                 : HostSavedAudienceMembershipMode.rules,
-                            enabled: !_busy,
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
                             onChanged: (value) {
                               if (value != null) {
                                 setState(
@@ -222,16 +238,18 @@ class _HostSavedAudienceEditorFormState
                               title: context.l10n.hostSavedAudienceMatch,
                               contract: CatchContractConstraints
                                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionJoin,
-                              contractValue: (value) => value.name,
+                              contractValueBuilder: (value) => value.name,
                               values: HostSavedAudienceJoin.values,
-                              itemLabel: (value) => switch (value) {
+                              itemLabelBuilder: (value) => switch (value) {
                                 HostSavedAudienceJoin.all =>
                                   context.l10n.hostSavedAudienceMatchAll,
                                 HostSavedAudienceJoin.any =>
                                   context.l10n.hostSavedAudienceMatchAny,
                               },
                               value: _join,
-                              enabled: !_busy,
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
                               onChanged: (value) {
                                 if (value != null) {
                                   setState(() => _join = value);
@@ -242,7 +260,7 @@ class _HostSavedAudienceEditorFormState
                       ),
                     ),
                     if (_static)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: HostStaticAudienceMembersEditor(
                           organizerId: widget.organizerId,
                           selectedIds: _selectedIds,
@@ -253,7 +271,7 @@ class _HostSavedAudienceEditorFormState
                       ),
                     if (!_static)
                       for (var index = 0; index < _rules.length; index++)
-                        CatchResponsiveSectionItem(
+                        CatchSectionListItem(
                           child: _HostSavedAudienceRuleSection(
                             key: ValueKey('host-saved-audience-rule-$index'),
                             number: index + 1,
@@ -269,7 +287,7 @@ class _HostSavedAudienceEditorFormState
                           ),
                         ),
                     if (!_static && _rules.length < 8)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: CatchSection.fieldRows(
                           children: [
                             CatchField.add(
@@ -290,7 +308,7 @@ class _HostSavedAudienceEditorFormState
                           ],
                         ),
                       ),
-                    CatchResponsiveSectionItem(
+                    CatchSectionListItem(
                       child: CatchSection.divided(
                         title: context.l10n.hostAudienceWhoWillBelong,
                         child: Column(
@@ -334,7 +352,7 @@ class _HostSavedAudienceEditorFormState
                       ),
                     ),
                     if (_previewError case final error?)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
@@ -352,7 +370,7 @@ class _HostSavedAudienceEditorFormState
                         ),
                       ),
                     if (_audience case final audience?)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: CatchSection.fieldRows(
                           title: context.l10n.hostSavedAudienceCurrentPreview,
                           footer: Text(
@@ -380,7 +398,7 @@ class _HostSavedAudienceEditorFormState
                         ),
                       ),
                     if (_audience != null)
-                      CatchResponsiveSectionItem(
+                      CatchSectionListItem(
                         child: CatchSection.fieldRows(
                           children: [
                             CatchField.action(
@@ -578,9 +596,9 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
       title: context.l10n.hostSavedAudienceCondition(number: number),
       trailing: !canRemove
           ? null
-          : CatchTextButton(
+          : CatchButton.text(
               label: context.l10n.hostSavedAudienceRemoveRule,
-              tone: CatchTextButtonTone.danger,
+              tone: CatchButtonTone.danger,
               onPressed: enabled ? onRemove : null,
             ),
       children: [
@@ -590,11 +608,11 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
           title: context.l10n.hostSavedAudienceRuleType,
           contract: CatchContractConstraints
               .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsKind,
-          contractValue: (value) => value.wireValue,
+          contractValueBuilder: (value) => value.wireValue,
           values: kinds,
-          itemLabel: (value) => _audienceRuleKindLabel(context, value),
+          itemLabelBuilder: (value) => _audienceRuleKindLabel(context, value),
           value: draft.kind,
-          enabled: enabled,
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
           onChanged: (value) {
             if (value != null) onChanged(draft.withKind(value, manualTags));
           },
@@ -626,14 +644,14 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               title: context.l10n.hostSavedAudienceSegment,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsSegmentId,
-              contractValue: (value) => value.wireValue,
+              contractValueBuilder: (value) => value.wireValue,
               values: HostAudienceSegment.values,
-              itemLabel: (value) => _customerFilterLabel(
+              itemLabelBuilder: (value) => _customerFilterLabel(
                 context,
                 hostCustomerFilterForAudienceSegment(value),
               ),
               value: draft.segment,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) {
                 if (value != null) onChanged(draft.copyWith(segment: value));
               },
@@ -645,14 +663,16 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               title: context.l10n.hostSavedAudienceTag,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsManualTagId,
-              contractValue: (value) => value.tagId,
+              contractValueBuilder: (value) => value.tagId,
               values: manualTags,
-              itemLabel: (value) => value.label,
+              itemLabelBuilder: (value) => value.label,
               value: manualTags
                   .where((tag) => tag.tagId == draft.manualTagId)
                   .firstOrNull,
               hintText: context.l10n.hostSavedAudienceChooseTag,
-              enabled: enabled && manualTags.isNotEmpty,
+              states: <WidgetState>{
+                if (!(enabled && manualTags.isNotEmpty)) WidgetState.disabled,
+              },
               onChanged: (value) {
                 if (value != null) {
                   onChanged(draft.copyWith(manualTagId: value.tagId));
@@ -666,16 +686,16 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               title: context.l10n.hostSavedAudienceAttendanceComparison,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
-              contractValue: (value) => value.name,
+              contractValueBuilder: (value) => value.name,
               values: HostSavedAudienceAttendanceOperator.values,
-              itemLabel: (value) => switch (value) {
+              itemLabelBuilder: (value) => switch (value) {
                 HostSavedAudienceAttendanceOperator.atLeast =>
                   context.l10n.hostSavedAudienceAtLeast,
                 HostSavedAudienceAttendanceOperator.atMost =>
                   context.l10n.hostSavedAudienceAtMost,
               },
               value: draft.operator,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) {
                 if (value != null) onChanged(draft.copyWith(operator: value));
               },
@@ -691,7 +711,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
                   context.l10n.hostSavedAudienceDecreaseCount,
               increaseSemanticLabel:
                   context.l10n.hostSavedAudienceIncreaseCount,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) =>
                   onChanged(draft.copyWith(amount: value.toInt())),
             ),
@@ -706,7 +726,7 @@ class _HostSavedAudienceRuleSection extends StatelessWidget {
               unit: context.l10n.hostSavedAudienceDaysUnit,
               decreaseSemanticLabel: context.l10n.hostSavedAudienceDecreaseDays,
               increaseSemanticLabel: context.l10n.hostSavedAudienceIncreaseDays,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) =>
                   onChanged(draft.copyWith(amount: value.toInt())),
             ),

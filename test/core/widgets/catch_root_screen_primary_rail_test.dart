@@ -42,9 +42,7 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
 
-      await tester.pumpWidget(
-        _wrap(bodyLayout: CatchScreenBodyLayout.fullBleed),
-      );
+      await tester.pumpWidget(_wrap(bodyLayout: CatchPageBodyMode.fullBleed));
       await tester.pump();
 
       expect(find.byType(SliverCrossAxisGroup), findsNothing);
@@ -65,8 +63,8 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     for (final (layout, expectedTop) in [
-      (CatchScreenBodyLayout.standard, CatchInsets.pageBody.top),
-      (CatchScreenBodyLayout.fullBleed, 0.0),
+      (CatchPageBodyMode.standard, CatchInsets.pageBody.top),
+      (CatchPageBodyMode.fullBleed, 0.0),
     ]) {
       await tester.pumpWidget(_wrap(bodyLayout: layout));
       await tester.pump();
@@ -105,13 +103,13 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(_wrap());
-    expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
+    expect(find.byType(CatchScrollTerminalGap), findsOneWidget);
 
-    await tester.pumpWidget(_wrap(bodyLayout: CatchScreenBodyLayout.fullBleed));
-    expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
+    await tester.pumpWidget(_wrap(bodyLayout: CatchPageBodyMode.fullBleed));
+    expect(find.byType(CatchScrollTerminalGap), findsOneWidget);
 
     await tester.pumpWidget(_wrapEmbeddedViewport());
-    expect(find.byType(CatchSliverTerminalPadding), findsNothing);
+    expect(find.byType(CatchScrollTerminalGap), findsNothing);
   });
 
   test('root primary-rail geometry uses the approved compact rhythm', () {
@@ -131,7 +129,7 @@ void main() {
     final bodyRect = tester.getRect(
       find.byKey(const ValueKey('root-page-frame')),
     );
-    expect(railRect.height, CatchTabRail.heightFor(tester.element(rail)));
+    expect(railRect.height, CatchPageTabBar.heightFor(tester.element(rail)));
     expect(railRect.height, greaterThan(CatchLayout.tabRailHeight));
     expect(
       bodyRect.top - railRect.bottom,
@@ -198,12 +196,12 @@ void main() {
                 tooltip: 'Search forms',
               ),
             ),
-            primaryRail: const _TestPrimaryRail(),
+            actions: const _TestPrimaryRail(),
             body: const CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 page: CatchRootScreenPageScrollView.standard(
                   scrollKey: PageStorageKey('search-root-page'),
-                  slivers: <Widget>[
+                  children: <Widget>[
                     SliverToBoxAdapter(child: SizedBox.shrink()),
                   ],
                 ),
@@ -214,15 +212,13 @@ void main() {
       );
 
       expect(find.text('Forms'), findsOneWidget);
-      final titleBar = tester.widget<CatchScreenTopBar>(
-        find.byType(CatchScreenTopBar),
-      );
+      final titleBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
       final expectedContentHeight =
-          CatchIconButton.targetExtentFor(CatchIconButton.navSize) +
+          CatchIconAction.targetExtentFor(CatchIconAction.navSize) +
           CatchInsets.primaryRailTitleBlock.vertical;
       expect(titleBar.contentPadding, CatchInsets.primaryRailTitleBlock);
       expect(titleBar.applySafeArea, isFalse);
-      expect(titleBar.leadingType, CatchTopBarLeading.none);
+      expect(titleBar.navigation.mode, CatchTopBarNavigationMode.none);
       expect(titleBar.height, expectedContentHeight);
       expect(titleBar.height, lessThanOrEqualTo(CatchLayout.topBarHeight));
 
@@ -247,12 +243,12 @@ void main() {
           theme: AppTheme.light,
           home: const CatchRootScreenScaffold.withPrimaryRail(
             header: CatchRootScreenHeader.title(title: 'Workspace'),
-            primaryRail: _TestPrimaryRail(height: 52),
+            actions: _TestPrimaryRail(height: 52),
             body: CatchRootScreenBody.single(
               page: CatchRootScreenPageSpec.scroll(
                 page: CatchRootScreenPageScrollView.standard(
                   scrollKey: PageStorageKey('invalid-rail-root-page'),
-                  slivers: <Widget>[],
+                  children: <Widget>[],
                 ),
               ),
             ),
@@ -266,7 +262,7 @@ void main() {
         error.toString(),
         contains(
           'CatchRootScreenScaffold requires a '
-          '${CatchTabRail.minimumHeight}-point primary rail.',
+          '${CatchPageTabBar.minimumHeight}-point primary rail.',
         ),
       );
       expect(error.toString(), contains('declared a preferred height of 52.0'));
@@ -285,7 +281,7 @@ void main() {
         theme: AppTheme.light,
         home: const CatchRootScreenScaffold.withPrimaryRail(
           header: CatchRootScreenHeader.title(title: 'Workspace'),
-          primaryRail: _TestPrimaryRail(),
+          actions: _TestPrimaryRail(),
           body: CatchRootScreenBody.single(
             page: CatchRootScreenPageSpec.scroll(page: _TestPageOwner()),
           ),
@@ -299,7 +295,7 @@ void main() {
 }
 
 Widget _wrap({
-  CatchScreenBodyLayout bodyLayout = CatchScreenBodyLayout.standard,
+  CatchPageBodyMode bodyLayout = CatchPageBodyMode.standard,
   double contentHeight = 80,
   TextScaler textScaler = TextScaler.noScaling,
   bool useCanonicalRail = false,
@@ -318,13 +314,13 @@ Widget _wrap({
     ),
   ];
   final page = switch (bodyLayout) {
-    CatchScreenBodyLayout.standard => CatchRootScreenPageScrollView.standard(
+    CatchPageBodyMode.standard => CatchRootScreenPageScrollView.standard(
       scrollKey: const PageStorageKey<String>('root-page-test'),
-      slivers: slivers,
+      children: slivers,
     ),
-    CatchScreenBodyLayout.fullBleed => CatchRootScreenPageScrollView.fullBleed(
+    CatchPageBodyMode.fullBleed => CatchRootScreenPageScrollView.fullBleed(
       scrollKey: const PageStorageKey<String>('root-page-test'),
-      slivers: slivers,
+      children: slivers,
     ),
   };
   return MaterialApp(
@@ -335,8 +331,8 @@ Widget _wrap({
     ),
     home: CatchRootScreenScaffold.withPrimaryRail(
       header: const CatchRootScreenHeader.title(title: 'Workspace'),
-      primaryRail: useCanonicalRail
-          ? const CatchTabRail<int>(
+      actions: useCanonicalRail
+          ? const CatchPageTabBar<int>(
               key: ValueKey('root-page-rail'),
               selected: 0,
               options: [CatchOption(value: 0, label: 'People')],
@@ -354,12 +350,12 @@ Widget _wrapEmbeddedViewport() {
     theme: AppTheme.light,
     home: const CatchRootScreenScaffold.withPrimaryRail(
       header: CatchRootScreenHeader.title(title: 'Workspace'),
-      primaryRail: _TestPrimaryRail(),
+      actions: _TestPrimaryRail(),
       body: CatchRootScreenBody.single(
         page: CatchRootScreenPageSpec.scroll(
           page: CatchRootScreenPageScrollView.embeddedViewport(
             scrollKey: PageStorageKey<String>('root-page-embedded-test'),
-            slivers: [SliverFillRemaining(child: SizedBox.shrink())],
+            children: [SliverFillRemaining(child: SizedBox.shrink())],
           ),
         ),
       ),
@@ -374,7 +370,7 @@ class _TestPrimaryRail extends StatelessWidget implements CatchPrimaryRail {
 
   @override
   Size get preferredSize =>
-      Size.fromHeight(height ?? CatchTabRail.minimumHeight);
+      Size.fromHeight(height ?? CatchPageTabBar.minimumHeight);
 
   @override
   Widget build(BuildContext context) => SizedBox(height: preferredSize.height);

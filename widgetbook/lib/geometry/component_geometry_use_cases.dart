@@ -181,7 +181,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _compactPhoneViewportWidth,
         viewportHeight: _compactViewportHeight,
         platform: TargetPlatform.iOS,
-        composition: CatchResponsiveSectionComposition.centered,
+        composition: CatchSectionListMode.centered,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -191,7 +191,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _tabletPortraitViewportWidth,
         viewportHeight: _compactViewportHeight,
         platform: TargetPlatform.android,
-        composition: CatchResponsiveSectionComposition.centered,
+        composition: CatchSectionListMode.centered,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -201,7 +201,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _tabletWorkspaceViewportWidth,
         viewportHeight: _tabletViewportHeight,
         platform: TargetPlatform.android,
-        composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+        composition: CatchSectionListMode.adaptiveTwoColumn,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -211,7 +211,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _expandedViewportWidth,
         viewportHeight: _expandedViewportHeight,
         platform: TargetPlatform.android,
-        composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+        composition: CatchSectionListMode.adaptiveTwoColumn,
       ),
       _responsivePageContextSpecimen(
         context,
@@ -221,7 +221,7 @@ Widget responsivePageContextMatrix(BuildContext context) {
         viewportWidth: _splitScreenViewportWidth,
         viewportHeight: _compactViewportHeight,
         platform: TargetPlatform.iOS,
-        composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
+        composition: CatchSectionListMode.adaptiveTwoColumn,
       ),
     ],
   );
@@ -277,13 +277,14 @@ Widget _keyboardFocusTreatmentSample(
       borderColor: t.line,
       radius: CatchRadius.lg,
       clipBehavior: Clip.antiAlias,
-      child: CatchSectionStack(
+      child: CatchSectionList.inset(
+        emptyStateOmitted: true,
         padding: CatchInsets.pageBody,
         children: [
           CatchSection.fieldRows(
             title: 'Notifications',
             first: true,
-            interaction: CatchDividedFieldInteraction.fullBleed,
+            interaction: CatchDividedFieldInteractionScopeMode.fullBleed,
             children: [
               CatchField.nav(
                 copy: catchFieldCopy(context.l10n),
@@ -420,7 +421,8 @@ Widget _mixedSectionPageSample(
       borderColor: t.line,
       radius: CatchRadius.lg,
       clipBehavior: Clip.antiAlias,
-      child: CatchSectionStack(
+      child: CatchSectionList.inset(
+        emptyStateOmitted: true,
         padding: CatchInsets.pageBody,
         gap: CatchGaps.section,
         children: [
@@ -461,10 +463,12 @@ Widget _mixedContainedSection(
         title: 'Host',
         icon: CatchIcons.hosted,
         values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
-        itemLabel: _identityString,
+        itemLabelBuilder: _identityString,
         selected: selected,
         onSelectionChanged: onSelectionChanged,
-        open: open,
+        disclosureMode: open
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: onOpenChanged,
       ),
       CatchField.nav(
@@ -492,10 +496,12 @@ Widget _mixedDividedSection(
     title: 'Reminder timing',
     icon: CatchIcons.clock,
     values: const ['Two hours before', 'One day before', 'Off'],
-    itemLabel: _identityString,
+    itemLabelBuilder: _identityString,
     selected: selected,
     onSelectionChanged: onSelectionChanged,
-    open: open,
+    disclosureMode: open
+        ? CatchFieldMode.controlledExpanded
+        : CatchFieldMode.controlledCollapsed,
     onOpenChanged: onOpenChanged,
   );
   final deliveryField = CatchField.nav(
@@ -509,8 +515,8 @@ Widget _mixedDividedSection(
     title: 'Notifications',
     first: true,
     interaction: fullWidthBand
-        ? CatchDividedFieldInteraction.fullBleed
-        : CatchDividedFieldInteraction.roundedTile,
+        ? CatchDividedFieldInteractionScopeMode.fullBleed
+        : CatchDividedFieldInteractionScopeMode.roundedTile,
     children: [timingField, deliveryField],
   );
 }
@@ -633,10 +639,14 @@ Widget buttonGeometryMatrix(BuildContext context) {
           crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             const CatchButton(label: 'Disabled', onPressed: null),
-            CatchButton(label: 'Loading', isLoading: true, onPressed: _noop),
+            CatchButton(
+              label: 'Loading',
+              status: CatchButtonStatus.loading,
+              onPressed: _noop,
+            ),
             CatchButton(
               label: 'With icon',
-              icon: Icon(CatchIcons.calendarAdd),
+              leading: Icon(CatchIcons.calendarAdd),
               onPressed: _noop,
             ),
           ],
@@ -682,9 +692,11 @@ Widget topBarGeometryMatrix(BuildContext context) {
         label: 'Compact route',
         child: CatchTopBar(
           title: 'Event details',
-          allowContentHeightExpansion: true,
-          leadingType: CatchTopBarLeading.back,
-          onBack: _noop,
+          mode: CatchTopBarMode.content,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+            onPressed: _noop,
+          ),
         ),
       ),
       _topBarSpecimen(
@@ -694,7 +706,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
           kicker: 'HOST MODE',
           title: 'Upcoming events',
           subtitle: 'Review requests and keep the room balanced.',
-          allowContentHeightExpansion: true,
+          mode: CatchTopBarMode.content,
         ),
       ),
       _topBarSpecimen(
@@ -706,11 +718,11 @@ Widget topBarGeometryMatrix(BuildContext context) {
                 name: 'Taylor from Sunday Social',
               ),
           identityName: 'Taylor from Sunday Social',
-          allowContentHeightExpansion: true,
+          mode: CatchTopBarMode.content,
           identityPhotoUrl: null,
           onIdentityTap: _noop,
-          surface: true,
-          divider: true,
+          tone: CatchTopBarTone.surface,
+          emphasis: CatchTopBarEmphasis.divided,
           actions: [
             CatchActionMenu<String>(
               tooltip: 'Conversation actions',
@@ -734,7 +746,7 @@ Widget topBarGeometryMatrix(BuildContext context) {
             'Use the search action to inspect the in-place width morph and title fade.',
         child: CatchTopBar(
           title: 'Explore',
-          allowContentHeightExpansion: true,
+          mode: CatchTopBarMode.content,
           search: CatchTopBarSearch(
             copy: catchSearchFieldCopy(context.l10n),
             value: '',
@@ -859,7 +871,7 @@ Widget menuGeometryMatrix(BuildContext context) {
               value: 'going',
               label: 'Going',
               selected: true,
-              role: CatchMenuItemRole.choice,
+              variant: CatchMenuItemVariant.choice,
               icon: CatchIcons.checkCircle,
               startsSection: true,
             ),
@@ -903,7 +915,7 @@ Widget menuGeometryMatrix(BuildContext context) {
         label: 'Adaptive selection',
         description:
             'The same choice model opens as a compact sheet or an anchored wider-layout menu.',
-        child: CatchAdaptiveSelectionControl<String>(
+        child: CatchSelectionMenu<String>.control(
           title: 'Sort customers',
           subtitle: 'Choose how customers are ordered.',
           tooltip: 'Sort customers',
@@ -916,7 +928,7 @@ Widget menuGeometryMatrix(BuildContext context) {
             ),
             CatchSelectionMenuItem(value: 'name', label: 'Name'),
           ],
-          triggerLabel: (item) => 'Sort: ${item.label}',
+          labelBuilder: (item) => 'Sort: ${item.label}',
           onSelected: _ignoreString,
         ),
       ),
@@ -926,18 +938,14 @@ Widget menuGeometryMatrix(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Geometry matrix',
-  type: CatchBottomSheetScaffold,
+  type: CatchSheet,
   path: '[Geometry system]',
 )
 Widget modalGeometryMatrix(BuildContext context) {
   return _geometryPage(
     context,
     title: 'Sheets and dialogs',
-    contractIds: const [
-      'catch.sheet',
-      'catch.confirm_dialog',
-      'catch.form_dialog',
-    ],
+    contractIds: const ['catch.sheet', 'catch.confirm_dialog'],
     principles: const [
       'Modals establish a new plane; their internal fields and actions remain flat.',
       'Sheets own viewport edges, safe area, keyboard clearance, and top radii.',
@@ -958,10 +966,10 @@ Widget modalGeometryMatrix(BuildContext context) {
               onPressed: () => showCatchBottomSheet<void>(
                 context: context,
                 useRootNavigator: false,
-                builder: (_) => CatchBottomSheetScaffold(
+                builder: (_) => CatchSheet(
                   title: 'Invite guests',
                   subtitle: 'Share this event with people who fit the format.',
-                  action: CatchButton(
+                  footer: CatchButton(
                     label: 'Copy invite link',
                     fullWidth: true,
                     onPressed: _noop,
@@ -996,11 +1004,11 @@ Widget modalGeometryMatrix(BuildContext context) {
         label: 'Sheet composition',
         child: SizedBox(
           width: _phoneWidth,
-          child: CatchBottomSheetScaffold(
+          child: CatchSheet(
             title: 'Arrival note',
             subtitle: 'Tell guests where to meet.',
             keyboardSafe: true,
-            action: CatchButton(
+            footer: CatchButton(
               label: 'Save note',
               fullWidth: true,
               onPressed: _noop,
@@ -1016,7 +1024,7 @@ Widget modalGeometryMatrix(BuildContext context) {
       _specimen(
         context,
         label: 'Dialog composition',
-        child: CatchConfirmDialog<bool>(
+        child: CatchDialog<bool>.confirmation(
           title: 'Cancel this event?',
           message: 'Guests will be notified immediately.',
           actions: const [
@@ -1040,7 +1048,7 @@ Widget _responsivePageContextSpecimen(
   required double viewportWidth,
   required double viewportHeight,
   required TargetPlatform platform,
-  required CatchResponsiveSectionComposition composition,
+  required CatchSectionListMode composition,
 }) {
   return _specimen(
     context,
@@ -1106,7 +1114,7 @@ Widget _scaledReviewViewport(
 
 Widget _responsiveGeometryShell(
   BuildContext context, {
-  required CatchResponsiveSectionComposition composition,
+  required CatchSectionListMode composition,
 }) {
   return CatchAdaptiveTabScaffold(
     activeIndex: 1,
@@ -1130,23 +1138,26 @@ Widget _responsiveGeometryShell(
     body: CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: 'Event settings',
-        leadingType: CatchTopBarLeading.none,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.none,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.fullBleed(
-        child: CatchResponsiveSectionPage(
-          composition: composition,
-          sections: [
-            CatchResponsiveSectionItem(
+        child: CatchSectionList.page(
+          emptyStateOmitted: true,
+          mode: composition,
+          items: [
+            CatchSectionListItem(
               child: _responsiveEventSettingsSection(context),
             ),
-            CatchResponsiveSectionItem(
-              lane: CatchResponsiveSectionLane.secondary,
+            CatchSectionListItem(
+              lane: CatchSectionListPlacement.secondary,
               child: _responsiveNotificationSection(context),
             ),
-            CatchResponsiveSectionItem(
-              child: _responsivePrivacySection(context),
-            ),
+            CatchSectionListItem(child: _responsivePrivacySection(context)),
           ],
         ),
       ),
@@ -1166,7 +1177,7 @@ Widget _responsiveEventSettingsSection(BuildContext context) {
           title: 'Host',
           icon: CatchIcons.hosted,
           values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
-          itemLabel: _identityString,
+          itemLabelBuilder: _identityString,
           selected: selected,
           onSelectionChanged: (next) => setState(() => selected = next),
         ),
@@ -1310,10 +1321,12 @@ Widget _canonicalInteractionSection(
       title: 'Host',
       icon: CatchIcons.hosted,
       values: const ['Catch Hosts', 'Sunday Social', 'Bandra Runs'],
-      itemLabel: _identityString,
+      itemLabelBuilder: _identityString,
       selected: selected,
       onSelectionChanged: onSelectionChanged,
-      open: open,
+      disclosureMode: open
+          ? CatchFieldMode.controlledExpanded
+          : CatchFieldMode.controlledCollapsed,
       onOpenChanged: onOpenChanged,
     ),
     CatchField.nav(

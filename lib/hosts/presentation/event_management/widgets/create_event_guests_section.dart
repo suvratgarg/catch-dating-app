@@ -161,14 +161,16 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
             title: context.l10n.hostsEventDetailsStepExternalWalkInTitle,
             contract: CatchContractConstraints
                 .createEventCallablePayloadRuntimeWalkInPolicy,
-            contractValue: (policy) => policy.name,
+            contractValueBuilder: (policy) => policy.name,
             body: _walkInPolicyLabel(widget.runtimeWalkInPolicy),
             values: EventRuntimeWalkInPolicy.values,
-            itemLabel: _walkInPolicyLabel,
+            itemLabelBuilder: _walkInPolicyLabel,
             selected: <EventRuntimeWalkInPolicy>{widget.runtimeWalkInPolicy},
             onSelectionChanged: (selection) =>
                 widget.onRuntimeWalkInPolicyChanged?.call(selection.single),
-            open: _accordion.isExpanded(_walkInPolicyField),
+            disclosureMode: _accordion.isExpanded(_walkInPolicyField)
+                ? CatchFieldMode.controlledExpanded
+                : CatchFieldMode.controlledCollapsed,
             onOpenChanged: (open) => _setOpen(_walkInPolicyField, open),
             icon: CatchIcons.peopleOutline,
           ),
@@ -199,19 +201,21 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               title: context.l10n.hostsEventDetailsStepExternalProviderTitle,
               contract: CatchContractConstraints
                   .createEventCallablePayloadExternalOriginProvider,
-              contractValue: (provider) => provider.name,
+              contractValueBuilder: (provider) => provider.name,
               body: _externalBookingProviderLabel(
                 widget.externalBookingProvider,
               ),
               values: ExternalBookingProviderX.externalValues,
-              itemLabel: _externalBookingProviderLabel,
+              itemLabelBuilder: _externalBookingProviderLabel,
               selected: <ExternalBookingProvider>{
                 widget.externalBookingProvider,
               },
               onSelectionChanged: (selection) => widget
                   .onExternalBookingProviderChanged
                   ?.call(selection.single),
-              open: _accordion.isExpanded(_externalProviderField),
+              disclosureMode: _accordion.isExpanded(_externalProviderField)
+                  ? CatchFieldMode.controlledExpanded
+                  : CatchFieldMode.controlledCollapsed,
               onOpenChanged: (open) => _setOpen(_externalProviderField, open),
               icon: CatchIcons.linkOutlined,
             ),
@@ -222,13 +226,13 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               contract: CatchContractConstraints
                   .createEventCallablePayloadExternalOriginExternalEventUrl,
               controller: widget.externalEventUrlController,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               inputHint:
                   context.l10n.hostsEventDetailsStepExternalEventUrlPlaceholder,
               icon: CatchIcons.linkRounded,
               keyboardType: TextInputType.url,
               textInputAction: TextInputAction.next,
-              validator: (value) {
+              onValidate: (value) {
                 final normalized = value?.trim() ?? '';
                 if (normalized.isEmpty) return null;
                 final uri = Uri.tryParse(normalized);
@@ -249,7 +253,7 @@ class _CreateEventGuestsSectionState extends State<CreateEventGuestsSection> {
               contract: CatchContractConstraints
                   .createEventCallablePayloadExternalOriginExternalEventId,
               controller: widget.externalEventIdController,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               inputHint:
                   context.l10n.hostsEventDetailsStepExternalEventIdPlaceholder,
               icon: CatchIcons.confirmationNumberOutlined,

@@ -63,7 +63,7 @@ class EventActionCard extends StatelessWidget {
               ? t.primary.withValues(alpha: CatchOpacity.mutedBorderUrgent)
               : t.line2),
       radius: radius,
-      elevation: CatchSurfaceElevation.card,
+      emphasis: CatchSurfaceEmphasis.subtle,
       gradient: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
@@ -110,7 +110,7 @@ class EventActionCard extends StatelessWidget {
                   gapH12,
                   for (var index = 0; index < metaRows.length; index += 1) ...[
                     if (index > 0) gapH6,
-                    CatchMetaDotRow(entries: metaRows[index]),
+                    CatchMetaRow.group(entries: metaRows[index]),
                   ],
                 ],
                 if (actions.isNotEmpty) ...[
@@ -216,11 +216,13 @@ class EventActionCardActions extends StatelessWidget {
           CatchButton(
             key: actions[index].key,
             label: actions[index].label,
-            icon: Icon(actions[index].icon, size: CatchIcon.md),
+            leading: Icon(actions[index].icon, size: CatchIcon.md),
             variant: actions[index].variant,
             accentColor: actions[index].accentColor,
             fullWidth: true,
-            isLoading: actions[index].isLoading,
+            status: (actions[index].isLoading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             semanticsLabel: actions[index].semanticsLabel,
             onPressed: actions[index].isLoading
                 ? null

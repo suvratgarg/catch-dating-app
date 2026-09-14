@@ -5,11 +5,11 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 @widgetbook.UseCase(
   name: 'Visual atom clock',
-  type: CatchTicketClock,
+  type: CatchClockIndicator,
   path: '[Events]/Tiles',
 )
 Widget eventClockMarkState(BuildContext context) {
-  return CatchTicketClock(
+  return CatchClockIndicator(
     accent: CatchTokens.of(context).primary,
     time: const TimeOfDay(hour: 6, minute: 30),
     size: 42,
@@ -19,7 +19,7 @@ Widget eventClockMarkState(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Visual atom status',
-  type: CatchTicketStatusBadge,
+  type: CatchBadge,
   path: '[Events]/Tiles',
 )
 Widget eventStatusPillState(BuildContext context) {
@@ -27,11 +27,11 @@ Widget eventStatusPillState(BuildContext context) {
   return Wrap(
     spacing: CatchSpacing.s2,
     children: [
-      CatchTicketStatusBadge(label: 'Open', color: t.primary),
-      CatchTicketStatusBadge(
+      CatchBadge.ticketStatus(label: 'Open', color: t.primary),
+      CatchBadge.ticketStatus(
         label: 'Booked',
         color: t.success,
-        tone: CatchTicketStatusBadgeTone.dark,
+        emphasis: CatchBadgeEmphasis.strong,
       ),
     ],
   );

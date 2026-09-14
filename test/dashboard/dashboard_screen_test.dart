@@ -156,10 +156,10 @@ void main() {
         );
         await tester.pump();
 
-        final button = tester.widget<CatchIconButton>(
-          find.byType(CatchIconButton),
+        final button = tester.widget<CatchIconAction>(
+          find.byType(CatchIconAction),
         );
-        expect(button.size, CatchIconButton.navSize);
+        expect(button.size, CatchIconAction.navSize);
         expect(find.byIcon(CatchIcons.notificationsRounded), findsOneWidget);
         expect(find.text('2'), findsOneWidget);
         expect(find.byTooltip('Notifications'), findsOneWidget);
@@ -306,7 +306,7 @@ void main() {
       final rootScaffold = tester.widget<CatchRootScreenScaffold>(
         find.byType(CatchRootScreenScaffold),
       );
-      expect(rootScaffold.bodyLayout, CatchScreenBodyLayout.standard);
+      expect(rootScaffold.bodyLayout, CatchPageBodyMode.standard);
       expect(
         find.text('Your catches unlock\nafter your first event.'),
         findsOneWidget,

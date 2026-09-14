@@ -143,7 +143,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 onEventSelected: (event) => _openEventDetail(context, event),
                 onRetryClubNames: () => ref.invalidate(clubNameLookupProvider),
               ),
-              const CatchSliverTerminalPadding(),
+              const CatchScrollTerminalGap.sliver(),
             ],
           ),
         );
@@ -155,10 +155,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       backgroundColor: t.bg,
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: _calendarMonthLabel(topBarSelectedDate),
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
         actions: [
-          CatchTopBarTextAction(
+          CatchButton.text(
             label: context.l10n.eventsCalendarScreenLabelToday,
             onPressed: () => _selectDate(topBarToday),
             foregroundColor: t.ink,
@@ -307,7 +311,7 @@ class CalendarAgendaSliverSection extends StatelessWidget {
       CalendarAgendaClubNamesLoadingState(:final skeletonCount) =>
         EventAgendaSliverSkeleton(count: skeletonCount),
       CalendarAgendaClubNamesErrorState(:final error) =>
-        CatchSliverStateViewport(
+        CatchStateViewport.sliver(
           accountForBottomOverlay: false,
           child: CatchLocalizedErrorState(
             error,
@@ -568,7 +572,7 @@ class CalendarStatsHeader extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     key: const ValueKey('calendar.stats.planned'),
                     label: context.l10n.eventsCalendarScreenLabelPlanned,
                     value: context.l10n.eventsCalendarScreenVisiblecopyLength(
@@ -578,7 +582,7 @@ class CalendarStatsHeader extends StatelessWidget {
                 ),
                 const CalendarStatDivider(),
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     key: const ValueKey('calendar.stats.distance'),
                     label: context.l10n.eventsCalendarScreenLabelDistance,
                     value: context.l10n.eventsCalendarScreenVisiblecopyRoundKm(
@@ -588,7 +592,7 @@ class CalendarStatsHeader extends StatelessWidget {
                 ),
                 const CalendarStatDivider(),
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     key: const ValueKey('calendar.stats.next'),
                     label: context.l10n.eventsCalendarScreenLabelNext,
                     value: summary.nextEvent == null

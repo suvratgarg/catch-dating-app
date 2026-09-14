@@ -77,7 +77,7 @@ void main() {
         ],
       );
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
+      expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
@@ -209,8 +209,8 @@ void main() {
         ],
       );
 
-      expect(find.byType(CatchScreenScaffold), findsOneWidget);
-      final body = tester.widget<CatchErrorBody>(find.byType(CatchErrorBody));
+      expect(find.byType(CatchScaffold), findsOneWidget);
+      final body = tester.widget<CatchErrorState>(find.byType(CatchErrorState));
       expect(body.onRetry, isNotNull);
     });
 
@@ -1142,7 +1142,7 @@ void main() {
       expect(390 - save.right, CatchSpacing.screenPx);
       expect(calendar.left - share.right, CatchSpacing.s2);
       expect(save.left - calendar.right, CatchSpacing.s2);
-      expect(find.byType(CatchTopBarActionGroup), findsOneWidget);
+      expect(find.byType(CatchTopBarActionRow), findsOneWidget);
     });
 
     testWidgets('reveals the event title in the collapsed toolbar', (

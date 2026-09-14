@@ -22,7 +22,7 @@ void main() {
             title: 'Name',
             initialValue: 'Original',
             variant: CatchFieldVariant.underline,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             showClearButton: true,
           ),
         ),
@@ -71,7 +71,7 @@ void main() {
                 copy: _copy('Custom'),
                 title: 'Language',
                 values: const ['one'],
-                itemLabel: (value) => value,
+                itemLabelBuilder: (value) => value,
                 onChanged: (_) {},
               ),
             ],
@@ -101,14 +101,15 @@ void main() {
                   copy: _copy('Custom'),
                   title: 'Choice',
                   body: 'One',
-                  control: const Text('Choices'),
-                  open: true,
+
+                  disclosureMode: CatchFieldMode.controlledExpanded,
                   onCancel: () {},
                   onSubmit: () {},
-                  isLoading: saving,
+
                   status: saving
                       ? CatchFieldStatus.saving
                       : CatchFieldStatus.idle,
+                  child: const Text('Choices'),
                 ),
                 CatchField.read(
                   key: const ValueKey('status'),
@@ -129,8 +130,8 @@ void main() {
     expect(find.text('Custom done'), findsOneWidget);
     update(() => saving = true);
     await tester.pump();
-    final actionBar = tester.widget<CatchFieldActionBar>(
-      find.byType(CatchFieldActionBar),
+    final actionBar = tester.widget<CatchFieldActionRow>(
+      find.byType(CatchFieldActionRow),
     );
     expect(actionBar.savingLabel, 'Custom working');
     final indicator = tester.widget<CatchFieldStatusIndicator>(
@@ -188,7 +189,7 @@ Widget _host(Widget child) => MaterialApp(
 );
 
 CatchFieldCopy _copy(String prefix) => CatchFieldCopy(
-  label: CatchFormFieldLabelCopy(
+  label: CatchFieldLabelTextCopy(
     optionalLabel: '$prefix optional',
     optionalSuffix: ' · $prefix optional',
     optionalSemantics: (label) => '$prefix optional $label',

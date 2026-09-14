@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/cross_paths_invitation.feature.json",
   "generatedFor": "2026-08-06",
   "sourceDigest": "sha256:f7c1c48c708574510f02cee90e840b42d11b6765f6f3514e7217935cbef51fff",
-  "resolvedDigest": "sha256:f95ba093d0a793a819a8a39d1f08f88802beeb0abb23a3251682ec8e8779e0b8",
+  "resolvedDigest": "sha256:07345dcd542bca7c0c2dc4fe17d1f22c8bd189e0f53eee23145627af30ba95f6",
   "feature": {
     "id": "feature.cross_paths_invitation",
     "name": "Cross Paths Invitation",
@@ -583,7 +583,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -591,10 +593,10 @@
             "id": "catch.person_polaroid",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchPersonPolaroid",
-              "file": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
+              "symbol": "CatchPolaroid",
+              "file": "packages/catch_ui/lib/src/components/catch_polaroid.dart",
               "constructors": [
-                "CatchPersonPolaroid"
+                "CatchPolaroid"
               ]
             }
           },
@@ -607,8 +609,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -619,7 +620,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

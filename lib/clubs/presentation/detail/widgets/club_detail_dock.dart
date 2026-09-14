@@ -66,7 +66,7 @@ class ClubDetailDock extends StatelessWidget {
     final t = CatchTokens.of(context);
     final showCount = members != null && state != ClubDetailDockRole.owner;
 
-    return CatchBottomDock(
+    return CatchDockSurface(
       padding: CatchInsets.clubDetailDock,
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -145,16 +145,18 @@ class _ClubDetailDockControls extends StatelessWidget {
       child: switch (state) {
         ClubDetailDockRole.guest => CatchButton(
           label: context.l10n.clubsClubDetailDockLabelSignInToJoin,
-          icon: Icon(CatchIcons.lockOutlineRounded),
+          leading: Icon(CatchIcons.lockOutlineRounded),
           onPressed: onSignIn,
           fullWidth: true,
         ),
         ClubDetailDockRole.visitor => CatchButton(
           key: joinKey,
           label: context.l10n.clubsClubDetailDockLabelJoinClub,
-          icon: Icon(CatchIcons.add),
+          leading: Icon(CatchIcons.add),
           accentColor: activity.accent,
-          isLoading: isJoinLoading,
+          status: (isJoinLoading)
+              ? CatchButtonStatus.loading
+              : CatchButtonStatus.idle,
           onPressed: onJoin,
           fullWidth: true,
         ),
@@ -171,9 +173,11 @@ class _ClubDetailDockControls extends StatelessWidget {
               child: CatchButton(
                 key: manageKey,
                 label: context.l10n.clubsClubDetailDockLabelJoined,
-                icon: Icon(CatchIcons.checkCircle),
+                leading: Icon(CatchIcons.checkCircle),
                 variant: CatchButtonVariant.secondary,
-                isLoading: isJoinLoading,
+                status: (isJoinLoading)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 onPressed: onManage,
                 fullWidth: true,
               ),
@@ -185,7 +189,7 @@ class _ClubDetailDockControls extends StatelessWidget {
             Expanded(
               child: CatchButton(
                 label: context.l10n.clubsClubDetailDockLabelManage,
-                icon: Icon(CatchIcons.settingsOutlined),
+                leading: Icon(CatchIcons.settingsOutlined),
                 variant: CatchButtonVariant.secondary,
                 onPressed: onManage,
                 fullWidth: true,
@@ -196,7 +200,7 @@ class _ClubDetailDockControls extends StatelessWidget {
               flex: 2,
               child: CatchButton(
                 label: context.l10n.clubsClubDetailDockLabelNewEvent,
-                icon: Icon(CatchIcons.add),
+                leading: Icon(CatchIcons.add),
                 accentColor: activity.accent,
                 onPressed: onCreate,
                 fullWidth: true,
@@ -274,10 +278,10 @@ class DockBell extends StatelessWidget {
       label: active
           ? context.l10n.clubsClubDetailDockLabelDisableClubPushNotifications
           : context.l10n.clubsClubDetailDockLabelEnableClubPushNotifications,
-      child: CatchIconButton(
+      child: CatchIconAction(
         size: CatchSpacing.s12,
-        background: active ? accent : t.raised,
-        onTap: enabled ? onPressed : null,
+        backgroundColor: active ? accent : t.raised,
+        onPressed: enabled ? onPressed : null,
         child: isLoading
             ? SizedBox.square(
                 dimension: CatchIcon.md,

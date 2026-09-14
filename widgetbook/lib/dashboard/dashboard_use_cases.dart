@@ -448,14 +448,14 @@ Widget dashboardFullReview(BuildContext context) {
                 user: _viewer,
               ),
               actions: [
-                CatchIconButton.counted(
+                CatchIconAction.counted(
                   icon: CatchIcons.notificationsRounded,
                   count: _notifications
                       .where((notification) => notification.isUnread)
                       .length,
-                  size: CatchIconButton.navSize,
+                  size: CatchIconAction.navSize,
                   tooltip: 'Notifications',
-                  onTap: _noopTap,
+                  onPressed: _noopTap,
                 ),
               ],
             ),
@@ -482,9 +482,9 @@ Widget dashboardFullSliverBodyReview(BuildContext context) {
           child: _DashboardRouteScope(
             child: CustomScrollView(
               slivers: [
-                CatchSliverScreenBody(
-                  layout: CatchScreenBodyLayout.standard,
-                  slivers: [
+                CatchPageBody.slivers(
+                  mode: CatchPageBodyMode.standard,
+                  children: [
                     DashboardFullSliverBody(
                       viewModel: _dashboardFullViewModel(),
                       user: _viewer,
@@ -502,18 +502,18 @@ Widget dashboardFullSliverBodyReview(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Header content',
-  type: CatchScreenHeaderTitle,
+  type: CatchScreenHeader,
   path: '[P1 product surfaces]/Dashboard home',
 )
 Widget dashboardHeaderContentReview(BuildContext context) {
   return _DashboardCatalog(
-    title: 'CatchScreenHeaderTitle',
+    title: 'CatchScreenHeader',
     contractId: 'dashboard.home.header_content',
     children: [
       _StateCard(
         label: 'copy only',
         child: const _DashboardPrimitiveFrame(
-          child: CatchScreenHeaderTitle.block(
+          child: CatchScreenHeader.block(
             title: 'Good evening, Subrath',
             actions: [],
             padding: CatchInsets.screenTitleBlockCompact,
@@ -523,16 +523,16 @@ Widget dashboardHeaderContentReview(BuildContext context) {
       _StateCard(
         label: 'notification action',
         child: _DashboardPrimitiveFrame(
-          child: CatchScreenHeaderTitle.block(
+          child: CatchScreenHeader.block(
             title: 'Three plans ready',
             padding: CatchInsets.screenTitleBlockCompact,
             actions: [
-              CatchIconButton.counted(
+              CatchIconAction.counted(
                 icon: CatchIcons.notificationsRounded,
                 count: 3,
-                size: CatchIconButton.navSize,
+                size: CatchIconAction.navSize,
                 tooltip: 'Notifications',
-                onTap: _noopTap,
+                onPressed: _noopTap,
               ),
             ],
           ),
@@ -544,47 +544,47 @@ Widget dashboardHeaderContentReview(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Counted notification action',
-  type: CatchIconButton,
+  type: CatchIconAction,
   path: '[P1 product surfaces]/Dashboard primitives',
 )
 Widget dashboardCountedNotificationActionReviewStates(BuildContext context) {
   return _DashboardCatalog(
-    title: 'CatchIconButton.counted',
+    title: 'CatchIconAction.counted',
     contractId: 'catch.icon_button',
     children: [
       _StateCard(
         label: 'no unread',
         child: _DashboardPrimitiveFrame(
-          child: CatchIconButton.counted(
+          child: CatchIconAction.counted(
             icon: CatchIcons.notificationsNoneRounded,
             count: 0,
-            size: CatchIconButton.navSize,
+            size: CatchIconAction.navSize,
             tooltip: 'Notifications',
-            onTap: _noopTap,
+            onPressed: _noopTap,
           ),
         ),
       ),
       _StateCard(
         label: 'unread count',
         child: _DashboardPrimitiveFrame(
-          child: CatchIconButton.counted(
+          child: CatchIconAction.counted(
             icon: CatchIcons.notificationsRounded,
             count: 3,
-            size: CatchIconButton.navSize,
+            size: CatchIconAction.navSize,
             tooltip: 'Notifications',
-            onTap: _noopTap,
+            onPressed: _noopTap,
           ),
         ),
       ),
       _StateCard(
         label: 'overflow badge',
         child: _DashboardPrimitiveFrame(
-          child: CatchIconButton.counted(
+          child: CatchIconAction.counted(
             icon: CatchIcons.notificationsRounded,
             count: 124,
-            size: CatchIconButton.navSize,
+            size: CatchIconAction.navSize,
             tooltip: 'Notifications',
-            onTap: _noopTap,
+            onPressed: _noopTap,
           ),
         ),
       ),

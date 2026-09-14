@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-02",
-  "sourceDigest": "sha256:3b6cde52d4def3175cc02404bc3c08e502b1c31be01a3256bb607a1d60c0d70e",
-  "resolvedDigest": "sha256:40f2c2db2313b3d2d18610464c58e055862f457c71e3106b57d4393e6e53cd58",
+  "sourceDigest": "sha256:904895b385aed5d80a01c05000d85e20de0e55da75c6d8b318c67a80a38236d4",
+  "resolvedDigest": "sha256:4e1a693f95f5a2c1d3ca97bec0567e52e26c6be5ef56517d0c1c705f6e6e75be",
   "feature": {
     "id": "feature.host_organizers",
     "name": "Host Organizers",
@@ -139,12 +139,12 @@
           "catch.button",
           "catch.confirm_dialog",
           "catch.empty_state",
-          "catch.error_banner",
+          "catch.banner",
           "catch.error_state",
           "catch.field",
           "catch.icon_button",
           "catch.menu",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.section",
           "catch.sheet",
           "catch.skeleton",
@@ -4097,7 +4097,7 @@
             "captureIds": [],
             "previewIds": [
               "HostClubTeamScreen/Route states",
-              "CatchTabRail/Contract states"
+              "CatchPageTabBar/Contract states"
             ],
             "tests": []
           },
@@ -4704,7 +4704,7 @@
             ],
             "previewIds": [
               "HostClubTeamScreen/Route states",
-              "CatchTabRail/Contract states"
+              "CatchPageTabBar/Contract states"
             ],
             "tests": [
               "test/hosts/host_operations_screen_test.dart"
@@ -4864,7 +4864,7 @@
               "HostClubTeamScreen/Route states",
               "HostTeamProfileSection/Profile summary states",
               "HostTeamHostedClubsSection/Clubs states",
-              "CatchTabRail/Contract states"
+              "CatchPageTabBar/Contract states"
             ],
             "tests": []
           },
@@ -5128,7 +5128,9 @@
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
                 "CatchBadge.privacy",
-                "CatchBadge.status"
+                "CatchBadge.status",
+                "CatchBadge.ticketStatus",
+                "CatchBadge.optional"
               ]
             }
           },
@@ -5141,7 +5143,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -5149,10 +5153,11 @@
             "id": "catch.confirm_dialog",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchConfirmDialog",
-              "file": "packages/catch_ui/lib/src/components/catch_confirm_dialog.dart",
+              "symbol": "CatchDialog",
+              "file": "packages/catch_ui/lib/src/components/catch_dialog.dart",
               "constructors": [
-                "CatchConfirmDialog"
+                "CatchDialog",
+                "CatchDialog.confirmation"
               ]
             }
           },
@@ -5168,14 +5173,16 @@
             }
           },
           {
-            "id": "catch.error_banner",
+            "id": "catch.banner",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchErrorBanner",
-              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
+              "symbol": "CatchBanner",
+              "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
               "constructors": [
-                "CatchErrorBanner",
-                "CatchErrorBanner.withRetry"
+                "CatchBanner",
+                "CatchBanner.error",
+                "CatchBanner.errorWithRetry",
+                "CatchBanner.statuses"
               ]
             }
           },
@@ -5218,12 +5225,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },
@@ -5234,18 +5242,22 @@
               "symbol": "CatchMenu",
               "file": "packages/catch_ui/lib/src/components/catch_menu.dart",
               "constructors": [
-                "CatchMenu"
+                "CatchMenu",
+                "CatchMenu.anchored"
               ]
             }
           },
           {
-            "id": "catch.option_group",
-            "kind": "composite",
+            "id": "catch.chip.field",
+            "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
+              "symbol": "CatchChoiceInput",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
               "constructors": [
-                "CatchOptionGroup"
+                "CatchChoiceInput",
+                "CatchChoiceInput.described",
+                "CatchChoiceInput.segmented",
+                "CatchChoiceInput.form"
               ]
             }
           },
@@ -5261,7 +5273,8 @@
                 "CatchSection.containedFieldRows",
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
-                "CatchSection.plain"
+                "CatchSection.plain",
+                "CatchSection.horizontal"
               ]
             }
           },
@@ -5269,10 +5282,10 @@
             "id": "catch.sheet",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchBottomSheetScaffold",
-              "file": "packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart",
+              "symbol": "CatchSheet",
+              "file": "packages/catch_ui/lib/src/components/catch_sheet.dart",
               "constructors": [
-                "CatchBottomSheetScaffold"
+                "CatchSheet"
               ]
             }
           },
@@ -5288,7 +5301,14 @@
                 "CatchSkeleton.text",
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
-                "CatchSkeleton.custom"
+                "CatchSkeleton.custom",
+                "CatchSkeleton.content",
+                "CatchSkeleton.cards",
+                "CatchSkeleton.rows",
+                "CatchSkeleton.boxes",
+                "CatchSkeleton.chips",
+                "CatchSkeleton.mediaRows",
+                "CatchSkeleton.iconRows"
               ]
             }
           },
@@ -5301,8 +5321,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -5310,10 +5329,11 @@
             "id": "catch.tab_rail",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchTabRail",
-              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
+              "symbol": "CatchPageTabBar",
+              "file": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
               "constructors": [
-                "CatchTabRail"
+                "CatchPageTabBar",
+                "CatchPageTabBar.controlled"
               ]
             }
           },
@@ -5321,10 +5341,14 @@
             "id": "catch.screen_body",
             "kind": "pattern",
             "dart": {
-              "symbol": "CatchScreenBody",
-              "file": "packages/catch_ui/lib/src/patterns/catch_screen_body.dart",
+              "symbol": "CatchPageBody",
+              "file": "packages/catch_ui/lib/src/patterns/catch_page_body.dart",
               "constructors": [
-                "CatchScreenBody"
+                "CatchPageBody",
+                "CatchPageBody.formStep",
+                "CatchPageBody.screen",
+                "CatchPageBody.sliver",
+                "CatchPageBody.slivers"
               ]
             }
           },
@@ -5335,13 +5359,16 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }
         ],
         "previews": [
-          "CatchTabRail/Contract states",
+          "CatchPageTabBar/Contract states",
           "HostClubEventDefaultsScreen/Owner loaded",
           "HostClubInsightsPane/Insights scorecard states",
           "HostClubLiveGuideScreen/Owner loaded",

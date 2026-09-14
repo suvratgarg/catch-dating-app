@@ -52,14 +52,15 @@ void main() {
       ),
     );
 
-    final focusSurface = find.byType(CatchSectionFocusSurface);
-    final clip = find.byKey(CatchSectionFocusSurface.rowGroupClipKey);
+    final focusSurface = find.byType(CatchSectionSurface);
+    final clip = find.byKey(CatchSectionSurface.rowGroupClipKey);
     final surfaceRect = tester.getRect(focusSurface);
     final sectionDividers = find.descendant(
       of: focusSurface,
       matching: find.byWidgetPredicate(
         (widget) =>
-            widget is CatchDivider && widget.role == CatchDividerRole.section,
+            widget is CatchDivider &&
+            widget.variant == CatchDividerVariant.section,
       ),
     );
     final dividers = tester
@@ -79,12 +80,14 @@ void main() {
     expect(find.text('Choose one'), findsOneWidget);
     expect(sectionDividers, findsNWidgets(2));
     expect(
-      dividers.where((divider) => divider.role == CatchDividerRole.section),
+      dividers.where(
+        (divider) => divider.variant == CatchDividerVariant.section,
+      ),
       hasLength(2),
     );
     expect(
       dividers.where(
-        (divider) => divider.role == CatchDividerRole.fieldSection,
+        (divider) => divider.variant == CatchDividerVariant.fieldSection,
       ),
       hasLength(2),
     );
@@ -126,9 +129,9 @@ void main() {
                   CatchField.control(
                     copy: catchFieldCopy(AppLocalizationsEn()),
                     title: 'Catch bookings',
-                    open: true,
+                    disclosureMode: CatchFieldMode.controlledExpanded,
                     onOpenChanged: (_) {},
-                    control: const Text('Choice controls'),
+                    child: const Text('Choice controls'),
                   ),
                 ],
               ),
@@ -138,7 +141,7 @@ void main() {
       ),
     );
 
-    final surfaceRect = tester.getRect(find.byType(CatchSectionFocusSurface));
+    final surfaceRect = tester.getRect(find.byType(CatchSectionSurface));
     final activeOverlay = find.byKey(
       const ValueKey('catch-field-active-overlay'),
     );
@@ -149,7 +152,7 @@ void main() {
     expect(
       find.ancestor(
         of: activeOverlay,
-        matching: find.byKey(CatchSectionFocusSurface.rowGroupClipKey),
+        matching: find.byKey(CatchSectionSurface.rowGroupClipKey),
       ),
       findsOneWidget,
     );

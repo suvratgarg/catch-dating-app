@@ -34,8 +34,8 @@ class EventRehearsalGuestLinkSection extends StatelessWidget {
         icon: CatchIcons.qrCode2Rounded,
         contractExemption:
             'The callable returns this opaque practice-only guest URL.',
-        initiallyOpen: true,
-        control: Column(
+        disclosureMode: CatchFieldMode.localExpanded,
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ColoredBox(
@@ -62,21 +62,21 @@ class EventRehearsalGuestLinkSection extends StatelessWidget {
               children: [
                 CatchButton(
                   label: context.l10n.hostEventRehearsalCopyLink,
-                  icon: Icon(CatchIcons.contentCopyRounded),
+                  leading: Icon(CatchIcons.contentCopyRounded),
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading ? null : onCopy,
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalShareLink,
-                  icon: Icon(CatchIcons.share),
+                  leading: Icon(CatchIcons.share),
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.secondary,
                   onPressed: isLoading ? null : onShare,
                 ),
                 CatchButton(
                   label: context.l10n.hostEventRehearsalRotateLink,
-                  icon: Icon(CatchIcons.refresh),
+                  leading: Icon(CatchIcons.refresh),
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.ghost,
                   onPressed: isLoading ? null : onRotate,
@@ -123,8 +123,8 @@ class EventRehearsalRunSection extends StatelessWidget {
           icon: CatchIcons.timerOutlined,
           contractExemption:
               'Virtual rehearsal clock controls are callable-owned commands.',
-          initiallyOpen: true,
-          control: Wrap(
+          disclosureMode: CatchFieldMode.localExpanded,
+          child: Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
@@ -235,7 +235,7 @@ class _EventRehearsalControlButton extends StatelessWidget {
     label: label,
     size: CatchButtonSize.sm,
     variant: variant,
-    isLoading: isLoading,
+    status: (isLoading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
     onPressed: isLoading ? null : () => onControl(action, null),
   );
 }

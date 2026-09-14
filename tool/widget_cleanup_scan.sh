@@ -18,11 +18,11 @@ fi
 if [[ "${1:-}" == "--summary" && "${WIDGET_CLEANUP_SCAN_FORCE_FULL:-}" != "1" ]]; then
   summary_key_for() {
     case "$1" in
-      "Raw Material/Cupertino button candidates that should use CatchButton or CatchTextButton") echo "raw_material_button_candidates" ;;
+      "Raw Material/Cupertino button candidates that should use CatchButton") echo "raw_material_button_candidates" ;;
       "Raw text input candidates that should use CatchField.input or a field-specific primitive") echo "raw_text_input_candidates" ;;
       "Fixed-white pill CTA candidates that should use CatchButtonVariant.light") echo "fixed_white_pill_cta_candidates" ;;
-      "Raw range sliders that should use CatchRangeSlider") echo "raw_range_slider_candidates" ;;
-      "Raw +/- number steppers that should use CatchNumberStepper") echo "raw_number_stepper_candidates" ;;
+      "Raw range sliders that should use CatchRangeInput") echo "raw_range_slider_candidates" ;;
+      "Raw +/- number steppers that should use CatchStepper") echo "raw_number_stepper_candidates" ;;
       "Feature tappables that may need semantic keys/tooltips") echo "feature_tappable_candidates" ;;
       "Literal SizedBox spacing candidates that should use gap constants or CatchSpacing") echo "literal_sized_box_spacing_candidates" ;;
       "Raw app-facing TextStyle candidates") echo "raw_text_style_candidates" ;;
@@ -194,14 +194,13 @@ scan_white_pill_ctas() {
 
 scan_raw_material_buttons() {
   echo
-  echo "==> Raw Material/Cupertino button candidates that should use CatchButton or CatchTextButton"
+  echo "==> Raw Material/Cupertino button candidates that should use CatchButton"
   local output
   output="$(rg -n \
     "${common_globs[@]}" \
     '(^|[^A-Za-z])(ElevatedButton|OutlinedButton|FilledButton|TextButton|CupertinoButton|FloatingActionButton)\(' \
     lib/core lib/*/presentation \
-    --glob '!packages/catch_ui/lib/src/components/catch_button.dart' \
-    --glob '!packages/catch_ui/lib/src/components/catch_text_button.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_button.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then
@@ -226,7 +225,7 @@ scan_raw_text_inputs() {
     --glob '!packages/catch_ui/lib/src/components/catch_field.dart' \
     --glob '!lib/core/widgets/catch_field_*.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_search_field.dart' \
-    --glob '!packages/catch_ui/lib/src/components/catch_otp_code_field.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_code_input.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then
@@ -242,13 +241,13 @@ scan_raw_text_inputs() {
 
 scan_raw_range_sliders() {
   echo
-  echo "==> Raw range sliders that should use CatchRangeSlider"
+  echo "==> Raw range sliders that should use CatchRangeInput"
   local output
   output="$(rg -n \
     "${common_globs[@]}" \
     '(^|[^A-Za-z])RangeSlider\(|SliderTheme\(' \
     lib/core lib/*/presentation \
-    --glob '!packages/catch_ui/lib/src/components/catch_range_slider.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_range_input.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
   if [[ -z "$output" ]]; then
@@ -264,13 +263,13 @@ scan_raw_range_sliders() {
 
 scan_raw_number_steppers() {
   echo
-  echo "==> Raw +/- number steppers that should use CatchNumberStepper"
+  echo "==> Raw +/- number steppers that should use CatchStepper"
   local raw
   raw="$(rg -n \
     "${common_globs[@]}" \
     'Icons\.(add|remove)_rounded|Icons\.(add|remove)\b' \
     lib/core lib/*/presentation \
-    --glob '!packages/catch_ui/lib/src/components/catch_number_stepper.dart' || true)"
+    --glob '!packages/catch_ui/lib/src/components/catch_stepper.dart' || true)"
 
   local output=""
   while IFS=: read -r file line _; do
@@ -287,7 +286,7 @@ scan_raw_number_steppers() {
     if grep -Eq 'Icons\.(remove|remove_rounded)' <<<"$context" &&
       grep -Eq 'Icons\.(add|add_rounded)' <<<"$context" &&
       grep -Eq 'IconButton\(' <<<"$context" &&
-      ! grep -Eq 'CatchNumberStepper\(' <<<"$context"; then
+      ! grep -Eq 'CatchStepper\(' <<<"$context"; then
       output+="${file}:${line}:${line_text}"$'\n'
     fi
   done <<<"$raw"
@@ -333,7 +332,7 @@ scan_raw_text_styles() {
     "${common_globs[@]}" \
     '(^|[^A-Za-z])TextStyle\(' \
     lib/core/widgets lib/*/presentation \
-    --glob '!packages/catch_ui/lib/src/components/catch_otp_code_field.dart' \
+    --glob '!packages/catch_ui/lib/src/components/catch_code_input.dart' \
     --glob '!packages/catch_ui/lib/src/components/catch_top_bar.dart' || true)"
 
   output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"

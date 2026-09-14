@@ -23,7 +23,7 @@ const _screenCoveragePath = 'design/screens/screen_coverage.json';
 const _routeInventoryPath = 'tool/ui_capture/route_inventory.json';
 const _topBarRegistryPath = 'tool/design/screen_top_bar_contracts.json';
 const _canonicalScaffoldPath =
-    'packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart';
+    'packages/catch_ui/lib/src/patterns/catch_scaffold.dart';
 const _canonicalRootScaffoldPath =
     'packages/catch_ui/lib/src/patterns/catch_root_screen_scaffold.dart';
 const _canonicalRootScrollPath =
@@ -52,9 +52,9 @@ const _rootScrollExpressions = <String>{
 };
 
 const _screenScaffoldExpressions = <String>{
-  'CatchScreenScaffold.standalone',
-  'CatchScreenScaffold.stepFlow',
-  'CatchScreenScaffold.workspace',
+  'CatchScaffold.standalone',
+  'CatchScaffold.stepFlow',
+  'CatchScaffold.workspace',
 };
 
 const catchRootScreenPageScrollExpressions = <String>{
@@ -87,7 +87,7 @@ const catchScreenLayoutOwnerExpressions = <String>{
 
 const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
   _canonicalScaffoldPath: <String, Set<String>>{
-    'CatchScreenScaffold': _screenScaffoldExpressions,
+    'CatchScaffold': _screenScaffoldExpressions,
   },
   _canonicalRootScaffoldPath: <String, Set<String>>{
     'CatchRootScreenScaffold': _rootScaffoldExpressions,
@@ -110,30 +110,30 @@ const _canonicalLayoutConstructorsByPath = <String, Map<String, Set<String>>>{
 };
 
 const _rootPageScrollRoles = <String, String>{
-  'CatchRootScreenPageScrollView.standard': 'CatchScreenBodyLayout.standard',
-  'CatchRootScreenPageScrollView.fullBleed': 'CatchScreenBodyLayout.fullBleed',
+  'CatchRootScreenPageScrollView.standard': 'CatchPageBodyMode.standard',
+  'CatchRootScreenPageScrollView.fullBleed': 'CatchPageBodyMode.fullBleed',
   'CatchRootScreenPageScrollView.embeddedViewport':
-      'CatchScreenBodyLayout.fullBleed',
+      'CatchPageBodyMode.fullBleed',
 };
 
 const _rootScreenRoles = <String, String>{
-  'CatchRootScreenScaffold.standard': 'CatchScreenBodyLayout.standard',
-  'CatchRootScreenScaffold.fullBleed': 'CatchScreenBodyLayout.fullBleed',
-  'CatchRootScreenScrollView.standard': 'CatchScreenBodyLayout.standard',
-  'CatchRootScreenScrollView.fullBleed': 'CatchScreenBodyLayout.fullBleed',
+  'CatchRootScreenScaffold.standard': 'CatchPageBodyMode.standard',
+  'CatchRootScreenScaffold.fullBleed': 'CatchPageBodyMode.fullBleed',
+  'CatchRootScreenScrollView.standard': 'CatchPageBodyMode.standard',
+  'CatchRootScreenScrollView.fullBleed': 'CatchPageBodyMode.fullBleed',
 };
 
 const _familyExpressions = <String, Set<String>>{
   'root': <String>{..._rootScaffoldExpressions, ..._rootScrollExpressions},
   'pushed-route': <String>{'CatchRouteScaffold'},
-  'media-hero': <String>{'CatchScreenScaffold.workspace'},
-  'immersive': <String>{'CatchScreenScaffold.workspace'},
+  'media-hero': <String>{'CatchScaffold.workspace'},
+  'immersive': <String>{'CatchScaffold.workspace'},
   'adaptive-workspace': <String>{
-    'CatchScreenScaffold.workspace',
+    'CatchScaffold.workspace',
     ..._rootScrollExpressions,
   },
-  'standalone': <String>{'CatchScreenScaffold.standalone'},
-  'step-flow': <String>{'CatchScreenScaffold.stepFlow'},
+  'standalone': <String>{'CatchScaffold.standalone'},
+  'step-flow': <String>{'CatchScaffold.stepFlow'},
 };
 
 Future<void> main(List<String> arguments) async {
@@ -549,10 +549,10 @@ List<String> evaluateLayoutOwnerContract({
       !matchingInstantiations.every(
         (instantiation) =>
             instantiation.namedArguments['topEdge'] ==
-            'CatchRootScreenTopEdge.headerOwned',
+            'CatchRootScreenScrollViewPlacement.headerOwned',
       )) {
     failures.add(
-      '$screenLayoutFamilyCode $screenId: header-owned top edge must select CatchRootScreenTopEdge.headerOwned',
+      '$screenLayoutFamilyCode $screenId: header-owned top edge must select CatchRootScreenScrollViewPlacement.headerOwned',
     );
   }
   return failures;
@@ -664,21 +664,21 @@ List<String> _evaluateBodyGeometryContract({
         '$screenLayoutFamilyCode $screenId: standard root page content must not nest competing page geometry (${competingGeometry.join(', ')}); CatchRootScreenPageScrollView owns the 20-point horizontal gutter and 24-point top rhythm',
       );
     }
-    final hasStandard = roles.contains('CatchScreenBodyLayout.standard');
-    final hasFullBleed = roles.contains('CatchScreenBodyLayout.fullBleed');
+    final hasStandard = roles.contains('CatchPageBodyMode.standard');
+    final hasFullBleed = roles.contains('CatchPageBodyMode.fullBleed');
     final onlyStandard = roles.every(
-      (role) => role == 'CatchScreenBodyLayout.standard',
+      (role) => role == 'CatchPageBodyMode.standard',
     );
     final onlyFullBleed = roles.every(
-      (role) => role == 'CatchScreenBodyLayout.fullBleed',
+      (role) => role == 'CatchPageBodyMode.fullBleed',
     );
     if (bodyGeometry == 'standard' && !onlyStandard) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: standard root primary-rail bodies must select only CatchScreenBodyLayout.standard pages at the typed body terminal',
+        '$screenLayoutFamilyCode $screenId: standard root primary-rail bodies must select only CatchPageBodyMode.standard pages at the typed body terminal',
       );
     } else if (bodyGeometry == 'full-bleed' && !onlyFullBleed) {
       failures.add(
-        '$screenLayoutFamilyCode $screenId: full-bleed root primary-rail bodies must select only CatchScreenBodyLayout.fullBleed pages at the typed body terminal',
+        '$screenLayoutFamilyCode $screenId: full-bleed root primary-rail bodies must select only CatchPageBodyMode.fullBleed pages at the typed body terminal',
       );
     } else if (bodyGeometry == 'mixed' && (!hasStandard || !hasFullBleed)) {
       failures.add(
@@ -690,8 +690,8 @@ List<String> _evaluateBodyGeometryContract({
 
   if (_rootScreenRoles.containsKey(expression)) {
     final requiredRole = switch (bodyGeometry) {
-      'standard' => 'CatchScreenBodyLayout.standard',
-      'full-bleed' => 'CatchScreenBodyLayout.fullBleed',
+      'standard' => 'CatchPageBodyMode.standard',
+      'full-bleed' => 'CatchPageBodyMode.fullBleed',
       _ => null,
     };
     if (requiredRole != null && _rootScreenRoles[expression] != requiredRole) {
@@ -712,11 +712,11 @@ List<String> _evaluateBodyGeometryContract({
     return failures;
   }
 
-  if (expression == 'CatchScreenScaffold.standalone' &&
+  if (expression == 'CatchScaffold.standalone' &&
       bodyGeometry == 'standard' &&
-      !everyBody((body) => _hasConstructor(body, 'CatchScreenBody'))) {
+      !everyBody((body) => _hasConstructor(body, 'CatchPageBody.screen'))) {
     failures.add(
-      '$screenLayoutFamilyCode $screenId: standard standalone bodies must delegate canonical page geometry to CatchScreenBody on every build/return terminal',
+      '$screenLayoutFamilyCode $screenId: standard standalone bodies must delegate canonical page geometry to CatchPageBody.screen on every build/return terminal',
     );
   }
   return failures;
@@ -756,18 +756,18 @@ bool _isStandardRouteBody(String body) {
 
 const _competingPageGeometryOwners = <String>{
   'CatchPageBody',
-  'CatchScreenBody',
-  'CatchFormStepBody',
-  'CatchFormReviewBody',
-  'CatchSliverPageBody',
-  'CatchSliverScreenBody',
-  'CatchResponsiveSectionPage',
-  'CatchAsyncScreenLoading',
+  'CatchPageBody.screen',
+  'CatchPageBody.formStep',
+  'CatchPageBody.sliver',
+  'CatchPageBody.slivers',
+  'CatchFormReviewPageBody',
+  'CatchSectionList.page',
+  'CatchScreenSkeleton',
 };
 
 const _defaultPageGeometryOwnerPadding = <String, String>{
-  'CatchSectionStack': 'padding',
-  'CatchAsyncSliverLoading': 'padding',
+  'CatchSectionList.inset': 'padding',
+  'CatchSliverSkeleton': 'padding',
 };
 
 const _competingPageInsetNames = <String>{
@@ -966,7 +966,7 @@ List<String> evaluateRootPageOwnerContract({
       '$screenLayoutFamilyCode $symbol: every semantic root page owner terminal must select one consistent CatchRootScreenPageScrollView geometry constructor',
     );
   }
-  if (resolvedRole == 'CatchScreenBodyLayout.standard') {
+  if (resolvedRole == 'CatchPageBodyMode.standard') {
     final competingGeometry = terminalStandardBodyGeometryConflicts(
       declarationSource,
       semanticRootPageOwnerRole: resolvedRole,
@@ -1004,7 +1004,7 @@ const _widgetBuilderArgumentNames = <String>{
 const _widgetBuilderOwnerSignatures = <String>{
   'AnimatedBuilder',
   'Builder',
-  'CatchAsyncValueView',
+  'CatchAsyncBoundary',
   'FutureBuilder',
   'LayoutBuilder',
   'ListenableBuilder',
@@ -1414,8 +1414,8 @@ final class _StandardBodyGeometryTraversal {
       return;
     }
 
-    if (_rootScreenRoles[signature] == 'CatchScreenBodyLayout.standard') {
-      if (_namedArgumentExpression(arguments, 'slivers') case final slivers?) {
+    if (_rootScreenRoles[signature] == 'CatchPageBodyMode.standard') {
+      if (_namedArgumentExpression(arguments, 'children') case final slivers?) {
         walk(slivers, withinStandardContent: true);
       }
       return;
@@ -1431,9 +1431,8 @@ final class _StandardBodyGeometryTraversal {
           ? null
           : _rootConstructorSignature(page.toSource());
       if (pageArguments != null &&
-          _rootPageScrollRoles[pageSignature] ==
-              'CatchScreenBodyLayout.standard') {
-        if (_namedArgumentExpression(pageArguments, 'slivers')
+          _rootPageScrollRoles[pageSignature] == 'CatchPageBodyMode.standard') {
+        if (_namedArgumentExpression(pageArguments, 'children')
             case final slivers?) {
           walk(slivers, withinStandardContent: true);
         }
@@ -1442,8 +1441,8 @@ final class _StandardBodyGeometryTraversal {
     }
 
     if (_rootPageScrollRoles.containsKey(signature) &&
-        semanticRootPageOwnerRole == 'CatchScreenBodyLayout.standard') {
-      if (_namedArgumentExpression(arguments, 'slivers') case final slivers?) {
+        semanticRootPageOwnerRole == 'CatchPageBodyMode.standard') {
+      if (_namedArgumentExpression(arguments, 'children') case final slivers?) {
         walk(slivers, withinStandardContent: true);
       }
     }
@@ -2581,7 +2580,7 @@ List<String> resolvedScaffoldOwnershipFailures({
   final findings = visitor.findings;
   final failures = <String>[];
   if (relativePath == canonicalScaffoldPath) {
-    final canonicalOwner = _namedDeclaration(unit, 'CatchScreenScaffold');
+    final canonicalOwner = _namedDeclaration(unit, 'CatchScaffold');
     final allowed = canonicalOwner == null
         ? const <_ResolvedScaffoldFinding>[]
         : findings
@@ -2595,7 +2594,7 @@ List<String> resolvedScaffoldOwnershipFailures({
               .toList();
     if (canonicalOwner == null || allowed.length != 1) {
       failures.add(
-        '$screenScaffoldOwnershipCode $canonicalScaffoldPath: exactly one analyzer-resolved Flutter Scaffold construction must be owned by CatchScreenScaffold',
+        '$screenScaffoldOwnershipCode $canonicalScaffoldPath: exactly one analyzer-resolved Flutter Scaffold construction must be owned by CatchScaffold',
       );
     }
     for (final finding in findings.where(
@@ -2603,7 +2602,7 @@ List<String> resolvedScaffoldOwnershipFailures({
     )) {
       final line = unit.lineInfo.getLocation(finding.node.offset).lineNumber;
       failures.add(
-        '$screenScaffoldOwnershipCode $relativePath:$line: ${finding.description} is outside the canonical CatchScreenScaffold owner',
+        '$screenScaffoldOwnershipCode $relativePath:$line: ${finding.description} is outside the canonical CatchScaffold owner',
       );
     }
     return failures;

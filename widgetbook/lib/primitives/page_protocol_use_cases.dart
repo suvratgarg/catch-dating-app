@@ -20,8 +20,12 @@ Widget routeBodyRoleStates(BuildContext context) => WidgetbookCatalogFrame(
           builder: (context) => CatchRouteScaffold(
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title: fullBleed ? 'Edge-owned route' : 'Standard route',
-              leadingType: CatchTopBarLeading.none,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.none,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: fullBleed
                 ? CatchRouteBody.fullBleed(
@@ -59,15 +63,15 @@ Widget rootScrollOwnerStates(BuildContext context) => WidgetbookCatalogFrame(
     for (final fullBleed in [false, true])
       WidgetbookViewportFrame.device(
         size: const Size(360, 320),
-        child: CatchScreenScaffold.workspace(
+        child: CatchScaffold.workspace(
           body: fullBleed
               ? CatchRootScreenScrollView.fullBleed(
-                  header: const CatchScreenHeaderTitle.block(
+                  title: const CatchScreenHeader.block(
                     title: 'Full-bleed pane',
                     titleMaxLines: 2,
                     padding: CatchInsets.screenTitleBlock,
                   ),
-                  slivers: [
+                  children: [
                     SliverToBoxAdapter(
                       child: ColoredBox(
                         color: CatchTokens.of(context).primarySoft,
@@ -80,11 +84,11 @@ Widget rootScrollOwnerStates(BuildContext context) => WidgetbookCatalogFrame(
                   ],
                 )
               : CatchRootScreenScrollView.standard(
-                  header: const CatchScreenHeaderTitle.block(
+                  title: const CatchScreenHeader.block(
                     title: 'Standard pane',
                     padding: CatchInsets.screenTitleBlock,
                   ),
-                  slivers: [
+                  children: [
                     SliverToBoxAdapter(
                       child: Text(
                         'The scroll owner supplies the readable gutter and terminal clearance.',
@@ -147,7 +151,7 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
         CatchRootScreenPageScrollView.standard(
           scrollKey: const PageStorageKey<String>('protocol-records'),
           scrollStateController: _scroll,
-          slivers: [
+          children: [
             SliverList.builder(
               itemCount: 12,
               itemBuilder: (context, index) => Padding(
@@ -160,7 +164,7 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
             ),
           ],
         );
-    final CatchPrimaryRail rail = CatchTabControllerRail<String>(
+    final CatchPrimaryRail rail = CatchPageTabBar<String>.controlled(
       controller: _tabs,
       options: const [
         CatchOption(value: 'records', label: 'Records'),
@@ -170,12 +174,12 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
     final header = CatchRootScreenHeader.title(
       title: 'Root page',
       actions: [
-        CatchTopBarTextAction(
+        CatchButton.text(
           label: 'Save',
           onPressed: () =>
               setState(() => _savedOffset = _scroll.captureOffset()),
         ),
-        CatchTopBarTextAction(
+        CatchButton.text(
           label: 'Restore',
           onPressed: _savedOffset == null
               ? null
@@ -194,7 +198,7 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
           expanded: false,
           master: CatchRootScreenPageScrollView.fullBleed(
             scrollKey: const PageStorageKey<String>('protocol-detail'),
-            slivers: [
+            children: [
               SliverToBoxAdapter(
                 child: Text(
                   'Full-bleed page',
@@ -208,16 +212,16 @@ class _RootPageProtocolPreviewState extends State<_RootPageProtocolPreview>
       ],
     );
     return widget.embedded
-        ? CatchScreenScaffold.workspace(
+        ? CatchScaffold.workspace(
             body: CatchRootScreenScrollView.withPrimaryRail(
               header: header,
-              primaryRail: rail,
+              actions: rail,
               body: body,
             ),
           )
         : CatchRootScreenScaffold.withPrimaryRail(
             header: header,
-            primaryRail: rail,
+            actions: rail,
             body: body,
           );
   }

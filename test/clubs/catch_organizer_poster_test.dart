@@ -18,7 +18,7 @@ void main() {
     );
 
     final title = tester.widget<Text>(find.text('Neighbourhood Club'));
-    expect(title.style?.fontSize, CatchDisplayStep.m.size);
+    expect(title.style?.fontSize, CatchTextStylesSize.m.size);
     expect(title.style?.fontStyle, isNot(FontStyle.italic));
     expect(find.byIcon(CatchIcons.forwardArrow), findsOneWidget);
 

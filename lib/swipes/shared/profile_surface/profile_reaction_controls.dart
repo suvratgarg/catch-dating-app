@@ -144,24 +144,24 @@ class _ProfileReactionCommentSheetState
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.swipesProfileReactionControlsTitleStartWithLabel(
         label: widget.target.label,
       ),
       subtitle:
           context.l10n.swipesProfileReactionControlsSubtitleSendACommentWith,
       keyboardSafe: true,
-      action: Row(
+      footer: Row(
         children: [
-          CatchTextButton(
+          CatchButton.text(
             label: context.l10n.swipesProfileReactionControlsLabelCancel,
-            tone: CatchTextButtonTone.neutral,
+            tone: CatchButtonTone.neutral,
             onPressed: () => Navigator.of(context).pop(),
           ),
           const Spacer(),
           CatchButton(
             label: context.l10n.swipesProfileReactionControlsLabelSendLike,
-            icon: Icon(CatchIcons.favoriteBorderRounded, size: CatchIcon.md),
+            leading: Icon(CatchIcons.favoriteBorderRounded, size: CatchIcon.md),
             onPressed: _canSend ? _submit : null,
             size: CatchButtonSize.sm,
           ),
@@ -189,7 +189,7 @@ class _ProfileReactionCommentSheetState
             title: context.l10n.swipesProfileReactionControlsTitleComment,
             contract: CatchContractConstraints
                 .createProfileDecisionClientWriteDataComment,
-            showLabel: false,
+            labelMode: CatchFieldLabelTextMode.hidden,
             controller: _controller,
             placeholder: context
                 .l10n
@@ -256,9 +256,9 @@ class ReactionControlButton extends StatelessWidget {
         child: AnimatedOpacity(
           opacity: isEnabled || isPending ? 1 : CatchOpacity.disabledControl,
           duration: const Duration(milliseconds: 120),
-          child: CatchIconButton(
-            onTap: isEnabled ? onPressed : null,
-            background: background,
+          child: CatchIconAction(
+            onPressed: isEnabled ? onPressed : null,
+            backgroundColor: background,
             borderColor: border,
             child: isPending
                 ? SizedBox.square(

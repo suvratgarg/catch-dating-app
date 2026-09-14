@@ -8,9 +8,9 @@ class PaymentConfirmationLoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchScreenScaffold.standalone(
+    return CatchScaffold.standalone(
       backgroundColor: t.bg,
-      body: CatchScreenBody(
+      body: CatchPageBody.screen(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

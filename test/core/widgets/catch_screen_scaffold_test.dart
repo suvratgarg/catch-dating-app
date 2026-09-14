@@ -14,7 +14,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      _rootScreen(bodyLayout: CatchScreenBodyLayout.standard),
+      _rootScreen(bodyLayout: CatchPageBodyMode.standard),
     );
 
     final header = tester.getRect(find.byKey(const ValueKey('root-header')));
@@ -22,7 +22,7 @@ void main() {
     expect(body.top - header.bottom, CatchInsets.pageBody.top);
     expect(body.left, CatchInsets.pageBody.left);
     expect(body.width, 400 - CatchInsets.pageBody.horizontal);
-    expect(find.byType(CatchSliverTerminalPadding), findsOneWidget);
+    expect(find.byType(CatchScrollTerminalGap), findsOneWidget);
   });
 
   testWidgets('root full-bleed body delegates no local page inset', (
@@ -34,7 +34,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      _rootScreen(bodyLayout: CatchScreenBodyLayout.fullBleed),
+      _rootScreen(bodyLayout: CatchPageBodyMode.fullBleed),
     );
 
     final header = tester.getRect(find.byKey(const ValueKey('root-header')));
@@ -53,7 +53,7 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
 
     await tester.pumpWidget(
-      _rootScreen(bodyLayout: CatchScreenBodyLayout.standard),
+      _rootScreen(bodyLayout: CatchPageBodyMode.standard),
     );
 
     final body = tester.getRect(find.byKey(const ValueKey('root-body')));
@@ -64,8 +64,8 @@ void main() {
   testWidgets('root top edge has one explicit safe-area owner', (tester) async {
     await tester.pumpWidget(
       _rootScreen(
-        bodyLayout: CatchScreenBodyLayout.standard,
-        topEdge: CatchRootScreenTopEdge.headerOwned,
+        bodyLayout: CatchPageBodyMode.standard,
+        topEdge: CatchRootScreenScrollViewPlacement.headerOwned,
       ),
     );
 
@@ -85,8 +85,8 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const CatchScreenScaffold.stepFlow(
-          safeArea: CatchScreenSafeArea.top,
+        home: const CatchScaffold.stepFlow(
+          safeArea: CatchScaffoldPlacement.top,
           body: SizedBox(key: ValueKey('step-body')),
         ),
       ),
@@ -99,7 +99,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.light,
-        home: const CatchScreenScaffold.workspace(
+        home: const CatchScaffold.workspace(
           body: SizedBox(key: ValueKey('workspace-body')),
         ),
       ),
@@ -163,8 +163,10 @@ void main() {
 
     expect(find.byType(SingleChildScrollView), findsNothing);
     expect(
-      tester.widget<CatchScreenBody>(find.byType(CatchScreenBody)).scrollable,
-      isFalse,
+      tester
+          .getTopLeft(find.byKey(const ValueKey('route-viewport-content')))
+          .dx,
+      CatchInsets.pageBody.left,
     );
   });
 
@@ -236,10 +238,7 @@ void main() {
     (tester) async {
       await tester.pumpWidget(_standardRouteWithBottomGeometry(safeBottom: 34));
 
-      expect(
-        tester.widget<CatchScreenBody>(find.byType(CatchScreenBody)).pb,
-        34 + CatchSpacing.screenPb,
-      );
+      await _expectBottomClearance(tester, 34 + CatchSpacing.screenPb);
     },
   );
 
@@ -254,10 +253,7 @@ void main() {
         ),
       );
 
-      expect(
-        tester.widget<CatchScreenBody>(find.byType(CatchScreenBody)).pb,
-        100 + CatchSpacing.screenPb,
-      );
+      await _expectBottomClearance(tester, 100 + CatchSpacing.screenPb);
     },
   );
 
@@ -272,10 +268,7 @@ void main() {
         ),
       );
 
-      expect(
-        tester.widget<CatchScreenBody>(find.byType(CatchScreenBody)).pb,
-        CatchSpacing.screenPb,
-      );
+      await _expectBottomClearance(tester, CatchSpacing.screenPb);
     },
   );
 
@@ -316,6 +309,20 @@ void main() {
   });
 }
 
+Future<void> _expectBottomClearance(
+  WidgetTester tester,
+  double expected,
+) async {
+  final scroll = tester.state<ScrollableState>(find.byType(Scrollable));
+  scroll.position.jumpTo(scroll.position.maxScrollExtent);
+  await tester.pump();
+  final viewport = tester.getRect(find.byType(SingleChildScrollView));
+  final content = tester.getRect(
+    find.byKey(const ValueKey('bottom-clearance-content')),
+  );
+  expect(viewport.bottom - content.bottom, expected);
+}
+
 Widget _standardRouteWithBottomGeometry({
   required double safeBottom,
   CatchTabViewportScopePlacement? bottomBarPlacement,
@@ -324,7 +331,9 @@ Widget _standardRouteWithBottomGeometry({
   Widget route = CatchRouteScaffold(
     topBarBuilder: (_, _) =>
         const PreferredSize(preferredSize: Size.zero, child: SizedBox.shrink()),
-    body: const CatchRouteBody.standard(child: SizedBox(height: 40)),
+    body: const CatchRouteBody.standard(
+      child: SizedBox(key: ValueKey('bottom-clearance-content'), height: 1200),
+    ),
   );
   if (bottomBarPlacement != null) {
     route = CatchTabViewportScope(
@@ -348,8 +357,9 @@ Widget _standardRouteWithBottomGeometry({
 }
 
 Widget _rootScreen({
-  required CatchScreenBodyLayout bodyLayout,
-  CatchRootScreenTopEdge topEdge = CatchRootScreenTopEdge.safeArea,
+  required CatchPageBodyMode bodyLayout,
+  CatchRootScreenScrollViewPlacement topEdge =
+      CatchRootScreenScrollViewPlacement.safeArea,
 }) {
   const header = SizedBox(
     key: ValueKey('root-header'),
@@ -366,15 +376,15 @@ Widget _rootScreen({
     ),
   ];
   final root = switch (bodyLayout) {
-    CatchScreenBodyLayout.standard => CatchRootScreenScaffold.standard(
-      header: header,
+    CatchPageBodyMode.standard => CatchRootScreenScaffold.standard(
+      title: header,
       topEdge: topEdge,
-      slivers: slivers,
+      children: slivers,
     ),
-    CatchScreenBodyLayout.fullBleed => CatchRootScreenScaffold.fullBleed(
-      header: header,
+    CatchPageBodyMode.fullBleed => CatchRootScreenScaffold.fullBleed(
+      title: header,
       topEdge: topEdge,
-      slivers: slivers,
+      children: slivers,
     ),
   };
   return MaterialApp(
