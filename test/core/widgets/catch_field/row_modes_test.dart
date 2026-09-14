@@ -319,8 +319,9 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           body: '168 cm',
-          child: const Text('Height control'),
+
           onOpenChanged: openChanges.add,
+          child: const Text('Height control'),
         ),
       ),
     );

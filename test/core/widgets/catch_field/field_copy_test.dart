@@ -101,7 +101,7 @@ void main() {
                   copy: _copy('Custom'),
                   title: 'Choice',
                   body: 'One',
-                  child: const Text('Choices'),
+
                   open: true,
                   onCancel: () {},
                   onSubmit: () {},
@@ -109,6 +109,7 @@ void main() {
                   status: saving
                       ? CatchFieldStatus.saving
                       : CatchFieldStatus.idle,
+                  child: const Text('Choices'),
                 ),
                 CatchField.read(
                   key: const ValueKey('status'),

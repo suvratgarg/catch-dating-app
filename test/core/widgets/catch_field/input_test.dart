@@ -199,11 +199,12 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Languages',
           body: 'English',
-          child: const Text('Language control'),
+
           initiallyOpen: true,
           error: 'Choose at least one language.',
           onCancel: () {},
           onSubmit: () {},
+          child: const Text('Language control'),
         ),
       ),
     );

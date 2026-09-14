@@ -66,9 +66,10 @@ void main() {
           open: open,
           isLoading: isLoading,
           status: status,
-          child: const Text('Height control'),
+
           onCancel: _noop,
           onSubmit: _noop,
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -261,9 +262,10 @@ void main() {
           title: 'Height',
           initiallyOpen: true,
           isLoading: true,
-          child: const Text('Height control'),
+
           onCancel: () {},
           onSubmit: () => submitCount++,
+          child: const Text('Height control'),
         ),
       ),
     );

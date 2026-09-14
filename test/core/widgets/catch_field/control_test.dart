@@ -374,9 +374,10 @@ void main() {
           title: 'Height',
           body: '168 cm',
           initiallyOpen: true,
-          child: const Text('Height control'),
+
           onCancel: _noop,
           onSubmit: _noop,
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -449,9 +450,10 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           initiallyOpen: true,
-          child: const Text('Height control'),
+
           onCancel: () => cancelCount++,
           onSubmit: () {},
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -475,9 +477,10 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           initiallyOpen: true,
-          child: const Text('Height control'),
+
           onCancel: () {},
           onSubmit: () => submitCount++,
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -503,9 +506,10 @@ void main() {
           title: 'Height',
           open: true,
           onOpenChanged: openChanges.add,
-          child: const Text('Height control'),
+
           onCancel: () {},
           onSubmit: () => submitCount++,
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -528,10 +532,11 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          child: const Text('Height control'),
+
           onOpenChanged: openChanges.add,
           onCancel: () {},
           onSubmit: () {},
+          child: const Text('Height control'),
         ),
       ),
     );

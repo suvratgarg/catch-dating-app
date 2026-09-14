@@ -581,18 +581,7 @@ class CatchField<T> extends StatefulWidget
       title: title,
       contract: contract,
       body: body ?? (selectedSummary.isEmpty ? null : selectedSummary),
-      child: CatchChoiceInput<T>(
-        values: supportedValues,
-        selected: supportedSelection,
-        allowEmptySelection: allowEmptySelection,
-        autoClose: mode == CatchChipMode.single && onSubmit == null,
-        mode: mode,
-        itemLabelBuilder: itemLabelBuilder,
-        itemAccentBuilder: itemAccentBuilder,
-        onChanged: !states.contains(WidgetState.disabled) && !isLoading
-            ? onSelectionChanged
-            : null,
-      ),
+
       open: open,
       initiallyOpen: initiallyOpen,
       onOpenChanged: onOpenChanged,
@@ -610,6 +599,18 @@ class CatchField<T> extends StatefulWidget
       emptyValueText: emptyValueText,
       error: error,
       errorText: errorText,
+      child: CatchChoiceInput<T>(
+        values: supportedValues,
+        selected: supportedSelection,
+        allowEmptySelection: allowEmptySelection,
+        autoClose: mode == CatchChipMode.single && onSubmit == null,
+        mode: mode,
+        itemLabelBuilder: itemLabelBuilder,
+        itemAccentBuilder: itemAccentBuilder,
+        onChanged: !states.contains(WidgetState.disabled) && !isLoading
+            ? onSelectionChanged
+            : null,
+      ),
     );
   }
 
@@ -665,19 +666,7 @@ class CatchField<T> extends StatefulWidget
       title: title,
       contract: contract,
       body: body ?? itemTitleBuilder(selected),
-      child: CatchChoiceInput<T>.described(
-        values: supportedValues,
-        selected: {selected},
-        autoClose: onSubmit == null,
-        onChanged:
-            !states.contains(WidgetState.disabled) &&
-                !isLoading &&
-                onChanged != null
-            ? (selection) => onChanged(selection.single)
-            : null,
-        itemLabelBuilder: itemTitleBuilder,
-        itemSubtitleBuilder: itemDescriptionBuilder,
-      ),
+
       open: open,
       initiallyOpen: initiallyOpen,
       onOpenChanged: onOpenChanged,
@@ -692,6 +681,19 @@ class CatchField<T> extends StatefulWidget
       tone: tone,
       error: error,
       errorText: errorText,
+      child: CatchChoiceInput<T>.described(
+        values: supportedValues,
+        selected: {selected},
+        autoClose: onSubmit == null,
+        onChanged:
+            !states.contains(WidgetState.disabled) &&
+                !isLoading &&
+                onChanged != null
+            ? (selection) => onChanged(selection.single)
+            : null,
+        itemLabelBuilder: itemTitleBuilder,
+        itemSubtitleBuilder: itemDescriptionBuilder,
+      ),
     );
   }
 
@@ -751,18 +753,7 @@ class CatchField<T> extends StatefulWidget
       title: title,
       contract: contract,
       body: body,
-      child: CatchStepper(
-        value: value,
-        min: effectiveMin,
-        max: effectiveMax,
-        step: effectiveStep,
-        unit: unit,
-        valueLabelBuilder: valueLabelBuilder,
-        decreaseSemanticLabel: decreaseSemanticLabel,
-        increaseSemanticLabel: increaseSemanticLabel,
-        enabled: !isLoading,
-        onChanged: onChanged,
-      ),
+
       open: open,
       initiallyOpen: initiallyOpen,
       onOpenChanged: onOpenChanged,
@@ -779,6 +770,18 @@ class CatchField<T> extends StatefulWidget
       emptyValueText: emptyValueText,
       error: error,
       errorText: errorText,
+      child: CatchStepper(
+        value: value,
+        min: effectiveMin,
+        max: effectiveMax,
+        step: effectiveStep,
+        unit: unit,
+        valueLabelBuilder: valueLabelBuilder,
+        decreaseSemanticLabel: decreaseSemanticLabel,
+        increaseSemanticLabel: increaseSemanticLabel,
+        enabled: !isLoading,
+        onChanged: onChanged,
+      ),
     );
   }
 

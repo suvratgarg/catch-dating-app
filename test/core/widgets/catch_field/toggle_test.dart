@@ -154,9 +154,10 @@ void main() {
           title: 'Height',
           initiallyOpen: true,
           onOpenChanged: openChanges.add,
-          child: const SizedBox(height: 80, child: Text('Height control')),
+
           onCancel: () {},
           onSubmit: () {},
+          child: const SizedBox(height: 80, child: Text('Height control')),
         ),
       ),
     );

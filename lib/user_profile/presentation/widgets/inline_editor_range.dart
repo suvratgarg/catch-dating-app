@@ -156,6 +156,9 @@ class _ProfileInlineRangeEditorState
         isLoading: isSaving,
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
+
+        onCancel: _cancel,
+        onSubmit: _submit,
         child: CatchRangeInput(
           minimumContract: widget.minimumContract,
           maximumContract: widget.maximumContract,
@@ -173,8 +176,6 @@ class _ProfileInlineRangeEditorState
                   });
                 },
         ),
-        onCancel: _cancel,
-        onSubmit: _submit,
       ),
     );
   }

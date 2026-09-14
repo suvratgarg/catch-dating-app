@@ -106,6 +106,9 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
       onOpenChanged: (_) => widget.scope.toggle(),
       isLoading: _saveState.saving,
       error: error == null ? null : widget.errorTextBuilder(context, error),
+
+      onCancel: _cancel,
+      onSubmit: _submit,
       child: CatchRangeInput(
         minimumContract: descriptor.contract,
         maximumContract: descriptor.contract,
@@ -120,8 +123,6 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
                 _saveState.reset();
               }),
       ),
-      onCancel: _cancel,
-      onSubmit: _submit,
     );
   }
 }

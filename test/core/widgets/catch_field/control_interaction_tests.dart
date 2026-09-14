@@ -17,12 +17,13 @@ void _registerControlInteractionTests() {
                 title: 'Height',
                 open: open,
                 onOpenChanged: (value) => setState(() => open = value),
-                child: const Text('Height control'),
+
                 onCancel: () {
                   cancelCount++;
                   setState(() => open = false);
                 },
                 onSubmit: () {},
+                child: const Text('Height control'),
               ),
               const SizedBox(height: 80),
               const Text('Outside target'),
@@ -63,12 +64,13 @@ void _registerControlInteractionTests() {
                 title: 'Height',
                 open: open,
                 onOpenChanged: (value) => setState(() => open = value),
-                child: const Text('Height control'),
+
                 onCancel: () {
                   cancelCount++;
                   setState(() => open = false);
                 },
                 onSubmit: () {},
+                child: const Text('Height control'),
               ),
               const SizedBox(height: 120),
               const Text('Outside drag target'),
@@ -165,9 +167,10 @@ void _registerControlInteractionTests() {
                       body: 'Jain',
                       open: open,
                       onOpenChanged: setOpen,
-                      child: const SizedBox(height: 180),
+
                       onCancel: () => setOpen(false),
                       onSubmit: _noop,
+                      child: const SizedBox(height: 180),
                     ),
                     const SizedBox(height: 160),
                   ],
@@ -221,9 +224,10 @@ void _registerControlInteractionTests() {
                     body: 'Jain',
                     open: open,
                     onOpenChanged: (value) => setState(() => open = value),
-                    child: const SizedBox(height: 180),
+
                     onCancel: _noop,
                     onSubmit: _noop,
+                    child: const SizedBox(height: 180),
                   ),
                   const SizedBox(height: 160),
                 ],
@@ -285,9 +289,10 @@ void _registerControlInteractionTests() {
                       body: 'Jain',
                       open: open,
                       onOpenChanged: (value) => setState(() => open = value),
-                      child: const SizedBox(height: 180),
+
                       onCancel: _noop,
                       onSubmit: _noop,
+                      child: const SizedBox(height: 180),
                     ),
                     const SizedBox(height: 160),
                   ],
