@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 3.87.0
+version: 3.88.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -217,7 +217,7 @@ Widgetbook callers.
 | `CatchBarIndicator` | `packages/catch_ui/lib/src/components/catch_bar_indicator.dart:8` | Bottom-anchored fractional fill bar for dense host and user analytics mini charts. Normalizes `value / maxValue`, keeps zero values visible with a faint stub, and owns the shared `CatchSurface` fill treatment so analytics trend panels do not duplicate chart bars. |
 | `CatchDataQualityMetricTile` | `packages/catch_ui/lib/src/components/catch_data_quality_metric_tile.dart:11` | Shared display-data analytics summary card. Renders caller-supplied icon, value, label, optional caption, and ready/partial/missing badge state without owning feature metric IDs, value formatting, or copy tables. |
 | `CatchBarSeriesIndicator` | `packages/catch_ui/lib/src/components/catch_bar_series_indicator.dart:5` | Compact mini bar-chart primitive for trend summaries inside dense metric panels. Owns the surface, border, content padding, bar spacing, zero-value treatment, tokenized fill/empty colors, and semantic label wrapper so insights and dashboard panels do not hand-roll tiny chart chrome. Registered as formal component contract `catch.mini_bar_chart`; Widgetbook contract states cover default, empty, zero-value, color-override, and semantic-label states. |
-| `CatchTextInput` | `packages/catch_ui/lib/src/primitives/catch_text_input.dart:9` | Shared low-level platform text-entry seam. `CatchFieldTextEntry`, `CatchSearchField` and `CatchOtpCodeField` use it so raw `TextField` construction stays centralized in one package primitive; feature forms should continue to use the named `CatchField` constructors. |
+| `CatchTextInput` | `packages/catch_ui/lib/src/primitives/catch_text_input.dart:9` | Shared low-level platform text-entry seam. `CatchFieldTextEntry`, `CatchSearchField` and `CatchCodeInput` use it so raw `TextField` construction stays centralized in one package primitive; feature forms should continue to use the named `CatchField` constructors. Mode owns editing/focus/selection and Status inherits or overrides native enablement. |
 | `CatchCodeInput` | `packages/catch_ui/lib/src/components/catch_code_input.dart:10` | Handoff `CodeInput`: static controlled verification-code row with 6-cell default, mono digits, 64px surface cells, 10px gaps, interactive-tile radius, ink active rule, and optional caret. |
 | `CatchCodeInputRow` | `packages/catch_ui/lib/src/components/catch_code_input_row.dart:7` | Direct verification-code row renderer used by `CatchCodeInput` and `CatchOtpCodeField`. Owns value truncation, active-cell selection, fixed gaps, and stable digit keys without private widget-returning helpers. |
 | `CatchCodeInputCell` | `packages/catch_ui/lib/src/primitives/catch_code_input_cell.dart:7` | Direct verification-code cell renderer. Keeps tokenized surface, interactive-tile radius, active ink border, digit text style, and optional caret reviewable as a standalone primitive. |

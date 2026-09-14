@@ -2,7 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// Native editing and focus ownership for a text control.
-enum CatchTextInputMode { editable, readOnly, inactive }
+enum CatchTextInputMode {
+  editable,
+  readOnly,
+  inactive,
+  editableWithoutSelection,
+  readOnlyWithoutSelection,
+  inactiveWithoutSelection;
+
+  bool get readOnlyText => switch (this) {
+    editable || editableWithoutSelection => false,
+    _ => true,
+  };
+
+  bool get canRequestFocus => switch (this) {
+    inactive || inactiveWithoutSelection => false,
+    _ => true,
+  };
+
+  bool get allowsSelection => switch (this) {
+    editableWithoutSelection ||
+    readOnlyWithoutSelection ||
+    inactiveWithoutSelection => false,
+    _ => true,
+  };
+}
+
+/// Whether the native field inherits its decoration's enabled state or overrides it.
+enum CatchTextInputStatus { inherited, enabled, disabled }
 
 /// Whether the platform text control conceals entered characters.
 enum CatchTextInputVariant { plain, obscured }
@@ -22,7 +49,7 @@ class CatchTextInput extends StatelessWidget {
     this.variant = CatchTextInputVariant.plain,
     this.focusNode,
     this.autofocus = false,
-    this.enabled,
+    this.status = CatchTextInputStatus.inherited,
     this.keyboardType,
     this.textInputAction,
     this.textCapitalization = TextCapitalization.none,
@@ -36,7 +63,6 @@ class CatchTextInput extends StatelessWidget {
     this.decoration = const InputDecoration(),
     this.style,
     this.cursorColor,
-    this.enableInteractiveSelection = true,
     this.showCursor,
     this.onSubmitted,
     this.onChanged,
@@ -52,7 +78,7 @@ class CatchTextInput extends StatelessWidget {
   final CatchTextInputVariant variant;
   final FocusNode? focusNode;
   final bool autofocus;
-  final bool? enabled;
+  final CatchTextInputStatus status;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final TextCapitalization textCapitalization;
@@ -66,7 +92,6 @@ class CatchTextInput extends StatelessWidget {
   final InputDecoration decoration;
   final TextStyle? style;
   final Color? cursorColor;
-  final bool enableInteractiveSelection;
   final bool? showCursor;
   final ValueChanged<String>? onSubmitted;
   final ValueChanged<String>? onChanged;
@@ -79,13 +104,17 @@ class CatchTextInput extends StatelessWidget {
     return TextField(
       key: inputKey,
       groupId: groupId,
-      readOnly: mode != CatchTextInputMode.editable,
-      canRequestFocus: mode != CatchTextInputMode.inactive,
+      readOnly: mode.readOnlyText,
+      canRequestFocus: mode.canRequestFocus,
       obscureText: variant == CatchTextInputVariant.obscured,
       controller: controller,
       focusNode: focusNode,
       autofocus: autofocus,
-      enabled: enabled,
+      enabled: switch (status) {
+        CatchTextInputStatus.inherited => null,
+        CatchTextInputStatus.enabled => true,
+        CatchTextInputStatus.disabled => false,
+      },
       keyboardType: keyboardType,
       textInputAction: textInputAction,
       textCapitalization: textCapitalization,
@@ -99,7 +128,7 @@ class CatchTextInput extends StatelessWidget {
       decoration: decoration,
       style: style,
       cursorColor: cursorColor,
-      enableInteractiveSelection: enableInteractiveSelection,
+      enableInteractiveSelection: mode.allowsSelection,
       showCursor: showCursor,
       onSubmitted: onSubmitted,
       onChanged: onChanged,

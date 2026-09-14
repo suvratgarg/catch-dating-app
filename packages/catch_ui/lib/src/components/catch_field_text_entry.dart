@@ -175,13 +175,14 @@ class CatchFieldTextEntry extends StatelessWidget {
           groupId: tapRegionGroupId,
           controller: controller,
           focusNode: focusNode,
-          enabled: field.enabled,
+          status: field.enabled
+              ? CatchTextInputStatus.enabled
+              : CatchTextInputStatus.disabled,
           mode: !canInteract
-              ? CatchTextInputMode.inactive
+              ? CatchTextInputMode.inactiveWithoutSelection
               : readOnly
               ? CatchTextInputMode.readOnly
               : CatchTextInputMode.editable,
-          enableInteractiveSelection: canInteract,
           autofocus: field.autofocus,
           keyboardType: field.keyboardType,
           textInputAction: field.textInputAction ?? TextInputAction.done,

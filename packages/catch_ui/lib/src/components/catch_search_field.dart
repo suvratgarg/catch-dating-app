@@ -207,7 +207,9 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
       controller: _controller,
       focusNode: _focusNode,
       autofocus: widget.autofocus,
-      enabled: widget.enabled,
+      status: widget.enabled
+          ? CatchTextInputStatus.enabled
+          : CatchTextInputStatus.disabled,
       textInputAction: widget.textInputAction,
       inputFormatters: CatchContractFieldPolicy.effectiveInputFormatters(
         widget.contract,

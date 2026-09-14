@@ -3061,7 +3061,7 @@
             "id": "catch.field.text_input",
             "symbol": "CatchTextInput",
             "file": "packages/catch_ui/lib/src/primitives/catch_text_input.dart",
-            "summary": "Shared low-level platform text-entry owner used by specialized field compositions.",
+            "summary": "Shared native text-entry owner. Mode owns editing, focus and selection policy; Status explicitly inherits or overrides decoration enablement. Search, code and form inputs mount the same primitive.",
             "states": [
               "empty",
               "populated",
@@ -3070,7 +3070,11 @@
               "read-only",
               "inactive",
               "obscured",
-              "multiline"
+              "multiline",
+              "editable-without-selection",
+              "read-only-without-selection",
+              "inactive-without-selection",
+              "inherited-enable-state"
             ],
             "governance": {
               "conceptRole": "member",

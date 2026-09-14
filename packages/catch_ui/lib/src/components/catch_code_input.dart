@@ -101,7 +101,7 @@ class CatchCodeInput extends StatelessWidget {
                   contentPadding: EdgeInsets.zero,
                 ),
                 style: CatchTextStyles.transparentInput(),
-                enableInteractiveSelection: false,
+                mode: CatchTextInputMode.editableWithoutSelection,
                 showCursor: false,
                 onSubmitted: onSubmitted,
                 onChanged: onChanged,
