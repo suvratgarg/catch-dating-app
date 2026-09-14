@@ -5,6 +5,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
 
@@ -14,17 +15,17 @@ import 'shell_fixture.dart';
   path: '[P1 product surfaces]/Host operations/Sections',
 )
 Widget hostPaymentAccountSectionStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostPaymentAccountCard',
     contractId: 'section.host.clubs_payouts',
     children: const [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'loading / error / setup / ready / light',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(child: _HostPaymentSectionStates()),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'loading / error / setup / ready / dark',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(

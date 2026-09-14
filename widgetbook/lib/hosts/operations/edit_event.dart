@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import '../../support/widgetbook_harness.dart';
 import 'fixtures.dart';
 import 'preview.dart';
@@ -62,11 +63,11 @@ final _selectedLocationEvent = widgetbookEditableEvent.copyWith(
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostEditEventRouteAndFormStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'EditHostedEventRouteScreen',
     contractId: 'screen.host.event.edit',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route loading',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -79,7 +80,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route error',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -94,7 +95,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route offline',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -109,7 +110,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'event not found',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -121,7 +122,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'unauthorized host',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -133,7 +134,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'editable prefilled form',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -146,7 +147,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'schedule locked form',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -159,7 +160,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'cancelled disabled form',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -172,7 +173,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'private access loading',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -186,7 +187,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'validation errors',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -200,7 +201,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'selected location',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -213,7 +214,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -229,7 +230,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'reduced motion',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -245,7 +246,7 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'dark theme',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -269,11 +270,11 @@ Widget hostEditEventRouteAndFormStates(BuildContext context) {
   path: '[P1 product surfaces]/Host edit event',
 )
 Widget editHostedEventScreenCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'EditHostedEventScreen',
     contractId: 'screen.host.event.edit.form',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'editable',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -286,7 +287,7 @@ Widget editHostedEventScreenCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'policy locked',
         child: WidgetbookHostDeviceFrame(
           child: _HostEditEventScope(
@@ -309,11 +310,11 @@ Widget editHostedEventScreenCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host edit event',
 )
 Widget editHostedEventScopeNoticeCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'EditHostedEventScopeNotice',
     contractId: 'component.host.event.edit_scope_notice',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'fully editable',
         child: WidgetbookHostDeviceFrame(
           child: EditHostedEventScopeNotice(
@@ -323,7 +324,7 @@ Widget editHostedEventScopeNoticeCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'schedule locked',
         child: WidgetbookHostDeviceFrame(
           child: EditHostedEventScopeNotice(
@@ -333,7 +334,7 @@ Widget editHostedEventScopeNoticeCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'cancelled',
         child: WidgetbookHostDeviceFrame(
           child: EditHostedEventScopeNotice(
@@ -353,23 +354,23 @@ Widget editHostedEventScopeNoticeCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host edit event',
 )
 Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'EditableHostedEventPolicyCard',
     contractId: 'component.host.event.edit_policy_card',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'open capacity',
         child: WidgetbookHostDeviceFrame(
           child: _EditableHostedEventPolicyCardFrame(),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'open capacity with cohort caps',
         child: WidgetbookHostDeviceFrame(
           child: _EditableHostedEventPolicyCardFrame(cohortCapsEnabled: true),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'invite only',
         child: WidgetbookHostDeviceFrame(
           child: _EditableHostedEventPolicyCardFrame(
@@ -377,7 +378,7 @@ Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'request to join',
         child: WidgetbookHostDeviceFrame(
           child: _EditableHostedEventPolicyCardFrame(
@@ -385,7 +386,7 @@ Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'balanced singles with demand pricing',
         child: WidgetbookHostDeviceFrame(
           child: _EditableHostedEventPolicyCardFrame(
@@ -404,11 +405,11 @@ Widget editableHostedEventPolicyCardCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host edit event',
 )
 Widget readOnlyHostedEventPolicyCardCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'ReadOnlyHostedEventPolicyCard',
     contractId: 'component.host.event.read_only_policy_card',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'locked policy',
         child: WidgetbookHostDeviceFrame(
           child: ReadOnlyHostedEventPolicyCard(event: widgetbookPrivateEvent),
@@ -424,11 +425,11 @@ Widget readOnlyHostedEventPolicyCardCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host edit event',
 )
 Widget readOnlyHostedEventScheduleCardCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'ReadOnlyHostedEventScheduleCard',
     contractId: 'component.host.event.read_only_schedule_card',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'started event',
         child: WidgetbookHostDeviceFrame(
           child: ReadOnlyHostedEventScheduleCard(event: widgetbookPrivateEvent),

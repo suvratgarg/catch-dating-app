@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:8beb28507dc23e005a99a8e9e51263a2540b0c6aa415da422622c8d7068740ed",
+  "sourceDigest": "sha256:6765a1b008886f7d4a3f55431bf4d8b4efb81757e2fabfd29532b0afc52a1854",
   "resolvedDigest": "sha256:c6131f438b659fbaed3e1d2b033e23e160fabc065ef73273fa554914eaf02998",
   "feature": {
     "id": "feature.event_detail",
@@ -2424,7 +2424,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/utility/p3_utility_use_cases.dart"
+          "widgetbook/lib/utility/location_map.dart"
         ],
         "actionOwners": [
           {

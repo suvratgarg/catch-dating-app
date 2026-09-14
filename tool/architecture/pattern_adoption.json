@@ -87,7 +87,7 @@
           "status": "aligned"
         },
         {
-          "path": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "widgetbook/lib/utility/location_map.dart",
           "role": "Widgetbook route and body states use route provider overrides or explicit EventLocationMapState/callback fixtures",
           "status": "aligned"
         },
@@ -275,7 +275,7 @@
         "flutter test test/events/event_detail_controller_test.dart test/events/event_detail_widgets_test.dart",
         "flutter analyze --no-fatal-infos lib/events/presentation/event_detail_screen.dart lib/events/presentation/event_detail_screen_state.dart lib/events/presentation/widgets/event_detail_body.dart lib/events/presentation/event_detail_controller.dart test/events/event_detail_screen_state_test.dart test/events/event_detail_controller_test.dart test/events/events_test_helpers.dart",
         "flutter test test/events/events_widgets_test.dart",
-        "flutter analyze --no-fatal-infos lib/events/presentation/event_location_map_screen.dart lib/events/presentation/event_location_map_state.dart test/events/events_widgets_test.dart test/ui_captures/catalog/screen_capture_catalog.dart widgetbook/lib/utility/p3_utility_use_cases.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/event_location_map_screen.dart lib/events/presentation/event_location_map_state.dart test/events/events_widgets_test.dart test/ui_captures/catalog/screen_capture_catalog.dart widgetbook/lib/utility/location_map.dart",
         "flutter test test/calendar/calendar_screen_state_test.dart test/calendar/calendar_screen_test.dart",
         "flutter analyze --no-fatal-infos lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/calendar/calendar_screen_state.dart test/calendar/calendar_screen_state_test.dart test/calendar/calendar_screen_test.dart",
         "flutter test test/events/saved_events_screen_test.dart",

@@ -815,7 +815,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/utility/p3_utility_use_cases.dart"
+          "widgetbook/lib/utility/location_map.dart"
         ],
         "actionOwners": [
           {

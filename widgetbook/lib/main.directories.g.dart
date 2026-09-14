@@ -237,8 +237,30 @@ import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
     as _widgetbook_workspace_shell_app_shell_use_cases;
 import 'package:widgetbook_workspace/user_analytics/user_analytics_use_cases.dart'
     as _widgetbook_workspace_user_analytics_user_analytics_use_cases;
-import 'package:widgetbook_workspace/utility/p3_utility_use_cases.dart'
-    as _widgetbook_workspace_utility_p3_utility_use_cases;
+import 'package:widgetbook_workspace/utility/app_root.dart'
+    as _widgetbook_workspace_utility_app_root;
+import 'package:widgetbook_workspace/utility/auth.dart'
+    as _widgetbook_workspace_utility_auth;
+import 'package:widgetbook_workspace/utility/calendar.dart'
+    as _widgetbook_workspace_utility_calendar;
+import 'package:widgetbook_workspace/utility/force_update.dart'
+    as _widgetbook_workspace_utility_force_update;
+import 'package:widgetbook_workspace/utility/launch_access.dart'
+    as _widgetbook_workspace_utility_launch_access;
+import 'package:widgetbook_workspace/utility/location_map.dart'
+    as _widgetbook_workspace_utility_location_map;
+import 'package:widgetbook_workspace/utility/notifications.dart'
+    as _widgetbook_workspace_utility_notifications;
+import 'package:widgetbook_workspace/utility/payment_confirmation.dart'
+    as _widgetbook_workspace_utility_payment_confirmation;
+import 'package:widgetbook_workspace/utility/payment_history.dart'
+    as _widgetbook_workspace_utility_payment_history;
+import 'package:widgetbook_workspace/utility/photos.dart'
+    as _widgetbook_workspace_utility_photos;
+import 'package:widgetbook_workspace/utility/reviews.dart'
+    as _widgetbook_workspace_utility_reviews;
+import 'package:widgetbook_workspace/utility/settings.dart'
+    as _widgetbook_workspace_utility_settings;
 
 final directories = <_widgetbook.WidgetbookNode>[
   _widgetbook.WidgetbookCategory(
@@ -10676,8 +10698,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Root shell',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .myAppRootState,
+                builder: _widgetbook_workspace_utility_app_root.myAppRootState,
               ),
             ],
           ),
@@ -10691,8 +10712,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .authScreenStates,
+                builder: _widgetbook_workspace_utility_auth.authScreenStates,
               ),
             ],
           ),
@@ -10701,7 +10721,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Country code selector states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_auth
                     .countryCodeSelectorStates,
               ),
             ],
@@ -10711,8 +10731,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'OTP entry states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .otpPageStates,
+                builder: _widgetbook_workspace_utility_auth.otpPageStates,
               ),
             ],
           ),
@@ -10721,8 +10740,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Phone entry states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .phonePageStates,
+                builder: _widgetbook_workspace_utility_auth.phonePageStates,
               ),
             ],
           ),
@@ -10736,8 +10754,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .calendarScreenStates,
+                builder:
+                    _widgetbook_workspace_utility_calendar.calendarScreenStates,
               ),
             ],
           ),
@@ -10749,7 +10767,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Agenda section states',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarAgendaSliverSectionStates,
                   ),
                 ],
@@ -10759,7 +10777,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Header states',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarDateHeaderStates,
                   ),
                 ],
@@ -10769,7 +10787,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Skeleton state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarDateHeaderSkeletonStates,
                   ),
                 ],
@@ -10779,7 +10797,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Loading state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarLoadingScreenStates,
                   ),
                 ],
@@ -10789,7 +10807,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Month grid state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarMonthGridStates,
                   ),
                 ],
@@ -10799,7 +10817,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Divider state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarStatDividerStates,
                   ),
                 ],
@@ -10809,7 +10827,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Skeleton state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarStatSkeletonStates,
                   ),
                 ],
@@ -10819,7 +10837,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Stats state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarStatsHeaderStates,
                   ),
                 ],
@@ -10829,7 +10847,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Skeleton state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarStatsHeaderSkeletonStates,
                   ),
                 ],
@@ -10839,7 +10857,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Week strip state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarWeekStripStates,
                   ),
                 ],
@@ -10849,7 +10867,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Skeleton state',
-                    builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                    builder: _widgetbook_workspace_utility_calendar
                         .calendarWeekStripSkeletonStates,
                   ),
                 ],
@@ -10866,7 +10884,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_location_map
                     .eventLocationMapRouteStates,
               ),
             ],
@@ -10876,7 +10894,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Map states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_location_map
                     .eventLocationMapScreenStates,
               ),
             ],
@@ -10891,7 +10909,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Error state',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_force_update
                     .forceUpdateCheckErrorScreenStates,
               ),
             ],
@@ -10901,7 +10919,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Gate states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_force_update
                     .forceUpdateGateStates,
               ),
             ],
@@ -10911,7 +10929,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_force_update
                     .updateRequiredScreenStates,
               ),
             ],
@@ -10926,7 +10944,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Ordered add tile states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_photos
                     .orderedPhotoAddTileStates,
               ),
             ],
@@ -10936,7 +10954,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Picker states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_photos
                     .orderedPhotoPickerStates,
               ),
             ],
@@ -10946,8 +10964,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Ordered tile states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .orderedPhotoTileStates,
+                builder:
+                    _widgetbook_workspace_utility_photos.orderedPhotoTileStates,
               ),
             ],
           ),
@@ -10956,8 +10974,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Grid states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .photoGridStates,
+                builder: _widgetbook_workspace_utility_photos.photoGridStates,
               ),
             ],
           ),
@@ -10966,8 +10983,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Slot states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .photoSlotStates,
+                builder: _widgetbook_workspace_utility_photos.photoSlotStates,
               ),
             ],
           ),
@@ -10976,7 +10992,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Editor preview states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_photos
                     .profilePhotoEditorPreviewStates,
               ),
             ],
@@ -10986,7 +11002,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Editor states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_photos
                     .profilePhotoEditorScreenStates,
               ),
             ],
@@ -10996,7 +11012,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Striped placeholder states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_photos
                     .stripedPhotoPlaceholderStates,
               ),
             ],
@@ -11011,7 +11027,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Form states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_launch_access
                     .launchAccessApplicationFormStates,
               ),
             ],
@@ -11021,7 +11037,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_launch_access
                     .launchAccessApplicationScreenStates,
               ),
             ],
@@ -11036,7 +11052,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_notifications
                     .activityScreenStates,
               ),
             ],
@@ -11046,7 +11062,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Section states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_notifications
                     .activitySectionStates,
               ),
             ],
@@ -11061,7 +11077,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Backdrop states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentCheckoutEventBackdropStates,
               ),
             ],
@@ -11071,7 +11087,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Checkout sheet states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentCheckoutSheetStates,
               ),
             ],
@@ -11081,7 +11097,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Body states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentConfirmationBodyStates,
               ),
             ],
@@ -11091,7 +11107,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Provider states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentConfirmationBodyControllerStates,
               ),
             ],
@@ -11101,7 +11117,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Info surfaces',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentConfirmationInfoStates,
               ),
             ],
@@ -11111,7 +11127,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Loading state',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentConfirmationLoadingScreenStates,
               ),
             ],
@@ -11121,7 +11137,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentConfirmationScreenStates,
               ),
             ],
@@ -11131,7 +11147,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Body states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentPendingCheckoutBodyStates,
               ),
             ],
@@ -11141,7 +11157,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Provider states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentPendingCheckoutControllerStates,
               ),
             ],
@@ -11151,7 +11167,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Referral banner',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentReferralBannerStates,
               ),
             ],
@@ -11161,7 +11177,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Referral banner controller',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_confirmation
                     .paymentReferralBannerControllerStates,
               ),
             ],
@@ -11176,7 +11192,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'List states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_history
                     .paymentHistoryListStates,
               ),
             ],
@@ -11186,7 +11202,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Provider states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_history
                     .paymentHistoryListControllerStates,
               ),
             ],
@@ -11196,7 +11212,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_history
                     .paymentHistoryScreenStates,
               ),
             ],
@@ -11206,7 +11222,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Loading states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_history
                     .paymentHistorySkeletonStates,
               ),
             ],
@@ -11216,7 +11232,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Row states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_history
                     .paymentHistoryTileStates,
               ),
             ],
@@ -11226,7 +11242,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Row skeleton states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_history
                     .paymentHistoryTileSkeletonStates,
               ),
             ],
@@ -11236,7 +11252,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Receipt states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_payment_history
                     .paymentReceiptSheetStates,
               ),
             ],
@@ -11251,8 +11267,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Card states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .reviewCardStates,
+                builder: _widgetbook_workspace_utility_reviews.reviewCardStates,
               ),
             ],
           ),
@@ -11261,7 +11276,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'History row states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .reviewHistoryItemStates,
               ),
             ],
@@ -11271,7 +11286,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'History row skeleton states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .reviewHistoryItemSkeletonStates,
               ),
             ],
@@ -11281,7 +11296,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Host response block',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .reviewOwnerResponseBlockState,
               ),
             ],
@@ -11291,7 +11306,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Response sheet states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .reviewResponseSheetStates,
               ),
             ],
@@ -11301,7 +11316,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'History body states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .reviewsHistoryBodyStates,
               ),
             ],
@@ -11311,7 +11326,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'History list states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .reviewsHistoryListStates,
               ),
             ],
@@ -11321,7 +11336,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .reviewsHistoryScreenStates,
               ),
             ],
@@ -11331,7 +11346,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'History skeleton states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .reviewsHistorySkeletonStates,
               ),
             ],
@@ -11341,7 +11356,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Preview section states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .reviewsPreviewSectionStates,
               ),
             ],
@@ -11351,8 +11366,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Rating states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .starRatingStates,
+                builder: _widgetbook_workspace_utility_reviews.starRatingStates,
               ),
             ],
           ),
@@ -11361,7 +11375,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Picker states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .starRatingPickerStates,
               ),
             ],
@@ -11371,7 +11385,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Sheet states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_reviews
                     .writeReviewSheetStates,
               ),
             ],
@@ -11386,13 +11400,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Mutation states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
+                builder: _widgetbook_workspace_utility_settings
                     .settingsMutationStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_utility_p3_utility_use_cases
-                    .settingsScreenStates,
+                builder:
+                    _widgetbook_workspace_utility_settings.settingsScreenStates,
               ),
             ],
           ),

@@ -16,6 +16,7 @@ import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import '../../support/widgetbook_harness.dart';
 import 'fixtures.dart';
 import 'preview.dart';
@@ -26,11 +27,11 @@ import 'preview.dart';
   path: '[P1 product surfaces]/Host create event',
 )
 Widget createEventPhotoPickerCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CreateEventPhotoPicker',
     contractId: 'component.host.event.photo_picker',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty',
         child: WidgetbookHostDeviceFrame(
           child: CreateEventPhotoPicker(
@@ -42,7 +43,7 @@ Widget createEventPhotoPickerCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'filled',
         child: WidgetbookHostDeviceFrame(
           child: CreateEventPhotoPicker(
@@ -54,7 +55,7 @@ Widget createEventPhotoPickerCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: '24-photo gallery',
         child: WidgetbookHostDeviceFrame(
           child: CreateEventPhotoPicker(
@@ -76,11 +77,11 @@ Widget createEventPhotoPickerCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget draftPickerSheetCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'DraftPickerSheet',
     contractId: 'component.host.event.draft_picker_sheet',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'with drafts',
         child: WidgetbookHostDeviceFrame(
           child: DraftPickerSheet(
@@ -91,7 +92,7 @@ Widget draftPickerSheetCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty',
         child: WidgetbookHostDeviceFrame(
           child: DraftPickerSheet(
@@ -112,11 +113,11 @@ Widget draftPickerSheetCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget draftCardCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'DraftCard',
     contractId: 'component.host.event.draft_card',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'saved draft',
         child: DraftCard(
           draft: HostOperationsFixtures.eventDraft,
@@ -125,7 +126,7 @@ Widget draftCardCatalogStates(BuildContext context) {
           onDelete: () {},
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'delete pending',
         child: DraftCard(
           draft: HostOperationsFixtures.eventDraft,
@@ -144,15 +145,15 @@ Widget draftCardCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget eventDetailsStepCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'EventDetailsStep',
     contractId: 'component.host.event.details_step',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'run event',
         child: WidgetbookHostDeviceFrame(child: _EventDetailsStepFrame()),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'custom activity',
         child: WidgetbookHostDeviceFrame(
           child: _EventDetailsStepFrame(customActivity: true),
@@ -176,15 +177,15 @@ Widget savedPlacesSectionCatalogStates(BuildContext context) =>
   path: '[P1 product surfaces]/Host create event',
 )
 Widget createEventGuestsSectionCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'CreateEventGuestsSection',
     contractId: 'section.host.event_create_guests',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'import later',
         child: WidgetbookHostDeviceFrame(child: _CreateEventGuestsFrame()),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'attached roster',
         child: WidgetbookHostDeviceFrame(
           child: _CreateEventGuestsFrame(attached: true),
@@ -200,11 +201,11 @@ Widget createEventGuestsSectionCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget whereStepCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'WhereStep',
     contractId: 'component.host.event.where_step',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'selected location',
         child: WidgetbookHostDeviceFrame(child: _WhereStepFrame()),
       ),
@@ -218,15 +219,15 @@ Widget whereStepCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget whenStepCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'WhenStep',
     contractId: 'component.host.event.when_step',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'scheduled',
         child: WidgetbookHostDeviceFrame(child: _WhenStepFrame()),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'schedule error',
         child: WidgetbookHostDeviceFrame(
           child: _WhenStepFrame(scheduleError: true),

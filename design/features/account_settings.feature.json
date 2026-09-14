@@ -20,7 +20,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "widgetbook/lib/utility/settings.dart",
           "widgetbook/lib/primitives/contracts/buttons.dart",
           "widgetbook/lib/primitives/contracts/chrome.dart",
           "widgetbook/lib/primitives/contracts/dialogs.dart",

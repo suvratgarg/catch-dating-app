@@ -21,6 +21,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import '../../support/widgetbook_harness.dart';
 import 'fixtures.dart';
 import 'preview.dart';
@@ -62,11 +63,11 @@ PickedEventPhoto _createEventPickedPhoto(String name) {
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostCreateEventRouteScreen',
     contractId: 'screen.host.event.create',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route loading',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -75,7 +76,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route error',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -87,7 +88,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route offline',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -99,7 +100,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'missing club',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -108,7 +109,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'basics validation',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -121,7 +122,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'custom activity',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -134,7 +135,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'picked event photos',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -148,7 +149,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'location selected',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -162,7 +163,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'draft picker',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -175,7 +176,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'draft restored',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -188,7 +189,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'save draft pending',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -204,7 +205,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'save draft error',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -220,7 +221,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'submit pending',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -237,7 +238,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'submit error',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -254,7 +255,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'submit offline',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -272,7 +273,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
         ),
       ),
       for (final step in _createEventSteps.entries)
-        WidgetbookHostStateCard(
+        WidgetbookPageStateCard(
           label: step.value,
           child: WidgetbookHostDeviceFrame(
             child: _HostCreateEventScope(
@@ -287,7 +288,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       for (final step in _createEventSteps.keys)
-        WidgetbookHostStateCard(
+        WidgetbookPageStateCard(
           label: 'runtime only · stage ${step + 1}',
           child: WidgetbookHostDeviceFrame(
             child: _HostCreateEventScope(
@@ -304,7 +305,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
             ),
           ),
         ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -320,7 +321,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'reduced motion',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -337,7 +338,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'dark theme',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -352,7 +353,7 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'created success',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -376,11 +377,11 @@ Widget hostCreateEventRouteAndWizardStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget hostCreateEventRouteStateViewCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostCreateEventRouteStateView',
     contractId: 'component.host.event.create_route_state_view',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'ready',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -401,11 +402,11 @@ Widget hostCreateEventRouteStateViewCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget createEventScreenCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CreateEventScreen',
     contractId: 'screen.host.event.create.form',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'draft restored',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -418,7 +419,7 @@ Widget createEventScreenCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'validation',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateEventScope(
@@ -441,11 +442,11 @@ Widget createEventScreenCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget createEventSuccessScreenCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CreateEventSuccessScreen',
     contractId: 'screen.host.event.create.success',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'public event',
         child: WidgetbookHostDeviceFrame(
           child: CreateEventSuccessScreen(
@@ -456,7 +457,7 @@ Widget createEventSuccessScreenCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'invite only',
         child: WidgetbookHostDeviceFrame(
           child: CreateEventSuccessScreen(

@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../../preview_layout_contracts.dart';
+import '../../support/page_preview.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
 
@@ -17,11 +18,11 @@ import 'shell_fixture.dart';
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostInsightsScorecardStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostClubInsightsPane',
     contractId: 'screen.host.clubs.insights',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'report loading',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -30,7 +31,7 @@ Widget hostInsightsScorecardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'loaded narrative scorecard',
         child: WidgetbookHostDeviceFrame(
           child: const WidgetbookHostShellScope(
@@ -38,7 +39,7 @@ Widget hostInsightsScorecardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty range',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -49,7 +50,7 @@ Widget hostInsightsScorecardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'partial data',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -60,7 +61,7 @@ Widget hostInsightsScorecardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'Coach recommendations',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -71,7 +72,7 @@ Widget hostInsightsScorecardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -87,12 +88,12 @@ Widget hostInsightsScorecardStates(BuildContext context) {
 }
 
 Widget _hostAnalyticsExactCatalog(BuildContext context, String focus) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: focus,
     contractId:
         'component.host.analytics.${widgetbookHostComponentSlug(focus)}',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'exact component',
         child: WidgetbookHostComponentFrame(
           child: _hostAnalyticsPreviewFor(focus),

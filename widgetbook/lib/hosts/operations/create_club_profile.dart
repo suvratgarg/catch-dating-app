@@ -10,6 +10,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
 
@@ -19,15 +20,15 @@ import 'preview.dart';
   path: '[P1 product surfaces]/Host create club',
 )
 Widget clubBasicsStepCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'ClubBasicsStep',
     contractId: 'component.host.club.basics_step',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'prefilled',
         child: WidgetbookHostDeviceFrame(child: _ClubBasicsStepFrame()),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'validation',
         child: WidgetbookHostDeviceFrame(
           child: _ClubBasicsStepFrame(validate: true),
@@ -43,11 +44,11 @@ Widget clubBasicsStepCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create club',
 )
 Widget clubDetailsStepCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'ClubDetailsStep',
     contractId: 'component.host.club.details_step',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'prefilled',
         child: WidgetbookHostDeviceFrame(child: _ClubDetailsStepFrame()),
       ),
@@ -61,11 +62,11 @@ Widget clubDetailsStepCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create club',
 )
 Widget createClubContactFieldsCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'CreateClubContactFields',
     contractId: 'component.host.club.contact_fields',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'filled',
         child: WidgetbookHostDeviceFrame(
           child: _CreateClubContactFieldsFrame(),
@@ -81,11 +82,11 @@ Widget createClubContactFieldsCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create club',
 )
 Widget createClubPhotosPickerCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CreateClubPhotosPicker',
     contractId: 'component.host.club.photos_picker',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty',
         child: WidgetbookHostDeviceFrame(
           child: CreateClubPhotosPicker(
@@ -96,7 +97,7 @@ Widget createClubPhotosPickerCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'edit strip',
         child: WidgetbookHostDeviceFrame(
           child: CreateClubPhotosPicker(
@@ -108,7 +109,7 @@ Widget createClubPhotosPickerCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: '24-photo scalable gallery',
         child: WidgetbookHostDeviceFrame(
           child: CreateClubPhotosPicker(
@@ -120,7 +121,7 @@ Widget createClubPhotosPickerCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'failed upload',
         child: WidgetbookHostDeviceFrame(
           child: CreateClubPhotosPicker(
@@ -171,11 +172,11 @@ Widget orderedPhotoManagerCatalogState(BuildContext context) {
   path: '[P1 product surfaces]/Host organizer',
 )
 Widget hostClubMediaSummaryCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostClubMediaSummary',
     contractId: 'component.host.club.photos_picker',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'logo, cover, and gallery',
         child: WidgetbookHostDeviceFrame(
           child: HostClubMediaSummary(
@@ -188,7 +189,7 @@ Widget hostClubMediaSummaryCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'compact empty',
         child: WidgetbookHostDeviceFrame(
           child: HostClubMediaSummary(
@@ -211,11 +212,11 @@ Widget hostClubMediaSummaryCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create club',
 )
 Widget createClubProfileImagePickerCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CreateClubProfileImagePicker',
     contractId: 'component.host.club.profile_image_picker',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'standard',
         child: WidgetbookHostDeviceFrame(
           child: CreateClubProfileImagePicker(
@@ -224,7 +225,7 @@ Widget createClubProfileImagePickerCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'edit logo',
         child: WidgetbookHostDeviceFrame(
           child: CreateClubProfileImagePicker(
@@ -245,11 +246,11 @@ Widget createClubProfileImagePickerCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create club',
 )
 Widget clubProfileImageTileCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'ClubProfileImageTile',
     contractId: 'component.host.club.profile_image_tile',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty large',
         child: ClubProfileImageTile(
           imageBytes: null,
@@ -259,7 +260,7 @@ Widget clubProfileImageTileCatalogStates(BuildContext context) {
           showEmptyLabel: true,
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'logo filled',
         child: ClubProfileImageTile(
           imageBytes: widgetbookCreateClubPngBytes(),

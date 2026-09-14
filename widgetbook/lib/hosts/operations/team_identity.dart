@@ -11,6 +11,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
 import 'role_theme.dart';
@@ -47,11 +48,11 @@ HostProfile _hostProfileVariant(HostProfileStatus status) {
   path: '[P2 host surfaces]/Host team',
 )
 Widget hostTeamRouteStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostClubTeamScreen',
     contractId: 'screen.host.clubs',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'auth required',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -60,7 +61,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'fallback profile from club',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -70,7 +71,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'active profile and clubs',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -78,7 +79,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'clubs loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -88,7 +89,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -99,7 +100,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -110,7 +111,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'reduced motion',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -121,7 +122,7 @@ Widget hostTeamRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'dark theme',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -140,17 +141,17 @@ Widget hostTeamRouteStates(BuildContext context) {
   path: '[P2 host surfaces]/Host team',
 )
 Widget hostTeamProfileSummaryStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostTeamProfileSection',
     contractId: 'section.host.team.profile',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'profile loading',
         child: const WidgetbookHostDeviceFrame(
           child: _HostTeamProfileFrame(state: HostTeamProfileLoading()),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'profile error',
         child: WidgetbookHostDeviceFrame(
           child: _HostTeamProfileFrame(
@@ -160,13 +161,13 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'no profile',
         child: const WidgetbookHostDeviceFrame(
           child: _HostTeamProfileFrame(state: HostTeamProfileMissing()),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'create pending',
         child: const WidgetbookHostDeviceFrame(
           child: _HostTeamProfileFrame(
@@ -175,7 +176,7 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'club fallback profile',
         child: WidgetbookHostDeviceFrame(
           child: _HostTeamProfileFrame(
@@ -186,7 +187,7 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'active edit rows',
         child: WidgetbookHostDeviceFrame(
           child: _HostTeamProfileFrame(
@@ -194,7 +195,7 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'active preview rows',
         child: WidgetbookHostDeviceFrame(
           child: _HostTeamProfileFrame(
@@ -203,7 +204,7 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'pending status',
         child: WidgetbookHostDeviceFrame(
           child: _HostTeamProfileFrame(
@@ -211,7 +212,7 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'suspended status',
         child: WidgetbookHostDeviceFrame(
           child: _HostTeamProfileFrame(
@@ -219,7 +220,7 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -240,17 +241,17 @@ Widget hostTeamProfileSummaryStates(BuildContext context) {
   path: '[P2 host surfaces]/Host team',
 )
 Widget hostTeamHostedClubsStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostTeamHostedClubsSection',
     contractId: 'section.host.team.hosted_clubs',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'clubs loading',
         child: const WidgetbookHostDeviceFrame(
           child: _HostTeamHostedClubsFrame(loading: true),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: _HostTeamHostedClubsFrame(
@@ -258,25 +259,25 @@ Widget hostTeamHostedClubsStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty clubs',
         child: const WidgetbookHostDeviceFrame(
           child: _HostTeamHostedClubsFrame(clubs: []),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'owner and host-team rows',
         child: const WidgetbookHostDeviceFrame(
           child: _HostTeamHostedClubsFrame(),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'preview mode rows',
         child: const WidgetbookHostDeviceFrame(
           child: _HostTeamHostedClubsFrame(editMode: false),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(

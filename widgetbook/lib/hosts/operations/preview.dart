@@ -83,76 +83,6 @@ class WidgetbookHostHomeSectionFrame extends StatelessWidget {
   }
 }
 
-class WidgetbookHostCatalog extends StatelessWidget {
-  const WidgetbookHostCatalog({
-    super.key,
-    required this.title,
-    required this.contractId,
-    required this.children,
-  });
-
-  final String title;
-  final String contractId;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        child: ListView(
-          padding: CatchInsets.content,
-          children: [
-            Text(title, style: CatchTextStyles.titleL(context)),
-            gapH4,
-            Text(
-              contractId,
-              style: CatchTextStyles.monoLabel(context, color: t.ink2),
-            ),
-            gapH24,
-            for (final child in children) ...[child, gapH20],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class WidgetbookHostStateCard extends StatelessWidget {
-  const WidgetbookHostStateCard({
-    super.key,
-    required this.label,
-    required this.child,
-  });
-
-  final String label;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface,
-        border: Border.all(color: t.line),
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-      ),
-      child: Padding(
-        padding: CatchInsets.content,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: CatchTextStyles.sectionTitle(context)),
-            gapH12,
-            child,
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class WidgetbookHostDeviceFrame extends StatelessWidget {
   const WidgetbookHostDeviceFrame({
     super.key,
@@ -170,29 +100,4 @@ class WidgetbookHostDeviceFrame extends StatelessWidget {
         ),
         child: child,
       );
-}
-
-class WidgetbookMediaOverride extends StatelessWidget {
-  const WidgetbookMediaOverride({
-    super.key,
-    required this.child,
-    this.textScaler,
-    this.disableAnimations = false,
-  });
-
-  final Widget child;
-  final TextScaler? textScaler;
-  final bool disableAnimations;
-
-  @override
-  Widget build(BuildContext context) {
-    final base = MediaQuery.of(context);
-    return MediaQuery(
-      data: base.copyWith(
-        textScaler: textScaler ?? base.textScaler,
-        disableAnimations: disableAnimations || base.disableAnimations,
-      ),
-      child: child,
-    );
-  }
 }

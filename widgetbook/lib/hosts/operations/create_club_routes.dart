@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import '../../support/widgetbook_harness.dart';
 import 'fixtures.dart';
 import 'preview.dart';
@@ -63,11 +64,11 @@ PickedClubProfileImage _createClubProfileImage() {
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostClubEditorLoadingScreenState(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'HostClubEditorLoadingScreen',
     contractId: 'screen.host.club.editor.loading',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'form-shaped skeleton',
         child: WidgetbookHostDeviceFrame(child: HostClubEditorLoadingScreen()),
       ),
@@ -81,11 +82,11 @@ Widget hostClubEditorLoadingScreenState(BuildContext context) {
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostCreateClubScreen',
     contractId: 'screen.host.club.create',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'auth required',
         child: const WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -94,7 +95,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route entry',
         child: const WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -102,7 +103,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'basics validation',
         child: const WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -113,7 +114,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'picked media',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -126,7 +127,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'restored draft',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -138,7 +139,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
         ),
       ),
       for (final step in _createClubSteps.entries)
-        WidgetbookHostStateCard(
+        WidgetbookPageStateCard(
           label: step.value,
           child: WidgetbookHostDeviceFrame(
             child: _HostCreateClubScope(
@@ -150,7 +151,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
             ),
           ),
         ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'save draft pending',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -164,7 +165,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'save draft error',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -178,7 +179,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'submit pending',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -193,7 +194,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'submit error',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -208,7 +209,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'submit offline',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -223,7 +224,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -238,7 +239,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'reduced motion',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -253,7 +254,7 @@ Widget hostCreateClubRouteAndWizardStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'dark theme',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -356,11 +357,11 @@ class _HostCreateClubMutationPreviewState
   path: '[P1 product surfaces]/Host create club',
 )
 Widget createClubScreenCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CreateClubScreen',
     contractId: 'screen.host.club.create.form',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'draft restored',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(
@@ -371,7 +372,7 @@ Widget createClubScreenCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'media picked',
         child: WidgetbookHostDeviceFrame(
           child: _HostCreateClubScope(

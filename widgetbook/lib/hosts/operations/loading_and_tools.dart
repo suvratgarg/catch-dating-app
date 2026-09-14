@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../../preview_layout_contracts.dart';
+import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
 
@@ -50,11 +51,11 @@ import 'preview.dart';
   path: '[P1 product surfaces]/Host operations/Components',
 )
 Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'Host loading skeletons',
     contractId: 'component.host.loading_skeletons',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route loading body',
         child: WidgetbookHostDeviceFrame(
           child: Scaffold(
@@ -65,13 +66,13 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'summary and tab rail',
         child: Column(
           children: [HostTabRailSkeleton(), gapH12, HostSummarySkeleton()],
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'row and settings groups',
         child: Column(
           children: [
@@ -81,7 +82,7 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
           ],
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'analytics and roster',
         child: Column(
           children: [
@@ -96,7 +97,7 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
           ],
         ),
       ),
-      WidgetbookHostStateCard(label: 'chart', child: HostChartSkeleton()),
+      WidgetbookPageStateCard(label: 'chart', child: HostChartSkeleton()),
     ],
   );
 }
@@ -107,11 +108,11 @@ Widget hostLoadingSkeletonCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host operations/Components',
 )
 Widget hostAnalyticsMetricGridSkeletonCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'HostAnalyticsMetricGridSkeleton',
     contractId: 'component.host.analytics.metric_grid_skeleton',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'two metrics',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
@@ -138,11 +139,11 @@ Widget hostAnalyticsMetricGridSkeletonCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host operations/Components',
 )
 Widget hostRosterPrimitiveCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'Catch roster primitives',
     contractId: 'component.host.roster_primitives',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'filter tiles',
         child: CatchRosterTiles(
           selected: 'booked',
@@ -164,7 +165,7 @@ Widget hostRosterPrimitiveCatalogStates(BuildContext context) {
           ],
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'decision row',
         child: CatchRosterTable(
           columns: const ['Guest', 'Signal', 'Host action'],
@@ -230,11 +231,11 @@ Widget hostToolCardCatalogStates(BuildContext context) {
       attendanceState: HostEventAttendanceState.closed,
     ),
   ];
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'Host tool cards',
     contractId: 'component.host.tool_cards',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'club management panel',
         child: HostClubManagementPanel(
           club: widgetbookClub,
@@ -245,7 +246,7 @@ Widget hostToolCardCatalogStates(BuildContext context) {
           onCreateEvent: () {},
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'stat chip',
         child: HostStatChip(
           label: 'Booked',
@@ -253,7 +254,7 @@ Widget hostToolCardCatalogStates(BuildContext context) {
           icon: CatchIcons.checkCircleOutlineRounded,
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'event tools carousel',
         child: HostEventToolsCarousel(
           tools: tools,
@@ -262,7 +263,7 @@ Widget hostToolCardCatalogStates(BuildContext context) {
           onViewReport: (_) {},
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'event tool card',
         child: HostEventToolCard(
           item: tools.first,
@@ -273,7 +274,7 @@ Widget hostToolCardCatalogStates(BuildContext context) {
           onViewReport: (_) {},
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'page indicator',
         child: HostEventToolsPageIndicator(selectedIndex: 0, itemCount: 2),
       ),
@@ -287,11 +288,11 @@ Widget hostToolCardCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostEmptyStateStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CatchEmptyState',
     contractId: 'component.host.empty_action_card',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'single action',
         child: WidgetbookHostHomeSectionFrame(
           child: CatchEmptyState(
@@ -309,7 +310,7 @@ Widget hostEmptyStateStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'two actions',
         child: WidgetbookHostHomeSectionFrame(
           child: CatchEmptyState(
@@ -340,7 +341,7 @@ Widget hostEmptyStateStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'pending action',
         child: WidgetbookHostHomeSectionFrame(
           child: CatchEmptyState(

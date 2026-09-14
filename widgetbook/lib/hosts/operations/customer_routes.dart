@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import '../../support/widgetbook_harness.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
@@ -343,11 +344,11 @@ Widget hostCustomersStates(
       sourceResponseId: 'design-response-1',
       dataAccessState: 'submittedFormResponse',
     );
-    return WidgetbookHostCatalog(
+    return WidgetbookPageCatalogFrame(
       title: 'Customer detail components',
       contractId: 'screen.host.customer_detail',
       children: [
-        WidgetbookHostStateCard(
+        WidgetbookPageStateCard(
           label: 'populated customer record',
           child: WidgetbookHostDeviceFrame(
             child: WidgetbookFixtureScope(
@@ -394,11 +395,11 @@ Widget hostCustomersStates(
       ],
     );
   }
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'Host Customers',
     contractId: 'screen.host.customers',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'populated directory',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -413,7 +414,7 @@ Widget hostCustomersStates(
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'full-page add customer',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -421,7 +422,7 @@ Widget hostCustomersStates(
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'linked customer detail',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -444,7 +445,7 @@ Widget hostCustomersStates(
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'detail composition',
         child: WidgetbookHostDeviceFrame(
           child: HostCustomerDetailBody(
@@ -476,7 +477,7 @@ Widget hostCustomersStates(
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'inline edit linked customer details',
         child: WidgetbookHostDeviceFrame(
           child: Scaffold(

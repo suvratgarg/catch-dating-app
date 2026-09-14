@@ -7,6 +7,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
 
@@ -16,11 +17,11 @@ import 'preview.dart';
   path: '[P1 product surfaces]/Host create club',
 )
 Widget clubHostDefaultsStepCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'ClubHostDefaultsStep',
     contractId: 'component.host.club.host_defaults_step',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'prefilled',
         child: WidgetbookHostDeviceFrame(child: _ClubHostDefaultsStepFrame()),
       ),
@@ -34,11 +35,11 @@ Widget clubHostDefaultsStepCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create club',
 )
 Widget clubPolicyDefaultsCardCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'ClubPolicyDefaultsCard',
     contractId: 'component.host.club.policy_defaults_card',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'editable',
         child: WidgetbookHostDeviceFrame(child: _ClubPolicyDefaultsCardFrame()),
       ),
@@ -52,11 +53,11 @@ Widget clubPolicyDefaultsCardCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create club',
 )
 Widget clubEventSuccessDefaultsStepCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'ClubEventSuccessDefaultsStep',
     contractId: 'component.host.club.event_success_defaults_step',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'activity-aware defaults',
         child: WidgetbookHostDeviceFrame(
           child: _ClubEventSuccessDefaultsStepFrame(),
@@ -72,11 +73,11 @@ Widget clubEventSuccessDefaultsStepCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create club',
 )
 Widget createClubStepHeaderCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CreateClubStepHeader',
     contractId: 'component.host.club.step_header',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'step 1',
         child: WidgetbookHostDeviceFrame(
           child: CreateClubStepHeader(

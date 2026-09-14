@@ -13,6 +13,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
 
@@ -77,17 +78,17 @@ final _longNameEvent = HostOperationsFixtures.upcomingEvent.copyWith(
   path: '[P1 product surfaces]/Host operations/Composed sections',
 )
 Widget hostHomeRouteStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostTodayScreen',
     contractId: 'screen.host.home',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'auth required',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(uid: null, child: HostTodayScreen()),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'clubs loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -97,7 +98,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -108,7 +109,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'clubs offline',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -120,7 +121,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'events offline',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -136,7 +137,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty host account',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -146,13 +147,13 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'populated host dashboard',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(child: HostTodayScreen()),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'owner and co-host switcher',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -167,7 +168,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'long club names',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -183,7 +184,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'co-host empty events',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -195,7 +196,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -204,7 +205,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'reduced motion',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -213,7 +214,7 @@ Widget hostHomeRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'dark theme',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -299,11 +300,11 @@ Widget hostOrganizerIdentityPillStates(BuildContext context) {
   final club = HostOperationsFixtures.primaryClub.copyWith(
     profileImageUrl: 'assets/fixtures/club_hero_portrait.jpg',
   );
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostOrganizerAvatar',
     contractId: 'component.host.navigation.organizer-avatar',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'navigation avatar',
         child: WidgetbookHostHomeSectionFrame(
           child: Align(
@@ -315,7 +316,7 @@ Widget hostOrganizerIdentityPillStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'long-press switcher sheet',
         child: WidgetbookHostHomeSectionFrame(
           child: HostOrganizerSwitcherSheet(

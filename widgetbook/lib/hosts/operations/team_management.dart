@@ -9,6 +9,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
 
@@ -43,17 +44,17 @@ import 'shell_fixture.dart';
   path: '[P1 product surfaces]/Host operations/Sections',
 )
 Widget hostTeamManagementSectionStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostTeamManagementSection',
     contractId: 'section.host.clubs_host_team',
     children: [
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'owner management / light',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(child: _HostTeamSectionPreview()),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'co-host read-only / light',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -61,7 +62,7 @@ Widget hostTeamManagementSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'owner management / dark',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -70,7 +71,7 @@ Widget hostTeamManagementSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'co-host read-only / dark',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -89,11 +90,11 @@ Widget hostTeamManagementSectionStates(BuildContext context) {
   path: '[P1 product surfaces]/Host operations/Sections',
 )
 Widget hostTeamAddHostSheetStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostTeamAddHostSheet',
     contractId: 'section.host.clubs_host_team',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'ready',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -101,7 +102,7 @@ Widget hostTeamAddHostSheetStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'add pending',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -111,7 +112,7 @@ Widget hostTeamAddHostSheetStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'add error',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -121,7 +122,7 @@ Widget hostTeamAddHostSheetStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'add offline',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -141,11 +142,11 @@ Widget hostTeamAddHostSheetStates(BuildContext context) {
   path: '[P1 product surfaces]/Host operations/Sections',
 )
 Widget hostTeamHostActionDialogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostTeamHostActionDialog',
     contractId: 'section.host.clubs_host_team',
     children: const [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'remove host',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -155,7 +156,7 @@ Widget hostTeamHostActionDialogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'transfer ownership',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
