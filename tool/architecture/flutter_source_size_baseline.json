@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "owner": "app_architecture",
+  "targetPhase": "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-5--budgets-splits-and-estate-shrink",
+  "maxLines": 800,
+  "policy": "new_or_split_handwritten_sources_stay_bounded_existing_debt_cannot_grow",
+  "allowedFindings": [
+    {
+      "path": "lib/core/widgets/ordered_photo_picker.dart",
+      "maxLines": 895
+    },
+    {
+      "path": "lib/event_rehearsal/presentation/host_event_rehearsal_screen.dart",
+      "maxLines": 905
+    },
+    {
+      "path": "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
+      "maxLines": 1033
+    },
+    {
+      "path": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
+      "maxLines": 2080
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_companion_screen_state.dart",
+      "maxLines": 1054
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_companion_screen.dart",
+      "maxLines": 833
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_feature_blocks.dart",
+      "maxLines": 1011
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_host_screen.dart",
+      "maxLines": 1726
+    },
+    {
+      "path": "lib/event_success/presentation/event_success_room_map.dart",
+      "maxLines": 1089
+    },
+    {
+      "path": "lib/event_success/presentation/host_parts/event_success_host_live.dart",
+      "maxLines": 1847
+    },
+    {
+      "path": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
+      "maxLines": 1546
+    },
+    {
+      "path": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
+      "maxLines": 1668
+    },
+    {
+      "path": "lib/events/data/event_repository.dart",
+      "maxLines": 948
+    },
+    {
+      "path": "lib/events/presentation/calendar/calendar_screen.dart",
+      "maxLines": 844
+    },
+    {
+      "path": "lib/events/presentation/event_detail_screen.dart",
+      "maxLines": 902
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
+      "maxLines": 954
+    },
+    {
+      "path": "lib/events/presentation/widgets/event_pins_map.dart",
+      "maxLines": 1140
+    },
+    {
+      "path": "lib/explore/presentation/explore_feed_view_model.dart",
+      "maxLines": 960
+    },
+    {
+      "path": "lib/explore/presentation/explore_screen_state.dart",
+      "maxLines": 1623
+    },
+    {
+      "path": "lib/explore/presentation/explore_screen.dart",
+      "maxLines": 923
+    },
+    {
+      "path": "lib/hosts/data/host_crm_repository.dart",
+      "maxLines": 3764
+    },
+    {
+      "path": "lib/hosts/domain/host_form_operations.dart",
+      "maxLines": 902
+    },
+    {
+      "path": "lib/hosts/domain/host_form.dart",
+      "maxLines": 1351
+    },
+    {
+      "path": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
+      "maxLines": 870
+    },
+    {
+      "path": "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
+      "maxLines": 873
+    },
+    {
+      "path": "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
+      "maxLines": 933
+    },
+    {
+      "path": "lib/hosts/presentation/edit_hosted_event_screen.dart",
+      "maxLines": 1664
+    },
+    {
+      "path": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
+      "maxLines": 1595
+    },
+    {
+      "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
+      "maxLines": 3069
+    },
+    {
+      "path": "lib/hosts/presentation/forms/host_forms_screen.dart",
+      "maxLines": 862
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",
+      "maxLines": 1309
+    },
+    {
+      "path": "lib/hosts/presentation/host_event_manage_screen.dart",
+      "maxLines": 1865
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_analytics.dart",
+      "maxLines": 1138
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_club_edit_tab.dart",
+      "maxLines": 1313
+    },
+    {
+      "path": "lib/hosts/presentation/host_operations/host_club_team_screen.dart",
+      "maxLines": 837
+    },
+    {
+      "path": "lib/hosts/presentation/inbox/host_campaign_composer.dart",
+      "maxLines": 828
+    },
+    {
+      "path": "lib/hosts/presentation/inbox/host_inbox_screen.dart",
+      "maxLines": 923
+    },
+    {
+      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
+      "maxLines": 1037
+    },
+    {
+      "path": "lib/hosts/presentation/payments/host_payment_account_card.dart",
+      "maxLines": 923
+    },
+    {
+      "path": "lib/hosts/presentation/widgets/host_event_attendance_panel.dart",
+      "maxLines": 1358
+    },
+    {
+      "path": "lib/hosts/presentation/widgets/host_operational_roster_panel.dart",
+      "maxLines": 2380
+    },
+    {
+      "path": "lib/onboarding/presentation/pages/welcome_page.dart",
+      "maxLines": 891
+    },
+    {
+      "path": "lib/routing/go_router.dart",
+      "maxLines": 1501
+    },
+    {
+      "path": "lib/safety/presentation/settings_screen.dart",
+      "maxLines": 834
+    },
+    {
+      "path": "packages/catch_tokens/lib/src/semantic/catch_layout.dart",
+      "maxLines": 807
+    },
+    {
+      "path": "packages/catch_ui_lints/lib/src/catch_ui_rules.dart",
+      "maxLines": 2835
+    },
+    {
+      "path": "packages/catch_ui/lib/src/components/catch_field.dart",
+      "maxLines": 1100
+    },
+    {
+      "path": "widgetbook/lib/catches/catches_use_cases.dart",
+      "maxLines": 2281
+    },
+    {
+      "path": "widgetbook/lib/clubs/club_detail_use_cases.dart",
+      "maxLines": 2147
+    },
+    {
+      "path": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+      "maxLines": 1222
+    },
+    {
+      "path": "widgetbook/lib/event_success/event_success_companion_use_cases.dart",
+      "maxLines": 955
+    },
+    {
+      "path": "widgetbook/lib/event_success/event_success_strict_coverage_use_cases.dart",
+      "maxLines": 2389
+    },
+    {
+      "path": "widgetbook/lib/events/event_detail_use_cases.dart",
+      "maxLines": 3655
+    },
+    {
+      "path": "widgetbook/lib/explore/explore_use_cases.dart",
+      "maxLines": 2978
+    },
+    {
+      "path": "widgetbook/lib/foundation/foundation_token_use_cases.dart",
+      "maxLines": 1983
+    },
+    {
+      "path": "widgetbook/lib/geometry/component_geometry_use_cases.dart",
+      "maxLines": 1627
+    },
+    {
+      "path": "widgetbook/lib/hosts/host_operations_use_cases.dart",
+      "maxLines": 8982
+    },
+    {
+      "path": "widgetbook/lib/matches/matches_chat_use_cases.dart",
+      "maxLines": 2660
+    },
+    {
+      "path": "widgetbook/lib/onboarding/onboarding_use_cases.dart",
+      "maxLines": 1340
+    },
+    {
+      "path": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
+      "maxLines": 4478
+    },
+    {
+      "path": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+      "maxLines": 11367
+    },
+    {
+      "path": "widgetbook/lib/profiles/profile_use_cases.dart",
+      "maxLines": 2634
+    },
+    {
+      "path": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+      "maxLines": 4009
+    }
+  ]
+}

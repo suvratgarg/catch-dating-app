@@ -234,6 +234,22 @@ node tool/test/flutter_coverage_report.mjs --lcov coverage/lcov.info
 node tool/test/check_flutter_test_size.mjs --check
 ```
 
+## Flutter Source Budgets
+
+`node tool/run.mjs check audit:flutter-source-size` enforces the architecture
+owner's 800-line handwritten source budget across app, packages, and Widgetbook.
+The exact Field constructor facade has its approved 1,150-line ceiling; both
+ordinary debt and the facade can only shrink. Git comparison prevents manually
+adding new or split oversized files to the legacy baseline. The check uses Node
+and repository source directly, so it does not start a Flutter analyzer.
+
+After a coherent split, run
+`node tool/architecture/check_flutter_source_size.mjs --write-baseline` and
+commit the reduction with the source changes. `--base` defaults to `origin/main`;
+an unresolved comparison base fails closed. Generated source is excluded only
+by the producer identities documented in
+`docs/app_architecture.md#source-size-budgets`.
+
 ## Analyzer-Backed UI Gate
 
 `node tool/ci/check_flutter_workspace_analysis.mjs` is the one fail-closed
