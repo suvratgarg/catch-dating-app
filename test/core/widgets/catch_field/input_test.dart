@@ -894,7 +894,9 @@ void main() {
                   open = next;
                   if (next) original = controller.text;
                 }),
-                isLoading: saving,
+                status: saving
+                    ? CatchFieldStatus.saving
+                    : CatchFieldStatus.idle,
                 onCancel: () => setState(() {
                   controller.text = original;
                   open = false;

@@ -12,7 +12,7 @@ extension _CatchFieldBehavior on _CatchFieldState {
       text: widget.controller == null ? widget.initialValue : null,
     );
     _inputWasEmpty = _controller.text.isEmpty;
-    _statusLaneActive = _effectiveStatus != CatchFieldStatus.idle;
+    _statusLaneActive = widget.status != CatchFieldStatus.idle;
     _attachControllerListener(_controller);
     if (widget._explicitSaveInput && _isOpen) {
       _pendingExpansionFocus = true;
@@ -23,10 +23,10 @@ extension _CatchFieldBehavior on _CatchFieldState {
   }
 
   void _updateFieldConfiguration(CatchField oldWidget) {
-    if (_effectiveStatus != CatchFieldStatus.idle) {
+    if (widget.status != CatchFieldStatus.idle) {
       _statusLaneDismissTimer?.cancel();
       _statusLaneActive = true;
-    } else if (_effectiveStatusFor(oldWidget) != CatchFieldStatus.idle) {
+    } else if (oldWidget.status != CatchFieldStatus.idle) {
       _scheduleStatusLaneDismiss();
     }
     if (oldWidget.status != widget.status) {
@@ -358,7 +358,7 @@ extension _CatchFieldBehavior on _CatchFieldState {
   }
 
   void _handleStatusLaneDismissed() {
-    if (!mounted || _effectiveStatus != CatchFieldStatus.idle) return;
+    if (!mounted || widget.status != CatchFieldStatus.idle) return;
     _update(() => _statusLaneActive = false);
   }
 
@@ -482,14 +482,7 @@ extension _CatchFieldBehavior on _CatchFieldState {
       (_displayError != null && _displayError!.isNotEmpty) ||
       _hasFieldValidationError;
   bool get _isOpen => widget.open ?? _open;
-  bool get _isSaving =>
-      widget._isLoading || widget.status == CatchFieldStatus.saving;
-  CatchFieldStatus get _effectiveStatus =>
-      _isSaving ? CatchFieldStatus.saving : widget.status;
-  CatchFieldStatus _effectiveStatusFor(CatchField field) =>
-      field._isLoading || field.status == CatchFieldStatus.saving
-      ? CatchFieldStatus.saving
-      : field.status;
+  bool get _isSaving => widget.status == CatchFieldStatus.saving;
   // Keep progress in the commit bar through its close animation. Once the
   // drawer is actually offstage, the header becomes the only visible owner.
   bool get _visibleCommitBarOwnsSavingIndicator =>

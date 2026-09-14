@@ -889,7 +889,9 @@ class EventSuccessAccountabilityCard extends StatelessWidget {
                               ),
                             );
                           },
-                    isLoading: isResolving,
+                    status: isResolving
+                        ? CatchFieldStatus.saving
+                        : CatchFieldStatus.idle,
                   ),
               ],
             ),

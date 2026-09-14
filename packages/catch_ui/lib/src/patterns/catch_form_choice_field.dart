@@ -121,7 +121,6 @@ class _CatchFormChoiceFieldState<P, T>
       tone: addable ? CatchFieldTone.primary : CatchFieldTone.normal,
       open: widget.scope.isExpanded,
       onOpenChanged: (_) => widget.scope.toggle(),
-      isLoading: _saveState.saving,
       status: _saveState.status,
       error: error == null ? null : widget.errorTextBuilder(context, error),
       values: descriptor.values,

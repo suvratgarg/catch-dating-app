@@ -172,7 +172,7 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
           widget.scope.collapse();
         },
         onSubmit: _submit,
-        isLoading: _saveState.saving,
+
         status: _saveState.status,
         keyboardType: descriptor.keyboardType,
         textInputAction: descriptor.maxLines == 1

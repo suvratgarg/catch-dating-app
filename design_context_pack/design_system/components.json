@@ -2806,20 +2806,12 @@
             "required": false,
             "default": "idle",
             "dartType": "CatchFieldStatus",
-            "notes": "Implicit or closed-field save feedback in the trailing lane. When an explicit commit bar is visible and saving, that bar becomes the sole progress owner; saved remains a trailing success tick.",
+            "notes": "Canonical save state for trailing feedback, disclosure interaction lock, commit actions and accessibility announcements. Saving disables choices, option cards and steppers. A visible commit bar owns the sole progress indicator; otherwise the trailing lane owns it. Saved remains a trailing success tick. Direct input edit permissions remain caller-owned.",
             "values": [
               "idle",
               "saving",
               "saved"
             ]
-          },
-          {
-            "name": "isLoading",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool",
-            "notes": "Locks disclosure interactions during an async explicit save. A visible commit bar renders the sole 13 px spinner inside Done; when the bar is not visible the trailing lane preserves one progress indicator."
           },
           {
             "name": "maxLength",

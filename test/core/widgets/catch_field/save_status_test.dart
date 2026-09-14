@@ -55,7 +55,6 @@ void main() {
   ) async {
     Future<void> pumpField({
       bool open = true,
-      bool isLoading = false,
       CatchFieldStatus status = CatchFieldStatus.idle,
     }) => tester.pumpWidget(
       _wrap(
@@ -64,9 +63,7 @@ void main() {
           title: 'Height',
           body: '168 cm',
           open: open,
-          isLoading: isLoading,
           status: status,
-
           onCancel: _noop,
           onSubmit: _noop,
           child: const Text('Height control'),
@@ -81,7 +78,7 @@ void main() {
       CatchIcons.checkCircleFilled,
     );
 
-    await pumpField(isLoading: true);
+    await pumpField(status: CatchFieldStatus.saving);
     expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
     expect(
       find.byWidgetPredicate(
@@ -150,43 +147,10 @@ void main() {
       CatchPlatformTokens.minimumInteractiveExtent,
     );
 
-    // The legacy aggregate status input coalesces into the same visible owner.
-    await pumpField(status: CatchFieldStatus.saving);
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchLoadingIndicator &&
-            widget.variant == CatchLoadingIndicatorVariant.inline,
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: find.byKey(const ValueKey('catch-field-done')),
-        matching: find.byWidgetPredicate(
-          (widget) =>
-              widget is CatchLoadingIndicator &&
-              widget.variant == CatchLoadingIndicatorVariant.inline,
-        ),
-      ),
-      findsOneWidget,
-    );
-    expect(
-      find.descendant(
-        of: find.byType(CatchFieldTrailingRow),
-        matching: find.byWidgetPredicate(
-          (widget) =>
-              widget is CatchLoadingIndicator &&
-              widget.variant == CatchLoadingIndicatorVariant.inline,
-        ),
-      ),
-      findsNothing,
-    );
-
     // If the commit bar is not visible, the trailing lane remains the only
     // place where saving progress can be communicated.
     await tester.pumpWidget(const SizedBox.shrink());
-    await pumpField(open: false, isLoading: true);
+    await pumpField(open: false, status: CatchFieldStatus.saving);
     expect(
       find.byWidgetPredicate(
         (widget) =>
@@ -208,6 +172,75 @@ void main() {
     );
     expect(find.byKey(const ValueKey('catch-field-action-bar')), findsNothing);
   });
+
+  for (final recipe in ['choices', 'optionCards', 'stepper']) {
+    testWidgets('CatchField $recipe locks selection for its saving status', (
+      tester,
+    ) async {
+      var status = CatchFieldStatus.saving;
+      var changes = 0;
+      late StateSetter update;
+      final copy = catchFieldCopy(AppLocalizationsEn());
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) {
+              update = setState;
+              return switch (recipe) {
+                'choices' => CatchField<String>.choices(
+                  copy: copy,
+                  title: 'Activity',
+                  values: const ['Run', 'Walk'],
+                  selected: const {'Run'},
+                  itemLabelBuilder: (value) => value,
+                  initiallyOpen: true,
+                  status: status,
+                  onSelectionChanged: (_) => changes++,
+                ),
+                'optionCards' => CatchField<String>.optionCards(
+                  copy: copy,
+                  title: 'Activity',
+                  values: const ['Run', 'Walk'],
+                  selected: 'Run',
+                  itemTitleBuilder: (value) => value,
+                  itemDescriptionBuilder: (value) => '$value outside',
+                  initiallyOpen: true,
+                  status: status,
+                  onChanged: (_) => changes++,
+                ),
+                _ => CatchField.stepper(
+                  copy: copy,
+                  title: 'Guests',
+                  value: 2,
+                  min: 1,
+                  max: 3,
+                  initiallyOpen: true,
+                  status: status,
+                  decreaseSemanticLabel: 'Decrease guests',
+                  increaseSemanticLabel: 'Increase guests',
+                  onChanged: (_) => changes++,
+                ),
+              };
+            },
+          ),
+        ),
+      );
+      final target = recipe == 'stepper'
+          ? find.bySemanticsLabel('Increase guests')
+          : find.text('Walk');
+      await tester.tap(target, warnIfMissed: false);
+      await tester.pump();
+      expect(changes, 0);
+      expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
+
+      update(() => status = CatchFieldStatus.idle);
+      await _pumpCatchFieldMotion(tester);
+      await tester.tap(target);
+      await tester.pump();
+      expect(changes, 1);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
 
   testWidgets('CatchField toggle stays visible and disabled while saving', (
     tester,
@@ -261,8 +294,7 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           initiallyOpen: true,
-          isLoading: true,
-
+          status: CatchFieldStatus.saving,
           onCancel: () {},
           onSubmit: () => submitCount++,
           child: const Text('Height control'),

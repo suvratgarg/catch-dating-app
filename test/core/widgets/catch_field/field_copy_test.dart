@@ -105,7 +105,7 @@ void main() {
                   open: true,
                   onCancel: () {},
                   onSubmit: () {},
-                  isLoading: saving,
+
                   status: saving
                       ? CatchFieldStatus.saving
                       : CatchFieldStatus.idle,

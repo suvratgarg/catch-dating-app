@@ -132,7 +132,7 @@ class _ProfileInlineHeightEditorState
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();
         },
-        isLoading: isSaving,
+
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
         value: _heightCm,

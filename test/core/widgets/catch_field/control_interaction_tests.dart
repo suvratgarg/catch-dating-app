@@ -120,7 +120,7 @@ void _registerControlInteractionTests() {
               setState(() => open = false);
             },
             onSubmit: () {},
-            isLoading: true,
+            status: CatchFieldStatus.saving,
           ),
         ),
       ),

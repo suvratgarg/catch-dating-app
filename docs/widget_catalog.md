@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 4.0.0
+version: 4.1.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -9,6 +9,10 @@ status: active
 # Widget Catalog
 
 ## Canonical Usage Decisions
+
+`CatchFieldStatus` is the single save-state input for all field recipes. Saving
+locks disclosure controls and commit actions and supplies progress and
+accessibility feedback. Direct text-input edit permissions remain caller-owned.
 
 L0 token definitions live in `packages/catch_tokens` and are consumed through
 `package:catch_tokens/catch_tokens.dart`. Widgetbook foundation specimens in
@@ -462,8 +466,8 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>EventSuccessSkeletonSurface</code> | <code>lib/event_success/presentation/event_success_skeletons.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessStructureConfigEditor</code> | <code>lib/event_success/presentation/event_success_structure_config_editor.dart:8</code> | — | — | No class documentation or registry summary. |
 | <code>EventSuccessAccountabilityCard</code> | <code>lib/event_success/presentation/host_parts/event_success_host_live.dart:802</code> | — | — | No class documentation or registry summary. |
-| <code>LiveNowConsole</code> | <code>lib/event_success/presentation/host_parts/event_success_host_live.dart:1143</code> | — | — | No class documentation or registry summary. |
-| <code>LiveStepNavigation</code> | <code>lib/event_success/presentation/host_parts/event_success_host_live.dart:1716</code> | — | — | No class documentation or registry summary. |
+| <code>LiveNowConsole</code> | <code>lib/event_success/presentation/host_parts/event_success_host_live.dart:1145</code> | — | — | No class documentation or registry summary. |
+| <code>LiveStepNavigation</code> | <code>lib/event_success/presentation/host_parts/event_success_host_live.dart:1718</code> | — | — | No class documentation or registry summary. |
 | <code>LiveTab</code> | <code>lib/event_success/presentation/host_parts/event_success_host_live.dart:11</code> | — | — | No class documentation or registry summary. |
 | <code>AssignmentReasonSummary</code> | <code>lib/event_success/presentation/host_parts/event_success_host_overrides.dart:1274</code> | — | — | No class documentation or registry summary. |
 | <code>GroupOverrideMemberEditor</code> | <code>lib/event_success/presentation/host_parts/event_success_host_overrides.dart:577</code> | — | — | No class documentation or registry summary. |
@@ -774,7 +778,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>HostClubReadOnlyEventDefaults</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:287</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubSpokeResolver</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:48</code> | — | — | No class documentation or registry summary. |
 | <code>HostClubSpokeScaffold</code> | <code>lib/hosts/presentation/host_operations/host_club_spoke_screens.dart:170</code> | — | — | No class documentation or registry summary. |
-| <code>HostTeamHostedClubsSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:765</code> | — | — | No class documentation or registry summary. |
+| <code>HostTeamHostedClubsSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:770</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfessionalProfilePreview</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:338</code> | — | — | Read-only projection of the professional identity edited in Host team. This intentionally consumes [HostTeamProfileState] rather than the dating profile collection: a host can have a valid organizer identity without a discoverable consumer profile. |
 | <code>HostTeamProfileRows</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:531</code> | — | — | No class documentation or registry summary. |
 | <code>HostTeamProfileSection</code> | <code>lib/hosts/presentation/host_operations/host_club_team_screen.dart:458</code> | — | — | No class documentation or registry summary. |

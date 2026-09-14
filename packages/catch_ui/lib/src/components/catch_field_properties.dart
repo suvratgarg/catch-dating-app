@@ -170,6 +170,4 @@ mixin _CatchFieldProperties {
   VoidCallback? get _onSubmit =>
       _controlConfig?.onSubmit ?? _editConfig?.onSubmit;
   bool get _closeLocallyOnSubmit => true;
-  bool get _isLoading =>
-      _controlConfig?.isLoading ?? _editConfig?.isLoading ?? false;
 }

@@ -90,7 +90,9 @@ class _EventRehearsalSetupSectionState
               'Rehearsal setup is submitted as one callable-owned snapshot.',
           open: _open,
           states: <WidgetState>{if (!editable) WidgetState.disabled},
-          isLoading: widget.isLoading,
+          status: widget.isLoading
+              ? CatchFieldStatus.saving
+              : CatchFieldStatus.idle,
           onOpenChanged: editable
               ? (open) => setState(() => _open = open)
               : null,

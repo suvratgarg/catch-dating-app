@@ -637,8 +637,10 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
             profile.displayName,
           ),
           onSubmit: () => unawaited(_submitField(_displayNameField)),
-          isLoading:
-              widget.savingProfile && _accordion.isExpanded(_displayNameField),
+          status:
+              widget.savingProfile && _accordion.isExpanded(_displayNameField)
+              ? CatchFieldStatus.saving
+              : CatchFieldStatus.idle,
           states: <WidgetState>{
             if (!(!widget.savingProfile && widget.onSaveProfile != null))
               WidgetState.disabled,
@@ -667,8 +669,9 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
             profile.roleTitle ?? '',
           ),
           onSubmit: () => unawaited(_submitField(_roleTitleField)),
-          isLoading:
-              widget.savingProfile && _accordion.isExpanded(_roleTitleField),
+          status: widget.savingProfile && _accordion.isExpanded(_roleTitleField)
+              ? CatchFieldStatus.saving
+              : CatchFieldStatus.idle,
           states: <WidgetState>{
             if (!(!widget.savingProfile && widget.onSaveProfile != null))
               WidgetState.disabled,
@@ -694,7 +697,9 @@ class _HostTeamProfileRowsState extends State<HostTeamProfileRows> {
           onCancel: () =>
               _cancelField(_bioField, widget.bioController, profile.bio ?? ''),
           onSubmit: () => unawaited(_submitField(_bioField)),
-          isLoading: widget.savingProfile && _accordion.isExpanded(_bioField),
+          status: widget.savingProfile && _accordion.isExpanded(_bioField)
+              ? CatchFieldStatus.saving
+              : CatchFieldStatus.idle,
           states: <WidgetState>{
             if (!(!widget.savingProfile && widget.onSaveProfile != null))
               WidgetState.disabled,

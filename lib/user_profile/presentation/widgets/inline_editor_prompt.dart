@@ -395,7 +395,6 @@ class _ProfileInlinePromptEntryEditorState
           },
           onCancel: _cancelQuestion,
           onSubmit: _saveQuestion,
-          isLoading: questionSaving,
           status: questionSaving ? CatchFieldStatus.saving : _questionStatus,
           error: _saveError(question: true),
         ),

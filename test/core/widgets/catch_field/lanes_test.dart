@@ -246,7 +246,7 @@ void main() {
           title: 'Height',
           body: '168 cm',
           open: true,
-          isLoading: true,
+          status: CatchFieldStatus.saving,
           child: const Text('Height control'),
         ),
       ),

@@ -104,7 +104,9 @@ class _CatchFormRangeFieldState<P> extends State<CatchFormRangeField<P>> {
           : descriptor.value,
       open: widget.scope.isExpanded,
       onOpenChanged: (_) => widget.scope.toggle(),
-      isLoading: _saveState.saving,
+      status: _saveState.saving
+          ? CatchFieldStatus.saving
+          : CatchFieldStatus.idle,
       error: error == null ? null : widget.errorTextBuilder(context, error),
 
       onCancel: _cancel,

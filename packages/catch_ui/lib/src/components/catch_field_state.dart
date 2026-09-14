@@ -200,7 +200,7 @@ class _CatchFieldState extends State<CatchField>
               contract: widget.contract,
               contractExemption: widget.toggleContractExemption,
               semanticLabel: _title,
-              status: _effectiveStatus,
+              status: widget.status,
               topPadding: 0,
             );
           } else if (_statusLaneActive &&
@@ -208,7 +208,7 @@ class _CatchFieldState extends State<CatchField>
               !_hasError) {
             rawTrailingSlot = CatchFieldTrailingRow.status(
               copy: widget.copy,
-              status: _effectiveStatus,
+              status: widget.status,
             );
           } else if (!_isSaving && widget.valid && !_hasError) {
             rawTrailingSlot = CatchFieldTrailingRow.valid(topPadding: 0);

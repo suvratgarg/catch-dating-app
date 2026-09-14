@@ -73,7 +73,6 @@ typedef _EditConfig = ({
   ValueChanged<bool>? onOpenChanged,
   VoidCallback? onCancel,
   VoidCallback? onSubmit,
-  bool isLoading,
 });
 
 typedef _SelectConfig = ({
@@ -99,7 +98,6 @@ typedef _ControlConfig = ({
   ValueChanged<bool>? onOpenChanged,
   VoidCallback? onCancel,
   VoidCallback? onSubmit,
-  bool isLoading,
   bool addable,
   bool isOptional,
   String? helperText,

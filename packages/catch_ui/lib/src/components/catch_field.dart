@@ -466,7 +466,6 @@ class CatchField<T> extends StatefulWidget
          onOpenChanged: null,
          onCancel: null,
          onSubmit: null,
-         isLoading: false,
        );
 
   /// A row-owned disclosure control. The row remains stable while [child]
@@ -486,7 +485,6 @@ class CatchField<T> extends StatefulWidget
     ValueChanged<bool>? onOpenChanged,
     VoidCallback? onCancel,
     VoidCallback? onSubmit,
-    bool isLoading = false,
     this.status = CatchFieldStatus.idle,
     this.states = const <WidgetState>{},
     bool addable = false,
@@ -517,7 +515,6 @@ class CatchField<T> extends StatefulWidget
          onOpenChanged: onOpenChanged,
          onCancel: onCancel,
          onSubmit: onSubmit,
-         isLoading: isLoading,
          addable: addable,
          isOptional: isOptional,
          helperText: helperText,
@@ -548,7 +545,6 @@ class CatchField<T> extends StatefulWidget
     ValueChanged<bool>? onOpenChanged,
     VoidCallback? onCancel,
     VoidCallback? onSubmit,
-    bool isLoading = false,
     CatchFieldStatus status = CatchFieldStatus.idle,
     Set<WidgetState> states = const <WidgetState>{},
     bool addable = false,
@@ -585,7 +581,6 @@ class CatchField<T> extends StatefulWidget
       onOpenChanged: onOpenChanged,
       onCancel: onCancel,
       onSubmit: onSubmit,
-      isLoading: isLoading,
       status: status,
       states: states,
       addable: addable,
@@ -605,7 +600,9 @@ class CatchField<T> extends StatefulWidget
         mode: mode,
         itemLabelBuilder: itemLabelBuilder,
         itemAccentBuilder: itemAccentBuilder,
-        onChanged: !states.contains(WidgetState.disabled) && !isLoading
+        onChanged:
+            !states.contains(WidgetState.disabled) &&
+                status != CatchFieldStatus.saving
             ? onSelectionChanged
             : null,
       ),
@@ -633,7 +630,6 @@ class CatchField<T> extends StatefulWidget
     ValueChanged<bool>? onOpenChanged,
     VoidCallback? onCancel,
     VoidCallback? onSubmit,
-    bool isLoading = false,
     CatchFieldStatus status = CatchFieldStatus.idle,
     Set<WidgetState> states = const <WidgetState>{},
     String? helperText,
@@ -670,7 +666,6 @@ class CatchField<T> extends StatefulWidget
       onOpenChanged: onOpenChanged,
       onCancel: onCancel,
       onSubmit: onSubmit,
-      isLoading: isLoading,
       status: status,
       states: states,
       helperText: helperText,
@@ -685,7 +680,7 @@ class CatchField<T> extends StatefulWidget
         autoClose: onSubmit == null,
         onChanged:
             !states.contains(WidgetState.disabled) &&
-                !isLoading &&
+                status != CatchFieldStatus.saving &&
                 onChanged != null
             ? (selection) => onChanged(selection.single)
             : null,
@@ -717,7 +712,6 @@ class CatchField<T> extends StatefulWidget
     ValueChanged<bool>? onOpenChanged,
     VoidCallback? onCancel,
     VoidCallback? onSubmit,
-    bool isLoading = false,
     CatchFieldStatus status = CatchFieldStatus.idle,
     Set<WidgetState> states = const <WidgetState>{},
     bool addable = false,
@@ -757,7 +751,6 @@ class CatchField<T> extends StatefulWidget
       onOpenChanged: onOpenChanged,
       onCancel: onCancel,
       onSubmit: onSubmit,
-      isLoading: isLoading,
       status: status,
       states: states,
       addable: addable,
@@ -777,7 +770,7 @@ class CatchField<T> extends StatefulWidget
         valueLabelBuilder: valueLabelBuilder,
         decreaseSemanticLabel: decreaseSemanticLabel,
         increaseSemanticLabel: increaseSemanticLabel,
-        enabled: !isLoading,
+        enabled: status != CatchFieldStatus.saving,
         onChanged: onChanged,
       ),
     );
@@ -804,7 +797,6 @@ class CatchField<T> extends StatefulWidget
     this.meta,
     this.actions,
     this.child,
-    bool isLoading = false,
     this.status = CatchFieldStatus.idle,
     TextInputType? keyboardType,
     TextInputAction? textInputAction,
@@ -854,7 +846,6 @@ class CatchField<T> extends StatefulWidget
          onOpenChanged: onOpenChanged,
          onCancel: onCancel,
          onSubmit: onSubmit,
-         isLoading: isLoading,
          initialValue: null,
          retainFocusOnSubmitted: false,
          onValidate: null,

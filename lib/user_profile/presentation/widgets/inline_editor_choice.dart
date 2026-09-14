@@ -134,7 +134,7 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();
         },
-        isLoading: isSaving,
+
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
         values: widget.values,
@@ -298,7 +298,7 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();
         },
-        isLoading: isSaving,
+
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
         values: widget.values,

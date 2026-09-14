@@ -11113,7 +11113,9 @@ class _ExplicitSaveFieldDemoState extends State<_ExplicitSaveFieldDemo> {
         padding: EdgeInsets.zero,
       ),
       error: widget.error,
-      isLoading: widget.isLoading,
+      status: widget.isLoading
+          ? CatchFieldStatus.saving
+          : CatchFieldStatus.idle,
       onCancel: () => setState(() => _expanded = false),
       onSubmit: _noop,
       maxLines: null,
