@@ -6,6 +6,7 @@ import path from "node:path";
 import {
   collectPrimitiveContractUseCases,
   parsePrimitiveContractUseCases,
+  validateGeometrySpecimens,
   validatePrimitiveContractUseCases,
 } from "./check_widgetbook_contract_refs.mjs";
 
@@ -29,6 +30,35 @@ test("all named recipes contribute to their canonical component contract", () =>
   assert.deepEqual(inventory.statesByContractId.get("catch.banner"),
     ["message", "error", "offline", "stacked"]);
   assert.deepEqual(validatePrimitiveContractUseCases(registry, inventory), []);
+});
+
+test("split geometry specimens retain exact type, path, and generated registration requirements", () => {
+  const specimens = [
+    ["modals", "modalGeometryMatrix", "CatchSheet"],
+    ["buttons", "buttonGeometryMatrix", "CatchButton"],
+    ["menus", "menuGeometryMatrix", "CatchMenu"],
+    ["fields", "fieldAndSectionGeometryMatrix", "CatchSection"],
+    ["navigation", "bottomNavigationGeometryMatrix", "CatchTabBar"],
+    ["top_bars", "topBarGeometryMatrix", "CatchTopBar"],
+  ];
+  const useCaseByKey = new Map(specimens.map(([file, builder, type]) => [
+    `widgetbook/lib/geometry/specimens/${file}.dart:${builder}`,
+    {type, path: "[Geometry system]"},
+  ]));
+  const generatedUseCaseKeys = new Set(useCaseByKey.keys());
+  assert.deepEqual(validateGeometrySpecimens({generatedUseCaseKeys}, {useCaseByKey}), []);
+  for (const [key, specimen] of useCaseByKey) {
+    const missing = new Map(useCaseByKey);
+    missing.delete(key);
+    assert.match(validateGeometrySpecimens({generatedUseCaseKeys}, {useCaseByKey: missing}).join("\n"), /missing required Widgetbook geometry use case/);
+    const unregistered = new Set(generatedUseCaseKeys);
+    unregistered.delete(key);
+    assert.match(validateGeometrySpecimens({generatedUseCaseKeys: unregistered}, {useCaseByKey}).join("\n"), /missing from generated Widgetbook directories/);
+    for (const bad of [{...specimen, type: "WrongComponent"}, {...specimen, path: "[Elsewhere]"}]) {
+      const altered = new Map(useCaseByKey).set(key, bad);
+      assert.match(validateGeometrySpecimens({generatedUseCaseKeys}, {useCaseByKey: altered}).join("\n"), /expected @UseCase/);
+    }
+  }
 });
 
 test("removing a recipe or a state cannot be masked by a later preview", () => {

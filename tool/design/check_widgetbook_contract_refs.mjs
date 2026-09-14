@@ -9,7 +9,6 @@ const stateMatrixPath = fromRepo("docs/design_parity/state_matrix.json");
 const screenContractsPath = fromRepo("design/screens/catch.screens.json");
 const widgetbookDirectoriesPath = fromRepo("widgetbook/lib/main.directories.g.dart");
 const widgetbookPrimitiveContractsPath = fromRepo("widgetbook/lib/primitives/contracts");
-const widgetbookGeometryPath = "widgetbook/lib/geometry/component_geometry_use_cases.dart";
 const requiredFoundationSpecimens = [
   {
     component: "FoundationColorTokens",
@@ -56,32 +55,32 @@ const requiredGeometrySpecimens = [
   {
     component: "CatchSheet",
     builder: "modalGeometryMatrix",
-    sourcePath: widgetbookGeometryPath,
+    sourcePath: "widgetbook/lib/geometry/specimens/modals.dart",
   },
   {
     component: "CatchButton",
     builder: "buttonGeometryMatrix",
-    sourcePath: widgetbookGeometryPath,
+    sourcePath: "widgetbook/lib/geometry/specimens/buttons.dart",
   },
   {
     component: "CatchMenu",
     builder: "menuGeometryMatrix",
-    sourcePath: widgetbookGeometryPath,
+    sourcePath: "widgetbook/lib/geometry/specimens/menus.dart",
   },
   {
     component: "CatchSection",
     builder: "fieldAndSectionGeometryMatrix",
-    sourcePath: widgetbookGeometryPath,
+    sourcePath: "widgetbook/lib/geometry/specimens/fields.dart",
   },
   {
     component: "CatchTabBar",
     builder: "bottomNavigationGeometryMatrix",
-    sourcePath: widgetbookGeometryPath,
+    sourcePath: "widgetbook/lib/geometry/specimens/navigation.dart",
   },
   {
     component: "CatchTopBar",
     builder: "topBarGeometryMatrix",
-    sourcePath: widgetbookGeometryPath,
+    sourcePath: "widgetbook/lib/geometry/specimens/top_bars.dart",
   },
 ];
 
@@ -286,7 +285,7 @@ function validateFoundationSpecimens(widgetbook) {
   return errors;
 }
 
-function validateGeometrySpecimens(widgetbook, widgetbookSources) {
+export function validateGeometrySpecimens(widgetbook, widgetbookSources) {
   const errors = [];
   for (const specimen of requiredGeometrySpecimens) {
     const sourceKey = `${specimen.sourcePath}:${specimen.builder}`;
