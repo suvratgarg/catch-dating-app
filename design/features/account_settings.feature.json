@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-05",
+  "updated": "2026-09-14",
   "id": "feature.account_settings",
   "name": "Account Settings",
   "owner": "safety",
@@ -21,7 +21,14 @@
       "bindings": {
         "previewSources": [
           "widgetbook/lib/utility/p3_utility_use_cases.dart",
-          "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
+          "widgetbook/lib/primitives/contracts/buttons.dart",
+          "widgetbook/lib/primitives/contracts/chrome.dart",
+          "widgetbook/lib/primitives/contracts/dialogs.dart",
+          "widgetbook/lib/primitives/contracts/feedback.dart",
+          "widgetbook/lib/primitives/contracts/field.dart",
+          "widgetbook/lib/primitives/contracts/inputs.dart",
+          "widgetbook/lib/primitives/contracts/messages.dart",
+          "widgetbook/lib/primitives/contracts/surfaces.dart"
         ],
         "actionOwners": [
           {

@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-09-02",
+  "updated": "2026-09-14",
   "id": "feature.host_organizers",
   "name": "Host Organizers",
   "owner": "hosts",
@@ -24,7 +24,19 @@
       "bindings": {
         "previewSources": [
           "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
+          "widgetbook/lib/primitives/contracts/buttons.dart",
+          "widgetbook/lib/primitives/contracts/choices.dart",
+          "widgetbook/lib/primitives/contracts/chrome.dart",
+          "widgetbook/lib/primitives/contracts/dialogs.dart",
+          "widgetbook/lib/primitives/contracts/feedback.dart",
+          "widgetbook/lib/primitives/contracts/field.dart",
+          "widgetbook/lib/primitives/contracts/loading.dart",
+          "widgetbook/lib/primitives/contracts/metadata.dart",
+          "widgetbook/lib/primitives/contracts/page_body.dart",
+          "widgetbook/lib/primitives/contracts/section.dart",
+          "widgetbook/lib/primitives/contracts/sheets.dart",
+          "widgetbook/lib/primitives/contracts/surfaces.dart",
+          "widgetbook/lib/primitives/contracts/tabs.dart"
         ],
         "actionOwners": [
           {

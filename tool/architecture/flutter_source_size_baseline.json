@@ -246,10 +246,6 @@
       "maxLines": 4478
     },
     {
-      "path": "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
-      "maxLines": 11367
-    },
-    {
       "path": "widgetbook/lib/profiles/profile_use_cases.dart",
       "maxLines": 2634
     },

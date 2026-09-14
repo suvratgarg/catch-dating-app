@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_organizers.feature.json",
-  "generatedFor": "2026-09-02",
-  "sourceDigest": "sha256:904895b385aed5d80a01c05000d85e20de0e55da75c6d8b318c67a80a38236d4",
+  "generatedFor": "2026-09-14",
+  "sourceDigest": "sha256:3668ab56d39d6a85cc4e6b4597a4433b966b890a17eba77f9533e7633a3ceda1",
   "resolvedDigest": "sha256:4e1a693f95f5a2c1d3ca97bec0567e52e26c6be5ef56517d0c1c705f6e6e75be",
   "feature": {
     "id": "feature.host_organizers",
@@ -40,7 +40,19 @@
       "bindings": {
         "previewSources": [
           "widgetbook/lib/hosts/host_operations_use_cases.dart",
-          "widgetbook/lib/primitives/primitive_contract_use_cases.dart"
+          "widgetbook/lib/primitives/contracts/buttons.dart",
+          "widgetbook/lib/primitives/contracts/choices.dart",
+          "widgetbook/lib/primitives/contracts/chrome.dart",
+          "widgetbook/lib/primitives/contracts/dialogs.dart",
+          "widgetbook/lib/primitives/contracts/feedback.dart",
+          "widgetbook/lib/primitives/contracts/field.dart",
+          "widgetbook/lib/primitives/contracts/loading.dart",
+          "widgetbook/lib/primitives/contracts/metadata.dart",
+          "widgetbook/lib/primitives/contracts/page_body.dart",
+          "widgetbook/lib/primitives/contracts/section.dart",
+          "widgetbook/lib/primitives/contracts/sheets.dart",
+          "widgetbook/lib/primitives/contracts/surfaces.dart",
+          "widgetbook/lib/primitives/contracts/tabs.dart"
         ],
         "actionOwners": [
           {
