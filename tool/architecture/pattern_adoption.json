@@ -2182,7 +2182,7 @@
         "functions/src/communications/organizerCommunicationPlan.test.ts",
         "functions/src/organizers/organizerCommunicationPlans.ts",
         "functions/src/organizers/organizerCommunicationPlans.test.ts",
-        "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/data/crm/host_communication_repository.dart",
         "lib/hosts/domain/crm/host_communication_plan.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
         "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
@@ -2257,7 +2257,7 @@
         "functions/src/organizers/organizerSavedAudiences.ts",
         "functions/src/organizers/organizerSavedAudiences.test.ts",
         "functions/src/organizers/organizerCampaigns.ts",
-        "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/data/crm/host_saved_audience_repository.dart",
         "lib/hosts/domain/crm/host_saved_audience.dart",
         "lib/hosts/presentation/customers/host_customers_screen.dart",
         "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
@@ -2424,7 +2424,7 @@
         "contracts/callables/prepare_organizer_manual_send_task_payload.schema.json",
         "functions/src/organizers/organizerManualSendTasks.ts",
         "functions/src/organizers/organizerManualSendTasks.test.ts",
-        "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/data/crm/host_communication_repository.dart",
         "lib/hosts/domain/crm/host_manual_send_task.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
         "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
@@ -2448,7 +2448,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/data/host_crm_repository.dart",
+          "path": "lib/hosts/data/crm/host_communication_repository.dart",
           "role": "generated callable payload boundaries for revision-bound manual tasks and route re-planning",
           "status": "aligned"
         },

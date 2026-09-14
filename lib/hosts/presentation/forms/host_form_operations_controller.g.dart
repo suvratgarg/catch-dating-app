@@ -440,7 +440,7 @@ final class HostFormAutomationsControllerProvider
 }
 
 String _$hostFormAutomationsControllerHash() =>
-    r'28fded3017fca77acb4d17acef720ea9aab36c49';
+    r'd28b40bc7da8b32f90e4fb383ca4a32ba74459c6';
 
 final class HostFormAutomationsControllerFamily extends $Family
     with
@@ -552,7 +552,7 @@ final class HostAutomationMessagesControllerProvider
 }
 
 String _$hostAutomationMessagesControllerHash() =>
-    r'8286ee1821d50ae1ac21a2f42b32850c7f07c340';
+    r'd963e5a64d7f23deea96fc646409aa679114c92b';
 
 final class HostAutomationMessagesControllerFamily extends $Family
     with

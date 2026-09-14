@@ -1,4 +1,8 @@
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
@@ -15,17 +19,37 @@ part 'host_audience_controller.g.dart';
 
 @riverpod
 HostAudienceController hostAudienceController(Ref ref) =>
-    HostAudienceController(ref.watch(hostCrmRepositoryProvider));
+    HostAudienceController(
+      contacts: ref.watch(hostContactsRepositoryProvider),
+      communication: ref.watch(hostCommunicationRepositoryProvider),
+      savedAudiences: ref.watch(hostSavedAudienceRepositoryProvider),
+      whatsapp: ref.watch(hostWhatsappRepositoryProvider),
+      campaign: ref.watch(hostCampaignRepositoryProvider),
+    );
 
 class HostAudienceController {
-  const HostAudienceController(this._repository);
+  const HostAudienceController({
+    required HostContactsRepository contacts,
+    required HostCommunicationRepository communication,
+    required HostSavedAudienceRepository savedAudiences,
+    required HostWhatsappRepository whatsapp,
+    required HostCampaignRepository campaign,
+  }) : _contacts = contacts,
+       _communication = communication,
+       _savedAudiences = savedAudiences,
+       _whatsapp = whatsapp,
+       _campaign = campaign;
 
-  final HostCrmRepository _repository;
+  final HostContactsRepository _contacts;
+  final HostCommunicationRepository _communication;
+  final HostSavedAudienceRepository _savedAudiences;
+  final HostWhatsappRepository _whatsapp;
+  final HostCampaignRepository _campaign;
 
   Future<HostAudienceContactDetail> getContactDetail({
     required String organizerId,
     required String contactId,
-  }) => _repository.getContactDetail(organizerId, contactId);
+  }) => _contacts.getContactDetail(organizerId, contactId);
 
   Future<void> mutateContact({
     required String organizerId,
@@ -35,7 +59,7 @@ class HostAudienceController {
     bool clearDisplayNameOverride = false,
     bool? whatsappAdminSuppressed,
     bool? hidden,
-  }) => _repository.mutateContact(
+  }) => _contacts.mutateContact(
     organizerId: organizerId,
     contactId: contactId,
     expectedRevision: expectedRevision,
@@ -48,22 +72,22 @@ class HostAudienceController {
   Future<HostAudienceExport> exportContacts({
     required String organizerId,
     HostAudienceSegment? segment,
-  }) => _repository.exportContacts(organizerId, segment: segment);
+  }) => _contacts.exportContacts(organizerId, segment: segment);
 
   Future<HostMessagingSetup> completeWhatsappConnection({
     required String organizerId,
     required HostWhatsappSignupResult result,
-  }) => _repository.completeWhatsappConnection(organizerId, result);
+  }) => _whatsapp.completeWhatsappConnection(organizerId, result);
 
   Future<HostMessagingSetup> syncWhatsappTemplates({
     required String organizerId,
     required String connectionId,
-  }) => _repository.syncWhatsappTemplates(organizerId, connectionId);
+  }) => _whatsapp.syncWhatsappTemplates(organizerId, connectionId);
 
   Future<HostMessagingSetup> disconnectWhatsapp({
     required String organizerId,
     required String connectionId,
-  }) => _repository.disconnectWhatsapp(organizerId, connectionId);
+  }) => _whatsapp.disconnectWhatsapp(organizerId, connectionId);
 
   Future<HostMessagingSetup> sendWhatsappTest({
     required String organizerId,
@@ -71,7 +95,7 @@ class HostAudienceController {
     required String templateId,
     required String toE164,
     required Map<String, String> templateVariables,
-  }) => _repository.sendWhatsappTest(
+  }) => _whatsapp.sendWhatsappTest(
     organizerId: organizerId,
     connectionId: connectionId,
     templateId: templateId,
@@ -86,7 +110,7 @@ class HostAudienceController {
     required HostSavedAudienceDefinition definition,
     String? audienceId,
     int? expectedRevision,
-  }) => _repository.upsertSavedAudience(
+  }) => _savedAudiences.upsertSavedAudience(
     organizerId: organizerId,
     requestId: requestId,
     name: name,
@@ -98,7 +122,7 @@ class HostAudienceController {
   Future<HostSavedAudiencePreview> previewAudience({
     required String organizerId,
     required HostSavedAudience audience,
-  }) => _repository.previewSavedAudience(
+  }) => _savedAudiences.previewSavedAudience(
     organizerId: organizerId,
     audience: audience,
   );
@@ -106,7 +130,7 @@ class HostAudienceController {
   Future<HostSavedAudience> archiveAudience({
     required String organizerId,
     required HostSavedAudience audience,
-  }) => _repository.archiveSavedAudience(
+  }) => _savedAudiences.archiveSavedAudience(
     organizerId: organizerId,
     audience: audience,
   );
@@ -115,41 +139,41 @@ class HostAudienceController {
     required String organizerId,
     required HostCampaignDraft draft,
   }) async {
-    final saved = await _repository.upsertCampaign(organizerId, draft);
-    return _repository.previewCampaign(organizerId, saved);
+    final saved = await _campaign.upsertCampaign(organizerId, draft);
+    return _campaign.previewCampaign(organizerId, saved);
   }
 
   Future<HostCampaign> approveCampaign({
     required String organizerId,
     required HostCampaign campaign,
-  }) => _repository.approveCampaign(organizerId, campaign);
+  }) => _campaign.approveCampaign(organizerId, campaign);
 
   Future<HostCampaign> dispatchCampaign({
     required String organizerId,
     required HostCampaign campaign,
-  }) => _repository.dispatchCampaign(organizerId, campaign);
+  }) => _campaign.dispatchCampaign(organizerId, campaign);
 
   Future<HostCampaign> cancelCampaign({
     required String organizerId,
     required HostCampaign campaign,
-  }) => _repository.cancelCampaign(organizerId, campaign);
+  }) => _campaign.cancelCampaign(organizerId, campaign);
 
   Future<HostCampaign> getCampaignReport({
     required String organizerId,
     required String campaignId,
-  }) => _repository.getCampaignReport(organizerId, campaignId);
+  }) => _campaign.getCampaignReport(organizerId, campaignId);
 
   Future<HostSendsPage> listSends({
     required String organizerId,
     String? cursor,
-  }) => _repository.listCampaigns(organizerId, cursor: cursor);
+  }) => _campaign.listCampaigns(organizerId, cursor: cursor);
 
   Future<HostManualSendTask> prepareManualSendTask({
     required String organizerId,
     required String contactId,
     required String requestId,
     required String prefillText,
-  }) => _repository.prepareManualSendTask(
+  }) => _communication.prepareManualSendTask(
     organizerId: organizerId,
     contactId: contactId,
     requestId: requestId,
@@ -158,21 +182,21 @@ class HostAudienceController {
 
   Future<HostManualSendTask> recordManualHandoffOpened(
     HostManualSendTask task,
-  ) => _repository.recordManualHandoffOpened(task);
+  ) => _communication.recordManualHandoffOpened(task);
 
   Future<HostManualSendTask> validateManualSendTaskLaunch(
     HostManualSendTask task,
-  ) => _repository.validateManualSendTaskLaunch(task);
+  ) => _communication.validateManualSendTaskLaunch(task);
 
   Future<HostManualSendTask> markManualSendTask(
     HostManualSendTask task,
     HostManualSendTaskAction action,
-  ) => _repository.markManualSendTask(task, action);
+  ) => _communication.markManualSendTask(task, action);
 
   Future<HostManualSendTaskReplan> replanManualSendTasks({
     required String organizerId,
     required List<String> taskIds,
-  }) => _repository.replanManualSendTasks(
+  }) => _communication.replanManualSendTasks(
     organizerId: organizerId,
     taskIds: taskIds,
   );
@@ -180,23 +204,23 @@ class HostAudienceController {
   Future<HostManualSendTaskPage> listManualSendTasks({
     required String organizerId,
     String? cursor,
-  }) =>
-      _repository.listManualSendTasks(organizerId: organizerId, cursor: cursor);
+  }) => _communication.listManualSendTasks(
+    organizerId: organizerId,
+    cursor: cursor,
+  );
 
   Future<HostWhatsappThreadDetail> getWhatsappThread({
     required String organizerId,
     required String threadId,
-  }) => _repository.getWhatsappThread(
-    organizerId: organizerId,
-    threadId: threadId,
-  );
+  }) =>
+      _whatsapp.getWhatsappThread(organizerId: organizerId, threadId: threadId);
 
   Future<void> sendWhatsappReply({
     required String organizerId,
     required HostWhatsappThreadDetail thread,
     required String body,
     required String idempotencyKey,
-  }) => _repository.sendWhatsappReply(
+  }) => _whatsapp.sendWhatsappReply(
     organizerId: organizerId,
     thread: thread,
     body: body,

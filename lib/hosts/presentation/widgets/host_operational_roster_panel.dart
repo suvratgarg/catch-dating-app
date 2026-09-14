@@ -19,7 +19,7 @@ import 'package:catch_dating_app/events/domain/event_attendee.dart';
 import 'package:catch_dating_app/events/domain/event_runtime_claim_request.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_event_roster_insights.dart';
 import 'package:catch_dating_app/hosts/data/host_provider_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_roster_file_parser.dart';

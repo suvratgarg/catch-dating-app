@@ -10,7 +10,9 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_manual_send_task.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';

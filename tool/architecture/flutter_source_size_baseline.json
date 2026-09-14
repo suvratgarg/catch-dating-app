@@ -86,10 +86,6 @@
       "maxLines": 923
     },
     {
-      "path": "lib/hosts/data/host_crm_repository.dart",
-      "maxLines": 887
-    },
-    {
       "path": "lib/hosts/domain/host_form_operations.dart",
       "maxLines": 902
     },

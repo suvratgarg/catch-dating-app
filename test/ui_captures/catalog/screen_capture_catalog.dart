@@ -125,7 +125,11 @@ import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';

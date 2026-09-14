@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-09-14",
+  "updated": "2026-09-15",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -5102,7 +5102,9 @@
             "lib/hosts/presentation/customers/host_customer_memory.dart",
             "lib/hosts/presentation/customers/host_customers_screen_state.dart",
             "lib/hosts/presentation/customers/host_customers_controller.dart",
-            "lib/hosts/data/host_crm_repository.dart",
+            "lib/hosts/data/crm/host_contacts_repository.dart",
+            "lib/hosts/data/crm/host_saved_audience_repository.dart",
+            "lib/hosts/data/crm/host_communication_repository.dart",
             "lib/hosts/presentation/host_operations/host_audience.dart",
             "lib/hosts/presentation/host_audience_controller.dart"
           ],
@@ -8732,7 +8734,10 @@
             "lib/hosts/presentation/inbox/host_sends_workspace.dart",
             "lib/hosts/presentation/host_operations_screen.dart",
             "lib/hosts/presentation/host_operations/host_audience.dart",
-            "lib/hosts/data/host_crm_repository.dart",
+            "lib/hosts/data/crm/host_campaign_repository.dart",
+            "lib/hosts/data/crm/host_communication_repository.dart",
+            "lib/hosts/data/crm/host_saved_audience_repository.dart",
+            "lib/hosts/data/crm/host_whatsapp_repository.dart",
             "lib/chats/presentation/inbox/chats_list_view_model.dart",
             "lib/chats/presentation/inbox/widgets/chats_sliver_header.dart",
             "lib/chats/presentation/inbox/widgets/chats_list_body.dart",
