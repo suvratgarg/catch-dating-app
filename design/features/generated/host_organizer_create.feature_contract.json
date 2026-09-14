@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_organizer_create.feature.json",
   "generatedFor": "2026-09-05",
-  "sourceDigest": "sha256:1ff57e7e0ff8185a077bd805f51acdd1fd93d0a436dff83f9f0f8992e992e2c5",
+  "sourceDigest": "sha256:aca18d076a3f3b8fde33a4cb064fe5a63c5bc036788e0808329305a19647b9fa",
   "resolvedDigest": "sha256:6dd14f3c2da377198c64ba9d4b63a86007547c0eb610c3ad59db22a79fbc907f",
   "feature": {
     "id": "feature.host_organizer_create",
@@ -41,7 +41,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/create_club_routes.dart"
         ],
         "actionOwners": [
           {

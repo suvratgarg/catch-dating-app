@@ -23,7 +23,11 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "widgetbook/lib/hosts/operations/analytics.dart",
+          "widgetbook/lib/hosts/operations/organizer_components.dart",
+          "widgetbook/lib/hosts/operations/organizer_routes.dart",
+          "widgetbook/lib/hosts/operations/team_identity.dart",
+          "widgetbook/lib/hosts/operations/team_management.dart",
           "widgetbook/lib/primitives/contracts/buttons.dart",
           "widgetbook/lib/primitives/contracts/choices.dart",
           "widgetbook/lib/primitives/contracts/chrome.dart",

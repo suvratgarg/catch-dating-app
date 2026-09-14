@@ -605,7 +605,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/club_preview.dart"
         ],
         "actionOwners": [
           {

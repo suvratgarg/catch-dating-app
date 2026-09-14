@@ -208,7 +208,7 @@
             "test/hosts/host_create_event_screen_test.dart",
             "test/hosts/host_event_manage_controller_test.dart",
             "test/ui_captures/catalog/screen_capture_catalog.dart",
-            "widgetbook/lib/hosts/host_operations_use_cases.dart"
+            "widgetbook/lib/hosts/operations/manage_routes.dart"
           ],
           "exitCriteria": "Promote Host Event Manage from defined variant to aligned adopter only when the loaded workspace is provider-free for selected section, roster, private access, invite links, Event Success, report, host action display data, mutation display state, retry intents, navigation, and typed callbacks while HostEventManageRouteScreen keeps canonical route aliases plus route loading, missing-resource, error, and access gates. As of 2026-07-03 HostEventManageScreenState is provider-free, but HostEventManageScreen still owns loaded-workspace provider watches and HostEventAttendancePanel still has WidgetRef-parameter debt, so the variant remains open."
         },

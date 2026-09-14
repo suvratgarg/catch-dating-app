@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_organizers.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:3668ab56d39d6a85cc4e6b4597a4433b966b890a17eba77f9533e7633a3ceda1",
+  "sourceDigest": "sha256:6c41a73eac567f3d8d4bce13909d58c1fb028049c7c73ee0f1c393a13aa8ea5e",
   "resolvedDigest": "sha256:4e1a693f95f5a2c1d3ca97bec0567e52e26c6be5ef56517d0c1c705f6e6e75be",
   "feature": {
     "id": "feature.host_organizers",
@@ -39,7 +39,11 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "widgetbook/lib/hosts/operations/analytics.dart",
+          "widgetbook/lib/hosts/operations/organizer_components.dart",
+          "widgetbook/lib/hosts/operations/organizer_routes.dart",
+          "widgetbook/lib/hosts/operations/team_identity.dart",
+          "widgetbook/lib/hosts/operations/team_management.dart",
           "widgetbook/lib/primitives/contracts/buttons.dart",
           "widgetbook/lib/primitives/contracts/choices.dart",
           "widgetbook/lib/primitives/contracts/chrome.dart",

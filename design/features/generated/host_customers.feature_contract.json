@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
-  "sourceDigest": "sha256:32bd03c638130d61d5160badf88c4e5f9606e2cb61dd8414a6f228d89755374a",
+  "sourceDigest": "sha256:c96012eb59c923ec7e150b9ed747bfeeb8e28d237e0bfcfebb1eea9fb4766c57",
   "resolvedDigest": "sha256:e638d7e8cffe42a0c09090039429420a9e390e6132c1739927d0b5d18afc3b44",
   "feature": {
     "id": "feature.host_customers",
@@ -39,7 +39,8 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart",
+          "widgetbook/lib/hosts/operations/audiences.dart",
+          "widgetbook/lib/hosts/operations/customer_routes.dart",
           "widgetbook/lib/hosts/host_saved_audience_use_cases.dart"
         ],
         "actionOwners": [

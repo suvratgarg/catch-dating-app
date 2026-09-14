@@ -20,7 +20,9 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/hosts/host_operations_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/hosts/operations/create_event_routes.dart"
+        ],
         "actionOwners": [
           {"id": "route_screen", "language": "dart", "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart", "symbol": "HostCreateEventRouteStateView"},
           {"id": "wizard_state", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_wizard_state.dart", "symbol": "CreateEventWizardState"},
