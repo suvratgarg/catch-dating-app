@@ -23,7 +23,8 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/event_success/event_success_companion_use_cases.dart"
+          "widgetbook/lib/event_success/companion/route.dart",
+          "widgetbook/lib/event_success/companion/screen.dart"
         ],
         "actionOwners": [
           {

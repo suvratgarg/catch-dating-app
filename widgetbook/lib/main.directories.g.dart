@@ -81,12 +81,40 @@ import 'package:widgetbook_workspace/dashboard/catalog/recommendations.dart'
     as _widgetbook_workspace_dashboard_catalog_recommendations;
 import 'package:widgetbook_workspace/dashboard/catalog/screen.dart'
     as _widgetbook_workspace_dashboard_catalog_screen;
-import 'package:widgetbook_workspace/event_success/event_success_companion_use_cases.dart'
-    as _widgetbook_workspace_event_success_event_success_companion_use_cases;
+import 'package:widgetbook_workspace/event_success/companion/feedback.dart'
+    as _widgetbook_workspace_event_success_companion_feedback;
+import 'package:widgetbook_workspace/event_success/companion/loading.dart'
+    as _widgetbook_workspace_event_success_companion_loading;
+import 'package:widgetbook_workspace/event_success/companion/route.dart'
+    as _widgetbook_workspace_event_success_companion_route;
+import 'package:widgetbook_workspace/event_success/companion/screen.dart'
+    as _widgetbook_workspace_event_success_companion_screen;
 import 'package:widgetbook_workspace/event_success/event_success_module_consolidation_prototypes.dart'
     as _widgetbook_workspace_event_success_event_success_module_consolidation_prototypes;
-import 'package:widgetbook_workspace/event_success/event_success_strict_coverage_use_cases.dart'
-    as _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases;
+import 'package:widgetbook_workspace/event_success/specimens/companion_paper.dart'
+    as _widgetbook_workspace_event_success_specimens_companion_paper;
+import 'package:widgetbook_workspace/event_success/specimens/companion_social.dart'
+    as _widgetbook_workspace_event_success_specimens_companion_social;
+import 'package:widgetbook_workspace/event_success/specimens/companion_stage.dart'
+    as _widgetbook_workspace_event_success_specimens_companion_stage;
+import 'package:widgetbook_workspace/event_success/specimens/defaults.dart'
+    as _widgetbook_workspace_event_success_specimens_defaults;
+import 'package:widgetbook_workspace/event_success/specimens/feature_blocks.dart'
+    as _widgetbook_workspace_event_success_specimens_feature_blocks;
+import 'package:widgetbook_workspace/event_success/specimens/hero.dart'
+    as _widgetbook_workspace_event_success_specimens_hero;
+import 'package:widgetbook_workspace/event_success/specimens/host.dart'
+    as _widgetbook_workspace_event_success_specimens_host;
+import 'package:widgetbook_workspace/event_success/specimens/live_reveal.dart'
+    as _widgetbook_workspace_event_success_specimens_live_reveal;
+import 'package:widgetbook_workspace/event_success/specimens/questionnaire.dart'
+    as _widgetbook_workspace_event_success_specimens_questionnaire;
+import 'package:widgetbook_workspace/event_success/specimens/room_setup.dart'
+    as _widgetbook_workspace_event_success_specimens_room_setup;
+import 'package:widgetbook_workspace/event_success/specimens/setup.dart'
+    as _widgetbook_workspace_event_success_specimens_setup;
+import 'package:widgetbook_workspace/event_success/specimens/structure.dart'
+    as _widgetbook_workspace_event_success_specimens_structure;
 import 'package:widgetbook_workspace/events/catalog/agenda.dart'
     as _widgetbook_workspace_events_catalog_agenda;
 import 'package:widgetbook_workspace/events/catalog/anatomy.dart'
@@ -6218,9 +6246,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Feedback counter row',
-                builder:
-                    _widgetbook_workspace_event_success_event_success_companion_use_cases
-                        .eventSuccessFeedbackCounterRowStates,
+                builder: _widgetbook_workspace_event_success_companion_feedback
+                    .eventSuccessFeedbackCounterRowStates,
               ),
             ],
           ),
@@ -6229,9 +6256,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Loading body',
-                builder:
-                    _widgetbook_workspace_event_success_event_success_companion_use_cases
-                        .eventSuccessCompanionLoadingBodyState,
+                builder: _widgetbook_workspace_event_success_companion_loading
+                    .eventSuccessCompanionLoadingBodyState,
               ),
             ],
           ),
@@ -6240,9 +6266,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route states',
-                builder:
-                    _widgetbook_workspace_event_success_event_success_companion_use_cases
-                        .eventSuccessCompanionRouteStates,
+                builder: _widgetbook_workspace_event_success_companion_route
+                    .eventSuccessCompanionRouteStates,
               ),
             ],
           ),
@@ -6251,9 +6276,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder:
-                    _widgetbook_workspace_event_success_event_success_companion_use_cases
-                        .eventSuccessCompanionScreenStates,
+                builder: _widgetbook_workspace_event_success_companion_screen
+                    .eventSuccessCompanionScreenStates,
               ),
             ],
           ),
@@ -6262,9 +6286,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Feedback form',
-                builder:
-                    _widgetbook_workspace_event_success_event_success_companion_use_cases
-                        .eventSuccessFeedbackFormStates,
+                builder: _widgetbook_workspace_event_success_companion_feedback
+                    .eventSuccessFeedbackFormStates,
               ),
             ],
           ),
@@ -6273,9 +6296,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Feedback rating row',
-                builder:
-                    _widgetbook_workspace_event_success_event_success_companion_use_cases
-                        .eventSuccessFeedbackRatingRowStates,
+                builder: _widgetbook_workspace_event_success_companion_feedback
+                    .eventSuccessFeedbackRatingRowStates,
               ),
             ],
           ),
@@ -6293,7 +6315,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'AfterglowBeatGrid',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictAfterglowBeatGrid,
                   ),
                 ],
@@ -6304,7 +6326,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'AfterglowBeatRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictAfterglowBeatRow,
                   ),
                 ],
@@ -6315,7 +6337,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'AnimatedStageMotifBackground',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictAnimatedStageMotifBackground,
                   ),
                 ],
@@ -6326,7 +6348,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'ArrivalRingCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictArrivalRingCard,
                   ),
                 ],
@@ -6337,7 +6359,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CompanionHero',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictCompanionHero,
                   ),
                 ],
@@ -6348,7 +6370,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CompanionMomentStage',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictCompanionMomentStage,
                   ),
                 ],
@@ -6359,7 +6381,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CompanionMomentStageContent',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictCompanionMomentStageContent,
                   ),
                 ],
@@ -6370,7 +6392,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CompanionPaperScaffold',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictCompanionPaperScaffold,
                   ),
                 ],
@@ -6381,7 +6403,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CompanionStageContentTransition',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictCompanionStageContentTransition,
                   ),
                 ],
@@ -6392,7 +6414,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CompanionStageScaffold',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictCompanionStageScaffold,
                   ),
                 ],
@@ -6403,7 +6425,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CompatibilityQuestionnaireSection',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictCompatibilityQuestionnaireSection,
                   ),
                 ],
@@ -6414,7 +6436,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventCheckInQrScannerSheet',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictEventCheckInQrScannerSheet,
                   ),
                 ],
@@ -6425,7 +6447,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'FirstHelloCheckInCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictFirstHelloCheckInCard,
                   ),
                 ],
@@ -6436,7 +6458,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'GroupRotationSlotRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictGroupRotationSlotRow,
                   ),
                 ],
@@ -6447,7 +6469,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'IncludeMeToggle',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictIncludeMeToggle,
                   ),
                 ],
@@ -6458,7 +6480,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'LiveArrivalRing',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictLiveArrivalRing,
                   ),
                 ],
@@ -6469,7 +6491,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'LiveOthersInRoomLine',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictLiveOthersInRoomLine,
                   ),
                 ],
@@ -6480,7 +6502,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'LiveStepContextCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictLiveStepContextCard,
                   ),
                 ],
@@ -6491,7 +6513,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'MicroPodCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictMicroPodCard,
                   ),
                 ],
@@ -6502,7 +6524,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'NoCompanionActionsCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictNoCompanionActionsCard,
                   ),
                 ],
@@ -6513,7 +6535,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperBarcode',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperBarcode,
                   ),
                 ],
@@ -6524,7 +6546,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperCompanionNav',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperCompanionNav,
                   ),
                 ],
@@ -6535,7 +6557,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperCompanionTicket',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperCompanionTicket,
                   ),
                 ],
@@ -6546,7 +6568,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperExpectationCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperExpectationCard,
                   ),
                 ],
@@ -6557,7 +6579,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperExpectationRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperExpectationRow,
                   ),
                 ],
@@ -6568,7 +6590,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperPrivacyCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperPrivacyCard,
                   ),
                 ],
@@ -6579,7 +6601,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperProgressRail',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperProgressRail,
                   ),
                 ],
@@ -6590,7 +6612,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperSelfCheckInBar',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperSelfCheckInBar,
                   ),
                 ],
@@ -6601,7 +6623,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperTicketDetail',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperTicketDetail,
                   ),
                 ],
@@ -6612,7 +6634,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperTicketHeader',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperTicketHeader,
                   ),
                 ],
@@ -6623,7 +6645,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperTicketPerforation',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperTicketPerforation,
                   ),
                 ],
@@ -6634,7 +6656,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PaperTicketSerial',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_paper
                             .eventSuccessStrictPaperTicketSerial,
                   ),
                 ],
@@ -6645,7 +6667,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PeopleTokenRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictPeopleTokenRow,
                   ),
                 ],
@@ -6656,7 +6678,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PreCheckInPlanningCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictPreCheckInPlanningCard,
                   ),
                 ],
@@ -6667,7 +6689,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PreviewLine',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictPreviewLine,
                   ),
                 ],
@@ -6678,7 +6700,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PrivateAfterglowRecapCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictPrivateAfterglowRecapCard,
                   ),
                 ],
@@ -6689,7 +6711,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'QuestionProgressRail',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictQuestionProgressRail,
                   ),
                 ],
@@ -6700,7 +6722,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RevealCinematicOverlay',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictRevealCinematicOverlay,
                   ),
                 ],
@@ -6711,7 +6733,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RotationScheduleCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictRotationScheduleCard,
                   ),
                 ],
@@ -6722,7 +6744,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RotationSlotRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictRotationSlotRow,
                   ),
                 ],
@@ -6733,7 +6755,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'SelfCheckInCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictSelfCheckInCard,
                   ),
                 ],
@@ -6744,7 +6766,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StageActionDock',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageActionDock,
                   ),
                 ],
@@ -6755,7 +6777,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StageBouncyChip',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageBouncyChip,
                   ),
                 ],
@@ -6766,7 +6788,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StageBouncyPress',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageBouncyPress,
                   ),
                 ],
@@ -6777,7 +6799,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StageConversationCueCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageConversationCueCard,
                   ),
                 ],
@@ -6788,7 +6810,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StageCueLine',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageCueLine,
                   ),
                 ],
@@ -6799,7 +6821,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StageGlyph',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageGlyph,
                   ),
                 ],
@@ -6810,7 +6832,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StageNav',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageNav,
                   ),
                 ],
@@ -6821,7 +6843,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StagePanel',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStagePanel,
                   ),
                 ],
@@ -6832,7 +6854,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StagePrivacyLine',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStagePrivacyLine,
                   ),
                 ],
@@ -6843,7 +6865,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StagePromptCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStagePromptCard,
                   ),
                 ],
@@ -6854,7 +6876,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StageSectionLabel',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageSectionLabel,
                   ),
                 ],
@@ -6865,7 +6887,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'StageSoftBand',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_stage
                             .eventSuccessStrictStageSoftBand,
                   ),
                 ],
@@ -6876,7 +6898,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'WingmanRequestSection',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_companion_social
                             .eventSuccessStrictWingmanRequestSection,
                   ),
                 ],
@@ -6892,7 +6914,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessDefaultsPanel',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_defaults
                             .eventSuccessStrictEventSuccessDefaultsPanel,
                   ),
                 ],
@@ -6908,7 +6930,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'BlockHeader',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictBlockHeader,
                   ),
                 ],
@@ -6919,7 +6941,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'ConversationCueRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictConversationCueRow,
                   ),
                 ],
@@ -6930,7 +6952,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessAttendeeCompanionPreview',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictEventSuccessAttendeeCompanionPreview,
                   ),
                 ],
@@ -6941,7 +6963,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessConversationCueCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictEventSuccessConversationCueCard,
                   ),
                 ],
@@ -6951,9 +6973,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessHeroSurface',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessHeroSurface,
+                    builder: _widgetbook_workspace_event_success_specimens_hero
+                        .eventSuccessStrictEventSuccessHeroSurface,
                   ),
                 ],
               ),
@@ -6963,7 +6984,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessHostSetupFlow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictEventSuccessHostSetupFlow,
                   ),
                 ],
@@ -6974,7 +6995,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessLiveHostMode',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictEventSuccessLiveHostMode,
                   ),
                 ],
@@ -6984,9 +7005,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessMetricPill',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessMetricPill,
+                    builder: _widgetbook_workspace_event_success_specimens_hero
+                        .eventSuccessStrictEventSuccessMetricPill,
                   ),
                 ],
               ),
@@ -6996,7 +7016,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessPostEventReport',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictEventSuccessPostEventReport,
                   ),
                 ],
@@ -7007,7 +7027,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessPromptCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictEventSuccessPromptCard,
                   ),
                 ],
@@ -7018,7 +7038,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessRecommendationTile',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictEventSuccessRecommendationTile,
                   ),
                 ],
@@ -7029,7 +7049,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'IssueList',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictIssueList,
                   ),
                 ],
@@ -7039,9 +7059,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'LiveStepRow',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveStepRow,
+                    builder: _widgetbook_workspace_event_success_specimens_hero
+                        .eventSuccessStrictLiveStepRow,
                   ),
                 ],
               ),
@@ -7051,7 +7070,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'ModuleToggleRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictModuleToggleRow,
                   ),
                 ],
@@ -7062,7 +7081,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'PlaybookSummaryCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictPlaybookSummaryCard,
                   ),
                 ],
@@ -7073,7 +7092,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'ProgressRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictProgressRow,
                   ),
                 ],
@@ -7084,7 +7103,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'WingmanCandidateRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_feature_blocks
                             .eventSuccessStrictWingmanCandidateRow,
                   ),
                 ],
@@ -7099,9 +7118,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'AssignmentReasonSummary',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictAssignmentReasonSummary,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictAssignmentReasonSummary,
                   ),
                 ],
               ),
@@ -7110,9 +7128,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'CompatibilitySignalHostCard',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictCompatibilitySignalHostCard,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictCompatibilitySignalHostCard,
                   ),
                 ],
               ),
@@ -7121,9 +7138,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessHostPanel',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessHostPanel,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessHostPanel,
                   ),
                 ],
               ),
@@ -7132,9 +7148,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessHostSection',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessHostSection,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessHostSection,
                   ),
                 ],
               ),
@@ -7143,9 +7158,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessHostSectionSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessHostSectionSkeleton,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessHostSectionSkeleton,
                   ),
                 ],
               ),
@@ -7154,9 +7168,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessHostTabBody',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessHostTabBody,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessHostTabBody,
                   ),
                 ],
               ),
@@ -7165,9 +7178,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessLiveTabSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessLiveTabSkeleton,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessLiveTabSkeleton,
                   ),
                 ],
               ),
@@ -7176,9 +7188,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessReportMetricsSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessReportMetricsSkeleton,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessReportMetricsSkeleton,
                   ),
                 ],
               ),
@@ -7187,9 +7198,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessReportTabSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessReportTabSkeleton,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessReportTabSkeleton,
                   ),
                 ],
               ),
@@ -7199,7 +7209,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessRoomSetupSection',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_room_setup
                             .eventSuccessStrictEventSuccessRoomSetupSection,
                   ),
                 ],
@@ -7209,9 +7219,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessSetupControlsSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessSetupControlsSkeleton,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessSetupControlsSkeleton,
                   ),
                 ],
               ),
@@ -7220,9 +7229,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessSetupTabSkeleton',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessSetupTabSkeleton,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessSetupTabSkeleton,
                   ),
                 ],
               ),
@@ -7231,9 +7239,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessSkeletonSurface',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessSkeletonSurface,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessSkeletonSurface,
                   ),
                 ],
               ),
@@ -7242,9 +7249,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessTabPicker',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessTabPicker,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictEventSuccessTabPicker,
                   ),
                 ],
               ),
@@ -7253,9 +7259,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'GroupOverrideMemberEditor',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictGroupOverrideMemberEditor,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictGroupOverrideMemberEditor,
                   ),
                 ],
               ),
@@ -7264,9 +7269,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'GroupOverrideRoundEditor',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictGroupOverrideRoundEditor,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictGroupOverrideRoundEditor,
                   ),
                 ],
               ),
@@ -7275,9 +7279,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'GroupOverrideSheet',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictGroupOverrideSheet,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictGroupOverrideSheet,
                   ),
                 ],
               ),
@@ -7286,9 +7289,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'GroupOverrideUnitEditor',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictGroupOverrideUnitEditor,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictGroupOverrideUnitEditor,
                   ),
                 ],
               ),
@@ -7297,9 +7299,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'HostActivitySummary',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictHostActivitySummary,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictHostActivitySummary,
                   ),
                 ],
               ),
@@ -7308,9 +7309,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'HostFunnelSummary',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictHostFunnelSummary,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictHostFunnelSummary,
                   ),
                 ],
               ),
@@ -7319,9 +7319,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'HostReportSignalGrid',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictHostReportSignalGrid,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictHostReportSignalGrid,
                   ),
                 ],
               ),
@@ -7330,9 +7329,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'LiveNowConsole',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveNowConsole,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictLiveNowConsole,
                   ),
                 ],
               ),
@@ -7341,9 +7339,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'LiveStepNavigation',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveStepNavigation,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictLiveStepNavigation,
                   ),
                 ],
               ),
@@ -7352,9 +7349,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'LiveTab',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictLiveTab,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictLiveTab,
                   ),
                 ],
               ),
@@ -7363,9 +7359,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'MicroPodsHostCard',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictMicroPodsHostCard,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictMicroPodsHostCard,
                   ),
                 ],
               ),
@@ -7374,9 +7369,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'NoticeCard',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictNoticeCard,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictNoticeCard,
                   ),
                 ],
               ),
@@ -7385,9 +7379,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'PlanSummary',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictPlanSummary,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictPlanSummary,
                   ),
                 ],
               ),
@@ -7396,9 +7389,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'PodGroupSummary',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictPodGroupSummary,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictPodGroupSummary,
                   ),
                 ],
               ),
@@ -7407,9 +7399,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'ReadinessIssues',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictReadinessIssues,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictReadinessIssues,
                   ),
                 ],
               ),
@@ -7418,9 +7409,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'ReportTab',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictReportTab,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictReportTab,
                   ),
                 ],
               ),
@@ -7429,9 +7419,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'RotationOverridePairEditor',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictRotationOverridePairEditor,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictRotationOverridePairEditor,
                   ),
                 ],
               ),
@@ -7440,9 +7429,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'RotationOverrideRoundEditor',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictRotationOverrideRoundEditor,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictRotationOverrideRoundEditor,
                   ),
                 ],
               ),
@@ -7451,9 +7439,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'RotationOverrideSheet',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictRotationOverrideSheet,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictRotationOverrideSheet,
                   ),
                 ],
               ),
@@ -7462,9 +7449,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'RotationsHostCard',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictRotationsHostCard,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictRotationsHostCard,
                   ),
                 ],
               ),
@@ -7473,9 +7459,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'SetupTab',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictSetupTab,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictSetupTab,
                   ),
                 ],
               ),
@@ -7484,9 +7469,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'TargetAttendeeControl',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictTargetAttendeeControl,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictTargetAttendeeControl,
                   ),
                 ],
               ),
@@ -7495,9 +7479,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'WingmanRequestHostRow',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictWingmanRequestHostRow,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictWingmanRequestHostRow,
                   ),
                 ],
               ),
@@ -7506,9 +7489,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'WingmanRequestsHostCard',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictWingmanRequestsHostCard,
+                    builder: _widgetbook_workspace_event_success_specimens_host
+                        .eventSuccessStrictWingmanRequestsHostCard,
                   ),
                 ],
               ),
@@ -7523,7 +7505,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'AssignmentUnlockedShell',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictAssignmentUnlockedShell,
                   ),
                 ],
@@ -7534,7 +7516,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'AttendeeCountdown',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictAttendeeCountdown,
                   ),
                 ],
@@ -7545,7 +7527,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CountdownBeatRail',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictCountdownBeatRail,
                   ),
                 ],
@@ -7556,7 +7538,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CountdownCuePill',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictCountdownCuePill,
                   ),
                 ],
@@ -7567,7 +7549,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CountdownCueStack',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictCountdownCueStack,
                   ),
                 ],
@@ -7578,7 +7560,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CountdownNumber',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictCountdownNumber,
                   ),
                 ],
@@ -7589,7 +7571,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CountdownStageDial',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictCountdownStageDial,
                   ),
                 ],
@@ -7600,7 +7582,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessLiveRevealAttendeeCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictEventSuccessLiveRevealAttendeeCard,
                   ),
                 ],
@@ -7611,7 +7593,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessLiveRevealHostCard',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictEventSuccessLiveRevealHostCard,
                   ),
                 ],
@@ -7622,7 +7604,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'HostRevealActions',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictHostRevealActions,
                   ),
                 ],
@@ -7633,7 +7615,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RevealGroupSlotRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictRevealGroupSlotRow,
                   ),
                 ],
@@ -7644,7 +7626,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RevealHostCopy',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictRevealHostCopy,
                   ),
                 ],
@@ -7655,7 +7637,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RevealProgressBar',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictRevealProgressBar,
                   ),
                 ],
@@ -7666,7 +7648,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RevealRoundList',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictRevealRoundList,
                   ),
                 ],
@@ -7677,7 +7659,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RevealRoundRail',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictRevealRoundRail,
                   ),
                 ],
@@ -7688,7 +7670,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RevealRoundRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictRevealRoundRow,
                   ),
                 ],
@@ -7699,7 +7681,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RevealSlotRow',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictRevealSlotRow,
                   ),
                 ],
@@ -7710,7 +7692,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'RevealTicker',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictRevealTicker,
                   ),
                 ],
@@ -7721,7 +7703,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'VisibleGroupRotationSlots',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictVisibleGroupRotationSlots,
                   ),
                 ],
@@ -7732,7 +7714,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'VisiblePodAssignment',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictVisiblePodAssignment,
                   ),
                 ],
@@ -7743,7 +7725,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'VisibleRotationSlots',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictVisibleRotationSlots,
                   ),
                 ],
@@ -7754,7 +7736,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'WaitingRevealCue',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_live_reveal
                             .eventSuccessStrictWaitingRevealCue,
                   ),
                 ],
@@ -7770,7 +7752,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'CustomQuestionnaireFields',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_questionnaire
                             .eventSuccessStrictCustomQuestionnaireFields,
                   ),
                 ],
@@ -7781,7 +7763,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessQuestionnaireConfigEditor',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_questionnaire
                             .eventSuccessStrictEventSuccessQuestionnaireConfigEditor,
                   ),
                 ],
@@ -7796,9 +7778,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Within setup body',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessModuleRows,
+                    builder: _widgetbook_workspace_event_success_specimens_setup
+                        .eventSuccessStrictEventSuccessModuleRows,
                   ),
                 ],
               ),
@@ -7807,9 +7788,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessSetupBody',
-                    builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
-                            .eventSuccessStrictEventSuccessSetupBody,
+                    builder: _widgetbook_workspace_event_success_specimens_setup
+                        .eventSuccessStrictEventSuccessSetupBody,
                   ),
                 ],
               ),
@@ -7824,7 +7804,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'EventSuccessStructureConfigEditor',
                     builder:
-                        _widgetbook_workspace_event_success_event_success_strict_coverage_use_cases
+                        _widgetbook_workspace_event_success_specimens_structure
                             .eventSuccessStrictEventSuccessStructureConfigEditor,
                   ),
                 ],
