@@ -30,6 +30,23 @@ Map<String, Object?> requestReadyWire({bool resolved = true}) {
       'kind': 'unresolved',
     };
   }
+  body['reporterOptions'] = {
+    'actorUid': 'host-1',
+    'sourceHash': (body['assignment']! as Map)['sourceHash'],
+    'validUntil': 5000,
+    'reporters': [
+      {
+        'operatorId': 'host-1',
+        'displayName': 'Sam',
+        'validUntil': 9007199254740991,
+      },
+      {
+        'operatorId': 'sweep-2',
+        'displayName': 'Priya',
+        'validUntil': 9007199254740991,
+      },
+    ],
+  };
   return wire;
 }
 
@@ -94,6 +111,7 @@ Map<String, Object?> requestAppliedWire(
     'operationRevision': change.expectedRevision + 1,
   });
   body['serverTime'] = change.review.serverTime + 200;
+  body.remove('reporterOptions');
   if (change.decision case ReassignCheckpointReporter(:final reporterId)) {
     body['assignment'] = {
       'revision': change.expectedRevision + 1,

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_group_pro
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
 part 'event_assistance_checkpoint_support.dart';
+part 'event_assistance_checkpoint_reporters.dart';
 
 final class EventAssistanceCheckpointScope {
   const EventAssistanceCheckpointScope({
@@ -293,6 +294,7 @@ final class EventAssistanceCheckpointView {
     required this.request,
     required this.assignment,
     required this.closeout,
+    required this.reporterOptions,
   });
   final EventAssistanceCheckpointScope scope;
   final int serverTime, revision;
@@ -303,6 +305,8 @@ final class EventAssistanceCheckpointView {
   final AssistanceCheckpointSupplement<AssistanceCheckpointAssignment>
   assignment;
   final AssistanceCheckpointSupplement<AssistanceCheckpointCloseout> closeout;
+  final AssistanceCheckpointSupplement<AssistanceCheckpointReporterOptions>
+  reporterOptions;
   bool get canReport => availability is AssistanceCheckpointRoster;
 
   factory EventAssistanceCheckpointView.fromCallableData(
@@ -323,6 +327,7 @@ final class EventAssistanceCheckpointView {
       'request',
       if (map.containsKey('assignment')) 'assignment',
       if (map.containsKey('closeout')) 'closeout',
+      if (map.containsKey('reporterOptions')) 'reporterOptions',
     });
     expectedScope.requireMatch(map);
     final now = assistanceInteger(map['serverTime']);
@@ -371,6 +376,27 @@ final class EventAssistanceCheckpointView {
     if (closeout.value case final value?) {
       _checkpointRequireCloseout(value, availability, report, request!);
     }
+    final reporterOptions = _checkpointSupplement(map, 'reporterOptions', (
+      value,
+    ) {
+      if (request == null ||
+          assignment.value == null ||
+          availability is! AssistanceCheckpointRoster ||
+          {
+            AssistanceCheckpointRequestState.complete,
+            AssistanceCheckpointRequestState.closedOut,
+          }.contains(request.state)) {
+        throw const FormatException(
+          'Reporter choices require an outstanding original request.',
+        );
+      }
+      return AssistanceCheckpointReporterOptions.fromJson(
+        value,
+        serverTime: now,
+        dueAt: request.dueAt,
+        assignmentHash: assignment.value!.sourceHash,
+      );
+    });
     return EventAssistanceCheckpointView._(
       scope: expectedScope,
       serverTime: now,
@@ -381,6 +407,7 @@ final class EventAssistanceCheckpointView {
       request: request,
       assignment: assignment,
       closeout: closeout,
+      reporterOptions: reporterOptions,
     );
   }
 }

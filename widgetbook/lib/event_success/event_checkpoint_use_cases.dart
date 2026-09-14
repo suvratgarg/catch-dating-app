@@ -86,7 +86,7 @@ Widget assistancePracticeCheckpointHistory(BuildContext context) =>
     const _CheckpointPreview(surface: _Surface.practiceHistory);
 
 @widgetbook.UseCase(
-  name: 'Shared checkpoint closeout and reopen',
+  name: 'Shared checkpoint reporter and closeout',
   type: EventAssistanceCheckpointRequestSection,
   path: _path,
 )

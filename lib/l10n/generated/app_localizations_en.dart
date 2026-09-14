@@ -18473,4 +18473,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventAssistanceCheckpointVisitReview => 'Review guest status';
+
+  @override
+  String get eventAssistanceCheckpointReporterBody =>
+      'Choose someone with access to this group through the original reporting deadline. The deadline stays the same.';
+
+  @override
+  String get eventAssistanceCheckpointReporterLabel => 'Reporter';
+
+  @override
+  String get eventAssistanceCheckpointReporterEmpty =>
+      'No other eligible reporter is available. Review group duties before changing this request.';
+
+  @override
+  String get eventAssistanceCheckpointReporterUnnamed =>
+      'Some eligible hosts have no display name. Add their name before selecting them.';
+
+  @override
+  String get eventAssistanceCheckpointReporterUnknown =>
+      'Reporter details unavailable';
+
+  @override
+  String eventAssistanceCheckpointReporterCurrent({required String name}) {
+    return 'Responsible reporter: $name';
+  }
+
+  @override
+  String get eventAssistanceCheckpointReporterCancel =>
+      'Cancel reporter change';
+
+  @override
+  String get eventAssistanceCheckpointReporterSave => 'Save reporter change';
 }

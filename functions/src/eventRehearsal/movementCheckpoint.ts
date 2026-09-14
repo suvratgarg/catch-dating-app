@@ -1,3 +1,4 @@
+import {practiceCheckpointReporters} from "./checkpointReporters";
 import {practiceCheckpointAccountability} from "./checkpointAccountability";
 import {operationContentHash as hash} from "../operations/durableActions";
 import {practiceGroupPermission} from "./groupStaff";
@@ -82,7 +83,11 @@ export function practiceCheckpointReview(session: Session,
     null;
   const complete = !!report &&
     report.accountedFor.length === departure.roster?.members.length;
-  return {progressRevision: record.progressRevision, checkpointId, sourceHash,
+  const ownerUntil = request ? practiceGroupPermission(source.sessionId,
+    session, authority, source.groupId, "recordCheckpoint",
+    request.responsibleOperatorId) : null;
+  const checkpoint: Checkpoint = {progressRevision: record.progressRevision,
+    checkpointId, sourceHash,
     revision: report?.revision ?? 0, report, availability, departure,
     assignment, closeout,
     accountabilityReviews: practiceCheckpointAccountability(session, source,
@@ -92,8 +97,9 @@ export function practiceCheckpointReview(session: Session,
       {...request, state: "closedOut", ownerAvailability: "notRequired"} :
       {...request, state: availability.kind !== "ready" ? "sourceUnavailable" :
         report ? "discrepancy" : source.now >= request.dueAt ? "overdue" :
-          "awaitingReport", ownerAvailability: practiceGroupPermission(
-        source.sessionId, session, authority, source.groupId,
-        "recordCheckpoint", request.responsibleOperatorId) !== null ?
+          "awaitingReport", ownerAvailability: ownerUntil !== null &&
+          ownerUntil > Math.max(source.now, request.dueAt) ?
         "current" : "needsReassignment"}};
+  return {...checkpoint, reporterOptions: practiceCheckpointReporters(session,
+    source, authority, availability, assignment, checkpoint.request)};
 }

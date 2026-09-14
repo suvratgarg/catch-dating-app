@@ -48,7 +48,10 @@ void main() {
       expect(manager.canReassign, isTrue);
       expect(manager.canClose, isTrue);
       for (final authority in ['readOnly', 'canConfirm']) {
+        final observerWire = requestReadyWire();
+        checkpointBody(observerWire)['reporterOptions'] = null;
         final owner = requestReview(
+          wire: observerWire,
           operator: checkpointOperator(
             actorUid: 'pacer-1',
             authority: authority,
@@ -58,6 +61,7 @@ void main() {
         expect(owner.canReassign, isFalse);
         expect(owner.canClose, isTrue);
         final other = requestReview(
+          wire: observerWire,
           operator: checkpointOperator(
             actorUid: 'other',
             authority: authority,
@@ -115,6 +119,7 @@ void main() {
     };
     expect(requestReview(wire: wire).canClose, isFalse);
     final unknown = requestReadyWire();
+    checkpointBody(unknown).remove('reporterOptions');
     checkpointBody(unknown).remove('assignment');
     checkpointBody(unknown).remove('closeout');
     expect(requestReview(wire: unknown).canAct, isFalse);

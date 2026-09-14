@@ -2873,7 +2873,8 @@
           "dueAt": 61000,
           "state": "awaitingReport",
           "ownerAvailability": "current"
-        }
+        },
+        "reporterOptions": null
       },
       "history": [
         {
@@ -3787,7 +3788,8 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
-        }
+        },
+        "reporterOptions": null
       },
       "history": [
         {
@@ -4708,7 +4710,8 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
-        }
+        },
+        "reporterOptions": null
       },
       "history": [
         {
@@ -5639,7 +5642,8 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
-        }
+        },
+        "reporterOptions": null
       },
       "history": [
         {
@@ -7282,7 +7286,8 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
-        }
+        },
+        "reporterOptions": null
       },
       "history": [
         {
@@ -8924,7 +8929,8 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
-        }
+        },
+        "reporterOptions": null
       },
       "history": [
         {

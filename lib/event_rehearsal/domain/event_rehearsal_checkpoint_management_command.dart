@@ -10,7 +10,9 @@ final class RehearsalManageCheckpoint extends RehearsalMovementCommand {
     final permissions = RehearsalCheckpointRequestPermissions(snapshot);
     final allowed = switch (decision) {
       ReassignCheckpointReporter(:final reporterId) =>
-        permissions.canReassign && reporterId != request!.responsibleOperatorId,
+        permissions.canReassign &&
+            snapshot.checkpoint!.reporterOptions.value!.contains(reporterId) &&
+            reporterId != request!.responsibleOperatorId,
       CloseCheckpointRequest() => permissions.canClose,
       ReopenCheckpointRequest() => permissions.canReopen,
     };

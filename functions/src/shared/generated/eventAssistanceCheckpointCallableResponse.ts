@@ -218,5 +218,21 @@ export interface EventAssistanceCheckpointCallableResponse {
             attendeeIds: string[];
           };
     } | null;
+    /**
+     * Current manager-only choices for this original checkpoint. Missing legacy values do not establish a choice list.
+     */
+    reporterOptions?: {
+      actorUid: string;
+      sourceHash: string;
+      validUntil: number;
+      /**
+       * @maxItems 92
+       */
+      reporters: {
+        operatorId: string;
+        displayName: string | null;
+        validUntil: number;
+      }[];
+    } | null;
   };
 }

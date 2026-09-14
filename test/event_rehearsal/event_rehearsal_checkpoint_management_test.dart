@@ -92,6 +92,7 @@ void main() {
         'movementReview',
         'checkpoint',
       ]);
+      checkpoint.remove('reporterOptions');
       checkpoint.remove('assignment');
       checkpoint.remove('closeout');
       final legacy = EventRehearsalBootstrap.fromCallableData(

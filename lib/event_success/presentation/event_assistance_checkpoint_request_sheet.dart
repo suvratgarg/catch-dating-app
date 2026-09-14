@@ -82,6 +82,8 @@ class EventAssistanceCheckpointRequestSheet extends ConsumerWidget {
                   eligibility: view.closeout.value?.eligibility,
                   canClose: review.view.canClose,
                   canReopen: review.view.canReopen,
+                  canReassign: review.view.canReassign,
+                  reporterOptions: review.view.checkpoint.reporterOptions.value,
                   checkpointLabel: available is AssistanceCheckpointRoster
                       ? available.label
                       : null,

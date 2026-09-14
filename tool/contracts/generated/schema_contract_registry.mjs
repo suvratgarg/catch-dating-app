@@ -8726,6 +8726,75 @@ export const eventAssistanceCheckpointCallableResponseSchema = {
               "type": "null"
             }
           ]
+        },
+        "reporterOptions": {
+          "description": "Current manager-only choices for this original checkpoint. Missing legacy values do not establish a choice list.",
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "actorUid",
+                "sourceHash",
+                "validUntil",
+                "reporters"
+              ],
+              "properties": {
+                "actorUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128,
+                  "pattern": "^[^/]+$"
+                },
+                "sourceHash": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "validUntil": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "reporters": {
+                  "type": "array",
+                  "maxItems": 92,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "operatorId",
+                      "displayName",
+                      "validUntil"
+                    ],
+                    "properties": {
+                      "operatorId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 128,
+                        "pattern": "^[^/]+$"
+                      },
+                      "displayName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "validUntil": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     }
@@ -112600,6 +112669,75 @@ export const eventRehearsalMovementCallableResponseSchema = {
                   }
                 }
               }
+            },
+            "reporterOptions": {
+              "description": "Current original-group reporter choices for the rehearsal manager.",
+              "anyOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "actorUid",
+                    "sourceHash",
+                    "validUntil",
+                    "reporters"
+                  ],
+                  "properties": {
+                    "actorUid": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128,
+                      "pattern": "^[^/]+$"
+                    },
+                    "sourceHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "validUntil": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "reporters": {
+                      "type": "array",
+                      "maxItems": 92,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "operatorId",
+                          "displayName",
+                          "validUntil"
+                        ],
+                        "properties": {
+                          "operatorId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128,
+                            "pattern": "^[^/]+$"
+                          },
+                          "displayName": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "validUntil": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -158318,6 +158456,75 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                       }
                     }
                   }
+                },
+                "reporterOptions": {
+                  "description": "Current original-group reporter choices for the rehearsal manager.",
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "actorUid",
+                        "sourceHash",
+                        "validUntil",
+                        "reporters"
+                      ],
+                      "properties": {
+                        "actorUid": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 128,
+                          "pattern": "^[^/]+$"
+                        },
+                        "sourceHash": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        },
+                        "validUntil": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "reporters": {
+                          "type": "array",
+                          "maxItems": 92,
+                          "items": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                              "operatorId",
+                              "displayName",
+                              "validUntil"
+                            ],
+                            "properties": {
+                              "operatorId": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 128,
+                                "pattern": "^[^/]+$"
+                              },
+                              "displayName": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 120
+                              },
+                              "validUntil": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "maximum": 9007199254740991
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
                 }
               }
             },

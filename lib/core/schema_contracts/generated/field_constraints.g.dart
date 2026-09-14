@@ -13391,6 +13391,62 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const eventAssistanceCheckpointCallableResponseViewReporterOptionsActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.reporterOptions.actorUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReporterOptionsReporters = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.reporterOptions.reporters',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 92,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReporterOptionsReportersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.reporterOptions.reporters.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReporterOptionsReportersItemsOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.reporterOptions.reporters.items.operatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReporterOptionsReportersItemsValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.reporterOptions.reporters.items.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReporterOptionsSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.reporterOptions.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceCheckpointCallableResponseViewReporterOptionsValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.reporterOptions.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceCheckpointCallableResponseViewRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceCheckpointCallableResponse.view.revision',
     required: true,
@@ -32794,6 +32850,62 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.actorUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsReporters = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.reporters',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 92,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsReportersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.reporters.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsReportersItemsOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.reporters.items.operatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsReportersItemsValidUntil = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.reporters.items.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsValidUntil = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointRevision = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.revision',
     required: true,
@@ -38509,6 +38621,62 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointReporterOptionsActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.actorUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointReporterOptionsReporters = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.reporters',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 92,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointReporterOptionsReportersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.reporters.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointReporterOptionsReportersItemsOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.reporters.items.operatorId',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[^/]+\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointReporterOptionsReportersItemsValidUntil = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.reporters.items.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointReporterOptionsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointReporterOptionsValidUntil = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const eventRehearsalMovementCallableResponseCheckpointRevision = CatchContractFieldConstraints(
@@ -92987,6 +93155,13 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCheckpointCallableResponse.view.report.rosterHash': eventAssistanceCheckpointCallableResponseViewReportRosterHash,
     'eventAssistanceCheckpointCallableResponse.view.report.rosterId': eventAssistanceCheckpointCallableResponseViewReportRosterId,
     'eventAssistanceCheckpointCallableResponse.view.report.schemaVersion': eventAssistanceCheckpointCallableResponseViewReportSchemaVersion,
+    'eventAssistanceCheckpointCallableResponse.view.reporterOptions.actorUid': eventAssistanceCheckpointCallableResponseViewReporterOptionsActorUid,
+    'eventAssistanceCheckpointCallableResponse.view.reporterOptions.reporters': eventAssistanceCheckpointCallableResponseViewReporterOptionsReporters,
+    'eventAssistanceCheckpointCallableResponse.view.reporterOptions.reporters.items.displayName': eventAssistanceCheckpointCallableResponseViewReporterOptionsReportersItemsDisplayName,
+    'eventAssistanceCheckpointCallableResponse.view.reporterOptions.reporters.items.operatorId': eventAssistanceCheckpointCallableResponseViewReporterOptionsReportersItemsOperatorId,
+    'eventAssistanceCheckpointCallableResponse.view.reporterOptions.reporters.items.validUntil': eventAssistanceCheckpointCallableResponseViewReporterOptionsReportersItemsValidUntil,
+    'eventAssistanceCheckpointCallableResponse.view.reporterOptions.sourceHash': eventAssistanceCheckpointCallableResponseViewReporterOptionsSourceHash,
+    'eventAssistanceCheckpointCallableResponse.view.reporterOptions.validUntil': eventAssistanceCheckpointCallableResponseViewReporterOptionsValidUntil,
     'eventAssistanceCheckpointCallableResponse.view.revision': eventAssistanceCheckpointCallableResponseViewRevision,
     'eventAssistanceCheckpointCallableResponse.view.serverTime': eventAssistanceCheckpointCallableResponseViewServerTime,
     'eventAssistanceCheckpointCallableResponse.view.sourceHash': eventAssistanceCheckpointCallableResponseViewSourceHash,
@@ -95577,6 +95752,13 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.report.reportedBy': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReportReportedBy,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.report.revision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReportRevision,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.report.rosterHash': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReportRosterHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.actorUid': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsActorUid,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.reporters': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsReporters,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.reporters.items.displayName': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsReportersItemsDisplayName,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.reporters.items.operatorId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsReportersItemsOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.reporters.items.validUntil': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsReportersItemsValidUntil,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.reporterOptions.validUntil': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointReporterOptionsValidUntil,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.revision': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointRevision,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointSourceHash,
     'eventRehearsalBootstrapCallableResponse.movementReview.clockId': eventRehearsalBootstrapCallableResponseMovementReviewClockId,
@@ -96330,6 +96512,13 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.checkpoint.report.reportedBy': eventRehearsalMovementCallableResponseCheckpointReportReportedBy,
     'eventRehearsalMovementCallableResponse.checkpoint.report.revision': eventRehearsalMovementCallableResponseCheckpointReportRevision,
     'eventRehearsalMovementCallableResponse.checkpoint.report.rosterHash': eventRehearsalMovementCallableResponseCheckpointReportRosterHash,
+    'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.actorUid': eventRehearsalMovementCallableResponseCheckpointReporterOptionsActorUid,
+    'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.reporters': eventRehearsalMovementCallableResponseCheckpointReporterOptionsReporters,
+    'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.reporters.items.displayName': eventRehearsalMovementCallableResponseCheckpointReporterOptionsReportersItemsDisplayName,
+    'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.reporters.items.operatorId': eventRehearsalMovementCallableResponseCheckpointReporterOptionsReportersItemsOperatorId,
+    'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.reporters.items.validUntil': eventRehearsalMovementCallableResponseCheckpointReporterOptionsReportersItemsValidUntil,
+    'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.sourceHash': eventRehearsalMovementCallableResponseCheckpointReporterOptionsSourceHash,
+    'eventRehearsalMovementCallableResponse.checkpoint.reporterOptions.validUntil': eventRehearsalMovementCallableResponseCheckpointReporterOptionsValidUntil,
     'eventRehearsalMovementCallableResponse.checkpoint.revision': eventRehearsalMovementCallableResponseCheckpointRevision,
     'eventRehearsalMovementCallableResponse.checkpoint.sourceHash': eventRehearsalMovementCallableResponseCheckpointSourceHash,
     'eventRehearsalMovementCallableResponse.clockId': eventRehearsalMovementCallableResponseClockId,

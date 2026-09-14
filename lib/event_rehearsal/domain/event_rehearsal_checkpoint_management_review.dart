@@ -220,7 +220,10 @@ final class RehearsalCheckpointRequestPermissions {
     final c = _checkpoint;
     return _active &&
         _manager &&
-        c!.assignment.value != null &&
+        c!.reporterOptions.value != null &&
+        c.reporterOptions.value!.actorUid == snapshot.actorUid &&
+        c.reporterOptions.value!.validUntil > snapshot.serverTime &&
+        c.assignment.value != null &&
         c.assignment.value!.revision < 9007199254740991 &&
         c.availability is AssistanceCheckpointRoster &&
         c.request!.state != AssistanceCheckpointRequestState.complete &&

@@ -10,6 +10,7 @@ final class RehearsalMovementCheckpoint {
     this.assignment,
     this.closeout,
     this.accountabilityReviews,
+    this.reporterOptions,
   );
   final RehearsalMovementRecord record;
   final String checkpointId, sourceHash;
@@ -21,6 +22,8 @@ final class RehearsalMovementCheckpoint {
   closeout;
   final AssistanceCheckpointSupplement<List<RehearsalCheckpointVisitReview>>
   accountabilityReviews;
+  final AssistanceCheckpointSupplement<AssistanceCheckpointReporterOptions>
+  reporterOptions;
   int get progressRevision => record.revision;
   int get revision => record.report?.revision ?? 0;
   RehearsalDeparture get departure => record.departure;
@@ -48,6 +51,7 @@ final class RehearsalMovementCheckpoint {
       if (m.containsKey('assignment')) 'assignment',
       if (m.containsKey('closeout')) 'closeout',
       if (m.containsKey('accountabilityReviews')) 'accountabilityReviews',
+      if (m.containsKey('reporterOptions')) 'reporterOptions',
     });
     if (selected == null ||
         selected.departure.checkpointId == null ||
@@ -170,6 +174,31 @@ final class RehearsalMovementCheckpoint {
                 session,
                 canResolveVisits,
               ),
+            ),
+      !m.containsKey('reporterOptions')
+          ? const AssistanceCheckpointNotProvided()
+          : AssistanceCheckpointProvided(
+              m['reporterOptions'] == null
+                  ? null
+                  : () {
+                      if (request == null ||
+                          assignment.value == null ||
+                          available is! AssistanceCheckpointRoster ||
+                          {
+                            AssistanceCheckpointRequestState.complete,
+                            AssistanceCheckpointRequestState.closedOut,
+                          }.contains(request.state)) {
+                        throw const FormatException(
+                          'Reporter choices require an outstanding original request.',
+                        );
+                      }
+                      return AssistanceCheckpointReporterOptions.fromJson(
+                        m['reporterOptions'],
+                        serverTime: session.virtualNow.millisecondsSinceEpoch,
+                        dueAt: request.dueAt,
+                        assignmentHash: assignment.value!.sourceHash,
+                      );
+                    }(),
             ),
     );
   }

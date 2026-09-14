@@ -29277,6 +29277,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Review guest status'**
   String get eventAssistanceCheckpointVisitReview;
+
+  /// No description provided for @eventAssistanceCheckpointReporterBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose someone with access to this group through the original reporting deadline. The deadline stays the same.'**
+  String get eventAssistanceCheckpointReporterBody;
+
+  /// No description provided for @eventAssistanceCheckpointReporterLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter'**
+  String get eventAssistanceCheckpointReporterLabel;
+
+  /// No description provided for @eventAssistanceCheckpointReporterEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No other eligible reporter is available. Review group duties before changing this request.'**
+  String get eventAssistanceCheckpointReporterEmpty;
+
+  /// No description provided for @eventAssistanceCheckpointReporterUnnamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Some eligible hosts have no display name. Add their name before selecting them.'**
+  String get eventAssistanceCheckpointReporterUnnamed;
+
+  /// No description provided for @eventAssistanceCheckpointReporterUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter details unavailable'**
+  String get eventAssistanceCheckpointReporterUnknown;
+
+  /// No description provided for @eventAssistanceCheckpointReporterCurrent.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsible reporter: {name}'**
+  String eventAssistanceCheckpointReporterCurrent({required String name});
+
+  /// No description provided for @eventAssistanceCheckpointReporterCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel reporter change'**
+  String get eventAssistanceCheckpointReporterCancel;
+
+  /// No description provided for @eventAssistanceCheckpointReporterSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save reporter change'**
+  String get eventAssistanceCheckpointReporterSave;
 }
 
 class _AppLocalizationsDelegate

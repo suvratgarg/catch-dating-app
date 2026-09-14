@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.d
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_reporter_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_visits_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -32,12 +33,16 @@ class EventAssistanceCheckpointRequestSection extends StatefulWidget {
     this.guestNames = const {},
     this.reviewableGuestIds = const {},
     this.onReviewGuest,
+    this.reporterOptions,
+    this.canReassign = false,
   });
   final Object reviewIdentity;
   final String contextMessage;
   final AssistanceCheckpointRequest? request;
   final AssistanceCheckpointCloseoutEligibility? eligibility;
   final bool canClose, canReopen;
+  final bool canReassign;
+  final AssistanceCheckpointReporterOptions? reporterOptions;
   final EventAssistanceCheckpointPhase phase;
   final CheckpointRequestDecision? submittedDecision;
   final Object? error;
@@ -56,6 +61,8 @@ class EventAssistanceCheckpointRequestSection extends StatefulWidget {
 class _EventAssistanceCheckpointRequestSectionState
     extends State<EventAssistanceCheckpointRequestSection> {
   final _reason = TextEditingController();
+  bool _choosingReporter = false;
+  String? _reporterId;
   @override
   void initState() {
     super.initState();
@@ -67,6 +74,8 @@ class _EventAssistanceCheckpointRequestSectionState
     super.didUpdateWidget(old);
     if (!identical(widget.reviewIdentity, old.reviewIdentity)) {
       _reason.text = widget.submittedDecision?.reason ?? '';
+      _choosingReporter = false;
+      _reporterId = null;
     }
   }
 
@@ -114,6 +123,18 @@ class _EventAssistanceCheckpointRequestSectionState
             ),
           ),
         ],
+        if (widget.request case final request?) ...[
+          gapH8,
+          Text(
+            l10n.eventAssistanceCheckpointReporterCurrent(
+              name: checkpointReporterName(
+                context,
+                widget.reporterOptions,
+                request.responsibleOperatorId,
+              ),
+            ),
+          ),
+        ],
         if (widget.observationSummary case final summary?) ...[
           gapH8,
           Text(summary, style: CatchTextStyles.labelL(context)),
@@ -157,7 +178,28 @@ class _EventAssistanceCheckpointRequestSectionState
                       },
                   },
           ),
-          if (widget.canClose || widget.canReopen) ...[
+          if (widget.canReassign && widget.reporterOptions != null) ...[
+            gapH8,
+            CatchButton(
+              key: const ValueKey('checkpoint.request.changeReporter'),
+              label: _choosingReporter
+                  ? l10n.eventAssistanceCheckpointReporterCancel
+                  : l10n.eventAssistanceCheckpointRequestReassign,
+              variant: CatchButtonVariant.ghost,
+              onPressed: () => setState(() {
+                _choosingReporter = !_choosingReporter;
+                _reporterId = null;
+              }),
+            ),
+            if (_choosingReporter)
+              EventAssistanceCheckpointReporterSection(
+                options: widget.reporterOptions!,
+                currentReporterId: widget.request!.responsibleOperatorId,
+                value: _reporterId,
+                onChanged: (id) => setState(() => _reporterId = id),
+              ),
+          ],
+          if (widget.canClose || widget.canReopen || _choosingReporter) ...[
             gapH12,
             CatchField.input(
               key: const ValueKey('checkpoint.request.reason'),
@@ -171,7 +213,20 @@ class _EventAssistanceCheckpointRequestSectionState
               onChanged: (_) => setState(() {}),
             ),
             gapH12,
-            if (widget.canClose)
+            if (_choosingReporter)
+              CatchButton(
+                key: const ValueKey('checkpoint.request.reassign'),
+                label: l10n.eventAssistanceCheckpointReporterSave,
+                onPressed: validReason && _reporterId != null
+                    ? () => widget.onConfirm(
+                        ReassignCheckpointReporter(
+                          reporterId: _reporterId!,
+                          reason: _reason.text,
+                        ),
+                      )
+                    : null,
+              ),
+            if (!_choosingReporter && widget.canClose)
               CatchButton(
                 key: const ValueKey('checkpoint.request.close'),
                 label: l10n.eventAssistanceCheckpointRequestClose,
@@ -180,7 +235,7 @@ class _EventAssistanceCheckpointRequestSectionState
                           widget.onConfirm(CloseCheckpointRequest(_reason.text))
                     : null,
               ),
-            if (widget.canReopen) ...[
+            if (!_choosingReporter && widget.canReopen) ...[
               gapH8,
               CatchButton(
                 key: const ValueKey('checkpoint.request.reopen'),
@@ -226,6 +281,18 @@ class _EventAssistanceCheckpointRequestSectionState
                 l10n.eventAssistanceCheckpointRequestReassign,
             }, style: CatchTextStyles.labelL(context)),
             gapH8,
+            if (decision case ReassignCheckpointReporter(
+              :final reporterId,
+            )) ...[
+              Text(
+                checkpointReporterName(
+                  context,
+                  widget.reporterOptions,
+                  reporterId,
+                ),
+              ),
+              gapH8,
+            ],
             Text(decision.reason),
           ],
         ],

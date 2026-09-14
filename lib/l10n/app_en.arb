@@ -24794,5 +24794,21 @@
   "eventAssistanceCheckpointVisitBeforeDeparture": "The recorded outcome predates this departure. Review their status again.",
   "@eventAssistanceCheckpointVisitBeforeDeparture": {"description": "Outcome before the selected departure cannot resolve its request.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_assistance_checkpoint_visits_section"},
   "eventAssistanceCheckpointVisitReview": "Review guest status",
-  "@eventAssistanceCheckpointVisitReview": {"description": "Reopens the exact unconfirmed original departure visit decision.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_assistance_checkpoint_visits_section"}
+  "@eventAssistanceCheckpointVisitReview": {"description": "Reopens the exact unconfirmed original departure visit decision.", "x-audience": "host", "x-owner": "product", "x-surface": "event_success.presentation.event_assistance_checkpoint_visits_section"},
+  "eventAssistanceCheckpointReporterBody": "Choose someone with access to this group through the original reporting deadline. The deadline stays the same.",
+  "@eventAssistanceCheckpointReporterBody": {},
+  "eventAssistanceCheckpointReporterLabel": "Reporter",
+  "@eventAssistanceCheckpointReporterLabel": {},
+  "eventAssistanceCheckpointReporterEmpty": "No other eligible reporter is available. Review group duties before changing this request.",
+  "@eventAssistanceCheckpointReporterEmpty": {},
+  "eventAssistanceCheckpointReporterUnnamed": "Some eligible hosts have no display name. Add their name before selecting them.",
+  "@eventAssistanceCheckpointReporterUnnamed": {},
+  "eventAssistanceCheckpointReporterUnknown": "Reporter details unavailable",
+  "@eventAssistanceCheckpointReporterUnknown": {},
+  "eventAssistanceCheckpointReporterCurrent": "Responsible reporter: {name}",
+  "@eventAssistanceCheckpointReporterCurrent": {"placeholders": {"name": {"type": "String"}}},
+  "eventAssistanceCheckpointReporterCancel": "Cancel reporter change",
+  "@eventAssistanceCheckpointReporterCancel": {},
+  "eventAssistanceCheckpointReporterSave": "Save reporter change",
+  "@eventAssistanceCheckpointReporterSave": {}
 }

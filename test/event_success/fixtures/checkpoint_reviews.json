@@ -47,7 +47,8 @@
             "observation": "unconfirmed"
           }
         ]
-      }
+      },
+      "reporterOptions": null
     }
   },
   "partial": {

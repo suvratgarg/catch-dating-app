@@ -158,6 +158,9 @@ class EventRehearsalCheckpointRequestSheet extends ConsumerWidget {
                         eligibility: checkpoint.closeout.value?.eligibility,
                         canClose: permissions.canClose,
                         canReopen: permissions.canReopen,
+                        canReassign: permissions.canReassign,
+                        reporterOptions:
+                            snapshot.checkpoint?.reporterOptions.value,
                         checkpointLabel: available is AssistanceCheckpointRoster
                             ? available.label
                             : null,

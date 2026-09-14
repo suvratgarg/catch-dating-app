@@ -338,6 +338,23 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
+        },
+        "reporterOptions": {
+          "actorUid": "host-1",
+          "sourceHash": "0fe737207a84e4b7e1c45ad74e7726b5e91165bad7f303675f5b866b5e06aa7a",
+          "validUntil": 1801000,
+          "reporters": [
+            {
+              "operatorId": "host-1",
+              "displayName": "Subrath",
+              "validUntil": 9007199254740991
+            },
+            {
+              "operatorId": "host-2",
+              "displayName": null,
+              "validUntil": 9007199254740991
+            }
+          ]
         }
       },
       "history": [
@@ -864,6 +881,23 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
+        },
+        "reporterOptions": {
+          "actorUid": "host-1",
+          "sourceHash": "0fe737207a84e4b7e1c45ad74e7726b5e91165bad7f303675f5b866b5e06aa7a",
+          "validUntil": 1801000,
+          "reporters": [
+            {
+              "operatorId": "host-1",
+              "displayName": "Subrath",
+              "validUntil": 9007199254740991
+            },
+            {
+              "operatorId": "host-2",
+              "displayName": null,
+              "validUntil": 9007199254740991
+            }
+          ]
         }
       },
       "history": [
@@ -1390,6 +1424,23 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
+        },
+        "reporterOptions": {
+          "actorUid": "host-1",
+          "sourceHash": "0fe737207a84e4b7e1c45ad74e7726b5e91165bad7f303675f5b866b5e06aa7a",
+          "validUntil": 1801000,
+          "reporters": [
+            {
+              "operatorId": "host-1",
+              "displayName": "Subrath",
+              "validUntil": 9007199254740991
+            },
+            {
+              "operatorId": "host-2",
+              "displayName": null,
+              "validUntil": 9007199254740991
+            }
+          ]
         }
       },
       "history": [
@@ -1922,6 +1973,23 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
+        },
+        "reporterOptions": {
+          "actorUid": "host-1",
+          "sourceHash": "0fe737207a84e4b7e1c45ad74e7726b5e91165bad7f303675f5b866b5e06aa7a",
+          "validUntil": 1801000,
+          "reporters": [
+            {
+              "operatorId": "host-1",
+              "displayName": "Subrath",
+              "validUntil": 9007199254740991
+            },
+            {
+              "operatorId": "host-2",
+              "displayName": null,
+              "validUntil": 9007199254740991
+            }
+          ]
         }
       },
       "history": [
@@ -2451,6 +2519,23 @@
           "dueAt": 61000,
           "state": "discrepancy",
           "ownerAvailability": "current"
+        },
+        "reporterOptions": {
+          "actorUid": "host-1",
+          "sourceHash": "39c5c6b6dee10373afb1e3b1ee08633412521ed3154606f4a313320202610fc3",
+          "validUntil": 1801000,
+          "reporters": [
+            {
+              "operatorId": "host-1",
+              "displayName": "Subrath",
+              "validUntil": 9007199254740991
+            },
+            {
+              "operatorId": "host-2",
+              "displayName": null,
+              "validUntil": 9007199254740991
+            }
+          ]
         }
       },
       "history": [

@@ -344,6 +344,7 @@ void main() {
     'observer data readiness never creates manager or responsible reporter authority',
     () async {
       permissions.observerOnly = true;
+      checkpointBody(repository.wire)['reporterOptions'] = null;
       final session = await review();
       final actions = editor(session);
       expect(session.view.canAct, isFalse);

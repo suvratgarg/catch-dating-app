@@ -993,6 +993,75 @@ const schemaEventAssistanceCheckpointCallableResponseSchema = <String, Object?>{
             },
           ],
         },
+        'reporterOptions': <String, Object?>{
+          'description': 'Current manager-only choices for this original checkpoint. Missing legacy values do not establish a choice list.',
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'actorUid',
+                'sourceHash',
+                'validUntil',
+                'reporters',
+              ],
+              'properties': <String, Object?>{
+                'actorUid': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 128,
+                  'pattern': '^[^/]+\$',
+                },
+                'sourceHash': <String, Object?>{
+                  'type': 'string',
+                  'pattern': '^[a-f0-9]{64}\$',
+                },
+                'validUntil': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+                'reporters': <String, Object?>{
+                  'type': 'array',
+                  'maxItems': 92,
+                  'items': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'operatorId',
+                      'displayName',
+                      'validUntil',
+                    ],
+                    'properties': <String, Object?>{
+                      'operatorId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 128,
+                        'pattern': '^[^/]+\$',
+                      },
+                      'displayName': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'minLength': 1,
+                        'maxLength': 120,
+                      },
+                      'validUntil': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 9007199254740991,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
       },
     },
   },

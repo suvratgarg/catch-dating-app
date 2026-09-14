@@ -1411,6 +1411,22 @@ export interface EventRehearsalBootstrapCallableResponse {
             };
         canResolve: boolean;
       }[];
+      /**
+       * Current original-group reporter choices for the rehearsal manager.
+       */
+      reporterOptions?: {
+        actorUid: string;
+        sourceHash: string;
+        validUntil: number;
+        /**
+         * @maxItems 92
+         */
+        reporters: {
+          operatorId: string;
+          displayName: string | null;
+          validUntil: number;
+        }[];
+      } | null;
     } | null;
     /**
      * @maxItems 25

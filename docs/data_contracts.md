@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.108.0
+version: 1.109.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -871,6 +871,16 @@ and current report/owner view, even after later changes. Reassignment changes no
 permissions or deadline and checks the new reporter's scoped authority again after
 lease/work preparation. Disposition-based closeout and staff notification delivery
 remain integration work; this contract does not authorize provider sends.
+
+Live checkpoint reads and rehearsal checkpoint projections optionally expose
+`reporterOptions`. This shared shape binds manager ID, assignment hash and review
+expiry separately from candidate authority expiry. At most 92 candidates contain
+only ID, nullable display name and authority deadline. Each authority deadline must
+be strictly later than the original request deadline and read clock. Current
+servers use null when reassignment is unavailable; legacy omission grants no
+selection authority. The existing reassignment command and atomic receipts remain
+the write boundary, with fresh scoped authority checks. Rehearsal mirrors current
+original-group duties and the virtual deadline without contacting live staff.
 
 Both collections deny direct client access and have no TTL. The report's
 `accountedFor` and receipt's `report` fields are excluded from indexes. Limits match

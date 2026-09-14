@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.116.0
+version: 1.117.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -1322,7 +1322,7 @@ automatic closeout of unresolved departure members.
 Acceptance covers atomic enrollment/interruption/retry, current authority,
 deadline/lease races, corrected reports, bounded source fanout, source failures
 and Firestore concurrency. The hooks and scheduler remain explicitly dormant.
-Staff notifications and reporter-selection controls remain integration work;
+Staff notification delivery remains integration work;
 no provider effect is activated.
 
 The native checkpoint boundary now retains the exact group, saved stop and
@@ -1345,8 +1345,8 @@ refresh and sheet closure. Account changes retire old state. Applied results mus
 confirm the actor, report identity, timestamp and chosen observations; replays
 preserve newer corrections. Reads and writes use the generated callable DTOs.
 The shared native observation and historical navigation controls are mounted in
-both runtimes. Notifications and reporter-selection controls remain integration
-work. Reporting does not change physical attendance, group movement, membership,
+both runtimes, including verified reporter selection. Staff notifications remain
+integration work. Reporting does not change physical attendance, group movement, membership,
 consent or event-visit accountability.
 
 ### Reviewed checkpoint closeout
@@ -1419,8 +1419,8 @@ proof remains readable and explicitly unavailable. The control transaction chang
 and parent action receipt/counters; it neither moves the group nor records an arrival.
 Applied native confirmations verify unchanged movement/report facts and the selected
 outcome; exact replays show later corrections or explicit visit unavailability.
-Verified reporter selection remains the next control to mount. This change sends no
-staff or guest messages.
+Verified reporter selection is also mounted in this request flow. These controls
+send no staff or guest messages.
 
 ### Checkpoint reporter reassignment
 
@@ -1475,8 +1475,29 @@ requires fresh review and an explicit new action. Account transitions retire the
 pending action, including callbacks retained by a closed sheet. Applied results
 verify ownership, original deadline and unchanged arrival facts; exact replays
 preserve later changes. Success refreshes the shared checkpoint read and its
-permission-dependent review. Close/reopen controls are mounted in both runtimes;
-reporter selection and staff notifications remain integration work.
+permission-dependent review. Close/reopen and verified reporter controls are mounted
+in both runtimes. Staff notifications remain integration work.
+
+The optional `reporterOptions` projection binds the requesting manager, assignment
+review hash and a review expiry of at most 30 minutes. Its bounded list combines
+organizer managers and current group observers whose authority extends strictly
+beyond both the server clock and the original deadline. Each candidate exposes only
+an account ID, nullable verified display name and authority deadline. Live discovery
+refuses overflow instead of silently showing an incomplete roster. Staff readers,
+closed or complete requests and unavailable sources expose null; omitted legacy
+metadata remains unknown. Native decisions require membership in the reviewed list,
+and the existing transaction still rechecks target authority before saving.
+
+The existing request section reveals a reporter picker on demand, retains the
+original deadline, and requires a reason and explicit save. Unnamed other hosts
+remain unselectable; self is labelled You. Connection loss freezes the selected
+person and exact operation for retry across sheet closure. Rehearsal uses the same
+control and decision, with virtual group duties and the original virtual deadline.
+A current reporter whose shortened duty no longer covers that deadline explicitly
+needs reassignment even while the duty is still active. Neither selection nor
+reassignment grants a duty, moves a guest or records an arrival. Normal and 2x-text
+interaction tests cover selection, interrupted save, detached retry, confirmation
+and account retirement in both modes.
 
 ### Scoped group staff
 

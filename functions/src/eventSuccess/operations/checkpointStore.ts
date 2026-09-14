@@ -1,3 +1,4 @@
+import {readCheckpointReporters} from "./checkpointReporters";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {operationContentHash} from "../../operations/durableActions";
@@ -27,8 +28,14 @@ export class EventCheckpointStore {
     if (!validateGetEventAssistanceCheckpointCallablePayload(input)) {
       throw new HttpsError("invalid-argument", "Invalid checkpoint scope.");
     }
-    return runAssistanceTransaction(this.db, async (tx) =>
-      checkpointResponse("read", await this.read(tx, actorUid, input)));
+    return runAssistanceTransaction(this.db, async (tx) => {
+      const s = await this.read(tx, actorUid, input);
+      const reporterOptions = s.access.role === "eventLead" ?
+        await readCheckpointReporters(this.db, tx, s, actorUid, this.clock) :
+        null;
+      const result = checkpointResponse("read", s);
+      return {...result, view: {...result.view, reporterOptions}};
+    });
   }
 
   async record(actorUid: string, input: unknown): Promise<Response> {

@@ -401,6 +401,13 @@ final class RehearsalMovementReview {
     if ((selected?.departure.checkpointId != null) != (checkpoint != null)) {
       throw const FormatException('Selected departure checkpoint is missing.');
     }
+    final reporters = checkpoint?.reporterOptions.value;
+    if (reporters != null &&
+        (!(staff?.isManager ?? true) || reporters.actorUid != uid)) {
+      throw const FormatException(
+        'Reporter choices require the current manager.',
+      );
+    }
     final history = _movementList(
       root['history'],
       25,

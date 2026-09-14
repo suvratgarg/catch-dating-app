@@ -460,6 +460,17 @@
           "items": {
             "$ref": "#/definitions/CheckpointVisitReview"
           }
+        },
+        "reporterOptions": {
+          "description": "Current original-group reporter choices for the rehearsal manager.",
+          "anyOf": [
+            {
+              "$ref": "event_assistance_checkpoint.schema.json#/definitions/ReporterOptions"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },

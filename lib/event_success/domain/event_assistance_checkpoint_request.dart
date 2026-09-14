@@ -15,6 +15,15 @@ final class EventAssistanceCheckpointRequestReview {
         operator.authority.validUntil <= serverTime) {
       throw const FormatException('Reload current checkpoint authority.');
     }
+    final options = checkpoint.reporterOptions.value;
+    if (options != null &&
+        (!isManager ||
+            options.actorUid != actorUid ||
+            options.validUntil <= serverTime)) {
+      throw const FormatException(
+        'Reporter choices belong to another or expired manager review.',
+      );
+    }
   }
 
   final EventAssistanceCheckpointView checkpoint;
@@ -38,6 +47,7 @@ final class EventAssistanceCheckpointRequestReview {
       (isManager || checkpoint.request!.responsibleOperatorId == actorUid);
   bool get canReassign =>
       isManager &&
+      checkpoint.reporterOptions.value != null &&
       checkpoint.assignment.value != null &&
       checkpoint.assignment.value!.revision < 9007199254740991 &&
       checkpoint.availability is AssistanceCheckpointRoster &&
@@ -112,6 +122,7 @@ final class EventAssistanceCheckpointRequestChange {
     final allowed = switch (decision) {
       ReassignCheckpointReporter(:final reporterId) =>
         review.canReassign &&
+            review.checkpoint.reporterOptions.value!.contains(reporterId) &&
             reporterId != snapshot.request!.responsibleOperatorId,
       CloseCheckpointRequest() => review.canClose,
       ReopenCheckpointRequest() => review.canReopen,
