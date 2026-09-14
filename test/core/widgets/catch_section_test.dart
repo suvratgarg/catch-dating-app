@@ -449,9 +449,9 @@ void main() {
                   first: true,
                   child: const Text('Lead body'),
                 ),
-                CatchSection.divided(
+                const CatchSection.divided(
                   title: 'Details',
-                  child: const Text('Neutral body'),
+                  child: Text('Neutral body'),
                 ),
               ],
             );

@@ -47,15 +47,15 @@ void main() {
                       first: true,
                       child: const SizedBox.shrink(),
                     ),
-                    CatchSection.divided(
+                    const CatchSection.divided(
                       title: 'Neutral',
                       first: true,
-                      child: const SizedBox.shrink(),
+                      child: SizedBox.shrink(),
                     ),
-                    CatchSection.fieldRows(
+                    const CatchSection.fieldRows(
                       title: 'Neutral fields',
                       first: true,
-                      child: const SizedBox.shrink(),
+                      child: SizedBox.shrink(),
                     ),
                     const CatchSection.fieldRows(
                       title: 'No accent',
