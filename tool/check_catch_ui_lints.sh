@@ -182,10 +182,8 @@ class CatchUiLintProbe extends StatelessWidget {
           padding: EdgeInsets.all(16),
           child: SizedBox.shrink(),
         ),
-        const CatchSectionFocusSurface(
+        const CatchSectionSurface(
           padding: EdgeInsets.zero,
-          focused: false,
-          hasError: false,
           child: SizedBox.shrink(),
         ),
         const CatchFieldLanes.single(
