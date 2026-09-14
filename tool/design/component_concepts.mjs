@@ -1,3 +1,5 @@
+import {featureWidgetNamingIssues} from "./lib/component_naming.mjs";
+
 export const conceptRoles = new Set(["concept", "member", "composition", "screen"]);
 export const conceptQualifiers = new Set([
   "variant",
@@ -29,7 +31,7 @@ export function newWidgetPolicyIssues(
 ) {
   if (entry.visibility === "private") return ["private-widget-class"];
 
-  const issues = [];
+  const issues = featureWidgetNamingIssues(entry);
   if (!widgetbookCovered) issues.push("missing-widgetbook");
   if (["lib/core/widgets/", "lib/core/riverpod_ui/", "packages/catch_ui/lib/"]
     .some((home) => entry.file.startsWith(home))) {

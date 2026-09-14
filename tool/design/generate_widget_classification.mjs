@@ -4,6 +4,7 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {fromRepo} from "../lib/repo_paths.mjs";
 import {collisionKeyFor} from "./component_concepts.mjs";
+import {featureWidgetNamingIssues} from "./lib/component_naming.mjs";
 import {
   buildLineStarts,
   collectClassDeclarations,
@@ -284,7 +285,7 @@ function catalogStatusFor(entry, contract, visibility, widgetbookNames) {
 }
 
 function flagsFor(entry, role, contract, catalogStatus, visibility) {
-  const flags = [];
+  const flags = featureWidgetNamingIssues({...entry, visibility});
   const imports = entry.imports.join("\n");
   if (visibility === "private" && entry.classKind === "widget") {
     flags.push("private-widget-publicization-required");

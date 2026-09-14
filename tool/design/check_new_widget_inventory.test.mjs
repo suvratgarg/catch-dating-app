@@ -29,6 +29,8 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
     "tool/lib/repo_paths.mjs",
     "tool/design/check_new_widget_inventory.mjs",
     "tool/design/component_concepts.mjs",
+    "tool/design/lib/component_naming.mjs",
+    "design/components/catch.components.schema.json",
     "tool/design/lib/new_widget_inventory_declarations.mjs",
     "tool/design/lib/production_widget_roots.mjs",
   ]) {
@@ -80,6 +82,21 @@ test("new-widget gate uses exact registry and Widgetbook identities without read
   const missingPreview = run();
   assert.equal(missingPreview.status, 1);
   assert.deepEqual(JSON.parse(missingPreview.stdout).addedWidgets[0].issues, ["missing-widgetbook"]);
+
+  write(widgetbookFile, "WidgetbookComponent(name: 'CatchButton', useCases: [])\nWidgetbookComponent(name: 'ProfilePanel', useCases: [])");
+  const featureFile = "lib/profile/presentation/profile.dart";
+  write(featureFile, "class ProfilePanel extends StatelessWidget {}\n");
+  const invalidFeature = run();
+  assert.equal(invalidFeature.status, 1);
+  assert.deepEqual(JSON.parse(invalidFeature.stdout).addedWidgets.find(
+    ({name}) => name === "ProfilePanel").issues,
+  ["noncanonical-feature-widget-name", "noncanonical-feature-widget-file"]);
+  fs.rmSync(path.join(root, featureFile));
+  write("lib/profile/presentation/profile_section.dart", "class ProfileSection extends StatelessWidget {}\n");
+  write(widgetbookFile, "WidgetbookComponent(name: 'CatchButton', useCases: [])\nWidgetbookComponent(name: 'ProfileSection', useCases: [])");
+  const validFeature = run();
+  assert.equal(validFeature.status, 0, validFeature.stderr);
+  assert.equal(JSON.parse(validFeature.stdout).summary.coveredNewWidgets, 2);
 });
 
 test("discovers direct and transitive widget subclasses without matching prose", () => {

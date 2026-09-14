@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.62.0
+version: 1.63.0
 updated: 2026-09-14
 owner: app_architecture
 status: active
@@ -2307,6 +2307,11 @@ or implementation technique cannot justify a second shared implementation.
 - **Prefixes.** `Catch` is reserved for design-system symbols (L0–L4a).
   Public feature widgets are `<Feature><RoleNoun>`. Private widget classes
   are legal only at L5.
+  Phase 4 sweeps the complete shared API. The new-widget delta gate enforces
+  this grammar for new or moved feature UI; existing feature naming violations
+  remain visible as source-derived classification flags for the owning
+  consolidation review. Flags do not approve exceptions or establish conformance.
+  App bootstrap classes and app-core adapters are not feature UI.
 - **Role nouns (closed; extend only via component-registry review):** Button,
   IconAction, Field, FieldLanes, Section, SectionList, Tile, Row, RowList,
   Chip, Badge, Banner, Sheet, Dialog, Notice, EmptyState, ErrorState,

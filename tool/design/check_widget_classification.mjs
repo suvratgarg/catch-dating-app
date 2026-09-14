@@ -501,12 +501,14 @@ function runCli() {
   const privateWidgetCount = registry.widgets.filter(
     (widget) => widget.visibility === "private" && widget.classKind === "widget",
   ).length;
+  const featureNamingReviewCount = registry.widgets.filter((widget) =>
+    widget.flags.some((flag) => /^(reserved|noncanonical)-feature-widget-/u.test(flag))).length;
   console.log(
     `Widget classification check passed (${registry.widgets.length} entries, ` +
       `0 unclassified public widgets, 0 ungoverned public name collisions, ` +
       `${registry.summary.collisionGroupCount} governed concept families; ` +
       `${publicReviewCount} public catalog/consolidation candidates and ` +
-      `${privateWidgetCount} private widget classes flagged for review).`,
+      `${privateWidgetCount} private widget classes and ${featureNamingReviewCount} existing feature naming candidates flagged for review).`,
   );
 }
 

@@ -25,6 +25,26 @@ export function sharedWidgetLevel(file) {
   return [...sharedHomes].find(([home]) => file.startsWith(home))?.[1] ?? null;
 }
 
+/** Feature UI is distinct from app bootstraps and the app-core adapter layer. */
+export function featureWidgetNamingIssues(entry) {
+  if (entry.visibility !== "public" || entry.classKind === "widget-state") return [];
+  const featureSource = /^lib\/(?!core\/|l10n\/|routing\/)[^/]+\//u.test(entry.file) ||
+    /^apps\/(?:consumer|host)\/lib\/[^/]+\//u.test(entry.file);
+  if (!featureSource || sharedWidgetLevel(entry.file)) return [];
+  const issues = [];
+  if (entry.name.startsWith("Catch")) issues.push("reserved-feature-widget-prefix");
+  const role = [...roleNouns, "Screen"].sort((a, b) => b.length - a.length)
+    .find((candidate) => entry.name.endsWith(candidate));
+  const feature = role ? entry.name.slice(0, -role.length) : "";
+  if (!/^(?:[A-Z][a-z0-9]*)+$/u.test(feature)) issues.push("noncanonical-feature-widget-name");
+  const file = path.basename(entry.file, ".dart");
+  const suffixes = [...roleNouns, "Screen", "Controller", "ViewModel", "State", "Repository", "Service", "Providers"];
+  if (!suffixes.some((suffix) => file.endsWith(`_${snakeCase(suffix)}`))) {
+    issues.push("noncanonical-feature-widget-file");
+  }
+  return issues;
+}
+
 export function componentNamingEntries(components) {
   return components.flatMap((component) => [
     {...component, symbol: component.dart?.symbol, file: component.dart?.file},

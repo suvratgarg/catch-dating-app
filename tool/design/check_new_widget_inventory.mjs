@@ -29,7 +29,8 @@ Compares production Dart sources against the merge base with origin/main by
 default. Blocks new or moved private widget classes and Widget-returning helpers,
 checks Widgetbook for every new or moved public widget, and requires shared
 widgets to use the Catch* namespace and an exact source identity in the component
-registry. The widget catalog is generated output, not an independent input.
+registry. New or moved feature UI also requires a feature-prefixed role name and
+a canonical source-file suffix. The widget catalog is generated output, not an independent input.
 The scan fails closed when its base ref is unavailable.
 `);
   process.exit(0);
@@ -107,7 +108,7 @@ const report = {
     widgetbook: "widgetbook/lib/main.directories.g.dart",
     registry: "design/components/catch.components.json",
     policy:
-      "New or moved public widget classes need Widgetbook coverage; shared widgets also require a canonical Catch* name and exact source identity in the component registry. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public covered widgets. The catalog inventory is generated separately.",
+      "New or moved public widget classes need Widgetbook coverage and feature UI requires canonical role names/file suffixes; shared widgets also require a canonical Catch* name and exact source identity in the component registry. New or moved private widget classes and Widget-returning helpers must be inlined/deleted, merged into an existing primitive, or promoted to public covered widgets. The catalog inventory is generated separately.",
   },
   summary,
   movedWidgets,
