@@ -111,10 +111,24 @@ import 'package:widgetbook_workspace/foundation/specimens/spacing.dart'
     as _widgetbook_workspace_foundation_specimens_spacing;
 import 'package:widgetbook_workspace/foundation/specimens/typography.dart'
     as _widgetbook_workspace_foundation_specimens_typography;
-import 'package:widgetbook_workspace/geometry/component_geometry_use_cases.dart'
-    as _widgetbook_workspace_geometry_component_geometry_use_cases;
 import 'package:widgetbook_workspace/geometry/field_transition_prototype.dart'
     as _widgetbook_workspace_geometry_field_transition_prototype;
+import 'package:widgetbook_workspace/geometry/specimens/buttons.dart'
+    as _widgetbook_workspace_geometry_specimens_buttons;
+import 'package:widgetbook_workspace/geometry/specimens/event_modal.dart'
+    as _widgetbook_workspace_geometry_specimens_event_modal;
+import 'package:widgetbook_workspace/geometry/specimens/fields.dart'
+    as _widgetbook_workspace_geometry_specimens_fields;
+import 'package:widgetbook_workspace/geometry/specimens/menus.dart'
+    as _widgetbook_workspace_geometry_specimens_menus;
+import 'package:widgetbook_workspace/geometry/specimens/modals.dart'
+    as _widgetbook_workspace_geometry_specimens_modals;
+import 'package:widgetbook_workspace/geometry/specimens/navigation.dart'
+    as _widgetbook_workspace_geometry_specimens_navigation;
+import 'package:widgetbook_workspace/geometry/specimens/responsive.dart'
+    as _widgetbook_workspace_geometry_specimens_responsive;
+import 'package:widgetbook_workspace/geometry/specimens/top_bars.dart'
+    as _widgetbook_workspace_geometry_specimens_top_bars;
 import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
@@ -5402,7 +5416,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         useCases: [
           _widgetbook.WidgetbookUseCase(
             name: 'Geometry matrix',
-            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+            builder: _widgetbook_workspace_geometry_specimens_buttons
                 .buttonGeometryMatrix,
           ),
         ],
@@ -5412,7 +5426,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         useCases: [
           _widgetbook.WidgetbookUseCase(
             name: 'Geometry matrix',
-            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+            builder: _widgetbook_workspace_geometry_specimens_menus
                 .menuGeometryMatrix,
           ),
         ],
@@ -5422,12 +5436,12 @@ final directories = <_widgetbook.WidgetbookNode>[
         useCases: [
           _widgetbook.WidgetbookUseCase(
             name: 'Create event modal · production',
-            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+            builder: _widgetbook_workspace_geometry_specimens_event_modal
                 .createEventModalSectionComparison,
           ),
           _widgetbook.WidgetbookUseCase(
             name: 'Geometry matrix',
-            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+            builder: _widgetbook_workspace_geometry_specimens_fields
                 .fieldAndSectionGeometryMatrix,
           ),
           _widgetbook.WidgetbookUseCase(
@@ -5437,7 +5451,7 @@ final directories = <_widgetbook.WidgetbookNode>[
           ),
           _widgetbook.WidgetbookUseCase(
             name: 'Responsive page contexts',
-            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+            builder: _widgetbook_workspace_geometry_specimens_responsive
                 .responsivePageContextMatrix,
           ),
         ],
@@ -5447,7 +5461,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         useCases: [
           _widgetbook.WidgetbookUseCase(
             name: 'Geometry matrix',
-            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+            builder: _widgetbook_workspace_geometry_specimens_modals
                 .modalGeometryMatrix,
           ),
         ],
@@ -5457,7 +5471,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         useCases: [
           _widgetbook.WidgetbookUseCase(
             name: 'Geometry matrix',
-            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+            builder: _widgetbook_workspace_geometry_specimens_navigation
                 .bottomNavigationGeometryMatrix,
           ),
         ],
@@ -5467,7 +5481,7 @@ final directories = <_widgetbook.WidgetbookNode>[
         useCases: [
           _widgetbook.WidgetbookUseCase(
             name: 'Geometry matrix',
-            builder: _widgetbook_workspace_geometry_component_geometry_use_cases
+            builder: _widgetbook_workspace_geometry_specimens_top_bars
                 .topBarGeometryMatrix,
           ),
         ],

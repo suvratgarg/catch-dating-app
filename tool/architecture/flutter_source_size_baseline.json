@@ -210,10 +210,6 @@
       "maxLines": 2389
     },
     {
-      "path": "widgetbook/lib/geometry/component_geometry_use_cases.dart",
-      "maxLines": 1627
-    },
-    {
       "path": "widgetbook/lib/matches/matches_chat_use_cases.dart",
       "maxLines": 2660
     },
