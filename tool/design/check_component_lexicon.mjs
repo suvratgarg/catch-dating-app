@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import {fromRepo} from "../lib/repo_paths.mjs";
+import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {collectComponentApi, componentApiProblems} from "./lib/component_api.mjs";
 import {productionWidgetRoots} from "./lib/production_widget_roots.mjs";
 
 const knownBad = process.argv.includes("--known-bad");
@@ -66,6 +67,17 @@ if (fs.existsSync(fromRepo("design/web-ui/components.json"))) {
   validateReverseRegistry("webui", "design/web-ui/components.json");
 }
 
+const apiInventory = collectComponentApi({repoRoot});
+if (process.argv.includes("--known-bad-api")) {
+  const input = apiInventory.classes?.find((row) => row.name === "CatchField")
+    ?.constructors.find((row) => row.name === "input");
+  if (!input) failures.push("API probe could not find the production Field.input constructor");
+  else input.parameters.push({name: "unreviewedFlag", type: "bool", kind: "value", named: true});
+}
+const apiProblems = componentApiProblems(apiInventory);
+failures.push(...apiProblems.map((problem) =>
+  `${problem.file ?? "component API"}:${problem.line ?? 0}: ${problem.message}`));
+
 if (failures.length > 0) {
   console.error("Component lexicon check failed:");
   failures.forEach((failure) => console.error(`- ${failure}`));
@@ -74,7 +86,7 @@ if (failures.length > 0) {
 
 console.log(
   `Component lexicon check passed (${componentById.size} contracts; ` +
-  `${countLinks(registry.components ?? [])} surface links).`
+  `${countLinks(registry.components ?? [])} surface links; 0 shared API grammar violations).`
 );
 
 function validateReverseRegistry(surface, relativePath) {

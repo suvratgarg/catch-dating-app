@@ -41,3 +41,11 @@ test("structural labels remain distinct from status badges on every stack", () =
     webui: "BadgeControl",
   });
 });
+
+test("component lexicon rejects a third boolean on a production constructor", () => {
+  const result = spawnSync(process.execPath,
+    ["tool/design/check_component_lexicon.mjs", "--known-bad-api"],
+    {cwd: process.cwd(), encoding: "utf8"});
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /CatchField.input: exposes 3 booleans.*unreviewedFlag/u);
+});

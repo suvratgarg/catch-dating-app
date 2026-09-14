@@ -8,6 +8,7 @@ import {
   collectProductionWidgetClassificationDeclarations,
 } from "./generate_widget_classification.mjs";
 import {publicWidgetNamingProblems} from "./component_concepts.mjs";
+import {sharedWidgetNamingProblems} from "./lib/component_naming.mjs";
 import {
   isProductionWidgetDartPath,
   productionWidgetGlobs,
@@ -106,6 +107,9 @@ export function validateWidgetClassification(
     }
   }
   failures.push(...publicWidgetNamingProblems(registry.widgets));
+  failures.push(...sharedWidgetNamingProblems({
+    components: contracts, declarations: registry.widgets,
+  }));
   return [...new Set(failures)].sort();
 }
 

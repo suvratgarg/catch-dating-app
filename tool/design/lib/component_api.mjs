@@ -1,3 +1,6 @@
+import {spawnSync} from "node:child_process";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 import {componentAxes, widgetSlotNames} from "./component_naming.mjs";
 
 const widgetBases = new Set([
@@ -36,6 +39,30 @@ function typeArguments(type) {
   }
   result.push(source.slice(start).trim());
   return result;
+}
+
+/** Execute the syntax-only collector; missing SDK or malformed output fails closed. */
+export function collectComponentApi({repoRoot, run = spawnSync}) {
+  const result = run("dart", [
+    `--packages=${path.join(repoRoot, ".dart_tool/package_config.json")}`,
+    fileURLToPath(new URL("./component_api.dart", import.meta.url)),
+    "--root", repoRoot,
+  ], {cwd: repoRoot, encoding: "utf8", maxBuffer: 32 * 1024 * 1024});
+  const failed = (message) => ({failures: [`Component API collection failed: ${message}`]});
+  if (result.error || result.status !== 0) {
+    return failed(result.error?.message || result.stderr?.trim() || `exit ${result.status}`);
+  }
+  let inventory;
+  try {
+    inventory = JSON.parse(result.stdout);
+  } catch {
+    return failed("collector did not return JSON");
+  }
+  if (!Array.isArray(inventory?.classes) || inventory.classes.length === 0 ||
+      !Array.isArray(inventory?.enums) || !Array.isArray(inventory?.failures)) {
+    return failed("collector returned an empty or invalid declaration inventory");
+  }
+  return inventory;
 }
 
 /** Check every public Widget constructor, not only the default constructor. */

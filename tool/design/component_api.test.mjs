@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import {after, before, test} from "node:test";
 import {fileURLToPath} from "node:url";
-import {componentApiProblems} from "./lib/component_api.mjs";
+import {collectComponentApi, componentApiProblems} from "./lib/component_api.mjs";
 
 const repo = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const collector = path.join(repo, "tool/design/lib/component_api.dart");
@@ -249,4 +249,17 @@ test("unknown CLI arguments fail instead of falling back to another inventory", 
   const result = spawnSync("dart", [...dartArguments, "--typo", "value"], {cwd: repo, encoding: "utf8"});
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Unknown argument/u);
+});
+
+test("gate collection fails closed on SDK failure, non-JSON and empty output", () => {
+  for (const result of [
+    {status: null, error: new Error("SDK missing")},
+    {status: 1, stderr: "syntax failure"},
+    {status: 0, stdout: "truncated"},
+    {status: 0, stdout: JSON.stringify({classes: [], enums: [], failures: []})},
+  ]) {
+    const inventory = collectComponentApi({repoRoot: repo, run: () => result});
+    assert.equal(componentApiProblems(inventory).length, 1);
+    assert.match(inventory.failures[0], /Component API collection failed/u);
+  }
 });

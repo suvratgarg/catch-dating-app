@@ -5389,12 +5389,17 @@
         "tool/design/component_concepts.mjs",
         "tool/design/component_concepts.test.mjs",
         "tool/design/lib/new_widget_inventory_declarations.mjs",
-        "tool/design/lib/production_widget_roots.mjs"
+        "tool/design/lib/production_widget_roots.mjs",
+        "tool/design/lib/component_naming.mjs",
+        "tool/design/component_naming.test.mjs",
+        "design/components/catch.components.json",
+        "packages/catch_ui/lib/**",
+        "lib/core/riverpod_ui/**"
       ],
       "command": "node tool/design/check_widget_classification.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Validates a source-derived, transitive widget classification across shared, Consumer, and Host production roots and blocks exact duplicate public widget classes plus ungoverned normalized naming collisions. Generated exclusions are restricted to named localization outputs and generated-file suffixes rather than whole directories, and no tracked inventory snapshot is trusted.",
+      "description": "Validates source-derived Widget ownership and identity across production roots. Shared Widgets must match reviewed ladder levels, role nouns, use-case comparisons, primary files and canonical names; new registry IDs cannot bypass collisions. No tracked inventory snapshot is trusted.",
       "checks": [
         "node --check tool/design/check_widget_classification.mjs",
         "node --test tool/design/check_widget_classification.test.mjs",
@@ -6359,12 +6364,15 @@
         "tool/design/lib/component_api.mjs",
         "tool/design/component_api.test.mjs",
         "design/components/catch.components.schema.json",
-        "docs/app_architecture.md"
+        "docs/app_architecture.md",
+        "packages/catch_ui/lib/**",
+        "lib/core/riverpod_ui/**",
+        "design/components/catch.components.json"
       ],
       "command": "node tool/design/check_component_lexicon.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Binds declared Flutter, website, admin, and web-ui implementation symbols to the cross-stack Catch component lexicon and validates reverse registry links.",
+      "description": "Binds declared cross-stack component symbols and enforces every public shared Widget constructor against the binding boolean, slot, callback, builder and enum-axis grammar using the syntax-only Dart collector.",
       "checks": [
         "node --check tool/design/check_component_lexicon.mjs",
         "node --check tool/design/lib/component_naming.mjs",

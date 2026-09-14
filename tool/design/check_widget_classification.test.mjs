@@ -221,6 +221,15 @@ test("rejects missing and stale source classifications", () => {
   assert.ok(failures.includes(`${stale.file}:${stale.name}: stale classification`));
 });
 
+test("classification enforces the reviewed role instead of trusting a registry ID", () => {
+  const changedContracts = clone(contracts);
+  changedContracts.find((row) => row.id === "catch.field").roleNoun = "Input";
+  const failures = validateWidgetClassification(classification, {
+    contracts: changedContracts, widgetbookNames, sourceDeclarations,
+  });
+  assert.ok(failures.some((failure) => /catch.field: expected CatchInput, found CatchField/u.test(failure)));
+});
+
 function validate(value) {
   return validateWidgetClassification(value, {
     contracts,
