@@ -2774,7 +2774,7 @@ Widget catchFieldContractStates(BuildContext context) {
           copy: copy,
           title: 'Handle',
           initialValue: '@catch-hosts',
-          readOnly: true,
+          inputMode: CatchTextInputMode.inactiveWithoutSelection,
         ),
       ),
       fieldState(

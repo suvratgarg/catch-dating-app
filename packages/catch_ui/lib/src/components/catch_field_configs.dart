@@ -49,7 +49,7 @@ typedef _EditConfig = ({
   int? maxLines,
   int? minLines,
   int? maxLength,
-  bool readOnly,
+  CatchTextInputMode inputMode,
   bool autofocus,
   bool showLabel,
   CatchFieldSize size,

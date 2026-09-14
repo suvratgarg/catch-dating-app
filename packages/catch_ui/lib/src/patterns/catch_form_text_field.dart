@@ -207,7 +207,9 @@ class _CatchFormTextFieldState<P> extends State<CatchFormTextField<P>> {
       maxLines: descriptor.maxLines,
       minLines: descriptor.minLines,
       maxLength: descriptor.effectiveMaxLength,
-      readOnly: _saveState.saving,
+      inputMode: _saveState.saving
+          ? CatchTextInputMode.inactiveWithoutSelection
+          : CatchTextInputMode.editable,
       status: _saveState.status,
       error: error,
       onFocusChanged: (focused) {

@@ -188,7 +188,9 @@ class _ProfileDirectTextEntryFieldState
         textInputAction: TextInputAction.done,
         textCapitalization: widget.textCapitalization,
         autofillHints: widget.autofillHints,
-        readOnly: isSaving,
+        inputMode: isSaving
+            ? CatchTextInputMode.inactiveWithoutSelection
+            : CatchTextInputMode.editable,
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: errorText,
         onFocusChanged: _handleFocusChanged,

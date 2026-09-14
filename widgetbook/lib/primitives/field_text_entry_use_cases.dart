@@ -38,7 +38,7 @@ Widget fieldTextEntryStates(BuildContext context) {
         copy: copy,
         title: 'Invitation code',
         initialValue: 'ABCD',
-        readOnly: true,
+        inputMode: CatchTextInputMode.inactiveWithoutSelection,
         leading: Icon(CatchIcons.tabEvents),
       ),
       CatchField.input(

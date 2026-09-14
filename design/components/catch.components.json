@@ -2956,11 +2956,20 @@
             "notes": "Caller-owned disabled and focus presentation states. Disabled suppresses interaction even when focus presentation is requested; native focus remains owned by the field. Empty restores ordinary enabled behavior."
           },
           {
-            "name": "readOnly",
-            "type": "bool",
+            "name": "inputMode",
+            "type": "enum",
             "required": false,
-            "default": false,
-            "dartType": "bool"
+            "default": "editable",
+            "dartType": "CatchTextInputMode",
+            "values": [
+              "editable",
+              "readOnly",
+              "inactive",
+              "editableWithoutSelection",
+              "readOnlyWithoutSelection",
+              "inactiveWithoutSelection"
+            ],
+            "notes": "Native editing, focus and selection permissions for direct text inputs. Non-actionable display-only fields use inactiveWithoutSelection; date-picker triggers use readOnly with onTap. Explicit-save inputs derive native permissions from their open state."
           }
         ],
         "states": [

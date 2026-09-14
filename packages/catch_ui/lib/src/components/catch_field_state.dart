@@ -141,7 +141,7 @@ class _CatchFieldState extends State<CatchField>
               _isEdit &&
               !widget._explicitSaveInput &&
               widget.enabled &&
-              (!widget.readOnly || widget.onTap != null);
+              (widget.inputMode.canRequestFocus || widget.onTap != null);
           final canToggleRow =
               _isToggle && widget.onToggle != null && !_isSaving;
           final canExpand =

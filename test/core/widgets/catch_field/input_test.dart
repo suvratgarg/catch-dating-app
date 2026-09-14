@@ -16,6 +16,41 @@ import 'test_support.dart';
 part 'input_selection_tests.dart';
 
 void main() {
+  for (final (mode, canFocus, readOnly, selectable) in [
+    (CatchTextInputMode.editable, true, false, true),
+    (CatchTextInputMode.readOnly, true, true, true),
+    (CatchTextInputMode.inactive, false, true, true),
+    (CatchTextInputMode.editableWithoutSelection, true, false, false),
+    (CatchTextInputMode.readOnlyWithoutSelection, true, true, false),
+    (CatchTextInputMode.inactiveWithoutSelection, false, true, false),
+  ]) {
+    testWidgets('CatchField preserves native ${mode.name} permissions', (
+      tester,
+    ) async {
+      final focus = FocusNode();
+      addTearDown(focus.dispose);
+      await tester.pumpWidget(
+        _wrap(
+          CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
+            title: 'Code',
+            initialValue: 'ABC',
+            focusNode: focus,
+            showLabel: false,
+            inputMode: mode,
+          ),
+        ),
+      );
+      await tester.tap(find.byType(TextField), warnIfMissed: false);
+      await tester.pump();
+      expect(focus.hasFocus, canFocus);
+      final native = tester.widget<EditableText>(find.byType(EditableText));
+      expect(native.readOnly, readOnly);
+      expect(native.enableInteractiveSelection, selectable);
+      expect(native.controller.text, 'ABC');
+    });
+  }
+
   testWidgets(
     'CatchField input derives length and validation from its contract',
     (tester) async {
@@ -362,7 +397,7 @@ void main() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Date of birth',
             controller: controller,
-            readOnly: true,
+            inputMode: CatchTextInputMode.readOnly,
             onTap: () => controller.text = '15/04/1997',
             onValidate: (value) =>
                 value == null || value.isEmpty ? 'Pick a date' : null,

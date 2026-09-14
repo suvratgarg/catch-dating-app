@@ -34,7 +34,7 @@ abstract interface class CatchFieldInputConfiguration {
   VoidCallback? get onTap;
   FormFieldValidator<String>? get onValidate;
   String? get prefixText;
-  bool get readOnly;
+  CatchTextInputMode get inputMode;
   VoidCallback? get onEditingComplete;
   bool get showClearButton;
   bool get showLabel;
@@ -108,8 +108,6 @@ class CatchFieldInput extends StatelessWidget {
         ? CatchFieldVariant.bare
         : configuration.variant;
     final effectiveShowLabel = valueEmphasis ? false : configuration.showLabel;
-    final canInteractOverride = explicitSave ? expanded && _enabled : null;
-    final readOnlyOverride = explicitSave ? !expanded : null;
     final includeSupport = !explicitSave;
     final inputHintOverride = explicitSave && !inlineAddAtRest
         ? expanded
@@ -191,10 +189,6 @@ class CatchFieldInput extends StatelessWidget {
             ? addSemanticLabel!
             : _title;
 
-        final canInteract =
-            canInteractOverride ??
-            (!configuration.readOnly || configuration.onTap != null);
-        final readOnly = readOnlyOverride ?? configuration.readOnly;
         final effectiveFocused =
             focusNode.hasFocus ||
             configuration.states.contains(WidgetState.focused);
@@ -238,11 +232,11 @@ class CatchFieldInput extends StatelessWidget {
           status: _enabled
               ? CatchTextInputStatus.enabled
               : CatchTextInputStatus.disabled,
-          mode: !canInteract
-              ? CatchTextInputMode.inactiveWithoutSelection
-              : readOnly
-              ? CatchTextInputMode.readOnly
-              : CatchTextInputMode.editable,
+          mode: explicitSave
+              ? expanded && _enabled
+                    ? CatchTextInputMode.editable
+                    : CatchTextInputMode.inactiveWithoutSelection
+              : configuration.inputMode,
           autofocus: configuration.autofocus,
           keyboardType: configuration.keyboardType,
           textInputAction:
@@ -545,7 +539,7 @@ class CatchFieldInput extends StatelessWidget {
       hasError ||
       configuration.autofocus;
   bool _inlineTextAddAtRestWith({required bool hasError}) =>
-      !configuration.readOnly &&
+      !configuration.inputMode.readOnlyText &&
       _textEntryCanCollapse &&
       !_hasInputValue &&
       !_active &&

@@ -193,7 +193,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 contract: CatchContractConstraints
                     .mobileFormStateOnboardingDateOfBirthText,
                 controller: controllers.date,
-                readOnly: true,
+                inputMode: CatchTextInputMode.readOnly,
                 onTap: () => callbacks.onPickDate(state.datePickerRequest),
                 icon: CatchIcons.calendarTodayOutlined,
                 suffixText: state.ageSuffix,
@@ -208,7 +208,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 contract:
                     CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
                 controller: controllers.phone,
-                readOnly: true,
+                inputMode: CatchTextInputMode.inactiveWithoutSelection,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.done,
                 autofillHints: const [AutofillHints.telephoneNumberNational],

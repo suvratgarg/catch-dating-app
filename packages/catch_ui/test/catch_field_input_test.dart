@@ -110,7 +110,7 @@ class _InputData implements CatchFieldInputConfiguration {
   @override
   final String? prefixText = null;
   @override
-  final bool readOnly = false;
+  final CatchTextInputMode inputMode = CatchTextInputMode.editable;
   @override
   final VoidCallback? onEditingComplete = null;
   @override

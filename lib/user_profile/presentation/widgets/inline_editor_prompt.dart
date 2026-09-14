@@ -414,7 +414,9 @@ class _ProfileInlinePromptEntryEditorState
           minLines: 1,
           maxLength: maximumProfilePromptAnswerLength,
           inputFormatters: const [_PromptStackedBlankLinesFormatter()],
-          readOnly: questionSaving || answerSaving,
+          inputMode: questionSaving || answerSaving
+              ? CatchTextInputMode.inactiveWithoutSelection
+              : CatchTextInputMode.editable,
           status: answerSaving ? CatchFieldStatus.saving : _answerStatus,
           error: _validationError ?? _saveError(question: false),
           onFocusChanged: _handleAnswerFocusChanged,

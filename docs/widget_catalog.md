@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 4.3.0
+version: 4.4.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -22,6 +22,9 @@ Direct input completion uses Flutter's keyboard-action behavior. Callers that
 need to retain focus, such as message composers, supply `onEditingComplete`;
 `onSubmitted` receives the value afterward. Numeric typography uses native
 `fontFeatures` instead of a separate typography flag.
+`inputMode` reuses native text-input permissions for editing, focus and
+selection. Display-only values stay outside the focus order; read-only inputs
+can support selection or an explicit picker action.
 
 L0 token definitions live in `packages/catch_tokens` and are consumed through
 `package:catch_tokens/catch_tokens.dart`. Widgetbook foundation specimens in
@@ -1006,7 +1009,7 @@ Purpose comes from the first class documentation paragraph, then the registry su
 | <code>ProfileInlinePromptEntryEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_prompt.dart:21</code> | — | — | One contained prompt card: a staged question selector followed by a separate multiline answer that saves implicitly on blur. |
 | <code>ProfileInlineRangeEditor</code> | <code>lib/user_profile/presentation/widgets/inline_editor_range.dart:15</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileDirectTextEntryField</code> | <code>lib/user_profile/presentation/widgets/inline_editor_text.dart:17</code> | — | — | No class documentation or registry summary. |
-| <code>ProfileInlineTextValue</code> | <code>lib/user_profile/presentation/widgets/inline_editor_text.dart:206</code> | — | — | Shared legacy inline-value adapter retained for host editor compatibility. |
+| <code>ProfileInlineTextValue</code> | <code>lib/user_profile/presentation/widgets/inline_editor_text.dart:208</code> | — | — | Shared legacy inline-value adapter retained for host editor compatibility. |
 | <code>PreviewTab</code> | <code>lib/user_profile/presentation/widgets/preview_tab.dart:5</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileInsightsTabSliverBody</code> | <code>lib/user_profile/presentation/widgets/profile_insights_tab.dart:4</code> | — | — | No class documentation or registry summary. |
 | <code>ProfileSettingsButton</code> | <code>lib/user_profile/presentation/widgets/profile_sliver_header.dart:44</code> | — | — | No class documentation or registry summary. |

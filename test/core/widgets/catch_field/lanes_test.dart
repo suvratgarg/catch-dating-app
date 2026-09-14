@@ -474,7 +474,7 @@ void main() {
               icon: CatchIcons.cakeOutlined,
               title: 'Locked value',
               initialValue: 'Fixed',
-              readOnly: true,
+              inputMode: CatchTextInputMode.inactiveWithoutSelection,
             ),
             CatchField.action(
               copy: catchFieldCopy(AppLocalizationsEn()),

@@ -121,7 +121,9 @@ mixin _CatchFieldProperties {
   int? get maxLength => _inputConfig != null
       ? _inputConfig!.maxLength
       : CatchContractFieldPolicy.effectiveMaxLength(contract, null);
-  bool get readOnly => _inputConfig?.readOnly ?? false;
+  CatchTextInputMode get inputMode =>
+      _inputConfig?.inputMode ?? CatchTextInputMode.editable;
+  bool get readOnly => inputMode.readOnlyText;
   bool get autofocus => _inputConfig?.autofocus ?? false;
   bool get isOptional => switch (_config) {
     final _RowConfig config => config.isOptional,

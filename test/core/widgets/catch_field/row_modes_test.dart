@@ -464,7 +464,7 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Mobile number',
           controller: controller,
-          readOnly: true,
+          inputMode: CatchTextInputMode.inactiveWithoutSelection,
           helperText: 'Verified via OTP',
         ),
       ),
