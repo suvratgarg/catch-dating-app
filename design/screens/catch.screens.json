@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-09-14",
+  "updated": "2026-09-15",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -15496,7 +15496,7 @@
           {"file": "lib/hosts/presentation/customers/host_saved_audience_editor.dart", "symbol": "HostSavedAudienceEditorScreen"},
           {"file": "lib/hosts/presentation/customers/host_saved_audience_overview.dart", "symbol": "HostSavedAudienceOverview"},
           {"file": "lib/hosts/presentation/customers/host_saved_audience_members_controller.dart", "symbol": "HostSavedAudienceMembersController"},
-          {"file": "lib/hosts/data/host_crm_repository.dart", "symbol": "hostAudienceContactDetail"},
+          {"file": "lib/hosts/data/crm/host_contacts_repository.dart", "symbol": "hostAudienceContactDetail"},
           {"file": "lib/hosts/presentation/host_organizer_selection_controller.dart", "symbol": "HostOrganizerSelection"}
         ],
         "mutationOwners": [
@@ -15829,7 +15829,7 @@
             "symbol": "HostMessagingSetupScreen"
           },
           {
-            "file": "lib/hosts/data/host_crm_repository.dart",
+            "file": "lib/hosts/data/crm/host_whatsapp_repository.dart",
             "symbol": "hostMessagingSetup"
           }
         ],
@@ -16080,7 +16080,7 @@
           "id": "host_header",
           "kind": "populated",
           "status": "captured",
-          "source": "ChatsBrowseHeader renders the compact Inbox title/search band without the retired Attendee queries subtitle; HostInboxScopeSelector owns event identity immediately below it.",
+          "source": "ChatsBrowseHeader renders the compact Inbox title/search band without the retired Attendee queries subtitle; HostInboxScopeMenu owns event identity immediately below it.",
           "tests": [
             "test/chats/chat_inbox_screen_test.dart"
           ],
@@ -16604,7 +16604,7 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "HostInboxScopeSelector",
+              "HostInboxScopeMenu",
               "HostInboxAudienceRail"
             ],
             "flutter": {

@@ -18,6 +18,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -136,14 +137,14 @@ Widget hostBroadcastComposerLifecycleStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Scope control states',
-  type: HostInboxScopeSelector,
+  type: HostInboxScopeMenu,
   path: '[P1 product surfaces]/Host/Inbox/Components',
 )
 Widget hostInboxScopeSelectorStates(BuildContext context) {
   final workspace = _workspace();
   return _HostRoleBoundary(
     child: _HostInboxCatalog(
-      title: 'HostInboxScopeSelector',
+      title: 'HostInboxScopeMenu',
       contractId: 'component.host.inbox_scope_selector',
       children: [
         _StateCard(
@@ -153,7 +154,7 @@ Widget hostInboxScopeSelectorStates(BuildContext context) {
             child: Scaffold(
               body: CustomScrollView(
                 slivers: [
-                  HostInboxScopeSelector(
+                  HostInboxScopeMenu(
                     workspace: workspace,
                     now: HostInboxSurfaceFixtures.now,
                     onChanged: (_) {},
