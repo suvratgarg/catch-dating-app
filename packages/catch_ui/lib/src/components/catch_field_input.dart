@@ -611,8 +611,9 @@ class CatchFieldInput extends StatelessWidget {
   }
 
   BoxConstraints? get _iconConstraints {
-    if (configuration.maxLines != 1 || configuration.minLines != null)
+    if (configuration.maxLines != 1 || configuration.minLines != null) {
       return null;
+    }
 
     final extent = CatchControlMetrics.iconExtent(_controlSize);
     return CatchControlMetrics.squareConstraints(extent);
@@ -632,8 +633,9 @@ class CatchFieldInput extends StatelessWidget {
   }
 
   TextAlignVertical? get _textAlignVertical {
-    if (configuration.maxLines != 1 || configuration.minLines != null)
+    if (configuration.maxLines != 1 || configuration.minLines != null) {
       return null;
+    }
     return TextAlignVertical.center;
   }
 
@@ -641,8 +643,9 @@ class CatchFieldInput extends StatelessWidget {
     if (variant == CatchFieldVariant.bare || variant == CatchFieldVariant.row) {
       return null;
     }
-    if (configuration.maxLines != 1 || configuration.minLines != null)
+    if (configuration.maxLines != 1 || configuration.minLines != null) {
       return null;
+    }
     return CatchControlMetrics.minHeight(_controlSize);
   }
 }
