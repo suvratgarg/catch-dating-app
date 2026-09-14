@@ -821,7 +821,7 @@ done
 
 # Menu overlays are owned by the exact package anchor, not neighboring files.
 for menu_scope in \
-  "packages/catch_ui/lib/src/components/catch_menu_anchor.dart" \
+  "packages/catch_ui/lib/src/components/catch_menu.dart" \
   "packages/catch_ui/lib/src/components/menu_anchor_consumer.dart" \
   "lib/core/widgets/catch_menu.dart"; do
   probe_path="$probe_root/$menu_scope"
@@ -830,7 +830,7 @@ import 'package:flutter/material.dart';
 
 Widget menuProbe() => MenuAnchor(menuChildren: const []);
 DART
-  if [[ "$menu_scope" == "packages/catch_ui/lib/src/components/catch_menu_anchor.dart" ]]; then
+  if [[ "$menu_scope" == "packages/catch_ui/lib/src/components/catch_menu.dart" ]]; then
     expect_probe exact catch_no_raw_button_control 0
     expect_probe clean
   else
