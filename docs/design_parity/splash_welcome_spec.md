@@ -1,7 +1,7 @@
 ---
 doc_id: splash_welcome_spec
-version: 1.3.1
-updated: 2026-08-07
+version: 1.3.2
+updated: 2026-09-15
 owner: design_parity_review
 status: implemented
 ---
@@ -299,7 +299,7 @@ The installable Host app has a distinct static launch contract:
 | Part 4 reel mechanics and phrase bank | aligned | `welcomePhraseBank` is the runtime bank; `test/onboarding/onboarding_widgets_test.dart` verifies object, activity kind, pigment, landing index, and 2x rendered rows against `strings.json` |
 | Part 4 focus/color math and band mask | aligned | `ReelRow` and `ReelBand` implement focus threshold, pigment mix, period opacity, dimming, and mask stops through tokens |
 | Part 4 landing and reduced motion | aligned | `WelcomePage` owns separate spin/landing controllers; tests cover reduced-motion/direct landed state and skip-to-CTA behavior |
-| Part 4 Widgetbook and appshot proof | aligned | `widgetbook/lib/onboarding/onboarding_use_cases.dart` has animated/landed/reduced-motion states; `/tmp/catch-splash-welcome-captures/start_welcome` holds light/dark captures from the recorded pass |
+| Part 4 Widgetbook and appshot proof | aligned | `widgetbook/lib/onboarding/catalog/welcome.dart` has animated/landed/reduced-motion states; `/tmp/catch-splash-welcome-captures/start_welcome` holds light/dark captures from the recorded pass |
 | Part 5 Consumer cold-boot reel | aligned | `lib/consumer_bootstrap.dart` coordinates decoded first-frame handoff, reel/init completion, reduced motion, skip, retry, delayed router mount, and an atomic boot-root replacement; `lib/core/presentation/app_shell.dart` keeps background FCM completion from rebuilding the keyed consumer navigation shell; the focused bootstrap and shell tests cover both contracts |
 | Part 6 fixed focus lockup | aligned | `WelcomeFocusLockup` owns the single-baseline `Catch ${phrase}.` sentence and measured phrase-only underline; `ReelBand` hides the moving focus row while `WelcomeScene` paints the fixed overlay |
 | Part 6 static/reel anchor and responsive matrix | aligned | `CatchConsumerBootScreen` and `WelcomeScene` share `CatchLayout` anchor helpers; `test/core/consumer_bootstrap_test.dart` proves exact handoff coordinates and `test/onboarding/welcome_reel_handoff_test.dart` covers intermediate motion, 320–430pt widths, safe areas, and enlarged text |

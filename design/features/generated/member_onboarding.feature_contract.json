@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:6dd188ec35d38b9518f53e6b5a9c07af49b1d16c01ecbd2f062b6ea52cb2dd8d",
+  "sourceDigest": "sha256:2a4c07467ec877e90d27858cfe15ddd868ce4674fcd5857c042d194127732cc3",
   "resolvedDigest": "sha256:994a43add9c3a38632d6bbf3405ba5152ac2fe3c43ee3e155991ad5421f52f4c",
   "feature": {
     "id": "feature.member_onboarding",
@@ -41,7 +41,12 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/onboarding/onboarding_use_cases.dart"
+          "widgetbook/lib/onboarding/catalog/identity.dart",
+          "widgetbook/lib/onboarding/catalog/photos.dart",
+          "widgetbook/lib/onboarding/catalog/preferences.dart",
+          "widgetbook/lib/onboarding/catalog/prompts.dart",
+          "widgetbook/lib/onboarding/catalog/screen.dart",
+          "widgetbook/lib/onboarding/catalog/welcome.dart"
         ],
         "actionOwners": [
           {
@@ -2398,7 +2403,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/onboarding/onboarding_use_cases.dart"
+          "widgetbook/lib/onboarding/catalog/welcome.dart"
         ],
         "actionOwners": [
           {
