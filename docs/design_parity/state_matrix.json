@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-09-04",
+  "updated": "2026-09-14",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -943,7 +943,6 @@
             "catch.button",
             "catch.chip",
             "catch.club_cover",
-            "catch.count_pill",
             "catch.cover_story",
             "catch.event_card",
             "catch.field",
@@ -1305,7 +1304,7 @@
             {
               "id": "DP-EXPLORE-001",
               "status": "closed",
-              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, catch.event_card for DateTicket/EventTicket roles, catch.organizer_poster for organizer spotlights, and catch.person_polaroid for server-ranked, consent-safe Cross Paths profiles."
+              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.button for the floating count/map launcher, catch.event_card for DateTicket/EventTicket roles, catch.organizer_poster for organizer spotlights, and catch.person_polaroid for server-ranked, consent-safe Cross Paths profiles."
             },
             {
               "id": "DP-EXPLORE-002",
@@ -1734,7 +1733,7 @@
             "lib/events/presentation/event_map_view_model.dart"
           ],
           "componentIds": [
-            "catch.count_pill",
+            "catch.button",
             "catch.event_card",
             "catch.icon_button",
             "catch.surface"
@@ -8740,7 +8739,7 @@
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/chats/presentation/chat_screen.dart",
             "packages/catch_ui/lib/src/components/catch_person_row.dart",
-            "packages/catch_ui/lib/src/patterns/catch_master_detail_layout.dart",
+            "packages/catch_ui/lib/src/patterns/catch_master_detail_viewport.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/event_participation_repository.dart"
