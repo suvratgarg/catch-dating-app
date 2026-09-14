@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/event_detail.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:6765a1b008886f7d4a3f55431bf4d8b4efb81757e2fabfd29532b0afc52a1854",
+  "sourceDigest": "sha256:e43b3e5a4084bea24ef59378555db9a2b0aa4995d1bbfbdc1c80dc6b433e9957",
   "resolvedDigest": "sha256:c6131f438b659fbaed3e1d2b033e23e160fabc065ef73273fa554914eaf02998",
   "feature": {
     "id": "feature.event_detail",
@@ -40,7 +40,9 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/events/event_detail_use_cases.dart",
+          "widgetbook/lib/events/catalog/booking.dart",
+          "widgetbook/lib/events/catalog/detail_screen.dart",
+          "widgetbook/lib/events/catalog/social.dart",
           "widgetbook/lib/primitives/catalog/celebration.dart",
           "widgetbook/lib/primitives/catalog/chrome.dart",
           "widgetbook/lib/primitives/catalog/docks.dart",

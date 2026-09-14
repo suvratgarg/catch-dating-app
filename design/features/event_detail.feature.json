@@ -24,7 +24,9 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/events/event_detail_use_cases.dart",
+          "widgetbook/lib/events/catalog/booking.dart",
+          "widgetbook/lib/events/catalog/detail_screen.dart",
+          "widgetbook/lib/events/catalog/social.dart",
           "widgetbook/lib/primitives/catalog/celebration.dart",
           "widgetbook/lib/primitives/catalog/chrome.dart",
           "widgetbook/lib/primitives/catalog/docks.dart",

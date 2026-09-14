@@ -61,7 +61,7 @@
           "status": "aligned"
         },
         {
-          "path": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "widgetbook/lib/events/catalog/detail_screen.dart",
           "role": "route-state and body-state review coverage for the reference screen",
           "status": "aligned"
         },
