@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-08",
+  "updated": "2026-09-14",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -1475,7 +1475,10 @@
       "description": "Ratchets user-visible marketing website strings into website/src/content without requiring a big-bang migration.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm"]
+        "setup": [
+          "node",
+          "root-npm"
+        ]
       },
       "checks": [
         "node --check tool/web/check_website_copy_ownership.mjs",
@@ -1681,7 +1684,9 @@
       "description": "Checks React marketing website app, content, feature, shared, generated, and service import boundaries.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_website_import_boundaries.mjs",
@@ -1700,7 +1705,9 @@
       "description": "Checks React website/admin feature code does not hand-roll native interactive controls outside shared UI primitive owners.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_ui_primitives.mjs",
@@ -1718,7 +1725,9 @@
       "description": "Checks React website/admin app, feature, and story code does not pass className directly outside shared primitive owner files.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_classname_boundaries.mjs",
@@ -1744,7 +1753,9 @@
       "description": "Checks React website/admin feature code routes governed component families through shared primitives, and verifies adopted admin form families declare valid shared field-row interaction modes directly from current source and authored component contracts.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_component_governance.mjs",
@@ -1771,7 +1782,9 @@
       "description": "Checks admin feature UI only exports route/workspace entry components; reusable panels/cards/lists must live in shared admin primitives or stay private.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_admin_feature_exports.mjs",
@@ -1846,7 +1859,9 @@
       "description": "Validates design/admin/components.json against admin route/workspace exports, shared admin UI primitives, feedback providers, and ready Storybook catchComponent coverage.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_admin_components.mjs",
@@ -1872,7 +1887,9 @@
       "description": "Checks React website/admin feature boundaries for route-owned state and cross-feature ownership drift.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_architecture_boundaries.mjs",
@@ -1895,7 +1912,9 @@
       "description": "Ratchets React feature controller and use-hook manual async/loading state so new server-state work moves to TanStack Query instead of local loading flags.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/web/check_react_query_state.mjs",
@@ -1974,7 +1993,9 @@
         "tool/lib/lint_probe_batch.mjs",
         "tool/lib/lint_probe_batch.test.mjs"
       ],
-      "alsoCheckIds": ["lint:probe-batch-protocol"],
+      "alsoCheckIds": [
+        "lint:probe-batch-protocol"
+      ],
       "checks": [
         "bash -n tool/check_catch_ui_lints.sh",
         "node tool/design/build_lint_enforcement_tables.mjs --check",
@@ -2290,6 +2311,48 @@
         "contains": [
           "known-bad new oversized Flutter test spec fails closed",
           "ratchet rejects growth and asks reductions to refresh the baseline"
+        ]
+      }
+    },
+    {
+      "id": "audit:flutter-source-size",
+      "category": "audit",
+      "path": "tool/architecture/check_flutter_source_size.mjs",
+      "command": "node tool/architecture/check_flutter_source_size.mjs --check",
+      "safety": "local-readonly",
+      "status": "active",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node"
+        ]
+      },
+      "impactPaths": [
+        "lib/**/*.dart",
+        "packages/**/*.dart",
+        "widgetbook/lib/**/*.dart",
+        "tool/architecture/flutter_source_size_baseline.json",
+        "tool/architecture/check_flutter_source_size.test.mjs",
+        "tool/test/check_flutter_test_size.mjs"
+      ],
+      "description": "Keeps new and split handwritten Dart sources within 800 lines, ratchets legacy debt against Git history, and bounds the exact CatchField facade exception at 1,150 lines.",
+      "checks": [
+        "node --check tool/architecture/check_flutter_source_size.mjs",
+        "node --test tool/architecture/check_flutter_source_size.test.mjs",
+        "node tool/architecture/check_flutter_source_size.mjs --check"
+      ],
+      "role": "ratchet",
+      "rules": [
+        "FLUTTER-SOURCE-MAINTAINABILITY-001"
+      ],
+      "baseline": "tool/architecture/flutter_source_size_baseline.json",
+      "vacuityProof": {
+        "type": "test",
+        "path": "tool/architecture/check_flutter_source_size.test.mjs",
+        "contains": [
+          "known-bad new source at 801 lines fails in every owned source root",
+          "CLI known-bad Field over-cap fails even when a baseline records the same size",
+          "CLI sees untracked source, permits reductions, and rejects a hand-broadened baseline"
         ]
       }
     },
@@ -3191,7 +3254,9 @@
       ],
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "category": "env",
       "path": "tool/ci/check_toolchain_consistency.sh",
@@ -4490,7 +4555,9 @@
       "description": "Validates Organizer Intake reads completed Supply Intake runs from Firestore, every review channel writes through an audited callable-backed Firestore collection, and retired Admin operational JSON snapshots are not reintroduced.",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node"]
+        "setup": [
+          "node"
+        ]
       },
       "checks": [
         "node --check tool/organizer_intake/check_admin_review_bridge.mjs",
@@ -6456,7 +6523,11 @@
       "status": "active",
       "ciRequirements": {
         "repositoryView": "full",
-        "setup": ["node", "root-npm", "playwright"]
+        "setup": [
+          "node",
+          "root-npm",
+          "playwright"
+        ]
       },
       "description": "Builds the marketing Storybook, then captures and compares current-platform desktop/mobile screenshots for registry-ready website and shared web-ui stories, retaining actual and diff artifacts on failure.",
       "checks": [

@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.63.1
+version: 1.64.0
 updated: 2026-09-14
 owner: app_architecture
 status: active
@@ -3076,6 +3076,28 @@ specs above the ceiling are exact, decrease-only debt in
 growth fails. Split by coherent behavior group and keep shared fixtures in the
 same Dart test library when that avoids duplication without hiding source-level
 failure locations.
+
+## Source Size Budgets
+
+New or split handwritten Dart files in `lib/**`, `packages/**`, and
+`widgetbook/lib/**` stay at or below 800 lines. Split by domain responsibility,
+screen pane, or component family; a file split must expose a useful ownership
+boundary rather than distribute one monolith across `part` files.
+
+`node tool/run.mjs check audit:flutter-source-size` checks tracked and untracked
+source against `tool/architecture/flutter_source_size_baseline.json`. Existing
+oversized files may only shrink. Deleted or now-bounded entries must leave the
+baseline, and reductions must be recorded in the same change. Git history
+prevents a baseline refresh from admitting new oversized files or raising an
+existing ceiling. Refresh after a reduction with
+`node tool/architecture/check_flutter_source_size.mjs --write-baseline`.
+
+The only exception is the `CatchField` constructor facade at
+`packages/catch_ui/lib/src/components/catch_field.dart`: at most 1,150 lines,
+with decrease-only protection. Configuration, resolution, state, and rendering
+files remain within 800 lines. Known generated suffixes, configured localization
+outputs, and exact vendored icon-generator outputs are excluded; a directory
+named `generated` or a generated-file comment alone grants no exemption.
 
 ## Enforcement And Overrides
 

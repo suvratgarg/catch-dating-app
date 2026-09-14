@@ -1442,7 +1442,7 @@
         "tool/architecture/check_dependency_direction.mjs",
         "tool/architecture/dependency_direction_baseline.json"
       ],
-      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and the existing direct imports are ratcheted debt in tool/architecture/dependency_direction_baseline.json — new domain code must not add them. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals — when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead.",
+      "instruction": "Layer imports follow the declared dependency direction. lib/*/domain/** must not import Flutter, Riverpod, Firebase, routing, or platform plugin packages; Timestamp/serialization handling routes through core/firestore_converters, and the existing direct imports are ratcheted debt in tool/architecture/dependency_direction_baseline.json \u2014 new domain code must not add them. lib/*/data/** and lib/*/domain/** must not import feature presentation code. Feature presentation must not import sibling feature presentation internals. Sanctioned seams are (a) a sibling feature public controller (presentation/*_controller.dart) imported from a route screen (*_screen.dart) or another controller, and (b) symbols exported by the sibling feature root barrel (lib/<feature>/<feature>.dart), where every presentation export in a barrel requires a // public-api: annotation. Direct deep imports of sibling presentation files remain violations. Widgets, bodies, state adapters, and view models are feature internals \u2014 when another feature needs a read model, expose a narrow public provider/contract or annotated barrel seam instead.",
       "sunset_when": [
         "The dependency-direction baseline is empty and adopted architecture boundary checks cover aligned features"
       ],
@@ -2022,7 +2022,7 @@
       "applies_to": [
         "lib/**/presentation/**"
       ],
-      "instruction": "Mutation state cardinality must match UI interaction grain. Route-level single actions (book, cancel, submit, delete for the route's single subject) may use static Mutation fields. Repeated row/list actions — attendance, waitlist offers, join-request decisions, any per-entity action rendered N times on one surface — must key mutation state per target (mutation(key) family instances) so one row's pending/error state cannot affect sibling rows. Keys are typed Dart records with value equality, not concatenated strings. Reference implementation: lib/hosts/presentation/host_event_booking_controller.dart.",
+      "instruction": "Mutation state cardinality must match UI interaction grain. Route-level single actions (book, cancel, submit, delete for the route's single subject) may use static Mutation fields. Repeated row/list actions \u2014 attendance, waitlist offers, join-request decisions, any per-entity action rendered N times on one surface \u2014 must key mutation state per target (mutation(key) family instances) so one row's pending/error state cannot affect sibling rows. Keys are typed Dart records with value equality, not concatenated strings. Reference implementation: lib/hosts/presentation/host_event_booking_controller.dart.",
       "sunset_when": [
         "Repeated row/list mutation actions consistently use typed record keys for three app architecture passes"
       ],
@@ -2049,7 +2049,7 @@
       "applies_to": [
         "lib/**/presentation/**"
       ],
-      "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError — via an inline ErrorBanner.fromError, a screen-level MutationErrorSnackbarListener, or try/catch + showCatchErrorSnackBar around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions.",
+      "instruction": "Any UI that watches a Mutation to drive a spinner (isPending) must also handle hasError \u2014 via an inline ErrorBanner.fromError, a screen-level MutationErrorSnackbarListener, or try/catch + showCatchErrorSnackBar around .run(). Silent failure (spinner clears, no feedback) is forbidden, especially for destructive/security actions.",
       "sunset_when": [
         "A scanner flags isPending watches with no matching hasError handling",
         "Mutation failure paths have controller/widget tests for three passes"
@@ -2215,7 +2215,7 @@
         "lib/**/domain/**",
         "lib/**/data/**"
       ],
-      "instruction": "Domain getters/predicates with time semantics must accept an injected DateTime/referenceNow when any caller threads one, instead of calling DateTime.now() internally — otherwise adjacent branches disagree and tests cannot pin time.",
+      "instruction": "Domain getters/predicates with time semantics must accept an injected DateTime/referenceNow when any caller threads one, instead of calling DateTime.now() internally \u2014 otherwise adjacent branches disagree and tests cannot pin time.",
       "sunset_when": [
         "No domain time predicate calls DateTime.now() internally where a referenceNow is threaded"
       ],
@@ -2363,7 +2363,7 @@
         "lib/**",
         "contracts/catalogs/**"
       ],
-      "instruction": "High-traffic user-facing string surfaces — onboarding, booking/CTA flows, dashboard, event detail, chat, notifications, and catalog copy under contracts/ — must be covered by a copy snapshot/golden test. Any automated find-replace rename that can touch prose (e.g. run->event) must re-run the copy golden AND include a human review of the changed string literals before merge. Do not add goldens for every string in the app; the scope is the named high-traffic surfaces plus any string that has previously regressed.",
+      "instruction": "High-traffic user-facing string surfaces \u2014 onboarding, booking/CTA flows, dashboard, event detail, chat, notifications, and catalog copy under contracts/ \u2014 must be covered by a copy snapshot/golden test. Any automated find-replace rename that can touch prose (e.g. run->event) must re-run the copy golden AND include a human review of the changed string literals before merge. Do not add goldens for every string in the app; the scope is the named high-traffic surfaces plus any string that has previously regressed.",
       "sunset_when": [
         "A copy golden covers the high-traffic user-facing string surfaces",
         "Two consecutive renames pass the golden with no manual copy fixes"
@@ -3353,6 +3353,38 @@
         {
           "stage": "manual",
           "docAnchor": "docs/app_architecture.md#exhibit-arch-pending-snapshot-001-pending-request-snapshot-integrity"
+        }
+      ]
+    },
+    "FLUTTER-SOURCE-MAINTAINABILITY-001": {
+      "title": "Bound handwritten Dart sources and ratchet existing monoliths",
+      "status": "active",
+      "kind": "contract",
+      "introduced_in": {
+        "doc_id": "app_architecture",
+        "version": "1.64.0"
+      },
+      "applies_to": [
+        "lib/**/*.dart",
+        "packages/**/*.dart",
+        "widgetbook/lib/**/*.dart",
+        "tool/architecture/flutter_source_size_baseline.json"
+      ],
+      "instruction": "Keep new and split handwritten Dart files at or below 800 lines. Existing oversized files may only shrink against the reviewed Git baseline; the exact CatchField constructor facade has a 1,150-line ceiling with the same decrease-only protection. Generated producer outputs are excluded by identity.",
+      "sunset_when": [
+        "A stronger structure-aware maintainability gate replaces source line bounds while preserving decrease-only debt and the exact Field facade ceiling"
+      ],
+      "sunset_signals": [
+        {
+          "type": "manual"
+        }
+      ],
+      "enforcement": [
+        {
+          "tool": "audit:flutter-source-size",
+          "stage": "scanner-ratchet",
+          "docAnchor": "docs/app_architecture.md#source-size-budgets",
+          "baseline": "tool/architecture/flutter_source_size_baseline.json"
         }
       ]
     }
