@@ -102,7 +102,7 @@
           "items": {
             "$ref": "event_common.schema.json#/definitions/documentId"
           },
-          "maxItems": 42
+          "maxItems": 92
         },
         "rows": {
           "type": "array",

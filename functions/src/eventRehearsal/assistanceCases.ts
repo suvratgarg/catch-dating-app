@@ -20,7 +20,7 @@ import {REHEARSAL_MAX_ACTIONS} from "./engine";
 
 export const rehearsalCases = "eventRehearsalCases";
 export type PracticeCaseAuthority = {actorUid: string;
-  organizer: OrganizerDocument};
+  organizer: OrganizerDocument; hostUid?: string; practiceOperatorId?: string};
 
 function identity(session: Session, actor: Pick<Actor, "sessionId" | "actorId">,
   source: Case["source"]): string {

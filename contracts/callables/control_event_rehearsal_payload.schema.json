@@ -42,83 +42,194 @@
     },
     "movement": {
       "$ref": "../shared/event_rehearsal_movement.schema.json#/definitions/Command"
+    },
+    "staff": {
+      "$ref": "../shared/event_rehearsal_staff.schema.json#/definitions/Command"
+    },
+    "practiceOperatorId": {
+      "$ref": "../shared/event_rehearsal_staff.schema.json#/definitions/OperatorId"
     }
   },
-  "if": {
-    "properties": {
-      "action": {
-        "const": "assistance"
-      }
-    }
-  },
-  "then": {
-    "required": [
-      "assistance",
-      "expectedSetupRevision"
-    ],
-    "not": {
-      "anyOf": [
-        {
-          "required": [
-            "minutes"
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "assistance"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "assistance",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            }
           ]
-        },
-        {
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "assistance"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "movement"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "movement",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
           "required": [
             "movement"
           ]
         }
-      ]
-    }
-  },
-  "else": {
-    "if": {
-      "properties": {
-        "action": {
-          "const": "movement"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "staff"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "staff",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "staff"
+          ]
         }
       }
     },
-    "then": {
-      "required": [
-        "movement",
-        "expectedSetupRevision"
-      ],
-      "not": {
-        "anyOf": [
-          {
-            "required": [
-              "minutes"
-            ]
-          },
-          {
-            "required": [
-              "assistance"
-            ]
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "not": {
+              "enum": [
+                "assistance",
+                "movement",
+                "staff"
+              ]
+            }
           }
-        ]
+        }
+      },
+      "then": {
+        "not": {
+          "required": [
+            "expectedSetupRevision"
+          ]
+        }
       }
     },
-    "else": {
-      "not": {
+    {
+      "if": {
+        "required": [
+          "practiceOperatorId"
+        ]
+      },
+      "then": {
         "anyOf": [
           {
-            "required": [
-              "assistance"
-            ]
+            "properties": {
+              "action": {
+                "const": "movement"
+              }
+            }
           },
           {
-            "required": [
-              "movement"
-            ]
-          },
-          {
-            "required": [
-              "expectedSetupRevision"
-            ]
+            "properties": {
+              "action": {
+                "const": "assistance"
+              },
+              "assistance": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "transferGroup",
+                      "resolveAccountability"
+                    ]
+                  }
+                }
+              }
+            }
           }
         ]
       }
     }
-  }
+  ]
 }

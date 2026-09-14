@@ -8,7 +8,8 @@ import type {EventRehearsalDocument as Session,
 import type {ControlEventRehearsalCallablePayload as Control} from
   "../shared/generated/controlEventRehearsalCallablePayload";
 import {operationContentHash as hash} from "../operations/durableActions";
-import {isOrganizerManager} from "../shared/organizerHosts";
+import {requirePracticeGroupPermission, practiceGroupPermission,
+  practiceStaffProjection} from "./groupStaff";
 import {prepareDepartureDecision, prepareCheckpointObservation,
   departureConflict} from "../eventSuccess/operations/movementDecisions";
 import {assertCheckpointRequestDeadline} from
@@ -31,7 +32,8 @@ export function practiceMovementScope(command: Command): MovementScope {
 export async function practiceMovementReview(db: Firestore, tx: Transaction,
   sessionId: string, session: Session, actors: readonly Actor[],
   scope: MovementScope, authority: PracticeCaseAuthority): Promise<Review> {
-  requireAuthority(authority);
+  requirePracticeGroupPermission(sessionId, session, authority,
+    scope.groupId, "readProgress");
   const source = practiceMovementSource(sessionId, session, scope.groupId);
   const records = await readPracticeMovements(db, tx, source, scope);
   return projectMovement(session, source, actors, records, authority);
@@ -49,6 +51,7 @@ function projectMovement(session: Session, source: MovementSource,
     clockId: source.context.clockId, setupRevision: session.setupRevision,
     runtimeRevision: session.runtimeRevision, actorUid: authority.actorUid,
     serverTime: source.now, groupId: source.groupId, groups: source.groups,
+    staffReview: practiceStaffProjection(source.sessionId, session, authority),
     progress: {revision, sourceHash: source.sourceHash,
       eventOpen: source.eventOpen, runtimeLive: source.runtimeLive,
       destinations: source.destinations, current,
@@ -77,7 +80,9 @@ export async function preparePracticeMovementCommand(db: Firestore,
   tx: Transaction, sessionId: string, session: Session,
   actors: readonly Actor[],
   command: Command, authority: PracticeCaseAuthority, operationId: string) {
-  requireAuthority(authority);
+  requirePracticeGroupPermission(sessionId, session, authority,
+    command.payload.groupId, command.kind === "confirmDeparture" ?
+      "confirmDeparture" : "recordCheckpoint");
   if (!["running", "paused", "complete"].includes(session.status) ||
       session.actionCount >= 500 || session.runtimeRevision >= 2147483647) {
     throw new HttpsError("failed-precondition", "Practice movement is closed.");
@@ -104,13 +109,15 @@ export async function preparePracticeMovementCommand(db: Firestore,
       return member;
     }) : null;
     if (checkpointRequest) {
-      if (!isOrganizerManager(authority.organizer,
-        checkpointRequest.responsibleOperatorId)) {
+      const until = practiceGroupPermission(sessionId, session, authority,
+        source.groupId, "recordCheckpoint",
+        checkpointRequest.responsibleOperatorId);
+      if (until === null) {
         throw new HttpsError("permission-denied",
-          "Choose a current rehearsal Host to report the checkpoint.");
+          "Choose a practice operator with a current checkpoint duty.");
       }
       assertCheckpointRequestDeadline(checkpointRequest,
-        Number.MAX_SAFE_INTEGER, source.now, source.endAt);
+        until, source.now, source.endAt);
     }
     const progressRevision = review.progress.revision + 1;
     const value = parsePracticeMovement({sessionId,
@@ -143,17 +150,10 @@ export async function preparePracticeMovementCommand(db: Firestore,
       reportedBy: authority.actorUid, reportedAt: source.now}};
   } else {
     updates = preparePracticeCheckpointManagement(record, checkpoint,
-      source, command, authority, operationId);
+      source, command, authority, operationId, session);
   }
   parsePracticeMovement({...record, ...updates}, source);
   return {confirmedDeparture: null, commit: () => tx.update(
     db.collection(rehearsalMovements).doc(
       practiceMovementId(source, record.progressRevision)), updates)};
-}
-
-function requireAuthority(authority: PracticeCaseAuthority) {
-  if (!isOrganizerManager(authority.organizer, authority.actorUid)) {
-    throw new HttpsError("permission-denied",
-      "Current Host authority required.");
-  }
 }

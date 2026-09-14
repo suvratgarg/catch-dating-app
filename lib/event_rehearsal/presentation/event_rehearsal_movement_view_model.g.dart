@@ -198,7 +198,7 @@ final class EventRehearsalMovementForAccountProvider
 }
 
 String _$eventRehearsalMovementForAccountHash() =>
-    r'e46e64414d973899ec71f7446e2167a9adc10646';
+    r'1006fc0e95e4173387f23f04bec2842bff6f7cb0';
 
 /// These deliberate reads must describe one runtime revision. Polling can never
 /// replace one half of a pending Host review or silently cross a reset.

@@ -50,5 +50,9 @@ const schemaGetEventRehearsalMovementCallablePayloadSchema = <String, Object?>{
         },
       },
     },
+    'practiceOperatorId': <String, Object?>{
+      'type': 'string',
+      'pattern': '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+    },
   },
 };

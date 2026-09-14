@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/events/domain/event_itinerary.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 
@@ -454,6 +455,7 @@ class EventRehearsalBootstrap {
     this.accountabilityReviews,
     this.membershipReviews,
     this.movementReview,
+    this.staffReview,
   });
 
   factory EventRehearsalBootstrap.fromCallableData(Object? data) {
@@ -465,29 +467,47 @@ class EventRehearsalBootstrap {
       map['actors'],
       'actors',
     ).map(EventRehearsalActor.fromMap).toList(growable: false);
+    final staff = !map.containsKey('staffReview')
+        ? null
+        : RehearsalStaffReview.fromJson(map['staffReview'], session: session);
+    final membership = !map.containsKey('membershipReviews')
+        ? null
+        : RehearsalMembershipReviews.fromJson(
+            map['membershipReviews'],
+            session: session,
+            actors: actors,
+            staffReview: staff,
+          );
+    final movement = !map.containsKey('movementReview')
+        ? null
+        : RehearsalMovementReview.fromBootstrapJson(
+            map['movementReview'],
+            session: session,
+            actors: actors,
+          );
+    if (staff != null && movement != null) {
+      staff.requireSameRole(movement.staffReview);
+      if (staff.sourceHash != movement.staffReview!.sourceHash ||
+          staff.revision != movement.staffReview!.revision) {
+        throw const FormatException(
+          'Practice group and staff reviews changed.',
+        );
+      }
+    }
     return EventRehearsalBootstrap(
       session: session,
       actors: actors,
-      movementReview: !map.containsKey('movementReview')
-          ? null
-          : RehearsalMovementReview.fromBootstrapJson(
-              map['movementReview'],
-              session: session,
-              actors: actors,
-            ),
-      membershipReviews: !map.containsKey('membershipReviews')
-          ? null
-          : RehearsalMembershipReviews.fromJson(
-              map['membershipReviews'],
-              session: session,
-              actors: actors,
-            ),
+      staffReview: staff,
+      movementReview: movement,
+      membershipReviews: membership,
       accountabilityReviews: !map.containsKey('accountabilityReviews')
           ? null
           : RehearsalAccountabilityReviews.fromJson(
               map['accountabilityReviews'],
               session: session,
               actors: actors,
+              staffReview: staff,
+              membershipReviews: membership,
             ),
       deliveryReviews: map['deliveryReviews'] == null
           ? null
@@ -522,6 +542,7 @@ class EventRehearsalBootstrap {
   final RehearsalAccountabilityReviews? accountabilityReviews;
   final RehearsalMembershipReviews? membershipReviews;
   final RehearsalMovementReview? movementReview;
+  final RehearsalStaffReview? staffReview;
 
   int get presentCount => actors
       .where(

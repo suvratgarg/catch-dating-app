@@ -2,8 +2,10 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
@@ -45,7 +47,9 @@ final class RehearsalMovementSelection {
     required this.scope,
     this.progressRevision,
     this.beforeRevision,
+    this.practiceOperatorId,
   }) {
+    if (practiceOperatorId != null) rehearsalOperatorId(practiceOperatorId);
     if (progressRevision != null) {
       _movementRevision(progressRevision, positive: true);
     }
@@ -56,6 +60,7 @@ final class RehearsalMovementSelection {
   }
   final RehearsalMovementScope scope;
   final int? progressRevision, beforeRevision;
+  final String? practiceOperatorId;
   Map<String, Object?> toJson() => {
     'groupId': scope.groupId,
     if (progressRevision != null) 'progressRevision': progressRevision,
@@ -66,9 +71,11 @@ final class RehearsalMovementSelection {
       other is RehearsalMovementSelection &&
       scope == other.scope &&
       progressRevision == other.progressRevision &&
-      beforeRevision == other.beforeRevision;
+      beforeRevision == other.beforeRevision &&
+      practiceOperatorId == other.practiceOperatorId;
   @override
-  int get hashCode => Object.hash(scope, progressRevision, beforeRevision);
+  int get hashCode =>
+      Object.hash(scope, progressRevision, beforeRevision, practiceOperatorId);
 }
 
 typedef RehearsalMovementGroup = ({String groupId, String label});
@@ -88,6 +95,7 @@ enum RehearsalDepartureUnavailableReason {
 /// Current candidates and recorded departure visits are separate observations.
 final class RehearsalMovementReview {
   const RehearsalMovementReview._({
+    required this.staffReview,
     required this.selection,
     required this.session,
     required this.actorUid,
@@ -107,6 +115,8 @@ final class RehearsalMovementReview {
     required this.history,
     required this.nextBeforeRevision,
   });
+  final RehearsalStaffReview? staffReview;
+  String get hostUid => staffReview?.hostUid ?? actorUid;
   final RehearsalMovementSelection selection;
   RehearsalMovementScope get scope => selection.scope;
   final EventRehearsalSession session;
@@ -127,6 +137,11 @@ final class RehearsalMovementReview {
       session.virtualStartedAt!.millisecondsSinceEpoch +
       session.setup.durationMinutes * 60000;
   bool get canConfirm =>
+      (staffReview?.canPerform(
+            scope.groupId,
+            AssistanceGroupPermission.confirmDeparture,
+          ) ??
+          true) &&
       revision < 500 &&
       eventOpen &&
       runtimeLive &&
@@ -134,6 +149,11 @@ final class RehearsalMovementReview {
       session.actionCount < 500 &&
       session.runtimeRevision < 2147483647;
   bool get canReport =>
+      (staffReview?.canPerform(
+            scope.groupId,
+            AssistanceGroupPermission.recordCheckpoint,
+          ) ??
+          true) &&
       checkpoint?.availability is AssistanceCheckpointRoster &&
       session.actionCount < 500 &&
       session.runtimeRevision < 2147483647 &&
@@ -158,6 +178,10 @@ final class RehearsalMovementReview {
       actors: actors,
       selection: RehearsalMovementSelection(
         scope: rehearsalMovementScope(session, _movementId(m['groupId'])),
+        practiceOperatorId: m['staffReview'] == null
+            ? null
+            : assistanceObject(m['staffReview'])['practiceOperatorId']
+                  as String?,
         progressRevision: selected == null
             ? null
             : _movementRevision(selected['progressRevision'], positive: true),
@@ -172,7 +196,9 @@ final class RehearsalMovementReview {
     required RehearsalMovementSelection selection,
     String? expectedActorUid,
   }) {
-    final root = assistanceObject(value, {
+    final raw = assistanceObject(value);
+    final root = assistanceObject(raw, {
+      if (raw.containsKey('staffReview')) 'staffReview',
       'sessionId',
       'organizerId',
       'clockId',
@@ -189,6 +215,9 @@ final class RehearsalMovementReview {
       'history',
       'nextBeforeRevision',
     });
+    final staff = root.containsKey('staffReview')
+        ? RehearsalStaffReview.fromJson(root['staffReview'], session: session)
+        : null;
     final scope = selection.scope;
     final now = session.virtualNow.millisecondsSinceEpoch;
     final uid = _movementId(root['actorUid']);
@@ -201,7 +230,16 @@ final class RehearsalMovementReview {
         assistanceInteger(root['setupRevision']) != scope.setupRevision ||
         assistanceInteger(root['runtimeRevision']) != session.runtimeRevision ||
         assistanceInteger(root['serverTime']) != now ||
-        expectedActorUid != null && uid != expectedActorUid ||
+        expectedActorUid != null &&
+            (staff?.hostUid ?? uid) != expectedActorUid ||
+        selection.practiceOperatorId != staff?.practiceOperatorId ||
+        staff != null &&
+            (staff.actorUid != uid ||
+                !staff.canPerform(
+                  scope.groupId,
+                  AssistanceGroupPermission.readProgress,
+                )) ||
+        staff == null && uid.startsWith('practice-staff:') ||
         end == null ||
         now < end ||
         session.actorCount < 2 ||
@@ -375,6 +413,7 @@ final class RehearsalMovementReview {
       throw const FormatException('Invalid movement history continuation.');
     }
     return RehearsalMovementReview._(
+      staffReview: staff,
       selection: selection,
       session: session,
       actorUid: uid,

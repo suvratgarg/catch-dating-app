@@ -2,7 +2,10 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
 /// One synthetic guest in one run. A new visit keeps the same pending owner.
@@ -85,6 +88,8 @@ final class RehearsalAccountabilityReviews {
     Object? value, {
     required EventRehearsalSession session,
     required List<EventRehearsalActor> actors,
+    RehearsalStaffReview? staffReview,
+    RehearsalMembershipReviews? membershipReviews,
   }) {
     final map = assistanceObject(value, {'clockId', 'coverage', 'rows'});
     assistanceId(session.id);
@@ -114,10 +119,21 @@ final class RehearsalAccountabilityReviews {
         actors.map((a) => a.actorId).toSet().length != actors.length) {
       throw const FormatException('Incomplete practice visit coverage.');
     }
+    if (staffReview != null &&
+        (!identical(staffReview.session, session) ||
+            staffReview.clockId != clock ||
+            !staffReview.isManager &&
+                membershipReviews?.actorUid != staffReview.actorUid)) {
+      throw const FormatException(
+        'Practice visit role needs current membership evidence.',
+      );
+    }
     final rows = <RehearsalAccountabilityRow>[];
     String? previous;
     for (final rawRow in raw) {
-      final row = assistanceObject(rawRow, {
+      final rawMap = assistanceObject(rawRow);
+      final row = assistanceObject(rawMap, {
+        if (rawMap.containsKey('groupId')) 'groupId',
         'attendeeId',
         'episodeId',
         'sourceHash',
@@ -153,6 +169,36 @@ final class RehearsalAccountabilityReviews {
         row['disposition'],
       );
       final canResolve = assistanceBoolean(row['canResolve']);
+      final groupId = row.containsKey('groupId')
+          ? assistanceText(row['groupId'], 180)
+          : 'event:whole';
+      final manager = staffReview?.isManager ?? true;
+      final membership = membershipReviews?.rows
+          .where((r) => r.scope.actorId == actorId)
+          .firstOrNull;
+      final whole =
+          staffReview?.canPerform(
+            'event:whole',
+            AssistanceGroupPermission.resolveAccountability,
+          ) ??
+          true;
+      final expectedGroup = manager || whole
+          ? 'event:whole'
+          : membership?.facts.accepted?.groupId ?? 'event:whole';
+      final permitted =
+          manager ||
+          (staffReview?.canPerform(
+                groupId,
+                AssistanceGroupPermission.resolveAccountability,
+              ) ??
+              false);
+      if (groupId != expectedGroup ||
+          !manager && !row.containsKey('groupId') ||
+          manager && groupId != 'event:whole') {
+        throw const FormatException(
+          'Practice visit does not belong to the reviewed group.',
+        );
+      }
       final reason = switch (availability) {
         RehearsalVisitReady() => null,
         RehearsalVisitUnavailable(:final reason) => reason,
@@ -189,7 +235,8 @@ final class RehearsalAccountabilityReviews {
                   visit == null ||
                   checkedIn != null) ||
           canResolve !=
-              (reason == null &&
+              (permitted &&
+                  reason == null &&
                   session.hasStarted &&
                   session.actionCount < 500 &&
                   revision < 9007199254740991)) {
@@ -205,8 +252,18 @@ final class RehearsalAccountabilityReviews {
       );
       rows.add(
         canResolve
-            ? RehearsalActionableAccountability._(scope, evidence)
-            : RehearsalObservedAccountability._(scope, evidence),
+            ? RehearsalActionableAccountability._(
+                scope,
+                evidence,
+                groupId,
+                staffReview,
+              )
+            : RehearsalObservedAccountability._(
+                scope,
+                evidence,
+                groupId,
+                staffReview,
+              ),
       );
       previous = actorId;
     }
@@ -231,7 +288,14 @@ final class RehearsalVisitEvidence {
 }
 
 sealed class RehearsalAccountabilityRow {
-  const RehearsalAccountabilityRow._(this.scope, this.evidence);
+  const RehearsalAccountabilityRow._(
+    this.scope,
+    this.evidence,
+    this.groupId,
+    this.staffReview,
+  );
+  final String groupId;
+  final RehearsalStaffReview? staffReview;
   final RehearsalAccountabilityScope scope;
   final RehearsalVisitEvidence evidence;
   String get actorId => scope.actorId;
@@ -239,11 +303,19 @@ sealed class RehearsalAccountabilityRow {
 
 final class RehearsalActionableAccountability
     extends RehearsalAccountabilityRow {
-  const RehearsalActionableAccountability._(super.scope, super.evidence)
-    : super._();
+  const RehearsalActionableAccountability._(
+    super.scope,
+    super.evidence,
+    super.groupId,
+    super.staffReview,
+  ) : super._();
 }
 
 final class RehearsalObservedAccountability extends RehearsalAccountabilityRow {
-  const RehearsalObservedAccountability._(super.scope, super.evidence)
-    : super._();
+  const RehearsalObservedAccountability._(
+    super.scope,
+    super.evidence,
+    super.groupId,
+    super.staffReview,
+  ) : super._();
 }

@@ -15,7 +15,9 @@ import {
   accountabilityResolutionFields,
   currentAccountabilityResolution,
 } from "../eventSuccess/accountability";
-import {isOrganizerManager} from "../shared/organizerHosts";
+import {requirePracticeHost, practiceIsManager, practiceGroupPermission} from
+  "./groupStaff";
+import {practiceMembershipSource} from "./membershipSource";
 import type {PracticeCaseAuthority} from "./assistanceCases";
 import {practiceContext, practiceEpisode} from "./assistanceRuntime";
 import {practiceAttendance, validPracticeVisit} from "./visitState";
@@ -29,7 +31,8 @@ type Command = Extract<
 /** Visit proof is independent of connectivity, seating and join intent. */
 export function practiceAccountabilityView(
   session: Session,
-  actor: Actor
+  actor: Actor,
+  authority?: PracticeCaseAuthority
 ): Row {
   const visit = actor.visit;
   const now = session.virtualNow.toMillis();
@@ -64,7 +67,7 @@ export function practiceAccountabilityView(
           null,
       }) :
       null;
-  return {
+  const row: Row = {
     attendeeId: actor.actorId,
     episodeId: practiceEpisode(session, actor),
     sourceHash: hash([
@@ -87,6 +90,17 @@ export function practiceAccountabilityView(
       visit!.accountabilityRevision < Number.MAX_SAFE_INTEGER &&
       ["running", "paused", "complete"].includes(session.status),
   };
+  if (!authority || practiceIsManager(authority)) return row;
+  const membership = practiceMembershipSource(session, actor);
+  const groupId = practiceGroupPermission(actor.sessionId, session, authority,
+    "event:whole", "resolveAccountability") !== null ? "event:whole" :
+    membership.current ? membership.membership?.accepted?.groupId ??
+      "event:whole" : "event:whole";
+  return {...row, groupId,
+    sourceHash: hash([row.sourceHash, authority.actorUid, groupId,
+      groupId === "event:whole" ? null : membership.membership?.accepted]),
+    canResolve: row.canResolve && practiceGroupPermission(actor.sessionId,
+      session, authority, groupId, "resolveAccountability") !== null};
 }
 
 /** Uses the live visit-resolution reducer; never writes a production record. */
@@ -96,14 +110,10 @@ export function resolvePracticeAccountability(
   command: Command,
   authority: PracticeCaseAuthority
 ): Actor {
-  if (!isOrganizerManager(authority.organizer, authority.actorUid)) {
-    throw new HttpsError(
-      "permission-denied",
-      "Current Host authority required."
-    );
-  }
-  const view = practiceAccountabilityView(session, actor);
+  requirePracticeHost(authority);
+  const view = practiceAccountabilityView(session, actor, authority);
   if (
+    (command.groupId ?? "event:whole") !== (view.groupId ?? "event:whole") ||
     command.actorId !== actor.actorId ||
     command.payload.attendeeId !== actor.actorId ||
     command.payload.episodeId !== view.episodeId ||
@@ -155,7 +165,8 @@ export function resolvePracticeAccountability(
 export function practiceAccountabilityProjection(
   sessionId: string,
   session: Session,
-  actors: readonly Actor[]
+  actors: readonly Actor[],
+  authority?: PracticeCaseAuthority
 ): NonNullable<Bootstrap["accountabilityReviews"]> {
   if (
     actors.length !== session.actorCount ||
@@ -169,7 +180,7 @@ export function practiceAccountabilityProjection(
     clockId: practiceContext(session, {sessionId}).clockId,
     coverage: "boundedSession",
     rows: actors
-      .map((actor) => practiceAccountabilityView(session, actor))
+      .map((actor) => practiceAccountabilityView(session, actor, authority))
       .sort((a, b) => a.attendeeId.localeCompare(b.attendeeId)),
   };
 }

@@ -10,4 +10,5 @@ export interface GetEventRehearsalMovementCallablePayload {
     progressRevision?: number;
     beforeRevision?: number;
   };
+  practiceOperatorId?: string;
 }

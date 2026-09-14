@@ -56,6 +56,27 @@ final class EventAssistanceGroupStaffTarget {
 
 enum AssistanceGroupDuty { lead, pacer, sweep }
 
+enum AssistanceGroupPermission {
+  readProgress,
+  confirmDeparture,
+  transferGroup,
+  recordCheckpoint,
+  resolveAccountability,
+}
+
+extension AssistanceGroupDutyPermissions on AssistanceGroupDuty {
+  Set<AssistanceGroupPermission> get permissions => switch (this) {
+    AssistanceGroupDuty.lead || AssistanceGroupDuty.pacer => Set.unmodifiable(
+      AssistanceGroupPermission.values,
+    ),
+    AssistanceGroupDuty.sweep => const {
+      AssistanceGroupPermission.readProgress,
+      AssistanceGroupPermission.recordCheckpoint,
+      AssistanceGroupPermission.resolveAccountability,
+    },
+  };
+}
+
 enum AssistanceGroupStaffStatus {
   none,
   assigned,
@@ -82,7 +103,17 @@ final class AssistanceGroupStaffDuty {
     Object? raw,
     EventAssistanceGroupScope group,
     int now,
-  ) {
+  ) => AssistanceGroupStaffDuty.fromJson(
+    raw,
+    groupId: group.groupId,
+    serverTime: now,
+  );
+
+  factory AssistanceGroupStaffDuty.fromJson(
+    Object? raw, {
+    required String groupId,
+    required int serverTime,
+  }) {
     final map = assistanceObject(raw, {
       'groupId',
       'duty',
@@ -93,7 +124,9 @@ final class AssistanceGroupStaffDuty {
     });
     final expiry = assistanceInteger(map['expiresAtMillis']);
     final granted = assistanceInteger(map['grantedAtMillis']);
-    if (map['groupId'] != group.groupId || granted > now || expiry <= granted) {
+    if (map['groupId'] != groupId ||
+        granted > serverTime ||
+        expiry <= granted) {
       throw const FormatException('Invalid group staff duty evidence.');
     }
     return AssistanceGroupStaffDuty._(

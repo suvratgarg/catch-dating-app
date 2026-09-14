@@ -15,6 +15,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 0,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -246,6 +276,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 0,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -489,6 +549,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -931,6 +1021,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -1402,6 +1522,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -1875,6 +2025,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -2349,6 +2529,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 2,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -2696,6 +2906,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 3,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -3101,6 +3341,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 4,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -3451,6 +3721,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 5,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -3817,6 +4117,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": false,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 5,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -4312,6 +4642,54 @@
           "label": "Easy pace"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "51ee95ca581401efe4bcb32f94bc7cca07fb3f63ba81c31d88d2efb07f18aa4b",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "1435943e588c4c6b2d25958d3e22d30beda4573e8e1456a1c6571cfadc72c326",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          },
+          {
+            "groupId": "easy",
+            "label": "Easy pace",
+            "sourceHash": "8958d23e1c1273e6c72d961ca334014777b0c1893b95d701367c77c631b7f7d0",
+            "availableDuties": [
+              "lead",
+              "pacer",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 0,
         "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",
@@ -4594,6 +4972,54 @@
           "label": "Easy pace"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "51ee95ca581401efe4bcb32f94bc7cca07fb3f63ba81c31d88d2efb07f18aa4b",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "1435943e588c4c6b2d25958d3e22d30beda4573e8e1456a1c6571cfadc72c326",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          },
+          {
+            "groupId": "easy",
+            "label": "Easy pace",
+            "sourceHash": "8958d23e1c1273e6c72d961ca334014777b0c1893b95d701367c77c631b7f7d0",
+            "availableDuties": [
+              "lead",
+              "pacer",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "78aa81443c381ada126fc685ed826b7bbb229538168b788d31d27693750baa5c",

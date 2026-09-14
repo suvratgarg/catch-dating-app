@@ -634,6 +634,9 @@
               "type": "null"
             }
           ]
+        },
+        "staffReview": {
+          "$ref": "event_rehearsal_staff.schema.json#/definitions/Review"
         }
       }
     },

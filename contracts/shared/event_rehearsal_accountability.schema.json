@@ -201,6 +201,9 @@
               },
               "canResolve": {
                 "type": "boolean"
+              },
+              "groupId": {
+                "$ref": "event_common.schema.json#/definitions/documentId"
               }
             }
           }
@@ -229,6 +232,9 @@
         "expectedSourceHash": {
           "type": "string",
           "pattern": "^[a-f0-9]{64}$"
+        },
+        "groupId": {
+          "$ref": "event_common.schema.json#/definitions/documentId"
         }
       }
     }

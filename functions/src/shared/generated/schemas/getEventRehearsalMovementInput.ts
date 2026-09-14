@@ -47,6 +47,10 @@ export const getEventRehearsalMovementCallablePayloadSchema: Record<string, unkn
           "maximum": 501
         }
       }
+    },
+    "practiceOperatorId": {
+      "type": "string",
+      "pattern": "^practice-staff:[A-Za-z0-9_-]{1,60}$"
     }
   }
 } as const;

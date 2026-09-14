@@ -3404,6 +3404,11 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
               },
               "canResolve": {
                 "type": "boolean"
+              },
+              "groupId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
               }
             }
           }
@@ -3441,7 +3446,7 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
             "minLength": 1,
             "maxLength": 180
           },
-          "maxItems": 42
+          "maxItems": 92
         },
         "rows": {
           "type": "array",
@@ -6586,6 +6591,402 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
               "type": "null"
             }
           ]
+        },
+        "staffReview": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "clockId",
+            "revision",
+            "sourceHash",
+            "hostUid",
+            "actorUid",
+            "practiceOperatorId",
+            "serverTime",
+            "canAssign",
+            "operators",
+            "groups"
+          ],
+          "properties": {
+            "clockId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "sourceHash": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "hostUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
+            },
+            "practiceOperatorId": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "pattern": "^practice-staff:[A-Za-z0-9_-]{1,60}$"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "serverTime": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "canAssign": {
+              "type": "boolean"
+            },
+            "operators": {
+              "type": "array",
+              "maxItems": 50,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "operatorId",
+                  "displayName",
+                  "duties"
+                ],
+                "properties": {
+                  "operatorId": {
+                    "type": "string",
+                    "pattern": "^practice-staff:[A-Za-z0-9_-]{1,60}$"
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "duties": {
+                    "type": "array",
+                    "maxItems": 20,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "groupId",
+                        "duty",
+                        "expiresAtMillis",
+                        "sourceHash",
+                        "grantedBy",
+                        "grantedAtMillis"
+                      ],
+                      "properties": {
+                        "groupId": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160,
+                          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                        },
+                        "duty": {
+                          "enum": [
+                            "lead",
+                            "pacer",
+                            "sweep"
+                          ]
+                        },
+                        "expiresAtMillis": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        },
+                        "sourceHash": {
+                          "type": "string",
+                          "pattern": "^[a-f0-9]{64}$"
+                        },
+                        "grantedBy": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 180
+                        },
+                        "grantedAtMillis": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "groups": {
+              "type": "array",
+              "maxItems": 21,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "groupId",
+                  "label",
+                  "sourceHash",
+                  "permissions",
+                  "validUntil",
+                  "availableDuties"
+                ],
+                "properties": {
+                  "groupId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "sourceHash": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "permissions": {
+                    "type": "array",
+                    "maxItems": 5,
+                    "uniqueItems": true,
+                    "items": {
+                      "enum": [
+                        "readProgress",
+                        "confirmDeparture",
+                        "transferGroup",
+                        "recordCheckpoint",
+                        "resolveAccountability"
+                      ]
+                    }
+                  },
+                  "validUntil": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "availableDuties": {
+                    "type": "array",
+                    "maxItems": 3,
+                    "uniqueItems": true,
+                    "items": {
+                      "enum": [
+                        "lead",
+                        "pacer",
+                        "sweep"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "staffReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "clockId",
+        "revision",
+        "sourceHash",
+        "hostUid",
+        "actorUid",
+        "practiceOperatorId",
+        "serverTime",
+        "canAssign",
+        "operators",
+        "groups"
+      ],
+      "properties": {
+        "clockId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "sourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "hostUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "practiceOperatorId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^practice-staff:[A-Za-z0-9_-]{1,60}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "canAssign": {
+          "type": "boolean"
+        },
+        "operators": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "operatorId",
+              "displayName",
+              "duties"
+            ],
+            "properties": {
+              "operatorId": {
+                "type": "string",
+                "pattern": "^practice-staff:[A-Za-z0-9_-]{1,60}$"
+              },
+              "displayName": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "duties": {
+                "type": "array",
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "groupId",
+                    "duty",
+                    "expiresAtMillis",
+                    "sourceHash",
+                    "grantedBy",
+                    "grantedAtMillis"
+                  ],
+                  "properties": {
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "duty": {
+                      "enum": [
+                        "lead",
+                        "pacer",
+                        "sweep"
+                      ]
+                    },
+                    "expiresAtMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "sourceHash": {
+                      "type": "string",
+                      "pattern": "^[a-f0-9]{64}$"
+                    },
+                    "grantedBy": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 180
+                    },
+                    "grantedAtMillis": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "groups": {
+          "type": "array",
+          "maxItems": 21,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "groupId",
+              "label",
+              "sourceHash",
+              "permissions",
+              "validUntil",
+              "availableDuties"
+            ],
+            "properties": {
+              "groupId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "sourceHash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "permissions": {
+                "type": "array",
+                "maxItems": 5,
+                "uniqueItems": true,
+                "items": {
+                  "enum": [
+                    "readProgress",
+                    "confirmDeparture",
+                    "transferGroup",
+                    "recordCheckpoint",
+                    "resolveAccountability"
+                  ]
+                }
+              },
+              "validUntil": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "availableDuties": {
+                "type": "array",
+                "maxItems": 3,
+                "uniqueItems": true,
+                "items": {
+                  "enum": [
+                    "lead",
+                    "pacer",
+                    "sweep"
+                  ]
+                }
+              }
+            }
+          }
         }
       }
     }

@@ -11,8 +11,19 @@ final class RehearsalTransferGroup extends RehearsalAssistanceCommand {
       decision,
       snapshot.actorUid,
     );
-    if (decision case AssistanceProposeGroup(:final receivingOperatorId)) {
-      if (!snapshot.receivingOperatorIds.contains(receivingOperatorId)) {
+    if (decision case AssistanceProposeGroup(
+      :final receivingOperatorId,
+      groupId: final to,
+    )) {
+      if (!snapshot.receivingOperatorIds.contains(receivingOperatorId) ||
+          snapshot.staffReview != null &&
+              receivingOperatorId.startsWith('practice-staff:') &&
+              snapshot.staffReview!.operatorPermissionUntil(
+                    receivingOperatorId,
+                    to,
+                    AssistanceGroupPermission.transferGroup,
+                  ) ==
+                  null) {
         throw const FormatException('Choose a current rehearsal Host.');
       }
     }

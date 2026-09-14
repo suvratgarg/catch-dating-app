@@ -52,6 +52,9 @@
     },
     "movementReview": {
       "$ref": "../shared/event_rehearsal_movement.schema.json#/definitions/Review"
+    },
+    "staffReview": {
+      "$ref": "../shared/event_rehearsal_staff.schema.json#/definitions/Review"
     }
   },
   "definitions": {

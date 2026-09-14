@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.110.0
-updated: 2026-09-09
+version: 1.111.0
+updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -1503,7 +1503,15 @@ authority, persistence and receipts. Current organizer managers can place a
 synthetic guest in a saved pace group, propose a handover to another current
 manager, accept or reject a handover addressed to them, cancel it, or remove the
 membership. Proposal does not move the guest. Only acceptance atomically replaces
-the single accepted group. Delegated rehearsal group duties remain separate work.
+the single accepted group. Rehearsal now also supports synthetic lead, pacer and
+sweep duties through `action: staff` and explicit `practiceOperatorId` reads and
+commands. The real caller remains an organizer manager; practice identities
+grant no real account or event access. The shared live duty policy governs
+permissions and assignment windows, while the rehearsal clock governs expiry.
+Receiver acceptance, former-group accountability revocation and checkpoint
+reporter authority apply to those synthetic duties. The full private staff
+contract and native integration boundary are owned by
+[Data Contracts](data_contracts.md).
 
 Synthetic actors now have explicit participation revisions and re-entry episodes.
 First arrival, reconnecting, social opt-out and seating changes preserve group
@@ -1521,8 +1529,9 @@ does not expose group audit data to guest pages or write live memberships. Nativ
 readers and commands reuse `AssistanceMembershipFacts` and the shared membership
 decision validation/confirmation logic. The ordinary assistance editor cannot
 submit group changes; a dedicated pending-command controller and runtime screen
-composition remain integration work. Checkpoint reporter reassignment and
-closeout also remain to be connected in rehearsal.
+composition remain integration work. Reporter reassignment and closeout now
+execute in rehearsal with independent revisions and the original arrival proof;
+native staff-role controls and screen mounting remain open.
 
 Group-checkpoint practice messages now bind the accepted assignment, group source
 and participation episode. The server derives this proof when publishing; Host

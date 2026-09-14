@@ -6,6 +6,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoin
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
@@ -52,8 +53,21 @@ final class RehearsalConfirmDeparture extends RehearsalMovementCommand {
         'Review the checkpoint roster and reporting deadline.',
       );
     }
-    // Current organizer authority for the named reporter is checked by the
-    // rehearsal backend. Naming a reporter does not grant them access.
+    if (checkpoint != null &&
+        snapshot.staffReview != null &&
+        checkpoint!.responsibleOperatorId.startsWith('practice-staff:')) {
+      final until = snapshot.staffReview!.operatorPermissionUntil(
+        checkpoint!.responsibleOperatorId,
+        snapshot.scope.groupId,
+        AssistanceGroupPermission.recordCheckpoint,
+      );
+      if (until == null || until <= checkpoint!.dueAt) {
+        throw const FormatException(
+          'The reporter needs duty beyond the checkpoint deadline.',
+        );
+      }
+    }
+    // Current real account authority is checked by the backend at execution.
   }
   final AssistanceJoiningTarget destination;
   final EventAssistanceDepartureRosterSelection? roster;
@@ -137,11 +151,14 @@ final class RehearsalMovementChange {
     'expectedRevision': snapshot.session.runtimeRevision,
     'expectedSetupRevision': snapshot.scope.setupRevision,
     'clientActionId': clientActionId,
+    if (snapshot.selection.practiceOperatorId != null)
+      'practiceOperatorId': snapshot.selection.practiceOperatorId,
     'action': 'movement',
     'movement': command.toJson(),
   };
 
   void requireResult(EventRehearsalBootstrap result) {
+    snapshot.staffReview?.requireSameRole(result.staffReview);
     final before = snapshot.session;
     final next = result.movementReview;
     final receipts = result.actions.where(

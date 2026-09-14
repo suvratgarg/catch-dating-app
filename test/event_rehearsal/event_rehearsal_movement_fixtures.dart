@@ -26,6 +26,7 @@ Map<String, Object?> movementBootstrap(String name) {
     'guestUrl': 'https://catchdates.com/rehearse/practicepublic1234567890',
     'canUseInternalFaults': false,
     'movementReview': raw['review'],
+    'staffReview': (raw['review'] as Map<String, Object?>)['staffReview'],
   };
 }
 

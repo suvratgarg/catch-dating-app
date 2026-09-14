@@ -1,3 +1,5 @@
+import {assertGroupDutyAssignment, availableGroupDuties} from
+  "./groupDutyPolicy";
 import {runAssistanceTransaction as transact} from "./transactionCallback";
 import {HttpsError} from "firebase-functions/v2/https";
 import {Firestore, Timestamp, Transaction} from "firebase-admin/firestore";
@@ -23,7 +25,6 @@ export interface StaffIdentity {
   uid: string; displayName: string; phoneLastFour: string;
 }
 export interface StaffScope {context: ProgressContext; groupId: string}
-const maxDuration = 14 * 24 * 60 * 60 * 1000;
 
 /** Group duties and event-wide permissions share one staff record. */
 export class EventGroupStaffStore {
@@ -88,14 +89,9 @@ export class EventGroupStaffStore {
         eventOperatorExpiryMillis(prior) : null;
       if (operatorUntil !== null && operatorUntil <= now) operatorUntil = null;
       if (input.decision.kind === "assign") {
-        if (!canAssign(state) ||
-            (input.decision.duty === "pacer" && !state.source.paceGroup) ||
-            input.decision.expiresAtMillis <= now ||
-            input.decision.expiresAtMillis > Math.min(now + maxDuration,
-              staffTimestampMillis(state.event.endTime) + 14_400_000)) {
-          throw new HttpsError("failed-precondition",
-            "Choose a current group and access within the event staff window.");
-        }
+        assertGroupDutyAssignment({canAssign: canAssign(state),
+          paceGroup: state.source.paceGroup, now,
+          endAt: staffTimestampMillis(state.event.endTime)}, input.decision);
         if ((active?.size ?? 0) >= 50 || remaining.length >= 20) {
           throw new HttpsError("resource-exhausted",
             "This event or staff member has reached its duty limit.");
@@ -186,8 +182,7 @@ function response(outcome: Response["outcome"], state: State,
     ...state.scope, ...state.target, sourceHash: state.source.hash,
     serverTime: now, revision: staff?.revision ?? 0, status, duty,
     canAssign: canAssign(state), availableDuties: !state.source.configured ?
-      [] : state.source.paceGroup ? ["lead", "pacer", "sweep"] :
-        ["lead", "sweep"],
+      [] : availableGroupDuties(state.source.paceGroup),
     operatorExpiresAtMillis: staff?.status === "active" ?
       eventOperatorExpiryMillis(staff) : null}};
   if (!validateEventAssistanceGroupStaffCallableResponse(value)) {

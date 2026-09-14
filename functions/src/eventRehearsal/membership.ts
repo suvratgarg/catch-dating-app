@@ -1,3 +1,5 @@
+import {requirePracticeHost, practiceIsManager, practiceGroupPermission,
+  practiceStaffState} from "./groupStaff";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventRehearsalDocument as Session,
   EventRehearsalActorDocument as Actor} from
@@ -6,7 +8,7 @@ import type {ControlEventRehearsalCallablePayload} from
   "../shared/generated/controlEventRehearsalCallablePayload";
 import type {EventRehearsalBootstrapCallableResponse as Bootstrap} from
   "../shared/generated/eventRehearsalBootstrapCallableResponse";
-import {isOrganizerManager, organizerManagerUserIds} from
+import {organizerManagerUserIds} from
   "../shared/organizerHosts";
 import {operationContentHash as hash} from "../operations/durableActions";
 import {availableMembershipActions, membershipTransferState,
@@ -26,21 +28,21 @@ type Command = Extract<NonNullable<
 
 function membershipFacts(session: Session, actor: Actor,
   authority: PracticeCaseAuthority) {
-  if (!isOrganizerManager(authority.organizer, authority.actorUid)) {
-    throw new HttpsError("permission-denied",
-      "Current Host authority required.");
-  }
+  requirePracticeHost(authority);
   const {context, groups, now, membership, valid, episodeId,
     availability, current, end, ready} = practiceMembershipSource(session,
     actor);
   const facts: MembershipDecisionReview = {now, actorUid: authority.actorUid,
-    manager: true, hasGuest: valid, current, ready, membership, groups,
-    transferableGroupIds: groups.map((g) => g.groupId)};
+    manager: practiceIsManager(authority), hasGuest: valid, current, ready,
+    membership, groups, transferableGroupIds: groups.filter((g) =>
+      practiceGroupPermission(actor.sessionId, session, authority, g.groupId,
+        "transferGroup") !== null).map((g) => g.groupId)};
   return {facts, context, episodeId, availability, end,
     membershipId: "practice-membership:" + hash([context, actor.actorId]),
-    sourceHash: hash([context, actor.actorId,
-      timestampEvidence(actor.createdAt), actor.participation ?? null,
-      practiceState(actor).intention, groups, session.setup.durationMinutes]),
+    sourceHash: hash([...(authority.practiceOperatorId ?
+      [authority.practiceOperatorId] : []), context, actor.actorId,
+    timestampEvidence(actor.createdAt), actor.participation ?? null,
+    practiceState(actor).intention, groups, session.setup.durationMinutes]),
     writable: ["running", "paused", "complete"].includes(session.status) &&
       session.actionCount < 500 && session.runtimeRevision < 2147483647 &&
       (membership?.revision ?? 0) < Number.MAX_SAFE_INTEGER};
@@ -79,10 +81,11 @@ export function transferPracticeMembership(session: Session, actor: Actor,
     throw new HttpsError("failed-precondition",
       "This practice membership is unavailable.");
   }
-  if (p.decision.kind === "propose" && !isOrganizerManager(
-    authority.organizer, p.decision.receivingOperatorId)) {
+  if (p.decision.kind === "propose" && practiceGroupPermission(actor.sessionId,
+    session, authority, p.decision.to, "transferGroup",
+    p.decision.receivingOperatorId) === null) {
     throw new HttpsError("permission-denied",
-      "Choose a current rehearsal Host to receive the guest.");
+      "Choose a practice operator with a current receiving-group duty.");
   }
   const change = prepareMembershipChange(s.facts, {payload: p, operationId},
     {membershipId: s.membershipId, episodeId: s.episodeId!, eventEnd: s.end});
@@ -108,7 +111,11 @@ export function practiceMembershipProjection(sessionId: string,
   }
   return {clockId: practiceContext(session, {sessionId}).clockId,
     actorUid: authority.actorUid, coverage: "boundedSession",
-    receivingOperatorIds: organizerManagerUserIds(authority.organizer).sort(),
+    receivingOperatorIds: [...organizerManagerUserIds(authority.organizer),
+      ...practiceStaffState(sessionId, session).operators.filter((o) =>
+        o.duties.some((d) => practiceGroupPermission(sessionId, session,
+          authority, d.groupId, "transferGroup", o.operatorId) !== null))
+        .map((o) => o.operatorId)].sort(),
     rows: actors.map((a) => practiceMembershipView(session, a, authority))
       .sort((a, b) => a.attendeeId.localeCompare(b.attendeeId))};
 }

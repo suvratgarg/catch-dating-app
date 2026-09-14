@@ -1,5 +1,7 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {isOrganizerManager} from "../shared/organizerHosts";
+import {practiceIsManager, practiceGroupPermission} from "./groupStaff";
+import type {EventRehearsalDocument as Session} from
+  "../shared/generated/firestoreAdminTypes";
 import {prepareCheckpointReassignment, prepareCheckpointCloseout,
   currentCheckpointCloseout} from
   "../eventSuccess/operations/checkpointManagementDecisions";
@@ -14,26 +16,39 @@ type Command = Extract<NonNullable<Control["movement"]>,
 /** Parent action receipts bind the exact command; no live work is created. */
 export function preparePracticeCheckpointManagement(record: Movement,
   checkpoint: NonNullable<Review["checkpoint"]>, source: MovementSource,
-  command: Command, authority: PracticeCaseAuthority, operationId: string
+  command: Command, authority: PracticeCaseAuthority, operationId: string,
+  session: Session
 ): Pick<Movement, "assignment" | "closeout"> {
   if (!checkpoint.assignment || !checkpoint.closeout || !checkpoint.request) {
     throw new HttpsError("failed-precondition",
       "This departure has no checkpoint request.");
   }
   if (command.kind === "reassignCheckpointReporter") {
+    if (!practiceIsManager(authority)) {
+      throw new HttpsError("permission-denied",
+        "Only the rehearsal Host can reassign checkpoint responsibility.");
+    }
     prepareCheckpointReassignment({...checkpoint,
       assignment: checkpoint.assignment}, command.payload,
     command.expectedSourceHash);
-    if (!isOrganizerManager(authority.organizer,
-      command.payload.responsibleOperatorId)) {
+    const until = practiceGroupPermission(source.sessionId, session, authority,
+      source.groupId, "recordCheckpoint",
+      command.payload.responsibleOperatorId);
+    if (until === null || until <= Math.max(source.now,
+      checkpoint.request.dueAt)) {
       throw new HttpsError("permission-denied",
-        "Choose a current rehearsal Host to report the checkpoint.");
+        "Choose a practice operator whose duty covers the original deadline.");
     }
     return {assignment: {revision: checkpoint.assignment.revision + 1,
       operationId, assignedBy: authority.actorUid, assignedAt: source.now,
       reason: command.payload.reason.trim(),
       responsibleOperatorId: command.payload.responsibleOperatorId,
       previousResponsibleOperatorId: checkpoint.request.responsibleOperatorId}};
+  }
+  if (!practiceIsManager(authority) &&
+      checkpoint.request.responsibleOperatorId !== authority.actorUid) {
+    throw new HttpsError("permission-denied",
+      "Only the assigned reporter or rehearsal Host can close this request.");
   }
   prepareCheckpointCloseout({request: checkpoint.request,
     closeout: checkpoint.closeout}, command.payload,

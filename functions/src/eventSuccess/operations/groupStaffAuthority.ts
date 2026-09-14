@@ -17,17 +17,10 @@ import {ProgressContext, invalidSource, timestampEvidence} from
   "./groupProgressSource";
 import {requireDocumentId} from "./guestRecords";
 
-export type GroupDuty = NonNullable<Staff["groupDuties"]>[number];
-export const GROUP_PERMISSIONS = ["readProgress", "confirmDeparture",
-  "transferGroup", "recordCheckpoint", "resolveAccountability"] as const;
-export type GroupPermission = typeof GROUP_PERMISSIONS[number];
-export const GROUP_DUTY_PERMISSIONS = {
-  lead: ["readProgress", "confirmDeparture", "transferGroup",
-    "recordCheckpoint", "resolveAccountability"],
-  pacer: ["readProgress", "confirmDeparture", "transferGroup",
-    "recordCheckpoint", "resolveAccountability"],
-  sweep: ["readProgress", "recordCheckpoint", "resolveAccountability"],
-} as const satisfies Record<GroupDuty["duty"], readonly GroupPermission[]>;
+import {GROUP_PERMISSIONS, GROUP_DUTY_PERMISSIONS, GroupPermission} from
+  "./groupDutyPolicy";
+export {GROUP_PERMISSIONS, GROUP_DUTY_PERMISSIONS, GroupPermission,
+  GroupDuty} from "./groupDutyPolicy";
 
 /** Routine attendance, progress and schedule changes preserve a duty. */
 export function groupDutySource(context: ProgressContext, groupId: string,

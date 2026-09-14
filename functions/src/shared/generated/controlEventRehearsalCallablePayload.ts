@@ -5,7 +5,9 @@
 /**
  * Host lifecycle or virtual-clock control. Assistance additionally requires the reviewed setup generation so a reset cannot reuse an old runtime revision.
  */
-export interface ControlEventRehearsalCallablePayload {
+export type ControlEventRehearsalCallablePayload = {
+  [k: string]: unknown;
+} & {
   sessionId: string;
   expectedRevision: number;
   clientActionId: string;
@@ -19,7 +21,8 @@ export interface ControlEventRehearsalCallablePayload {
     | "advanceClock"
     | "complete"
     | "assistance"
-    | "movement";
+    | "movement"
+    | "staff";
   minutes?: number;
   assistance?:
     | {
@@ -361,6 +364,7 @@ export interface ControlEventRehearsalCallablePayload {
           disposition: "returned" | "departed" | "unresolved";
         };
         expectedSourceHash: string;
+        groupId?: string;
       }
     | {
         kind: "transferGroup";
@@ -489,4 +493,21 @@ export interface ControlEventRehearsalCallablePayload {
         };
         expectedSourceHash: string;
       };
-}
+  staff?: {
+    operatorId: string;
+    displayName: string;
+    groupId: string;
+    expectedRevision: number;
+    expectedSourceHash: string;
+    decision:
+      | {
+          kind: "assign";
+          duty: "lead" | "pacer" | "sweep";
+          expiresAtMillis: number;
+        }
+      | {
+          kind: "remove";
+        };
+  };
+  practiceOperatorId?: string;
+};

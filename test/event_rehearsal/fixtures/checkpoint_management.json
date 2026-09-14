@@ -15,6 +15,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -458,6 +488,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -927,6 +987,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -1425,6 +1515,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -1930,6 +2050,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -2532,6 +2682,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -3133,6 +3313,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",
@@ -3670,6 +3880,36 @@
           "label": "Whole event"
         }
       ],
+      "staffReview": {
+        "clockId": "clock:972433a3265af5d743117c62f9861175057fea66de936ae57edbcbf4018c7f47",
+        "revision": 0,
+        "sourceHash": "4479e4434766a00ce2f3aa6be078e050d40730f9fcddda675f3ecb41efd4ee0f",
+        "hostUid": "host-1",
+        "actorUid": "host-1",
+        "practiceOperatorId": null,
+        "serverTime": 1000,
+        "canAssign": true,
+        "operators": [],
+        "groups": [
+          {
+            "groupId": "event:whole",
+            "label": "Whole event",
+            "sourceHash": "206e0215d917ef7847f5c24fe2a9b6e9f529b92a1492a4da23656ce1ef5cec95",
+            "availableDuties": [
+              "lead",
+              "sweep"
+            ],
+            "permissions": [
+              "readProgress",
+              "confirmDeparture",
+              "transferGroup",
+              "recordCheckpoint",
+              "resolveAccountability"
+            ],
+            "validUntil": 9007199254740991
+          }
+        ]
+      },
       "progress": {
         "revision": 1,
         "sourceHash": "f117e89434a530ead9eda87235b1a3e7e77f6f574d795c42f12c3355d4bb0a98",

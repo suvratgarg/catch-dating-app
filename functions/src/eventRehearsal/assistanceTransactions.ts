@@ -1,3 +1,4 @@
+import {practiceIsManager} from "./groupStaff";
 import {readPracticeDepartures, practiceRecipeKey} from "./movementGuidance";
 import type {Movement} from "./movementSource";
 import {resolvePracticeAccountability} from "./accountability";
@@ -116,6 +117,12 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
           session.status === "complete"))) {
     throw new HttpsError("failed-precondition",
       "Practice command is unavailable.");
+  }
+  if (authority?.practiceOperatorId &&
+      !["transferGroup", "resolveAccountability"].includes(command.kind) &&
+      !practiceIsManager(authority)) {
+    throw new HttpsError("permission-denied",
+      "This assistance action belongs to the rehearsal Host.");
   }
   if (command.kind === "transferGroup") {
     if (!authority?.operationId) {

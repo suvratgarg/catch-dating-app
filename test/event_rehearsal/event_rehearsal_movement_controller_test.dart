@@ -390,6 +390,9 @@ class _Repository extends Fake implements EventRehearsalRepository {
     if (wrongGeneration) {
       final session = movementObjectAt(raw, ['session']);
       session['setupRevision'] = (session['setupRevision'] as int) + 1;
+      final current = EventRehearsalSession.fromMap(session);
+      movementObjectAt(raw, ['staffReview'])['clockId'] =
+          rehearsalMovementScope(current, 'event:whole').clockId;
     }
     return EventRehearsalBootstrap.fromCallableData(raw);
   }

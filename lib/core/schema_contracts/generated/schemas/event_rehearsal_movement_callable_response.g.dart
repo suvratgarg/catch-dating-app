@@ -2801,6 +2801,204 @@ const schemaEventRehearsalMovementCallableResponseSchema = <String, Object?>{
         },
       ],
     },
+    'staffReview': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'clockId',
+        'revision',
+        'sourceHash',
+        'hostUid',
+        'actorUid',
+        'practiceOperatorId',
+        'serverTime',
+        'canAssign',
+        'operators',
+        'groups',
+      ],
+      'properties': <String, Object?>{
+        'clockId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'revision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'sourceHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'hostUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'actorUid': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'practiceOperatorId': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'string',
+              'pattern': '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'serverTime': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'canAssign': <String, Object?>{
+          'type': 'boolean',
+        },
+        'operators': <String, Object?>{
+          'type': 'array',
+          'maxItems': 50,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'operatorId',
+              'displayName',
+              'duties',
+            ],
+            'properties': <String, Object?>{
+              'operatorId': <String, Object?>{
+                'type': 'string',
+                'pattern': '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+              },
+              'displayName': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'duties': <String, Object?>{
+                'type': 'array',
+                'maxItems': 20,
+                'items': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'groupId',
+                    'duty',
+                    'expiresAtMillis',
+                    'sourceHash',
+                    'grantedBy',
+                    'grantedAtMillis',
+                  ],
+                  'properties': <String, Object?>{
+                    'groupId': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 160,
+                      'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                    },
+                    'duty': <String, Object?>{
+                      'enum': <Object?>[
+                        'lead',
+                        'pacer',
+                        'sweep',
+                      ],
+                    },
+                    'expiresAtMillis': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                    'sourceHash': <String, Object?>{
+                      'type': 'string',
+                      'pattern': '^[a-f0-9]{64}\$',
+                    },
+                    'grantedBy': <String, Object?>{
+                      'type': 'string',
+                      'minLength': 1,
+                      'maxLength': 180,
+                    },
+                    'grantedAtMillis': <String, Object?>{
+                      'type': 'integer',
+                      'minimum': 0,
+                      'maximum': 9007199254740991,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        'groups': <String, Object?>{
+          'type': 'array',
+          'maxItems': 21,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'groupId',
+              'label',
+              'sourceHash',
+              'permissions',
+              'validUntil',
+              'availableDuties',
+            ],
+            'properties': <String, Object?>{
+              'groupId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'label': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 120,
+              },
+              'sourceHash': <String, Object?>{
+                'type': 'string',
+                'pattern': '^[a-f0-9]{64}\$',
+              },
+              'permissions': <String, Object?>{
+                'type': 'array',
+                'maxItems': 5,
+                'uniqueItems': true,
+                'items': <String, Object?>{
+                  'enum': <Object?>[
+                    'readProgress',
+                    'confirmDeparture',
+                    'transferGroup',
+                    'recordCheckpoint',
+                    'resolveAccountability',
+                  ],
+                },
+              },
+              'validUntil': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 9007199254740991,
+              },
+              'availableDuties': <String, Object?>{
+                'type': 'array',
+                'maxItems': 3,
+                'uniqueItems': true,
+                'items': <String, Object?>{
+                  'enum': <Object?>[
+                    'lead',
+                    'pacer',
+                    'sweep',
+                  ],
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   'title': 'EventRehearsalMovementCallableResponse',
 };

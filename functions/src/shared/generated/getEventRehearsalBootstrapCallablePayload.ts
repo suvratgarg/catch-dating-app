@@ -7,4 +7,5 @@
  */
 export interface GetEventRehearsalBootstrapCallablePayload {
   sessionId: string;
+  practiceOperatorId?: string;
 }

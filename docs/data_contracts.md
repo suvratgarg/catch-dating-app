@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.104.0
-updated: 2026-09-09
+version: 1.105.0
+updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
 ---
@@ -201,10 +201,46 @@ an explicit partial report and a current, post-departure visit disposition for e
 unconfirmed original member. It never creates an arrival observation. Changed
 reports or dispositions restore review; a complete report supersedes closeout.
 Reopening retains the saved evidence. Current organizer managers can reassign a
-request to another current manager without extending its original deadline or
-granting access. All changes use the existing bounded rehearsal transaction,
+request to a current manager or a synthetic reporter whose duty covers the
+original deadline. Reassignment does not extend that deadline or grant access. All changes use the existing bounded rehearsal transaction,
 action receipt and reset/expiry cleanup; no live Operations work or notification
-is created. Native screen mounting and delegated rehearsal staff remain open.
+is created. Native screen mounting remains open.
+
+`event_rehearsal_staff.schema.json` now owns up to 50 synthetic operators, each
+with at most 20 independently expiring group duties in the private session.
+`controlEventRehearsal` with `action: staff` assigns or removes a reviewed duty;
+the parent runtime revision, setup generation, action cap and receipt fence the
+change. Reset, fork and setup replacement do not inherit practice staff.
+
+Host bootstrap and movement reads accept an explicit `practiceOperatorId`;
+scoped movement, membership and accountability commands bind that identity in
+their request receipt. The real caller must remain an organizer manager.
+Synthetic identities never create accounts, invitations or `eventStaffGrants`,
+and cannot authorize access to any live event or rehearsal endpoint. The Host
+retains lifecycle, clock, messaging and staff-configuration control.
+
+Live and practice share the duty permission map and assignment window.
+Leads/pacers can confirm departures and transfer guests; sweeps can read, report
+checkpoints and resolve accountability. Only the named, currently authorized
+receiver accepts a handoff. Accepted membership determines subgroup visit scope;
+proposals do not transfer authority. A reporter needs duty coverage beyond the
+original deadline; removal, virtual expiry and changed group sources withhold
+permission without rewriting arrival evidence or original responsibility.
+
+`staffReview` separates the real Host, practiced operator, stored duties and
+current per-group permissions. Role-specific accountability rows and commands
+carry the actual group scope. Native readers validate the staff clock, Host and
+practice identities, roster coverage, duty expiry and current permissions against
+backend-produced fixtures. Group commands retain the selected role through reads,
+confirmation and exact retries. Handover acceptance changes the guest's group
+scope; a sweep cannot depart, transfer guests or reassign a checkpoint reporter.
+
+`RehearsalStaffChange` reuses live assignment/removal decisions, freezes the parent
+and staff revisions, checks the practice window, and verifies the saved duty,
+other operators and parent receipt. Later replay preserves subsequent removal.
+The repository supports explicit role reads and typed staff writes. Native staff
+configuration/role-selection controllers and screen mounting remain integration
+work. Other rehearsal controls still default to organizer management authority.
 
 ### Explicit Attendance Closeout
 

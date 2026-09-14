@@ -143,7 +143,7 @@ class EventRehearsalMembershipController
     }
     final page = ref.read(eventRehearsalAssistanceProvider(scope.sessionId));
     if (selected.membership.scope != scope ||
-        selected.membership.actorUid != selected.account.uid ||
+        selected.membership.hostUid != selected.account.uid ||
         page.isLoading ||
         page.hasError ||
         !selected.session.isCurrent ||
@@ -164,8 +164,7 @@ class EventRehearsalMembershipController
     RehearsalMembershipRow membership,
   ) {
     if (!_current(review.account, _epoch)) throw rehearsalReviewSessionChanged;
-    if (membership.scope != scope ||
-        membership.actorUid != review.account.uid) {
+    if (membership.scope != scope || membership.hostUid != review.account.uid) {
       throw const ValidationException('Choose the reviewed practice guest.');
     }
     if (_pending != null || _inFlight != null) return;

@@ -45,6 +45,7 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
         'complete',
         'assistance',
         'movement',
+        'staff',
       ],
     },
     'minutes': <String, Object?>{
@@ -1540,6 +1541,11 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
               'type': 'string',
               'pattern': '^[a-f0-9]{64}\$',
             },
+            'groupId': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 180,
+            },
           },
         },
         <String, Object?>{
@@ -2138,82 +2144,270 @@ const schemaControlEventRehearsalCallablePayloadSchema = <String, Object?>{
       ],
       'type': 'object',
     },
-  },
-  'if': <String, Object?>{
-    'properties': <String, Object?>{
-      'action': <String, Object?>{
-        'const': 'assistance',
-      },
-    },
-  },
-  'then': <String, Object?>{
-    'required': <Object?>[
-      'assistance',
-      'expectedSetupRevision',
-    ],
-    'not': <String, Object?>{
-      'anyOf': <Object?>[
-        <String, Object?>{
-          'required': <Object?>[
-            'minutes',
+    'staff': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'operatorId',
+        'displayName',
+        'groupId',
+        'expectedRevision',
+        'expectedSourceHash',
+        'decision',
+      ],
+      'properties': <String, Object?>{
+        'operatorId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+        },
+        'displayName': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+        },
+        'groupId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+        },
+        'expectedRevision': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 9007199254740991,
+        },
+        'expectedSourceHash': <String, Object?>{
+          'type': 'string',
+          'pattern': '^[a-f0-9]{64}\$',
+        },
+        'decision': <String, Object?>{
+          'oneOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+                'duty',
+                'expiresAtMillis',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'assign',
+                },
+                'duty': <String, Object?>{
+                  'enum': <Object?>[
+                    'lead',
+                    'pacer',
+                    'sweep',
+                  ],
+                },
+                'expiresAtMillis': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 9007199254740991,
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'kind',
+              ],
+              'properties': <String, Object?>{
+                'kind': <String, Object?>{
+                  'const': 'remove',
+                },
+              },
+            },
           ],
         },
-        <String, Object?>{
+      },
+    },
+    'practiceOperatorId': <String, Object?>{
+      'type': 'string',
+      'pattern': '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+    },
+  },
+  'allOf': <Object?>[
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'action': <String, Object?>{
+            'const': 'assistance',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'assistance',
+          'expectedSetupRevision',
+        ],
+        'not': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'required': <Object?>[
+                'movement',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'staff',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'minutes',
+              ],
+            },
+          ],
+        },
+      },
+      'else': <String, Object?>{
+        'not': <String, Object?>{
+          'required': <Object?>[
+            'assistance',
+          ],
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'action': <String, Object?>{
+            'const': 'movement',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'movement',
+          'expectedSetupRevision',
+        ],
+        'not': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'required': <Object?>[
+                'assistance',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'staff',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'minutes',
+              ],
+            },
+          ],
+        },
+      },
+      'else': <String, Object?>{
+        'not': <String, Object?>{
           'required': <Object?>[
             'movement',
           ],
         },
-      ],
+      },
     },
-  },
-  'else': <String, Object?>{
-    'if': <String, Object?>{
-      'properties': <String, Object?>{
-        'action': <String, Object?>{
-          'const': 'movement',
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'action': <String, Object?>{
+            'const': 'staff',
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'required': <Object?>[
+          'staff',
+          'expectedSetupRevision',
+        ],
+        'not': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'required': <Object?>[
+                'assistance',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'movement',
+              ],
+            },
+            <String, Object?>{
+              'required': <Object?>[
+                'minutes',
+              ],
+            },
+          ],
+        },
+      },
+      'else': <String, Object?>{
+        'not': <String, Object?>{
+          'required': <Object?>[
+            'staff',
+          ],
         },
       },
     },
-    'then': <String, Object?>{
-      'required': <Object?>[
-        'movement',
-        'expectedSetupRevision',
-      ],
-      'not': <String, Object?>{
+    <String, Object?>{
+      'if': <String, Object?>{
+        'properties': <String, Object?>{
+          'action': <String, Object?>{
+            'not': <String, Object?>{
+              'enum': <Object?>[
+                'assistance',
+                'movement',
+                'staff',
+              ],
+            },
+          },
+        },
+      },
+      'then': <String, Object?>{
+        'not': <String, Object?>{
+          'required': <Object?>[
+            'expectedSetupRevision',
+          ],
+        },
+      },
+    },
+    <String, Object?>{
+      'if': <String, Object?>{
+        'required': <Object?>[
+          'practiceOperatorId',
+        ],
+      },
+      'then': <String, Object?>{
         'anyOf': <Object?>[
           <String, Object?>{
-            'required': <Object?>[
-              'minutes',
-            ],
+            'properties': <String, Object?>{
+              'action': <String, Object?>{
+                'const': 'movement',
+              },
+            },
           },
           <String, Object?>{
-            'required': <Object?>[
-              'assistance',
-            ],
+            'properties': <String, Object?>{
+              'action': <String, Object?>{
+                'const': 'assistance',
+              },
+              'assistance': <String, Object?>{
+                'properties': <String, Object?>{
+                  'kind': <String, Object?>{
+                    'enum': <Object?>[
+                      'transferGroup',
+                      'resolveAccountability',
+                    ],
+                  },
+                },
+              },
+            },
           },
         ],
       },
     },
-    'else': <String, Object?>{
-      'not': <String, Object?>{
-        'anyOf': <Object?>[
-          <String, Object?>{
-            'required': <Object?>[
-              'assistance',
-            ],
-          },
-          <String, Object?>{
-            'required': <Object?>[
-              'movement',
-            ],
-          },
-          <String, Object?>{
-            'required': <Object?>[
-              'expectedSetupRevision',
-            ],
-          },
-        ],
-      },
-    },
-  },
+  ],
 };

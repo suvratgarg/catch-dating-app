@@ -10,15 +10,18 @@ final class GetEventRehearsalMovementCallableRequest {
     required this.sessionId,
     required this.expectedSetupRevision,
     required this.scope,
+    this.practiceOperatorId,
   });
 
   final String sessionId;
   final int expectedSetupRevision;
   final Map<String, Object?> scope;
+  final String? practiceOperatorId;
 
   Map<String, Object?> toJson() => {
     'sessionId': sessionId,
     'expectedSetupRevision': expectedSetupRevision,
     'scope': scope,
+    'practiceOperatorId': ?practiceOperatorId,
   };
 }

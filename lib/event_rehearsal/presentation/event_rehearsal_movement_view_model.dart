@@ -72,7 +72,7 @@ Future<RehearsalMovementPage> eventRehearsalMovementForAccount(
   );
   requireRehearsalReviewAccount(ref, account);
   if (snapshot.selection != selection ||
-      snapshot.actorUid != account.uid ||
+      snapshot.hostUid != account.uid ||
       !identical(snapshot.session, session.session)) {
     throw rehearsalReviewExpired;
   }

@@ -561,4 +561,55 @@ export interface EventRehearsalMovementCallableResponse {
       operationId: string;
     };
   } | null;
+  staffReview?: {
+    clockId: string;
+    revision: number;
+    sourceHash: string;
+    hostUid: string;
+    actorUid: string;
+    practiceOperatorId: string | null;
+    serverTime: number;
+    canAssign: boolean;
+    /**
+     * @maxItems 50
+     */
+    operators: {
+      operatorId: string;
+      displayName: string;
+      /**
+       * @maxItems 20
+       */
+      duties: {
+        groupId: string;
+        duty: "lead" | "pacer" | "sweep";
+        expiresAtMillis: number;
+        sourceHash: string;
+        grantedBy: string;
+        grantedAtMillis: number;
+      }[];
+    }[];
+    /**
+     * @maxItems 21
+     */
+    groups: {
+      groupId: string;
+      label: string;
+      sourceHash: string;
+      /**
+       * @maxItems 5
+       */
+      permissions: (
+        | "readProgress"
+        | "confirmDeparture"
+        | "transferGroup"
+        | "recordCheckpoint"
+        | "resolveAccountability"
+      )[];
+      validUntil: number;
+      /**
+       * @maxItems 3
+       */
+      availableDuties: ("lead" | "pacer" | "sweep")[];
+    }[];
+  };
 }

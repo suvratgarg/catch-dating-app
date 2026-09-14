@@ -7,6 +7,8 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff_change.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -45,6 +47,42 @@ class EventRehearsalRepository {
     action: 'load an event dress rehearsal',
     parse: EventRehearsalBootstrap.fromCallableData,
   );
+
+  Future<EventRehearsalBootstrap> fetchPracticeRole({
+    required String sessionId,
+    required String practiceOperatorId,
+    required String hostUid,
+  }) => _call(
+    name: 'getEventRehearsalBootstrap',
+    payload: GetEventRehearsalBootstrapCallableRequest(
+      sessionId: sessionId,
+      practiceOperatorId: rehearsalOperatorId(practiceOperatorId),
+    ).toJson(),
+    action: 'review a practice staff role',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      if (result.session.id != sessionId ||
+          result.staffReview?.hostUid != hostUid ||
+          result.staffReview?.practiceOperatorId != practiceOperatorId) {
+        throw const FormatException(
+          'Practice review returned a different role.',
+        );
+      }
+      return result;
+    },
+  );
+
+  Future<EventRehearsalBootstrap> applyStaff(RehearsalStaffChange change) =>
+      _call(
+        name: 'controlEventRehearsal',
+        payload: change.toJson(),
+        action: 'configure practice staff',
+        parse: (data) {
+          final result = EventRehearsalBootstrap.fromCallableData(data);
+          change.requireResult(result);
+          return result;
+        },
+      );
 
   Stream<EventRehearsalBootstrap> watch(String sessionId) async* {
     while (true) {
@@ -113,6 +151,7 @@ class EventRehearsalRepository {
       sessionId: selection.scope.sessionId,
       expectedSetupRevision: selection.scope.setupRevision,
       scope: selection.toJson(),
+      practiceOperatorId: selection.practiceOperatorId,
     ).toJson(),
     action: 'review rehearsal group movement',
     parse: (data) => RehearsalMovementReview.fromJson(

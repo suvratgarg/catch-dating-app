@@ -16,6 +16,8 @@ final class RehearsalResolveAccountability extends RehearsalAssistanceCommand {
   Map<String, Object?> toJson() => {
     'kind': kind,
     'actorId': actorId,
+    if (snapshot.staffReview?.practiceOperatorId != null)
+      'groupId': snapshot.groupId,
     'expectedSourceHash': snapshot.evidence.sourceHash,
     'payload': {
       'attendeeId': actorId,

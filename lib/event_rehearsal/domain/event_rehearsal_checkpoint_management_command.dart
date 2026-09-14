@@ -18,27 +18,53 @@ final class RehearsalManageCheckpoint extends RehearsalMovementCommand {
           EventRehearsalStatus.paused,
           EventRehearsalStatus.complete,
         ].contains(snapshot.session.status);
+    final manager = snapshot.staffReview?.isManager ?? true;
+    final canClose =
+        manager || request?.responsibleOperatorId == snapshot.actorUid;
     final allowed =
         active &&
+        (snapshot.staffReview?.canPerform(
+              snapshot.scope.groupId,
+              AssistanceGroupPermission.recordCheckpoint,
+            ) ??
+            true) &&
         request != null &&
         switch (decision) {
           ReassignCheckpointReporter(:final reporterId) =>
-            assignment != null &&
+            manager &&
+                assignment != null &&
                 assignment.revision < 9007199254740991 &&
                 c!.availability is AssistanceCheckpointRoster &&
                 request.state != AssistanceCheckpointRequestState.complete &&
                 request.state != AssistanceCheckpointRequestState.closedOut &&
                 reporterId != request.responsibleOperatorId,
           CloseCheckpointRequest() =>
-            closeout != null &&
+            canClose &&
+                closeout != null &&
                 closeout.revision < 9007199254740991 &&
                 closeout.eligibility is AssistanceCheckpointCloseoutReady,
           ReopenCheckpointRequest() =>
-            closeout != null &&
+            canClose &&
+                closeout != null &&
                 closeout.revision < 9007199254740991 &&
                 closeout.change?.decision is RehearsalCheckpointClosed &&
                 request.state != AssistanceCheckpointRequestState.complete,
         };
+    if (decision case ReassignCheckpointReporter(:final reporterId)) {
+      if (snapshot.staffReview != null &&
+          reporterId.startsWith('practice-staff:')) {
+        final until = snapshot.staffReview!.operatorPermissionUntil(
+          reporterId,
+          snapshot.scope.groupId,
+          AssistanceGroupPermission.recordCheckpoint,
+        );
+        if (until == null || request == null || until <= request.dueAt) {
+          throw const FormatException(
+            'The reporter needs duty beyond the original deadline.',
+          );
+        }
+      }
+    }
     if (!allowed) {
       throw const FormatException('Review a permitted checkpoint action.');
     }

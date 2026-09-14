@@ -42,7 +42,8 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         "advanceClock",
         "complete",
         "assistance",
-        "movement"
+        "movement",
+        "staff"
       ]
     },
     "minutes": {
@@ -1537,6 +1538,11 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
             "expectedSourceHash": {
               "type": "string",
               "pattern": "^[a-f0-9]{64}$"
+            },
+            "groupId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 180
             }
           }
         },
@@ -2135,83 +2141,271 @@ export const controlEventRehearsalCallablePayloadSchema: Record<string, unknown>
         }
       ],
       "type": "object"
-    }
-  },
-  "if": {
-    "properties": {
-      "action": {
-        "const": "assistance"
-      }
-    }
-  },
-  "then": {
-    "required": [
-      "assistance",
-      "expectedSetupRevision"
-    ],
-    "not": {
-      "anyOf": [
-        {
-          "required": [
-            "minutes"
-          ]
+    },
+    "staff": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operatorId",
+        "displayName",
+        "groupId",
+        "expectedRevision",
+        "expectedSourceHash",
+        "decision"
+      ],
+      "properties": {
+        "operatorId": {
+          "type": "string",
+          "pattern": "^practice-staff:[A-Za-z0-9_-]{1,60}$"
         },
-        {
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180
+        },
+        "expectedRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "expectedSourceHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "decision": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "duty",
+                "expiresAtMillis"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "assign"
+                },
+                "duty": {
+                  "enum": [
+                    "lead",
+                    "pacer",
+                    "sweep"
+                  ]
+                },
+                "expiresAtMillis": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "remove"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "practiceOperatorId": {
+      "type": "string",
+      "pattern": "^practice-staff:[A-Za-z0-9_-]{1,60}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "assistance"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "assistance",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "assistance"
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "movement"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "movement",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
           "required": [
             "movement"
           ]
         }
-      ]
-    }
-  },
-  "else": {
-    "if": {
-      "properties": {
-        "action": {
-          "const": "movement"
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "staff"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "staff",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "staff"
+          ]
         }
       }
     },
-    "then": {
-      "required": [
-        "movement",
-        "expectedSetupRevision"
-      ],
-      "not": {
-        "anyOf": [
-          {
-            "required": [
-              "minutes"
-            ]
-          },
-          {
-            "required": [
-              "assistance"
-            ]
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "not": {
+              "enum": [
+                "assistance",
+                "movement",
+                "staff"
+              ]
+            }
           }
-        ]
+        }
+      },
+      "then": {
+        "not": {
+          "required": [
+            "expectedSetupRevision"
+          ]
+        }
       }
     },
-    "else": {
-      "not": {
+    {
+      "if": {
+        "required": [
+          "practiceOperatorId"
+        ]
+      },
+      "then": {
         "anyOf": [
           {
-            "required": [
-              "assistance"
-            ]
+            "properties": {
+              "action": {
+                "const": "movement"
+              }
+            }
           },
           {
-            "required": [
-              "movement"
-            ]
-          },
-          {
-            "required": [
-              "expectedSetupRevision"
-            ]
+            "properties": {
+              "action": {
+                "const": "assistance"
+              },
+              "assistance": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "transferGroup",
+                      "resolveAccountability"
+                    ]
+                  }
+                }
+              }
+            }
           }
         ]
       }
     }
-  }
+  ]
 } as const;

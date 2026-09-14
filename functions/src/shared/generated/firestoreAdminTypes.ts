@@ -8336,6 +8336,28 @@ export interface EventRehearsalDocument {
   updatedAt: FirebaseFirestore.Timestamp;
   expiresAt: FirebaseFirestore.Timestamp;
   completedAt: FirebaseFirestore.Timestamp | null;
+  staff?: {
+    clockId: string;
+    revision: number;
+    /**
+     * @maxItems 50
+     */
+    operators: {
+      operatorId: string;
+      displayName: string;
+      /**
+       * @maxItems 20
+       */
+      duties: {
+        groupId: string;
+        duty: "lead" | "pacer" | "sweep";
+        expiresAtMillis: number;
+        sourceHash: string;
+        grantedBy: string;
+        grantedAtMillis: number;
+      }[];
+    }[];
+  };
 }
 
 /**

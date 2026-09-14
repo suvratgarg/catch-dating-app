@@ -6886,7 +6886,7 @@ abstract final class CatchContractConstraints {
     path: 'controlEventRehearsalCallablePayload.action',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement'],
+    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff'],
   );
 
   static const controlEventRehearsalCallablePayloadAssistance = CatchContractFieldConstraints(
@@ -6928,12 +6928,75 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['object'],
   );
 
+  static const controlEventRehearsalCallablePayloadPracticeOperatorId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.practiceOperatorId',
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
   static const controlEventRehearsalCallablePayloadSessionId = CatchContractFieldConstraints(
     path: 'controlEventRehearsalCallablePayload.sessionId',
     maxLength: 180,
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const controlEventRehearsalCallablePayloadStaffDecisionDuty = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.staff.decision.duty',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const controlEventRehearsalCallablePayloadStaffDecisionExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.staff.decision.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const controlEventRehearsalCallablePayloadStaffDecisionKind = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.staff.decision.kind',
+    required: true,
+  );
+
+  static const controlEventRehearsalCallablePayloadStaffDisplayName = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.staff.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const controlEventRehearsalCallablePayloadStaffExpectedRevision = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.staff.expectedRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const controlEventRehearsalCallablePayloadStaffExpectedSourceHash = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.staff.expectedSourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const controlEventRehearsalCallablePayloadStaffGroupId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.staff.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const controlEventRehearsalCallablePayloadStaffOperatorId = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.staff.operatorId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
   );
 
   static const controlEventRehearsalSpatialCallablePayloadAction = CatchContractFieldConstraints(
@@ -30675,6 +30738,14 @@ abstract final class CatchContractConstraints {
     pattern: '^episode:[a-f0-9]{64}\$',
   );
 
+  static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsRevision = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.revision',
     required: true,
@@ -31613,7 +31684,7 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['array'],
     itemValueTypes: <String>['string'],
-    maxItems: 42,
+    maxItems: 92,
     uniqueItems: true,
   );
 
@@ -33905,6 +33976,211 @@ abstract final class CatchContractConstraints {
     maximum: 2147483647,
   );
 
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewCanAssign = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.canAssign',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.clockId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 21,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsAvailableDuties = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.availableDuties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['lead', 'pacer', 'sweep'],
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsAvailableDutiesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.availableDuties.items',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsPermissions = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.permissions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['readProgress', 'confirmDeparture', 'transferGroup', 'recordCheckpoint', 'resolveAccountability'],
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsPermissionsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.permissions.items',
+    required: true,
+    enumValues: <String>['readProgress', 'confirmDeparture', 'transferGroup', 'recordCheckpoint', 'resolveAccountability'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsValidUntil = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewHostUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.hostUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperators = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDuties = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsDuty = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.duty',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsGrantedAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.grantedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsGrantedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.grantedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.operatorId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewPracticeOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.practiceOperatorId',
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewServerTime = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
   static const eventRehearsalBootstrapCallableResponseSessionActionCount = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.session.actionCount',
     required: true,
@@ -34361,6 +34637,211 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewCanAssign = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.canAssign',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.clockId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.groups',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 21,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsAvailableDuties = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.availableDuties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['lead', 'pacer', 'sweep'],
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsAvailableDutiesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.availableDuties.items',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsPermissions = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.permissions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['readProgress', 'confirmDeparture', 'transferGroup', 'recordCheckpoint', 'resolveAccountability'],
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsPermissionsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.permissions.items',
+    required: true,
+    enumValues: <String>['readProgress', 'confirmDeparture', 'transferGroup', 'recordCheckpoint', 'resolveAccountability'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsValidUntil = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewHostUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.hostUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperators = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDuties = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsDuty = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.duty',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsGrantedAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.grantedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsGrantedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.grantedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.operatorId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewPracticeOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.practiceOperatorId',
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewServerTime = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseStaffReviewSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.staffReview.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRehearsalCaseDocumentActorId = CatchContractFieldConstraints(
@@ -35000,6 +35481,99 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalDocument.sourceEventRevision',
     maxLength: 180,
     valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentStaffClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.clockId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentStaffOperators = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalDocumentStaffOperatorsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentStaffOperatorsItemsDuties = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators.items.duties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const eventRehearsalDocumentStaffOperatorsItemsDutiesItemsDuty = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators.items.duties.items.duty',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventRehearsalDocumentStaffOperatorsItemsDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators.items.duties.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalDocumentStaffOperatorsItemsDutiesItemsGrantedAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators.items.duties.items.grantedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalDocumentStaffOperatorsItemsDutiesItemsGrantedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators.items.duties.items.grantedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentStaffOperatorsItemsDutiesItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators.items.duties.items.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalDocumentStaffOperatorsItemsDutiesItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators.items.duties.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalDocumentStaffOperatorsItemsOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.operators.items.operatorId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
+  static const eventRehearsalDocumentStaffRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.staff.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
   );
 
   static const eventRehearsalDocumentStatus = CatchContractFieldConstraints(
@@ -39050,6 +39624,211 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 2147483647,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.actorUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewCanAssign = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.canAssign',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.clockId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.groups',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 21,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewGroupsItemsAvailableDuties = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.groups.items.availableDuties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['lead', 'pacer', 'sweep'],
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewGroupsItemsAvailableDutiesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.groups.items.availableDuties.items',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewGroupsItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.groups.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.groups.items.label',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewGroupsItemsPermissions = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.groups.items.permissions',
+    required: true,
+    valueTypes: <String>['array'],
+    itemEnumValues: <String>['readProgress', 'confirmDeparture', 'transferGroup', 'recordCheckpoint', 'resolveAccountability'],
+    maxItems: 5,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewGroupsItemsPermissionsItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.groups.items.permissions.items',
+    required: true,
+    enumValues: <String>['readProgress', 'confirmDeparture', 'transferGroup', 'recordCheckpoint', 'resolveAccountability'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewGroupsItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.groups.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewGroupsItemsValidUntil = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.groups.items.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewHostUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.hostUid',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperators = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 50,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDuties = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 20,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsDuty = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.duty',
+    required: true,
+    enumValues: <String>['lead', 'pacer', 'sweep'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsExpiresAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.expiresAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsGrantedAtMillis = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.grantedAtMillis',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsGrantedBy = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.grantedBy',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.operators.items.operatorId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewPracticeOperatorId = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.practiceOperatorId',
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewServerTime = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalMovementCallableResponseStaffReviewSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.staffReview.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
   );
 
   static const eventRehearsalMovementDocumentAssignmentAssignedAt = CatchContractFieldConstraints(
@@ -48244,6 +49023,12 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9_-]{43}\$',
   );
 
+  static const getEventRehearsalBootstrapCallablePayloadPracticeOperatorId = CatchContractFieldConstraints(
+    path: 'getEventRehearsalBootstrapCallablePayload.practiceOperatorId',
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
+  );
+
   static const getEventRehearsalBootstrapCallablePayloadSessionId = CatchContractFieldConstraints(
     path: 'getEventRehearsalBootstrapCallablePayload.sessionId',
     maxLength: 180,
@@ -48284,6 +49069,12 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 0,
     maximum: 2147483647,
+  );
+
+  static const getEventRehearsalMovementCallablePayloadPracticeOperatorId = CatchContractFieldConstraints(
+    path: 'getEventRehearsalMovementCallablePayload.practiceOperatorId',
+    valueTypes: <String>['string'],
+    pattern: '^practice-staff:[A-Za-z0-9_-]{1,60}\$',
   );
 
   static const getEventRehearsalMovementCallablePayloadScopeBeforeRevision = CatchContractFieldConstraints(
@@ -90908,7 +91699,16 @@ abstract final class CatchContractConstraints {
     'controlEventRehearsalCallablePayload.expectedSetupRevision': controlEventRehearsalCallablePayloadExpectedSetupRevision,
     'controlEventRehearsalCallablePayload.minutes': controlEventRehearsalCallablePayloadMinutes,
     'controlEventRehearsalCallablePayload.movement': controlEventRehearsalCallablePayloadMovement,
+    'controlEventRehearsalCallablePayload.practiceOperatorId': controlEventRehearsalCallablePayloadPracticeOperatorId,
     'controlEventRehearsalCallablePayload.sessionId': controlEventRehearsalCallablePayloadSessionId,
+    'controlEventRehearsalCallablePayload.staff.decision.duty': controlEventRehearsalCallablePayloadStaffDecisionDuty,
+    'controlEventRehearsalCallablePayload.staff.decision.expiresAtMillis': controlEventRehearsalCallablePayloadStaffDecisionExpiresAtMillis,
+    'controlEventRehearsalCallablePayload.staff.decision.kind': controlEventRehearsalCallablePayloadStaffDecisionKind,
+    'controlEventRehearsalCallablePayload.staff.displayName': controlEventRehearsalCallablePayloadStaffDisplayName,
+    'controlEventRehearsalCallablePayload.staff.expectedRevision': controlEventRehearsalCallablePayloadStaffExpectedRevision,
+    'controlEventRehearsalCallablePayload.staff.expectedSourceHash': controlEventRehearsalCallablePayloadStaffExpectedSourceHash,
+    'controlEventRehearsalCallablePayload.staff.groupId': controlEventRehearsalCallablePayloadStaffGroupId,
+    'controlEventRehearsalCallablePayload.staff.operatorId': controlEventRehearsalCallablePayloadStaffOperatorId,
     'controlEventRehearsalSpatialCallablePayload.action': controlEventRehearsalSpatialCallablePayloadAction,
     'controlEventRehearsalSpatialCallablePayload.actorId': controlEventRehearsalSpatialCallablePayloadActorId,
     'controlEventRehearsalSpatialCallablePayload.clientActionId': controlEventRehearsalSpatialCallablePayloadClientActionId,
@@ -94101,6 +94901,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.checkedInAtMillis': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsCheckedInAtMillis,
     'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.disposition': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsDisposition,
     'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.episodeId': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsEpisodeId,
+    'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.groupId': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsGroupId,
     'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.revision': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsRevision,
     'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.sourceHash': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsSourceHash,
     'eventRehearsalBootstrapCallableResponse.accountabilityReviews.rows.items.visitRevision': eventRehearsalBootstrapCallableResponseAccountabilityReviewsRowsItemsVisitRevision,
@@ -94530,6 +95331,33 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.serverTime': eventRehearsalBootstrapCallableResponseMovementReviewServerTime,
     'eventRehearsalBootstrapCallableResponse.movementReview.sessionId': eventRehearsalBootstrapCallableResponseMovementReviewSessionId,
     'eventRehearsalBootstrapCallableResponse.movementReview.setupRevision': eventRehearsalBootstrapCallableResponseMovementReviewSetupRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.actorUid': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewActorUid,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.canAssign': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewCanAssign,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.clockId': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewClockId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroups,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.availableDuties': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsAvailableDuties,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.availableDuties.items': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsAvailableDutiesItems,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.groupId': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsGroupId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.label': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.permissions': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsPermissions,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.permissions.items': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsPermissionsItems,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.groups.items.validUntil': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewGroupsItemsValidUntil,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.hostUid': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewHostUid,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperators,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.displayName': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDisplayName,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDuties,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.duty': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsDuty,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.expiresAtMillis': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsExpiresAtMillis,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.grantedAtMillis': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsGrantedAtMillis,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.grantedBy': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsGrantedBy,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.groupId': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsGroupId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.duties.items.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsDutiesItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.operators.items.operatorId': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewOperatorsItemsOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.practiceOperatorId': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewPracticeOperatorId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.revision': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewRevision,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.serverTime': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewServerTime,
+    'eventRehearsalBootstrapCallableResponse.movementReview.staffReview.sourceHash': eventRehearsalBootstrapCallableResponseMovementReviewStaffReviewSourceHash,
     'eventRehearsalBootstrapCallableResponse.session.actionCount': eventRehearsalBootstrapCallableResponseSessionActionCount,
     'eventRehearsalBootstrapCallableResponse.session.activeStepIndex': eventRehearsalBootstrapCallableResponseSessionActiveStepIndex,
     'eventRehearsalBootstrapCallableResponse.session.actorCount': eventRehearsalBootstrapCallableResponseSessionActorCount,
@@ -94592,6 +95420,33 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.status': eventRehearsalBootstrapCallableResponseSessionStatus,
     'eventRehearsalBootstrapCallableResponse.session.virtualNowMillis': eventRehearsalBootstrapCallableResponseSessionVirtualNowMillis,
     'eventRehearsalBootstrapCallableResponse.session.virtualStartedAtMillis': eventRehearsalBootstrapCallableResponseSessionVirtualStartedAtMillis,
+    'eventRehearsalBootstrapCallableResponse.staffReview.actorUid': eventRehearsalBootstrapCallableResponseStaffReviewActorUid,
+    'eventRehearsalBootstrapCallableResponse.staffReview.canAssign': eventRehearsalBootstrapCallableResponseStaffReviewCanAssign,
+    'eventRehearsalBootstrapCallableResponse.staffReview.clockId': eventRehearsalBootstrapCallableResponseStaffReviewClockId,
+    'eventRehearsalBootstrapCallableResponse.staffReview.groups': eventRehearsalBootstrapCallableResponseStaffReviewGroups,
+    'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.availableDuties': eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsAvailableDuties,
+    'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.availableDuties.items': eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsAvailableDutiesItems,
+    'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.groupId': eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsGroupId,
+    'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.label': eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.permissions': eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsPermissions,
+    'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.permissions.items': eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsPermissionsItems,
+    'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.sourceHash': eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.staffReview.groups.items.validUntil': eventRehearsalBootstrapCallableResponseStaffReviewGroupsItemsValidUntil,
+    'eventRehearsalBootstrapCallableResponse.staffReview.hostUid': eventRehearsalBootstrapCallableResponseStaffReviewHostUid,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators': eventRehearsalBootstrapCallableResponseStaffReviewOperators,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.displayName': eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDisplayName,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties': eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDuties,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.duty': eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsDuty,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.expiresAtMillis': eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsExpiresAtMillis,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.grantedAtMillis': eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsGrantedAtMillis,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.grantedBy': eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsGrantedBy,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.groupId': eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsGroupId,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.duties.items.sourceHash': eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsDutiesItemsSourceHash,
+    'eventRehearsalBootstrapCallableResponse.staffReview.operators.items.operatorId': eventRehearsalBootstrapCallableResponseStaffReviewOperatorsItemsOperatorId,
+    'eventRehearsalBootstrapCallableResponse.staffReview.practiceOperatorId': eventRehearsalBootstrapCallableResponseStaffReviewPracticeOperatorId,
+    'eventRehearsalBootstrapCallableResponse.staffReview.revision': eventRehearsalBootstrapCallableResponseStaffReviewRevision,
+    'eventRehearsalBootstrapCallableResponse.staffReview.serverTime': eventRehearsalBootstrapCallableResponseStaffReviewServerTime,
+    'eventRehearsalBootstrapCallableResponse.staffReview.sourceHash': eventRehearsalBootstrapCallableResponseStaffReviewSourceHash,
     'eventRehearsalCaseDocument.actorId': eventRehearsalCaseDocumentActorId,
     'eventRehearsalCaseDocument.caseId': eventRehearsalCaseDocumentCaseId,
     'eventRehearsalCaseDocument.category': eventRehearsalCaseDocumentCategory,
@@ -94677,6 +95532,18 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.setupRevision': eventRehearsalDocumentSetupRevision,
     'eventRehearsalDocument.sourceEventId': eventRehearsalDocumentSourceEventId,
     'eventRehearsalDocument.sourceEventRevision': eventRehearsalDocumentSourceEventRevision,
+    'eventRehearsalDocument.staff.clockId': eventRehearsalDocumentStaffClockId,
+    'eventRehearsalDocument.staff.operators': eventRehearsalDocumentStaffOperators,
+    'eventRehearsalDocument.staff.operators.items.displayName': eventRehearsalDocumentStaffOperatorsItemsDisplayName,
+    'eventRehearsalDocument.staff.operators.items.duties': eventRehearsalDocumentStaffOperatorsItemsDuties,
+    'eventRehearsalDocument.staff.operators.items.duties.items.duty': eventRehearsalDocumentStaffOperatorsItemsDutiesItemsDuty,
+    'eventRehearsalDocument.staff.operators.items.duties.items.expiresAtMillis': eventRehearsalDocumentStaffOperatorsItemsDutiesItemsExpiresAtMillis,
+    'eventRehearsalDocument.staff.operators.items.duties.items.grantedAtMillis': eventRehearsalDocumentStaffOperatorsItemsDutiesItemsGrantedAtMillis,
+    'eventRehearsalDocument.staff.operators.items.duties.items.grantedBy': eventRehearsalDocumentStaffOperatorsItemsDutiesItemsGrantedBy,
+    'eventRehearsalDocument.staff.operators.items.duties.items.groupId': eventRehearsalDocumentStaffOperatorsItemsDutiesItemsGroupId,
+    'eventRehearsalDocument.staff.operators.items.duties.items.sourceHash': eventRehearsalDocumentStaffOperatorsItemsDutiesItemsSourceHash,
+    'eventRehearsalDocument.staff.operators.items.operatorId': eventRehearsalDocumentStaffOperatorsItemsOperatorId,
+    'eventRehearsalDocument.staff.revision': eventRehearsalDocumentStaffRevision,
     'eventRehearsalDocument.status': eventRehearsalDocumentStatus,
     'eventRehearsalDocument.updatedAt._nanoseconds': eventRehearsalDocumentUpdatedAtNanoseconds,
     'eventRehearsalDocument.updatedAt._seconds': eventRehearsalDocumentUpdatedAtSeconds,
@@ -95207,6 +96074,33 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.serverTime': eventRehearsalMovementCallableResponseServerTime,
     'eventRehearsalMovementCallableResponse.sessionId': eventRehearsalMovementCallableResponseSessionId,
     'eventRehearsalMovementCallableResponse.setupRevision': eventRehearsalMovementCallableResponseSetupRevision,
+    'eventRehearsalMovementCallableResponse.staffReview.actorUid': eventRehearsalMovementCallableResponseStaffReviewActorUid,
+    'eventRehearsalMovementCallableResponse.staffReview.canAssign': eventRehearsalMovementCallableResponseStaffReviewCanAssign,
+    'eventRehearsalMovementCallableResponse.staffReview.clockId': eventRehearsalMovementCallableResponseStaffReviewClockId,
+    'eventRehearsalMovementCallableResponse.staffReview.groups': eventRehearsalMovementCallableResponseStaffReviewGroups,
+    'eventRehearsalMovementCallableResponse.staffReview.groups.items.availableDuties': eventRehearsalMovementCallableResponseStaffReviewGroupsItemsAvailableDuties,
+    'eventRehearsalMovementCallableResponse.staffReview.groups.items.availableDuties.items': eventRehearsalMovementCallableResponseStaffReviewGroupsItemsAvailableDutiesItems,
+    'eventRehearsalMovementCallableResponse.staffReview.groups.items.groupId': eventRehearsalMovementCallableResponseStaffReviewGroupsItemsGroupId,
+    'eventRehearsalMovementCallableResponse.staffReview.groups.items.label': eventRehearsalMovementCallableResponseStaffReviewGroupsItemsLabel,
+    'eventRehearsalMovementCallableResponse.staffReview.groups.items.permissions': eventRehearsalMovementCallableResponseStaffReviewGroupsItemsPermissions,
+    'eventRehearsalMovementCallableResponse.staffReview.groups.items.permissions.items': eventRehearsalMovementCallableResponseStaffReviewGroupsItemsPermissionsItems,
+    'eventRehearsalMovementCallableResponse.staffReview.groups.items.sourceHash': eventRehearsalMovementCallableResponseStaffReviewGroupsItemsSourceHash,
+    'eventRehearsalMovementCallableResponse.staffReview.groups.items.validUntil': eventRehearsalMovementCallableResponseStaffReviewGroupsItemsValidUntil,
+    'eventRehearsalMovementCallableResponse.staffReview.hostUid': eventRehearsalMovementCallableResponseStaffReviewHostUid,
+    'eventRehearsalMovementCallableResponse.staffReview.operators': eventRehearsalMovementCallableResponseStaffReviewOperators,
+    'eventRehearsalMovementCallableResponse.staffReview.operators.items.displayName': eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDisplayName,
+    'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties': eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDuties,
+    'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.duty': eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsDuty,
+    'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.expiresAtMillis': eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsExpiresAtMillis,
+    'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.grantedAtMillis': eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsGrantedAtMillis,
+    'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.grantedBy': eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsGrantedBy,
+    'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.groupId': eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsGroupId,
+    'eventRehearsalMovementCallableResponse.staffReview.operators.items.duties.items.sourceHash': eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsDutiesItemsSourceHash,
+    'eventRehearsalMovementCallableResponse.staffReview.operators.items.operatorId': eventRehearsalMovementCallableResponseStaffReviewOperatorsItemsOperatorId,
+    'eventRehearsalMovementCallableResponse.staffReview.practiceOperatorId': eventRehearsalMovementCallableResponseStaffReviewPracticeOperatorId,
+    'eventRehearsalMovementCallableResponse.staffReview.revision': eventRehearsalMovementCallableResponseStaffReviewRevision,
+    'eventRehearsalMovementCallableResponse.staffReview.serverTime': eventRehearsalMovementCallableResponseStaffReviewServerTime,
+    'eventRehearsalMovementCallableResponse.staffReview.sourceHash': eventRehearsalMovementCallableResponseStaffReviewSourceHash,
     'eventRehearsalMovementDocument.assignment.assignedAt': eventRehearsalMovementDocumentAssignmentAssignedAt,
     'eventRehearsalMovementDocument.assignment.assignedBy': eventRehearsalMovementDocumentAssignmentAssignedBy,
     'eventRehearsalMovementDocument.assignment.operationId': eventRehearsalMovementDocumentAssignmentOperationId,
@@ -96443,12 +97337,14 @@ abstract final class CatchContractConstraints {
     'getEventRcsPreferenceCallablePayload.senderId': getEventRcsPreferenceCallablePayloadSenderId,
     'getEventRcsWithdrawalCallablePayload.linkId': getEventRcsWithdrawalCallablePayloadLinkId,
     'getEventRcsWithdrawalCallablePayload.secret': getEventRcsWithdrawalCallablePayloadSecret,
+    'getEventRehearsalBootstrapCallablePayload.practiceOperatorId': getEventRehearsalBootstrapCallablePayloadPracticeOperatorId,
     'getEventRehearsalBootstrapCallablePayload.sessionId': getEventRehearsalBootstrapCallablePayloadSessionId,
     'getEventRehearsalGuestBootstrapCallablePayload.clientInstanceId': getEventRehearsalGuestBootstrapCallablePayloadClientInstanceId,
     'getEventRehearsalGuestBootstrapCallablePayload.publicRehearsalId': getEventRehearsalGuestBootstrapCallablePayloadPublicRehearsalId,
     'getEventRehearsalGuestBootstrapCallablePayload.slotToken': getEventRehearsalGuestBootstrapCallablePayloadSlotToken,
     'getEventRehearsalGuestBootstrapCallablePayload.viewerToken': getEventRehearsalGuestBootstrapCallablePayloadViewerToken,
     'getEventRehearsalMovementCallablePayload.expectedSetupRevision': getEventRehearsalMovementCallablePayloadExpectedSetupRevision,
+    'getEventRehearsalMovementCallablePayload.practiceOperatorId': getEventRehearsalMovementCallablePayloadPracticeOperatorId,
     'getEventRehearsalMovementCallablePayload.scope.beforeRevision': getEventRehearsalMovementCallablePayloadScopeBeforeRevision,
     'getEventRehearsalMovementCallablePayload.scope.groupId': getEventRehearsalMovementCallablePayloadScopeGroupId,
     'getEventRehearsalMovementCallablePayload.scope.progressRevision': getEventRehearsalMovementCallablePayloadScopeProgressRevision,

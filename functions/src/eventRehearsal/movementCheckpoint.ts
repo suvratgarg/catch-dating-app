@@ -1,5 +1,5 @@
 import {operationContentHash as hash} from "../operations/durableActions";
-import {isOrganizerManager} from "../shared/organizerHosts";
+import {practiceGroupPermission} from "./groupStaff";
 import {checkpointCloseoutDecisionState, checkpointCloseoutEligibility} from
   "../eventSuccess/operations/checkpointManagementDecisions";
 import type {EventRehearsalDocument as Session,
@@ -89,7 +89,8 @@ export function practiceCheckpointReview(session: Session,
       {...request, state: "closedOut", ownerAvailability: "notRequired"} :
       {...request, state: availability.kind !== "ready" ? "sourceUnavailable" :
         report ? "discrepancy" : source.now >= request.dueAt ? "overdue" :
-          "awaitingReport", ownerAvailability: isOrganizerManager(
-        authority.organizer, request.responsibleOperatorId) ?
+          "awaitingReport", ownerAvailability: practiceGroupPermission(
+        source.sessionId, session, authority, source.groupId,
+        "recordCheckpoint", request.responsibleOperatorId) !== null ?
         "current" : "needsReassignment"}};
 }

@@ -7,9 +7,11 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_membership_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
@@ -248,7 +250,15 @@ final class RehearsalAssistanceChange {
     required EventRehearsalBootstrap snapshot,
     required this.command,
     required this.clientActionId,
-  }) : session = snapshot.session {
+  }) : session = snapshot.session,
+       staffReview = snapshot.staffReview {
+    if (staffReview?.isManager == false &&
+        command is! RehearsalResolveAccountability &&
+        command is! RehearsalTransferGroup) {
+      throw const FormatException(
+        'Switch to the Host to manage practice messages.',
+      );
+    }
     if (!RegExp(r'^[A-Za-z0-9_-]{8,120}$').hasMatch(clientActionId) ||
         !snapshot.actors.any((actor) => actor.actorId == command.actorId) ||
         session.actionCount >= 500 ||
@@ -288,6 +298,7 @@ final class RehearsalAssistanceChange {
       }
     }
     if (command case RehearsalResolveAccountability(snapshot: final visit)) {
+      staffReview?.requireSameRole(visit.staffReview);
       if (visit.scope.sessionId != session.id ||
           visit.scope.organizerId != session.organizerId ||
           visit.scope.setupRevision != session.setupRevision ||
@@ -299,6 +310,7 @@ final class RehearsalAssistanceChange {
       }
     }
     if (command case RehearsalTransferGroup(snapshot: final membership)) {
+      staffReview?.requireSameRole(membership.staffReview);
       if (membership.scope.sessionId != session.id ||
           membership.scope.organizerId != session.organizerId ||
           membership.scope.setupRevision != session.setupRevision ||
@@ -311,6 +323,7 @@ final class RehearsalAssistanceChange {
     }
   }
   final EventRehearsalSession session;
+  final RehearsalStaffReview? staffReview;
   final RehearsalAssistanceCommand command;
   final String clientActionId;
   Map<String, Object?> toJson() => {
@@ -318,11 +331,14 @@ final class RehearsalAssistanceChange {
     'expectedRevision': session.runtimeRevision,
     'expectedSetupRevision': session.setupRevision,
     'clientActionId': clientActionId,
+    if (staffReview?.practiceOperatorId != null)
+      'practiceOperatorId': staffReview!.practiceOperatorId,
     'action': 'assistance',
     'assistance': command.toJson(),
   };
 
   void requireResult(EventRehearsalBootstrap result) {
+    staffReview?.requireSameRole(result.staffReview);
     if (result.session.id != session.id ||
         result.session.organizerId != session.organizerId ||
         result.session.setupRevision != session.setupRevision ||

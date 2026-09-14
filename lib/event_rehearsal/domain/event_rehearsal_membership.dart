@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_membership.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
@@ -27,9 +29,12 @@ final class RehearsalMembershipRow {
     this.facts,
     this.availability,
     this.receivingOperatorIds,
+    this.staffReview,
   );
   final RehearsalMembershipScope scope;
   final String actorUid;
+  final RehearsalStaffReview? staffReview;
+  String get hostUid => staffReview?.hostUid ?? actorUid;
   final AssistanceMembershipFacts facts;
   final RehearsalMembershipAvailability availability;
   final Set<String> receivingOperatorIds;
@@ -44,6 +49,7 @@ final class RehearsalMembershipReviews {
     Object? value, {
     required EventRehearsalSession session,
     required List<EventRehearsalActor> actors,
+    RehearsalStaffReview? staffReview,
   }) {
     final map = assistanceObject(value, {
       'clockId',
@@ -71,13 +77,20 @@ final class RehearsalMembershipReviews {
         'clock:${sha256Digest(jsonEncode([session.id, start, session.setupRevision]))}';
     final uid = assistanceText(map['actorUid'], 180);
     final rawOperators = map['receivingOperatorIds'];
-    if (rawOperators is! List || rawOperators.length > 42) {
+    if (rawOperators is! List ||
+        rawOperators.length > (staffReview == null ? 42 : 92)) {
       throw const FormatException('Invalid practice receiving Hosts.');
     }
     final operators = rawOperators.map((v) => assistanceText(v, 180)).toSet();
     final raw = map['rows'];
     if (operators.length != rawOperators.length ||
-        !operators.contains(uid) ||
+        (staffReview == null || staffReview.isManager) &&
+            !operators.contains(uid) ||
+        staffReview != null &&
+            (staffReview.actorUid != uid ||
+                staffReview.clockId != clock ||
+                !identical(staffReview.session, session)) ||
+        staffReview == null && uid.startsWith('practice-staff:') ||
         map['clockId'] != clock ||
         map['coverage'] != 'boundedSession' ||
         raw is! List ||
@@ -85,6 +98,30 @@ final class RehearsalMembershipReviews {
         actors.length != session.actorCount ||
         actors.map((a) => a.actorId).toSet().length != actors.length) {
       throw const FormatException('Incomplete practice membership review.');
+    }
+    if (staffReview != null) {
+      final expected = staffReview.operators.values
+          .where(
+            (o) => staffReview.groups.keys.any(
+              (g) =>
+                  staffReview.operatorPermissionUntil(
+                    o.id,
+                    g,
+                    AssistanceGroupPermission.transferGroup,
+                  ) !=
+                  null,
+            ),
+          )
+          .map((o) => o.id)
+          .toSet();
+      final actual = operators
+          .where((id) => id.startsWith('practice-staff:'))
+          .toSet();
+      if (actual.length != expected.length || !actual.containsAll(expected)) {
+        throw const FormatException(
+          'Practice receivers do not match their current duties.',
+        );
+      }
     }
     final rows = <RehearsalMembershipRow>[];
     final seen = <String>{};
@@ -123,6 +160,31 @@ final class RehearsalMembershipReviews {
               facts.transfer?.proposal.receivingOperatorId != uid) {
         throw const FormatException('Inconsistent practice membership review.');
       }
+      if (staffReview != null && !staffReview.isManager) {
+        bool transfer(String? group) =>
+            group != null &&
+            staffReview.canPerform(
+              group,
+              AssistanceGroupPermission.transferGroup,
+            );
+        final sourceAccess = transfer(facts.accepted?.groupId);
+        if (facts.actions.any(
+          (a) => !switch (a) {
+            AssistanceMembershipAction.place => false,
+            AssistanceMembershipAction.propose ||
+            AssistanceMembershipAction.cancel ||
+            AssistanceMembershipAction.leave => sourceAccess,
+            AssistanceMembershipAction.accept ||
+            AssistanceMembershipAction.reject =>
+              facts.transfer?.proposal.receivingOperatorId == uid &&
+                  transfer(facts.transfer?.proposal.to),
+          },
+        )) {
+          throw const FormatException(
+            'Practice membership action exceeds this role.',
+          );
+        }
+      }
       rows.add(
         RehearsalMembershipRow._(
           (
@@ -136,6 +198,7 @@ final class RehearsalMembershipReviews {
           facts,
           availability,
           Set.unmodifiable(operators),
+          staffReview,
         ),
       );
     }

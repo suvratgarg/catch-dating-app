@@ -20,6 +20,9 @@
     },
     "scope": {
       "$ref": "../shared/event_rehearsal_movement.schema.json#/definitions/Scope"
+    },
+    "practiceOperatorId": {
+      "$ref": "../shared/event_rehearsal_staff.schema.json#/definitions/OperatorId"
     }
   }
 }
