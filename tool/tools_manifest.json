@@ -6356,6 +6356,14 @@
       "id": "design:component-lexicon",
       "category": "design",
       "path": "tool/design/check_component_lexicon.mjs",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
       "impactPaths": [
         "tool/design/check_component_lexicon.test.mjs",
         "tool/design/lib/component_naming.mjs",
