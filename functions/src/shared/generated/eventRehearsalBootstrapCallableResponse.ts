@@ -1217,6 +1217,7 @@ export interface EventRehearsalBootstrapCallableResponse {
                       | "invalidSource"
                       | "beforeDeparture";
                   };
+              displayName?: string | null;
             }[];
           }
         | {

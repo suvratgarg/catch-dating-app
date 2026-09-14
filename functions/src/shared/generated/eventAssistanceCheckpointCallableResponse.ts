@@ -88,6 +88,7 @@ export interface EventAssistanceCheckpointCallableResponse {
                     | "invalidSource"
                     | "beforeDeparture";
                 };
+            displayName?: string | null;
           }[];
         }
       | {

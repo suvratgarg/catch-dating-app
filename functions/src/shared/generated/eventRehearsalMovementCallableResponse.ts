@@ -259,6 +259,7 @@ export interface EventRehearsalMovementCallableResponse {
                     | "invalidSource"
                     | "beforeDeparture";
                 };
+            displayName?: string | null;
           }[];
         }
       | {

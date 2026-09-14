@@ -11,9 +11,11 @@ class EventAssistanceMovementSection extends StatefulWidget {
     super.key,
     required this.groups,
     required this.onDeparture,
+    this.onCheckpointHistory,
   });
   final List<EventAssistanceMovementGroup> groups;
   final ValueChanged<String> onDeparture;
+  final ValueChanged<String>? onCheckpointHistory;
   @override
   State<EventAssistanceMovementSection> createState() =>
       _EventAssistanceMovementSectionState();
@@ -56,6 +58,16 @@ class _EventAssistanceMovementSectionState
                 ? null
                 : () => widget.onDeparture(selected.id),
           ),
+          if (widget.onCheckpointHistory != null) ...[
+            gapH8,
+            CatchButton(
+              label: l10n.eventAssistanceHistoryTitle,
+              variant: CatchButtonVariant.ghost,
+              onPressed: selected == null
+                  ? null
+                  : () => widget.onCheckpointHistory!(selected.id),
+            ),
+          ],
         ],
       ),
     );

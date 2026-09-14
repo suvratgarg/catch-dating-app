@@ -5033,6 +5033,14 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
                                     }
                                   }
                                 ]
+                              },
+                              "displayName": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 120
                               }
                             }
                           }

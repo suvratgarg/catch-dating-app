@@ -1,4 +1,7 @@
+import 'package:catch_dating_app/event_success/domain/event_assistance_departure_history.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_provider.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_movement_section.dart';
@@ -37,6 +40,26 @@ class EventAssistanceLiveMovementSection extends ConsumerWidget {
           builder: (_) => EventAssistanceDepartureSheet(
             scope: scope,
             eventEnd: event.endTime,
+            groupLabel: route?.groupStrategy == RouteGroupStrategy.paceGroups
+                ? route!.paceGroups.firstWhere((g) => g.id == id).label
+                : context.l10n.eventAssistanceMovementEveryone,
+          ),
+        );
+      },
+      onCheckpointHistory: (id) {
+        final scope = EventAssistanceGroupScope(
+          organizerId: event.clubId,
+          eventId: event.id,
+          groupId: id,
+        );
+        final query = eventAssistanceDepartureHistoryProvider(
+          EventAssistanceDepartureHistoryQuery(scope),
+        );
+        if (ref.exists(query)) ref.read(query.notifier).reload();
+        showCatchBottomSheet<void>(
+          context: context,
+          builder: (_) => EventAssistanceDepartureHistorySheet(
+            scope: scope,
             groupLabel: route?.groupStrategy == RouteGroupStrategy.paceGroups
                 ? route!.paceGroups.firstWhere((g) => g.id == id).label
                 : context.l10n.eventAssistanceMovementEveryone,

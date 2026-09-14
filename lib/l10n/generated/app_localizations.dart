@@ -28877,6 +28877,274 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Everyone'**
   String get eventAssistanceMovementEveryone;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint arrivals'**
+  String get eventAssistanceCheckpointTitle;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'From departure {number}'**
+  String eventAssistanceCheckpointDeparture({required int number});
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Select guests you have seen at this checkpoint. Other guests stay unconfirmed. Event check-in is unchanged.'**
+  String get eventAssistanceCheckpointBody;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} of {total} guests observed'**
+  String eventAssistanceCheckpointSelected({
+    required int count,
+    required int total,
+  });
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest record unavailable'**
+  String get eventAssistanceCheckpointUnknownGuest;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept in this departure roster. Reload before changing this observation.'**
+  String get eventAssistanceCheckpointUnknownGuestBody;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The guest’s event visit changed. Earlier observations remain in this report.'**
+  String get eventAssistanceCheckpointVisitChanged;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Observed in an earlier report'**
+  String get eventAssistanceCheckpointEarlierObservation;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival not yet confirmed'**
+  String get eventAssistanceCheckpointNotObserved;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'This departure explicitly recorded an empty roster. You can save an empty checkpoint report.'**
+  String get eventAssistanceCheckpointEmptyRoster;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for correction'**
+  String get eventAssistanceCheckpointCorrection;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain why you are removing an earlier arrival observation.'**
+  String get eventAssistanceCheckpointCorrectionBody;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No guest roster was recorded for this departure.'**
+  String get eventAssistanceCheckpointNoRoster;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No checkpoint destination was recorded for this departure.'**
+  String get eventAssistanceCheckpointNoDestination;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'This destination does not have a checkpoint report.'**
+  String get eventAssistanceCheckpointNotApplicable;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The event setup changed. This original departure can no longer accept new arrival observations.'**
+  String get eventAssistanceCheckpointSetupChanged;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving the checkpoint report…'**
+  String get eventAssistanceCheckpointSaving;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The save is unconfirmed. Retry this same report to check the result.'**
+  String get eventAssistanceCheckpointUnconfirmed;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The report or your access changed. Reload before making a new observation.'**
+  String get eventAssistanceCheckpointChanged;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint report saved. The latest recorded observations are shown above.'**
+  String get eventAssistanceCheckpointSaved;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'This review does not allow arrival reporting.'**
+  String get eventAssistanceCheckpointReadOnly;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Save checkpoint report'**
+  String get eventAssistanceCheckpointSave;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this report'**
+  String get eventAssistanceCheckpointRetry;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload checkpoint'**
+  String get eventAssistanceCheckpointReload;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Report requested by {deadline}'**
+  String eventAssistanceCheckpointDue({required String deadline});
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Report overdue · requested by {deadline}'**
+  String eventAssistanceCheckpointOverdue({required String deadline});
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved report still has unconfirmed guests.'**
+  String get eventAssistanceCheckpointDiscrepancy;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Every guest on this departure roster has an arrival observation.'**
+  String get eventAssistanceCheckpointComplete;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'This reporting request was closed. Closure does not add arrival observations.'**
+  String get eventAssistanceCheckpointClosedOut;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure rosters & checkpoints'**
+  String get eventAssistanceHistoryTitle;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a recorded departure to review arrivals at its checkpoint. Reports describe that departure, even after the group moves again.'**
+  String get eventAssistanceHistoryBody;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No recorded departure rosters on this page.'**
+  String get eventAssistanceHistoryEmpty;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination from an earlier setup'**
+  String get eventAssistanceHistoryEarlierSetup;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure {number} · {date}, {time}'**
+  String eventAssistanceHistoryDepartureAt({
+    required int number,
+    required String date,
+    required String time,
+  });
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} guests recorded as leaving'**
+  String eventAssistanceHistoryRosterSize({required int count});
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint report not yet recorded'**
+  String get eventAssistanceHistoryNoReport;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Last report: {count} of {total} guests observed'**
+  String eventAssistanceHistoryObserved({
+    required int count,
+    required int total,
+  });
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'No checkpoint report for this destination'**
+  String get eventAssistanceHistoryNoCheckpoint;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Earlier departures'**
+  String get eventAssistanceHistoryEarlier;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Newer departures'**
+  String get eventAssistanceHistoryNewer;
+
+  /// Host checkpoint observation and historical departure controls shared with rehearsal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload history'**
+  String get eventAssistanceHistoryReload;
+
+  /// Checkpoint roster selection state before saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected for this report'**
+  String get eventAssistanceCheckpointSelectedObservation;
+
+  /// Checkpoint roster selection state before saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Removing an earlier observation'**
+  String get eventAssistanceCheckpointRemovingObservation;
 }
 
 class _AppLocalizationsDelegate

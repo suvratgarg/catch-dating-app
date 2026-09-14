@@ -3,6 +3,7 @@ import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_departure_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_movement_section.dart';
+import 'package:catch_dating_app/event_success/data/event_assistance_departure_history_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_departure_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_roster_section.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import 'event_checkpoint_preview_repositories.dart';
 import 'event_departure_preview_repositories.dart';
 
 const _path = '[P1 product surfaces]/Event Success assistance';
@@ -130,6 +132,9 @@ class _DeparturePreviewState extends State<_DeparturePreview> {
           eventRehearsalRepositoryProvider.overrideWith((ref) => repository),
           eventAssistanceDepartureRepositoryProvider.overrideWith(
             (ref) => DeparturePreviewLiveRepository(repository),
+          ),
+          eventAssistanceDepartureHistoryRepositoryProvider.overrideWith(
+            (ref) => const EmptyDeparturePreviewHistoryRepository(),
           ),
           watchEventAttendeesProvider(event.id).overrideWith(
             (ref) => Stream.value(runtime.accountabilityAttendees),

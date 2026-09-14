@@ -12819,6 +12819,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionDisposition = CatchContractFieldConstraints(
     path: 'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.disposition',
     required: true,
@@ -32177,6 +32184,13 @@ abstract final class CatchContractConstraints {
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
+  static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityMembersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.members.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
   static const eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityMembersItemsDispositionDisposition = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.members.items.disposition.disposition',
     required: true,
@@ -37825,6 +37839,13 @@ abstract final class CatchContractConstraints {
     required: true,
     valueTypes: <String>['string'],
     pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalMovementCallableResponseCheckpointAvailabilityMembersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalMovementCallableResponse.checkpoint.availability.members.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
   );
 
   static const eventRehearsalMovementCallableResponseCheckpointAvailabilityMembersItemsDispositionDisposition = CatchContractFieldConstraints(
@@ -92769,6 +92790,7 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCheckpointCallableResponse.view.availability.label': eventAssistanceCheckpointCallableResponseViewAvailabilityLabel,
     'eventAssistanceCheckpointCallableResponse.view.availability.members': eventAssistanceCheckpointCallableResponseViewAvailabilityMembers,
     'eventAssistanceCheckpointCallableResponse.view.availability.members.items.attendeeId': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsAttendeeId,
+    'eventAssistanceCheckpointCallableResponse.view.availability.members.items.displayName': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDisplayName,
     'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.disposition': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionDisposition,
     'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.kind': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionKind,
     'eventAssistanceCheckpointCallableResponse.view.availability.members.items.disposition.reason': eventAssistanceCheckpointCallableResponseViewAvailabilityMembersItemsDispositionReason,
@@ -95352,6 +95374,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.label': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityLabel,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.members': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityMembers,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.members.items.attendeeId': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityMembersItemsAttendeeId,
+    'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.members.items.displayName': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityMembersItemsDisplayName,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.members.items.disposition.disposition': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityMembersItemsDispositionDisposition,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.members.items.disposition.kind': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityMembersItemsDispositionKind,
     'eventRehearsalBootstrapCallableResponse.movementReview.checkpoint.availability.members.items.disposition.reason': eventRehearsalBootstrapCallableResponseMovementReviewCheckpointAvailabilityMembersItemsDispositionReason,
@@ -96095,6 +96118,7 @@ abstract final class CatchContractConstraints {
     'eventRehearsalMovementCallableResponse.checkpoint.availability.label': eventRehearsalMovementCallableResponseCheckpointAvailabilityLabel,
     'eventRehearsalMovementCallableResponse.checkpoint.availability.members': eventRehearsalMovementCallableResponseCheckpointAvailabilityMembers,
     'eventRehearsalMovementCallableResponse.checkpoint.availability.members.items.attendeeId': eventRehearsalMovementCallableResponseCheckpointAvailabilityMembersItemsAttendeeId,
+    'eventRehearsalMovementCallableResponse.checkpoint.availability.members.items.displayName': eventRehearsalMovementCallableResponseCheckpointAvailabilityMembersItemsDisplayName,
     'eventRehearsalMovementCallableResponse.checkpoint.availability.members.items.disposition.disposition': eventRehearsalMovementCallableResponseCheckpointAvailabilityMembersItemsDispositionDisposition,
     'eventRehearsalMovementCallableResponse.checkpoint.availability.members.items.disposition.kind': eventRehearsalMovementCallableResponseCheckpointAvailabilityMembersItemsDispositionKind,
     'eventRehearsalMovementCallableResponse.checkpoint.availability.members.items.disposition.reason': eventRehearsalMovementCallableResponseCheckpointAvailabilityMembersItemsDispositionReason,

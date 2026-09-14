@@ -1,0 +1,300 @@
+{
+  "initial": {
+    "outcome": "read",
+    "operationRevision": null,
+    "view": {
+      "context": {
+        "mode": "live",
+        "eventId": "e-checkpoint-native",
+        "organizerId": "o-checkpoint-native"
+      },
+      "groupId": "event:whole",
+      "checkpointId": "one",
+      "progressRevision": 2,
+      "serverTime": 1000000,
+      "sourceHash": "c7eaf577ee9e87f275313dc126f4f46e5b0fe989e850be501bb7b27513714b7f",
+      "revision": 0,
+      "report": null,
+      "request": null,
+      "assignment": null,
+      "closeout": null,
+      "availability": {
+        "kind": "ready",
+        "rosterId": "departure-roster:cb30b2b4c62a6227371321821fa1ddf7687b352cf938810c8b543b9a6cc000ef",
+        "label": "Stop one",
+        "reportStatus": "unreported",
+        "members": [
+          {
+            "attendeeId": "a-checkpoint-native",
+            "visit": {
+              "kind": "current"
+            },
+            "displayName": "Alex Morgan",
+            "disposition": {
+              "kind": "unresolved"
+            },
+            "observation": "unconfirmed"
+          },
+          {
+            "attendeeId": "guest-b",
+            "visit": {
+              "kind": "current"
+            },
+            "displayName": "Priya Sharma",
+            "disposition": {
+              "kind": "unresolved"
+            },
+            "observation": "unconfirmed"
+          }
+        ]
+      }
+    }
+  },
+  "partial": {
+    "outcome": "applied",
+    "operationRevision": 1,
+    "view": {
+      "context": {
+        "mode": "live",
+        "eventId": "e-checkpoint-native",
+        "organizerId": "o-checkpoint-native"
+      },
+      "groupId": "event:whole",
+      "checkpointId": "one",
+      "progressRevision": 2,
+      "serverTime": 1000001,
+      "sourceHash": "c8a2a0cd0c11ab89ed9a9dbea2b442cd4b3bdf52559b7d0588ff1d028456e1b0",
+      "revision": 1,
+      "report": {
+        "schemaVersion": 1,
+        "reportId": "checkpoint:10f92c224ed784f44a1ea7727583ade17e41d0838cbbf1d1f986246906d45ecf",
+        "context": {
+          "mode": "live",
+          "eventId": "e-checkpoint-native",
+          "organizerId": "o-checkpoint-native"
+        },
+        "groupId": "event:whole",
+        "checkpointId": "one",
+        "progressRevision": 2,
+        "rosterId": "departure-roster:cb30b2b4c62a6227371321821fa1ddf7687b352cf938810c8b543b9a6cc000ef",
+        "rosterHash": "89e32cd43ad3eceb68011dae646192e30af2983a4a8248cca486d91b092c048b",
+        "revision": 1,
+        "accountedFor": [
+          "a-checkpoint-native"
+        ],
+        "reportedBy": "host-1",
+        "reportedAt": 1000001,
+        "correctionReason": null,
+        "createdAt": 1000001
+      },
+      "request": null,
+      "assignment": null,
+      "closeout": null,
+      "availability": {
+        "kind": "ready",
+        "rosterId": "departure-roster:cb30b2b4c62a6227371321821fa1ddf7687b352cf938810c8b543b9a6cc000ef",
+        "label": "Stop one",
+        "reportStatus": "partial",
+        "members": [
+          {
+            "attendeeId": "a-checkpoint-native",
+            "visit": {
+              "kind": "current"
+            },
+            "displayName": "Alex Morgan",
+            "disposition": {
+              "kind": "unresolved"
+            },
+            "observation": "accountedFor"
+          },
+          {
+            "attendeeId": "guest-b",
+            "visit": {
+              "kind": "current"
+            },
+            "displayName": "Priya Sharma",
+            "disposition": {
+              "kind": "unresolved"
+            },
+            "observation": "unconfirmed"
+          }
+        ]
+      }
+    }
+  },
+  "corrected": {
+    "outcome": "applied",
+    "operationRevision": 2,
+    "view": {
+      "context": {
+        "mode": "live",
+        "eventId": "e-checkpoint-native",
+        "organizerId": "o-checkpoint-native"
+      },
+      "groupId": "event:whole",
+      "checkpointId": "one",
+      "progressRevision": 2,
+      "serverTime": 1000002,
+      "sourceHash": "d57d75179cf82ce59e01bb900c8232e4774deb9efccb29932d934d798b3f9f3a",
+      "revision": 2,
+      "report": {
+        "schemaVersion": 1,
+        "reportId": "checkpoint:10f92c224ed784f44a1ea7727583ade17e41d0838cbbf1d1f986246906d45ecf",
+        "context": {
+          "mode": "live",
+          "eventId": "e-checkpoint-native",
+          "organizerId": "o-checkpoint-native"
+        },
+        "groupId": "event:whole",
+        "checkpointId": "one",
+        "progressRevision": 2,
+        "rosterId": "departure-roster:cb30b2b4c62a6227371321821fa1ddf7687b352cf938810c8b543b9a6cc000ef",
+        "rosterHash": "89e32cd43ad3eceb68011dae646192e30af2983a4a8248cca486d91b092c048b",
+        "revision": 2,
+        "accountedFor": [],
+        "reportedBy": "host-1",
+        "reportedAt": 1000002,
+        "correctionReason": "Selected the wrong guest.",
+        "createdAt": 1000001
+      },
+      "request": null,
+      "assignment": null,
+      "closeout": null,
+      "availability": {
+        "kind": "ready",
+        "rosterId": "departure-roster:cb30b2b4c62a6227371321821fa1ddf7687b352cf938810c8b543b9a6cc000ef",
+        "label": "Stop one",
+        "reportStatus": "partial",
+        "members": [
+          {
+            "attendeeId": "a-checkpoint-native",
+            "visit": {
+              "kind": "current"
+            },
+            "displayName": "Alex Morgan",
+            "disposition": {
+              "kind": "unresolved"
+            },
+            "observation": "unconfirmed"
+          },
+          {
+            "attendeeId": "guest-b",
+            "visit": {
+              "kind": "current"
+            },
+            "displayName": "Priya Sharma",
+            "disposition": {
+              "kind": "unresolved"
+            },
+            "observation": "unconfirmed"
+          }
+        ]
+      }
+    }
+  },
+  "historyInitial": {
+    "context": {
+      "mode": "live",
+      "eventId": "e-checkpoint-native",
+      "organizerId": "o-checkpoint-native"
+    },
+    "groupId": "event:whole",
+    "actorUid": "host-1",
+    "validUntil": 9007199254740991,
+    "serverTime": 1000000,
+    "progressRevision": 2,
+    "coverage": "page",
+    "rosters": [
+      {
+        "progressRevision": 2,
+        "confirmedAt": 1000000,
+        "destination": {
+          "kind": "itineraryStop",
+          "itineraryId": "e-checkpoint-native:itinerary",
+          "stopId": "one"
+        },
+        "label": "Stop one",
+        "sourceState": "current",
+        "rosterSize": 2,
+        "checkpoint": {
+          "checkpointId": "one",
+          "reportStatus": "unreported",
+          "reportRevision": 0,
+          "accountedForCount": 0,
+          "originalRequestedDueAt": null
+        }
+      }
+    ],
+    "nextBeforeRevision": null
+  },
+  "historyPartial": {
+    "context": {
+      "mode": "live",
+      "eventId": "e-checkpoint-native",
+      "organizerId": "o-checkpoint-native"
+    },
+    "groupId": "event:whole",
+    "actorUid": "host-1",
+    "validUntil": 9007199254740991,
+    "serverTime": 1000001,
+    "progressRevision": 2,
+    "coverage": "page",
+    "rosters": [
+      {
+        "progressRevision": 2,
+        "confirmedAt": 1000000,
+        "destination": {
+          "kind": "itineraryStop",
+          "itineraryId": "e-checkpoint-native:itinerary",
+          "stopId": "one"
+        },
+        "label": "Stop one",
+        "sourceState": "current",
+        "rosterSize": 2,
+        "checkpoint": {
+          "checkpointId": "one",
+          "reportStatus": "partial",
+          "reportRevision": 1,
+          "accountedForCount": 1,
+          "originalRequestedDueAt": null
+        }
+      }
+    ],
+    "nextBeforeRevision": null
+  },
+  "historyCorrected": {
+    "context": {
+      "mode": "live",
+      "eventId": "e-checkpoint-native",
+      "organizerId": "o-checkpoint-native"
+    },
+    "groupId": "event:whole",
+    "actorUid": "host-1",
+    "validUntil": 9007199254740991,
+    "serverTime": 1000002,
+    "progressRevision": 2,
+    "coverage": "page",
+    "rosters": [
+      {
+        "progressRevision": 2,
+        "confirmedAt": 1000000,
+        "destination": {
+          "kind": "itineraryStop",
+          "itineraryId": "e-checkpoint-native:itinerary",
+          "stopId": "one"
+        },
+        "label": "Stop one",
+        "sourceState": "current",
+        "rosterSize": 2,
+        "checkpoint": {
+          "checkpointId": "one",
+          "reportStatus": "partial",
+          "reportRevision": 2,
+          "accountedForCount": 0,
+          "originalRequestedDueAt": null
+        }
+      }
+    ],
+    "nextBeforeRevision": null
+  }
+}

@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.106.0
+version: 1.107.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -831,6 +831,12 @@ revision and current visit eligibility. The report stores the roster content has
 accounted-for attendee IDs, submitting actor/time and correction reason. Missing
 members stay in the denominator; guest replies and current memberships are not
 physical checkpoint evidence. Any removal from an earlier report requires a reason.
+The member projection optionally includes `displayName`, verified against the
+original registration's source and attendee generations before returning it. A
+missing, malformed or replacement record returns null; its original roster member
+and prior observations remain intact. Same-registration attendance changes do not
+hide the name. Name changes enter the reviewed observation hash. Legacy responses
+without names remain parseable and cannot invent a named UI identity.
 
 `eventAssistanceCheckpointReceipts/{receiptId}` atomically preserves the authenticated
 request hash and full original report. Its ID binds context, group and operation ID.

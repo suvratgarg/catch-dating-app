@@ -8141,6 +8141,14 @@ export const eventAssistanceCheckpointCallableResponseSchema = {
                             }
                           }
                         ]
+                      },
+                      "displayName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 120
                       }
                     }
                   }
@@ -111695,6 +111703,14 @@ export const eventRehearsalMovementCallableResponseSchema = {
                                 }
                               }
                             ]
+                          },
+                          "displayName": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "minLength": 1,
+                            "maxLength": 120
                           }
                         }
                       }
@@ -157316,6 +157332,14 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                                     }
                                   }
                                 ]
+                              },
+                              "displayName": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "minLength": 1,
+                                "maxLength": 120
                               }
                             }
                           }

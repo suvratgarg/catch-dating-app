@@ -14,6 +14,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehe
 import 'package:catch_dating_app/event_success/data/event_assistance_departure_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_sheet.dart';
@@ -70,6 +71,18 @@ void main() {
       await tester.tap(open);
       await pumpFeatureUi(tester);
       expect(find.byType(EventAssistanceDepartureSection), findsOneWidget);
+      expect(repository.writes, isEmpty);
+      await tester.ensureVisible(find.text('Done'));
+      await tester.tap(find.text('Done'));
+      await pumpFeatureUi(tester);
+      final history = find.text('Departure rosters & checkpoints');
+      await tester.ensureVisible(history);
+      await tester.tap(history);
+      await pumpFeatureUi(tester);
+      expect(
+        find.byType(EventAssistanceDepartureHistorySection),
+        findsOneWidget,
+      );
       expect(repository.writes, isEmpty);
       expect(tester.takeException(), isNull);
     },

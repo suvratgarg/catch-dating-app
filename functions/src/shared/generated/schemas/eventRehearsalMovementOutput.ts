@@ -1240,6 +1240,14 @@ export const eventRehearsalMovementCallableResponseSchema: Record<string, unknow
                                 }
                               }
                             ]
+                          },
+                          "displayName": {
+                            "type": [
+                              "string",
+                              "null"
+                            ],
+                            "minLength": 1,
+                            "maxLength": 120
                           }
                         }
                       }

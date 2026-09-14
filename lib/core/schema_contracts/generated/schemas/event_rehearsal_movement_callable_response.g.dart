@@ -1243,6 +1243,14 @@ const schemaEventRehearsalMovementCallableResponseSchema = <String, Object?>{
                               },
                             ],
                           },
+                          'displayName': <String, Object?>{
+                            'type': <Object?>[
+                              'string',
+                              'null',
+                            ],
+                            'minLength': 1,
+                            'maxLength': 120,
+                          },
                         },
                       },
                     },

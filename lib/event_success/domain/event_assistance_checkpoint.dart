@@ -88,6 +88,7 @@ final class AssistanceCheckpointMember {
     this.accountedFor,
     this.visit,
     this.disposition,
+    this.displayName,
   );
   final String attendeeId;
 
@@ -95,6 +96,9 @@ final class AssistanceCheckpointMember {
   final bool accountedFor;
   final AssistanceCheckpointVisit visit;
   final AssistanceCheckpointDisposition disposition;
+
+  /// Supplied only after verifying the original registration identity.
+  final String? displayName;
   bool get canAddObservation => visit is AssistanceCheckpointCurrentVisit;
   factory AssistanceCheckpointMember._parse(Object? raw, int now) {
     final map = assistanceObject(raw);
@@ -103,6 +107,7 @@ final class AssistanceCheckpointMember {
       'observation',
       'visit',
       if (map.containsKey('disposition')) 'disposition',
+      if (map.containsKey('displayName')) 'displayName',
     });
     final observed = map['observation'];
     if (observed != 'accountedFor' && observed != 'unconfirmed') {
@@ -126,6 +131,9 @@ final class AssistanceCheckpointMember {
       observed == 'accountedFor',
       visit,
       disposition,
+      map['displayName'] == null
+          ? null
+          : assistanceText(map['displayName'], 120),
     );
   }
 }

@@ -19,8 +19,10 @@ export 'domain/event_success_preference.dart';
 export 'domain/event_success_runtime.dart';
 export 'domain/event_success_structure.dart';
 export 'domain/event_success_wingman_request.dart';
+export 'presentation/event_assistance_checkpoint_section.dart'; // public-api: shared live and rehearsal checkpoint observations and request copy
 export 'presentation/event_assistance_deliveries_provider.dart'; // public-api: account-scoped Host delivery pages and reviewed actions
 export 'presentation/event_assistance_delivery_controller.dart'; // public-api: per-message reviewed handoff and exact retry state
+export 'presentation/event_assistance_departure_history_section.dart'; // public-api: shared live and rehearsal historical roster navigation
 export 'presentation/event_assistance_departure_section.dart'; // public-api: shared live and rehearsal departure controls
 export 'presentation/event_assistance_group_roster_section.dart'; // public-api: shared live and rehearsal group guest selection
 export 'presentation/event_assistance_group_staff_copy.dart'; // public-api: shared live and rehearsal group duty descriptions

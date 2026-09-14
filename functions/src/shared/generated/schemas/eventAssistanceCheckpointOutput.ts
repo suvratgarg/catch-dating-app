@@ -405,6 +405,14 @@ export const eventAssistanceCheckpointCallableResponseSchema: Record<string, unk
                             }
                           }
                         ]
+                      },
+                      "displayName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 120
                       }
                     }
                   }

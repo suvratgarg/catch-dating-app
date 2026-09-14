@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.113.0
+version: 1.114.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -1166,7 +1166,8 @@ searchable roster, selection semantics and confirmation action. Native tests cov
 normal and 2x text, the real rehearsal runtime entry, optional/empty rosters, checkpoint
 dependencies, detached retries and authentication transitions. The backend-produced
 movement fixture also exercises the shared self-reporter default. This change does
-not activate messaging or mount checkpoint observation and request-management UI.
+not activate messaging. Checkpoint reporting now mounts as described below;
+request-management controls remain subsequent work.
 
 An existing link follows the workflow thread once a fresh instruction is
 published. Until then it returns `noInstructions`, and neither web nor native
@@ -1223,8 +1224,30 @@ Current source labels are withheld after setup changes. The scoped checkpoint
 detail read still owns current guest eligibility, reporter and closeout evidence;
 history never claims that a former observation establishes present location.
 Pagination, revoked/expired duties, changed source, corrupt overflow witnesses
-and native account transitions are covered. History navigation and the shared
-checkpoint observation form remain the next UI integration slice.
+and native account transitions are covered.
+
+Both live and rehearsal movement now open the shared departure-history section.
+Checkpoint rows open the exact recorded departure; fixed-destination records remain
+read-only. The shared checkpoint form shows the original roster with explicit
+observation controls, search and bounded visible rows. Its count describes recorded
+observations rather than current physical presence. Previously observed people stay
+selected; removing one reveals the required correction explanation. Empty rosters
+require an explicit report, while omitted rosters have no observation action.
+
+Live names come from the authorized checkpoint projection and match the original
+registration and source generations. Deleted or replaced guest records keep their
+original denominator and prior observations, but the UI disables their unidentified
+rows. Names are not joined to an independently refreshed event guest list. Rehearsal
+uses its immutable fictional departure names with the same form and validation.
+
+The live controller and shared rehearsal movement controller retain unknown outcomes
+through closing and reopening the sheets. A pending rehearsal command prevents
+another departure's form from replacing its retry. Saved counts come from the latest
+server receipt, including newer reports returned by an exact replay. Account changes
+hide retained forms. Native flow tests exercise both runtimes at normal and 2x text,
+historical navigation, exact retry after reopening, corrections and unavailable rows.
+Isolated Widgetbook previews mount the real controls without Firebase; registration
+in the shared generated Widgetbook index awaits release of its active file claim.
 
 `getEventAssistanceCheckpoint` and `recordEventAssistanceCheckpoint` operate on
 one checkpoint and one explicitly recorded departure revision. Each new departure
@@ -1259,8 +1282,10 @@ scheduled event end, completion or cancellation. Changed event setup or replaced
 source documents withhold new reports; saved reports remain visible when their
 source record is intact. No action changes attendance, group progress, membership,
 end-of-event accountability, messaging or consent. An empty roster is complete only
-after an explicit empty report. Read projections expose IDs and checkpoint facts,
-not guest contact data.
+after an explicit empty report. Read projections expose IDs, checkpoint facts and
+optional verified display names, without guest contact data. A renamed original
+registration invalidates a pending observation review; a reused attendee ID cannot
+supply the replacement guest's name.
 
 The optional `confirmDeparture.payload.checkpointRequest` names a responsible
 operator and UTC-millisecond reporting deadline. It requires an explicitly selected
@@ -1319,9 +1344,10 @@ report and departure revisions, observation set, correction and operation ID acr
 refresh and sheet closure. Account changes retire old state. Applied results must
 confirm the actor, report identity, timestamp and chosen observations; replays
 preserve newer corrections. Reads and writes use the generated callable DTOs.
-Native screen mounting, notifications and rehearsal adapters remain integration
-work. Reporting does not change physical
-attendance, group movement, membership, consent or event-visit accountability.
+The shared native observation and historical navigation controls are mounted in
+both runtimes. Notifications and request-management controls remain integration
+work. Reporting does not change physical attendance, group movement, membership,
+consent or event-visit accountability.
 
 ### Reviewed checkpoint closeout
 

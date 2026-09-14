@@ -146,6 +146,18 @@ class EventAssistanceCheckpointController
     state = CheckpointForm._(review);
   }
 
+  void reload() {
+    final form = state;
+    if (form is! CheckpointForm ||
+        !form.canReload ||
+        _pending != null ||
+        _inFlight != null) {
+      return;
+    }
+    _refresh();
+    state = const CheckpointIdle();
+  }
+
   void select(AssistanceCheckpointObservation? decision) {
     final form = state;
     if (form is! CheckpointForm || !form.canSelect || _pending != null) {

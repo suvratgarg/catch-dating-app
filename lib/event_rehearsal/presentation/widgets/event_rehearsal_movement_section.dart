@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_departure_history_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_departure_sheet.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show EventAssistanceMovementSection;
@@ -34,6 +35,19 @@ class EventRehearsalMovementSection extends ConsumerWidget {
           showCatchBottomSheet<void>(
             context: context,
             builder: (_) => EventRehearsalDepartureSheet(selection: selection),
+          );
+        },
+        onCheckpointHistory: (id) {
+          final selection = RehearsalMovementSelection(
+            scope: rehearsalMovementScope(rehearsal.session, id),
+            practiceOperatorId: practiceOperatorId,
+          );
+          final query = eventRehearsalMovementProvider(selection);
+          if (ref.exists(query)) ref.read(query.notifier).reload();
+          showCatchBottomSheet<void>(
+            context: context,
+            builder: (_) =>
+                EventRehearsalDepartureHistorySheet(selection: selection),
           );
         },
       );

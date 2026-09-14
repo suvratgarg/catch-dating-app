@@ -39,7 +39,8 @@ export async function readCheckpoint(db: Firestore, tx: Transaction,
         db.collection("eventAttendees").doc(m.attendeeId)));
       for (const [i, member] of members.entries()) {
         const visit = checkpointVisit(member, snapshots[i], progress);
-        state.visits.push({attendeeId: member.attendeeId, visit});
+        state.visits.push({attendeeId: member.attendeeId, visit,
+          displayName: checkpointGuestName(member, snapshots[i], progress)});
         state.dispositions!.push({attendeeId: member.attendeeId,
           disposition: checkpointDisposition(roster, member, visit,
             snapshots[i].data(), clock())});
@@ -103,5 +104,24 @@ function checkpointVisit(member: Roster["members"][number],
   } catch {
     // Only pure parsing is caught; database failures propagate.
     return unavailable("invalidSource");
+  }
+}
+
+/** Names follow the original registration across attendance changes. */
+function checkpointGuestName(member: Roster["members"][number],
+  snapshot: DocumentSnapshot, progress: ProgressState): string | null {
+  const attendee = snapshot.data();
+  const context = progress.source.context;
+  if (!validateEventAttendeeDocument(attendee) ||
+      attendee.eventId !== context.eventId ||
+      attendee.organizerId !== context.organizerId) return null;
+  try {
+    const source = guestSourceFactsFromSnapshots(context, member.attendeeId,
+      progress.eventSnapshot, snapshot);
+    return source.sourceGeneration === member.sourceGeneration &&
+      source.attendeeGeneration === member.attendeeGeneration ?
+      attendee.displayName.trim() || null : null;
+  } catch {
+    return null;
   }
 }

@@ -18208,4 +18208,183 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventAssistanceMovementEveryone => 'Everyone';
+
+  @override
+  String get eventAssistanceCheckpointTitle => 'Checkpoint arrivals';
+
+  @override
+  String eventAssistanceCheckpointDeparture({required int number}) {
+    return 'From departure $number';
+  }
+
+  @override
+  String get eventAssistanceCheckpointBody =>
+      'Select guests you have seen at this checkpoint. Other guests stay unconfirmed. Event check-in is unchanged.';
+
+  @override
+  String eventAssistanceCheckpointSelected({
+    required int count,
+    required int total,
+  }) {
+    return '$count of $total guests observed';
+  }
+
+  @override
+  String get eventAssistanceCheckpointUnknownGuest =>
+      'Guest record unavailable';
+
+  @override
+  String get eventAssistanceCheckpointUnknownGuestBody =>
+      'Kept in this departure roster. Reload before changing this observation.';
+
+  @override
+  String get eventAssistanceCheckpointVisitChanged =>
+      'The guest’s event visit changed. Earlier observations remain in this report.';
+
+  @override
+  String get eventAssistanceCheckpointEarlierObservation =>
+      'Observed in an earlier report';
+
+  @override
+  String get eventAssistanceCheckpointNotObserved =>
+      'Arrival not yet confirmed';
+
+  @override
+  String get eventAssistanceCheckpointEmptyRoster =>
+      'This departure explicitly recorded an empty roster. You can save an empty checkpoint report.';
+
+  @override
+  String get eventAssistanceCheckpointCorrection => 'Reason for correction';
+
+  @override
+  String get eventAssistanceCheckpointCorrectionBody =>
+      'Explain why you are removing an earlier arrival observation.';
+
+  @override
+  String get eventAssistanceCheckpointNoRoster =>
+      'No guest roster was recorded for this departure.';
+
+  @override
+  String get eventAssistanceCheckpointNoDestination =>
+      'No checkpoint destination was recorded for this departure.';
+
+  @override
+  String get eventAssistanceCheckpointNotApplicable =>
+      'This destination does not have a checkpoint report.';
+
+  @override
+  String get eventAssistanceCheckpointSetupChanged =>
+      'The event setup changed. This original departure can no longer accept new arrival observations.';
+
+  @override
+  String get eventAssistanceCheckpointSaving => 'Saving the checkpoint report…';
+
+  @override
+  String get eventAssistanceCheckpointUnconfirmed =>
+      'The save is unconfirmed. Retry this same report to check the result.';
+
+  @override
+  String get eventAssistanceCheckpointChanged =>
+      'The report or your access changed. Reload before making a new observation.';
+
+  @override
+  String get eventAssistanceCheckpointSaved =>
+      'Checkpoint report saved. The latest recorded observations are shown above.';
+
+  @override
+  String get eventAssistanceCheckpointReadOnly =>
+      'This review does not allow arrival reporting.';
+
+  @override
+  String get eventAssistanceCheckpointSave => 'Save checkpoint report';
+
+  @override
+  String get eventAssistanceCheckpointRetry => 'Retry this report';
+
+  @override
+  String get eventAssistanceCheckpointReload => 'Reload checkpoint';
+
+  @override
+  String eventAssistanceCheckpointDue({required String deadline}) {
+    return 'Report requested by $deadline';
+  }
+
+  @override
+  String eventAssistanceCheckpointOverdue({required String deadline}) {
+    return 'Report overdue · requested by $deadline';
+  }
+
+  @override
+  String get eventAssistanceCheckpointDiscrepancy =>
+      'The saved report still has unconfirmed guests.';
+
+  @override
+  String get eventAssistanceCheckpointComplete =>
+      'Every guest on this departure roster has an arrival observation.';
+
+  @override
+  String get eventAssistanceCheckpointClosedOut =>
+      'This reporting request was closed. Closure does not add arrival observations.';
+
+  @override
+  String get eventAssistanceHistoryTitle => 'Departure rosters & checkpoints';
+
+  @override
+  String get eventAssistanceHistoryBody =>
+      'Open a recorded departure to review arrivals at its checkpoint. Reports describe that departure, even after the group moves again.';
+
+  @override
+  String get eventAssistanceHistoryEmpty =>
+      'No recorded departure rosters on this page.';
+
+  @override
+  String get eventAssistanceHistoryEarlierSetup =>
+      'Destination from an earlier setup';
+
+  @override
+  String eventAssistanceHistoryDepartureAt({
+    required int number,
+    required String date,
+    required String time,
+  }) {
+    return 'Departure $number · $date, $time';
+  }
+
+  @override
+  String eventAssistanceHistoryRosterSize({required int count}) {
+    return '$count guests recorded as leaving';
+  }
+
+  @override
+  String get eventAssistanceHistoryNoReport =>
+      'Checkpoint report not yet recorded';
+
+  @override
+  String eventAssistanceHistoryObserved({
+    required int count,
+    required int total,
+  }) {
+    return 'Last report: $count of $total guests observed';
+  }
+
+  @override
+  String get eventAssistanceHistoryNoCheckpoint =>
+      'No checkpoint report for this destination';
+
+  @override
+  String get eventAssistanceHistoryEarlier => 'Earlier departures';
+
+  @override
+  String get eventAssistanceHistoryNewer => 'Newer departures';
+
+  @override
+  String get eventAssistanceHistoryReload => 'Reload history';
+
+  @override
+  String get eventAssistanceCheckpointSelectedObservation =>
+      'Selected for this report';
+
+  @override
+  String get eventAssistanceCheckpointRemovingObservation =>
+      'Removing an earlier observation';
 }

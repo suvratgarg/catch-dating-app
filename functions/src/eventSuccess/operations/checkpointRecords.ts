@@ -33,7 +33,7 @@ export interface CheckpointState {
   progress: ProgressState;
   roster: Roster | null;
   report: Report | null;
-  visits: {attendeeId: string; visit: Visit}[];
+  visits: {attendeeId: string; visit: Visit; displayName?: string | null}[];
   dispositions?: {attendeeId: string; disposition: CheckpointDisposition}[];
   ownerValidUntil: number;
   requestWork?: CheckpointWorkRecords | null;
@@ -108,7 +108,9 @@ export function checkpointAvailability(s: CheckpointState):
   return {kind: "ready", rosterId: roster.rosterId, label: destination.label,
     reportStatus: !s.report ? "unreported" :
       accounted.size === roster.members.length ? "complete" : "partial",
-    members: s.visits.map(({attendeeId, visit}) => ({attendeeId, visit,
+    members: s.visits.map(({attendeeId, visit, displayName}) => ({
+      attendeeId, visit,
+      ...(displayName !== undefined ? {displayName} : {}),
       ...(s.dispositions ? {disposition: s.dispositions.find((d) =>
         d.attendeeId === attendeeId)!.disposition} : {}),
       observation: accounted.has(attendeeId) ?
