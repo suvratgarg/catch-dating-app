@@ -242,10 +242,6 @@
       "maxLines": 1340
     },
     {
-      "path": "widgetbook/lib/primitives/core_catalog_use_cases.dart",
-      "maxLines": 4478
-    },
-    {
       "path": "widgetbook/lib/profiles/profile_use_cases.dart",
       "maxLines": 2634
     },

@@ -298,7 +298,7 @@
         "packages/catch_ui/lib/src/components/catch_top_bar.dart",
         "packages/catch_ui/lib/src/components/catch_screen_header.dart",
         "test/core/catch_top_bar_test.dart",
-        "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+        "widgetbook/lib/primitives/catalog/chrome.dart"
       ],
       "adopters": [
         {

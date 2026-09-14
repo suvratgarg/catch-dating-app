@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/explore.feature.json",
-  "generatedFor": "2026-08-05",
-  "sourceDigest": "sha256:b3476b11552825ae4fe0bd224a40a241d4eff4f7c92d6a37578107137af88d32",
+  "generatedFor": "2026-09-14",
+  "sourceDigest": "sha256:044a6c5714d3a86075574a9fb278af1b469186aadfdabe2cb6c4489c7de89cf3",
   "resolvedDigest": "sha256:4278b8fa96ced65edf6568834a58bd17d93385f1d992a2c4dcde3b51ace69ff6",
   "feature": {
     "id": "feature.explore",
@@ -40,7 +40,19 @@
       "bindings": {
         "previewSources": [
           "widgetbook/lib/explore/explore_use_cases.dart",
-          "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+          "widgetbook/lib/primitives/catalog/celebration.dart",
+          "widgetbook/lib/primitives/catalog/chrome.dart",
+          "widgetbook/lib/primitives/catalog/docks.dart",
+          "widgetbook/lib/primitives/catalog/event_hero.dart",
+          "widgetbook/lib/primitives/catalog/event_information.dart",
+          "widgetbook/lib/primitives/catalog/feedback.dart",
+          "widgetbook/lib/primitives/catalog/inputs.dart",
+          "widgetbook/lib/primitives/catalog/layout.dart",
+          "widgetbook/lib/primitives/catalog/loading.dart",
+          "widgetbook/lib/primitives/catalog/media.dart",
+          "widgetbook/lib/primitives/catalog/menus.dart",
+          "widgetbook/lib/primitives/catalog/sections.dart",
+          "widgetbook/lib/primitives/catalog/typography.dart"
         ],
         "actionOwners": [
           {

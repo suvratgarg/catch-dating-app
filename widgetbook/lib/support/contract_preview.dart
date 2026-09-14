@@ -138,16 +138,21 @@ class WidgetbookContractStateCard extends StatelessWidget {
 }
 
 class WidgetbookContractWrap extends StatelessWidget {
-  const WidgetbookContractWrap({super.key, required this.children});
+  const WidgetbookContractWrap({
+    super.key,
+    required this.children,
+    this.crossAxisAlignment = WrapCrossAlignment.center,
+  });
 
   final List<Widget> children;
+  final WrapCrossAlignment crossAxisAlignment;
 
   @override
   Widget build(BuildContext context) {
     return Wrap(
       spacing: CatchSpacing.s3,
       runSpacing: CatchSpacing.s3,
-      crossAxisAlignment: WrapCrossAlignment.center,
+      crossAxisAlignment: crossAxisAlignment,
       children: children,
     );
   }

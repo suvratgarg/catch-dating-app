@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-10",
+  "updated": "2026-09-14",
   "id": "feature.event_detail",
   "name": "Event Detail",
   "owner": "events",
@@ -25,7 +25,19 @@
       "bindings": {
         "previewSources": [
           "widgetbook/lib/events/event_detail_use_cases.dart",
-          "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+          "widgetbook/lib/primitives/catalog/celebration.dart",
+          "widgetbook/lib/primitives/catalog/chrome.dart",
+          "widgetbook/lib/primitives/catalog/docks.dart",
+          "widgetbook/lib/primitives/catalog/event_hero.dart",
+          "widgetbook/lib/primitives/catalog/event_information.dart",
+          "widgetbook/lib/primitives/catalog/feedback.dart",
+          "widgetbook/lib/primitives/catalog/inputs.dart",
+          "widgetbook/lib/primitives/catalog/layout.dart",
+          "widgetbook/lib/primitives/catalog/loading.dart",
+          "widgetbook/lib/primitives/catalog/media.dart",
+          "widgetbook/lib/primitives/catalog/menus.dart",
+          "widgetbook/lib/primitives/catalog/sections.dart",
+          "widgetbook/lib/primitives/catalog/typography.dart"
         ],
         "actionOwners": [
           {
