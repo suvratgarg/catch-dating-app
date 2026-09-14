@@ -1,0 +1,81 @@
+import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+
+class WidgetbookMatchesComposerStatesPreview extends StatefulWidget {
+  const WidgetbookMatchesComposerStatesPreview();
+
+  @override
+  State<WidgetbookMatchesComposerStatesPreview> createState() =>
+      _ComposerStatesPreviewState();
+}
+
+class _ComposerStatesPreviewState
+    extends State<WidgetbookMatchesComposerStatesPreview> {
+  late final TextEditingController _readyController;
+  late final TextEditingController _sendingController;
+  late final TextEditingController _imagePendingController;
+  late final TextEditingController _disabledController;
+
+  @override
+  void initState() {
+    super.initState();
+    _readyController = TextEditingController(text: 'That last loop was fun.');
+    _sendingController = TextEditingController(text: 'Sending this now...');
+    _imagePendingController = TextEditingController(
+      text: 'Uploading a photo...',
+    );
+    _disabledController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _readyController.dispose();
+    _sendingController.dispose();
+    _imagePendingController.dispose();
+    _disabledController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            const Spacer(),
+            ChatInputBar(
+              controller: _readyController,
+              sending: false,
+              onSend: () {},
+              onSendImage: () {},
+            ),
+            gapH12,
+            ChatInputBar(
+              controller: _sendingController,
+              sending: true,
+              onSend: () {},
+              onSendImage: () {},
+            ),
+            gapH12,
+            ChatInputBar(
+              controller: _imagePendingController,
+              sending: false,
+              sendingImage: true,
+              onSend: () {},
+              onSendImage: () {},
+            ),
+            gapH12,
+            ChatInputBar(
+              controller: _disabledController,
+              sending: false,
+              disabledReason: 'This chat is closed.',
+              onSend: null,
+              onSendImage: null,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
