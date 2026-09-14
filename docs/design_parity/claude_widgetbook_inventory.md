@@ -1,6 +1,6 @@
 ---
 doc_id: claude_widgetbook_inventory
-version: 0.3.1
+version: 0.3.2
 updated: 2026-09-14
 owner: product_design_parity
 status: active
@@ -31,7 +31,7 @@ The goal of this pass is to answer:
 | Claude foundation CSS | `/Users/suvratgarg/Downloads/Catch Design System (2)/colors_and_type.css` | CSS variables, spacing, radius, shadows, typography roles, font roles, photo grade, and dark theme. |
 | Claude templates | `/Users/suvratgarg/Downloads/Catch Design System (2)/templates/` | Screen blueprints composed from components. Not treated as primitive inventory unless a reusable component is exported in the manifest. |
 | Local Widgetbook | `widgetbook/lib/main.directories.g.dart` | Generated source of truth for currently visible Widgetbook entries. |
-| Local Widgetbook sources | `widgetbook/lib/primitives/core_catalog_use_cases.dart`, `widgetbook/lib/primitives/contracts/` | Annotated use cases for broad catalog and formal contract previews. |
+| Local Widgetbook sources | `widgetbook/lib/primitives/catalog/`, `widgetbook/lib/primitives/contracts/` | Annotated use cases for broad catalog and formal contract previews. |
 | Local component contracts | `design/components/catch.components.json` | Current allowed cross-tool component contract registry. |
 | Local design tokens | `design/tokens/catch.tokens.json` | DTCG-shaped token source mirrored into generated Dart/CSS. |
 | Local Dart token/style sources | `lib/core/theme/catch_tokens.dart`, `lib/core/theme/catch_spacing.dart`, `lib/core/theme/catch_text_styles.dart`, `lib/core/theme/catch_icons.dart`, `lib/core/theme/activity_palette.dart` | Runtime token, gap, style, icon, and activity palette implementations. |

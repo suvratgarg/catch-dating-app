@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:widgetbook/widgetbook.dart';
 import 'package:widgetbook_golden_test_core/widgetbook_golden_test_core.dart';
 import 'package:widgetbook_workspace/main.directories.g.dart';
-import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart';
+import 'package:widgetbook_workspace/primitives/catalog/event_information.dart';
 import 'package:widgetbook_workspace/primitives/notice_provider_use_cases.dart';
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 

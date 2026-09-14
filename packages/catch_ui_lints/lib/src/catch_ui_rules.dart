@@ -86,7 +86,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
             'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart' &&
         !const {
           '/lib/app.dart',
-          '/widgetbook/lib/primitives/core_catalog_use_cases.dart',
+          '/widgetbook/lib/primitives/catalog/feedback.dart',
         }.any(path.endsWith)) {
       rule.reportAtNode(
         node,

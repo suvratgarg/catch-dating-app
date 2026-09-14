@@ -53,6 +53,32 @@ import 'package:widgetbook_workspace/primitives/avatar_use_cases.dart'
     as _widgetbook_workspace_primitives_avatar_use_cases;
 import 'package:widgetbook_workspace/primitives/bottom_action_use_cases.dart'
     as _widgetbook_workspace_primitives_bottom_action_use_cases;
+import 'package:widgetbook_workspace/primitives/catalog/celebration.dart'
+    as _widgetbook_workspace_primitives_catalog_celebration;
+import 'package:widgetbook_workspace/primitives/catalog/chrome.dart'
+    as _widgetbook_workspace_primitives_catalog_chrome;
+import 'package:widgetbook_workspace/primitives/catalog/docks.dart'
+    as _widgetbook_workspace_primitives_catalog_docks;
+import 'package:widgetbook_workspace/primitives/catalog/event_hero.dart'
+    as _widgetbook_workspace_primitives_catalog_event_hero;
+import 'package:widgetbook_workspace/primitives/catalog/event_information.dart'
+    as _widgetbook_workspace_primitives_catalog_event_information;
+import 'package:widgetbook_workspace/primitives/catalog/feedback.dart'
+    as _widgetbook_workspace_primitives_catalog_feedback;
+import 'package:widgetbook_workspace/primitives/catalog/inputs.dart'
+    as _widgetbook_workspace_primitives_catalog_inputs;
+import 'package:widgetbook_workspace/primitives/catalog/layout.dart'
+    as _widgetbook_workspace_primitives_catalog_layout;
+import 'package:widgetbook_workspace/primitives/catalog/loading.dart'
+    as _widgetbook_workspace_primitives_catalog_loading;
+import 'package:widgetbook_workspace/primitives/catalog/media.dart'
+    as _widgetbook_workspace_primitives_catalog_media;
+import 'package:widgetbook_workspace/primitives/catalog/menus.dart'
+    as _widgetbook_workspace_primitives_catalog_menus;
+import 'package:widgetbook_workspace/primitives/catalog/sections.dart'
+    as _widgetbook_workspace_primitives_catalog_sections;
+import 'package:widgetbook_workspace/primitives/catalog/typography.dart'
+    as _widgetbook_workspace_primitives_catalog_typography;
 import 'package:widgetbook_workspace/primitives/contracts/activity_media.dart'
     as _widgetbook_workspace_primitives_contracts_activity_media;
 import 'package:widgetbook_workspace/primitives/contracts/analytics.dart'
@@ -107,8 +133,6 @@ import 'package:widgetbook_workspace/primitives/contracts/tabs.dart'
     as _widgetbook_workspace_primitives_contracts_tabs;
 import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
     as _widgetbook_workspace_primitives_contracts_typography;
-import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
-    as _widgetbook_workspace_primitives_core_catalog_use_cases;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
     as _widgetbook_workspace_primitives_distance_ring_use_cases;
 import 'package:widgetbook_workspace/primitives/error_feedback_use_cases.dart'
@@ -809,7 +833,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Text states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchTextButtonCatalogStates,
               ),
             ],
@@ -824,7 +848,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_media
                     .catchActivityMapPinCatalogStates,
               ),
             ],
@@ -834,7 +858,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_media
                     .catchDistanceOverlayLabelCatalogStates,
               ),
             ],
@@ -849,17 +873,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Entry states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_typography
                     .catchMetaRowEntryStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Flow states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_typography
                     .catchMetaRowFlowStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Group states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_typography
                     .catchMetaRowGroupStates,
               ),
             ],
@@ -869,7 +893,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_typography
                     .catchStatColumnCatalogStates,
               ),
             ],
@@ -884,7 +908,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_media
                     .catchEventCardCatalogStates,
               ),
             ],
@@ -894,7 +918,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_event_hero
                     .eventTicketSurfaceCatalogStates,
               ),
             ],
@@ -904,7 +928,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_media
                     .eventActivityBackdropCatalogStates,
               ),
             ],
@@ -914,7 +938,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_media
                     .eventVisualAtomsCatalogStates,
               ),
             ],
@@ -929,8 +953,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contact states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .eventDetailHostCardCatalogStates,
+                builder:
+                    _widgetbook_workspace_primitives_catalog_event_information
+                        .eventDetailHostCardCatalogStates,
               ),
             ],
           ),
@@ -939,8 +964,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .eventDetailBookingDockCatalogStates,
+                builder:
+                    _widgetbook_workspace_primitives_catalog_event_information
+                        .eventDetailBookingDockCatalogStates,
               ),
             ],
           ),
@@ -949,7 +975,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_event_hero
                     .eventDetailHeroCatalogStates,
               ),
             ],
@@ -959,8 +985,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .eventDetailHintListCatalogStates,
+                builder:
+                    _widgetbook_workspace_primitives_catalog_event_information
+                        .eventDetailHintListCatalogStates,
               ),
             ],
           ),
@@ -969,8 +996,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .eventDetailItineraryCatalogStates,
+                builder:
+                    _widgetbook_workspace_primitives_catalog_event_information
+                        .eventDetailItineraryCatalogStates,
               ),
             ],
           ),
@@ -979,8 +1007,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .eventDetailMapCardCatalogStates,
+                builder:
+                    _widgetbook_workspace_primitives_catalog_event_information
+                        .eventDetailMapCardCatalogStates,
               ),
             ],
           ),
@@ -989,8 +1018,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .eventDetailMechanismListCatalogStates,
+                builder:
+                    _widgetbook_workspace_primitives_catalog_event_information
+                        .eventDetailMechanismListCatalogStates,
               ),
             ],
           ),
@@ -999,8 +1029,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
-                    .eventDetailPhotoStripCatalogStates,
+                builder:
+                    _widgetbook_workspace_primitives_catalog_event_information
+                        .eventDetailPhotoStripCatalogStates,
               ),
             ],
           ),
@@ -1009,7 +1040,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_event_hero
                     .eventDetailTicketStubCatalogStates,
               ),
             ],
@@ -1024,12 +1055,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_feedback
                     .catchBannerCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Error recipes',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_feedback
                     .catchBannerErrorRecipes,
               ),
             ],
@@ -1039,7 +1070,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_feedback
                     .catchStatusStripScopeCatalogStates,
               ),
             ],
@@ -1049,7 +1080,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_feedback
                     .catchErrorDetailsAccordionCatalogStates,
               ),
             ],
@@ -1059,7 +1090,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchErrorScaffoldCatalogStates,
               ),
             ],
@@ -1069,7 +1100,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchInlineErrorStateCatalogStates,
               ),
             ],
@@ -1079,7 +1110,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_feedback
                     .catchFrameworkErrorStateCatalogStates,
               ),
             ],
@@ -1089,7 +1120,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_feedback
                     .catchLocalizedErrorBannerMutationStates,
               ),
             ],
@@ -1099,7 +1130,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Queued arrival',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_feedback
                     .catchNoticeQueueCatalogState,
               ),
             ],
@@ -1109,7 +1140,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_feedback
                     .catchNoticeOverlayCatalogStates,
               ),
             ],
@@ -1119,7 +1150,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchSliverEmptyStateCatalogStates,
               ),
             ],
@@ -1129,7 +1160,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchSliverErrorStateCatalogStates,
               ),
             ],
@@ -1139,12 +1170,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Box optical center',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchStateViewportCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Sliver optical center',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchStateViewportSliverCatalogStates,
               ),
             ],
@@ -1154,7 +1185,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Validated arrival interaction',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_feedback
                     .foregroundNotificationListenerPreview,
               ),
             ],
@@ -1169,7 +1200,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchIconTileCatalogStates,
               ),
             ],
@@ -1184,7 +1215,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_inputs
                     .catchCodeInputCatalogStates,
               ),
             ],
@@ -1194,7 +1225,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_inputs
                     .catchControlShellCatalogStates,
               ),
             ],
@@ -1204,7 +1235,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_inputs
                     .catchFieldLabelTextCatalogStates,
               ),
             ],
@@ -1219,7 +1250,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchDividerCatalogStates,
               ),
             ],
@@ -1229,7 +1260,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchFormReviewBodyCatalogStates,
               ),
             ],
@@ -1239,17 +1270,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Form step insets',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchFormStepBodyCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Page insets',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchPageBodyCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Sliver insets',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchSliverPageBodyCatalogStates,
               ),
             ],
@@ -1259,7 +1290,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchScrollTerminalGapCatalogStates,
               ),
             ],
@@ -1269,17 +1300,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .responsiveBuilderCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Local breakpoint',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchViewportBreakpointCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Local sliver geometry',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchViewportSliverCatalogStates,
               ),
             ],
@@ -1294,12 +1325,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchAsyncValueViewCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Sliver states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchAsyncValueSliverCatalogStates,
               ),
             ],
@@ -1309,7 +1340,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchLoadingIndicatorCatalogStates,
               ),
             ],
@@ -1319,7 +1350,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchAsyncScreenLoadingCatalogStates,
               ),
             ],
@@ -1329,7 +1360,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchSkeletonListCatalogStates,
               ),
             ],
@@ -1339,7 +1370,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchAsyncSliverLoadingCatalogStates,
               ),
             ],
@@ -1349,7 +1380,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_loading
                     .catchStartupLoadingScreenCatalogStates,
               ),
             ],
@@ -1398,7 +1429,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_media
                     .catchEventThumbnailCatalogStates,
               ),
             ],
@@ -1408,7 +1439,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_media
                     .catchGradedImageCatalogStates,
               ),
             ],
@@ -1418,7 +1449,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_media
                     .catchHeroImageCatalogStates,
               ),
             ],
@@ -1433,7 +1464,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_menus
                     .catchActionMenuCatalogStates,
               ),
             ],
@@ -1443,7 +1474,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_menus
                     .catchMenuCatalogStates,
               ),
             ],
@@ -1453,7 +1484,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_menus
                     .catchMenuRowCatalogStates,
               ),
             ],
@@ -1463,7 +1494,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_menus
                     .catchSelectionMenuCatalogStates,
               ),
             ],
@@ -1478,7 +1509,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_celebration
                     .catchCelebrationScreenCatalogStates,
               ),
             ],
@@ -1488,7 +1519,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_celebration
                     .celebrationDetailRowCatalogStates,
               ),
             ],
@@ -1498,7 +1529,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_celebration
                     .celebrationDetailsCardCatalogStates,
               ),
             ],
@@ -1508,7 +1539,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_celebration
                     .celebrationIconCatalogStates,
               ),
             ],
@@ -1518,7 +1549,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_celebration
                     .celebrationNoteCatalogStates,
               ),
             ],
@@ -1528,7 +1559,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_celebration
                     .paperCelebrationDetailRowCatalogStates,
               ),
             ],
@@ -1538,7 +1569,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_celebration
                     .paperCelebrationDetailsCardCatalogStates,
               ),
             ],
@@ -1548,7 +1579,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_celebration
                     .paperCelebrationIconCatalogStates,
               ),
             ],
@@ -1558,7 +1589,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_celebration
                     .paperCelebrationScaffoldCatalogStates,
               ),
             ],
@@ -1573,7 +1604,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchTicketHeroCatalogStates,
               ),
             ],
@@ -1583,7 +1614,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_layout
                     .catchMapRevealTransitionCatalogStates,
               ),
             ],
@@ -1598,7 +1629,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Toolbar actions',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchTopBarActionsCatalogStates,
               ),
             ],
@@ -1608,7 +1639,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Toolbar text states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchTopBarTextActionCatalogStates,
               ),
             ],
@@ -1618,7 +1649,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchIconActionCatalogStates,
               ),
             ],
@@ -1628,7 +1659,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchPageDotsCatalogStates,
               ),
             ],
@@ -1638,7 +1669,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'App-bar placement',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchPageTabBarAppBarStates,
               ),
             ],
@@ -1648,7 +1679,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchSliverHeaderCatalogStates,
               ),
             ],
@@ -1658,7 +1689,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchTopBarScreenCatalogStates,
               ),
             ],
@@ -1668,7 +1699,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchTopBarActionGroupCatalogStates,
               ),
             ],
@@ -1678,7 +1709,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_chrome
                     .catchTopBarPrimaryActionCatalogStates,
               ),
             ],
@@ -1693,7 +1724,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_sections
                     .catchDaySectionHeaderCountCatalogStates,
               ),
             ],
@@ -1703,7 +1734,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_sections
                     .catchDaySectionHeaderCatalogStates,
               ),
             ],
@@ -1713,7 +1744,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Horizontal collection',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_sections
                     .catchSectionHorizontalCatalogStates,
               ),
             ],
@@ -1723,7 +1754,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_sections
                     .catchSectionHeaderCatalogStates,
               ),
             ],
@@ -1738,7 +1769,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_inputs
                     .catchChoiceInputFormCatalogStates,
               ),
             ],
@@ -1753,7 +1784,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_typography
                     .catchAttributionRowCatalogStates,
               ),
             ],
@@ -1763,17 +1794,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Embedded primary action states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_docks
                     .catchDockEmbeddedPrimaryCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Primary action states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_docks
                     .catchDockPrimaryCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Utility states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_docks
                     .catchDockUtilityCatalogStates,
               ),
             ],
@@ -1783,12 +1814,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_docks
                     .catchShareCardSheetCatalogStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Sharing state',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_docks
                     .catchShareCardSheetSharingState,
               ),
             ],
@@ -1798,7 +1829,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_docks
                     .catchBottomSheetGrabberCatalogStates,
               ),
             ],
@@ -1813,7 +1844,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_typography
                     .catchMetadataTextCatalogStates,
               ),
             ],
@@ -1823,7 +1854,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Catalog states',
-                builder: _widgetbook_workspace_primitives_core_catalog_use_cases
+                builder: _widgetbook_workspace_primitives_catalog_typography
                     .catchSectionHeaderTitleCatalogStates,
               ),
             ],
