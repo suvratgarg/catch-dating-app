@@ -41,7 +41,8 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.byType(TextField), warnIfMissed: false);
+      // Inactive modes deliberately remove the input from hit testing.
+      await tester.tapAt(tester.getCenter(find.byType(TextField)));
       await tester.pump();
       expect(focus.hasFocus, canFocus);
       final native = tester.widget<EditableText>(find.byType(EditableText));

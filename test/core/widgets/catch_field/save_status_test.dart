@@ -230,7 +230,8 @@ void main() {
       final target = recipe == 'stepper'
           ? find.bySemanticsLabel('Increase guests')
           : find.text('Walk');
-      await tester.tap(target, warnIfMissed: false);
+      // Saving may ignore pointer events; still exercise the painted control.
+      await tester.tapAt(tester.getCenter(target));
       await tester.pump();
       expect(changes, 0);
       expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
