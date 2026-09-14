@@ -53,6 +53,60 @@ import 'package:widgetbook_workspace/primitives/avatar_use_cases.dart'
     as _widgetbook_workspace_primitives_avatar_use_cases;
 import 'package:widgetbook_workspace/primitives/bottom_action_use_cases.dart'
     as _widgetbook_workspace_primitives_bottom_action_use_cases;
+import 'package:widgetbook_workspace/primitives/contracts/activity_media.dart'
+    as _widgetbook_workspace_primitives_contracts_activity_media;
+import 'package:widgetbook_workspace/primitives/contracts/analytics.dart'
+    as _widgetbook_workspace_primitives_contracts_analytics;
+import 'package:widgetbook_workspace/primitives/contracts/avatars.dart'
+    as _widgetbook_workspace_primitives_contracts_avatars;
+import 'package:widgetbook_workspace/primitives/contracts/buttons.dart'
+    as _widgetbook_workspace_primitives_contracts_buttons;
+import 'package:widgetbook_workspace/primitives/contracts/choices.dart'
+    as _widgetbook_workspace_primitives_contracts_choices;
+import 'package:widgetbook_workspace/primitives/contracts/chrome.dart'
+    as _widgetbook_workspace_primitives_contracts_chrome;
+import 'package:widgetbook_workspace/primitives/contracts/code_input.dart'
+    as _widgetbook_workspace_primitives_contracts_code_input;
+import 'package:widgetbook_workspace/primitives/contracts/dialogs.dart'
+    as _widgetbook_workspace_primitives_contracts_dialogs;
+import 'package:widgetbook_workspace/primitives/contracts/feedback.dart'
+    as _widgetbook_workspace_primitives_contracts_feedback;
+import 'package:widgetbook_workspace/primitives/contracts/field.dart'
+    as _widgetbook_workspace_primitives_contracts_field;
+import 'package:widgetbook_workspace/primitives/contracts/field_rows.dart'
+    as _widgetbook_workspace_primitives_contracts_field_rows;
+import 'package:widgetbook_workspace/primitives/contracts/icons.dart'
+    as _widgetbook_workspace_primitives_contracts_icons;
+import 'package:widgetbook_workspace/primitives/contracts/images.dart'
+    as _widgetbook_workspace_primitives_contracts_images;
+import 'package:widgetbook_workspace/primitives/contracts/inputs.dart'
+    as _widgetbook_workspace_primitives_contracts_inputs;
+import 'package:widgetbook_workspace/primitives/contracts/loading.dart'
+    as _widgetbook_workspace_primitives_contracts_loading;
+import 'package:widgetbook_workspace/primitives/contracts/messages.dart'
+    as _widgetbook_workspace_primitives_contracts_messages;
+import 'package:widgetbook_workspace/primitives/contracts/metadata.dart'
+    as _widgetbook_workspace_primitives_contracts_metadata;
+import 'package:widgetbook_workspace/primitives/contracts/page_body.dart'
+    as _widgetbook_workspace_primitives_contracts_page_body;
+import 'package:widgetbook_workspace/primitives/contracts/root_screen.dart'
+    as _widgetbook_workspace_primitives_contracts_root_screen;
+import 'package:widgetbook_workspace/primitives/contracts/roster.dart'
+    as _widgetbook_workspace_primitives_contracts_roster;
+import 'package:widgetbook_workspace/primitives/contracts/section.dart'
+    as _widgetbook_workspace_primitives_contracts_section;
+import 'package:widgetbook_workspace/primitives/contracts/section_lists.dart'
+    as _widgetbook_workspace_primitives_contracts_section_lists;
+import 'package:widgetbook_workspace/primitives/contracts/sheets.dart'
+    as _widgetbook_workspace_primitives_contracts_sheets;
+import 'package:widgetbook_workspace/primitives/contracts/steps.dart'
+    as _widgetbook_workspace_primitives_contracts_steps;
+import 'package:widgetbook_workspace/primitives/contracts/surfaces.dart'
+    as _widgetbook_workspace_primitives_contracts_surfaces;
+import 'package:widgetbook_workspace/primitives/contracts/tabs.dart'
+    as _widgetbook_workspace_primitives_contracts_tabs;
+import 'package:widgetbook_workspace/primitives/contracts/typography.dart'
+    as _widgetbook_workspace_primitives_contracts_typography;
 import 'package:widgetbook_workspace/primitives/core_catalog_use_cases.dart'
     as _widgetbook_workspace_primitives_core_catalog_use_cases;
 import 'package:widgetbook_workspace/primitives/distance_ring_use_cases.dart'
@@ -91,8 +145,6 @@ import 'package:widgetbook_workspace/primitives/picker_use_cases.dart'
     as _widgetbook_workspace_primitives_picker_use_cases;
 import 'package:widgetbook_workspace/primitives/preferred_size_use_cases.dart'
     as _widgetbook_workspace_primitives_preferred_size_use_cases;
-import 'package:widgetbook_workspace/primitives/primitive_contract_use_cases.dart'
-    as _widgetbook_workspace_primitives_primitive_contract_use_cases;
 import 'package:widgetbook_workspace/primitives/rail_use_cases.dart'
     as _widgetbook_workspace_primitives_rail_use_cases;
 import 'package:widgetbook_workspace/primitives/section_anatomy_use_cases.dart'
@@ -2107,15 +2159,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchButtonContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_buttons
+                    .catchButtonContractStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Floating states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCountPillContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_metadata
+                    .catchCountPillContractStates,
               ),
             ],
           ),
@@ -2124,9 +2174,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchButtonLabelContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_buttons
+                    .catchButtonLabelContractStates,
               ),
             ],
           ),
@@ -2135,9 +2184,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchIconButtonContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_buttons
+                    .catchIconButtonContractStates,
               ),
             ],
           ),
@@ -2146,9 +2194,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchButtonLoadingDotsContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_buttons
+                    .catchButtonLoadingDotsContractStates,
               ),
             ],
           ),
@@ -2163,7 +2210,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_activity_media
                         .catchActivityArtContractStates,
               ),
             ],
@@ -2174,7 +2221,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_activity_media
                         .catchActivityMapPinContractStates,
               ),
             ],
@@ -2184,9 +2231,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchDistanceOverlayContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_images
+                    .catchDistanceOverlayContractStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Fixed diameter and edge label',
@@ -2217,9 +2263,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchAnalyticsMetricContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_analytics
+                    .catchAnalyticsMetricContractStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Tile states',
@@ -2262,7 +2307,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_section_lists
                         .catchRecordRowContractStates,
               ),
             ],
@@ -2277,9 +2322,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchMiniBarChartContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_analytics
+                    .catchMiniBarChartContractStates,
               ),
             ],
           ),
@@ -2288,9 +2332,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchDividerContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_surfaces
+                    .catchDividerContractStates,
               ),
             ],
           ),
@@ -2299,9 +2342,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchMetricStripContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_analytics
+                    .catchMetricStripContractStates,
               ),
             ],
           ),
@@ -2310,9 +2352,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchMetricStripCellContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_analytics
+                    .catchMetricStripCellContractStates,
               ),
             ],
           ),
@@ -2321,9 +2362,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTimestampedMessageContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_messages
+                    .catchTimestampedMessageContractStates,
               ),
             ],
           ),
@@ -2337,9 +2377,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchDialogContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_dialogs
+                    .catchDialogContractStates,
               ),
             ],
           ),
@@ -2353,9 +2392,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTicketContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_surfaces
+                    .catchTicketContractStates,
               ),
             ],
           ),
@@ -2369,15 +2407,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchBannerContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_feedback
+                    .catchBannerContractStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Persistent status states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchBannerStatusContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_feedback
+                    .catchBannerStatusContractStates,
               ),
             ],
           ),
@@ -2386,9 +2422,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchEmptyStateContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_feedback
+                    .catchEmptyStateContractStates,
               ),
             ],
           ),
@@ -2408,9 +2443,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchErrorStateContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_feedback
+                    .catchErrorStateContractStates,
               ),
             ],
           ),
@@ -2419,9 +2453,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchNoticeContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_feedback
+                    .catchNoticeContractStates,
               ),
             ],
           ),
@@ -2609,9 +2642,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchRosterRowContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_roster
+                    .catchRosterRowContractStates,
               ),
             ],
           ),
@@ -2620,9 +2652,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchRosterTableContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_roster
+                    .catchRosterTableContractStates,
               ),
             ],
           ),
@@ -2631,9 +2662,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchRosterTilesContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_roster
+                    .catchRosterTilesContractStates,
               ),
             ],
           ),
@@ -2647,9 +2677,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchIconTileContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_icons
+                    .catchIconTileContractStates,
               ),
             ],
           ),
@@ -2663,9 +2692,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchChoiceInputContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_choices
+                    .catchChoiceInputContractStates,
               ),
             ],
           ),
@@ -2674,9 +2702,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCodeCaretIndicatorContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_code_input
+                    .catchCodeCaretIndicatorContractStates,
               ),
             ],
           ),
@@ -2685,9 +2712,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCodeDigitSurfaceContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_code_input
+                    .catchCodeDigitSurfaceContractStates,
               ),
             ],
           ),
@@ -2696,9 +2722,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCodeInputContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_code_input
+                    .catchCodeInputContractStates,
               ),
             ],
           ),
@@ -2707,9 +2732,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCodeInputRowContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_code_input
+                    .catchCodeInputRowContractStates,
               ),
             ],
           ),
@@ -2718,9 +2742,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchControlShellContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_inputs
+                    .catchControlShellContractStates,
               ),
             ],
           ),
@@ -2729,9 +2752,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_field
+                    .catchFieldContractStates,
               ),
             ],
           ),
@@ -2740,9 +2762,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldActionBarContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_field_rows
+                    .catchFieldActionBarContractStates,
               ),
             ],
           ),
@@ -2751,9 +2772,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldCommitButtonContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_field_rows
+                    .catchFieldCommitButtonContractStates,
               ),
             ],
           ),
@@ -2762,9 +2782,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldContentRowContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_field_rows
+                    .catchFieldContentRowContractStates,
               ),
             ],
           ),
@@ -2773,9 +2792,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldDisclosureDrawerContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_field_rows
+                    .catchFieldDisclosureDrawerContractStates,
               ),
             ],
           ),
@@ -2784,9 +2802,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldRowContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_field_rows
+                    .catchFieldRowContractStates,
               ),
             ],
           ),
@@ -2795,9 +2812,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldSupportRowContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_field_rows
+                    .catchFieldSupportRowContractStates,
               ),
             ],
           ),
@@ -2806,9 +2822,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldTrailingContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_field_rows
+                    .catchFieldTrailingContractStates,
               ),
             ],
           ),
@@ -2817,9 +2832,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchRangeInputContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_inputs
+                    .catchRangeInputContractStates,
               ),
             ],
           ),
@@ -2829,7 +2843,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_section_lists
                         .catchRowPressSurfaceContractStates,
               ),
             ],
@@ -2839,9 +2853,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSearchFieldContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_inputs
+                    .catchSearchFieldContractStates,
               ),
             ],
           ),
@@ -2850,9 +2863,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchNumberStepperContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_inputs
+                    .catchNumberStepperContractStates,
               ),
             ],
           ),
@@ -2861,9 +2873,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchFieldRepeatButtonContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_field_rows
+                    .catchFieldRepeatButtonContractStates,
               ),
             ],
           ),
@@ -2882,9 +2893,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchToggleInputContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_inputs
+                    .catchToggleInputContractStates,
               ),
             ],
           ),
@@ -2920,9 +2930,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchViewportContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_surfaces
+                    .catchViewportContractStates,
               ),
             ],
           ),
@@ -2936,9 +2945,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchIndexRowContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_typography
+                    .catchIndexRowContractStates,
               ),
             ],
           ),
@@ -2952,9 +2960,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchAsyncValueContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_loading
+                    .catchAsyncValueContractStates,
               ),
             ],
           ),
@@ -2963,9 +2970,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchLoadingIndicatorContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_loading
+                    .catchLoadingIndicatorContractStates,
               ),
             ],
           ),
@@ -2974,9 +2980,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSkeletonContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_loading
+                    .catchSkeletonContractStates,
               ),
             ],
           ),
@@ -2985,9 +2990,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchStartupLoadingScreenContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_loading
+                    .catchStartupLoadingScreenContractStates,
               ),
             ],
           ),
@@ -3002,7 +3006,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_activity_media
                         .catchClubCoverContractStates,
               ),
             ],
@@ -3013,7 +3017,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_activity_media
                         .catchEventThumbnailActivityFallbackContractStates,
               ),
             ],
@@ -3023,9 +3027,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchGradedImageContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_images
+                    .catchGradedImageContractStates,
               ),
             ],
           ),
@@ -3034,9 +3037,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchHeroImageContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_images
+                    .catchHeroImageContractStates,
               ),
             ],
           ),
@@ -3045,9 +3047,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchNetworkImageFallbackContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_images
+                    .catchNetworkImageFallbackContractStates,
               ),
             ],
           ),
@@ -3056,9 +3057,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchScrimContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_images
+                    .catchScrimContractStates,
               ),
             ],
           ),
@@ -3067,9 +3067,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchNetworkImageContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_images
+                    .catchNetworkImageContractStates,
               ),
             ],
           ),
@@ -3079,7 +3078,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_activity_media
                         .catchOrganizerPosterContractStates,
               ),
             ],
@@ -3090,7 +3089,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_activity_media
                         .catchPolaroidContractStates,
               ),
             ],
@@ -3153,9 +3152,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchMetaRowContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_metadata
+                    .catchMetaRowContractStates,
               ),
             ],
           ),
@@ -3180,9 +3178,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchMotionViewportContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_surfaces
+                    .catchMotionViewportContractStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Resting and transition poses',
@@ -3202,9 +3199,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCollapsedSliverTitleContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_chrome
+                    .catchCollapsedSliverTitleContractStates,
               ),
             ],
           ),
@@ -3213,9 +3209,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchMenuContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_chrome
+                    .catchMenuContractStates,
               ),
             ],
           ),
@@ -3224,9 +3219,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchNavigationButtonContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_buttons
+                    .catchNavigationButtonContractStates,
               ),
             ],
           ),
@@ -3235,9 +3229,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPageDotsContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_tabs
+                    .catchPageDotsContractStates,
               ),
             ],
           ),
@@ -3246,9 +3239,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Controller-backed rail',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPageTabBarControllerStates,
+                builder: _widgetbook_workspace_primitives_contracts_root_screen
+                    .catchPageTabBarControllerStates,
               ),
             ],
           ),
@@ -3257,9 +3249,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Root page with primary rail',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchRootScreenPageContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_root_screen
+                    .catchRootScreenPageContractStates,
               ),
             ],
           ),
@@ -3268,9 +3259,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchRootScreenPrimaryRailContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_root_screen
+                    .catchRootScreenPrimaryRailContractStates,
               ),
             ],
           ),
@@ -3279,9 +3269,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchStepHeaderContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_steps
+                    .catchStepHeaderContractStates,
               ),
             ],
           ),
@@ -3290,9 +3279,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTabDockContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_tabs
+                    .catchTabDockContractStates,
               ),
             ],
           ),
@@ -3311,9 +3299,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTopBarContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_chrome
+                    .catchTopBarContractStates,
               ),
             ],
           ),
@@ -3322,9 +3309,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Readable sliver width',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchViewportSliverLaneContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_root_screen
+                    .catchViewportSliverLaneContractStates,
               ),
             ],
           ),
@@ -3338,9 +3324,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPersonAvatarContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_avatars
+                    .catchPersonAvatarContractStates,
               ),
             ],
           ),
@@ -3359,9 +3344,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchAvatarInitialsSurfaceContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_avatars
+                    .catchAvatarInitialsSurfaceContractStates,
               ),
             ],
           ),
@@ -3380,9 +3364,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPersonAvatarShellContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_avatars
+                    .catchPersonAvatarShellContractStates,
               ),
             ],
           ),
@@ -3396,9 +3379,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCoverStoryContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_images
+                    .catchCoverStoryContractStates,
               ),
             ],
           ),
@@ -3407,9 +3389,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchDockSurfaceContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_sheets
+                    .catchDockSurfaceContractStates,
               ),
             ],
           ),
@@ -3419,7 +3400,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_activity_media
                         .catchEventCardContractStates,
               ),
             ],
@@ -3430,7 +3411,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_activity_media
                         .catchMapPreviewContractStates,
               ),
             ],
@@ -3440,9 +3421,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPersonRowChatPreviewContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_messages
+                    .catchPersonRowChatPreviewContractStates,
               ),
             ],
           ),
@@ -3451,21 +3431,18 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .chatInputBarContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_messages
+                    .chatInputBarContractStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Focused draft',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .chatInputBarFocusedDraft,
+                builder: _widgetbook_workspace_primitives_contracts_messages
+                    .chatInputBarFocusedDraft,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Focused empty',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .chatInputBarFocusedEmpty,
+                builder: _widgetbook_workspace_primitives_contracts_messages
+                    .chatInputBarFocusedEmpty,
               ),
             ],
           ),
@@ -3474,9 +3451,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .clubDetailDockContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_sheets
+                    .clubDetailDockContractStates,
               ),
             ],
           ),
@@ -3486,7 +3462,7 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_activity_media
                         .eventActivityStampContractStates,
               ),
             ],
@@ -3496,9 +3472,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .notificationRowContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_messages
+                    .notificationRowContractStates,
               ),
             ],
           ),
@@ -3538,9 +3513,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPageBodyContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_page_body
+                    .catchPageBodyContractStates,
               ),
             ],
           ),
@@ -3549,9 +3523,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchScreenScaffoldContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_page_body
+                    .catchScreenScaffoldContractStates,
               ),
             ],
           ),
@@ -3560,9 +3533,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSectionContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_section
+                    .catchSectionContractStates,
               ),
             ],
           ),
@@ -3583,19 +3555,19 @@ final directories = <_widgetbook.WidgetbookNode>[
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_section_lists
                         .catchSectionListContractStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Inset sections',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_section_lists
                         .catchSectionInsetStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Sliver section insets',
                 builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
+                    _widgetbook_workspace_primitives_contracts_section_lists
                         .catchSectionSliverStates,
               ),
             ],
@@ -3616,9 +3588,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSectionSurfaceContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_section
+                    .catchSectionSurfaceContractStates,
               ),
             ],
           ),
@@ -3627,9 +3598,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchStepRowListContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_steps
+                    .catchStepRowListContractStates,
               ),
             ],
           ),
@@ -3643,9 +3613,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchChipContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_choices
+                    .catchChipContractStates,
               ),
             ],
           ),
@@ -3654,9 +3623,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchChoiceButtonContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_buttons
+                    .catchChoiceButtonContractStates,
               ),
             ],
           ),
@@ -3665,9 +3633,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchChoiceTileContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_choices
+                    .catchChoiceTileContractStates,
               ),
             ],
           ),
@@ -3676,9 +3643,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPageTabBarContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_tabs
+                    .catchPageTabBarContractStates,
               ),
             ],
           ),
@@ -3707,9 +3673,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSheetContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_sheets
+                    .catchSheetContractStates,
               ),
             ],
           ),
@@ -3718,15 +3683,13 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Branded header states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchBrandedSheetHeaderContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_sheets
+                    .catchBrandedSheetHeaderContractStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Plain header states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPlainSheetHeaderContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_sheets
+                    .catchPlainSheetHeaderContractStates,
               ),
             ],
           ),
@@ -3740,9 +3703,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchBadgeContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_metadata
+                    .catchBadgeContractStates,
               ),
             ],
           ),
@@ -3751,9 +3713,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchCountBadgeContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_metadata
+                    .catchCountBadgeContractStates,
               ),
             ],
           ),
@@ -3762,9 +3723,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchPrivacyBadgeContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_metadata
+                    .catchPrivacyBadgeContractStates,
               ),
             ],
           ),
@@ -3773,9 +3733,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchStatusDotContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_metadata
+                    .catchStatusDotContractStates,
               ),
             ],
           ),
@@ -3784,9 +3743,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchInlineStatusContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_metadata
+                    .catchInlineStatusContractStates,
               ),
             ],
           ),
@@ -3800,9 +3758,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSurfaceContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_surfaces
+                    .catchSurfaceContractStates,
               ),
             ],
           ),
@@ -3816,9 +3773,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchTypographyContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_typography
+                    .catchTypographyContractStates,
               ),
             ],
           ),
@@ -3827,9 +3783,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contract states',
-                builder:
-                    _widgetbook_workspace_primitives_primitive_contract_use_cases
-                        .catchSectionHeaderTitleContractStates,
+                builder: _widgetbook_workspace_primitives_contracts_typography
+                    .catchSectionHeaderTitleContractStates,
               ),
             ],
           ),

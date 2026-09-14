@@ -217,7 +217,7 @@ test("scanSectionDividers covers lib, test, and widgetbook sources", () => {
   );
   writeFile(
     root,
-    "widgetbook/lib/primitives/primitive_contract_use_cases.dart",
+    "widgetbook/lib/primitives/contracts/section.dart",
     "Widget useCase() => Divider(height: 1, color: t.line);",
   );
 

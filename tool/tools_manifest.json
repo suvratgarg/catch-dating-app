@@ -5790,6 +5790,7 @@
       "description": "Validates component contracts, primitive contract-state previews, and screen preview ids against generated Widgetbook directories.",
       "checks": [
         "node --check tool/design/check_widgetbook_contract_refs.mjs",
+        "node --test tool/design/check_widgetbook_contract_refs.test.mjs",
         "node tool/design/check_widgetbook_contract_refs.mjs --check"
       ],
       "role": "finder"

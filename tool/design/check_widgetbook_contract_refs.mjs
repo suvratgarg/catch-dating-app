@@ -8,7 +8,7 @@ const componentRegistryPath = fromRepo("design/components/catch.components.json"
 const stateMatrixPath = fromRepo("docs/design_parity/state_matrix.json");
 const screenContractsPath = fromRepo("design/screens/catch.screens.json");
 const widgetbookDirectoriesPath = fromRepo("widgetbook/lib/main.directories.g.dart");
-const widgetbookPrimitiveContractsPath = fromRepo("widgetbook/lib/primitives/primitive_contract_use_cases.dart");
+const widgetbookPrimitiveContractsPath = fromRepo("widgetbook/lib/primitives/contracts");
 const widgetbookGeometryPath = "widgetbook/lib/geometry/component_geometry_use_cases.dart";
 const requiredFoundationSpecimens = [
   {
@@ -107,9 +107,8 @@ function checkRefs({summary = false} = {}) {
   const stateMatrix = readJson(stateMatrixPath);
   const screenContracts = readJson(screenContractsPath);
   const widgetbookSource = fs.readFileSync(widgetbookDirectoriesPath, "utf8");
-  const primitiveContractSource = fs.readFileSync(widgetbookPrimitiveContractsPath, "utf8");
   const widgetbook = parseWidgetbookDirectories(widgetbookSource);
-  const primitiveContracts = parsePrimitiveContractUseCases(primitiveContractSource);
+  const primitiveContracts = collectPrimitiveContractUseCases();
   const widgetbookSources = collectWidgetbookUseCaseSources();
 
   const errors = [
@@ -463,9 +462,16 @@ function collectDartFiles(dir) {
   return files;
 }
 
+export function collectPrimitiveContractUseCases({root = fromRepo()} = {}) {
+  const directory = path.join(root, "widgetbook/lib/primitives/contracts");
+  const files = collectDartFiles(directory).sort();
+  if (files.length === 0) throw new Error("Primitive contract directory has no Dart sources.");
+  return parsePrimitiveContractUseCases(files.map(file => fs.readFileSync(file, "utf8")).join("\n"));
+}
+
 export function parsePrimitiveContractUseCases(source) {
   const statesByContractId = new Map();
-  for (const block of extractCallBlocks(source, "_ContractScreen")) {
+  for (const block of extractCallBlocks(source, "WidgetbookContractFrame")) {
     const contractId = matchString(block, /\bcontractId:\s*'([^']+)'/u);
     const statesMatch =
       /\bstates:\s*(?:const\s*)?(?:<String>\s*)?\[([\s\S]*?)\]/u.exec(block);
