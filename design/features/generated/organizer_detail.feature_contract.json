@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/organizer_detail.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:6131ab690ee227a9626bb3aa9c5cce744b79baecad1c677fbc2059db0e7cb31d",
+  "sourceDigest": "sha256:e5ae680892b411ca82a3db9828d919d3474dd0fb9f5aad77ba3e639ff24f2129",
   "resolvedDigest": "sha256:2caed83fba0ec517cd9d86c9ae5c5b91af1aadacc91f3530e7cfeb6769f57b5f",
   "feature": {
     "id": "feature.organizer_detail",
@@ -1239,7 +1239,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/club_preview.dart"
         ],
         "actionOwners": [
           {

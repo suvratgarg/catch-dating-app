@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
-  "sourceDigest": "sha256:c206ea8bb7432382d66fa43cfe27164991f4572fe8b275d56b46ba72832e35a6",
+  "sourceDigest": "sha256:09d9c1a550a82890442f2d1ade2b2dfd908ccee68c7dad529e8357ac475510ec",
   "resolvedDigest": "sha256:e2ab03e76b2c1e78a477766eb686db23357ffa56c92c58ae3908809e2c68c757",
   "feature": {
     "id": "feature.host_event_manage",
@@ -39,7 +39,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/manage_routes.dart"
         ],
         "actionOwners": [
           {
@@ -3577,7 +3577,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/edit_event.dart"
         ],
         "actionOwners": [
           {

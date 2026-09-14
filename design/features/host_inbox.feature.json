@@ -20,7 +20,10 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/hosts/host_inbox_use_cases.dart", "widgetbook/lib/hosts/host_operations_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/hosts/host_inbox_use_cases.dart",
+          "widgetbook/lib/hosts/operations/audiences.dart"
+        ],
         "actionOwners": [
           {"id": "inbox_screen", "language": "dart", "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart", "symbol": "HostInboxScreen"},
           {"id": "search_header", "language": "dart", "file": "lib/chats/presentation/inbox/chats_search_header_controller.dart", "symbol": "ChatsSearchHeaderController"},

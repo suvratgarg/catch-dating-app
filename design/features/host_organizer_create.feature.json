@@ -25,7 +25,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/create_club_routes.dart"
         ],
         "actionOwners": [
           {

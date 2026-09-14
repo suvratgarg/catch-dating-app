@@ -19,7 +19,11 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/hosts/host_operations_use_cases.dart", "widgetbook/lib/hosts/host_saved_audience_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/hosts/operations/audiences.dart",
+          "widgetbook/lib/hosts/operations/customer_routes.dart",
+          "widgetbook/lib/hosts/host_saved_audience_use_cases.dart"
+        ],
         "actionOwners": [
           {"id": "customers_screen", "language": "dart", "file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersScreen"},
           {"id": "audiences_workspace", "language": "dart", "file": "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart", "symbol": "HostSavedAudiencesWorkspace"},

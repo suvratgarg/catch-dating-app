@@ -39,10 +39,54 @@ import 'package:widgetbook_workspace/hosts/host_form_workspace_use_cases.dart'
     as _widgetbook_workspace_hosts_host_form_workspace_use_cases;
 import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
-import 'package:widgetbook_workspace/hosts/host_operations_use_cases.dart'
-    as _widgetbook_workspace_hosts_host_operations_use_cases;
 import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
+import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
+    as _widgetbook_workspace_hosts_operations_analytics;
+import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
+    as _widgetbook_workspace_hosts_operations_audiences;
+import 'package:widgetbook_workspace/hosts/operations/club_preview.dart'
+    as _widgetbook_workspace_hosts_operations_club_preview;
+import 'package:widgetbook_workspace/hosts/operations/create_club_defaults.dart'
+    as _widgetbook_workspace_hosts_operations_create_club_defaults;
+import 'package:widgetbook_workspace/hosts/operations/create_club_profile.dart'
+    as _widgetbook_workspace_hosts_operations_create_club_profile;
+import 'package:widgetbook_workspace/hosts/operations/create_club_routes.dart'
+    as _widgetbook_workspace_hosts_operations_create_club_routes;
+import 'package:widgetbook_workspace/hosts/operations/create_event_details.dart'
+    as _widgetbook_workspace_hosts_operations_create_event_details;
+import 'package:widgetbook_workspace/hosts/operations/create_event_policy.dart'
+    as _widgetbook_workspace_hosts_operations_create_event_policy;
+import 'package:widgetbook_workspace/hosts/operations/create_event_routes.dart'
+    as _widgetbook_workspace_hosts_operations_create_event_routes;
+import 'package:widgetbook_workspace/hosts/operations/customer_components.dart'
+    as _widgetbook_workspace_hosts_operations_customer_components;
+import 'package:widgetbook_workspace/hosts/operations/customer_routes.dart'
+    as _widgetbook_workspace_hosts_operations_customer_routes;
+import 'package:widgetbook_workspace/hosts/operations/edit_event.dart'
+    as _widgetbook_workspace_hosts_operations_edit_event;
+import 'package:widgetbook_workspace/hosts/operations/home_routes.dart'
+    as _widgetbook_workspace_hosts_operations_home_routes;
+import 'package:widgetbook_workspace/hosts/operations/home_sections.dart'
+    as _widgetbook_workspace_hosts_operations_home_sections;
+import 'package:widgetbook_workspace/hosts/operations/loading_and_tools.dart'
+    as _widgetbook_workspace_hosts_operations_loading_and_tools;
+import 'package:widgetbook_workspace/hosts/operations/manage_components.dart'
+    as _widgetbook_workspace_hosts_operations_manage_components;
+import 'package:widgetbook_workspace/hosts/operations/manage_routes.dart'
+    as _widgetbook_workspace_hosts_operations_manage_routes;
+import 'package:widgetbook_workspace/hosts/operations/organizer_components.dart'
+    as _widgetbook_workspace_hosts_operations_organizer_components;
+import 'package:widgetbook_workspace/hosts/operations/organizer_routes.dart'
+    as _widgetbook_workspace_hosts_operations_organizer_routes;
+import 'package:widgetbook_workspace/hosts/operations/payouts.dart'
+    as _widgetbook_workspace_hosts_operations_payouts;
+import 'package:widgetbook_workspace/hosts/operations/team_identity.dart'
+    as _widgetbook_workspace_hosts_operations_team_identity;
+import 'package:widgetbook_workspace/hosts/operations/team_management.dart'
+    as _widgetbook_workspace_hosts_operations_team_management;
+import 'package:widgetbook_workspace/hosts/operations/wizard_chrome.dart'
+    as _widgetbook_workspace_hosts_operations_wizard_chrome;
 import 'package:widgetbook_workspace/matches/matches_chat_use_cases.dart'
     as _widgetbook_workspace_matches_matches_chat_use_cases;
 import 'package:widgetbook_workspace/onboarding/onboarding_use_cases.dart'
@@ -7724,8 +7768,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Form states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .clubBasicsStepCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_profile
+                        .clubBasicsStepCatalogStates,
               ),
             ],
           ),
@@ -7734,8 +7779,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Form states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .clubDetailsStepCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_profile
+                        .clubDetailsStepCatalogStates,
               ),
             ],
           ),
@@ -7744,8 +7790,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Event success defaults states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .clubEventSuccessDefaultsStepCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_defaults
+                        .clubEventSuccessDefaultsStepCatalogStates,
               ),
             ],
           ),
@@ -7754,8 +7801,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Defaults states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .clubHostDefaultsStepCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_defaults
+                        .clubHostDefaultsStepCatalogStates,
               ),
             ],
           ),
@@ -7764,8 +7812,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Policy defaults states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .clubPolicyDefaultsCardCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_defaults
+                        .clubPolicyDefaultsCardCatalogStates,
               ),
             ],
           ),
@@ -7774,8 +7823,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Profile image tile states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .clubProfileImageTileCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_profile
+                        .clubProfileImageTileCatalogStates,
               ),
             ],
           ),
@@ -7784,8 +7834,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Contact states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .createClubContactFieldsCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_profile
+                        .createClubContactFieldsCatalogStates,
               ),
             ],
           ),
@@ -7794,8 +7845,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Media states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .createClubPhotosPickerCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_profile
+                        .createClubPhotosPickerCatalogStates,
               ),
             ],
           ),
@@ -7804,8 +7856,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Image states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .createClubProfileImagePickerCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_profile
+                        .createClubProfileImagePickerCatalogStates,
               ),
             ],
           ),
@@ -7814,8 +7867,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Direct form states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .createClubScreenCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_routes
+                        .createClubScreenCatalogStates,
               ),
             ],
           ),
@@ -7824,8 +7878,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Header states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .createClubStepHeaderCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_defaults
+                        .createClubStepHeaderCatalogStates,
               ),
             ],
           ),
@@ -7834,8 +7889,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Scalable gallery manager',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .orderedPhotoManagerCatalogState,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_profile
+                        .orderedPhotoManagerCatalogState,
               ),
             ],
           ),
@@ -7849,8 +7905,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Guest import states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .createEventGuestsSectionCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_details
+                        .createEventGuestsSectionCatalogStates,
               ),
             ],
           ),
@@ -7859,8 +7916,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Photo picker states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .createEventPhotoPickerCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_details
+                        .createEventPhotoPickerCatalogStates,
               ),
             ],
           ),
@@ -7869,8 +7927,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Direct screen states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .createEventScreenCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_routes
+                        .createEventScreenCatalogStates,
               ),
             ],
           ),
@@ -7879,7 +7938,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Header states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_wizard_chrome
                     .createEventStepHeaderCatalogStates,
               ),
             ],
@@ -7889,8 +7948,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Success states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .createEventSuccessScreenCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_routes
+                        .createEventSuccessScreenCatalogStates,
               ),
             ],
           ),
@@ -7899,7 +7959,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Dialog states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_wizard_chrome
                     .createEventUnsavedChangesDialogCatalogStates,
               ),
             ],
@@ -7909,8 +7969,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Draft card states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .draftCardCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_details
+                        .draftCardCatalogStates,
               ),
             ],
           ),
@@ -7919,7 +7980,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Delete confirmation',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_wizard_chrome
                     .draftDeleteConfirmationDialogCatalogStates,
               ),
             ],
@@ -7929,8 +7990,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Draft sheet states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .draftPickerSheetCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_details
+                        .draftPickerSheetCatalogStates,
               ),
             ],
           ),
@@ -7939,8 +8001,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Age range states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .eventAgeRangeFieldCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_policy
+                        .eventAgeRangeFieldCatalogStates,
               ),
             ],
           ),
@@ -7949,8 +8012,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Details step states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .eventDetailsStepCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_details
+                        .eventDetailsStepCatalogStates,
               ),
             ],
           ),
@@ -7959,8 +8023,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Policy step states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .eventPolicyStepCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_policy
+                        .eventPolicyStepCatalogStates,
               ),
             ],
           ),
@@ -7969,8 +8034,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Event success step states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .eventSuccessStepCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_policy
+                        .eventSuccessStepCatalogStates,
               ),
             ],
           ),
@@ -7979,8 +8045,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route state renderer',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostCreateEventRouteStateViewCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_routes
+                        .hostCreateEventRouteStateViewCatalogStates,
               ),
             ],
           ),
@@ -7989,8 +8056,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'When step states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .whenStepCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_details
+                        .whenStepCatalogStates,
               ),
             ],
           ),
@@ -7999,8 +8067,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Where step states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .whereStepCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_details
+                        .whereStepCatalogStates,
               ),
             ],
           ),
@@ -8014,7 +8083,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Scope notice states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_edit_event
                     .editHostedEventScopeNoticeCatalogStates,
               ),
             ],
@@ -8024,7 +8093,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Direct screen states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_edit_event
                     .editHostedEventScreenCatalogStates,
               ),
             ],
@@ -8034,7 +8103,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Editable policy states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_edit_event
                     .editableHostedEventPolicyCardCatalogStates,
               ),
             ],
@@ -8044,7 +8113,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Read-only policy states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_edit_event
                     .readOnlyHostedEventPolicyCardCatalogStates,
               ),
             ],
@@ -8054,7 +8123,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Read-only schedule states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_edit_event
                     .readOnlyHostedEventScheduleCardCatalogStates,
               ),
             ],
@@ -8073,7 +8142,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Optimistic editor',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostClubDefaultsEditorStates,
                   ),
                 ],
@@ -8084,7 +8153,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Owner loaded',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostClubEventDefaultsScreenLoaded,
                   ),
                 ],
@@ -8095,7 +8164,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Owner loaded',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostClubLiveGuideScreenLoaded,
                   ),
                 ],
@@ -8106,7 +8175,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Owner loaded',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostClubPaymentsScreenLoaded,
                   ),
                 ],
@@ -8117,7 +8186,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Co-host read only',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostClubReadOnlyEventDefaultsStates,
                   ),
                 ],
@@ -8128,7 +8197,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Resolver states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostClubSpokeResolverStates,
                   ),
                 ],
@@ -8139,7 +8208,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical scaffold',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostClubSpokeScaffoldStates,
                   ),
                 ],
@@ -8150,7 +8219,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Owner loaded',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostClubTeamScreenLoaded,
                   ),
                 ],
@@ -8162,7 +8231,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Public preview states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_club_preview
                     .hostClubDetailPublicPreviewStates,
               ),
             ],
@@ -8176,7 +8245,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Roster primitive states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostRosterPrimitiveCatalogStates,
                   ),
                 ],
@@ -8187,7 +8256,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Metric grid skeleton states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostAnalyticsMetricGridSkeletonCatalogStates,
                   ),
                 ],
@@ -8198,7 +8267,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Tool card states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostToolCardCatalogStates,
                   ),
                 ],
@@ -8209,7 +8278,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Skeleton states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostLoadingSkeletonCatalogStates,
                   ),
                 ],
@@ -8225,7 +8294,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Action card states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostEmptyStateStates,
                   ),
                 ],
@@ -8236,7 +8305,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host clubs route states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_team_management
                             .hostTeamManagementSectionStates,
                   ),
                 ],
@@ -8247,7 +8316,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Loaded history',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerHistoryPanelStates,
                   ),
                 ],
@@ -8258,7 +8327,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host event manage route states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostStrictCatchRosterActionCellCatalogStates,
                   ),
                 ],
@@ -8269,7 +8338,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host event section states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_home_sections
                             .hostHomeEventSectionStates,
                   ),
                 ],
@@ -8279,9 +8348,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host home route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostHomeRouteStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostHomeRouteStates,
                   ),
                 ],
               ),
@@ -8290,9 +8358,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Navigation identity states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostOrganizerIdentityPillStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostOrganizerIdentityPillStates,
                   ),
                 ],
               ),
@@ -8302,7 +8369,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Loading, auth, error, and empty',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_routes
                             .hostOrganizerStateScaffoldStates,
                   ),
                 ],
@@ -8312,9 +8379,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Long-press switcher states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostOrganizerSwitcherSheetStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostOrganizerSwitcherSheetStates,
                   ),
                 ],
               ),
@@ -8324,7 +8390,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by meeting-location step',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_create_event_details
                             .savedPlacesSectionCatalogStates,
                   ),
                 ],
@@ -8335,7 +8401,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by host team route states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_team_identity
                             .hostTeamRouteStates,
                   ),
                 ],
@@ -8345,9 +8411,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Attention card states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayAttentionCardStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayAttentionCardStates,
                   ),
                 ],
               ),
@@ -8356,9 +8421,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayBodyStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayBodyStates,
                   ),
                 ],
               ),
@@ -8367,9 +8431,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayEventDateBlockStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayEventDateBlockStates,
                   ),
                 ],
               ),
@@ -8378,9 +8441,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayEventMetadataStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayEventMetadataStates,
                   ),
                 ],
               ),
@@ -8389,9 +8451,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Operational metric states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayEventMetricStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayEventMetricStates,
                   ),
                 ],
               ),
@@ -8400,9 +8461,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayEventRowStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayEventRowStates,
                   ),
                 ],
               ),
@@ -8411,9 +8471,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Operational spotlight states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayEventSpotlightStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayEventSpotlightStates,
                   ),
                 ],
               ),
@@ -8422,9 +8481,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayHeaderStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayHeaderStates,
                   ),
                 ],
               ),
@@ -8433,9 +8491,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayLoadedRouteStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayLoadedRouteStates,
                   ),
                 ],
               ),
@@ -8444,9 +8501,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Covered by Today route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayOrganizerEmptyStateStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayOrganizerEmptyStateStates,
                   ),
                 ],
               ),
@@ -8455,9 +8511,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Overview route states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostTodayOverviewStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostTodayOverviewStates,
                   ),
                 ],
               ),
@@ -8472,7 +8527,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Full-page add state',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostAddCustomerScreenStates,
                   ),
                 ],
@@ -8505,7 +8560,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerApplicationSnapshotComponentStates,
                   ),
                 ],
@@ -8516,7 +8571,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerApplicationsPanelComponentStates,
                   ),
                 ],
@@ -8527,7 +8582,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Attendance stats',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerAttendanceStates,
                   ),
                 ],
@@ -8538,7 +8593,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Detail composition states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerDetailBodyStates,
                   ),
                 ],
@@ -8549,7 +8604,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerDetailOverviewComponentStates,
                   ),
                 ],
@@ -8560,7 +8615,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Detail states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerDetailStates,
                   ),
                 ],
@@ -8571,7 +8626,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerDetailTabsComponentStates,
                   ),
                 ],
@@ -8582,7 +8637,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerDetailsSectionComponentStates,
                   ),
                 ],
@@ -8593,7 +8648,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Directory control states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerDirectoryControlsStates,
                   ),
                 ],
@@ -8604,7 +8659,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerHistoryFiltersComponentStates,
                   ),
                 ],
@@ -8615,7 +8670,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Identity states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerIdentityStates,
                   ),
                 ],
@@ -8626,7 +8681,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Identity input states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerIdentityInputStates,
                   ),
                 ],
@@ -8637,7 +8692,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerMemoryPreviewComponentStates,
                   ),
                 ],
@@ -8648,7 +8703,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Reach and provenance states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerConversationStates,
                   ),
                 ],
@@ -8659,7 +8714,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerRecentEventsComponentStates,
                   ),
                 ],
@@ -8670,7 +8725,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerRevenueBreakdownComponentStates,
                   ),
                 ],
@@ -8681,7 +8736,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Revenue coverage states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerRevenueStates,
                   ),
                 ],
@@ -8692,7 +8747,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Row states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerDirectoryRowStates,
                   ),
                 ],
@@ -8703,7 +8758,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Populated component',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerTimelineRecordComponentStates,
                   ),
                 ],
@@ -8714,7 +8769,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Unified timeline states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomerTimelineStates,
                   ),
                 ],
@@ -8725,7 +8780,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Directory states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomersDirectoryStates,
                   ),
                 ],
@@ -8736,7 +8791,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'No-organizer state',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomersNoOrganizerStates,
                   ),
                 ],
@@ -8747,7 +8802,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Route and component states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_routes
                             .hostCustomersStates,
                   ),
                 ],
@@ -8758,7 +8813,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Summary states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_customer_components
                             .hostCustomersSummaryStates,
                   ),
                 ],
@@ -8812,9 +8867,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Saved audience states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostSavedAudiencesStates,
+                    builder: _widgetbook_workspace_hosts_operations_audiences
+                        .hostSavedAudiencesStates,
                   ),
                 ],
               ),
@@ -8836,7 +8890,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route and section states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_edit_event
                     .hostEditEventRouteAndFormStates,
               ),
             ],
@@ -8912,8 +8966,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Loading state',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostClubEditorLoadingScreenState,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_routes
+                        .hostClubEditorLoadingScreenState,
               ),
             ],
           ),
@@ -8922,7 +8977,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Insights scorecard states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_analytics
                     .hostInsightsScorecardStates,
               ),
             ],
@@ -8932,7 +8987,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_organizer_routes
                     .hostClubsRouteStates,
               ),
             ],
@@ -8942,8 +8997,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route and wizard states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostCreateClubRouteAndWizardStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_routes
+                        .hostCreateClubRouteAndWizardStates,
               ),
             ],
           ),
@@ -8952,8 +9008,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route and wizard states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostCreateEventRouteAndWizardStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_event_routes
+                        .hostCreateEventRouteAndWizardStates,
               ),
             ],
           ),
@@ -8962,7 +9019,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route and section states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_manage_routes
                     .hostEventManageRouteAndSectionStates,
               ),
             ],
@@ -8972,7 +9029,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_home_routes
                     .hostTodayScreenStates,
               ),
             ],
@@ -8985,9 +9042,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Campaign and sender states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostCustomerMessagingStates,
+                    builder: _widgetbook_workspace_hosts_operations_audiences
+                        .hostCustomerMessagingStates,
                   ),
                 ],
               ),
@@ -9001,9 +9057,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical payout section states',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostPaymentAccountSectionStates,
+                    builder: _widgetbook_workspace_hosts_operations_payouts
+                        .hostPaymentAccountSectionStates,
                   ),
                 ],
               ),
@@ -9013,7 +9068,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Add host sheet states',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_team_management
                             .hostTeamAddHostSheetStates,
                   ),
                 ],
@@ -9024,7 +9079,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Host action confirmation dialogs',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_team_management
                             .hostTeamHostActionDialogStates,
                   ),
                 ],
@@ -9039,9 +9094,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictCatchBarIndicatorCatalogStates,
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostStrictCatchBarIndicatorCatalogStates,
                   ),
                 ],
               ),
@@ -9051,7 +9105,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_home_sections
                             .hostStrictCatchEmptyStateCatalogStates,
                   ),
                 ],
@@ -9062,7 +9116,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostStrictCatchRosterDecideTargetCatalogStates,
                   ),
                 ],
@@ -9073,7 +9127,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostActionRowCatalogStates,
                   ),
                 ],
@@ -9083,9 +9137,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsDualBarCatalogStates,
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostStrictHostAnalyticsDualBarCatalogStates,
                   ),
                 ],
               ),
@@ -9094,9 +9147,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsEventListCatalogStates,
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostStrictHostAnalyticsEventListCatalogStates,
                   ),
                 ],
               ),
@@ -9105,9 +9157,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsEventTileCatalogStates,
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostStrictHostAnalyticsEventTileCatalogStates,
                   ),
                 ],
               ),
@@ -9117,7 +9168,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostStrictHostAnalyticsReportSkeletonCatalogStates,
                   ),
                 ],
@@ -9127,9 +9178,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsReportViewCatalogStates,
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostStrictHostAnalyticsReportViewCatalogStates,
                   ),
                 ],
               ),
@@ -9138,9 +9188,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsReviewsPanelCatalogStates,
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostStrictHostAnalyticsReviewsPanelCatalogStates,
                   ),
                 ],
               ),
@@ -9149,9 +9198,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostAnalyticsTrendPanelCatalogStates,
+                    builder: _widgetbook_workspace_hosts_operations_analytics
+                        .hostStrictHostAnalyticsTrendPanelCatalogStates,
                   ),
                 ],
               ),
@@ -9161,7 +9209,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostStrictHostChartSkeletonCatalogStates,
                   ),
                 ],
@@ -9172,7 +9220,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostStrictHostClubEditTabCatalogStates,
                   ),
                 ],
@@ -9183,7 +9231,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostStrictHostClubInsightsPaneCatalogStates,
                   ),
                 ],
@@ -9194,7 +9242,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostStrictHostClubOrganizerOverviewCatalogStates,
                   ),
                 ],
@@ -9204,8 +9252,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                        .hostStrictHostClubOrganizerOverviewControllerCatalogStates,
+                    builder:
+                        _widgetbook_workspace_hosts_operations_organizer_components
+                            .hostStrictHostClubOrganizerOverviewControllerCatalogStates,
                   ),
                 ],
               ),
@@ -9215,7 +9264,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_team_identity
                             .hostStrictHostClubTeamScreenCatalogStates,
                   ),
                 ],
@@ -9226,7 +9275,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_routes
                             .hostStrictHostClubsScreenCatalogStates,
                   ),
                 ],
@@ -9237,7 +9286,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventActionsSectionCatalogStates,
                   ),
                 ],
@@ -9248,7 +9297,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventAttendancePanelCatalogStates,
                   ),
                 ],
@@ -9259,7 +9308,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventCheckInQrPanelCatalogStates,
                   ),
                 ],
@@ -9270,7 +9319,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_home_sections
                             .hostStrictHostEventLifecycleRowCatalogStates,
                   ),
                 ],
@@ -9281,7 +9330,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventManageRouteScreenCatalogStates,
                   ),
                 ],
@@ -9292,7 +9341,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventParticipantsListCatalogStates,
                   ),
                 ],
@@ -9303,7 +9352,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventParticipantsPanelCatalogStates,
                   ),
                 ],
@@ -9314,7 +9363,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventRosterDrawerCatalogStates,
                   ),
                 ],
@@ -9325,7 +9374,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventRosterHandleCatalogStates,
                   ),
                 ],
@@ -9336,7 +9385,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventRosterPanelCatalogStates,
                   ),
                 ],
@@ -9347,7 +9396,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventSummaryCardCatalogStates,
                   ),
                 ],
@@ -9358,7 +9407,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostEventSummaryRowCatalogStates,
                   ),
                 ],
@@ -9369,7 +9418,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostStrictHostEventToolCardCatalogStates,
                   ),
                 ],
@@ -9380,7 +9429,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostStrictHostEventToolsCarouselCatalogStates,
                   ),
                 ],
@@ -9391,7 +9440,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostStrictHostEventToolsPageIndicatorCatalogStates,
                   ),
                 ],
@@ -9402,7 +9451,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_organizer_components
                             .hostStrictHostEventsClubCardCatalogStates,
                   ),
                 ],
@@ -9413,7 +9462,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_home_sections
                             .hostStrictHostEventsTimelinePageCatalogStates,
                   ),
                 ],
@@ -9424,7 +9473,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostFullCapacityApronCatalogStates,
                   ),
                 ],
@@ -9435,7 +9484,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostFullCapacityBannerCatalogStates,
                   ),
                 ],
@@ -9446,7 +9495,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_loading_and_tools
                             .hostStrictHostInlineSkeletonIconCatalogStates,
                   ),
                 ],
@@ -9457,7 +9506,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostInviteLinkRowCatalogStates,
                   ),
                 ],
@@ -9468,7 +9517,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
                     builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
+                        _widgetbook_workspace_hosts_operations_manage_components
                             .hostStrictHostInviteLinksListCatalogStates,
                   ),
                 ],
@@ -9478,9 +9527,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Exact catalog',
-                    builder:
-                        _widgetbook_workspace_hosts_host_operations_use_cases
-                            .hostStrictHostLoadingScreenCatalogStates,
+                    builder: _widgetbook_workspace_hosts_operations_home_routes
+                        .hostStrictHostLoadingScreenCatalogStates,
                   ),
                 ],
               ),
@@ -9496,8 +9544,9 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Role-sized summary states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
-                    .hostClubMediaSummaryCatalogStates,
+                builder:
+                    _widgetbook_workspace_hosts_operations_create_club_profile
+                        .hostClubMediaSummaryCatalogStates,
               ),
             ],
           ),
@@ -9511,7 +9560,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Footer states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_wizard_chrome
                     .stepperFooterCatalogStates,
               ),
             ],
@@ -10577,7 +10626,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Clubs states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_team_identity
                     .hostTeamHostedClubsStates,
               ),
             ],
@@ -10587,7 +10636,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Profile summary states',
-                builder: _widgetbook_workspace_hosts_host_operations_use_cases
+                builder: _widgetbook_workspace_hosts_operations_team_identity
                     .hostTeamProfileSummaryStates,
               ),
             ],

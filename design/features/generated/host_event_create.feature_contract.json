@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_create.feature.json",
   "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:bae638ec3b70fbf9e4f4fd3e6efd73945d1e2c543f65b8ab6cccf5dc6b333900",
+  "sourceDigest": "sha256:139be75d51fd034e05309968d241e33817b92eb5d41226d4782cf8fba1019e4e",
   "resolvedDigest": "sha256:7701cfad581c34b0a8af52e226f36fb8d6530e7900bfe5ee6bca4eb4a1b0b61c",
   "feature": {
     "id": "feature.host_event_create",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/create_event_routes.dart"
         ],
         "actionOwners": [
           {

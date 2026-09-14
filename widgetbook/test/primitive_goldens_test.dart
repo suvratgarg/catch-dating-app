@@ -138,6 +138,44 @@ void main() {
     );
   });
 
+  testWidgets('shared viewport preserves fixed and natural width contracts', (
+    tester,
+  ) async {
+    const contentKey = ValueKey('viewport-contract-content');
+    for (final (available, requested, expected) in [
+      (600.0, 100.0, 100.0),
+      (600.0, 500.0, 390.0),
+      (200.0, 500.0, 200.0),
+    ]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Center(
+            child: SizedBox(
+              width: available,
+              height: 500,
+              child: WidgetbookViewportFrame.constrainedDevice(
+                size: const Size(390, 300),
+                child: SizedBox(key: contentKey, width: requested),
+              ),
+            ),
+          ),
+        ),
+      );
+      expect(tester.getSize(find.byKey(contentKey)), Size(expected, 300));
+    }
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const WidgetbookViewportFrame.device(
+          size: Size(390, 300),
+          child: SizedBox(key: contentKey, width: 100),
+        ),
+      ),
+    );
+    expect(tester.getSize(find.byKey(contentKey)), const Size(390, 300));
+  });
+
   testWidgets('shared scope preserves theme, scale and knob defaults', (
     tester,
   ) async {

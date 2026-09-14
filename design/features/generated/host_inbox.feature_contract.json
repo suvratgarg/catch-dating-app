@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
   "generatedFor": "2026-08-31",
-  "sourceDigest": "sha256:2a99e6a3396b6fabe8d07eaa4de186588ad739735b46028ba046b176ef3f2100",
+  "sourceDigest": "sha256:59a60a7debb36ee17c0021c497ae5e1ccb59faaa769a040630a09abbf2b94f71",
   "resolvedDigest": "sha256:2de3857131c76c59c527d6c663e5bb8914b4493c1c68e88b82372b619c38ea72",
   "feature": {
     "id": "feature.host_inbox",
@@ -41,7 +41,7 @@
       "bindings": {
         "previewSources": [
           "widgetbook/lib/hosts/host_inbox_use_cases.dart",
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/audiences.dart"
         ],
         "actionOwners": [
           {
