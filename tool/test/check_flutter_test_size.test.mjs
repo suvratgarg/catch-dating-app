@@ -53,6 +53,8 @@ test("baseline generator records only current debt deterministically", () => {
     ),
     {
       schemaVersion: 1,
+      owner: "app_architecture",
+      targetPhase: "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
       maxLines: 1200,
       policy:
         "new_or_split_flutter_test_specs_stay_bounded_existing_debt_cannot_grow",

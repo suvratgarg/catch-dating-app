@@ -66,7 +66,7 @@
         ]
       },
       "role": "gate",
-      "description": "Validates active rule-to-tool enforcement bindings, manifest roles, doc anchors, sunset reviews, vacuity proofs, architecture scanner ownership, and ratchet baselines without requiring tracked metric receipts.",
+      "description": "Validates active rule-to-tool enforcement bindings, manifest roles, doc anchors, sunset reviews, vacuity proofs, architecture scanner ownership, and baseline ownership and target-zero phase references without requiring tracked metric receipts.",
       "checks": [
         "node --check tool/check_enforcement_integrity.mjs",
         "node --test tool/check_enforcement_integrity.test.mjs",
@@ -80,7 +80,9 @@
           "fails satisfied sunset signals without review",
           "fails role-less covered runtime tools",
           "fails gate tools that only run count or syntax checks",
-          "accepts ratchet baselines without a separate metric receipt"
+          "accepts ratchet baselines without a separate metric receipt",
+          "every baseline requires ownership and a real target phase even without a tool binding",
+          "baseline ownership rejects placeholders and missing phase anchors while accepting owned fixtures"
         ]
       }
     },

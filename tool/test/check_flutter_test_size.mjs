@@ -71,6 +71,8 @@ export function buildFlutterTestSizeBaseline(
   {maxLines = defaultMaxLines} = {},
 ) {
   return {
+    owner: "app_architecture",
+    targetPhase: "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
     schemaVersion: 1,
     maxLines,
     policy:

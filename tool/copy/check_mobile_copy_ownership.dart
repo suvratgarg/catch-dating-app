@@ -197,7 +197,7 @@ Future<void> main(List<String> arguments) async {
             .map(RegistryEntry.fromFinding)
             .toList()
           ..sort((a, b) => a.key.compareTo(b.key));
-    _writeRegistry(
+    _writeBaseline(
       File('${root.path}/$_baselinePath'),
       CopyRegistry(
         version: 1,
@@ -629,10 +629,16 @@ CopyRegistry _readRegistry(File file, {bool requireReason = false}) {
   );
 }
 
-void _writeRegistry(File file, CopyRegistry registry) {
+void _writeBaseline(File file, CopyRegistry registry) {
   file.parent.createSync(recursive: true);
+  final baseline = {
+    ...registry.toJson(),
+    'owner': 'app_architecture',
+    'targetPhase':
+        'docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes',
+  };
   file.writeAsStringSync(
-    '${const JsonEncoder.withIndent('  ').convert(registry.toJson())}\n',
+    '${const JsonEncoder.withIndent('  ').convert(baseline)}\n',
   );
 }
 

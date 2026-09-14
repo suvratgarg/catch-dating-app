@@ -212,6 +212,11 @@ enum/path handling, subcommands, and every apply or production confirmation
 boundary. Do not broaden this helper by moving product or remote-write policy
 into a generic parser.
 
+`meta:enforcement-integrity` discovers every repository `*_baseline.json`
+and requires an `owner` identifying its source document plus a `targetPhase` Markdown heading
+reference. Fixture baselines obey the same rule. Baseline refreshers must emit
+both fields; metadata belongs in the existing baseline, not a separate ledger.
+
 ## Flutter Test Evidence
 
 `tool/test/flutter_coverage_report.mjs` converts `coverage/lcov.info` into
