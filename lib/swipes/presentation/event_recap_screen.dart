@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
@@ -53,8 +52,10 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
       backgroundColor: CatchTokens.of(context).bg,
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.swipesEventRecapScreenTitleEventRecap,
-        divider: scrolledUnder,
-        leading: CatchIconAction(
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
+        leading: CatchIconAction.toolbar(
           icon: CatchIcons.closeRounded,
           tooltip: context.l10n.swipesEventRecapScreenTooltipCloseRecap,
           onPressed: () => context.pop(),
@@ -72,7 +73,7 @@ class _EventRecapScreenState extends ConsumerState<EventRecapScreen> {
           EventRecapMissingEvent() => CatchErrorState(
             title: context.l10n.swipesEventRecapScreenTitleEventNotFound,
             message: context.l10n.swipesEventRecapScreenMessageThisEventIsNo,
-            secondaryAction: const CatchErrorBackAction(),
+            actions: const [CatchErrorBackButton()],
           ),
           EventRecapReady ready => EventRecapReadyBody(
             state: ready,
@@ -148,9 +149,10 @@ class EventRecapReadyBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchResponsiveSectionLayout(
-      sections: [
-        CatchResponsiveSectionItem(
+    return CatchSectionList.responsive(
+      emptyStateOmitted: true,
+      items: [
+        CatchSectionListItem(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -180,10 +182,11 @@ class EventRecapReadyBody extends StatelessWidget {
                   EventRecapProfileLookupStatus.loading =>
                     const VibeGridSkeleton(),
                   EventRecapProfileLookupStatus.error =>
-                    CatchLocalizedInlineErrorState(
+                    CatchLocalizedErrorState(
                       state.profileLookupError!,
                       context: AppErrorContext.profile,
                       onRetry: () => onRetryRosterProfiles(state.attendeeIds),
+                      mode: CatchErrorStateMode.inline,
                     ),
                   EventRecapProfileLookupStatus.ready => VibeGrid(
                     rows: state.attendeeRows,
@@ -277,9 +280,10 @@ class EventRecapLoadingBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchResponsiveSectionLayout(
-      sections: [
-        CatchResponsiveSectionItem(
+    return CatchSectionList.responsive(
+      emptyStateOmitted: true,
+      items: [
+        CatchSectionListItem(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

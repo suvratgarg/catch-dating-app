@@ -6,8 +6,8 @@ import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -106,7 +106,7 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
             'guest list; the field itself does not persist a scalar value.',
         icon: CatchIcons.groupsOutlined,
         onOpenChanged: onOpenChanged,
-        control: Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Wrap(
@@ -116,22 +116,26 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterImport,
                   onPressed: importing ? null : onImport,
-                  isLoading: importing,
+                  status: (importing)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   variant: CatchButtonVariant.secondary,
-                  icon: Icon(CatchIcons.cloudUploadOutlined),
+                  leading: Icon(CatchIcons.cloudUploadOutlined),
                 ),
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterAddGuest,
                   onPressed: importing ? null : onAddGuest,
                   variant: CatchButtonVariant.ghost,
-                  icon: Icon(CatchIcons.personAddAlt1Outlined),
+                  leading: Icon(CatchIcons.personAddAlt1Outlined),
                 ),
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterForwardCsv,
                   onPressed: importing || creatingHandoff ? null : onForward,
-                  isLoading: creatingHandoff,
+                  status: (creatingHandoff)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   variant: CatchButtonVariant.ghost,
-                  icon: Icon(CatchIcons.alternateEmailOutlined),
+                  leading: Icon(CatchIcons.alternateEmailOutlined),
                 ),
               ],
             ),
@@ -294,9 +298,11 @@ class _HostOperationalRosterPanelState
                 onPressed: _importing
                     ? null
                     : () => unawaited(_showManualGuest()),
-                isLoading: _importing,
+                status: (_importing)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 variant: CatchButtonVariant.secondary,
-                icon: Icon(CatchIcons.personAddAlt1Outlined),
+                leading: Icon(CatchIcons.personAddAlt1Outlined),
               ),
             ),
             gapH12,
@@ -314,19 +320,18 @@ class _HostOperationalRosterPanelState
             ),
             gapH12,
           ],
-          CatchAsyncValueView<List<EventRuntimeClaimRequest>>(
+          CatchAsyncBoundary<List<EventRuntimeClaimRequest>>(
             value: claimsAsync,
             onRetry: () => ref.invalidate(
               watchPendingEventRuntimeClaimsProvider(widget.eventId),
             ),
             loadingBuilder: (_) => const SizedBox.shrink(),
-            errorBuilder: (_, error, _) => CatchLocalizedErrorBanner(
-              error,
-              context: AppErrorContext.event,
-              onRetry: () => ref.invalidate(
-                watchPendingEventRuntimeClaimsProvider(widget.eventId),
-              ),
-            ),
+            errorBuilder: (_, error, _, onBoundaryRetry) =>
+                CatchLocalizedErrorBanner(
+                  error,
+                  context: AppErrorContext.event,
+                  onRetry: onBoundaryRetry,
+                ),
             builder: (context, claims) {
               if (claims.isEmpty) return const SizedBox.shrink();
               return Padding(
@@ -349,7 +354,7 @@ class _HostOperationalRosterPanelState
               );
             },
           ),
-          CatchAsyncValueView<List<EventAttendee>>(
+          CatchAsyncBoundary<List<EventAttendee>>(
             value: attendeesAsync,
             errorContext: AppErrorContext.event,
             onRetry: () =>
@@ -357,7 +362,7 @@ class _HostOperationalRosterPanelState
             builder: (context, attendees) {
               if (attendees.isEmpty) {
                 return CatchEmptyState(
-                  layout: CatchEmptyStateLayout.inline,
+                  variant: CatchEmptyStateVariant.inline,
                   icon: CatchIcons.groupsOutlined,
                   title: context.l10n.hostsOperationalRosterEmptyTitle,
                   message: context.l10n.hostsOperationalRosterEmptyMessage,
@@ -397,7 +402,7 @@ class _HostOperationalRosterPanelState
                   ],
                   if (filteredAttendees.isEmpty)
                     CatchEmptyState(
-                      layout: CatchEmptyStateLayout.inline,
+                      variant: CatchEmptyStateVariant.inline,
                       icon: CatchIcons.searchOffRounded,
                       title: context
                           .l10n
@@ -722,14 +727,14 @@ class _HostOperationalRosterPanelState
       } else {
         await showCatchBottomSheet<void>(
           context: context,
-          builder: (context) => CatchBottomSheetScaffold(
+          builder: (context) => CatchSheet(
             title: context.l10n.hostsOperationalRosterImportPartialTitle,
             subtitle: context.l10n.hostsOperationalRosterImportPartialBody(
               created: result.createdCount,
               updated: result.updatedCount,
               count: result.errors.length,
             ),
-            action: CatchButton(
+            footer: CatchButton(
               label: context.l10n.hostsOperationalRosterImportResultDone,
               fullWidth: true,
               onPressed: () => Navigator.of(context).pop(),
@@ -1161,7 +1166,7 @@ class _HostProviderControl extends StatelessWidget {
         style: CatchTextStyles.supporting(context),
       );
     }
-    return CatchAsyncValueView<HostProviderSetup>(
+    return CatchAsyncBoundary<HostProviderSetup>(
       value: setupValue,
       errorContext: AppErrorContext.event,
       onRetry: onRetry,
@@ -1204,7 +1209,7 @@ class _HostProviderSetupView extends StatelessWidget {
   Widget build(BuildContext context) {
     final entry = setup.catalogFor(provider);
     if (entry == null) {
-      return CatchErrorBanner(
+      return CatchBanner.error(
         message: context.l10n.hostsOperationalRosterProviderUnavailable,
       );
     }
@@ -1272,17 +1277,21 @@ class _HostProviderSetupView extends StatelessWidget {
                   CatchButton(
                     label: context.l10n.hostsOperationalRosterProviderReconnect,
                     onPressed: mutationPending ? null : onConnect,
-                    isLoading: mutationPending,
+                    status: (mutationPending)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     size: CatchButtonSize.sm,
-                    icon: Icon(CatchIcons.keyOutlined),
+                    leading: Icon(CatchIcons.keyOutlined),
                   )
                 else
                   CatchButton(
                     label: context.l10n.hostsOperationalRosterProviderSyncNow,
                     onPressed: mutationPending ? null : onSync,
-                    isLoading: mutationPending,
+                    status: (mutationPending)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     size: CatchButtonSize.sm,
-                    icon: Icon(CatchIcons.syncRounded),
+                    leading: Icon(CatchIcons.syncRounded),
                   ),
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterProviderDisconnect,
@@ -1314,7 +1323,7 @@ class _HostProviderSetupView extends StatelessWidget {
         if (entry.importSupport ==
             HostProviderImportSupport.sampleRequired) ...[
           gapH8,
-          CatchErrorBanner(
+          CatchBanner.error(
             message: context.l10n.hostsOperationalRosterAdapterSampleRequired,
           ),
         ],
@@ -1329,9 +1338,11 @@ class _HostProviderSetupView extends StatelessWidget {
                 CatchButton(
                   label: context.l10n.hostsOperationalRosterProviderConnect,
                   onPressed: mutationPending ? null : onConnect,
-                  isLoading: mutationPending,
+                  status: (mutationPending)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   size: CatchButtonSize.sm,
-                  icon: Icon(CatchIcons.keyOutlined),
+                  leading: Icon(CatchIcons.keyOutlined),
                 ),
               if (entry.capabilities.fileImport)
                 CatchButton(
@@ -1339,7 +1350,7 @@ class _HostProviderSetupView extends StatelessWidget {
                   onPressed: mutationPending ? null : onImport,
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.secondary,
-                  icon: Icon(CatchIcons.cloudUploadOutlined),
+                  leading: Icon(CatchIcons.cloudUploadOutlined),
                 ),
             ],
           ),
@@ -1390,14 +1401,14 @@ class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
   @override
   Widget build(BuildContext context) {
     final apiKey = _apiKeyController.text.trim();
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterProviderConnectTitle,
       subtitle: context.l10n.hostsOperationalRosterProviderConnectBody,
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsOperationalRosterProviderChooseEvent,
         onPressed: _loading ? null : _verifyAndChoose,
-        isLoading: _loading,
+        status: (_loading) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         fullWidth: true,
       ),
       child: Column(
@@ -1410,7 +1421,7 @@ class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
               contract: CatchContractConstraints
                   .listOrganizerLumaEventsCallablePayloadApiKey,
               controller: _apiKeyController,
-              obscureText: true,
+              inputVariant: CatchTextInputVariant.obscured,
               helperText: context.l10n.hostsOperationalRosterProviderApiKeyHelp,
               errorText: _showErrors && apiKey.length < 16
                   ? context.l10n.hostsOperationalRosterProviderFieldRequired
@@ -1471,7 +1482,7 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterProviderChooseEventTitle,
       subtitle: context.l10n.hostsOperationalRosterProviderChooseEventBody(
         calendar: choices.calendarName,
@@ -1482,7 +1493,7 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
         ),
         child: choices.events.isEmpty
             ? CatchEmptyState(
-                layout: CatchEmptyStateLayout.inline,
+                variant: CatchEmptyStateVariant.inline,
                 icon: CatchIcons.calendarMonthOutlined,
                 title: context.l10n.hostsOperationalRosterProviderNoEventsTitle,
                 message:
@@ -1493,7 +1504,7 @@ class _HostLumaEventChoiceSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (choices.truncated) ...[
-                      CatchErrorBanner(
+                      CatchBanner.error(
                         message: context
                             .l10n
                             .hostsOperationalRosterProviderEventsTruncated,
@@ -1541,11 +1552,11 @@ class _HostRosterHandoffSheet extends StatelessWidget {
     final emailAlias = instructions.emailAlias;
     final whatsappNumber = instructions.whatsappNumber;
     final whatsappMessage = instructions.whatsappMessage;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterForwardTitle,
       subtitle: context.l10n.hostsOperationalRosterForwardSubtitle,
       glyph: CatchIcons.alternateEmailOutlined,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsOperationalRosterForwardDone,
         onPressed: () => Navigator.of(context).pop(),
         fullWidth: true,
@@ -1554,7 +1565,7 @@ class _HostRosterHandoffSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (!instructions.hasAvailableChannel) ...[
-            CatchErrorBanner(
+            CatchBanner.error(
               message: context.l10n.hostsOperationalRosterForwardProviderSetup,
             ),
             gapH12,
@@ -1568,7 +1579,7 @@ class _HostRosterHandoffSheet extends StatelessWidget {
                     emailAlias ??
                     context.l10n.hostsOperationalRosterForwardNotAvailable,
                 icon: CatchIcons.emailOutlined,
-                action: emailAlias == null
+                actions: emailAlias == null
                     ? null
                     : CatchButton(
                         label: context.l10n.hostsOperationalRosterForwardCopy,
@@ -1587,7 +1598,7 @@ class _HostRosterHandoffSheet extends StatelessWidget {
                         whatsappMessage: whatsappMessage,
                       ),
                 icon: CatchIcons.sendRounded,
-                action: whatsappNumber == null || whatsappMessage == null
+                actions: whatsappNumber == null || whatsappMessage == null
                     ? null
                     : CatchButton(
                         label: context.l10n.hostsOperationalRosterForwardCopy,
@@ -1688,11 +1699,13 @@ class _HostRuntimeClaimActions extends StatelessWidget {
         ? CatchButton(
             label: context.l10n.hostsOperationalRosterClaimApprove,
             onPressed: enabled ? () => onApprove(candidateIds.single) : null,
-            isLoading: pending,
+            status: (pending)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             variant: CatchButtonVariant.secondary,
             size: CatchButtonSize.sm,
           )
-        : CatchMenuAnchor<String>(
+        : CatchMenu<String>.anchored(
             items: [
               for (final attendeeId in candidateIds)
                 CatchMenuItem<String>(
@@ -1707,7 +1720,9 @@ class _HostRuntimeClaimActions extends StatelessWidget {
               onPressed: enabled && candidateIds.isNotEmpty
                   ? controller.open
                   : null,
-              isLoading: pending,
+              status: (pending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               variant: CatchButtonVariant.secondary,
               size: CatchButtonSize.sm,
             ),
@@ -1760,7 +1775,9 @@ class _RosterAttendanceAction extends StatelessWidget {
                 ? context.l10n.hostsOperationalRosterUndoCheckIn
                 : context.l10n.hostsOperationalRosterCheckIn,
             onPressed: pending ? null : onPressed,
-            isLoading: pending,
+            status: (pending)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             variant: CatchButtonVariant.ghost,
             size: CatchButtonSize.sm,
           ),
@@ -1838,10 +1855,10 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
         mapped.rows.isNotEmpty &&
         !mapped.hasBlockingMappingIssue &&
         !invalidFallback;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterImportTitle,
       subtitle: context.l10n.hostsOperationalRosterImportSubtitle,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsOperationalRosterImportAction(
           count: mapped.rows.length,
         ),
@@ -1870,26 +1887,26 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
             if (widget.table.adapter.support ==
                 HostRosterAdapterSupport.sampleRequired) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message:
                     context.l10n.hostsOperationalRosterAdapterSampleRequired,
               ),
             ],
             if (widget.table.adapter.providerMismatch) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: context.l10n.hostsOperationalRosterProviderMismatch,
               ),
             ],
             if (widget.table.usedLegacyEncoding) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: context.l10n.hostsOperationalRosterLegacyEncoding,
               ),
             ],
             if (widget.table.worksheetCount > 1) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: context.l10n.hostsOperationalRosterMultipleWorksheets(
                   count: widget.table.worksheetCount,
                 ),
@@ -1925,7 +1942,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   helperText: widget.suggestedRevenueAmountMinor == null
                       ? context.l10n.hostsOperationalRosterRevenueFallbackHelp
                       : context.l10n
@@ -1986,7 +2003,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
             ),
             if (mapped.truncatedCount > 0) ...[
               gapH8,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: context.l10n.hostsOperationalRosterLimit(
                   count: mapped.truncatedCount,
                 ),
@@ -1994,7 +2011,7 @@ class _HostRosterImportSheetState extends State<HostRosterImportSheet> {
             ],
             for (final issue in mapped.issues) ...[
               gapH8,
-              CatchErrorBanner(message: _rowIssueCopy(context, issue)),
+              CatchBanner.error(message: _rowIssueCopy(context, issue)),
             ],
             if (mapped.rows.isNotEmpty) ...[
               gapH12,
@@ -2047,7 +2064,7 @@ class _RosterMappingField extends StatelessWidget {
               .where((sample) => sample.isNotEmpty)
               .take(2)
               .toList(growable: false);
-    return CatchMenuAnchor<int>(
+    return CatchMenu<int>.anchored(
       items: [
         for (final option in options)
           CatchMenuItem<int>(
@@ -2056,7 +2073,7 @@ class _RosterMappingField extends StatelessWidget {
                 ? context.l10n.hostsOperationalRosterDoNotImport
                 : headers[option],
             selected: option == selectedValue,
-            role: CatchMenuItemRole.choice,
+            variant: CatchMenuItemVariant.choice,
           ),
       ],
       onSelected: (option, _) => onChanged(option == -1 ? null : option),
@@ -2099,11 +2116,11 @@ class _HostManualAttendeeSheetState extends State<_HostManualAttendeeSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsOperationalRosterManualTitle,
       subtitle: context.l10n.hostsOperationalRosterManualSubtitle,
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsOperationalRosterManualSave,
         onPressed: _submit,
         fullWidth: true,

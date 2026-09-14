@@ -21,6 +21,11 @@ abstract final class CatchOpacity {
   /// Disabled control opacity for non-semantic fade states.
   static const double disabledControl = 0.40;
 
+  /// Shared notification palette blends, preserving the existing tone mix.
+  static const double noticeFill = 0.08;
+  static const double noticeIconFill = 0.16;
+  static const double noticeBorder = 0.32;
+
   /// Explore feed weight for events that remain informative but the viewer
   /// cannot currently join.
   static const double discoveryIneligible = 0.64;

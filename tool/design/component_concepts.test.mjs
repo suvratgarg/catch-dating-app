@@ -39,7 +39,6 @@ test("new core widgets require canonical names and component contracts", () => {
       },
       {
         widgetbookCovered: true,
-        catalogMentioned: true,
         componentContracted: false,
       },
     ),
@@ -65,12 +64,36 @@ test("new private widgets remain a blocking destination", () => {
       },
       {
         widgetbookCovered: false,
-        catalogMentioned: false,
         componentContracted: false,
       },
     ),
     ["private-widget-class"],
   );
+});
+
+test("new shared package widgets and Riverpod adapters require registry identity", () => {
+  for (const file of [
+    "packages/catch_ui/lib/src/components/catch_button.dart",
+    "lib/core/riverpod_ui/catch_async_boundary.dart",
+  ]) {
+    const entry = {name: "CatchButton", file, visibility: "public"};
+    assert.deepEqual(newWidgetPolicyIssues(entry, {
+      widgetbookCovered: true, componentContracted: false,
+    }), ["missing-component-contract"]);
+    assert.deepEqual(newWidgetPolicyIssues(entry, {
+      widgetbookCovered: true, componentContracted: true,
+    }), []);
+  }
+});
+
+test("feature widgets require preview coverage without becoming shared concepts", () => {
+  const entry = {name: "ProfileSection", file: "lib/profile/presentation/profile_section.dart", visibility: "public"};
+  assert.deepEqual(newWidgetPolicyIssues(entry, {
+    widgetbookCovered: true, componentContracted: false,
+  }), []);
+  assert.deepEqual(newWidgetPolicyIssues(entry, {
+    widgetbookCovered: false, componentContracted: false,
+  }), ["missing-widgetbook"]);
 });
 
 test("ungoverned normalized names and exact public duplicates fail", () => {
@@ -287,4 +310,18 @@ test("metrics count concepts rather than public contracts", () => {
       },
     },
   );
+});
+
+test("feature previews cannot bypass reserved prefixes, role names or file suffixes", () => {
+  const covered = {widgetbookCovered: true, componentContracted: true};
+  const base = {file: "lib/profile/presentation/profile_section.dart", visibility: "public"};
+  assert.deepEqual(newWidgetPolicyIssues({...base, name: "CatchProfileSection"}, covered),
+    ["reserved-feature-widget-prefix"]);
+  assert.deepEqual(newWidgetPolicyIssues({...base, name: "ProfilePanel"}, covered),
+    ["noncanonical-feature-widget-name"]);
+  assert.deepEqual(newWidgetPolicyIssues({...base, name: "Section"}, covered),
+    ["noncanonical-feature-widget-name"]);
+  assert.deepEqual(newWidgetPolicyIssues({...base, name: "ProfileSection", file: "lib/profile/presentation/profile.dart"}, covered),
+    ["noncanonical-feature-widget-file"]);
+  assert.deepEqual(newWidgetPolicyIssues({...base, name: "ProfileScreen", file: "lib/profile/presentation/profile_screen.dart"}, covered), []);
 });

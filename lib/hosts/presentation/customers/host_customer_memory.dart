@@ -69,7 +69,7 @@ class HostCustomerMemorySection extends StatelessWidget {
           title: context.l10n.hostCustomersMemory,
           trailing: notes.isEmpty
               ? null
-              : CatchTextButton(
+              : CatchButton.text(
                   key: const ValueKey('host-customer-add-note'),
                   label: context.l10n.hostCustomersAddNote,
                   textStyle: CatchTextStyles.control(context, selected: true),
@@ -78,7 +78,7 @@ class HostCustomerMemorySection extends StatelessWidget {
                   onPressed: onAddNote,
                 ),
           child: CatchSection.contained(
-            elevation: CatchSurfaceElevation.none,
+            emphasis: CatchSurfaceEmphasis.flat,
             borderColor: CatchTokens.of(context).line,
             tone: CatchSurfaceTone.transparent,
             child: Column(
@@ -169,19 +169,19 @@ class HostCustomerMemorySection extends StatelessWidget {
         if (customer.notesCoverage ==
             HostCustomerHistoryCoverage.unavailable) ...[
           gapH12,
-          CatchSurface.message(
+          CatchBanner(
             title: context.l10n.hostCustomersNotesUnavailableTitle,
             message: context.l10n.hostCustomersNotesUnavailableBody,
-            messageIcon: CatchIcons.infoOutlineRounded,
-            messageTone: CatchSurfaceMessageTone.warning,
+            icon: CatchIcons.infoOutlineRounded,
+            tone: CatchBannerTone.warning,
           ),
         ] else if (customer.notesTruncated) ...[
           gapH12,
-          CatchSurface.message(
+          CatchBanner(
             title: context.l10n.hostCustomersNotes,
             message: context.l10n.hostCustomersNotesTruncated,
-            messageIcon: CatchIcons.infoOutlineRounded,
-            messageTone: CatchSurfaceMessageTone.warning,
+            icon: CatchIcons.infoOutlineRounded,
+            tone: CatchBannerTone.warning,
           ),
         ],
       ],
@@ -213,7 +213,7 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: widget.note == null
         ? context.l10n.hostCustomersAddNote
         : context.l10n.hostCustomersEditNote,
@@ -241,7 +241,9 @@ class _HostCustomerNoteSheetState extends ConsumerState<HostCustomerNoteSheet> {
           CatchButton(
             key: const ValueKey('host-customer-save-note'),
             label: context.l10n.hostCustomersSaveNote,
-            isLoading: _saving,
+            status: (_saving)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: _saving ? null : _save,
           ),
         ],
@@ -326,7 +328,7 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostCustomersTagSheetTitle,
     subtitle: context.l10n.hostCustomersTagSheetSubtitle,
     child: SingleChildScrollView(
@@ -395,7 +397,9 @@ class _HostCustomerTagsSheetState extends ConsumerState<HostCustomerTagsSheet> {
             CatchButton(
               key: const ValueKey('host-customer-save-tags'),
               label: context.l10n.hostCustomersSaveTags,
-              isLoading: _saving,
+              status: (_saving)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: _saving ? null : _save,
             ),
           ],

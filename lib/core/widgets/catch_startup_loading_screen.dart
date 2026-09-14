@@ -101,7 +101,7 @@ class _CatchStartupLoadingScreenState extends State<CatchStartupLoadingScreen> {
     final t = CatchTokens.of(context);
     final isHost = AppConfig.appRole == AppRole.host;
 
-    return CatchScreenScaffold.standalone(
+    return CatchScaffold.standalone(
       backgroundColor: t.bg,
       body: Stack(
         alignment: Alignment.center,

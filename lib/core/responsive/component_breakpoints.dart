@@ -1,7 +1,7 @@
 /// Component-level layout breakpoints, in logical pixels.
 ///
 /// Compared against the component's **local** box width through
-/// `CatchViewportBreakpoint` — not the window size — so an individual
+/// `CatchViewport.atWidth` — not the window size — so an individual
 /// widget can reflow based on the space it is actually given.
 ///
 /// Deliberately distinct from `CatchWindowSize` in `package:catch_tokens/catch_tokens.dart`, which

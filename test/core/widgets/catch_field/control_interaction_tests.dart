@@ -15,14 +15,17 @@ void _registerControlInteractionTests() {
               CatchField.control(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Height',
-                open: open,
+                disclosureMode: open
+                    ? CatchFieldMode.controlledExpanded
+                    : CatchFieldMode.controlledCollapsed,
                 onOpenChanged: (value) => setState(() => open = value),
-                control: const Text('Height control'),
+
                 onCancel: () {
                   cancelCount++;
                   setState(() => open = false);
                 },
                 onSubmit: () {},
+                child: const Text('Height control'),
               ),
               const SizedBox(height: 80),
               const Text('Outside target'),
@@ -61,14 +64,17 @@ void _registerControlInteractionTests() {
               CatchField.control(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Height',
-                open: open,
+                disclosureMode: open
+                    ? CatchFieldMode.controlledExpanded
+                    : CatchFieldMode.controlledCollapsed,
                 onOpenChanged: (value) => setState(() => open = value),
-                control: const Text('Height control'),
+
                 onCancel: () {
                   cancelCount++;
                   setState(() => open = false);
                 },
                 onSubmit: () {},
+                child: const Text('Height control'),
               ),
               const SizedBox(height: 120),
               const Text('Outside drag target'),
@@ -118,7 +124,7 @@ void _registerControlInteractionTests() {
               setState(() => open = false);
             },
             onSubmit: () {},
-            isLoading: true,
+            status: CatchFieldStatus.saving,
           ),
         ),
       ),
@@ -163,11 +169,14 @@ void _registerControlInteractionTests() {
                       copy: catchFieldCopy(AppLocalizationsEn()),
                       title: 'Diet',
                       body: 'Jain',
-                      open: open,
+                      disclosureMode: open
+                          ? CatchFieldMode.controlledExpanded
+                          : CatchFieldMode.controlledCollapsed,
                       onOpenChanged: setOpen,
-                      control: const SizedBox(height: 180),
+
                       onCancel: () => setOpen(false),
                       onSubmit: _noop,
+                      child: const SizedBox(height: 180),
                     ),
                     const SizedBox(height: 160),
                   ],
@@ -219,11 +228,14 @@ void _registerControlInteractionTests() {
                     copy: catchFieldCopy(AppLocalizationsEn()),
                     title: 'Diet',
                     body: 'Jain',
-                    open: open,
+                    disclosureMode: open
+                        ? CatchFieldMode.controlledExpanded
+                        : CatchFieldMode.controlledCollapsed,
                     onOpenChanged: (value) => setState(() => open = value),
-                    control: const SizedBox(height: 180),
+
                     onCancel: _noop,
                     onSubmit: _noop,
+                    child: const SizedBox(height: 180),
                   ),
                   const SizedBox(height: 160),
                 ],
@@ -283,11 +295,14 @@ void _registerControlInteractionTests() {
                       copy: catchFieldCopy(AppLocalizationsEn()),
                       title: 'Diet',
                       body: 'Jain',
-                      open: open,
+                      disclosureMode: open
+                          ? CatchFieldMode.controlledExpanded
+                          : CatchFieldMode.controlledCollapsed,
                       onOpenChanged: (value) => setState(() => open = value),
-                      control: const SizedBox(height: 180),
+
                       onCancel: _noop,
                       onSubmit: _noop,
+                      child: const SizedBox(height: 180),
                     ),
                     const SizedBox(height: 160),
                   ],

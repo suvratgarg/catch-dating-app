@@ -12,7 +12,7 @@ class CatchLocalizedErrorScaffold extends StatelessWidget {
     this.onRetry,
     this.retryLabel,
     this.icon,
-    this.secondaryAction,
+    this.actions = const [],
   }) : errorContext = context;
 
   final Object error;
@@ -20,7 +20,7 @@ class CatchLocalizedErrorScaffold extends StatelessWidget {
   final VoidCallback? onRetry;
   final String? retryLabel;
   final IconData? icon;
-  final Widget? secondaryAction;
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class CatchLocalizedErrorScaffold extends StatelessWidget {
       // descriptor cannot infer that this operation is retryable.
       onRetry: onRetry,
       retryLabel: retryLabel ?? descriptor.retryLabel,
-      secondaryAction: secondaryAction,
+      actions: actions,
     );
   }
 }

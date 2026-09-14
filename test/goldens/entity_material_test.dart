@@ -39,7 +39,7 @@ void main() {
               showArrow: false,
             ),
             gapH24,
-            CatchPersonPolaroid(
+            CatchPolaroid(
               media: CatchGradedImage(
                 child: Image(image: _portrait, fit: BoxFit.cover),
               ),

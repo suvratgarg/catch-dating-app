@@ -189,7 +189,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             : null,
         variant: CatchButtonVariant.secondary,
         size: CatchButtonSize.sm,
-        shape: CatchButtonShape.rounded,
+        mode: CatchButtonMode.rounded,
         fullWidth: fullWidth,
       );
 
@@ -223,13 +223,15 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               style: CatchTextStyles.fieldLabel(context, color: t.ink),
             ),
             gapH8,
-            CatchOtpCodeField(
+            CatchCodeInput(
               semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
               inputKey: AuthFormKeys.otpField,
               contract: CatchContractConstraints.mobileFormStateAuthOtpCode,
               controller: _otpController,
               autofocus: viewState.shouldAutofocus,
-              hasError: verifyError != null,
+              status: verifyError != null
+                  ? CatchCodeInputStatus.error
+                  : CatchCodeInputStatus.ready,
               height: CatchLayout.authOtpDigitHeight,
               gap: CatchLayout.authOtpDigitGap,
               onSubmitted: _submit,
@@ -244,7 +246,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             ],
             if (sendMutation.hasError) ...[
               gapH12,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: appErrorMessage(
                   (sendMutation as MutationError).error,
                   l10n: l10n,
@@ -274,7 +276,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                 onPressed: viewState.canResend ? _resendOtp : null,
                 variant: CatchButtonVariant.secondary,
                 size: CatchButtonSize.lg,
-                shape: CatchButtonShape.rounded,
+                mode: CatchButtonMode.rounded,
                 fullWidth: true,
               ),
           ],
@@ -285,11 +287,13 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     return OnboardingStepLayout(
       footer: CatchButton(
         label: l10n.authVerifyAction,
-        icon: Icon(CatchIcons.checkRounded),
+        leading: Icon(CatchIcons.checkRounded),
         onPressed: viewState.canVerify
             ? () => _submit(_otpController.text)
             : null,
-        isLoading: viewState.verifyButtonLoading,
+        status: (viewState.verifyButtonLoading)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
         fullWidth: true,
         size: CatchButtonSize.lg,
       ),
@@ -309,7 +313,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           gutter: false,
         ),
         gapH28,
-        CatchOtpCodeField(
+        CatchCodeInput(
           semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
           inputKey: AuthFormKeys.otpField,
           contract: CatchContractConstraints.mobileFormStateAuthOtpCode,
@@ -320,7 +324,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ),
         if (verifyMutation.hasError) ...[
           gapH16,
-          CatchErrorBanner(
+          CatchBanner.error(
             message: appErrorMessage(
               (verifyMutation as MutationError).error,
               l10n: context.l10n,
@@ -330,7 +334,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ],
         if (sendMutation.hasError) ...[
           gapH16,
-          CatchErrorBanner(
+          CatchBanner.error(
             message: appErrorMessage(
               (sendMutation as MutationError).error,
               l10n: context.l10n,

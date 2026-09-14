@@ -98,7 +98,9 @@ void main() {
       _app(
         const CatchTopBar(
           title: 'People',
-          leadingType: CatchTopBarLeading.none,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.none,
+          ),
           search: CatchTopBarSearch(
             copy: _copy,
             placeholder: 'Find people',

@@ -144,7 +144,7 @@ class _EventSuccessLayoutAuthorSheetState
     final minCapacity = capacityContract.minimum ?? 1;
     final maxCapacity = capacityContract.maximum ?? 1000;
     final maxColumns = (gridContract.maximum ?? 199) + 1;
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsEventSuccessStepRoomLayoutAuthorTitle,
       subtitle: context.l10n.hostsEventSuccessStepRoomLayoutAuthorSubtitle,
       keyboardSafe: true,
@@ -172,9 +172,9 @@ class _EventSuccessLayoutAuthorSheetState
                   title: context.l10n.hostsEventSuccessStepRoomLayoutShape,
                   contract: CatchContractConstraints
                       .upsertEventSuccessLayoutCallablePayloadUnitsItemsShape,
-                  contractValue: (shape) => shape.wireName,
+                  contractValueBuilder: (shape) => shape.wireName,
                   values: EventSuccessLayoutShape.values,
-                  itemLabel: (shape) => _shapeLabel(context, shape),
+                  itemLabelBuilder: (shape) => _shapeLabel(context, shape),
                   value: _shape,
                   onChanged: (shape) {
                     if (shape != null) setState(() => _shape = shape);

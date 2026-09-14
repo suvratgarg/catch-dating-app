@@ -32,12 +32,18 @@ class MapPinTile extends StatelessWidget {
               : t.ink2
         : t.ink3;
 
-    return CatchControlShell(
+    return CatchControlSurface(
+      status: hasPin
+          ? CatchControlSurfaceStatus.focused
+          : CatchControlSurfaceStatus.resting,
+
       onTap: enabled ? onTap : null,
-      tone: hasPin ? CatchControlTone.surface : CatchControlTone.raised,
+      tone: hasPin
+          ? CatchControlSurfaceTone.surface
+          : CatchControlSurfaceTone.raised,
       enabled: enabled,
-      focused: hasPin,
-      padding: CatchControlMetrics.contentPadding(CatchControlSize.md),
+
+      padding: CatchControlMetrics.contentPadding(CatchControlSurfaceSize.md),
       semanticButton: true,
       child: Row(
         children: [

@@ -88,7 +88,7 @@ class EventReviewsSection extends StatelessWidget {
               .l10n
               .reviewsReviewsSectionMessageBeTheFirstToReviewThisEvent,
           emptyAction: canWriteEventReview
-              ? CatchTextButton(
+              ? CatchButton.text(
                   key: ReviewKeys.writeReviewButton,
                   label: context.l10n.reviewsReviewsSectionLabelWriteAReview,
                   onPressed: () => showWriteReviewSheet(
@@ -168,7 +168,7 @@ class ReviewsPreviewSection extends StatelessWidget {
   void _showAllReviews(BuildContext context) {
     showCatchBottomSheet<void>(
       context: context,
-      builder: (sheetContext) => CatchBottomSheetScaffold(
+      builder: (sheetContext) => CatchSheet(
         title: context.l10n.reviewsReviewsSectionTitleAllReviewsLength(
           length: reviews.length,
         ),
@@ -255,11 +255,11 @@ class ReviewsPreviewSection extends StatelessWidget {
                     : context
                           .l10n
                           .reviewsReviewsSectionMessageReviewsFromAttendeesWill),
-            action: emptyAction,
+            actions: [?emptyAction],
             surface: emptyPresentation == ReviewsEmptyPresentation.contained,
-            layout: emptyPresentation == ReviewsEmptyPresentation.standalone
-                ? CatchEmptyStateLayout.stacked
-                : CatchEmptyStateLayout.inline,
+            variant: emptyPresentation == ReviewsEmptyPresentation.standalone
+                ? CatchEmptyStateVariant.stacked
+                : CatchEmptyStateVariant.inline,
             iconSize: emptyPresentation == ReviewsEmptyPresentation.standalone
                 ? CatchIcon.tile
                 : CatchIcon.row,
@@ -293,7 +293,7 @@ class ReviewsPreviewSection extends StatelessWidget {
           ],
           if (showAllAction && reviews.length > maxVisibleReviews) ...[
             gapH4,
-            CatchTextButton(
+            CatchButton.text(
               key: ReviewKeys.seeAllReviewsButton,
               label: context.l10n.reviewsReviewsSectionLabelSeeAllLengthReviews(
                 length: reviews.length,
@@ -333,7 +333,7 @@ class ReviewCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              CatchPersonAvatar(name: review.reviewerName, size: 32),
+              CatchAvatar(name: review.reviewerName, size: 32),
               gapW8,
               Expanded(
                 child: Column(
@@ -352,9 +352,9 @@ class ReviewCard extends StatelessWidget {
               if (isOwn && onEdit != null)
                 Tooltip(
                   message: context.l10n.reviewsReviewsSectionMessageEditReview,
-                  child: CatchIconButton(
+                  child: CatchIconAction(
                     key: ReviewKeys.editReviewButton(review.id),
-                    onTap: onEdit!,
+                    onPressed: onEdit!,
                     child: Icon(
                       CatchIcons.editOutlined,
                       size: CatchIcon.xs,
@@ -369,9 +369,9 @@ class ReviewCard extends StatelessWidget {
                       : context
                             .l10n
                             .reviewsReviewsSectionMessageEditHostResponse,
-                  child: CatchIconButton(
+                  child: CatchIconAction(
                     key: ReviewKeys.respondToReviewButton(review.id),
-                    onTap: onRespond!,
+                    onPressed: onRespond!,
                     child: Icon(
                       CatchIcons.rateReviewOutlined,
                       size: CatchIcon.xs,
@@ -420,7 +420,7 @@ class ReviewOwnerResponseBlock extends StatelessWidget {
         children: [
           Row(
             children: [
-              CatchPersonAvatar(
+              CatchAvatar(
                 name: response.hostName,
                 imageUrl: response.hostAvatarUrl,
                 size: 24,
@@ -503,7 +503,7 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
             .setOwnerResponse(reviewId: widget.review.id, message: message);
       });
     } catch (_) {
-      // Inline CatchErrorBanner owns user-facing error display.
+      // Inline CatchBanner owns user-facing error display.
     }
   }
 
@@ -518,16 +518,18 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
       }
     });
 
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: widget.review.ownerResponse == null
           ? context.l10n.reviewsReviewsSectionTitleRespondToReview
           : context.l10n.reviewsReviewsSectionTitleEditResponse,
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         key: ReviewKeys.submitOwnerResponseButton,
         label: context.l10n.reviewsReviewsSectionLabelSaveResponse,
         onPressed: !canSubmit || mutation.isPending ? null : _submit,
-        isLoading: mutation.isPending,
+        status: (mutation.isPending)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
         fullWidth: true,
       ),
       child: Column(
@@ -549,7 +551,7 @@ class _ReviewResponseSheetState extends ConsumerState<ReviewResponseSheet> {
           ),
           if (mutation.hasError) ...[
             gapH12,
-            CatchErrorBanner(
+            CatchBanner.error(
               message: mutationErrorMessage(mutation, l10n: context.l10n),
             ),
           ],

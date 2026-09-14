@@ -40,7 +40,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
         name: name,
       ),
       icon: CatchIcons.favoriteRounded,
-      visual: CatchPersonAvatar(
+      visual: CatchAvatar(
         size: 108,
         name: name,
         imageUrl: photoUrl,

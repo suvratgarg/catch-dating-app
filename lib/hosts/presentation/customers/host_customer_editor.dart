@@ -36,13 +36,17 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
     canPop: !_saving,
     child: CatchRouteScaffold(
       resizeToAvoidBottomInset: true,
-      topBarBuilder: (context, scrolledUnder) => CatchScreenTopBar(
+      topBarBuilder: (context, scrolledUnder) => CatchTopBar.screen(
         context: context,
         title: context.l10n.hostCustomersAddTitle,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
-      bottomNavigationBar: CatchBottomAction(
+      footer: CatchDockSurface.primary(
         label: context.l10n.hostCustomersAdd,
         buttonKey: const ValueKey('host-add-customer-submit'),
         isLoading: _saving,
@@ -51,9 +55,10 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
       body: CatchRouteBody.standard(
         child: Form(
           key: _formKey,
-          child: CatchResponsiveSectionLayout(
-            sections: [
-              CatchResponsiveSectionItem(
+          child: CatchSectionList.responsive(
+            emptyStateOmitted: true,
+            items: [
+              CatchSectionListItem(
                 child: HostCustomerIdentityInputSection(
                   key: const ValueKey('host-add-customer-details'),
                   title: context.l10n.hostCustomersContactDetails,
@@ -73,13 +78,13 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                       ),
                       if (_contactMethodError != null) ...[
                         gapH12,
-                        CatchErrorBanner(message: _contactMethodError!),
+                        CatchBanner.error(message: _contactMethodError!),
                       ],
                     ],
                   ),
                 ),
               ),
-              CatchResponsiveSectionItem(
+              CatchSectionListItem(
                 child: CatchFieldLanes.single(
                   child: CatchField.control(
                     copy: catchFieldCopy(context.l10n),
@@ -87,8 +92,8 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                     title: context.l10n.hostCustomersInitialNote,
                     contractExemption:
                         'Disclosure for the nested initial-note input, which uses the generated create-contact binding.',
-                    isOptional: true,
-                    control: Column(
+                    labelMode: CatchFieldLabelTextMode.optional,
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
@@ -105,12 +110,14 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                             contract: CatchContractConstraints
                                 .createOrganizerContactCallablePayloadInitialNote,
                             controller: _noteController,
-                            isOptional: true,
+                            labelMode: CatchFieldLabelTextMode.optional,
                             minLines: 3,
                             maxLines: 5,
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.done,
-                            enabled: !_saving,
+                            states: <WidgetState>{
+                              if (_saving) WidgetState.disabled,
+                            },
                             onSubmitted: (_) => unawaited(_submit()),
                           ),
                         ),
@@ -242,8 +249,8 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
           textInputAction: TextInputAction.next,
           autofillHints: const [AutofillHints.name],
           autofocus: autofocusName,
-          enabled: enabled,
-          validator: (value) => (value ?? '').trim().isEmpty
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
+          onValidate: (value) => (value ?? '').trim().isEmpty
               ? context.l10n.hostCustomersNameRequired
               : null,
         ),
@@ -262,14 +269,14 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
                 : CatchContractConstraints
                       .mutateOrganizerContactCallablePayloadPhoneE164,
             controller: phoneController,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             keyboardType: TextInputType.phone,
             textInputAction: TextInputAction.next,
             autofillHints: const [AutofillHints.telephoneNumber],
             placeholder: '+919876543210',
             helperText: create ? null : context.l10n.hostCustomersPhoneHelp,
-            enabled: enabled,
-            validator: (value) => _manualPhoneError(context, value),
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
+            onValidate: (value) => _manualPhoneError(context, value),
             onChanged: (_) => onContactMethodChanged(),
           ),
         ),
@@ -286,12 +293,12 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
                 : CatchContractConstraints
                       .mutateOrganizerContactCallablePayloadEmail,
             controller: emailController,
-            isOptional: true,
+            labelMode: CatchFieldLabelTextMode.optional,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.done,
             autofillHints: const [AutofillHints.email],
-            enabled: enabled,
-            validator: (value) => _manualEmailError(context, value),
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
+            onValidate: (value) => _manualEmailError(context, value),
             onChanged: (_) => onContactMethodChanged(),
             onSubmitted: (_) => onSubmitted(),
           ),
@@ -344,7 +351,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
     }
     return CatchSection.containedFieldRows(
       title: title,
-      focused: focused,
+      states: {if (focused) WidgetState.focused},
       footer: footer,
       children: fields,
     );

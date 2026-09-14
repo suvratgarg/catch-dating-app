@@ -3,7 +3,7 @@ import 'package:catch_dating_app/clubs/clubs.dart'
     show ClubAvatarRail, buildClubDirectorySlivers;
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/explore/domain/explore_event_recommendation.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
@@ -98,7 +98,9 @@ List<Widget> buildExploreBodySlivers({
           child: CatchButton(
             label: context.l10n.exploreExploreScreenActionLoadMorePlans,
             onPressed: feedValue!.isLoadingMore ? null : onLoadMore,
-            isLoading: feedValue.isLoadingMore,
+            status: (feedValue.isLoadingMore)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             variant: CatchButtonVariant.secondary,
             fullWidth: true,
           ),
@@ -109,7 +111,7 @@ List<Widget> buildExploreBodySlivers({
         AsyncLoading() => const SliverToBoxAdapter(
           child: Padding(
             padding: CatchInsets.pageBody,
-            child: CatchSkeletonList(
+            child: CatchSkeleton.cards(
               count: 2,
               height: CatchLayout.dashboardRecommendedEventSkeletonHeight,
             ),
@@ -118,11 +120,11 @@ List<Widget> buildExploreBodySlivers({
         AsyncError(:final error) => SliverToBoxAdapter(
           child: Padding(
             padding: CatchInsets.pageBody,
-            child: CatchLocalizedInlineErrorState(
+            child: CatchLocalizedErrorState(
               error,
               context: AppErrorContext.explore,
               onRetry: onRetryFeed,
-              compact: true,
+              mode: CatchErrorStateMode.compact,
             ),
           ),
         ),
@@ -140,11 +142,11 @@ List<Widget> buildExploreBodySlivers({
       SliverToBoxAdapter(
         child: Padding(
           padding: CatchInsets.pageBody,
-          child: CatchLocalizedInlineErrorState(
+          child: CatchLocalizedErrorState(
             clubSectionError,
             context: AppErrorContext.explore,
             onRetry: onRetryClubs,
-            compact: true,
+            mode: CatchErrorStateMode.compact,
           ),
         ),
       ),

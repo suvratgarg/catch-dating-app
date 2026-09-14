@@ -32,7 +32,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       initialEvent: initialEvent,
     );
 
-    return CatchAsyncValueView<_HostEventManageRouteData>(
+    return CatchAsyncBoundary<_HostEventManageRouteData>(
       value: routeDataAsync,
       onRetry: () {
         ref.invalidate(uidProvider);
@@ -42,26 +42,29 @@ class HostEventManageRouteScreen extends ConsumerWidget {
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-          divider: scrolledUnder,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: const CatchRouteBody.standardViewport(
           child: HostRouteLoadingBody(padding: EdgeInsets.zero),
         ),
       ),
-      errorBuilder: (_, error, _) => CatchRouteScaffold(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-          leadingType: CatchTopBarLeading.back,
-          divider: scrolledUnder,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.event,
-            onRetry: () {
-              ref.invalidate(fetchClubProvider(clubId));
-              ref.invalidate(watchEventProvider(eventId));
-            },
+            onRetry: onBoundaryRetry,
           ),
         ),
       ),
@@ -74,18 +77,22 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title:
                   context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-              leadingType: CatchTopBarLeading.back,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorBody(
+              child: CatchErrorState(
                 title: context
                     .l10n
                     .hostsHostEventManageRouteScreenTitleEventNotFound,
                 message: context
                     .l10n
                     .hostsHostEventManageRouteScreenMessageThisHostedEventIs,
-                secondaryAction: const CatchErrorBackAction(),
+                actions: const [CatchErrorBackButton()],
               ),
             ),
           );
@@ -96,11 +103,15 @@ class HostEventManageRouteScreen extends ConsumerWidget {
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title:
                   context.l10n.hostsHostEventManageRouteScreenTitleManageEvent,
-              leadingType: CatchTopBarLeading.back,
-              divider: scrolledUnder,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorBody(
+              child: CatchErrorState(
                 title: context
                     .l10n
                     .hostsHostEventManageRouteScreenTitleActionUnavailable,
@@ -108,7 +119,7 @@ class HostEventManageRouteScreen extends ConsumerWidget {
                     .l10n
                     .hostsHostEventManageRouteScreenMessageYouCanManageOnly,
                 icon: CatchIcons.blockRounded,
-                secondaryAction: const CatchErrorBackAction(),
+                actions: const [CatchErrorBackButton()],
               ),
             ),
           );

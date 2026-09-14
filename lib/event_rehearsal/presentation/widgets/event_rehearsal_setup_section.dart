@@ -88,15 +88,19 @@ class _EventRehearsalSetupSectionState
               : context.l10n.hostEventRehearsalSetupFrozen,
           contractExemption:
               'Rehearsal setup is submitted as one callable-owned snapshot.',
-          open: _open,
-          enabled: editable,
-          isLoading: widget.isLoading,
+          disclosureMode: _open
+              ? CatchFieldMode.controlledExpanded
+              : CatchFieldMode.controlledCollapsed,
+          states: <WidgetState>{if (!editable) WidgetState.disabled},
+          status: widget.isLoading
+              ? CatchFieldStatus.saving
+              : CatchFieldStatus.idle,
           onOpenChanged: editable
               ? (open) => setState(() => _open = open)
               : null,
           onCancel: _cancel,
           onSubmit: _valid ? _save : null,
-          control: CatchFieldLanes.divided(
+          child: CatchFieldLanes.divided(
             children: [
               _EventRehearsalSetupInput(
                 title: context.l10n.hostEventRehearsalFieldTitle,
@@ -154,13 +158,13 @@ class _EventRehearsalSetupSectionState
                 title: context.l10n.hostEventRehearsalModules,
                 contract: CatchContractConstraints
                     .updateEventRehearsalSetupCallablePayloadSetupModuleIds,
-                contractValue: (module) => module.name,
+                contractValueBuilder: (module) => module.name,
                 values: EventRehearsalModule.values,
-                itemLabel: (module) =>
+                itemLabelBuilder: (module) =>
                     eventRehearsalModuleLabel(context.l10n, module),
                 selected: _modules,
-                multi: true,
-                initiallyOpen: true,
+                mode: CatchChipMode.multiple,
+                disclosureMode: CatchFieldMode.localExpanded,
                 onSelectionChanged: (selection) =>
                     setState(() => _modules = selection),
               ),
@@ -282,27 +286,28 @@ class _EventRehearsalScenarioPicker extends StatelessWidget {
   final ValueChanged<EventRehearsalScenario> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<EventRehearsalScenario>(
-    items: [
-      for (final scenario in EventRehearsalScenario.values)
-        CatchMenuItem<EventRehearsalScenario>(
-          value: scenario,
-          label: eventRehearsalScenarioTitle(context.l10n, scenario),
-          sublabel: eventRehearsalScenarioBody(context.l10n, scenario),
-          selected: scenario == selected,
-          role: CatchMenuItemRole.choice,
+  Widget build(BuildContext context) =>
+      CatchMenu<EventRehearsalScenario>.anchored(
+        items: [
+          for (final scenario in EventRehearsalScenario.values)
+            CatchMenuItem<EventRehearsalScenario>(
+              value: scenario,
+              label: eventRehearsalScenarioTitle(context.l10n, scenario),
+              sublabel: eventRehearsalScenarioBody(context.l10n, scenario),
+              selected: scenario == selected,
+              variant: CatchMenuItemVariant.choice,
+            ),
+        ],
+        onSelected: (scenario, _) => onSelected(scenario),
+        builder: (context, controller, _) => CatchFieldLanes.single(
+          child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostEventRehearsalScenario,
+            valueText: eventRehearsalScenarioTitle(context.l10n, selected),
+            onTap: controller.isOpen ? controller.close : controller.open,
+          ),
         ),
-    ],
-    onSelected: (scenario, _) => onSelected(scenario),
-    builder: (context, controller, _) => CatchFieldLanes.single(
-      child: CatchField.nav(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostEventRehearsalScenario,
-        valueText: eventRehearsalScenarioTitle(context.l10n, selected),
-        onTap: controller.isOpen ? controller.close : controller.open,
-      ),
-    ),
-  );
+      );
 }
 
 class _EventRehearsalActorCountPicker extends StatelessWidget {
@@ -315,14 +320,14 @@ class _EventRehearsalActorCountPicker extends StatelessWidget {
   final ValueChanged<int> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<int>(
+  Widget build(BuildContext context) => CatchMenu<int>.anchored(
     items: [
       for (final count in const [8, 12, 14, 15, 16, 18, 24, 32, 50])
         CatchMenuItem<int>(
           value: count,
           label: context.l10n.hostEventRehearsalActorCount(count: count),
           selected: count == selected,
-          role: CatchMenuItemRole.choice,
+          variant: CatchMenuItemVariant.choice,
         ),
     ],
     onSelected: (count, _) => onSelected(count),

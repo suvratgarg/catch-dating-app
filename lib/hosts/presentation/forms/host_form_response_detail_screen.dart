@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -49,11 +49,14 @@ class _HostFormResponseDetailScreenState
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: context.l10n.hostAudienceResponseTitle,
-        leadingType: CatchTopBarLeading.back,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.back,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
-      bottomNavigationBar:
-          loadedDetail?.response.status == HostFormResponseStatus.submitted
+      footer: loadedDetail?.response.status == HostFormResponseStatus.submitted
           ? HostFormResponsePrimaryAction(
               detail: loadedDetail!,
               organizerId: widget.organizerId,
@@ -62,16 +65,17 @@ class _HostFormResponseDetailScreenState
             )
           : null,
       body: CatchRouteBody.standardConstrained(
-        child: CatchAsyncValueView<HostFormResponseDetail>(
+        child: CatchAsyncBoundary<HostFormResponseDetail>(
           value: detail,
           onRetry: () => ref.invalidate(provider),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 8),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.formResponses,
-            onRetry: () => ref.invalidate(provider),
-          ),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 8),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.formResponses,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, value) => Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -117,7 +121,7 @@ class _HostFormResponseDetailScreenState
                   title: context.l10n.hostAudienceSubmissionDetails,
                   contractExemption:
                       'Read-only disclosure of server-owned response metadata; no scalar value is persisted.',
-                  control: _ResponseTechnicalDetails(detail: value),
+                  child: _ResponseTechnicalDetails(detail: value),
                 ),
               ),
               if (value.response.status == HostFormResponseStatus.submitted ||
@@ -217,7 +221,7 @@ class _HostFormResponseDetailScreenState
   Future<bool?> _showConversionPreview(HostFormConversionPreview preview) =>
       showDialog<bool>(
         context: context,
-        builder: (dialogContext) => CatchFormDialog(
+        builder: (dialogContext) => CatchDialog(
           title: context.l10n.hostFormConversionReviewTitle,
           actions: [
             CatchButton(
@@ -300,7 +304,7 @@ class _HostFormResponseDetailScreenState
       if (!mounted) return null;
       return showDialog<Event>(
         context: context,
-        builder: (dialogContext) => CatchFormDialog(
+        builder: (dialogContext) => CatchDialog(
           title: context.l10n.hostFormSelectEventTitle,
           actions: [
             CatchButton(
@@ -351,15 +355,15 @@ class _ResponseIdentityHeader extends StatelessWidget {
           context.l10n.hostFormResponsesAnonymous,
       seed: detail.response.responseId,
     ),
-    metadata: Text(
+    meta: Text(
       detail.response.formTitle,
       style: CatchTextStyles.supporting(context),
     ),
-    contextContent: Text(
+    body: Text(
       '${context.l10n.hostAudienceResultsVersion(version: detail.response.version)} · ${AppTimeFormatters.dateTime(detail.response.submittedAt)}',
       style: CatchTextStyles.recordContext(context),
     ),
-    status: CatchBadge.status(
+    trailing: CatchBadge.status(
       key: const ValueKey('host-form-response-status'),
       label: detail.response.status == HostFormResponseStatus.submitted
           ? context.l10n.hostFormResponsesSubmitted
@@ -381,14 +385,14 @@ class _ResponseContactActions extends StatelessWidget {
         CatchButton.command(
           key: const ValueKey('host-form-response-call'),
           label: context.l10n.hostApplicationCall,
-          icon: Icon(CatchIcons.phoneOutlined),
+          leading: Icon(CatchIcons.phoneOutlined),
           onPressed: () => onOpen(Uri(scheme: 'tel', path: phone)),
         ),
       if (identity.email case final email?)
         CatchButton.command(
           key: const ValueKey('host-form-response-email'),
           label: context.l10n.hostApplicationEmail,
-          icon: Icon(CatchIcons.emailOutlined),
+          leading: Icon(CatchIcons.emailOutlined),
           onPressed: () => onOpen(Uri(scheme: 'mailto', path: email)),
         ),
     ],
@@ -473,7 +477,7 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (detail.applicationId case final id?) {
-      return CatchBottomAction(
+      return CatchDockSurface.primary(
         buttonKey: const ValueKey('host-form-response-convert-application'),
         label: context.l10n.hostAudienceReviewApplication,
         onPressed: converting != null
@@ -489,20 +493,20 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
       organizerId: organizerId,
       responseId: detail.response.responseId,
     );
-    return CatchAsyncValueView<bool>(
+    return CatchAsyncBoundary<bool>(
       value: ref.watch(provider),
       initialLoadTimeout: null,
       onRetry: () => ref.invalidate(provider),
       loadingBuilder: (_) => const SizedBox.shrink(),
-      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.formResponses,
         mode: CatchErrorStateMode.compact,
-        onRetry: () => ref.invalidate(provider),
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, canApply) {
         if (canApply) {
-          return CatchBottomAction(
+          return CatchDockSurface.primary(
             buttonKey: const ValueKey('host-form-response-convert-application'),
             label: context.l10n.hostAudienceReviewApplication,
             isLoading: converting == HostFormConversionKind.application,
@@ -512,7 +516,7 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
           );
         }
         if (detail.contactId case final id?) {
-          return CatchBottomAction(
+          return CatchDockSurface.primary(
             label: context.l10n.hostApplicationOpenPerson,
             onPressed: converting != null
                 ? null
@@ -528,7 +532,7 @@ class HostFormResponsePrimaryAction extends ConsumerWidget {
         )) {
           return const SizedBox.shrink();
         }
-        return CatchBottomAction(
+        return CatchDockSurface.primary(
           buttonKey: const ValueKey('host-form-response-convert-crm-primary'),
           label: context.l10n.hostFormConvertCrm,
           isLoading: converting == HostFormConversionKind.crmContact,

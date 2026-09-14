@@ -74,7 +74,7 @@ test("classifies loading skeleton dividers as low visual geometry", () => {
 test("retired ticket owner and shared ticket files do not exempt raw dividers", () => {
   for (const relativePath of [
     "lib/core/widgets/event_ticket_surface.dart",
-    "packages/catch_ui/lib/src/components/catch_ticket_perforated_divider.dart",
+    "packages/catch_ui/lib/src/components/catch_ticket_divider.dart",
     "packages/catch_ui/lib/src/components/ticket_neighbor.dart",
   ]) {
     const findings = scanSourceForSectionDividers({

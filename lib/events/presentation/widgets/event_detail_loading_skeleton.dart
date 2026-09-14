@@ -21,7 +21,7 @@ class EventDetailLoadingScreen extends StatelessWidget {
     final isSpotlight =
         presentationMode == EventDetailPresentationMode.spotlightDark;
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       backgroundColor: isSpotlight ? t.ink : t.bg,
       body: CustomScrollView(
         slivers: [
@@ -29,10 +29,11 @@ class EventDetailLoadingScreen extends StatelessWidget {
             child: EventDetailHeroSkeleton(presentationMode: presentationMode),
           ),
           const SliverToBoxAdapter(child: EventDetailTicketStubSkeleton()),
-          const CatchDetailSliverSectionList(
+          const CatchSectionList.sliver(
+            emptyStateOmitted: true,
             topPadding: CatchSpacing.screenPt,
             bottomPadding: CatchSpacing.screenPb,
-            sections: [
+            children: [
               EventDetailPlanSkeleton(),
               EventDetailHintSkeleton(),
               EventDetailItinerarySkeleton(),
@@ -43,9 +44,7 @@ class EventDetailLoadingScreen extends StatelessWidget {
           ),
         ],
       ),
-      bottomNavigationBar: showBottomNavigation
-          ? const EventDetailLoadingCta()
-          : null,
+      footer: showBottomNavigation ? const EventDetailLoadingCta() : null,
     );
   }
 }
@@ -81,11 +80,11 @@ class EventDetailHeroSkeleton extends StatelessWidget {
             right: CatchSpacing.s2,
             child: Row(
               children: [
-                CatchSkeleton.circle(size: CatchIconButton.navSize),
+                CatchSkeleton.circle(size: CatchIconAction.navSize),
                 const Spacer(),
-                CatchSkeleton.circle(size: CatchIconButton.navSize),
+                CatchSkeleton.circle(size: CatchIconAction.navSize),
                 gapW8,
-                CatchSkeleton.circle(size: CatchIconButton.navSize),
+                CatchSkeleton.circle(size: CatchIconAction.navSize),
               ],
             ),
           ),
@@ -437,7 +436,7 @@ class EventDetailLoadingCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomAction(
+    return CatchDockSurface.primary(
       label: context.l10n.eventsEventDetailScreenStateLabelBookEvent,
       onPressed: null,
       isLoading: true,

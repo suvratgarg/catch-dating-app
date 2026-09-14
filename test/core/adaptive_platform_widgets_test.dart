@@ -163,13 +163,13 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(find.byType(Dialog), findsOneWidget);
-      expect(find.byType(CatchConfirmDialog<bool>), findsOneWidget);
+      expect(find.byType(CatchDialog<bool>), findsOneWidget);
       expect(find.byType(AlertDialog), findsNothing);
       expect(find.widgetWithText(CatchButton, 'Cancel'), findsOneWidget);
       expect(find.widgetWithText(CatchButton, 'Delete'), findsOneWidget);
       final surface = tester.widget<CatchSurface>(
         find.descendant(
-          of: find.byType(CatchConfirmDialog<bool>),
+          of: find.byType(CatchDialog<bool>),
           matching: find.byType(CatchSurface),
         ),
       );
@@ -211,7 +211,7 @@ void main() {
       await tester.tap(find.text('Open confirm dialog'));
       await pumpFeatureUi(tester);
 
-      expect(find.byType(CatchConfirmDialog<bool>), findsOneWidget);
+      expect(find.byType(CatchDialog<bool>), findsOneWidget);
       expect(find.text('Remove host?'), findsOneWidget);
       expect(find.text('This host will lose access.'), findsOneWidget);
       expect(find.widgetWithText(CatchButton, 'Cancel'), findsOneWidget);
@@ -269,7 +269,7 @@ void main() {
     expect(result, isTrue);
   });
 
-  testWidgets('top bar tabs use a Cupertino segmented control on iOS', (
+  testWidgets('page tabs use the canonical selection renderer on iOS', (
     tester,
   ) async {
     await _withIosPlatform(() async {
@@ -278,20 +278,17 @@ void main() {
 
       await tester.pumpWidget(
         _wrap(
-          CatchTopBarTabBar(
+          CatchPageTabBar<int>.controlled(
             controller: controller,
-            tabs: const [
-              Tab(text: 'Dashboard'),
-              Tab(text: 'Activity'),
+            options: const [
+              CatchOption(value: 0, label: 'Dashboard'),
+              CatchOption(value: 1, label: 'Activity'),
             ],
           ),
         ),
       );
 
-      expect(
-        find.byType(CupertinoSlidingSegmentedControl<int>),
-        findsOneWidget,
-      );
+      expect(find.byType(CatchChoiceInput<int>), findsOneWidget);
       expect(find.byType(TabBar), findsNothing);
 
       await tester.tap(find.text('Activity'));

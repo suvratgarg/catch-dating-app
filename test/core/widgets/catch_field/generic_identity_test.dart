@@ -17,7 +17,7 @@ void main() {
       key: key,
       title: 'Selection',
       values: const ['First', 'Second'],
-      itemLabel: (value) => value,
+      itemLabelBuilder: (value) => value,
       value: 'First',
       onChanged: (_) {},
     );
@@ -26,7 +26,7 @@ void main() {
       key: key,
       title: 'Selection',
       values: const [1, 2],
-      itemLabel: (value) => '$value',
+      itemLabelBuilder: (value) => '$value',
       value: 2,
       onChanged: (_) {},
     );
@@ -55,10 +55,10 @@ void main() {
       key: key,
       title: 'Choices',
       values: const [1, 2],
-      itemLabel: (value) => '$value',
+      itemLabelBuilder: (value) => '$value',
       selected: const {2},
       onSelectionChanged: (_) {},
-      initiallyOpen: true,
+      disclosureMode: CatchFieldMode.localExpanded,
     );
     expect(Widget.canUpdate(numberField, choices), isTrue);
     await tester.pumpWidget(

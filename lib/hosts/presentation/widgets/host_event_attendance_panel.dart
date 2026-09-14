@@ -5,11 +5,11 @@ import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -103,27 +103,24 @@ class _HostEventParticipantsPanelState
       attendanceSheetViewModelProvider(eventId),
     );
 
-    return CatchAsyncValueView<AttendanceSheetViewModel?>(
+    return CatchAsyncBoundary<AttendanceSheetViewModel?>(
       value: attendanceAsync,
       onRetry: () {
         ref.invalidate(watchEventProvider(eventId));
         ref.invalidate(watchEventParticipationsForEventProvider(eventId));
         ref.invalidate(attendanceSheetViewModelProvider(eventId));
       },
-      loadingBuilder: (_) => const CatchSkeletonRows(
+      loadingBuilder: (_) => const CatchSkeleton.rows(
         count: 4,
         titleWidth: CatchLayout.skeletonTextSectionWidth,
       ),
-      errorBuilder: (_, error, _) => Padding(
+      errorBuilder: (_, error, _, onBoundaryRetry) => Padding(
         padding: CatchInsets.content,
-        child: CatchLocalizedInlineErrorState(
+        child: CatchLocalizedErrorState(
           error,
           context: AppErrorContext.event,
-          onRetry: () {
-            ref.invalidate(watchEventProvider(eventId));
-            ref.invalidate(watchEventParticipationsForEventProvider(eventId));
-            ref.invalidate(attendanceSheetViewModelProvider(eventId));
-          },
+          onRetry: onBoundaryRetry,
+          mode: CatchErrorStateMode.inline,
         ),
       ),
       builder: (context, viewModel) {
@@ -541,16 +538,17 @@ class _HostEventParticipantsListState extends State<HostEventParticipantsList> {
 
     final rows = switch (profileLookupState.status) {
       HostParticipantProfilesLookupStatus.ready => buildBoard(),
-      HostParticipantProfilesLookupStatus.loading => const CatchSkeletonRows(
+      HostParticipantProfilesLookupStatus.loading => const CatchSkeleton.rows(
         count: 4,
         titleWidth: CatchLayout.skeletonTextSectionWidth,
       ),
       HostParticipantProfilesLookupStatus.error => Padding(
         padding: CatchInsets.content,
-        child: CatchLocalizedInlineErrorState(
+        child: CatchLocalizedErrorState(
           profileLookupState.error!,
           context: AppErrorContext.event,
           onRetry: widget.onRetryProfiles,
+          mode: CatchErrorStateMode.inline,
         ),
       ),
     };
@@ -710,7 +708,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                       'submitted or persisted.',
                   body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
                   icon: CatchIcons.qrCode2Rounded,
-                  control: HostEventCheckInQrPanel(event: viewModel.event),
+                  child: HostEventCheckInQrPanel(event: viewModel.event),
                 ),
               ],
             ),
@@ -848,7 +846,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                 icon: CatchIcons.groupsOutlined,
                 title: rosterState.emptyTitle,
                 message: rosterState.emptyMessage,
-                layout: CatchEmptyStateLayout.inline,
+                variant: CatchEmptyStateVariant.inline,
                 surface: true,
                 padding: CatchInsets.content,
               )
@@ -1149,10 +1147,11 @@ class _HostEventCheckInQrPanelState
             ),
             error: (error, _) => SizedBox(
               width: CatchLayout.eventSuccessVenueQrErrorMaxWidth,
-              child: CatchLocalizedInlineErrorState(
+              child: CatchLocalizedErrorState(
                 error,
                 onRetry: () =>
                     ref.invalidate(eventVenueSessionProvider(widget.event.id)),
+                mode: CatchErrorStateMode.inline,
               ),
             ),
           ),
@@ -1161,10 +1160,12 @@ class _HostEventCheckInQrPanelState
             CatchButton(
               label:
                   context.l10n.hostsHostEventAttendancePanelRuntimeShareLabel,
-              icon: Icon(CatchIcons.share),
+              leading: Icon(CatchIcons.share),
               size: CatchButtonSize.sm,
               variant: CatchButtonVariant.secondary,
-              isLoading: _sharing,
+              status: (_sharing)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: _sharing ? null : () => _shareRuntimeLink(runtimeLink),
             ),
           ],
@@ -1229,10 +1230,10 @@ class HostRosterFilterHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchMetricStrip(
+          CatchMetricSection(
             items: [
               for (final spec in filters)
-                CatchMetricStripItem(
+                CatchMetricValue(
                   value: context.l10n
                       .hostsHostEventAttendancePanelVisiblecopyValue(
                         value: spec.value,
@@ -1243,17 +1244,17 @@ class HostRosterFilterHeader extends StatelessWidget {
           ),
           if (canFilter) ...[
             gapH12,
-            CatchOptionGroup<HostRosterFilter>(
+            CatchChoiceInput<HostRosterFilter>.segmented(
               contract:
                   CatchContractConstraints.mobileFormStateHostRosterFilter,
-              contractValue: (filter) => filter.name,
+              contractValueBuilder: (filter) => filter.name,
               options: [
                 for (final spec in filters)
                   CatchOption(value: spec.filter, label: spec.label),
               ],
               selected: selectedFilter,
               onChanged: onFilterChanged,
-              variant: CatchOptionGroupVariant.mono,
+              variant: CatchChoiceInputVariant.mono,
               scrollable: true,
             ),
           ],
@@ -1323,8 +1324,8 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
       ),
       size: CatchButtonSize.sm,
       variant: CatchButtonVariant.secondary,
-      icon: Icon(CatchIcons.sendRounded),
-      isLoading: isPending,
+      leading: Icon(CatchIcons.sendRounded),
+      status: (isPending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       onPressed: isPending ? null : onOffer,
     );
     return CatchSurface(
@@ -1332,7 +1333,7 @@ class HostWaitlistBulkOfferAction extends StatelessWidget {
       borderColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
       radius: CatchRadius.md,
       backgroundColor: t.warning.withValues(alpha: CatchOpacity.warningFill),
-      child: CatchViewportBreakpoint(
+      child: CatchViewport.atWidth(
         breakpoint: ComponentBreakpoints.hostWaitlistBulkOfferStackBreakpoint,
         compactBuilder: (context) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

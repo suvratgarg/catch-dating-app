@@ -22,10 +22,10 @@ class CatchMenuRow<T> extends StatelessWidget {
         : null;
 
     return Semantics(
-      button: item.role == CatchMenuItemRole.action,
+      button: item.variant == CatchMenuItemVariant.action,
       enabled: item.enabled,
       selected: item.selected,
-      inMutuallyExclusiveGroup: item.role == CatchMenuItemRole.choice,
+      inMutuallyExclusiveGroup: item.variant == CatchMenuItemVariant.choice,
       child: Material(
         color: Colors.transparent,
         child: InkWell(

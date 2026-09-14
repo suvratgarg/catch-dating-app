@@ -65,18 +65,18 @@ class _EventSuccessQuestionnaireConfigEditorState
                 .eventSuccessEventSuccessQuestionnaireConfigEditorTextQuestionSet,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentQuestionnaireConfigTemplateId,
-            contractValue: (value) => value,
+            contractValueBuilder: (value) => value,
             helperText: context.l10n
                 .eventSuccessEventSuccessQuestionnaireConfigEditorLabelLengthQuestions(
                   length: previewPack.questions.length,
                 ),
             values: questionSetIds,
-            itemTitle: (id) => id == _customQuestionSetId
+            itemTitleBuilder: (id) => id == _customQuestionSetId
                 ? context
                       .l10n
                       .eventSuccessEventSuccessQuestionnaireConfigEditorLabelCustom
                 : templates.firstWhere((template) => template.id == id).title,
-            itemDescription: (id) => id == _customQuestionSetId
+            itemDescriptionBuilder: (id) => id == _customQuestionSetId
                 ? EventSuccessQuestionnairePackLibrary.resolve(
                     const EventSuccessQuestionnaireConfig.customTemplate(),
                   ).subtitle
@@ -84,11 +84,13 @@ class _EventSuccessQuestionnaireConfigEditorState
                       .firstWhere((template) => template.id == id)
                       .subtitle,
             selected: previewId,
-            open: _questionSetOpen,
+            disclosureMode: _questionSetOpen
+                ? CatchFieldMode.controlledExpanded
+                : CatchFieldMode.controlledCollapsed,
             onOpenChanged: _setQuestionSetOpen,
             onCancel: _cancelQuestionSet,
             onSubmit: _submitQuestionSet,
-            enabled: widget.enabled,
+            states: <WidgetState>{if (!widget.enabled) WidgetState.disabled},
             onChanged: widget.enabled
                 ? (id) => setState(() => _draftQuestionSetId = id)
                 : null,
@@ -358,7 +360,7 @@ class _CustomQuestionnaireFieldsState extends State<CustomQuestionnaireFields> {
           onCommit(controller.text);
           _accordion.collapse();
         },
-        enabled: widget.enabled,
+        states: <WidgetState>{if (!widget.enabled) WidgetState.disabled},
         inputFormatters: inputFormatters,
         maxLines: maxLines,
         textInputAction: maxLines == 1

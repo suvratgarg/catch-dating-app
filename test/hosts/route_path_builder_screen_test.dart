@@ -26,8 +26,8 @@ void main() {
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
-    expect(topBar.leadingType, CatchTopBarLeading.close);
-    expect(topBar.divider, isFalse);
+    expect(topBar.navigation.mode, CatchTopBarNavigationMode.close);
+    expect(topBar.emphasis, CatchTopBarEmphasis.plain);
     expect(
       tester.widget<gmaps.GoogleMap>(find.byType(gmaps.GoogleMap)).mapType,
       gmaps.MapType.none,

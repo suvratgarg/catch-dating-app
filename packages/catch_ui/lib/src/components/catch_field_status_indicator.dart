@@ -1,14 +1,14 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
-import 'package:catch_ui/src/components/catch_field_spinner.dart';
 import 'package:catch_ui/src/components/catch_field_status.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
+import 'package:catch_ui/src/primitives/catch_loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 /// Animated saving/saved feedback for the `CatchField` trailing lane.
 ///
-/// Product surfaces normally receive this through `CatchFieldTrailing.status`
-/// or `CatchFieldTrailing.toggle`. It is public so the field family keeps a
+/// Product surfaces normally receive this through `CatchFieldTrailingRow.status`
+/// or `CatchFieldTrailingRow.toggle`. It is public so the field family keeps a
 /// cataloged, directly testable status contract instead of a private widget
 /// destination.
 class CatchFieldStatusIndicator extends StatefulWidget {
@@ -83,7 +83,7 @@ class _CatchFieldStatusIndicatorState extends State<CatchFieldStatusIndicator> {
             opacity: _appeared ? 1 : 0,
             child: SizedBox.square(
               dimension: CatchFieldTokens.spinnerExtent,
-              child: CatchFieldSpinner(color: t.ink3),
+              child: CatchLoadingIndicator.inline(color: t.ink3),
             ),
           ),
         ),

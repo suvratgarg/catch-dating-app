@@ -148,15 +148,20 @@ class _ProfileInlineRangeEditorState
         title: widget.title,
         contract: widget.minimumContract,
         body: body,
-        open: widget.isExpanded,
+        disclosureMode: widget.isExpanded
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: (expanded) {
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();
         },
-        isLoading: isSaving,
+
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
-        control: CatchRangeSlider(
+
+        onCancel: _cancel,
+        onSubmit: _submit,
+        child: CatchRangeInput(
           minimumContract: widget.minimumContract,
           maximumContract: widget.maximumContract,
           min: widget.sliderMin,
@@ -173,8 +178,6 @@ class _ProfileInlineRangeEditorState
                   });
                 },
         ),
-        onCancel: _cancel,
-        onSubmit: _submit,
       ),
     );
   }

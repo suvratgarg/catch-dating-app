@@ -12,7 +12,7 @@ class CatchLocalizedSliverErrorState extends StatelessWidget {
     this.onRetry,
     this.retryLabel,
     this.icon,
-    this.secondaryAction,
+    this.actions = const [],
     this.fillRemaining = true,
   }) : errorContext = context;
 
@@ -21,7 +21,7 @@ class CatchLocalizedSliverErrorState extends StatelessWidget {
   final VoidCallback? onRetry;
   final String? retryLabel;
   final IconData? icon;
-  final Widget? secondaryAction;
+  final List<Widget> actions;
   final bool fillRemaining;
 
   @override
@@ -39,7 +39,7 @@ class CatchLocalizedSliverErrorState extends StatelessWidget {
       // descriptor cannot infer that this operation is retryable.
       onRetry: onRetry,
       retryLabel: retryLabel ?? descriptor.retryLabel,
-      secondaryAction: secondaryAction,
+      actions: actions,
       fillRemaining: fillRemaining,
     );
   }

@@ -21,11 +21,11 @@ void main() {
             child: SizedBox(
               width: width,
               height: 700,
-              child: CatchAdaptiveMasterDetailLayout(
+              child: CatchMasterDetailViewport.adaptive(
                 minimumExpandedWidth: 720,
-                masterBuilder: (context, expanded) =>
+                leadingBuilder: (context, expanded) =>
                     Text(expanded ? 'Split master' : 'Compact master'),
-                detail: const Text('Detail'),
+                body: const Text('Detail'),
               ),
             ),
           ),

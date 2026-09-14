@@ -35,7 +35,7 @@ void main() {
     );
 
     expect(find.text('18–99+'), findsOneWidget);
-    var slider = tester.widget<CatchRangeSlider>(find.byType(CatchRangeSlider));
+    var slider = tester.widget<CatchRangeInput>(find.byType(CatchRangeInput));
     expect(slider.values, const RangeValues(18, 99));
 
     slider.onChanged!(const RangeValues(21, 35));
@@ -44,7 +44,7 @@ void main() {
     expect(maxController.text, '35');
     expect(find.text('21–35'), findsOneWidget);
 
-    slider = tester.widget<CatchRangeSlider>(find.byType(CatchRangeSlider));
+    slider = tester.widget<CatchRangeInput>(find.byType(CatchRangeInput));
     slider.onChangeEnd!(const RangeValues(21, 35));
     expect(committed, (minAge: 21, maxAge: 35));
 
@@ -52,7 +52,7 @@ void main() {
     await tester.pump();
     expect(minController.text, isEmpty);
     expect(maxController.text, isEmpty);
-    slider = tester.widget<CatchRangeSlider>(find.byType(CatchRangeSlider));
+    slider = tester.widget<CatchRangeInput>(find.byType(CatchRangeInput));
     slider.onChangeEnd!(const RangeValues(18, 99));
     expect(committed, (minAge: 0, maxAge: 99));
   });
@@ -88,8 +88,8 @@ void main() {
     expect(find.text('25–42'), findsOneWidget);
     expect(
       tester
-          .widget<CatchRangeSlider>(
-            find.byType(CatchRangeSlider, skipOffstage: false),
+          .widget<CatchRangeInput>(
+            find.byType(CatchRangeInput, skipOffstage: false),
           )
           .values,
       const RangeValues(25, 42),

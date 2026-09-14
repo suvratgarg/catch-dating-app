@@ -71,7 +71,7 @@ mixin InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   Widget? buildSaveError() {
     final error = _saveError;
     if (error == null) return null;
-    return CatchErrorBanner(
+    return CatchBanner.error(
       message: appErrorMessage(
         error,
         l10n: context.l10n,

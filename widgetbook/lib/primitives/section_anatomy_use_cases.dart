@@ -8,39 +8,39 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Heading count and trailing states',
-  type: CatchSectionKicker,
+  type: CatchSectionHeader,
   path: '[Core primitives]/Sections',
 )
 Widget sectionKickerStates(BuildContext context) {
   final tokens = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
     title: 'Section heading anatomy',
-    catalogId: 'catch.section.kicker',
+    catalogId: 'catch.section.header.kicker',
     children: [
-      CatchSectionKicker(text: 'Your details', color: tokens.ink),
-      CatchSectionKicker(text: 'Guests', count: 24, color: tokens.ink),
-      CatchSectionKicker(
-        text: 'Upcoming events',
+      CatchSectionHeader.kicker(title: 'Your details', color: tokens.ink),
+      CatchSectionHeader.kicker(title: 'Guests', count: 24, color: tokens.ink),
+      CatchSectionHeader.kicker(
+        title: 'Upcoming events',
         color: tokens.ink,
-        trailing: CatchTextButton(label: 'View all', onPressed: () {}),
+        trailing: CatchButton.text(label: 'View all', onPressed: () {}),
       ),
-      CatchSectionKicker(
-        text: 'Team members',
+      CatchSectionHeader.kicker(
+        title: 'Team members',
         count: 12,
         color: tokens.ink,
-        trailing: CatchTextButton(label: 'Manage', onPressed: () {}),
+        trailing: CatchButton.text(label: 'Manage', onPressed: () {}),
       ),
-      CatchSectionKicker(text: null, count: 8, color: tokens.ink),
-      CatchSectionKicker(
-        text: null,
+      CatchSectionHeader.kicker(title: null, count: 8, color: tokens.ink),
+      CatchSectionHeader.kicker(
+        title: null,
         color: tokens.ink,
-        trailing: CatchTextButton(label: 'Edit', onPressed: () {}),
+        trailing: CatchButton.text(label: 'Edit', onPressed: () {}),
       ),
-      CatchSectionKicker(
-        text: 'Notification preferences',
+      CatchSectionHeader.kicker(
+        title: 'Notification preferences',
         count: 4,
         color: tokens.ink2,
-        size: CatchKickerSize.fieldSection,
+        textVariant: CatchKickerTextVariant.fieldSection,
       ),
     ],
   );
@@ -48,20 +48,20 @@ Widget sectionKickerStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Content and field separator modes',
-  type: CatchSectionBody,
+  type: CatchSectionRowList,
   path: '[Core primitives]/Sections',
 )
-Widget sectionBodyStates(BuildContext context) => WidgetbookCatalogFrame(
+Widget sectionRowListStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Section child layouts',
   catalogId: 'catch.section.body',
   children: [
-    for (final mode in CatchSectionBodyMode.values) ...[
+    for (final mode in CatchSectionRowListMode.values) ...[
       Text(mode.name, style: CatchTextStyles.bodyM(context)),
-      CatchSectionBody(
+      CatchSectionRowList(
         mode: mode,
-        dividerRole: mode == CatchSectionBodyMode.content
-            ? CatchDividerRole.fieldRow
-            : CatchDividerRole.fieldSection,
+        dividerVariant: mode == CatchSectionRowListMode.content
+            ? CatchDividerVariant.fieldRow
+            : CatchDividerVariant.fieldSection,
         children: [
           CatchField.read(
             copy: catchFieldCopy(context.l10n),
@@ -77,8 +77,8 @@ Widget sectionBodyStates(BuildContext context) => WidgetbookCatalogFrame(
         ],
       ),
     ],
-    CatchSectionBody(
-      mode: CatchSectionBodyMode.dividedFields,
+    CatchSectionRowList(
+      mode: CatchSectionRowListMode.dividedFields,
       children: [
         for (final label in ['Adapter row', 'Fallback text lane'])
           Padding(
@@ -87,20 +87,20 @@ Widget sectionBodyStates(BuildContext context) => WidgetbookCatalogFrame(
           ),
       ],
     ),
-    CatchSectionBody(
+    CatchSectionRowList(
       showInternalDividers: false,
       children: [
         for (final label in ['Unseparated content', 'Second item'])
           Text(label, style: CatchTextStyles.bodyM(context)),
       ],
     ),
-    CatchSectionBody(
+    CatchSectionRowList(
       child: Text(
         'Caller-owned direct child',
         style: CatchTextStyles.bodyM(context),
       ),
     ),
-    const CatchSectionBody(),
+    const CatchSectionRowList(),
   ],
 );
 

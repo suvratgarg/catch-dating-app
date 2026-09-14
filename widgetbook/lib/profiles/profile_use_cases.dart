@@ -228,9 +228,9 @@ Widget profileInsightsTabSliverBodyStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: CustomScrollView(
             slivers: [
-              CatchSliverScreenBody(
-                layout: CatchScreenBodyLayout.standard,
-                slivers: [ProfileInsightsTabSliverBody()],
+              CatchPageBody.slivers(
+                mode: CatchPageBodyMode.standard,
+                children: [ProfileInsightsTabSliverBody()],
               ),
             ],
           ),
@@ -328,12 +328,12 @@ Widget profileScreenSelfSectionStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Profile title',
-  type: CatchScreenHeaderTitle,
+  type: CatchScreenHeader,
   path: '[P1 product surfaces]/Profiles/Sections',
 )
 Widget profileTitleStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchScreenHeaderTitle',
+    title: 'CatchScreenHeader',
     contractId: 'section.profile.self.title',
     children: [
       _StateCard(
@@ -341,7 +341,7 @@ Widget profileTitleStates(BuildContext context) {
         child: const _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: _ProfileHeaderRouterFrame(
-            child: CatchScreenHeaderTitle.block(
+            child: CatchScreenHeader.block(
               title: 'Your profile',
               actions: [ProfileSettingsButton()],
             ),
@@ -858,9 +858,9 @@ Widget profileTabSliverBodyStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileExpandedPreviewHeight,
           child: CustomScrollView(
             slivers: [
-              CatchSliverScreenBody(
-                layout: CatchScreenBodyLayout.standard,
-                slivers: [
+              CatchPageBody.slivers(
+                mode: CatchPageBodyMode.standard,
+                children: [
                   ProfileTabSliverBody(
                     user: _viewer,
                     uploadState: _idlePhotoUploadState,
@@ -891,9 +891,9 @@ Widget profileTabSkeletonSliverBodyStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profilePhonePreviewHeight,
           child: CustomScrollView(
             slivers: [
-              CatchSliverScreenBody(
-                layout: CatchScreenBodyLayout.standard,
-                slivers: [ProfileTabSkeletonSliverBody()],
+              CatchPageBody.slivers(
+                mode: CatchPageBodyMode.standard,
+                children: [ProfileTabSkeletonSliverBody()],
               ),
             ],
           ),
@@ -1114,20 +1114,20 @@ Widget profileInlineHeightEditorStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical height stepper states',
-  type: CatchFieldStepper,
+  type: CatchStepper,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileHeightStepperControlsStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldStepper',
-    contractId: 'catch.field.stepper',
+    title: 'CatchStepper',
+    contractId: 'catch.number_stepper',
     children: [
       _StateCard(
         label: 'enabled',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldStepper(
+            child: CatchStepper(
               value: 172,
               min: 120,
               max: 220,
@@ -1145,7 +1145,7 @@ Widget profileHeightStepperControlsStates(BuildContext context) {
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldStepper(
+            child: CatchStepper(
               value: 172,
               min: 120,
               max: 220,
@@ -1164,13 +1164,13 @@ Widget profileHeightStepperControlsStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical height stepper bounds',
-  type: CatchFieldStepper,
+  type: CatchStepper,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileHeightStepButtonStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldStepper bounds',
-    contractId: 'catch.field.stepper.bounds',
+    title: 'CatchStepper bounds',
+    contractId: 'catch.number_stepper.bounds',
     children: [
       _StateCard(
         label: 'minimum and maximum endpoints',
@@ -1179,7 +1179,7 @@ Widget profileHeightStepButtonStates(BuildContext context) {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CatchFieldStepper(
+              CatchStepper(
                 value: 120,
                 min: 120,
                 max: 220,
@@ -1189,7 +1189,7 @@ Widget profileHeightStepButtonStates(BuildContext context) {
                 onChanged: (_) {},
               ),
               gapH16,
-              CatchFieldStepper(
+              CatchStepper(
                 value: 220,
                 min: 120,
                 max: 220,
@@ -1250,25 +1250,24 @@ Widget profileInlineMultiChoiceEntryEditorStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical single-choice chip states',
-  type: CatchFieldChoiceChip,
+  type: CatchChip,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileSingleChipValueStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldChoiceChip',
-    contractId: 'catch.field.choice_chip.single',
+    title: 'CatchChip',
+    contractId: 'catch.chip.choice.single',
     children: [
       _StateCard(
         label: 'selected',
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldChoiceChip(
+            child: CatchChip.choice(
               label: RelationshipGoal.relationship.label,
               selected: true,
-              multi: false,
-              enabled: true,
               onPressed: () {},
+              mode: CatchChipMode.single,
             ),
           ),
         ),
@@ -1278,12 +1277,11 @@ Widget profileSingleChipValueStates(BuildContext context) {
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldChoiceChip(
+            child: CatchChip.choice(
               label: RelationshipGoal.friendship.label,
               selected: false,
-              multi: false,
-              enabled: true,
               onPressed: () {},
+              mode: CatchChipMode.single,
             ),
           ),
         ),
@@ -1293,12 +1291,11 @@ Widget profileSingleChipValueStates(BuildContext context) {
         child: _SectionFrame(
           height: WidgetbookPreviewLayout.profileCompactPreviewHeight,
           child: Center(
-            child: CatchFieldChoiceChip(
+            child: CatchChip.choice(
               label: RelationshipGoal.relationship.label,
               selected: true,
-              multi: false,
-              enabled: false,
-              onPressed: () {},
+              onPressed: null,
+              mode: CatchChipMode.single,
             ),
           ),
         ),
@@ -1309,13 +1306,13 @@ Widget profileSingleChipValueStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical wrapping choice control states',
-  type: CatchFieldChoiceControl,
+  type: CatchChoiceInput,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileMultiChipValueStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldChoiceControl',
-    contractId: 'catch.field.choice_control.multi',
+    title: 'CatchChoiceInput',
+    contractId: 'catch.chip.field.multi',
     children: [
       _StateCard(
         label: 'selected and unselected wrap',
@@ -1323,7 +1320,7 @@ Widget profileMultiChipValueStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: CatchFieldChoiceControl<Language>(
+            child: CatchChoiceInput<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
@@ -1331,11 +1328,10 @@ Widget profileMultiChipValueStates(BuildContext context) {
                 Language.tamil,
                 Language.gujarati,
               ],
-              itemLabel: (value) => value.label,
               selected: const {Language.english, Language.hindi},
-              multi: true,
-              enabled: true,
-              onSelectionChanged: (_) {},
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              onChanged: (_) {},
             ),
           ),
         ),
@@ -1346,7 +1342,7 @@ Widget profileMultiChipValueStates(BuildContext context) {
           height: WidgetbookPreviewLayout.profileInlinePreviewHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: CatchFieldChoiceControl<Language>(
+            child: CatchChoiceInput<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
@@ -1354,11 +1350,10 @@ Widget profileMultiChipValueStates(BuildContext context) {
                 Language.tamil,
                 Language.gujarati,
               ],
-              itemLabel: (value) => value.label,
               selected: const {Language.english, Language.hindi},
-              multi: true,
-              enabled: false,
-              onSelectionChanged: (_) {},
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              onChanged: null,
             ),
           ),
         ),
@@ -1387,18 +1382,18 @@ Widget profileChipPlaceholderStates(BuildContext context) {
                 copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 values: const [Language.english, Language.hindi],
-                itemLabel: (value) => value.label,
+                itemLabelBuilder: (value) => value.label,
                 selected: const {},
-                multi: true,
+                mode: CatchChipMode.multiple,
                 onSelectionChanged: (_) {},
               ),
               CatchField<Language>.choices(
                 copy: catchFieldCopy(context.l10n),
                 title: 'Languages',
                 values: const [Language.english, Language.hindi],
-                itemLabel: (value) => value.label,
+                itemLabelBuilder: (value) => value.label,
                 selected: const {Language.english, Language.hindi},
-                multi: true,
+                mode: CatchChipMode.multiple,
                 onSelectionChanged: (_) {},
               ),
             ],
@@ -1411,13 +1406,13 @@ Widget profileChipPlaceholderStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Canonical choice option states',
-  type: CatchFieldChoiceControl,
+  type: CatchChoiceInput,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
 Widget profileChipOptionsStates(BuildContext context) {
   return _ProfileCatalog(
-    title: 'CatchFieldChoiceControl options',
-    contractId: 'catch.field.choice_control.options',
+    title: 'CatchChoiceInput options',
+    contractId: 'catch.chip.field.options',
     children: [
       _StateCard(
         label: 'enabled selected',
@@ -1425,17 +1420,16 @@ Widget profileChipOptionsStates(BuildContext context) {
           height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: CatchFieldChoiceControl<Language>(
+            child: CatchChoiceInput<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
                 Language.marathi,
               ],
-              itemLabel: (value) => value.label,
               selected: const {Language.english},
-              multi: true,
-              enabled: true,
-              onSelectionChanged: (_) {},
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              onChanged: (_) {},
             ),
           ),
         ),
@@ -1446,17 +1440,16 @@ Widget profileChipOptionsStates(BuildContext context) {
           height: WidgetbookPreviewLayout.compactPanelHeight,
           child: Padding(
             padding: CatchInsets.content,
-            child: CatchFieldChoiceControl<Language>(
+            child: CatchChoiceInput<Language>(
               values: const [
                 Language.english,
                 Language.hindi,
                 Language.marathi,
               ],
-              itemLabel: (value) => value.label,
               selected: const {Language.english, Language.hindi},
-              multi: true,
-              enabled: false,
-              onSelectionChanged: (_) {},
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
+              onChanged: null,
             ),
           ),
         ),
@@ -1524,37 +1517,28 @@ Widget catchFormRowListStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Typed descriptor prototype',
-  type: CatchFormTextRowEditor,
+  type: CatchFormTextField,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
-Widget catchFormTextRowEditorStates(BuildContext context) {
+Widget catchFormTextFieldStates(BuildContext context) {
   return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
   name: 'Typed descriptor prototype',
-  type: CatchFormSingleChoiceRowEditor,
+  type: CatchFormChoiceField,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
-Widget catchFormSingleChoiceRowEditorStates(BuildContext context) {
+Widget catchFormChoiceFieldStates(BuildContext context) {
   return _catchFormDescriptorPreview(context);
 }
 
 @widgetbook.UseCase(
   name: 'Typed descriptor prototype',
-  type: CatchFormMultiChoiceRowEditor,
+  type: CatchFormRangeField,
   path: '[P1 product surfaces]/Profiles/Inline Editors',
 )
-Widget catchFormMultiChoiceRowEditorStates(BuildContext context) {
-  return _catchFormDescriptorPreview(context);
-}
-
-@widgetbook.UseCase(
-  name: 'Typed descriptor prototype',
-  type: CatchFormRangeRowEditor,
-  path: '[P1 product surfaces]/Profiles/Inline Editors',
-)
-Widget catchFormRangeRowEditorStates(BuildContext context) {
+Widget catchFormRangeFieldStates(BuildContext context) {
   return _catchFormDescriptorPreview(context);
 }
 
@@ -1627,8 +1611,8 @@ Widget _catchFormDescriptorPreview(BuildContext context) {
                     _WidgetbookFormPatch('pace', (min, max)),
               ),
             ],
-            savePatch: (_) async => true,
-            errorText: (_, error) => error.toString(),
+            onSave: (_) async => true,
+            errorTextBuilder: (_, error) => error.toString(),
           ),
         ),
       ),
@@ -2193,7 +2177,7 @@ class _ProfileHeaderPreviewState extends State<_ProfileHeaderPreview>
     return CustomScrollView(
       slivers: [
         ...CatchSliverHeader(
-          title: const CatchScreenHeaderTitle.block(
+          title: const CatchScreenHeader.block(
             title: 'Your profile',
             actions: [ProfileSettingsButton()],
           ),
@@ -2463,7 +2447,7 @@ class _BlockDialogPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: CatchConfirmDialog<bool>(
+      child: CatchDialog<bool>.confirmation(
         title: 'Block ${profile.name}?',
         message:
             'You will stop seeing each other in chats, matches, Catches, and '

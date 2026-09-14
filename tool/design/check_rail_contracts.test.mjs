@@ -49,7 +49,7 @@ test("reports redundant showDivider false without failing high", () => {
   const result = scanSourceForRailContracts({
     relativePath: "lib/dashboard/presentation/widgets/recommendations.dart",
     source: `
-      Widget build(context) => CatchHorizontalRail(
+      Widget build(context) => CatchSection.horizontal(
         title: 'Recommended',
         itemCount: 2,
         itemBuilder: itemBuilder,
@@ -66,7 +66,7 @@ test("ignores canonical rail implementations", () => {
   const result = scanSourceForRailContracts({
     relativePath: "lib/clubs/presentation/discovery/widgets/club_avatar_rail.dart",
     source: `
-      Widget build(context) => CatchHorizontalRail(
+      Widget build(context) => CatchSection.horizontal(
         title: 'Your clubs',
         fullBleed: fullBleed,
         showDivider: showDivider,
@@ -86,7 +86,7 @@ test("scanRailContracts covers app and shared-package production sources", () =>
   writeFile(
     root,
     "packages/catch_ui/lib/src/components/neighbor.dart",
-    "Widget build(context) => CatchHorizontalRail(headerPadding: EdgeInsets.zero);",
+    "Widget build(context) => CatchSection.horizontal(headerPadding: EdgeInsets.zero);",
   );
   writeFile(
     root,
@@ -119,9 +119,9 @@ test("scanRailContracts covers app and shared-package production sources", () =>
 });
 
 test("only the exact extracted rail owner retains its exemption", () => {
-  const source = "Widget build(context) => CatchHorizontalRail(headerPadding: EdgeInsets.zero);";
+  const source = "Widget build(context) => CatchSection.horizontal(headerPadding: EdgeInsets.zero);";
   const owner = scanSourceForRailContracts({
-    relativePath: "packages/catch_ui/lib/src/components/catch_horizontal_rail.dart",
+    relativePath: "packages/catch_ui/lib/src/components/catch_section.dart",
     source,
   });
   assert.equal(owner.findings.length, 0);
@@ -140,3 +140,17 @@ function writeFile(root, relativePath, source) {
   fs.mkdirSync(path.dirname(file), {recursive: true});
   fs.writeFileSync(file, source);
 }
+
+test("horizontal named recipe cannot escape the chrome scanner", () => {
+  const result = scanSourceForRailContracts({
+    relativePath: "lib/explore/presentation/widgets/recommendations.dart",
+    source: "Widget build(context) => CatchSection . horizontal(headerPadding: EdgeInsets.zero);",
+  });
+  assert.equal(result.inventory.railCalls, 1);
+  assert.equal(result.findings[0].rule, "RAIL-CONTRACT-001");
+  const otherRecipe = scanSourceForRailContracts({
+    relativePath: "lib/explore/presentation/widgets/recommendations.dart",
+    source: "Widget build(context) => CatchSection.plain(padding: EdgeInsets.zero, child: Text('x'));",
+  });
+  assert.equal(otherRecipe.inventory.railCalls, 0);
+});

@@ -69,36 +69,36 @@ class HostCreateEventRouteScreen extends ConsumerWidget {
     final initialDraft = this.initialDraft;
     final initialPrefill = this.initialPrefill;
     if (initialClub != null && initialClub.id != clubId) {
-      return CatchScreenScaffold.stepFlow(
-        body: CatchErrorBody(
+      return CatchScaffold.stepFlow(
+        body: CatchErrorState(
           title:
               context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
           message: context
               .l10n
               .hostsHostCreateEventScreenMessageThatOrganizerDoesNot,
-          secondaryAction: const CatchErrorBackAction(),
+          actions: const [CatchErrorBackButton()],
         ),
       );
     }
     if (initialPrefill != null && initialPrefill.values.clubId != clubId) {
-      return CatchScreenScaffold.stepFlow(
-        body: CatchErrorBody(
+      return CatchScaffold.stepFlow(
+        body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleRepeatUnavailable,
           message:
               context.l10n.hostsHostCreateEventScreenMessageThatEventBelongsTo,
-          secondaryAction: const CatchErrorBackAction(),
+          actions: const [CatchErrorBackButton()],
         ),
       );
     }
     if (initialDraft != null && initialDraft.clubId != clubId) {
-      return CatchScreenScaffold.stepFlow(
-        body: CatchErrorBody(
+      return CatchScaffold.stepFlow(
+        body: CatchErrorState(
           title:
               context.l10n.hostsHostCreateEventScreenTitleEventSetupUnavailable,
           message: context
               .l10n
               .hostsHostCreateEventScreenMessageThatOrganizerDoesNot,
-          secondaryAction: const CatchErrorBackAction(),
+          actions: const [CatchErrorBackButton()],
         ),
       );
     }
@@ -147,7 +147,7 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
     return switch (state.status) {
       HostCreateEventRouteStatus.loading =>
         const HostCreateEventRouteLoadingScreen(),
-      HostCreateEventRouteStatus.error => CatchScreenScaffold.stepFlow(
+      HostCreateEventRouteStatus.error => CatchScaffold.stepFlow(
         body: CatchLocalizedErrorState(
           state.error!,
           context: AppErrorContext.club,
@@ -161,18 +161,18 @@ class HostCreateEventRouteStateView extends ConsumerWidget {
           },
         ),
       ),
-      HostCreateEventRouteStatus.notFound => CatchScreenScaffold.stepFlow(
-        body: CatchErrorBody(
+      HostCreateEventRouteStatus.notFound => CatchScaffold.stepFlow(
+        body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleClubNotFound,
           message: context.l10n.hostsHostCreateEventScreenMessageThisClubIsNo,
-          secondaryAction: const CatchErrorBackAction(),
+          actions: const [CatchErrorBackButton()],
         ),
       ),
-      HostCreateEventRouteStatus.forbidden => CatchScreenScaffold.stepFlow(
-        body: CatchErrorBody(
+      HostCreateEventRouteStatus.forbidden => CatchScaffold.stepFlow(
+        body: CatchErrorState(
           title: context.l10n.hostsHostCreateEventScreenTitleHostAccessRequired,
           message: context.l10n.hostsHostCreateEventScreenMessageOnlyThisClubS,
-          secondaryAction: const CatchErrorBackAction(),
+          actions: const [CatchErrorBackButton()],
         ),
       ),
       HostCreateEventRouteStatus.ready => CreateEventScreen(

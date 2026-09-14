@@ -14,7 +14,7 @@ class EventSuccessLiveWorkspacePicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabRail<EventSuccessLiveWorkspace>(
+    return CatchPageTabBar<EventSuccessLiveWorkspace>(
       options: [
         CatchOption(
           value: EventSuccessLiveWorkspace.now,
@@ -35,7 +35,7 @@ class EventSuccessLiveWorkspacePicker extends StatelessWidget {
       ],
       selected: selected,
       onChanged: onChanged,
-      variant: CatchOptionGroupVariant.operational,
+      variant: CatchChoiceInputVariant.operational,
     );
   }
 }
@@ -52,7 +52,7 @@ class EventSuccessTabPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabRail<EventSuccessHostTab>(
+    return CatchPageTabBar<EventSuccessHostTab>(
       options: [
         for (final tab in EventSuccessHostTab.values)
           CatchOption(value: tab, label: tab.label(context.l10n)),
@@ -132,7 +132,7 @@ class PlanSummary extends StatelessWidget {
         body: context.l10n.eventSuccessEventSuccessHostSharedLabelLengthTools(
           length: draft.selectedModules.length,
         ),
-        action: CatchBadge(
+        actions: CatchBadge(
           label: planIsPersisted
               ? draft.status.label
               : context.l10n.eventSuccessEventSuccessHostSharedLabelNotSaved,
@@ -165,7 +165,7 @@ class HostActivitySummary extends StatelessWidget {
         body: profile.summary,
         valueText: profile.interactionModel.label,
         icon: CatchIcons.autoAwesomeOutlined,
-        action: CatchBadge(
+        actions: CatchBadge(
           label: context.l10n
               .eventSuccessEventSuccessHostSharedLabelLengthSelected(
                 length: draft.selectedModules.length,
@@ -201,7 +201,7 @@ class CompatibilitySignalHostCard extends StatelessWidget {
                     .eventSuccessEventSuccessHostSharedTextAnswersCanStillShape,
           valueText: pack.title,
           icon: CatchIcons.psychologyAltOutlined,
-          action: CatchBadge(
+          actions: CatchBadge(
             label: rankingOn
                 ? context
                       .l10n

@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-09-04",
+  "updated": "2026-09-14",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -12,14 +12,14 @@
   "layoutContracts": {
     "screen.event.detail": {
       "owners": [
-        {"routes": ["eventDetailScreen", "calendarEventDetailScreen", "savedEventDetailScreen", "dashboardEventDetailScreen", "hostAppEventDetailScreen"], "file": "lib/events/presentation/event_detail_screen.dart", "symbol": "_EventDetailScreenState", "family": "media-hero", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"},
-        {"routes": ["eventDetailScreen", "calendarEventDetailScreen", "savedEventDetailScreen", "dashboardEventDetailScreen", "hostAppEventDetailScreen"], "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart", "symbol": "EventDetailLoadingScreen", "family": "media-hero", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+        {"routes": ["eventDetailScreen", "calendarEventDetailScreen", "savedEventDetailScreen", "dashboardEventDetailScreen", "hostAppEventDetailScreen"], "file": "lib/events/presentation/event_detail_screen.dart", "symbol": "_EventDetailScreenState", "family": "media-hero", "expression": "CatchScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"},
+        {"routes": ["eventDetailScreen", "calendarEventDetailScreen", "savedEventDetailScreen", "dashboardEventDetailScreen", "hostAppEventDetailScreen"], "file": "lib/events/presentation/widgets/event_detail_loading_skeleton.dart", "symbol": "EventDetailLoadingScreen", "family": "media-hero", "expression": "CatchScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "Every Event Detail route and loading state uses the registered media-hero workspace owner."
     },
     "screen.club.detail": {
       "owners": [
-        {"routes": ["clubDetailScreen"], "file": "lib/clubs/presentation/detail/club_detail_screen.dart", "symbol": "ClubDetailScreen", "family": "media-hero", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
+        {"routes": ["clubDetailScreen"], "file": "lib/clubs/presentation/detail/club_detail_screen.dart", "symbol": "ClubDetailScreen", "family": "media-hero", "expression": "CatchScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
       ],
       "reason": "Club Detail owns a collapsing media hero and mixed edge-to-edge content."
     },
@@ -32,7 +32,7 @@
     "screen.explore.discovery": {
       "owners": [
         {"routes": ["exploreScreen"], "file": "lib/explore/presentation/explore_screen.dart", "symbol": "_ExploreScreenState", "family": "root", "expression": "CatchRootScreenScaffold.withPrimaryRail", "bodyGeometry": "full-bleed", "topEdge": "header-owned"},
-        {"routes": ["exploreMapScreen"], "file": "lib/explore/presentation/explore_map_screen.dart", "symbol": "_ExploreMapScreenState", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+        {"routes": ["exploreMapScreen"], "file": "lib/explore/presentation/explore_map_screen.dart", "symbol": "_ExploreMapScreenState", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "Explore declares separate canonical list-root and immersive-map owners."
     },
@@ -47,9 +47,9 @@
     },
     "screen.event_success.companion": {
       "owners": [
-        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/event_success_companion_screen.dart", "symbol": "CompanionScaffold", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "route-chrome"},
-        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart", "symbol": "CompanionStageScaffold", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
-        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart", "symbol": "CompanionPaperScaffold", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
+        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/event_success_companion_screen.dart", "symbol": "CompanionScaffold", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "route-chrome"},
+        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart", "symbol": "CompanionStageScaffold", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
+        {"routes": ["eventSuccessCompanionScreen"], "file": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart", "symbol": "CompanionPaperScaffold", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
       ],
       "reason": "Companion success deliberately switches among registered immersive stage and paper compositions."
     },
@@ -59,7 +59,7 @@
     },
     "screen.catches.event": {
       "owners": [
-        {"routes": ["swipeEventScreen"], "file": "lib/swipes/presentation/swipe_screen.dart", "symbol": "_SwipeScreenState", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+        {"routes": ["swipeEventScreen"], "file": "lib/swipes/presentation/swipe_screen.dart", "symbol": "_SwipeScreenState", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "The event deck is an intentional full-bleed immersive route."
     },
@@ -110,15 +110,15 @@
     },
     "screen.host.club.detail": {
       "owners": [
-        {"routes": ["hostClubDetailScreen"], "file": "lib/clubs/presentation/detail/club_detail_screen.dart", "symbol": "ClubDetailScreen", "family": "media-hero", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
+        {"routes": ["hostClubDetailScreen"], "file": "lib/clubs/presentation/detail/club_detail_screen.dart", "symbol": "ClubDetailScreen", "family": "media-hero", "expression": "CatchScaffold.workspace", "bodyGeometry": "mixed", "topEdge": "body-owned"}
       ],
       "reason": "The Host club-detail alias reuses the governed Club Detail media-hero owner."
     },
     "screen.host.event.create": {
       "owners": [
-        {"routes": ["hostCreateEventScreen"], "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart", "symbol": "_CreateEventScreenState", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "safe-area"},
-        {"routes": ["hostCreateEventScreen"], "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart", "symbol": "HostCreateEventRouteLoadingScreen", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "safe-area"},
-        {"routes": ["hostCreateEventScreen"], "file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "PaperCelebrationScaffold", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "body-owned"}
+        {"routes": ["hostCreateEventScreen"], "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart", "symbol": "_CreateEventScreenState", "family": "step-flow", "expression": "CatchScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "safe-area"},
+        {"routes": ["hostCreateEventScreen"], "file": "lib/hosts/presentation/event_management/host_create_event_route_loading_screen.dart", "symbol": "HostCreateEventRouteLoadingScreen", "family": "step-flow", "expression": "CatchScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "safe-area"},
+        {"routes": ["hostCreateEventScreen"], "file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "PaperCelebrationScaffold", "family": "step-flow", "expression": "CatchScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "body-owned"}
       ],
       "reason": "Event creation and its loading state share the explicit step-flow owner."
     },
@@ -153,7 +153,7 @@
     },
     "screen.host.inbox": {
       "owners": [
-        {"routes": ["hostInboxScreen"], "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart", "symbol": "_HostInboxScreenState", "family": "adaptive-workspace", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
+        {"routes": ["hostInboxScreen"], "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart", "symbol": "_HostInboxScreenState", "family": "adaptive-workspace", "expression": "CatchScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
         {"routes": ["hostInboxScreen"], "file": "lib/hosts/presentation/inbox/host_inbox_screen.dart", "symbol": "_HostInboxScreenState", "family": "adaptive-workspace", "expression": "CatchRootScreenScrollView.withPrimaryRail", "bodyGeometry": "full-bleed", "topEdge": "safe-area"},
         {"routes": ["hostOrganizerMessagingScreen"], "file": "lib/hosts/presentation/inbox/host_messaging_setup_screen.dart", "symbol": "HostMessagingSetupScreen", "family": "pushed-route", "expression": "CatchRouteScaffold", "bodyGeometry": "standard", "topEdge": "route-chrome"}
       ],
@@ -167,20 +167,20 @@
     },
     "screen.start.welcome": {
       "owners": [
-        {"routes": ["startScreen"], "file": "lib/onboarding/presentation/start_welcome_route_screen.dart", "symbol": "StartWelcomeRouteScreen", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"}
+        {"routes": ["startScreen"], "file": "lib/onboarding/presentation/start_welcome_route_screen.dart", "symbol": "StartWelcomeRouteScreen", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"}
       ],
       "reason": "A deterministic route adapter gives the intentionally embeddable WelcomePage an explicit standalone surface owner."
     },
     "screen.auth.phone_entry": {
       "owners": [
-        {"routes": ["authScreen"], "file": "lib/auth/presentation/auth_screen.dart", "symbol": "AuthScreen", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "safe-area"},
-        {"routes": ["authScreen"], "file": "lib/auth/presentation/auth_screen.dart", "symbol": "HostAuthFlowFrame", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "safe-area"}
+        {"routes": ["authScreen"], "file": "lib/auth/presentation/auth_screen.dart", "symbol": "AuthScreen", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "safe-area"},
+        {"routes": ["authScreen"], "file": "lib/auth/presentation/auth_screen.dart", "symbol": "HostAuthFlowFrame", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "safe-area"}
       ],
       "reason": "Consumer and Host auth frames share the explicit standalone family."
     },
     "screen.onboarding.flow": {
       "owners": [
-        {"routes": ["onboardingScreen"], "file": "lib/onboarding/presentation/onboarding_screen.dart", "symbol": "_OnboardingScreenState", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "body-owned"}
+        {"routes": ["onboardingScreen"], "file": "lib/onboarding/presentation/onboarding_screen.dart", "symbol": "_OnboardingScreenState", "family": "step-flow", "expression": "CatchScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "body-owned"}
       ],
       "reason": "Onboarding is a route-level multi-step flow with its own step chrome."
     },
@@ -210,7 +210,7 @@
     },
     "screen.host.club.create": {
       "owners": [
-        {"routes": ["hostCreateClubScreen"], "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart", "symbol": "_CreateClubScreenState", "family": "step-flow", "expression": "CatchScreenScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "safe-area"}
+        {"routes": ["hostCreateClubScreen"], "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart", "symbol": "_CreateClubScreenState", "family": "step-flow", "expression": "CatchScaffold.stepFlow", "bodyGeometry": "intrinsic", "topEdge": "safe-area"}
       ],
       "reason": "Club creation and loading share the explicit step-flow family."
     },
@@ -223,7 +223,7 @@
     },
     "screen.event.location_map": {
       "owners": [
-        {"routes": ["eventLocationMapScreen"], "file": "lib/events/presentation/event_location_map_screen.dart", "symbol": "ChromelessMapScaffold", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+        {"routes": ["eventLocationMapScreen"], "file": "lib/events/presentation/event_location_map_screen.dart", "symbol": "ChromelessMapScaffold", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "The exact-location map is an intentional chromeless immersive surface."
     },
@@ -275,16 +275,16 @@
   "layoutOnlyRoutes": {
     "loadingScreen": {
       "owners": [
-        {"routes": ["loadingScreen"], "file": "lib/routing/go_router.dart", "symbol": "_RouteLoadingScreen", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "standard", "topEdge": "safe-area"}
+        {"routes": ["loadingScreen"], "file": "lib/routing/go_router.dart", "symbol": "_RouteLoadingScreen", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "standard", "topEdge": "safe-area"}
       ],
       "reason": "The transient startup route is excluded from design parity but still has typed layout ownership."
     },
     "paymentConfirmationScreen": {
       "owners": [
-        {"routes": ["paymentConfirmationScreen"], "file": "packages/catch_ui/lib/src/patterns/catch_error_scaffold.dart", "symbol": "CatchErrorScaffold", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"},
-        {"routes": ["paymentConfirmationScreen"], "file": "lib/payments/presentation/payment_confirmation_loading_screen.dart", "symbol": "PaymentConfirmationLoadingScreen", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "standard", "topEdge": "safe-area"},
-        {"routes": ["paymentConfirmationScreen"], "file": "lib/payments/presentation/payment_confirmation_screen.dart", "symbol": "PaymentPendingCheckoutBody", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
-        {"routes": ["paymentConfirmationScreen"], "file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+        {"routes": ["paymentConfirmationScreen"], "file": "packages/catch_ui/lib/src/patterns/catch_error_scaffold.dart", "symbol": "CatchErrorScaffold", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "intrinsic", "topEdge": "body-owned"},
+        {"routes": ["paymentConfirmationScreen"], "file": "lib/payments/presentation/payment_confirmation_loading_screen.dart", "symbol": "PaymentConfirmationLoadingScreen", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "standard", "topEdge": "safe-area"},
+        {"routes": ["paymentConfirmationScreen"], "file": "lib/payments/presentation/payment_confirmation_screen.dart", "symbol": "PaymentPendingCheckoutBody", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"},
+        {"routes": ["paymentConfirmationScreen"], "file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "Payment confirmation is a route coordinator whose loading, localized error, pending checkout, and completed celebration terminals each have deterministic standalone ownership."
     }
@@ -292,19 +292,19 @@
   "imperativePageContracts": {
     "MatchCelebrationDialog": {
       "owners": [
-        {"file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+        {"file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "The root-navigator match celebration delegates to the canonical standalone celebration surface."
     },
     "EventJoinedCelebrationScreen": {
       "owners": [
-        {"file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+        {"file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "The no-payment join completion pushes the canonical standalone celebration surface."
     },
     "EventCheckInCelebrationScreen": {
       "owners": [
-        {"file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScreenScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+        {"file": "lib/core/celebration/catch_celebration_screen.dart", "symbol": "_CatchCelebrationScreenState", "family": "standalone", "expression": "CatchScaffold.standalone", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "The check-in fallback pushes the canonical standalone celebration surface."
     },
@@ -322,7 +322,7 @@
     },
     "LocationPickerScreen": {
       "owners": [
-        {"file": "lib/events/presentation/location_picker_screen.dart", "symbol": "_LocationPickerScreenState", "family": "immersive", "expression": "CatchScreenScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
+        {"file": "lib/events/presentation/location_picker_screen.dart", "symbol": "_LocationPickerScreenState", "family": "immersive", "expression": "CatchScaffold.workspace", "bodyGeometry": "full-bleed", "topEdge": "body-owned"}
       ],
       "reason": "Every create/edit location launch site shares the full-bleed map workspace owner."
     },
@@ -1135,7 +1135,7 @@
               "symbol": "EventDetailHostsSection"
             },
             "currentOwner": "EventDetailBody",
-            "targetOwner": "registered host section plus host-card compound",
+            "targetOwner": "EventDetailHostsSection with CatchPersonRow.contact",
             "dependencies": [
               "catch.button",
               "catch.surface"
@@ -1149,9 +1149,9 @@
               "unverified"
             ],
             "previewIds": [
-              "CatchHostRow/Catalog states"
+              "CatchPersonRow/Contact states"
             ],
-            "migration": "Club lookup is route-owned and mapped through EventDetailHostState; remaining work is formal host-card component registration and broader section-state hardening."
+            "migration": "Club lookup is route-owned and mapped through EventDetailHostState; identity and contact actions mount the registered CatchPersonRow.contact recipe."
           },
           {
             "id": "section.event.who_is_going",
@@ -1645,7 +1645,7 @@
           "id": "join_leave_failed",
           "kind": "mutation",
           "status": "captured",
-          "source": "CatchMutationErrorListener wraps join, leave, push-notification, and start-conversation mutations.",
+          "source": "listenToCatchMutationErrors subscribes to join, leave, push-notification, and start-conversation mutations in the owning build branch.",
           "captureIds": [
             "club_detail_mutation_error"
           ],
@@ -1739,7 +1739,7 @@
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "CatchMetricStrip"
+              "symbol": "CatchMetricSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "screen-local section.club.stats until another product screen proves reuse",
@@ -1753,7 +1753,7 @@
               "empty_rating"
             ],
             "previewIds": [
-              "CatchMetricStrip/Contract states"
+              "CatchMetricSection/Contract states"
             ],
             "migration": "Keep screen-local for now; promote only if host club detail or another product screen reuses the same club metrics contract."
           },
@@ -2497,7 +2497,7 @@
           "id": "event_feed_error",
           "kind": "error",
           "status": "captured",
-          "source": "AsyncError from exploreFeedViewModelProvider renders CatchLocalizedInlineErrorState inside the feed sliver.",
+          "source": "AsyncError from exploreFeedViewModelProvider renders CatchLocalizedErrorState (inline/compact mode) inside the feed sliver.",
           "previewIds": [
             "ExploreEventsSection/Feed states"
           ],
@@ -2559,7 +2559,7 @@
             "ExploreScreen/Screen states",
             "ExploreEventsSection/Feed states",
             "ExploreEventTypeBrowseGrid/Activity states",
-            "CatchCountPill/Map launcher states"
+            "CatchButton/Map launcher states"
           ],
           "tests": [
             "test/explore/explore_widgets_test.dart"
@@ -2570,7 +2570,7 @@
           "id": "cross_paths_suggestion",
           "kind": "populated",
           "status": "captured",
-          "source": "exploreCrossPathsSuggestionsProvider requests at most two server-ranked, consent-safe suggestions for currently visible first-party events. ExploreFeedSectionState inserts each CatchPersonPolaroid after event content in the same date group without replacing its event ticket; provider errors and expired tokens fail closed to no people.",
+          "source": "exploreCrossPathsSuggestionsProvider requests at most two server-ranked, consent-safe suggestions for currently visible first-party events. ExploreFeedSectionState inserts each CatchPolaroid after event content in the same date group without replacing its event ticket; provider errors and expired tokens fail closed to no people.",
           "captureIds": [
             "explore_cross_paths_person"
           ],
@@ -2817,7 +2817,7 @@
           "source": "Explore has narrow-width widget tests for key cards, but no full-screen text-scale capture.",
           "previewIds": [
             "ExploreScreen/Screen states",
-            "CatchCountPill/Map launcher states"
+            "CatchButton/Map launcher states"
           ],
           "nextAction": "Review text-scale capture against design references for browse header, filter rail, event rows, and map pill.",
           "captureIds": [
@@ -2890,7 +2890,6 @@
             "dependencies": [
               "catch.button",
               "catch.chip",
-              "catch.count_pill",
               "catch.surface"
             ],
             "states": [
@@ -2988,7 +2987,6 @@
             "targetOwner": "registered floating map count pill",
             "dependencies": [
               "catch.button",
-              "catch.count_pill",
               "catch.icon_button"
             ],
             "states": [
@@ -2998,9 +2996,9 @@
               "text_scale"
             ],
             "previewIds": [
-              "CatchCountPill/Map launcher states"
+              "CatchButton/Map launcher states"
             ],
-            "migration": "Map label/count derivation now lives in provider-free ExploreMapLauncherState. CountPill states are registered through catch.count_pill and the Explore map launcher section binds the production map/list affordance states."
+            "migration": "Map label/count derivation now lives in provider-free ExploreMapLauncherState. CountPill states are registered through catch.button and the Explore map launcher section binds the production map/list affordance states."
           },
           {
             "id": "section.explore.map_route",
@@ -3019,7 +3017,7 @@
             "currentOwner": "ExploreMapScreen and EventMapView",
             "targetOwner": "registered Explore map route adapter",
             "dependencies": [
-              "catch.count_pill",
+              "catch.button",
               "catch.event_card",
               "catch.icon_button"
             ],
@@ -3103,7 +3101,7 @@
         {
           "id": "DS-EXPLORE-001",
           "status": "closed",
-          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.count_pill, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to ExploreOrganizerPosterCard and the catch.organizer_poster family."
+          "nextAction": "Closed by registering Explore browse chrome, filter rail, mixed feed, cover story, map launcher, map route, empty/error, and activity-grid sections in the screen registry, while mapping reusable compounds to formal component contracts: catch.cover_story, catch.button, catch.event_card, and catch.organizer_poster. DateTicket/EventTicket roles map to catch.event_card ticket states; organizer spotlight roles map to ExploreOrganizerPosterCard and the catch.organizer_poster family."
         },
         {
           "id": "DS-EXPLORE-002",
@@ -3542,7 +3540,7 @@
           "id": "recommendations_error",
           "kind": "error",
           "status": "captured",
-          "source": "Recommendation load failures render CatchLocalizedInlineErrorState with AppErrorContext.dashboard and retry invalidation.",
+          "source": "Recommendation load failures render CatchLocalizedErrorState (inline/compact mode) with AppErrorContext.dashboard and retry invalidation.",
           "tests": [
             "test/dashboard/dashboard_screen_test.dart"
           ],
@@ -3652,7 +3650,7 @@
               "symbol": "NotificationsAction"
             },
             "currentOwner": "DashboardScreen",
-            "targetOwner": "NotificationsAction semantic adapter over CatchIconButton.counted",
+            "targetOwner": "NotificationsAction semantic adapter over CatchIconAction.counted",
             "dependencies": [
               "catch.badge",
               "catch.icon_button",
@@ -3663,7 +3661,7 @@
               "unread",
               "capped_count"
             ],
-            "migration": "NotificationsAction retains notification loading, analytics, and routing semantics while delegating icon chrome, typed count formatting, zero hiding, and the 40px app-bar target to CatchIconButton.counted.",
+            "migration": "NotificationsAction retains notification loading, analytics, and routing semantics while delegating icon chrome, typed count formatting, zero hiding, and the 40px app-bar target to CatchIconAction.counted.",
             "previewIds": [
               "DashboardScreen/Screen states"
             ]
@@ -4219,7 +4217,7 @@
           "id": "data_load_error",
           "kind": "error",
           "status": "captured",
-          "source": "Event, profile, participation, plan, arrival mission, compatibility, feedback, assignment, preference, wingman, and candidate errors render _CompanionError through CatchLocalizedInlineErrorState with retry invalidation.",
+          "source": "Event, profile, participation, plan, arrival mission, compatibility, feedback, assignment, preference, wingman, and candidate errors render _CompanionError through CatchLocalizedErrorState (inline/compact mode) with retry invalidation.",
           "nextAction": "Event, profile, participation, and plan failures are captured; add assignment, rotation, wingman, and candidate error captures if those branches diverge visually.",
           "previewIds": [
             "EventSuccessCompanionRouteScreen/Route states"
@@ -4366,7 +4364,7 @@
           "id": "micro_pod_assignment",
           "kind": "populated",
           "status": "captured",
-          "source": "Assigned micro-pod and group-rotation slots render group labels, peer rows, table/round details, and handoff CatchToggle opt-in controls.",
+          "source": "Assigned micro-pod and group-rotation slots render group labels, peer rows, table/round details, and handoff CatchToggleInput opt-in controls.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -4384,7 +4382,7 @@
           "id": "rotation_schedule",
           "kind": "populated",
           "status": "captured",
-          "source": "Guided rotation assignment renders round schedule, partner profile rows, and a handoff CatchToggle Include me control.",
+          "source": "Guided rotation assignment renders round schedule, partner profile rows, and a handoff CatchToggleInput Include me control.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -4497,7 +4495,7 @@
           "id": "offline",
           "kind": "offline",
           "status": "captured",
-          "source": "Companion provider failures use shared mapped offline copy through CatchLocalizedInlineErrorState; event_success_companion_offline captures an offline-mapped plan load failure.",
+          "source": "Companion provider failures use shared mapped offline copy through CatchLocalizedErrorState (inline/compact mode); event_success_companion_offline captures an offline-mapped plan load failure.",
           "nextAction": "Define companion-specific offline copy only if product wants copy that diverges from the shared app error catalogue, and add assignment/wingman offline captures when runtime-stage fixtures expand.",
           "previewIds": [
             "EventSuccessCompanionRouteScreen/Route states"
@@ -5244,8 +5242,8 @@
               "file": "lib/swipes/presentation/swipe_hub_screen.dart",
               "symbol": "SwipeHubScreen"
             },
-            "currentOwner": "CatchScreenHeaderTitle.block",
-            "targetOwner": "CatchScreenHeaderTitle.block",
+            "currentOwner": "CatchScreenHeader.block",
+            "targetOwner": "CatchScreenHeader.block",
             "dependencies": [
               "catch.surface"
             ],
@@ -5254,7 +5252,7 @@
               "text_scale_2",
               "light_dark"
             ],
-            "migration": "The retained historical screen source delegates root title typography and geometry to CatchScreenHeaderTitle.block; runtime /catches redirects to Dashboard.",
+            "migration": "The retained historical screen source delegates root title typography and geometry to CatchScreenHeader.block; runtime /catches redirects to Dashboard.",
             "previewIds": [
               "SwipeHubScreen/Screen states"
             ]
@@ -6475,7 +6473,7 @@
             "targetOwner": "provider-free chats list header section",
             "dependencies": [
               "catch.field",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.top_bar"
             ],
             "states": [
@@ -6907,7 +6905,7 @@
           "id": "messages_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncValueView while watchConversationMessagesProvider loads.",
+          "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncBoundary while watchConversationMessagesProvider loads.",
           "nextAction": "Capture registered; continue with adapter extraction, interaction-specific mutation proof, design-reference export, and advisory pixel comparison.",
           "previewIds": [
             "ChatScreen/Route states"
@@ -7988,7 +7986,7 @@
             "targetOwner": "SelfProfileScreenState provider/controller adapter",
             "dependencies": [
               "catch.top_bar",
-              "catch.option_group"
+              "catch.chip.field"
             ],
             "states": [
               "loading",
@@ -8020,7 +8018,7 @@
             "targetOwner": "provider-free self-profile header section",
             "dependencies": [
               "catch.icon_button",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.top_bar"
             ],
             "states": [
@@ -8162,7 +8160,7 @@
               "range",
               "height"
             ],
-            "migration": "Keep editor save orchestration in ProfileEditController. CatchField owns choice summaries, clearability policy, wrapped controls, steppers, action orientation, and focus transfer; CatchSection owns prompt-card perimeter and dividers; CatchRangeSlider remains the range control. Widgetbook covers the canonical field states and production profile compositions.",
+            "migration": "Keep editor save orchestration in ProfileEditController. CatchField owns choice summaries, clearability policy, wrapped controls, steppers, action orientation, and focus transfer; CatchSection owns prompt-card perimeter and dividers; CatchRangeInput remains the range control. Widgetbook covers the canonical field states and production profile compositions.",
             "previewIds": [
               "ProfileScreen/Self section states"
             ]
@@ -8525,7 +8523,7 @@
           "id": "report_sheet",
           "kind": "mutation",
           "status": "captured",
-          "source": "Profile overflow Report action opens a CatchBottomSheetScaffold with shared CatchSettingsRow reason choices.",
+          "source": "Profile overflow Report action opens a CatchSheet with shared CatchSettingsRow reason choices.",
           "tests": [
             "test/public_profile/public_profile_screen_test.dart"
           ],
@@ -10279,7 +10277,7 @@
           "id": "update_club_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "_HostInlineClubSaveState catches update failures and renders CatchErrorBanner with AppErrorContext.club copy.",
+          "source": "_HostInlineClubSaveState catches update failures and renders CatchBanner.error with AppErrorContext.club copy.",
           "nextAction": "Covered by host_clubs_inline_edit_error and host_clubs_inline_edit_offline through HostClubEditController.updateClubMutation.",
           "previewIds": [
             "HostClubsScreen/Route states"
@@ -10587,7 +10585,7 @@
           "nextAction": "Compare tab rail placement against the canonical Host team reference once exported.",
           "previewIds": [
             "HostClubTeamScreen/Route states",
-            "CatchTabRail/Contract states"
+            "CatchPageTabBar/Contract states"
           ]
         },
         {
@@ -10684,7 +10682,7 @@
           "id": "sign_out_action",
           "kind": "mutation",
           "status": "captured",
-          "source": "Top-bar sign-out action delegates to AuthSessionController.signOutMutation and surfaces failure through CatchMutationErrorListener.",
+          "source": "Top-bar sign-out action delegates to AuthSessionController.signOutMutation and surfaces failure through listenToCatchMutationErrors.",
           "tests": [
             "test/hosts/host_operations_screen_test.dart"
           ],
@@ -10695,7 +10693,7 @@
           ],
           "previewIds": [
             "HostClubTeamScreen/Route states",
-            "CatchTabRail/Contract states"
+            "CatchPageTabBar/Contract states"
           ]
         },
         {
@@ -10722,7 +10720,7 @@
             "HostClubTeamScreen/Route states",
             "HostTeamProfileSection/Profile summary states",
             "HostTeamHostedClubsSection/Clubs states",
-            "CatchTabRail/Contract states"
+            "CatchPageTabBar/Contract states"
           ]
         },
         {
@@ -10854,14 +10852,14 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CatchTabRail"
+              "CatchPageTabBar"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
-              "symbol": "CatchTabRail"
+              "file": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
+              "symbol": "CatchPageTabBar"
             },
             "currentOwner": "HostClubsScaffold",
-            "targetOwner": "shared CatchTabRail",
+            "targetOwner": "shared CatchPageTabBar",
             "dependencies": [
               "catch.tab_rail"
             ],
@@ -10872,7 +10870,7 @@
               "long_labels",
               "text_scale"
             ],
-            "migration": "Keep Edit as the default route tab and selection as screen state. Loaded and route-level loading, auth, error, and empty branches retain the same pinned Edit, Insights, and Preview rail through CatchRootScreenScaffold.withPrimaryRail and the shared CatchTabRail primitive.",
+            "migration": "Keep Edit as the default route tab and selection as screen state. Loaded and route-level loading, auth, error, and empty branches retain the same pinned Edit, Insights, and Preview rail through CatchRootScreenScaffold.withPrimaryRail and the shared CatchPageTabBar primitive.",
             "previewIds": [
               "HostClubsScreen/Route states"
             ]
@@ -11067,7 +11065,7 @@
             "dependencies": [
               "catch.badge",
               "catch.button",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.surface"
             ],
             "states": [
@@ -11215,10 +11213,10 @@
               "HostTeamTopBar"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
-              "symbol": "CatchTabRail"
+              "file": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
+              "symbol": "CatchPageTabBar"
             },
-            "currentOwner": "HostClubTeamScreen + CatchTabRail",
+            "currentOwner": "HostClubTeamScreen + CatchPageTabBar",
             "targetOwner": "route-owned top bar with shared tab rail",
             "dependencies": [
               "catch.top_bar",
@@ -11229,10 +11227,10 @@
               "sign_out_action",
               "text_scale_2"
             ],
-            "migration": "Host team tab rail uses shared CatchTabRail, and the pushed route uses explicit CatchTopBar back navigation enforced by screen_top_bar_contracts.json. Remaining work is deciding whether tab/action state belongs in HostTeamWorkspaceState or stays route-local until broader account-action policy is settled.",
+            "migration": "Host team tab rail uses shared CatchPageTabBar, and the pushed route uses explicit CatchTopBar back navigation enforced by screen_top_bar_contracts.json. Remaining work is deciding whether tab/action state belongs in HostTeamWorkspaceState or stays route-local until broader account-action policy is settled.",
             "previewIds": [
               "HostClubTeamScreen/Route states",
-              "CatchTabRail/Contract states"
+              "CatchPageTabBar/Contract states"
             ]
           },
           {
@@ -11430,7 +11428,7 @@
           },
           {
             "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-            "symbol": "CatchMetricStrip"
+            "symbol": "CatchMetricSection"
           },
           {
             "file": "lib/reviews/shared/reviews_section.dart",
@@ -11929,11 +11927,11 @@
             "status": "implemented_local",
             "layer": "section",
             "claudeComponents": [
-              "CatchMetricStrip"
+              "CatchMetricSection"
             ],
             "flutter": {
               "file": "lib/clubs/presentation/detail/widgets/club_detail_body.dart",
-              "symbol": "CatchMetricStrip"
+              "symbol": "CatchMetricSection"
             },
             "currentOwner": "ClubDetailBody",
             "targetOwner": "shared club stats section if host references match consumer detail",
@@ -12545,12 +12543,12 @@
         {
           "id": "host_create_save_draft_error",
           "status": "captured",
-          "notes": "Deterministic capture renders save-draft error state through the shared CatchErrorBanner."
+          "notes": "Deterministic capture renders save-draft error state through the shared CatchBanner.error."
         },
         {
           "id": "host_create_save_draft_offline",
           "status": "captured",
-          "notes": "Deterministic capture renders save-draft offline feedback through the shared CatchErrorBanner."
+          "notes": "Deterministic capture renders save-draft offline feedback through the shared CatchBanner.error."
         },
         {
           "id": "host_create_submit_pending",
@@ -12560,12 +12558,12 @@
         {
           "id": "host_create_submit_error",
           "status": "captured",
-          "notes": "Deterministic capture renders submit error state through the shared CatchErrorBanner."
+          "notes": "Deterministic capture renders submit error state through the shared CatchBanner.error."
         },
         {
           "id": "host_create_submit_offline",
           "status": "captured",
-          "notes": "Deterministic capture renders offline submit failure copy through the shared CatchErrorBanner."
+          "notes": "Deterministic capture renders offline submit failure copy through the shared CatchBanner.error."
         },
         {
           "id": "host_create_photo_upload_offline",
@@ -12914,11 +12912,11 @@
           "id": "submit_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "submitMutation.hasError renders CatchErrorBanner with AppErrorContext.event mapped copy.",
+          "source": "submitMutation.hasError renders CatchBanner.error with AppErrorContext.event mapped copy.",
           "tests": [
             "test/hosts/host_create_event_screen_test.dart"
           ],
-          "nextAction": "submitMutation.hasError renders CatchErrorBanner with AppErrorContext.event mapped copy. Captures now cover generic submit failure and offline submit failure; backend-validation variants remain follow-up if design requires distinct copy.",
+          "nextAction": "submitMutation.hasError renders CatchBanner.error with AppErrorContext.event mapped copy. Captures now cover generic submit failure and offline submit failure; backend-validation variants remain follow-up if design requires distinct copy.",
           "previewIds": [
             "HostCreateEventRouteScreen/Route and wizard states"
           ],
@@ -14093,7 +14091,7 @@
           "id": "attendance_error",
           "kind": "error",
           "status": "captured",
-          "source": "Attendance view-model errors render CatchLocalizedInlineErrorState with retry invalidating event, participation, and attendance providers.",
+          "source": "Attendance view-model errors render CatchLocalizedErrorState (inline/compact mode) with retry invalidating event, participation, and attendance providers.",
           "nextAction": "Add branded attendance error and offline captures for setup/live/report modes.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14141,7 +14139,7 @@
           "id": "attendee_profiles_error",
           "kind": "error",
           "status": "captured",
-          "source": "Profile lookup errors render CatchLocalizedInlineErrorState and retry attendeeProfilesProvider.",
+          "source": "Profile lookup errors render CatchLocalizedErrorState (inline/compact mode) and retry attendeeProfilesProvider.",
           "nextAction": "Add capture/preview for profile fetch failure and offline-looking profile errors.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14192,7 +14190,7 @@
           "id": "attendance_mutation_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "The participants panel surfaces the first attendance/action mutation failure through CatchErrorBanner.",
+          "source": "The participants panel surfaces the first attendance/action mutation failure through CatchBanner.error.",
           "nextAction": "Captured by host_manage_attendance_mutation_error; remaining Host Manage coverage is Event Success live/report substates, deeper offline variants, and reference-specific variants.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14263,7 +14261,7 @@
           "id": "live_event_success_plan_error",
           "kind": "error",
           "status": "captured",
-          "source": "EventSuccessHostSectionState maps saved-plan failures to CatchInlineErrorState with Event Success plan retry intent.",
+          "source": "EventSuccessHostSectionState maps saved-plan failures to CatchErrorState (inline/compact mode) with Event Success plan retry intent.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -14283,7 +14281,7 @@
           "id": "live_event_success_plan_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "EventSuccessHostSectionState maps offline saved-plan failures through CatchInlineErrorState with Event Success plan retry intent.",
+          "source": "EventSuccessHostSectionState maps offline saved-plan failures through CatchErrorState (inline/compact mode) with Event Success plan retry intent.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -14549,7 +14547,7 @@
           "id": "report_scorecard_error",
           "kind": "error",
           "status": "captured",
-          "source": "EventSuccessHostSectionState maps scorecard failures to CatchInlineErrorState with scorecard retry intent.",
+          "source": "EventSuccessHostSectionState maps scorecard failures to CatchErrorState (inline/compact mode) with scorecard retry intent.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -14569,7 +14567,7 @@
           "id": "report_scorecard_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "EventSuccessHostSectionState maps offline scorecard failures through CatchInlineErrorState with scorecard retry intent while the saved Event Success plan remains available.",
+          "source": "EventSuccessHostSectionState maps offline scorecard failures through CatchErrorState (inline/compact mode) with scorecard retry intent while the saved Event Success plan remains available.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
@@ -14606,7 +14604,7 @@
           "id": "private_access_error",
           "kind": "error",
           "status": "captured",
-          "source": "_HostPrivateAccessCard errors render CatchLocalizedInlineErrorState with retry invalidating watchEventPrivateAccessProvider.",
+          "source": "_HostPrivateAccessCard errors render CatchLocalizedErrorState (inline/compact mode) with retry invalidating watchEventPrivateAccessProvider.",
           "nextAction": "Add private-access error and offline captures with invite-only event policy fixtures.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -14620,7 +14618,7 @@
           "id": "private_access_offline",
           "kind": "offline",
           "status": "captured",
-          "source": "_HostPrivateAccessCard maps offline private-access load failures through CatchLocalizedInlineErrorState with retry.",
+          "source": "_HostPrivateAccessCard maps offline private-access load failures through CatchLocalizedErrorState (inline/compact mode) with retry.",
           "nextAction": "Captured by host_manage_private_access_offline; continue only if private-access offline copy diverges from the shared mapped offline error.",
           "previewIds": [
             "HostEventManageRouteScreen/Route and section states"
@@ -15175,7 +15173,7 @@
             "dependencies": [
               "catch.button",
               "catch.option_card",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.surface",
               "catch.field"
             ],
@@ -15457,7 +15455,7 @@
       },
       "topBar": {
         "role": "shell",
-        "expression": "CatchScreenHeaderTitle.block + CatchScreenTopBar",
+        "expression": "CatchScreenHeader.block + CatchScreenTopBar",
         "owner": "HostCustomersScreen, HostFormsScreen, HostAddCustomerScreen, HostSavedAudienceEditorScreen, and HostCustomerDetailScreen",
         "reason": "The Audience destination uses People, Audiences, Forms, and Responses peer tabs. Add customer is explicitly People-only; Audiences exposes one in-workspace New audience action. Route-level customer, audience, and form editors own compact back titles."
       },
@@ -15620,7 +15618,7 @@
             "targetOwner": "hosts.presentation.customers",
             "dependencies": ["catch.button", "catch.chip", "catch.search_field", "catch.surface", "catch.top_bar"],
             "states": ["customers_loading", "customers_empty", "customers_populated", "customers_filtered_empty"],
-            "migration": "The shell-selected organizer is the single scope input. The screen reuses CatchStatColumn, CatchSearchField, CatchChip and CatchButton instead of introducing Customers-only primitive families."
+            "migration": "The shell-selected organizer is the single scope input. The screen reuses CatchMetricTile, CatchSearchField, CatchChip and CatchButton instead of introducing Customers-only primitive families."
           },
           {
             "id": "section.host.customers.directory",
@@ -16616,7 +16614,7 @@
             "currentOwner": "HostInboxScreen + HostInboxViewModel",
             "targetOwner": "Host-owned typed Event/General scope selector plus Booked/Prospective rail",
             "dependencies": [
-              "catch.option_group"
+              "catch.chip.field"
             ],
             "states": [
               "selected_event",
@@ -16767,7 +16765,7 @@
             "dependencies": [
               "catch.button",
               "catch.field",
-              "catch.option_group",
+              "catch.chip.field",
               "catch.surface"
             ],
             "states": [
@@ -17266,7 +17264,7 @@
           "id": "messages_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncValueView while watchConversationMessagesProvider is loading.",
+          "source": "ChatMessageList renders date and alternating message-bubble skeleton rows through CatchAsyncBoundary while watchConversationMessagesProvider is loading.",
           "nextAction": "Compare the skeleton pattern against the host-chat design reference before visual edits.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -17466,7 +17464,7 @@
           "id": "mutation_error_listener",
           "kind": "mutation",
           "status": "captured",
-          "source": "_ChatMutationListeners wraps send, image, report, block, and Suvbot mutation failures in the shared CatchMutationErrorListeners boundary with chat error context. Focused Host Chat tests verify report/block failure feedback.",
+          "source": "The chat build subscribes to send, image, report, block, and Suvbot mutation failures through listenToCatchMutationErrors with chat error context. Focused Host Chat tests verify report/block failure feedback.",
           "nextAction": "Add send/image-specific failure captures only if host conversations retain image attachment support.",
           "previewIds": [
             "ChatScreen/Host chat states"
@@ -18417,7 +18415,7 @@
           "id": "send_code_mutation",
           "kind": "mutation",
           "status": "captured",
-          "source": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface.",
+          "source": "AuthController.sendOtpMutation drives the Send code loading state and CatchBanner.error failure surface.",
           "previewIds": [
             "AuthScreen/Screen states",
             "PhonePage/Phone entry states"
@@ -18435,7 +18433,7 @@
           "id": "otp_entry",
           "kind": "populated",
           "status": "captured",
-          "source": "After codeSent, Host AuthScreen keeps the same route and startup-aligned mark while OtpPage reveals masked-number confirmation, a separate Edit number button, CatchOtpCodeField, auto-verification status, and a full-width resend cooldown/action inside the same HostAuthCard. Consumer retains its standalone OTP presentation.",
+          "source": "After codeSent, Host AuthScreen keeps the same route and startup-aligned mark while OtpPage reveals masked-number confirmation, a separate Edit number button, CatchCodeInput, auto-verification status, and a full-width resend cooldown/action inside the same HostAuthCard. Consumer retains its standalone OTP presentation.",
           "previewIds": [
             "AuthScreen/Screen states",
             "OtpPage/OTP entry states"
@@ -18606,7 +18604,7 @@
               "send_code_mutation",
               "verify_otp_mutation"
             ],
-            "migration": "Keep CatchErrorBanner surfaces, but expose stable error fixtures for phone, OTP verify, and resend failures."
+            "migration": "Keep CatchBanner.error surfaces, but expose stable error fixtures for phone, OTP verify, and resend failures."
           }
         ]
       },
@@ -20390,7 +20388,7 @@
         {
           "id": "filters_save_error",
           "status": "captured",
-          "notes": "Route-level save failure seeded through FiltersController.saveFiltersMutation and CatchMutationErrorListener."
+          "notes": "Route-level save failure seeded through FiltersController.saveFiltersMutation and listenToCatchMutationErrors."
         },
         {
           "id": "filters_text_scale_2",
@@ -20521,7 +20519,7 @@
           "id": "save_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "CatchMutationErrorListener surfaces save failures from FiltersController.saveFiltersMutation.",
+          "source": "listenToCatchMutationErrors surfaces save failures from FiltersController.saveFiltersMutation.",
           "captureIds": [
             "filters_save_error"
           ],
@@ -20651,7 +20649,7 @@
               "edited_preferences",
               "text_scale_2"
             ],
-            "migration": "FiltersContent exposes range display and changed callbacks through provider-free content state while preserving CatchRangeSlider treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
+            "migration": "FiltersContent exposes range display and changed callbacks through provider-free content state while preserving CatchRangeInput treatment; Widgetbook covers default, dirty, reset, pending, text-scale, reduced-motion, and dark-theme bodies.",
             "previewIds": [
               "FiltersContent/Content states"
             ]
@@ -20993,7 +20991,7 @@
           "id": "profile_lookup_error",
           "kind": "error",
           "status": "captured",
-          "source": "A failed batched public-profile lookup renders CatchInlineErrorState with AppErrorContext.profile and retries the exact attendee-id query without discarding the resolved recap.",
+          "source": "A failed batched public-profile lookup renders CatchErrorState (inline/compact mode) with AppErrorContext.profile and retries the exact attendee-id query without discarding the resolved recap.",
           "captureIds": [
             "event_recap_profile_lookup_error"
           ],
@@ -21282,8 +21280,8 @@
             "symbol": "CreateClubScreen"
           },
           {
-            "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
-            "symbol": "CatchBottomDock"
+            "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
+            "symbol": "CatchDockSurface"
           },
           {
             "file": "lib/hosts/presentation/club_management/create/create_club_screen.dart",
@@ -21415,7 +21413,7 @@
         {
           "id": "create_club_save_draft_error",
           "status": "captured",
-          "notes": "Deterministic capture renders save-draft mutation error feedback through CatchErrorBanner."
+          "notes": "Deterministic capture renders save-draft mutation error feedback through CatchBanner.error."
         },
         {
           "id": "create_club_submit_pending",
@@ -21425,7 +21423,7 @@
         {
           "id": "create_club_submit_error",
           "status": "captured",
-          "notes": "Deterministic capture renders submit mutation error feedback through CatchErrorBanner."
+          "notes": "Deterministic capture renders submit mutation error feedback through CatchBanner.error."
         },
         {
           "id": "create_club_submit_offline",
@@ -21561,7 +21559,7 @@
           "id": "save_draft_pending_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "CreateClubDraftController.saveDraftMutation freezes route, wizard, media, fields/defaults, and footer actions while pending; CatchErrorBanner owns failure copy and the shared Catch snackbar owns success feedback.",
+          "source": "CreateClubDraftController.saveDraftMutation freezes route, wizard, media, fields/defaults, and footer actions while pending; CatchBanner.error owns failure copy and the shared Catch snackbar owns success feedback.",
           "previewIds": [
             "HostCreateClubScreen/Route and wizard states"
           ],
@@ -21596,7 +21594,7 @@
           "id": "submit_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "Submit mutation errors render inline CatchErrorBanner copy.",
+          "source": "Submit mutation errors render inline CatchBanner.error copy.",
           "previewIds": [
             "HostCreateClubScreen/Route and wizard states"
           ],
@@ -22270,7 +22268,7 @@
           "id": "submit_error",
           "kind": "mutation",
           "status": "captured",
-          "source": "HostEventEditScreenState exposes updateHostedEventMutation errors before EditHostedEventScreen renders CatchErrorBanner.fromError under the scope notice.",
+          "source": "HostEventEditScreenState exposes updateHostedEventMutation errors before EditHostedEventScreen renders CatchLocalizedErrorBanner under the scope notice.",
           "previewIds": [
             "EditHostedEventRouteScreen/Route and section states"
           ],
@@ -22500,8 +22498,8 @@
               "EditEventFooter"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_bottom_dock.dart",
-              "symbol": "CatchBottomDock"
+              "file": "packages/catch_ui/lib/src/components/catch_dock_surface.dart",
+              "symbol": "CatchDockSurface"
             },
             "currentOwner": "EditHostedEventFooter over EditHostedEventFooterState",
             "targetOwner": "provider-free mutation footer",
@@ -23210,7 +23208,7 @@
           "id": "activity_error",
           "kind": "error",
           "status": "captured",
-          "source": "ActivitySection renders CatchInlineErrorState with retry invalidation when notification loading fails.",
+          "source": "ActivitySection renders CatchErrorState (inline/compact mode) with retry invalidation when notification loading fails.",
           "captureIds": [
             "notifications_activity_error"
           ],
@@ -24314,7 +24312,7 @@
           "id": "notification_preferences",
           "kind": "mutation",
           "status": "captured",
-          "source": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference; any settings mutation freezes every settings action plus route exit, while SettingsController deduplicates overlapping preference, unblock, and delete calls.",
+          "source": "Preference toggles optimistically update local CatchToggleInput state and persist through SettingsController.savePreference; any settings mutation freezes every settings action plus route exit, while SettingsController deduplicates overlapping preference, unblock, and delete calls.",
           "captureIds": [
             "settings_preference_pending"
           ],
@@ -24366,7 +24364,7 @@
           "id": "blocked_accounts_loading_error",
           "kind": "loading",
           "status": "captured",
-          "source": "Blocked accounts footer renders _BlockedAccountsSkeleton while loading and CatchLocalizedInlineErrorState with retry on failure.",
+          "source": "Blocked accounts footer renders _BlockedAccountsSkeleton while loading and CatchLocalizedErrorState (inline/compact mode) with retry on failure.",
           "captureIds": [
             "settings_blocked_loading",
             "settings_blocked_error"
@@ -24441,7 +24439,7 @@
           ],
           "nextAction": "Add a dedicated confirm-dialog capture if destructive-dialog pixel parity becomes blocking.",
           "previewIds": [
-            "CatchConfirmDialog/Contract states",
+            "CatchDialog/Contract states",
             "SettingsScreen/Mutation states"
           ]
         },
@@ -24555,7 +24553,7 @@
             "migration": "SettingsAccountState now owns profile provider waves, preference draft values, blocked-account rows, provider retry states, and mutation pending flags; SettingsScreen keeps route callbacks and controller calls at the edge.",
             "previewIds": [
               "SettingsScreen/Screen states",
-              "CatchConfirmDialog/Contract states",
+              "CatchDialog/Contract states",
               "SettingsScreen/Mutation states"
             ]
           },
@@ -24598,7 +24596,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_section.dart",
               "symbol": "CatchSection"
             },
-            "currentOwner": "_SettingsSection + CatchToggle",
+            "currentOwner": "_SettingsSection + CatchToggleInput",
             "targetOwner": "provider-free settings notification preferences section",
             "dependencies": [
               "catch.surface"
@@ -24641,7 +24639,7 @@
             "migration": "Keep safety row layout reusable while SettingsController owns destructive and privacy mutations. The Cross Paths master row remains hidden unless the consent-controls rollout flag is enabled, and missing profile values resolve off.",
             "previewIds": [
               "SettingsScreen/Screen states",
-              "CatchConfirmDialog/Contract states",
+              "CatchDialog/Contract states",
               "SettingsScreen/Mutation states"
             ]
           },
@@ -24756,7 +24754,7 @@
           "offline",
           "permission"
         ],
-        "owner": "LaunchAccessApplicationScreen, LaunchAccessController, and CatchAsyncValueView"
+        "owner": "LaunchAccessApplicationScreen, LaunchAccessController, and CatchAsyncBoundary"
       },
       "name": "Launch Access Application",
       "owner": "launch_access",
@@ -24916,7 +24914,7 @@
           "id": "provider_error",
           "kind": "error",
           "status": "captured",
-          "source": "Application stream failures render through CatchAsyncValueView with an exact provider retry.",
+          "source": "Application stream failures render through CatchAsyncBoundary with an exact provider retry.",
           "captureIds": ["launch_access_error"],
           "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
           "tests": ["test/ui_captures/capture_runner_test.dart"],
@@ -24930,7 +24928,7 @@
           "captureIds": ["launch_access_offline"],
           "previewIds": ["LaunchAccessApplicationScreen/Screen states"],
           "tests": ["test/ui_captures/capture_runner_test.dart"],
-          "nextAction": "Keep offline classification centralized in CatchAsyncValueView."
+          "nextAction": "Keep offline classification centralized in CatchAsyncBoundary."
         },
         {
           "id": "locked_status",
@@ -24997,14 +24995,14 @@
             "dependencies": [
               "catch.button",
               "catch.field",
-              "catch.option_group"
+              "catch.chip.field"
             ],
             "states": [
               "editable_application",
               "submit_application",
               "accessibility"
             ],
-            "migration": "Keep the form on shared CatchField and CatchChipField primitives; do not reintroduce a client-only launch gate or local snapshot authority."
+            "migration": "Keep the form on shared CatchField and CatchChoiceInput.form primitives; do not reintroduce a client-only launch gate or local snapshot authority."
           }
         ]
       },
@@ -25291,7 +25289,7 @@
           "id": "detail_sheet",
           "kind": "populated",
           "status": "captured",
-          "source": "Tapping a payment tile opens CatchBottomSheetScaffold receipt details with payment/order/event ids and date rows.",
+          "source": "Tapping a payment tile opens CatchSheet receipt details with payment/order/event ids and date rows.",
           "captureIds": [
             "payment_history_receipt_sheet",
             "payment_history_failed_signup_receipt_sheet"
@@ -25711,7 +25709,7 @@
       },
       "statePolicy": {
         "requiredStates": ["data", "error", "loading", "mutation"],
-        "owner": "eventRehearsalProvider, EventRehearsalController mutations, and CatchAsyncValueView"
+        "owner": "eventRehearsalProvider, EventRehearsalController mutations, and CatchAsyncBoundary"
       },
       "stateController": {
         "primary": "eventRehearsalProvider + EventRehearsalController",
@@ -25763,7 +25761,7 @@
           "id": "host_event_rehearsal_loading",
           "kind": "loading",
           "status": "implemented",
-          "source": "CatchSkeletonRows through CatchAsyncValueView",
+          "source": "CatchSkeletonRows through CatchAsyncBoundary",
           "tests": ["test/event_rehearsal/host_event_rehearsal_screen_test.dart"],
           "nextAction": "Retain the route-owned skeleton while the first isolated projection loads."
         },
@@ -25814,7 +25812,7 @@
           "id": "host_event_rehearsal_mutation",
           "kind": "mutation",
           "status": "implemented",
-          "source": "EventRehearsalController mutation families and CatchMutationErrorListeners",
+          "source": "EventRehearsalController mutation families and listenToCatchMutationErrors",
           "tests": ["test/event_rehearsal/host_event_rehearsal_screen_test.dart"],
           "nextAction": "Preserve bounded idempotency and stale-revision recovery for all controls."
         }

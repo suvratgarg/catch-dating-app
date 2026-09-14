@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updated": "2026-09-04",
+  "updated": "2026-09-08",
   "ciImpact": {
     "mandatoryCheckIds": [
       "docs:metadata",
@@ -5270,6 +5270,32 @@
       }
     },
     {
+      "id": "design:widget-catalog",
+      "category": "design",
+      "path": "tool/design/generate_widget_catalog.mjs",
+      "impactPaths": [
+        "tool/design/generate_widget_catalog.test.mjs",
+        "tool/design/lib/component_naming.mjs",
+        "design/components/catch.components.schema.json",
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json",
+        "lib/**",
+        "apps/consumer/lib/**",
+        "apps/host/lib/**",
+        "packages/catch_ui/lib/**"
+      ],
+      "command": "node tool/design/generate_widget_catalog.mjs --write",
+      "safety": "local-writes-generated",
+      "status": "active",
+      "role": "generator",
+      "description": "Generates and checks the widget catalog inventory from production declarations and reviewed shared-component identities. Source, registry and catalog changes select its drift check; temporary fixtures prove membership retention, documentation attachment and hand-edit rejection.",
+      "checks": [
+        "node --check tool/design/generate_widget_catalog.mjs",
+        "node --test tool/design/generate_widget_catalog.test.mjs",
+        "node tool/design/generate_widget_catalog.mjs --check"
+      ]
+    },
+    {
       "id": "design:widget-classification-generate",
       "category": "design",
       "path": "tool/design/generate_widget_classification.mjs",
@@ -5363,12 +5389,17 @@
         "tool/design/component_concepts.mjs",
         "tool/design/component_concepts.test.mjs",
         "tool/design/lib/new_widget_inventory_declarations.mjs",
-        "tool/design/lib/production_widget_roots.mjs"
+        "tool/design/lib/production_widget_roots.mjs",
+        "tool/design/lib/component_naming.mjs",
+        "tool/design/component_naming.test.mjs",
+        "design/components/catch.components.json",
+        "packages/catch_ui/lib/**",
+        "lib/core/riverpod_ui/**"
       ],
       "command": "node tool/design/check_widget_classification.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Validates a source-derived, transitive widget classification across shared, Consumer, and Host production roots and blocks exact duplicate public widget classes plus ungoverned normalized naming collisions. Generated exclusions are restricted to named localization outputs and generated-file suffixes rather than whole directories, and no tracked inventory snapshot is trusted.",
+      "description": "Validates source-derived Widget ownership and identity across production roots. Shared Widgets must match reviewed ladder levels, role nouns, use-case comparisons, primary files and canonical names; new registry IDs cannot bypass collisions. No tracked inventory snapshot is trusted.",
       "checks": [
         "node --check tool/design/check_widget_classification.mjs",
         "node --test tool/design/check_widget_classification.test.mjs",
@@ -5430,7 +5461,6 @@
         "apps/consumer/lib/**",
         "apps/host/lib/**",
         "widgetbook/lib/main.directories.g.dart",
-        "docs/widget_catalog.md",
         "design/components/catch.components.json"
       ],
       "ciRequirements": {
@@ -5442,7 +5472,7 @@
       "command": "node tool/design/check_new_widget_inventory.mjs --check --no-write",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Fails closed against a reachable base and transitively discovers widget subclasses across shared, Consumer, and Host production roots. It blocks new or moved private widget classes, Widget-returning functions/getters, uncataloged public widgets, and core widgets without canonical Catch* names or component contracts; generated exclusions are file-specific or suffix-specific, never directory-wide.",
+      "description": "Fails closed against a reachable base and transitively discovers widget subclasses across production roots. New or moved public widgets require Widgetbook coverage; shared widgets also require a canonical Catch* name and exact registry source identity. The generated markdown inventory is not an input. Private widgets and Widget-returning helpers remain blocked; generated exclusions are file-specific or suffix-specific.",
       "checks": [
         "node --check tool/design/check_new_widget_inventory.mjs",
         "node --check tool/design/lib/new_widget_inventory_declarations.mjs",
@@ -5464,7 +5494,7 @@
           "moved widget classes and helpers remain blocking inventory items",
           "an unavailable default merge base fails closed instead of using HEAD parent",
           "an unavailable explicit base fails closed without scanning the working tree",
-          "prose-only catalog mentions do not satisfy exact widget inventory coverage"
+          "new-widget gate uses exact registry and Widgetbook identities without reading markdown"
         ]
       }
     },
@@ -5836,7 +5866,7 @@
         "type": "test",
         "path": "tool/design/check_host_event_field_contracts.test.mjs",
         "contains": [
-          "flags activity choice fields without itemAccent",
+          "flags activity choice fields without itemAccentBuilder",
           "flags initially open event create fields",
           "flags event accordions seeded with an expanded field"
         ]
@@ -5939,7 +5969,7 @@
       "command": "node tool/design/check_option_group_usage.mjs --summary",
       "safety": "local",
       "status": "active",
-      "description": "Reports production direct CatchOptionGroupItem usage so underline tabs route through CatchOptionGroup or CatchTabRail rather than forking divider, indicator, ink, and trailing alignment behavior.",
+      "description": "Reports production direct CatchChoiceButton usage so underline tabs route through CatchChoiceInput.segmented or CatchPageTabBar rather than forking divider, indicator, ink, and trailing alignment behavior.",
       "checks": [
         "node --check tool/design/check_option_group_usage.mjs",
         "node --test tool/design/check_option_group_usage.test.mjs",
@@ -5954,8 +5984,8 @@
         "type": "test",
         "path": "tool/design/check_option_group_usage.test.mjs",
         "contains": [
-          "flags direct CatchOptionGroupItem usage in production feature code",
-          "allows the canonical CatchOptionGroup implementation",
+          "flags direct CatchChoiceButton usage in production feature code",
+          "allows the canonical CatchChoiceInput.segmented implementation",
           "ignores direct item usage outside production lib sources"
         ]
       }
@@ -6326,12 +6356,37 @@
       "id": "design:component-lexicon",
       "category": "design",
       "path": "tool/design/check_component_lexicon.mjs",
+      "ciRequirements": {
+        "repositoryView": "full",
+        "setup": [
+          "node",
+          "flutter",
+          "flutter-pub"
+        ]
+      },
+      "impactPaths": [
+        "tool/design/check_component_lexicon.test.mjs",
+        "tool/design/lib/component_naming.mjs",
+        "tool/design/component_naming.test.mjs",
+        "tool/design/lib/component_api.dart",
+        "tool/design/lib/component_api.mjs",
+        "tool/design/component_api.test.mjs",
+        "design/components/catch.components.schema.json",
+        "docs/app_architecture.md",
+        "packages/catch_ui/lib/**",
+        "lib/core/riverpod_ui/**",
+        "design/components/catch.components.json"
+      ],
       "command": "node tool/design/check_component_lexicon.mjs",
       "safety": "local-readonly",
       "status": "active",
-      "description": "Binds declared Flutter, website, admin, and web-ui implementation symbols to the cross-stack Catch component lexicon and validates reverse registry links.",
+      "description": "Binds declared cross-stack component symbols and enforces every public shared Widget constructor against the binding boolean, slot, callback, builder and enum-axis grammar using the syntax-only Dart collector.",
       "checks": [
         "node --check tool/design/check_component_lexicon.mjs",
+        "node --check tool/design/lib/component_naming.mjs",
+        "node --test tool/design/component_naming.test.mjs",
+        "node --check tool/design/lib/component_api.mjs",
+        "node --test tool/design/component_api.test.mjs",
         "node --test tool/design/check_component_lexicon.test.mjs",
         "node tool/design/check_component_lexicon.mjs"
       ],

@@ -221,7 +221,7 @@ class CoverStoryChrome extends StatelessWidget {
                         ),
                     child: ExcludeSemantics(
                       child: CatchSurface(
-                        height: CatchIconButton.defaultSize,
+                        height: CatchIconAction.defaultSize,
                         radius: CatchRadius.sm,
                         borderWidth: 0,
                         backgroundColor: Colors.transparent,
@@ -236,10 +236,10 @@ class CoverStoryChrome extends StatelessWidget {
           else
             const SizedBox.shrink(),
           if (story.showSearch)
-            CatchIconButton(
-              onTap: story.onSearch,
-              variant: CatchIconButtonVariant.plain,
-              background: Colors.transparent,
+            CatchIconAction(
+              onPressed: story.onSearch,
+              variant: CatchIconActionVariant.plain,
+              backgroundColor: Colors.transparent,
               borderColor: paper.withValues(
                 alpha: CatchOpacity.coverStorySearchBorder,
               ),

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/domain/host_form.dart';
@@ -56,7 +56,7 @@ class _HostFormResponsesPanelState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchOptionGroup<bool>(
+        CatchChoiceInput<bool>.segmented(
           key: const ValueKey('host-form-responses-review-applications'),
           options: [
             CatchOption(
@@ -66,7 +66,7 @@ class _HostFormResponsesPanelState
             CatchOption(value: true, label: context.l10n.hostApplicationsTitle),
           ],
           selected: false,
-          variant: CatchOptionGroupVariant.summary,
+          variant: CatchChoiceInputVariant.summary,
           contractExemption:
               'Navigation between raw submissions and the application review queue; not a stored value.',
           onChanged: (applications) {
@@ -94,7 +94,7 @@ class _HostFormResponsesPanelState
                             responses,
                           ).value?.responses.firstOrNull?.formTitle ??
                           context.l10n.hostAudienceSelectedForm,
-                icon: Icon(CatchIcons.descriptionOutlined),
+                leading: Icon(CatchIcons.descriptionOutlined),
                 onPressed: widget.onFormChanged != null
                     ? _chooseForm
                     : widget.onClearFormFilter,
@@ -107,25 +107,25 @@ class _HostFormResponsesPanelState
                   context.l10n.hostFormResponsesWithdrawn,
                 null => context.l10n.hostAudienceAllStatuses,
               },
-              icon: Icon(CatchIcons.tune),
+              leading: Icon(CatchIcons.tune),
               onPressed: _selectStatus,
             ),
           ],
         ),
         gapH8,
-        CatchAsyncValueView<HostFormResponsesState>(
+        CatchAsyncBoundary<HostFormResponsesState>(
           value: responses,
           onRetry: () =>
               ref.invalidate(hostFormResponsesControllerProvider(request)),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => const CatchSkeletonRows(count: 6),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.formResponses,
-            mode: CatchErrorStateMode.compact,
-            onRetry: () =>
-                ref.invalidate(hostFormResponsesControllerProvider(request)),
-          ),
+          loadingBuilder: (_) => const CatchSkeleton.rows(count: 6),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.formResponses,
+                mode: CatchErrorStateMode.compact,
+                onRetry: onBoundaryRetry,
+              ),
           builder: (context, state) {
             if (state.responses.isEmpty) {
               final filtered = widget.query != null || _status != null;
@@ -156,15 +156,15 @@ class _HostFormResponsesPanelState
                               context.l10n.hostFormResponsesAnonymous,
                           seed: response.responseId,
                         ),
-                        metadata: Text(
+                        meta: Text(
                           response.formTitle,
                           style: CatchTextStyles.supporting(context),
                         ),
-                        contextContent: Text(
+                        body: Text(
                           '${AppTimeFormatters.compactRelativeTime(response.submittedAt)} · ${response.sourceLabel ?? context.l10n.hostFormResponseDirectSource}',
                           style: CatchTextStyles.recordContext(context),
                         ),
-                        status: CatchBadge.status(
+                        trailing: CatchBadge.status(
                           label:
                               response.status ==
                                   HostFormResponseStatus.withdrawn
@@ -184,7 +184,9 @@ class _HostFormResponsesPanelState
                   CatchButton(
                     label: context.l10n.hostFormResponsesLoadMore,
                     variant: CatchButtonVariant.secondary,
-                    isLoading: state.loadingMore,
+                    status: (state.loadingMore)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     fullWidth: true,
                     onPressed: state.loadingMore
                         ? null
@@ -252,9 +254,9 @@ class _HostFormResponsesPanelState
     final selected = await showCatchBottomSheet<String>(
       context: context,
       builder: (sheetContext) => Consumer(
-        builder: (context, ref, _) => CatchBottomSheetScaffold(
+        builder: (context, ref, _) => CatchSheet(
           title: context.l10n.hostAudienceChooseForm,
-          scrollable: true,
+          mode: CatchSheetMode.scrollable,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -265,12 +267,12 @@ class _HostFormResponsesPanelState
                   onTap: () => Navigator.of(sheetContext).pop(''),
                 ),
               ),
-              CatchAsyncValueView<HostFormsDirectoryState>(
+              CatchAsyncBoundary<HostFormsDirectoryState>(
                 value: ref.watch(hostFormsDirectoryControllerProvider(request)),
                 onRetry: () => ref.invalidate(
                   hostFormsDirectoryControllerProvider(request),
                 ),
-                loadingBuilder: (_) => const CatchSkeletonRows(),
+                loadingBuilder: (_) => const CatchSkeleton.rows(),
                 builder: (context, state) => CatchSection.fieldRows(
                   children: [
                     for (final form in state.forms)

@@ -68,7 +68,7 @@ void main() {
     expect(find.byType(CatchSection), findsWidgets);
     expect(
       find.byWidgetPredicate(
-        (widget) => widget is CatchFieldOptionCardControl,
+        (widget) => widget is CatchChoiceInput,
         skipOffstage: false,
       ),
       findsWidgets,
@@ -101,10 +101,10 @@ void main() {
     await tester.pump(CatchFieldTokens.reveal);
 
     final balanced = find.byWidgetPredicate(
-      (widget) => widget is CatchOptionCard && widget.title == 'BALANCED',
+      (widget) => widget is CatchChoiceTile && widget.title == 'BALANCED',
     );
     await tester.ensureVisible(balanced);
-    tester.widget<CatchOptionCard>(balanced).onTap!();
+    tester.widget<CatchChoiceTile>(balanced).onTap!();
     await tester.pump(CatchFieldTokens.singleChoiceCloseDelay);
     await tester.pump(CatchFieldTokens.reveal);
 
@@ -183,7 +183,7 @@ void main() {
     );
     Finder choice(String label, {bool? selected}) => find.byWidgetPredicate(
       (widget) =>
-          widget is CatchOptionCard &&
+          widget is CatchChoiceTile &&
           widget.title == label &&
           (selected == null || widget.selected == selected),
       skipOffstage: false,
@@ -243,7 +243,7 @@ void main() {
     );
     Finder choice(String label, {bool? selected}) => find.byWidgetPredicate(
       (widget) =>
-          widget is CatchOptionCard &&
+          widget is CatchChoiceTile &&
           widget.title == label &&
           (selected == null || widget.selected == selected),
       skipOffstage: false,
@@ -271,7 +271,7 @@ void main() {
     await tester.tap(field('Admission format'));
     await tester.pump(CatchFieldTokens.reveal);
     final balanced = choice('BALANCED');
-    tester.widget<CatchOptionCard>(balanced).onTap!();
+    tester.widget<CatchChoiceTile>(balanced).onTap!();
     await tester.pump(CatchFieldTokens.singleChoiceCloseDelay);
     await tester.pump(CatchFieldTokens.reveal);
 

@@ -80,21 +80,19 @@ void _registerHostOperationsAnalyticsTeamTests() {
     }
 
     expectSharedChrome();
-    final editBody = tester.widget<CatchSliverScreenBody>(
-      find.ancestor(
-        of: find.byType(HostClubEditTab),
-        matching: find.byType(CatchSliverScreenBody),
+    expect(
+      CatchFieldInteractionPlaneScope.outsetsOf(
+        tester.element(find.byType(HostClubEditTab)),
       ),
+      EdgeInsets.symmetric(horizontal: CatchInsets.pageBody.left),
     );
-    expect(editBody.layout, CatchScreenBodyLayout.standard);
-    final loadedHeader = tester.widget<CatchScreenHeaderTitle>(
+    final loadedHeader = tester.widget<CatchScreenHeader>(
       find.byWidgetPredicate(
         (widget) =>
-            widget is CatchScreenHeaderTitle &&
-            widget.title == 'Saket Run Club',
+            widget is CatchScreenHeader && widget.title == 'Saket Run Club',
       ),
     );
-    expect(loadedHeader.eyebrow, isNull);
+    expect(loadedHeader.kicker, isNull);
     expect(loadedHeader.subtitle, isNull);
     expect(loadedHeader.leading, isNull);
     final publicationSection = find.byWidgetPredicate(
@@ -158,13 +156,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
     expect(find.text('SAKET · INDORE'), findsNothing);
     expect(find.byTooltip('Back to Organizer'), findsNothing);
     final rangeOptions = find.byType(
-      CatchOptionGroup<HostClubInsightsRangePreset>,
+      CatchChoiceInput<HostClubInsightsRangePreset>,
     );
     expect(
       tester
-          .widget<CatchOptionGroup<HostClubInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostClubInsightsRangePreset>>(rangeOptions)
           .selected,
-      HostClubInsightsRangePreset.thirtyDays,
+      {HostClubInsightsRangePreset.thirtyDays},
     );
     await Scrollable.ensureVisible(
       tester.element(find.text('90 days')),
@@ -175,9 +173,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
     expect(
       tester
-          .widget<CatchOptionGroup<HostClubInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostClubInsightsRangePreset>>(rangeOptions)
           .selected,
-      HostClubInsightsRangePreset.ninetyDays,
+      {HostClubInsightsRangePreset.ninetyDays},
     );
 
     await tester.tap(tab('Preview'));
@@ -220,9 +218,9 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await pumpFeatureUi(tester);
     expect(
       tester
-          .widget<CatchOptionGroup<HostClubInsightsRangePreset>>(rangeOptions)
+          .widget<CatchChoiceInput<HostClubInsightsRangePreset>>(rangeOptions)
           .selected,
-      HostClubInsightsRangePreset.ninetyDays,
+      {HostClubInsightsRangePreset.ninetyDays},
     );
 
     await tester.tap(tab('Edit'));
@@ -519,10 +517,7 @@ void _registerHostOperationsAnalyticsTeamTests() {
     await tester.tap(organizerTypeEditor);
     await pumpFeatureUi(tester);
 
-    final communityChoice = find.widgetWithText(
-      CatchFieldChoiceChip,
-      'Community',
-    );
+    final communityChoice = find.widgetWithText(CatchChip, 'Community');
     expect(communityChoice, findsOneWidget);
     await tester.tap(communityChoice);
     await pumpFeatureUi(tester);
@@ -594,12 +589,20 @@ void _registerHostOperationsAnalyticsTeamTests() {
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Event defaults');
     expect(topBar.subtitle, club.name);
-    expect(topBar.leadingType, CatchTopBarLeading.back);
-    expect(topBar.divider, isFalse);
+    expect(topBar.navigation.mode, CatchTopBarNavigationMode.back);
+    expect(topBar.emphasis, CatchTopBarEmphasis.plain);
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
-    expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
-    expect(find.byType(CatchFieldToggle), findsNothing);
-    expect(find.byType(CatchFieldActionBar), findsNothing);
+    expect(
+      find.ancestor(
+        of: find.byType(CatchPageBody),
+        matching: find.byType(CatchSectionList),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(CatchPageBody), findsOneWidget);
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+    expect(find.byType(CatchToggleInput), findsNothing);
+    expect(find.byType(CatchFieldActionRow), findsNothing);
     expect(find.text('Default activity'), findsOneWidget);
 
     await _pumpHostScreen(
@@ -607,8 +610,8 @@ void _registerHostOperationsAnalyticsTeamTests() {
       HostClubLiveGuideScreen(clubId: club.id),
       overrides: overrides,
     );
-    expect(find.byType(CatchFieldToggle), findsNothing);
-    expect(find.byType(CatchFieldActionBar), findsNothing);
+    expect(find.byType(CatchToggleInput), findsNothing);
+    expect(find.byType(CatchFieldActionRow), findsNothing);
 
     await _pumpHostScreen(
       tester,
@@ -826,10 +829,13 @@ void _registerHostOperationsAnalyticsTeamTests() {
       ),
     );
 
-    final stack = tester.widget<CatchSectionStack>(
-      find.byType(CatchSectionStack),
-    );
-    expect(stack.gap, 0);
-    expect(find.byType(CatchSection), findsNWidgets(4));
+    final sections = find.byType(CatchSection);
+    expect(sections, findsNWidgets(4));
+    for (var index = 1; index < 4; index++) {
+      expect(
+        tester.getBottomLeft(sections.at(index - 1)).dy,
+        tester.getTopLeft(sections.at(index)).dy,
+      );
+    }
   });
 }

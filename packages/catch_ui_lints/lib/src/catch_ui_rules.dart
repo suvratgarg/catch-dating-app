@@ -25,12 +25,12 @@ class CatchFeedbackRules extends MultiAnalysisRule {
   );
   static const statusStripIsLayoutOwned = LintCode(
     'catch_status_strip_is_layout_owned',
-    'Supply CatchStatusStripData through the screen status slot or CatchStatusStripScope; only canonical screen layouts may place the persistent strip.',
+    'Supply CatchBannerStatus through the screen status slot or CatchBannerStatusScope; only canonical screen layouts may place the persistent strip.',
     severity: DiagnosticSeverity.WARNING,
   );
   static const noticeHostIsAppOwned = LintCode(
     'catch_notice_host_is_app_owned',
-    'CatchNoticeHost belongs once above the router in app.dart; features publish CatchNoticeData rather than creating a route-local overlay.',
+    'CatchNoticeOverlay belongs once above the router in app.dart; features publish CatchNoticeData rather than creating a route-local overlay.',
     severity: DiagnosticSeverity.WARNING,
   );
   static const notificationDeliveryIsServiceOwned = LintCode(
@@ -81,9 +81,9 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
   void _check(AstNode node, Element? element) {
     final uri = element?.library?.uri.toString();
     if (element is ConstructorElement &&
-        element.enclosingElement.name == 'CatchNoticeHost' &&
+        element.enclosingElement.name == 'CatchNoticeOverlay' &&
         uri ==
-            'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart' &&
+            'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart' &&
         !const {
           '/lib/app.dart',
           '/widgetbook/lib/primitives/core_catalog_use_cases.dart',
@@ -103,10 +103,11 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
       );
     }
     if (element is ConstructorElement &&
-        element.enclosingElement.name == 'CatchStatusStrip' &&
-        uri == 'package:catch_ui/src/components/catch_status_strip.dart' &&
+        element.enclosingElement.name == 'CatchBanner' &&
+        element.name == 'statuses' &&
+        uri == 'package:catch_ui/src/components/catch_banner.dart' &&
         !const {
-          '/packages/catch_ui/lib/src/patterns/catch_screen_scaffold.dart',
+          '/packages/catch_ui/lib/src/patterns/catch_scaffold.dart',
           '/packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart',
           '/lib/core/widgets/catch_tabbed_screen.dart',
           '/packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart',
@@ -292,12 +293,12 @@ const _roundedAffordanceConstructors = <String>{
   'CatchBadge',
   'CatchButton',
   'CatchChip',
-  'CatchIconButton',
+  'CatchIconAction',
   'CatchPersonAvatar',
   'CatchPersonAvatarStack',
   'CatchSearchField',
   'CatchSkeleton',
-  'CatchToggle',
+  'CatchToggleInput',
 };
 
 const _roundedAffordanceNameFragments = <String>{
@@ -348,7 +349,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const useSectionList = LintCode(
     'catch_use_section_list',
-    'Use CatchSectionList/CatchDetailSliverSectionList for adjacent semantic sections instead of manually interleaving spacers.',
+    'Use CatchSectionList or its named placement recipes for adjacent semantic sections instead of manually interleaving spacers.',
     severity: DiagnosticSeverity.WARNING,
   );
 
@@ -594,7 +595,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const topBarRequiresActionGroup = LintCode(
     'catch_top_bar_requires_action_group',
-    'Compose CatchTopBar actions through CatchTopBarActionGroup so the primitive owns action geometry.',
+    'Compose CatchTopBar actions through CatchTopBarActionRow so the primitive owns action geometry.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -630,25 +631,25 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const asyncRequiresStateSurface = LintCode(
     'catch_async_requires_state_surface',
-    'Route presentation AsyncValue handling through CatchAsyncValueView or cover loading and error explicitly; do not force value/requireValue.',
+    'Route presentation AsyncValue handling through CatchAsyncBoundary or cover loading and error explicitly; do not force value/requireValue.',
     severity: DiagnosticSeverity.INFO,
   );
 
   static const asyncRequiresRetry = LintCode(
     'catch_async_requires_retry',
-    'CatchAsyncValueView/CatchAsyncValueSliver must declare onRetry so both provider errors and initial-load timeouts have an actionable recovery path.',
+    'CatchAsyncBoundary and its sliver constructor must declare onRetry so both provider errors and initial-load timeouts have an actionable recovery path.',
     severity: DiagnosticSeverity.WARNING,
   );
 
   static const errorStateRequiresAction = LintCode(
     'catch_error_state_requires_action',
-    'Full-screen and sliver Catch error states must declare onRetry or secondaryAction so the user always has a recovery or exit path.',
+    'Full-screen and sliver Catch error states must declare onRetry or nonempty actions so the user always has a recovery or exit path.',
     severity: DiagnosticSeverity.WARNING,
   );
 
   static const noRawErrorSurface = LintCode(
     'catch_no_raw_error_surface',
-    'Use CatchErrorState/CatchSliverErrorState/CatchInlineErrorState instead of a raw Center(Text(...)) failure surface.',
+    'Use CatchErrorState with an appropriate mode, or CatchSliverErrorState, instead of a raw Center(Text(...)) failure surface.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -955,8 +956,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
           'CatchDividedFieldInteractionScope',
           'CatchFieldGeometryScope',
           'CatchFieldInteractionPlaneScope',
-          'CatchFieldInteractionPlane',
-          'CatchSectionFocusSurface',
+          'CatchSectionSurface',
         }.contains(typeName)) {
       _reportAtNode(node, CatchUiLayoutRules.fieldGeometryIsSectionOwned);
     }
@@ -981,8 +981,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
 
     if (isFeaturePresentationPath &&
-        (typeName == 'CatchAsyncValueView' ||
-            typeName == 'CatchAsyncValueSliver') &&
+        typeName == 'CatchAsyncBoundary' &&
         !_hasNamedArgument(node, 'onRetry')) {
       _reportAtNode(node, CatchUiLayoutRules.asyncRequiresRetry);
     }
@@ -994,8 +993,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
             typeName == 'CatchLocalizedErrorState' ||
             typeName == 'CatchLocalizedErrorScaffold' ||
             typeName == 'CatchLocalizedSliverErrorState') &&
-        !_hasNamedArgument(node, 'onRetry') &&
-        !_hasNamedArgument(node, 'secondaryAction')) {
+        !_isInlineErrorState(node, typeName) &&
+        !_hasErrorRecovery(node)) {
       _reportAtNode(node, CatchUiLayoutRules.errorStateRequiresAction);
     }
 
@@ -1365,7 +1364,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       final name = argument.name.label.name;
       if (name != 'actions' && name != 'leading') continue;
       final text = argument.expression.toSource();
-      if (text.contains('CatchTopBarActionGroup')) continue;
+      if (text.contains('CatchTopBarActionRow')) continue;
       if (RegExp(r'\b(?:Row|Wrap)\s*\(').hasMatch(text)) return true;
     }
     return false;
@@ -1743,18 +1742,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       return false;
     }
 
-    if (_namedArgumentSourceContains(node, 'role', 'CatchSurfaceRole.tinted')) {
-      return false;
-    }
-
-    if (_namedArgumentSourceContains(
-      node,
-      'role',
-      'CatchSurfaceRole.message',
-    )) {
-      return false;
-    }
-
     if (_namedArgumentSourceContains(
       node,
       'tone',
@@ -1771,8 +1758,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
             (typeName == 'TextField' || typeName == 'TextFormField')) ||
         (_isCatchMenuImplementationPath && typeName == 'MenuAnchor') ||
         (_isCatchTextInputImplementationPath && typeName == 'TextField') ||
-        (_isCatchRangeSliderImplementationPath && typeName == 'RangeSlider') ||
-        (_isCatchTextButtonImplementationPath && typeName == 'TextButton');
+        (_isCatchRangeInputImplementationPath && typeName == 'RangeSlider') ||
+        (_isCatchButtonImplementationPath && typeName == 'TextButton');
   }
 
   bool _isContainedCatchSection(InstanceCreationExpression node) {
@@ -1793,6 +1780,35 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool _hasNamedArgument(InstanceCreationExpression node, String name) {
     return _namedArgument(node, name) != null;
+  }
+
+  bool _hasErrorRecovery(InstanceCreationExpression node) {
+    final retry = _namedArgument(node, 'onRetry');
+    if (retry != null && retry is! NullLiteral) return true;
+    final actions = _namedArgument(node, 'actions');
+    return actions != null &&
+        actions is! NullLiteral &&
+        (actions is! ListLiteral || actions.elements.isNotEmpty);
+  }
+
+  bool _isInlineErrorState(InstanceCreationExpression node, String typeName) {
+    if (typeName != 'CatchErrorState' &&
+        typeName != 'CatchLocalizedErrorState') {
+      return false;
+    }
+    // These recipes inherit recovery from the surrounding section. Resolve
+    // the enum owner so a matching spelling from another API cannot opt out.
+    final mode = _namedArgument(node, 'mode');
+    final element = switch (mode) {
+      PrefixedIdentifier() => mode.element,
+      PropertyAccess() => mode.propertyName.element,
+      SimpleIdentifier() => mode.element,
+      _ => null,
+    };
+    return element?.enclosingElement?.name == 'CatchErrorStateMode' &&
+        element?.library?.uri.toString() ==
+            'package:catch_ui/src/components/catch_error_state_mode.dart' &&
+        const {'inline', 'compact'}.contains(element?.name);
   }
 
   bool _namedArgumentSourceContains(
@@ -2159,13 +2175,13 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   bool get _isCatchMenuImplementationPath {
     return path.endsWith(
-      '/packages/catch_ui/lib/src/components/catch_menu_anchor.dart',
+      '/packages/catch_ui/lib/src/components/catch_menu.dart',
     );
   }
 
-  bool get _isCatchTextButtonImplementationPath {
+  bool get _isCatchButtonImplementationPath {
     return path.endsWith(
-      '/packages/catch_ui/lib/src/components/catch_text_button.dart',
+      '/packages/catch_ui/lib/src/components/catch_button.dart',
     );
   }
 
@@ -2175,9 +2191,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     );
   }
 
-  bool get _isCatchRangeSliderImplementationPath {
+  bool get _isCatchRangeInputImplementationPath {
     return path.endsWith(
-      '/packages/catch_ui/lib/src/components/catch_range_slider.dart',
+      '/packages/catch_ui/lib/src/components/catch_range_input.dart',
     );
   }
 
@@ -2420,19 +2436,15 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
   @override
   void visitInstanceCreationExpression(InstanceCreationExpression node) {
     final typeName = _constructorTypeName(node);
-    if (typeName == 'CatchMutationErrorBanner' ||
-        typeName == 'CatchMutationErrorListener') {
+    if ((typeName == 'CatchLocalizedErrorBanner' &&
+            node.constructorName.name?.name == 'mutation') ||
+        // Before resolution, explicit const named construction can be parsed
+        // as a prefixed type with no separate constructor-name node.
+        (node.constructorName.element == null &&
+            node.constructorName.toSource() ==
+                'CatchLocalizedErrorBanner.mutation')) {
       final mutation = _namedArgumentExpression(node, 'mutation');
       if (mutation != null) _addMutationExpression(mutation);
-    } else if (typeName == 'CatchMutationErrorListeners') {
-      final mutations = _namedArgumentExpression(node, 'mutations');
-      if (mutations is ListLiteral) {
-        for (final element in mutations.elements) {
-          if (element is Expression) _addMutationExpression(element);
-        }
-      } else if (mutations != null) {
-        _addMutationExpression(mutations);
-      }
     }
 
     super.visitInstanceCreationExpression(node);
@@ -2440,6 +2452,17 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
 
   @override
   void visitMethodInvocation(MethodInvocation node) {
+    // Unresolved syntax represents implicit named construction as a method call.
+    if (node.target?.toSource() == 'CatchLocalizedErrorBanner' &&
+        node.methodName.name == 'mutation') {
+      for (final argument in node.argumentList.arguments) {
+        if (argument is NamedExpression &&
+            argument.name.label.name == 'mutation') {
+          _addMutationExpression(argument.expression);
+        }
+      }
+    }
+
     if (node.methodName.name == 'mutationErrorMessage' &&
         node.argumentList.arguments.isNotEmpty) {
       final argument = node.argumentList.arguments.first;
@@ -2449,7 +2472,14 @@ class _MutationErrorSurfaceVisitor extends RecursiveAstVisitor<void> {
       _addMutationExpression(expression);
     }
 
-    if (_isMutationErrorHelperName(node.methodName.name)) {
+    if (node.methodName.name == 'listenToCatchMutationErrors') {
+      for (final argument in node.argumentList.arguments) {
+        if (argument is NamedExpression &&
+            argument.name.label.name == 'mutations') {
+          _addMutationExpressionsFromArgument(argument);
+        }
+      }
+    } else if (_isMutationErrorHelperName(node.methodName.name)) {
       for (final argument in node.argumentList.arguments) {
         _addMutationExpressionsFromArgument(argument);
       }

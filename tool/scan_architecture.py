@@ -3,7 +3,7 @@
 
 Detects:
   1. async_state handling — classifies every .when() / switch into:
-     a) should-use-wrapper (same Scaffold in all states → use CatchAsyncValueView)
+     a) should-use-wrapper (same Scaffold in all states → use CatchAsyncBoundary)
      b) legitimate-when (different structure per state — slivers, etc.)
      c) missing-error-handling (loading+data but no error callback)
   2. Repository method consistency (withBackendErrorContext usage)
@@ -50,16 +50,16 @@ def classify_async_handling(body: str) -> dict:
     result = {
         'uses_when': False,
         'uses_switch': False,
-        'uses_catch_async_value_view': False,
+        'uses_catch_async_boundary': False,
         'has_loading': False,
         'has_error': False,
         'has_data': False,
         'classification': 'no-async',  # no-async, should-use-wrapper, legitimate-when, missing-error
     }
 
-    # Check for CatchAsyncValueView usage (correct pattern)
-    if re.search(r'CatchAsyncValue(View|Sliver)', body):
-        result['uses_catch_async_value_view'] = True
+    # Check for CatchAsyncBoundary usage (correct pattern)
+    if re.search(r'CatchAsyncBoundary', body):
+        result['uses_catch_async_boundary'] = True
         result['classification'] = 'uses-wrapper'
         return result
 
@@ -110,13 +110,13 @@ def classify_async_handling(body: str) -> dict:
 def structural_hash(body: str) -> str:
     used = sorted(w for w in {
         'CatchField', 'CatchSection', 'CatchSectionList', 'CatchSurface',
-        'CatchButton', 'CatchChip', 'CatchChipField', 'CatchSkeleton',
+        'CatchButton', 'CatchChip', 'CatchChoiceInput', 'CatchSkeleton',
         'CatchTopBar', 'CatchCoverStory', 'CatchSearchField', 'CatchEmptyState',
-        'CatchErrorState', 'CatchSliverErrorState', 'CatchInlineErrorState',
-        'CatchRangeSlider', 'CatchPersonRow', 'CatchPolaroid', 'CatchToggle',
-        'CatchBadge', 'CatchCountPill', 'CatchNetworkImage', 'CatchGradedImage',
-        'CatchNotice', 'CatchBottomSheet', 'CatchIconButton', 'CatchTextButton',
-        'CatchOptionGroup', 'CatchPageBody', 'CatchScreenBody', 'CatchTabDock',
+        'CatchErrorState', 'CatchSliverErrorState',
+        'CatchRangeInput', 'CatchPersonRow', 'CatchPolaroid', 'CatchToggleInput',
+        'CatchBadge', 'CatchNetworkImage', 'CatchGradedImage',
+        'CatchNotice', 'CatchBottomSheet', 'CatchIconAction',
+        'CatchChoiceInput', 'CatchPageBody', 'CatchTabDock',
     } if w in body)
     return '|'.join(used)
 

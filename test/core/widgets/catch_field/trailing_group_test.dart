@@ -31,11 +31,11 @@ void main() {
                 width: 188,
                 height: 24,
               ),
-              _ => CatchIconButton.icon(
+              _ => CatchIconAction.icon(
                 key: actionKey,
                 icon: Icons.more_horiz,
                 tooltip: 'More',
-                onTap: () => taps++,
+                onPressed: () => taps++,
               ),
             };
             await tester.pumpWidget(
@@ -52,7 +52,7 @@ void main() {
                           title: 'Event One',
                           body: '12 Jun · Completed\n20 booked · 16 attended',
                           valueText: '₹1,200',
-                          action: action,
+                          actions: action,
                           showChevron: kind == 'action with chevron',
                           onTap: () {},
                         ),

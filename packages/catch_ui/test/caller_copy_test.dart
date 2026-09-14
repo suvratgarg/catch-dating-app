@@ -11,13 +11,13 @@ void main() {
       MaterialApp(
         theme: CatchTheme.light,
         home: Scaffold(
-          body: CatchNumberStepper(
+          body: CatchStepper(
             value: 0,
             min: 0,
             max: 2,
-            formatValue: (value) => '$value places',
-            decreaseTooltip: 'Réduire',
-            increaseTooltip: 'Augmenter',
+            valueLabelBuilder: (value) => '$value places',
+            decreaseSemanticLabel: 'Réduire',
+            increaseSemanticLabel: 'Augmenter',
             onChanged: changes.add,
           ),
         ),
@@ -36,7 +36,7 @@ void main() {
   ) async {
     final semantics = tester.ensureSemantics();
     try {
-      final copy = CatchFormFieldLabelCopy(
+      final copy = CatchFieldLabelTextCopy(
         optionalLabel: 'Facultatif',
         optionalSuffix: ' (facultatif)',
         optionalSemantics: (label) => '$label, facultatif',
@@ -48,10 +48,10 @@ void main() {
             home: Scaffold(
               body: MediaQuery(
                 data: MediaQueryData(textScaler: TextScaler.linear(scale)),
-                child: CatchFormFieldLabel(
+                child: CatchFieldLabelText(
                   label: 'Nom',
                   copy: copy,
-                  isOptional: true,
+                  mode: CatchFieldLabelTextMode.optional,
                 ),
               ),
             ),
@@ -62,7 +62,7 @@ void main() {
           scale == 1 ? findsOneWidget : findsNothing,
         );
         expect(
-          tester.getSemantics(find.byType(CatchFormFieldLabel)).label,
+          tester.getSemantics(find.byType(CatchFieldLabelText)).label,
           'Nom, facultatif',
         );
       }
@@ -70,10 +70,10 @@ void main() {
         MaterialApp(
           theme: CatchTheme.light,
           home: Scaffold(
-            body: CatchFormFieldLabel.inline(
+            body: CatchFieldLabelText.inline(
               label: 'Nom',
               copy: copy,
-              isOptional: true,
+              mode: CatchFieldLabelTextMode.optional,
               style: const TextStyle(fontSize: 16),
             ),
           ),
@@ -85,13 +85,49 @@ void main() {
     }
   });
 
+  for (final (mode, spokenLabel) in [
+    (CatchFieldLabelTextMode.hidden, 'Nom'),
+    (CatchFieldLabelTextMode.hiddenOptional, 'Nom, facultatif'),
+  ]) {
+    testWidgets('${mode.name} retains spoken copy without painting a label', (
+      tester,
+    ) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: CatchFieldLabelText(
+                label: 'Nom',
+                copy: CatchFieldLabelTextCopy(
+                  optionalLabel: 'Facultatif',
+                  optionalSuffix: ' (facultatif)',
+                  optionalSemantics: (label) => '$label, facultatif',
+                ),
+                mode: mode,
+              ),
+            ),
+          ),
+        );
+        expect(find.text('Nom'), findsNothing);
+        expect(tester.getSize(find.byType(CatchFieldLabelText)), Size.zero);
+        expect(
+          tester.getSemantics(find.byType(CatchFieldLabelText)).label,
+          spokenLabel,
+        );
+      } finally {
+        semantics.dispose();
+      }
+    });
+  }
+
   testWidgets('framework recovery and debug disclosure use caller copy', (
     tester,
   ) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: CatchTheme.light,
-        home: CatchFrameworkErrorView(
+        home: CatchFrameworkErrorState(
           copy: const CatchFrameworkErrorCopy(
             title: 'Une erreur est survenue',
             message: 'Veuillez réessayer',
@@ -117,7 +153,7 @@ void main() {
       MaterialApp(
         theme: CatchTheme.light,
         home: const Scaffold(
-          body: CatchShareCardFooter(
+          body: CatchAttributionRow(
             brandLabel: 'Notre marque',
             trailing: 'À partager',
           ),
@@ -126,47 +162,5 @@ void main() {
     );
     expect(find.text('Notre marque'), findsOneWidget);
     expect(find.text('À partager'), findsOneWidget);
-  });
-
-  testWidgets('step progress formats the clamped one-based counter', (
-    tester,
-  ) async {
-    final calls = <(int, int)>[];
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CatchTheme.light,
-        home: Scaffold(
-          body: CatchStepProgress(
-            currentStep: 99,
-            totalSteps: 5,
-            counterLabelBuilder: (step, total) {
-              calls.add((step, total));
-              return 'Étape $step sur $total';
-            },
-          ),
-        ),
-      ),
-    );
-    expect(calls, [(5, 5)]);
-    expect(find.text('Étape 5 sur 5'), findsOneWidget);
-  });
-
-  testWidgets('hidden step counter does not request copy', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CatchTheme.light,
-        home: Scaffold(
-          body: CatchStepProgress(
-            currentStep: 0,
-            totalSteps: 3,
-            showCounter: false,
-            counterLabelBuilder: (_, _) =>
-                throw StateError('Hidden counters must not request copy'),
-          ),
-        ),
-      ),
-    );
-    expect(find.byType(AnimatedContainer), findsNWidgets(3));
-    expect(tester.takeException(), isNull);
   });
 }

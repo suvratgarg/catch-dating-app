@@ -35,11 +35,10 @@ class EventDetailOverviewSection extends StatelessWidget {
       children: [
         CatchSection.divided(
           title: context.l10n.eventsEventDetailOverviewSectionTitleThePlan,
-          leadAccent: ActivityPalette.resolve(
+          titleColor: ActivityPalette.resolve(
             context,
             event.activityKind,
           ).accent,
-          lead: true,
           first: true,
           dividerColor: style?.dividerColor,
           child: EventDescription(

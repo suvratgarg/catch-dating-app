@@ -91,10 +91,10 @@ class ExploreExternalEventRow extends StatelessWidget {
                 ),
                 gapW8,
                 Expanded(
-                  child: CatchMonoLabel(state.sourceLabel, color: t.ink3),
+                  child: CatchMetadataText(state.sourceLabel, color: t.ink3),
                 ),
                 gapW8,
-                CatchTicketStatusBadge(
+                CatchBadge.ticketStatus(
                   label: state.statusLabel,
                   color: visual.accent,
                 ),
@@ -107,7 +107,7 @@ class ExploreExternalEventRow extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.eventDisplay(
                 context,
-                step: CatchDisplayStep.m,
+                step: CatchTextStylesSize.m,
                 height: 1.02,
               ),
             ),
@@ -121,7 +121,7 @@ class ExploreExternalEventRow extends StatelessWidget {
             gapH10,
             Row(
               children: [
-                CatchTicketClock(
+                CatchClockIndicator(
                   accent: visual.accent,
                   time: TimeOfDay.fromDateTime(event.startTime),
                   size: 17,
@@ -138,7 +138,7 @@ class ExploreExternalEventRow extends StatelessWidget {
                 gapW12,
                 CatchButton(
                   label: state.actionLabel,
-                  icon: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
+                  leading: Icon(CatchIcons.arrowUpRight, size: CatchIcon.sm),
                   size: CatchButtonSize.sm,
                   variant: CatchButtonVariant.secondary,
                   onPressed: !state.hasExternalLink
@@ -149,7 +149,7 @@ class ExploreExternalEventRow extends StatelessWidget {
               ],
             ),
             gapH8,
-            CatchMonoLabel(state.readOnlySupplyLabel, color: t.ink3),
+            CatchMetadataText(state.readOnlySupplyLabel, color: t.ink3),
           ],
         ),
       ),
@@ -173,7 +173,7 @@ class ThisWeekRecommendationsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchMonoLabel(
+        CatchMetadataText(
           context.l10n.exploreExploreEventRowsVisiblecopyComingUpLength(
             length: items.length,
           ),
@@ -185,7 +185,7 @@ class ThisWeekRecommendationsSection extends StatelessWidget {
           padding: EdgeInsets.zero,
           titleStyle: CatchTextStyles.clubDisplay(
             context,
-            step: CatchDisplayStep.xl,
+            step: CatchTextStylesSize.xl,
             height: 0.92,
           ),
         ),

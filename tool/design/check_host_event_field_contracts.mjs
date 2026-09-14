@@ -47,18 +47,18 @@ export function scanHostEventFieldSource({relativePath, source}) {
     const openParen = maskedSource.indexOf("(", start);
     const end = findBalancedClose(maskedSource, openParen);
     if (end == null) continue;
-    const expression = source.slice(start, end + 1);
-    if (/\bitemAccent\s*:/u.test(expression)) continue;
+    const expression = maskedSource.slice(start, end + 1);
+    if (/\bitemAccentBuilder\s*:/u.test(expression)) continue;
     findings.push({
       path: relativePath,
       line: lineForOffset(source, start),
       rule: "HOST-EVENT-FIELD-001",
-      reason: `${match[1]} choices must provide itemAccent so event activity color survives shared-field refactors.`,
+      reason: `${match[1]} choices must provide itemAccentBuilder so event activity color survives shared-field refactors.`,
     });
   }
 
   if (eventDisclosurePaths.some((ownedPath) => relativePath.startsWith(ownedPath))) {
-    for (const match of maskedSource.matchAll(/\binitiallyOpen\s*:\s*true\b/gu)) {
+    for (const match of maskedSource.matchAll(/\bdisclosureMode\s*:\s*CatchFieldMode\s*\.\s*(?:localExpanded|controlledExpanded)\b/gu)) {
       findings.push({
         path: relativePath,
         line: lineForOffset(source, match.index ?? 0),

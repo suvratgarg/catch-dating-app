@@ -78,7 +78,7 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
               ),
               CatchPrivacyBadge(
                 copy: catchPrivacyBadgeCopy(context.l10n),
-                kind: CatchPrivacyBadgeKind.hostCanSee,
+                variant: CatchPrivacyBadgeVariant.hostCanSee,
               ),
             ],
           ),
@@ -114,7 +114,9 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
                         .eventSuccessEventSuccessCompanionWingmanLabelWithdraw,
                     size: CatchButtonSize.sm,
                     variant: CatchButtonVariant.secondary,
-                    isLoading: withdrawing,
+                    status: (withdrawing)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     onPressed: withdrawing ? null : _withdrawRequest,
                   ),
                 ],
@@ -177,7 +179,9 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
                               .eventSuccessEventSuccessCompanionWingmanLabelSwitch,
                     size: CatchButtonSize.sm,
                     variant: CatchButtonVariant.secondary,
-                    isLoading: saving && candidate.uid != requestedTargetUid,
+                    status: (saving && candidate.uid != requestedTargetUid)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                     onPressed: saving || candidate.uid == requestedTargetUid
                         ? null
                         : () => _saveRequest(candidate),

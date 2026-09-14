@@ -225,31 +225,31 @@ void _registerHostOperationsStateEventsTests() {
     expect(find.byType(HostLoadingScreen), findsNothing);
     expect(find.byType(CatchRootScreenScaffold), findsOneWidget);
     expect(find.byType(CatchRootScreenPageScrollView), findsOneWidget);
-    expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+    expect(find.byType(CatchStateViewport), findsOneWidget);
     expect(find.text('Organizer'), findsOneWidget);
     expect(find.text('Edit'), findsOneWidget);
     expect(find.text('Insights'), findsOneWidget);
     expect(find.text('Preview'), findsOneWidget);
     expect(
       tester
-          .widget<CatchOptionGroup<HostClubTab>>(
+          .widget<CatchChoiceInput<HostClubTab>>(
             find.byKey(const ValueKey('host-club-tab-rail')),
           )
           .selected,
-      HostClubTab.edit,
+      {HostClubTab.edit},
     );
     expect(find.text('Sign in required'), findsNothing);
-    expect(
-      tester.widget<CatchSectionStack>(find.byType(CatchSectionStack)).padding,
-      EdgeInsets.zero,
-    );
+    final sectionBounds = tester.getRect(find.byType(CatchSectionList));
+    final summaryBounds = tester.getRect(find.byType(HostSummarySkeleton));
+    expect(summaryBounds.left, sectionBounds.left);
+    expect(summaryBounds.right, sectionBounds.right);
     expect(
       tester
           .widget<CatchRootScreenPageScrollView>(
             find.byType(CatchRootScreenPageScrollView),
           )
           .bodyLayout,
-      CatchScreenBodyLayout.standard,
+      CatchPageBodyMode.standard,
     );
   });
 
@@ -387,10 +387,19 @@ void _registerHostOperationsStateEventsTests() {
               matching: find.byType(CatchDivider),
             ),
           )
-          .where((divider) => divider.role == CatchDividerRole.section),
+          .where((divider) => divider.variant == CatchDividerVariant.section),
       hasLength(6),
     );
-    expect(find.byType(CatchSectionHeader), findsNothing);
+    final headers = tester.widgetList<CatchSectionHeader>(
+      find.byType(CatchSectionHeader),
+    );
+    expect(headers, hasLength(6));
+    expect(
+      headers.every(
+        (header) => header.variant == CatchSectionHeaderVariant.kicker,
+      ),
+      isTrue,
+    );
     expect(find.byType(CatchField), findsWidgets);
     expect(find.text('Set up international payouts'), findsOneWidget);
     expect(find.text('Razorpay'), findsWidgets);

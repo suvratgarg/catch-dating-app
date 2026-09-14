@@ -8,64 +8,70 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Nested body paint extents',
-  type: CatchFieldInteractionPlane,
+  type: CatchFieldInteractionPlaneScope,
   path: '[Core patterns]/Section layout',
 )
-Widget fieldInteractionPlaneLayoutStates(
-  BuildContext context,
-) => WidgetbookCatalogFrame(
-  title: 'Page-owned field paint',
-  catalogId: 'catch.field.interaction_plane',
-  children: [
-    for (final nested in [false, true]) ...[
-      Text(
-        nested ? 'Nested page gutter' : 'Single page gutter',
-        style: CatchTextStyles.bodyM(context),
-      ),
-      Builder(
-        builder: (context) {
-          final body = Padding(
-            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
-            child: CatchFieldInteractionPlane(
-              padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s6),
-              child: CatchSection.fieldRows(
-                children: [
-                  CatchField<String>.choices(
-                    copy: catchFieldCopy(context.l10n),
-                    title: 'Reminder',
-                    values: const ['Before', 'After'],
-                    itemLabel: (value) => value,
-                    selected: const {'Before'},
-                    onSelectionChanged: (_) {},
-                    initiallyOpen: true,
-                  ),
-                ],
-              ),
-            ),
-          );
-          return nested
-              ? CatchPageBody(
+Widget fieldInteractionPlaneLayoutStates(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'Page-owned field paint',
+      catalogId: 'catch.field.interaction_plane_scope',
+      children: [
+        for (final nested in [false, true]) ...[
+          Text(
+            nested ? 'Nested page gutter' : 'Single page gutter',
+            style: CatchTextStyles.bodyM(context),
+          ),
+          Builder(
+            builder: (context) {
+              final body = Builder(
+                builder: (context) => Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: CatchSpacing.s4,
+                    horizontal: CatchSpacing.s6,
                   ),
-                  child: body,
-                )
-              : body;
-        },
-      ),
-    ],
-  ],
-);
+                  child: CatchFieldInteractionPlaneScope.fromPadding(
+                    context: context,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CatchSpacing.s6,
+                    ),
+                    child: CatchSection.fieldRows(
+                      children: [
+                        CatchField<String>.choices(
+                          copy: catchFieldCopy(context.l10n),
+                          title: 'Reminder',
+                          values: const ['Before', 'After'],
+                          itemLabelBuilder: (value) => value,
+                          selected: const {'Before'},
+                          onSelectionChanged: (_) {},
+                          disclosureMode: CatchFieldMode.localExpanded,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+              return nested
+                  ? CatchPageBody(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: CatchSpacing.s4,
+                      ),
+                      child: body,
+                    )
+                  : body;
+            },
+          ),
+        ],
+      ],
+    );
 
 @widgetbook.UseCase(
   name: 'Local breakpoint and single-lane fallback',
-  type: CatchResponsiveSectionLayout,
+  type: CatchSectionList,
   path: '[Core patterns]/Section layout',
 )
 Widget responsiveSectionLayoutStates(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Complete section lanes',
-      catalogId: 'catch.section_stack.responsive_section_layout',
+      catalogId: 'catch.section_stack',
       children: [
         for (final setup in [
           (width: 659.0, secondary: true, label: 'Below 660'),
@@ -77,15 +83,15 @@ Widget responsiveSectionLayoutStates(BuildContext context) =>
             fit: BoxFit.scaleDown,
             child: WidgetbookViewportFrame.device(
               size: Size(setup.width, 320),
-              child: CatchResponsiveSectionLayout(
-                composition:
-                    CatchResponsiveSectionComposition.adaptiveTwoColumn,
-                sections: [
+              child: CatchSectionList.responsive(
+                emptyStateOmitted: true,
+                mode: CatchSectionListMode.adaptiveTwoColumn,
+                items: [
                   for (final index in [0, 1])
-                    CatchResponsiveSectionItem(
+                    CatchSectionListItem(
                       lane: index == 1 && setup.secondary
-                          ? CatchResponsiveSectionLane.secondary
-                          : CatchResponsiveSectionLane.primary,
+                          ? CatchSectionListPlacement.secondary
+                          : CatchSectionListPlacement.primary,
                       child: CatchSection.fieldRows(
                         children: [
                           CatchField.read(
@@ -106,34 +112,36 @@ Widget responsiveSectionLayoutStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Scrolled terminal clearance',
-  type: CatchResponsiveSectionPage,
+  type: CatchSectionList,
   path: '[Core patterns]/Section layout',
 )
 Widget responsiveSectionPageStates(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Section page clearance',
-      catalogId: 'catch.screen_body.responsive_section_page',
+      catalogId: 'catch.section_stack',
       children: [
         for (final floating in [false, true]) ...[
           Text(
             floating ? 'Floating navigation' : 'No navigation overlay',
             style: CatchTextStyles.bodyM(context),
           ),
-          _ScrolledSectionPage(floating: floating),
+          WidgetbookScrolledSectionPage(floating: floating),
         ],
       ],
     );
 
-class _ScrolledSectionPage extends StatefulWidget {
-  const _ScrolledSectionPage({required this.floating});
+class WidgetbookScrolledSectionPage extends StatefulWidget {
+  const WidgetbookScrolledSectionPage({super.key, required this.floating});
 
   final bool floating;
 
   @override
-  State<_ScrolledSectionPage> createState() => _ScrolledSectionPageState();
+  State<WidgetbookScrolledSectionPage> createState() =>
+      _WidgetbookScrolledSectionPageState();
 }
 
-class _ScrolledSectionPageState extends State<_ScrolledSectionPage> {
+class _WidgetbookScrolledSectionPageState
+    extends State<WidgetbookScrolledSectionPage> {
   final _controller = ScrollController();
 
   @override
@@ -163,11 +171,12 @@ class _ScrolledSectionPageState extends State<_ScrolledSectionPage> {
           bottomBarPlacement: widget.floating
               ? CatchTabViewportScopePlacement.floating
               : CatchTabViewportScopePlacement.none,
-          child: CatchResponsiveSectionPage(
+          child: CatchSectionList.page(
+            emptyStateOmitted: true,
             controller: _controller,
-            sections: [
+            items: [
               for (var index = 0; index < 8; index++)
-                CatchResponsiveSectionItem(
+                CatchSectionListItem(
                   child: CatchSection.fieldRows(
                     title: 'Section ${index + 1}',
                     children: [
@@ -206,22 +215,22 @@ class _ScrolledSectionPageState extends State<_ScrolledSectionPage> {
 
 @widgetbook.UseCase(
   name: 'Standard and full-bleed sliver roles',
-  type: CatchSliverScreenBody,
+  type: CatchPageBody,
   path: '[Core patterns]/Section layout',
 )
 Widget sliverScreenBodyStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Semantic sliver bodies',
-  catalogId: 'catch.screen_body.sliver_screen_body',
+  catalogId: 'catch.screen_body',
   children: [
-    for (final layout in CatchScreenBodyLayout.values) ...[
+    for (final layout in CatchPageBodyMode.values) ...[
       Text(layout.name, style: CatchTextStyles.bodyM(context)),
       WidgetbookViewportFrame.device(
         size: const Size(360, 180),
         child: CustomScrollView(
           slivers: [
-            CatchSliverScreenBody(
-              layout: layout,
-              slivers: [
+            CatchPageBody.slivers(
+              mode: layout,
+              children: [
                 SliverToBoxAdapter(
                   child: SizedBox(
                     height: 96,
@@ -247,13 +256,13 @@ Widget sliverScreenBodyStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Extra and shell-aware terminal space',
-  type: CatchSliverTerminalPadding,
+  type: CatchScrollTerminalGap,
   path: '[Core patterns]/Section layout',
 )
 Widget sliverTerminalPaddingStates(BuildContext context) =>
     WidgetbookCatalogFrame(
       title: 'Sliver terminal space',
-      catalogId: 'catch.screen_body.sliver_terminal_padding',
+      catalogId: 'catch.screen_body.scroll_terminal_gap',
       children: [
         for (final includeShell in [false, true]) ...[
           Text(
@@ -282,7 +291,7 @@ Widget sliverTerminalPaddingStates(BuildContext context) =>
                       ),
                     ),
                   ),
-                  CatchSliverTerminalPadding(
+                  CatchScrollTerminalGap.sliver(
                     extra: 32,
                     includeSafeArea: includeShell,
                   ),

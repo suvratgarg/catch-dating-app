@@ -8,6 +8,7 @@ import {
   collectProductionWidgetClassificationDeclarations,
 } from "./generate_widget_classification.mjs";
 import {publicWidgetNamingProblems} from "./component_concepts.mjs";
+import {sharedWidgetNamingProblems} from "./lib/component_naming.mjs";
 import {
   isProductionWidgetDartPath,
   productionWidgetGlobs,
@@ -106,6 +107,9 @@ export function validateWidgetClassification(
     }
   }
   failures.push(...publicWidgetNamingProblems(registry.widgets));
+  failures.push(...sharedWidgetNamingProblems({
+    components: contracts, declarations: registry.widgets,
+  }));
   return [...new Set(failures)].sort();
 }
 
@@ -497,12 +501,14 @@ function runCli() {
   const privateWidgetCount = registry.widgets.filter(
     (widget) => widget.visibility === "private" && widget.classKind === "widget",
   ).length;
+  const featureNamingReviewCount = registry.widgets.filter((widget) =>
+    widget.flags.some((flag) => /^(reserved|noncanonical)-feature-widget-/u.test(flag))).length;
   console.log(
     `Widget classification check passed (${registry.widgets.length} entries, ` +
       `0 unclassified public widgets, 0 ungoverned public name collisions, ` +
       `${registry.summary.collisionGroupCount} governed concept families; ` +
       `${publicReviewCount} public catalog/consolidation candidates and ` +
-      `${privateWidgetCount} private widget classes flagged for review).`,
+      `${privateWidgetCount} private widget classes and ${featureNamingReviewCount} existing feature naming candidates flagged for review).`,
   );
 }
 

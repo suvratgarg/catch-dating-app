@@ -12,7 +12,7 @@ class HostFormMetrics extends StatelessWidget {
     final stacked = MediaQuery.textScalerOf(context).scale(1) >= 1.4;
     final cells = [
       for (final item in items)
-        CatchStatColumn(value: item.value, label: item.label),
+        CatchMetricTile(value: item.value, label: item.label),
     ];
     return stacked
         ? Column(

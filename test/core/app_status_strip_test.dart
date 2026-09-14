@@ -24,15 +24,19 @@ void main() {
           GoRoute(
             path: '/',
             builder: (context, state) => CatchRootScreenScaffold.standard(
-              header: const CatchScreenHeaderTitle.block(title: 'Today'),
-              slivers: const [SliverToBoxAdapter(child: Text('Root content'))],
+              title: const CatchScreenHeader.block(title: 'Today'),
+              children: const [SliverToBoxAdapter(child: Text('Root content'))],
             ),
           ),
           GoRoute(
             path: '/detail',
             builder: (context, state) => CatchRouteScaffold(
-              topBarBuilder: (context, scrolled) =>
-                  CatchTopBar(title: 'Detail', divider: scrolled),
+              topBarBuilder: (context, scrolled) => CatchTopBar(
+                title: 'Detail',
+                emphasis: (scrolled)
+                    ? CatchTopBarEmphasis.divided
+                    : CatchTopBarEmphasis.plain,
+              ),
               body: const CatchRouteBody.standard(
                 child: Text('Detail content'),
               ),
@@ -68,7 +72,13 @@ void main() {
       expect(find.text("YOU'RE OFFLINE"), findsOneWidget);
       expect(
         tester
-            .widget<CatchStatusStrip>(find.byType(CatchStatusStrip))
+            .widget<CatchBanner>(
+              find.byWidgetPredicate(
+                (widget) =>
+                    widget is CatchBanner &&
+                    widget.variant == CatchBannerVariant.statuses,
+              ),
+            )
             .statuses
             .single
             .actions,

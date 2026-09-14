@@ -73,7 +73,7 @@ class ChatsList extends ConsumerWidget {
         viewModel: viewModel,
         onThreadSelected: onThreadSelected ?? (_) {},
       ),
-      ChatsListEmpty(:final kind) => CatchSliverStateViewport(
+      ChatsListEmpty(:final kind) => CatchStateViewport.sliver(
         child: switch (kind) {
           ChatsListEmptyKind.noSearchResults =>
             const ChatsEmptyState.noSearchResults(),

@@ -1,7 +1,7 @@
 ---
 doc_id: section_gutter_divider_followups
-version: 1.0.3
-updated: 2026-08-27
+version: 1.1.0
+updated: 2026-09-09
 owner: design_parity_review
 status: ready-for-implementation
 ---
@@ -160,7 +160,8 @@ changes) — assert via existing screen tests where they exist.
    `CatchSpacing.s5` that means "the app screen gutter" (defaults, literals,
    and the doc comments) becomes `CatchSpacing.screenPx`. Visual noop; these
    core widgets legitimately own gutters, they just spell the token wrong.
-2. `CatchFieldTrailing.valueText` in `lib/core/widgets/catch_field.dart`
+2. `CatchFieldTrailingRow.valueText` in
+   `packages/catch_ui/lib/src/components/catch_field_trailing_row.dart`
    caps at raw `maxWidth: 160`. Add ONE token —
    `CatchLayout.fieldTrailingValueMaxWidth = 160.0` — next to the other
    field-row layout tokens in `lib/core/theme/catch_tokens.dart`, and use

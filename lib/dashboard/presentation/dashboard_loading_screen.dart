@@ -6,8 +6,8 @@ class DashboardLoadingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CatchRootScreenScaffold.standard(
-      header: const DashboardLoadingHeader(),
-      slivers: const [SliverToBoxAdapter(child: DashboardFocusLoadingCard())],
+      title: const DashboardLoadingHeader(),
+      children: const [SliverToBoxAdapter(child: DashboardFocusLoadingCard())],
     );
   }
 }

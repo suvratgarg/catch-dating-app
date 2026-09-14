@@ -1,10 +1,19 @@
 #!/usr/bin/env node
 import fs from "node:fs";
 import path from "node:path";
-import {fromRepo} from "../lib/repo_paths.mjs";
+import {fromRepo, repoRoot} from "../lib/repo_paths.mjs";
+import {collectComponentApi, componentApiProblems} from "./lib/component_api.mjs";
 import {productionWidgetRoots} from "./lib/production_widget_roots.mjs";
 
 const knownBad = process.argv.includes("--known-bad");
+const knownBadApi = process.argv.includes("--known-bad-api");
+const surfacesOnly = process.argv.includes("--surfaces-only");
+const allowedArgs = new Set(["--known-bad", "--known-bad-api", "--surfaces-only"]);
+if (process.argv.slice(2).some((arg) => !allowedArgs.has(arg)) ||
+    (surfacesOnly && knownBadApi)) {
+  console.error("Use --surfaces-only for the Node-only cross-stack symbol check; API probes require the full default check.");
+  process.exit(64);
+}
 const registry = readJson("design/components/catch.components.json");
 const failures = [];
 const componentById = new Map(
@@ -26,7 +35,7 @@ validateSemanticDistinction("catch.badge", {
   webui: "BadgeControl",
 });
 validateSemanticDistinction("catch.ui_label", {
-  flutter: "CatchSectionLabel",
+  flutter: "CatchSectionHeaderTitle",
   website: "UiLabel",
   admin: "AdminEyebrow",
   webui: "UiLabel",
@@ -66,6 +75,19 @@ if (fs.existsSync(fromRepo("design/web-ui/components.json"))) {
   validateReverseRegistry("webui", "design/web-ui/components.json");
 }
 
+if (!surfacesOnly) {
+  const apiInventory = collectComponentApi({repoRoot});
+  if (knownBadApi) {
+    const input = apiInventory.classes?.find((row) => row.name === "CatchField")
+      ?.constructors.find((row) => row.name === "input");
+    if (!input) failures.push("API probe could not find the production Field.input constructor");
+    else input.parameters.push({name: "unreviewedFlag", type: "bool", kind: "value", named: true});
+  }
+  const apiProblems = componentApiProblems(apiInventory);
+  failures.push(...apiProblems.map((problem) =>
+    `${problem.file ?? "component API"}:${problem.line ?? 0}: ${problem.message}`));
+}
+
 if (failures.length > 0) {
   console.error("Component lexicon check failed:");
   failures.forEach((failure) => console.error(`- ${failure}`));
@@ -74,7 +96,8 @@ if (failures.length > 0) {
 
 console.log(
   `Component lexicon check passed (${componentById.size} contracts; ` +
-  `${countLinks(registry.components ?? [])} surface links).`
+  `${countLinks(registry.components ?? [])} surface links` +
+  (surfacesOnly ? "; surface symbols only)." : "; 0 shared API grammar violations).")
 );
 
 function validateReverseRegistry(surface, relativePath) {

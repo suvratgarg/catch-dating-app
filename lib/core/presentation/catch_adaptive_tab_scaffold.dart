@@ -39,14 +39,23 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
             expandedSideNavigation ?? mediumSideNavigation,
         };
         if (sideNavigation != null) {
-          return CatchScreenScaffold.workspace(
+          return CatchScaffold.workspace(
             scaffoldKey: AppShellKeys.scaffold,
             body: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 sideNavigation,
                 Expanded(
-                  child: CatchTabViewportScope(index: activeIndex, child: body),
+                  // A nested Navigator's modal barrier may discard preceding
+                  // semantics. Confine it to the page so it cannot hide the
+                  // persistent side-navigation sibling.
+                  child: Semantics(
+                    container: true,
+                    child: CatchTabViewportScope(
+                      index: activeIndex,
+                      child: body,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -76,7 +85,7 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
           child: body,
         );
 
-        return CatchScreenScaffold.workspace(
+        return CatchScaffold.workspace(
           scaffoldKey: AppShellKeys.scaffold,
           extendBody: tabBarFloats,
           body: candidateTabBarFloats
@@ -93,7 +102,7 @@ class CatchAdaptiveTabScaffold extends StatelessWidget {
                   ],
                 )
               : scopedBody,
-          bottomNavigationBar: anchoredBar,
+          footer: anchoredBar,
         );
       },
     );

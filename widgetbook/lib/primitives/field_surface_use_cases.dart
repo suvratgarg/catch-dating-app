@@ -1,9 +1,12 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
+
+import '../preview_layout_contracts.dart';
 
 @widgetbook.UseCase(
   name: 'Interaction shapes and paint states',
@@ -12,9 +15,9 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 )
 Widget fieldSurfaceStates(BuildContext context) {
   const shapes = [
-    ('Rounded row', CatchFieldInteractionShape.roundedTile),
-    ('Inside a section', CatchFieldInteractionShape.sectionClipped),
-    ('Across the page', CatchFieldInteractionShape.fullBleedBand),
+    ('Rounded row', CatchFieldGeometryScopeVariant.roundedTile),
+    ('Inside a section', CatchFieldGeometryScopeVariant.sectionClipped),
+    ('Across the page', CatchFieldGeometryScopeVariant.fullBleedBand),
   ];
   const states = [
     ('Idle', <WidgetState>{}),
@@ -36,14 +39,14 @@ Widget fieldSurfaceStates(BuildContext context) {
         Text(label, style: CatchTextStyles.headline(context)),
         for (final (label, state) in states)
           CatchFieldGeometryScope(
-            gutterOwnership: CatchFieldGutterOwnership.field,
+            gutterOwnership: CatchFieldGeometryScopeMode.field,
             interactionShape: shape,
             interactionOutsets: EdgeInsets.zero,
             child: CatchFieldSurface(
               pressedOverlayKey: ValueKey((shape, label)),
               states: state,
               child: CatchFieldRow.standard(
-                content: CatchFieldValueContent(
+                body: CatchFieldContentRow.value(
                   labelCopy: copy.label,
                   label: label,
                   value: 'Field content',
@@ -52,6 +55,30 @@ Widget fieldSurfaceStates(BuildContext context) {
             ),
           ),
       ],
+      Text('Small control focus', style: CatchTextStyles.headline(context)),
+      for (final focused in [false, true])
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CatchMetadataText(
+              focused ? 'focus-target-visible' : 'focus-target-hidden',
+              color: CatchTokens.of(context).ink2,
+            ),
+            gapH8,
+            CatchFieldSurface.focusTarget(
+              outlineKey: ValueKey('catch-field-focus-target-$focused'),
+              states: focused ? const {WidgetState.focused} : const {},
+              borderRadius: BorderRadius.circular(CatchRadius.pill),
+              child: SizedBox(
+                width: WidgetbookPreviewLayout.fieldFocusTargetWidth,
+                height: WidgetbookPreviewLayout.fieldFocusTargetHeight,
+                child: Center(
+                  child: Text('Target', style: CatchTextStyles.bodyM(context)),
+                ),
+              ),
+            ),
+          ],
+        ),
     ],
   );
 }

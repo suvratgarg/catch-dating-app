@@ -27,7 +27,9 @@ Widget catchTextInputContractStates(BuildContext context) {
               gapH8,
               CatchTextInput(
                 controller: controller,
-                enabled: enabled,
+                status: enabled
+                    ? CatchTextInputStatus.enabled
+                    : CatchTextInputStatus.disabled,
                 showCursor: false,
                 decoration: const InputDecoration(hintText: 'Write a name'),
                 style: CatchTextStyles.bodyM(context),

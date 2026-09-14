@@ -36,7 +36,7 @@
           {"id": "campaign_controller", "language": "dart", "file": "lib/hosts/presentation/host_audience_controller.dart", "symbol": "HostAudienceController"},
           {"id": "whatsapp_thread", "language": "dart", "file": "lib/hosts/presentation/inbox/host_whatsapp_thread_sheet.dart", "symbol": "HostWhatsappThreadSheet"}
         ],
-        "componentContracts": ["catch.button", "catch.chip", "catch.empty_state", "catch.error_state", "catch.field", "catch.menu", "catch.notice", "catch.option_card", "catch.option_group", "catch.person_row", "catch.search_field", "catch.section", "catch.skeleton", "catch.surface", "catch.top_bar"],
+        "componentContracts": ["catch.button", "catch.chip", "catch.empty_state", "catch.error_state", "catch.field", "catch.menu", "catch.notice", "catch.option_card", "catch.chip.field", "catch.person_row", "catch.search_field", "catch.section", "catch.skeleton", "catch.surface", "catch.top_bar"],
         "dataContracts": [
           "contracts/callable_responses/organizer_campaign_response.schema.json",
           "contracts/callable_responses/create_organizer_post_response.schema.json",

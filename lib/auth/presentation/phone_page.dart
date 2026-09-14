@@ -97,7 +97,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               ),
               gapH16,
               CatchFieldLanes.custom(
-                child: CatchControlShell(
+                child: CatchControlSurface(
                   enabled: viewState.requestControlsEnabled,
                   padding: EdgeInsets.zero,
                   child: Row(
@@ -128,9 +128,12 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                           title: l10n.authPhoneFieldLabel,
                           contract: CatchContractConstraints
                               .onboardingDraftDocumentPhoneNumber,
-                          showLabel: false,
+                          labelMode: CatchFieldLabelTextMode.hidden,
                           controller: _phoneController,
-                          enabled: viewState.requestControlsEnabled,
+                          states: <WidgetState>{
+                            if (!viewState.requestControlsEnabled)
+                              WidgetState.disabled,
+                          },
                           keyboardType: TextInputType.phone,
                           textInputAction: TextInputAction.done,
                           autofillHints: const [
@@ -151,7 +154,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                           ],
                           placeholder: l10n.authPhoneFieldPlaceholder,
                           variant: CatchFieldVariant.bare,
-                          validator: (value) =>
+                          onValidate: (value) =>
                               AuthInput.phoneNumberIssue(value) == null
                               ? null
                               : l10n.authInvalidPhoneNumber,
@@ -163,7 +166,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               ),
               if (mutation.hasError) ...[
                 gapH12,
-                CatchErrorBanner(
+                CatchBanner.error(
                   message: appErrorMessage(
                     (mutation as MutationError).error,
                     l10n: context.l10n,
@@ -184,7 +187,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                   onPressed: canSubmit ? _submit : null,
                   fullWidth: true,
                   size: CatchButtonSize.lg,
-                  shape: CatchButtonShape.rounded,
+                  mode: CatchButtonMode.rounded,
                 ),
             ],
           ),
@@ -198,9 +201,11 @@ class _PhonePageState extends ConsumerState<PhonePage> {
         footer: CatchButton(
           key: AuthFormKeys.sendCode,
           label: l10n.authSendCodeAction,
-          icon: Icon(CatchIcons.arrowForwardRounded),
+          leading: Icon(CatchIcons.arrowForwardRounded),
           onPressed: _submit,
-          isLoading: viewState.sendButtonLoading,
+          status: (viewState.sendButtonLoading)
+              ? CatchButtonStatus.loading
+              : CatchButtonStatus.idle,
           fullWidth: true,
           size: CatchButtonSize.lg,
         ),
@@ -216,8 +221,8 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             gutter: false,
           ),
           gapH28,
-          CatchFormFieldLabel(
-            copy: catchFormFieldLabelCopy(context.l10n),
+          CatchFieldLabelText(
+            copy: catchFieldLabelTextCopy(context.l10n),
             label: l10n.authPhoneFieldLabel,
           ),
           const SizedBox(height: CatchSpacing.s2),
@@ -242,10 +247,13 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                     title: l10n.authPhoneFieldLabel,
                     contract: CatchContractConstraints
                         .onboardingDraftDocumentPhoneNumber,
-                    showLabel: false,
+                    labelMode: CatchFieldLabelTextMode.hidden,
                     controller: _phoneController,
                     autofocus: viewState.shouldAutofocus,
-                    enabled: viewState.requestControlsEnabled,
+                    states: <WidgetState>{
+                      if (!viewState.requestControlsEnabled)
+                        WidgetState.disabled,
+                    },
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.done,
                     autofillHints: const [
@@ -262,7 +270,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                       ),
                     ],
                     placeholder: '98765 43210',
-                    validator: (value) =>
+                    onValidate: (value) =>
                         AuthInput.phoneNumberIssue(value) == null
                         ? null
                         : l10n.authInvalidPhoneNumber,
@@ -273,7 +281,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           ),
           if (mutation.hasError) ...[
             gapH16,
-            CatchErrorBanner(
+            CatchBanner.error(
               message: appErrorMessage(
                 (mutation as MutationError).error,
                 l10n: context.l10n,
@@ -399,7 +407,7 @@ class CountryCodeSelector extends StatelessWidget {
       height: CatchField.mdControlHeight,
       child: embedded
           ? IgnorePointer(ignoring: !enabled, child: picker)
-          : CatchControlShell(
+          : CatchControlSurface(
               enabled: enabled,
               padding: EdgeInsets.zero,
               child: picker,

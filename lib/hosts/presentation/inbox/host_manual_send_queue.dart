@@ -182,7 +182,9 @@ class _HostManualSendQueueContent extends StatelessWidget {
         label: context.l10n.hostManualSendQueueReplan,
         size: CatchButtonSize.sm,
         variant: CatchButtonVariant.secondary,
-        isLoading: replanning,
+        status: (replanning)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
         onPressed: replanning ? null : () => onReplan(tasks),
       ),
       footer: Column(
@@ -197,7 +199,9 @@ class _HostManualSendQueueContent extends StatelessWidget {
             CatchButton(
               label: context.l10n.hostSendsLoadMore,
               variant: CatchButtonVariant.secondary,
-              isLoading: loadingMore,
+              status: (loadingMore)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: loadingMore ? null : () => onLoadMore(nextCursor),
             ),
           ],
@@ -234,13 +238,13 @@ class _HostManualSendTaskSheetState
   bool _busy = false;
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostManualSendTaskTitle(name: _task.displayName),
     subtitle: context.l10n.hostManualSendTaskSubtitle,
-    action: CatchButton(
+    footer: CatchButton(
       key: const ValueKey('host-manual-send-mark-sent'),
       label: context.l10n.hostManualSendTaskMarkSent,
-      isLoading: _busy,
+      status: (_busy) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       onPressed: _busy || _task.status != HostManualSendTaskStatus.handoffOpened
           ? null
           : () => unawaited(_mark(HostManualSendTaskAction.hostMarkedSent)),
@@ -351,7 +355,7 @@ class _HostManualSendReplanSheet extends StatelessWidget {
   final Map<String, HostManualSendTaskReplanResult> results;
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostManualSendReplanTitle,
     subtitle: context.l10n.hostManualSendReplanSubtitle,
     child: CatchSection.fieldRows(

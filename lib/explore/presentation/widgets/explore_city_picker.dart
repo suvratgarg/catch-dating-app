@@ -121,7 +121,7 @@ class CityTrigger extends StatelessWidget {
             : city.label,
         semanticsLabel: state.semanticLabel,
         tooltip: state.tooltipLabel,
-        icon: Icon(state.icon),
+        leading: Icon(state.icon),
         backgroundColor:
             backgroundColor ??
             (presentation == ExploreCityPickerPresentation.scopeLabel
@@ -155,7 +155,7 @@ class ExploreCityPickerSheet extends StatelessWidget {
 
     return ConstrainedBox(
       constraints: BoxConstraints(maxHeight: maxHeight),
-      child: CatchBottomSheetScaffold(
+      child: CatchSheet(
         title: context.l10n.exploreExploreCityPickerTextCity,
         trailing: Icon(
           CatchIcons.locationOnOutlined,

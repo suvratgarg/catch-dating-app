@@ -21,7 +21,7 @@ void _registerHostOperationsCustomersTests() {
       );
       _expectAudienceStateOwner(tester, selected: view);
       expect(find.byType(HostRouteLoadingBody), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpHostScreen(
         tester,
@@ -70,7 +70,7 @@ void _registerHostOperationsCustomersTests() {
       );
       _expectAudienceStateOwner(tester, selected: view);
       expect(find.byType(HostRouteLoadingBody), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpHostScreen(
         tester,
@@ -146,8 +146,8 @@ void _registerHostOperationsCustomersTests() {
 
     final name = tester.widget<Text>(find.text('Ananya Rao'));
     final metadata = tester.widget<Text>(find.textContaining('8 events'));
-    final avatar = tester.widget<CatchPersonAvatar>(
-      find.descendant(of: row, matching: find.byType(CatchPersonAvatar)),
+    final avatar = tester.widget<CatchAvatar>(
+      find.descendant(of: row, matching: find.byType(CatchAvatar)),
     );
     expect(avatar.size, CatchSpacing.s10);
     expect(tester.getSize(row).height, greaterThanOrEqualTo(72));
@@ -196,7 +196,7 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const _CustomersTestPrimaryRail(),
+        actions: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
@@ -225,7 +225,7 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const _CustomersTestPrimaryRail(),
+        actions: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
@@ -251,7 +251,7 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const _CustomersTestPrimaryRail(),
+        actions: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
@@ -422,13 +422,12 @@ void _registerHostOperationsCustomersTests() {
     expect(search.placeholder, 'Search by name');
     expect(find.text('SMS reachable'), findsNothing);
     expect(requests.last.search, isNull);
-    final body = tester.widget<CatchSliverScreenBody>(
-      find.ancestor(
-        of: find.byType(HostCustomersDirectory),
-        matching: find.byType(CatchSliverScreenBody),
+    expect(
+      CatchFieldInteractionPlaneScope.outsetsOf(
+        tester.element(find.byType(HostCustomersDirectory)),
       ),
+      EdgeInsets.symmetric(horizontal: CatchInsets.pageBody.left),
     );
-    expect(body.layout, CatchScreenBodyLayout.standard);
 
     await tester.tap(searchFinder);
     await pumpFeatureUi(tester);
@@ -550,7 +549,7 @@ void _registerHostOperationsCustomersTests() {
           matching: find.byType(CatchTopBar),
         ),
       );
-      expect(detailTopBar.leadingType, CatchTopBarLeading.none);
+      expect(detailTopBar.navigation.mode, CatchTopBarNavigationMode.none);
       expect(tester.takeException(), isNull);
     },
   );
@@ -614,7 +613,7 @@ void _registerHostOperationsCustomersTests() {
     );
 
     expect(find.byType(CatchRouteScaffold), findsOneWidget);
-    expect(find.byType(CatchBottomSheetScaffold), findsNothing);
+    expect(find.byType(CatchSheet), findsNothing);
     expect(
       find.byKey(const ValueKey('host-add-customer-details')),
       findsOneWidget,
@@ -767,7 +766,7 @@ void _registerHostOperationsCustomersTests() {
       tester,
       CatchRootScreenScaffold.withPrimaryRail(
         header: const CatchRootScreenHeader.title(title: 'Customers'),
-        primaryRail: const _CustomersTestPrimaryRail(),
+        actions: const _CustomersTestPrimaryRail(),
         body: CatchRootScreenBody.single(
           page: CatchRootScreenPageSpec.scroll(
             page: HostSavedAudiencesWorkspace(
@@ -900,11 +899,11 @@ class _CustomersTestPrimaryRail extends StatelessWidget
   const _CustomersTestPrimaryRail();
 
   @override
-  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+  Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
 
   @override
   Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchTabRail.heightFor(context));
+      Size.fromHeight(CatchPageTabBar.heightFor(context));
 
   @override
   Widget build(BuildContext context) =>

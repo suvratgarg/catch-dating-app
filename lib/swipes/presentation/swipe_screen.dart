@@ -121,7 +121,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       now: widget.now,
     );
 
-    return CatchScreenScaffold.workspace(
+    return CatchScaffold.workspace(
       backgroundColor: t.bg,
       body: switch (state) {
         CatchesEventQueueLoading() => const CatchesProfileReviewSkeleton(),
@@ -246,7 +246,7 @@ class CatchesProfileReview extends StatelessWidget {
     return Stack(
       children: [
         Positioned.fill(
-          child: CatchViewportBreakpoint(
+          child: CatchViewport.atWidth(
             breakpoint: ComponentBreakpoints.catchesWidePaddingBreakpoint,
             compactBuilder: (context) => ProfileSurface(
               key: ValueKey(profile.uid),
@@ -379,7 +379,7 @@ class CatchesTopOverlay extends StatelessWidget {
           padding: CatchInsets.swipeTopChrome,
           child: Row(
             children: [
-              CatchIconAction(
+              CatchIconAction.toolbar(
                 tooltip: context.l10n.swipesSwipeScreenTooltipBackToCatches,
                 icon: CatchIcons.arrowBackIosNewRounded,
                 onPressed: onBack,
@@ -414,7 +414,7 @@ class CatchesTopOverlay extends StatelessWidget {
                 ),
               ),
               gapW10,
-              CatchIconAction(
+              CatchIconAction.toolbar(
                 tooltip: context.l10n.swipesSwipeScreenTooltipFilters,
                 icon: CatchIcons.tuneRounded,
                 onPressed: onFilters,

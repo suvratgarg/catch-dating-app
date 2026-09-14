@@ -1,7 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_action_menu_item.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
-import 'package:catch_ui/src/components/catch_menu_anchor.dart';
+import 'package:catch_ui/src/components/catch_icon_action.dart';
+import 'package:catch_ui/src/components/catch_menu.dart';
 import 'package:catch_ui/src/components/catch_menu_item.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +14,7 @@ class CatchActionMenu<T> extends StatefulWidget {
     this.onSelected,
     this.enabled = true,
     this.icon,
-    this.variant = CatchIconButtonVariant.bordered,
+    this.variant = CatchIconActionVariant.bordered,
   }) : assert(tooltip != '', 'CatchActionMenu requires an accessible tooltip.');
 
   final List<CatchActionMenuItem<T>> items;
@@ -22,7 +22,7 @@ class CatchActionMenu<T> extends StatefulWidget {
   final String tooltip;
   final bool enabled;
   final IconData? icon;
-  final CatchIconButtonVariant variant;
+  final CatchIconActionVariant variant;
 
   @override
   State<CatchActionMenu<T>> createState() => _CatchActionMenuState<T>();
@@ -53,7 +53,7 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
       viewportWidth: MediaQuery.sizeOf(context).width,
     );
 
-    return CatchMenuAnchor<T>(
+    return CatchMenu<T>.anchored(
       controller: _controller,
       width: menuWidth,
       alignmentOffset: Offset(
@@ -76,10 +76,10 @@ class _CatchActionMenuState<T> extends State<CatchActionMenu<T>> {
         _controller.close();
       },
       builder: (context, controller, child) {
-        return CatchIconButton(
+        return CatchIconAction(
           tooltip: widget.tooltip,
           variant: widget.variant,
-          onTap: _canOpen
+          onPressed: _canOpen
               ? () => controller.isOpen ? controller.close() : controller.open()
               : null,
           child: Icon(

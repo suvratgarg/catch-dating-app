@@ -20,6 +20,7 @@ import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -100,7 +101,7 @@ void main() {
     expect(find.text('BOOKED · 1'), findsOneWidget);
     expect(find.text('PROSPECTIVE · 1'), findsOneWidget);
     expect(
-      find.byType(CatchOptionGroup<HostInboxAudienceSegment>),
+      find.byType(CatchChoiceInput<HostInboxAudienceSegment>),
       findsOneWidget,
     );
     expect(find.text('Message 1 booked attendee'), findsNothing);
@@ -145,9 +146,7 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(find.byType(NestedScrollView), findsOneWidget);
-      final topBar = tester.widget<CatchScreenTopBar>(
-        find.byType(CatchScreenTopBar),
-      );
+      final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
       expect(topBar.contentPadding, CatchInsets.primaryRailTitleBlock);
       final rail = find.byType(HostMessagingWorkspaceRail);
       final railBefore = tester.getRect(rail);
@@ -187,7 +186,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchScreenScaffold), findsOneWidget);
+    expect(find.byType(CatchScaffold), findsOneWidget);
     expect(
       find.byKey(const ValueKey('catch-master-detail-divider')),
       findsOneWidget,
@@ -289,10 +288,20 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    final lane = tester.widget<CatchSliverContentWidth>(
-      find.byType(CatchSliverContentWidth),
+    final lane = find.byWidgetPredicate(
+      (widget) =>
+          widget is SliverConstrainedCrossAxis &&
+          widget.maxExtent == CatchLayout.hostMessagingSendsPageMaxExtent,
     );
-    expect(lane.maxExtent, CatchLayout.hostMessagingSendsPageMaxExtent);
+    expect(lane, findsOneWidget);
+    expect(
+      tester
+          .renderObject<RenderSliverConstrainedCrossAxis>(lane)
+          .child!
+          .constraints
+          .crossAxisExtent,
+      CatchLayout.hostMessagingSendsPageMaxExtent,
+    );
     expect(find.text('Outbound delivery and history.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -640,7 +649,13 @@ void main() {
     await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
     await pumpFeatureUi(tester);
 
-    expect(find.byType(CatchMenu<HostInboxScope>), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchMenu<HostInboxScope> && widget.builder == null,
+      ),
+      findsOneWidget,
+    );
     expect(find.text('General inquiries'), findsOneWidget);
 
     await tester.tap(find.text('General inquiries'));
@@ -684,7 +699,10 @@ void main() {
       await tester.tap(find.bySemanticsLabel(RegExp('Inbox scope')));
       await pumpFeatureUi(tester);
 
-      final menu = find.byType(CatchMenu<HostInboxScope>);
+      final menu = find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchMenu<HostInboxScope> && widget.builder == null,
+      );
       expect(menu, findsOneWidget);
       final usableBottom =
           tester.view.physicalSize.height / tester.view.devicePixelRatio -
@@ -760,8 +778,8 @@ void main() {
       expect(find.text('No general inquiries'), findsOneWidget);
 
       final emptyState = find.byType(CatchEmptyState);
-      final content = find.byType(CatchEmptyStateContent);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      final content = find.byType(CatchEmptyState);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
       expect(
         find.ancestor(of: emptyState, matching: find.byType(Center)),
         findsNothing,

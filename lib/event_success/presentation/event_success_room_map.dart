@@ -246,7 +246,7 @@ class _EventSuccessRoomMapState extends State<EventSuccessRoomMap> {
       ],
     );
 
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: ComponentBreakpoints.eventSuccessSpatialDragBreakpoint,
       compactBuilder: (_) => content(false),
       expandedBuilder: (_) => content(true),
@@ -544,7 +544,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
     ];
     final identity = Row(
       children: [
-        CatchPersonAvatar(
+        CatchAvatar(
           size: CatchLayout.avatarIdentityExtent,
           name: profile?.name ?? assignment.displayTitle,
           imageUrl: profile?.primaryPhotoThumbnailUrl,
@@ -591,7 +591,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
           : context.l10n.eventSuccessRoomMapMoveToUnit(
               unitLabel: destinationUnit!.label,
             ),
-      isLoading: pending,
+      status: (pending) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
       onPressed: pending ? null : onMove,
       fullWidth: true,
     );
@@ -605,7 +605,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchViewportBreakpoint(
+          CatchViewport.atWidth(
             breakpoint: ComponentBreakpoints
                 .eventSuccessSelectedPlacementInlineBreakpoint,
             compactBuilder: (_) => stackedHeader,
@@ -623,7 +623,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: CatchOptionGroup<EventSuccessSpatialScope>(
+                child: CatchChoiceInput<EventSuccessSpatialScope>.segmented(
                   options: [
                     CatchOption(
                       value: EventSuccessSpatialScope.thisRound,
@@ -638,7 +638,7 @@ class _EventSuccessSelectedPlacementCard extends StatelessWidget {
                   selected: scope,
                   contract: CatchContractConstraints
                       .eventSuccessSpatialActionCallablePayloadScope,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   onChanged: pending ? null : onScopeChanged,
                   showDivider: false,
                 ),
@@ -975,7 +975,7 @@ class _EventSuccessCapacityPosition extends StatelessWidget {
         : confirmed
         ? t.success
         : t.primary;
-    return CatchPersonAvatar(
+    return CatchAvatar(
       size: extent,
       name: profile?.name ?? assignment.displayTitle,
       imageUrl: profile?.primaryPhotoThumbnailUrl,

@@ -44,17 +44,19 @@ void main() {
               build: (context, scope) => CatchField.control(
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Custom',
-                open: scope.isExpanded,
+                disclosureMode: scope.isExpanded
+                    ? CatchFieldMode.controlledExpanded
+                    : CatchFieldMode.controlledCollapsed,
                 onOpenChanged: (_) => scope.toggle(),
-                control: const Text('Custom control'),
+                child: const Text('Custom control'),
               ),
             ),
           ],
-          savePatch: (patch) {
+          onSave: (patch) {
             savedPatch = patch;
             return pendingSave.future;
           },
-          errorText: (_, error) => error.toString(),
+          errorTextBuilder: (_, error) => error.toString(),
         ),
       ),
     );
@@ -75,7 +77,14 @@ void main() {
     pendingSave.complete(true);
     await tester.pump();
     await _pumpFieldMotion(tester);
-    expect(find.byType(CatchFieldChoiceChip).hitTestable(), findsNothing);
+    expect(
+      find
+          .byWidgetPredicate(
+            (widget) => widget is CatchChip && widget.mode != null,
+          )
+          .hitTestable(),
+      findsNothing,
+    );
 
     await tester.tap(find.text('Custom'));
     await _pumpFieldMotion(tester);
@@ -137,11 +146,11 @@ void main() {
               patchForValue: (value) => _Patch(value as String),
             ),
           ],
-          savePatch: (patch) async {
+          onSave: (patch) async {
             savedPatch = patch;
             return true;
           },
-          errorText: (_, error) => error.toString(),
+          errorTextBuilder: (_, error) => error.toString(),
         ),
       ),
     );
@@ -173,7 +182,7 @@ void main() {
       _wrap(
         CatchFormRowList<_Patch>(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
-          textCommitMode: CatchFormTextCommitMode.onBlur,
+          textCommitMode: CatchFormRowListMode.onBlur,
           rows: [
             CatchFormTextRow<_Patch>(
               validationCopy: catchFormValidationCopy(AppLocalizationsEn()),
@@ -184,11 +193,11 @@ void main() {
               patchForValue: (value) => _Patch(value as String),
             ),
           ],
-          savePatch: (patch) async {
+          onSave: (patch) async {
             savedPatch = patch;
             return true;
           },
-          errorText: (_, error) => error.toString(),
+          errorTextBuilder: (_, error) => error.toString(),
         ),
       ),
     );

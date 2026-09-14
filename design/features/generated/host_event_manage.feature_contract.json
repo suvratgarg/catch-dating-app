@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_event_manage.feature.json",
   "generatedFor": "2026-08-17",
-  "sourceDigest": "sha256:e6a5b6845b3b92aa13537889825bdd345d2a0bc2a41803adea7d91fc6036fc8c",
-  "resolvedDigest": "sha256:97ca6dd62fadffbf1be0c88ee22a83a10869690c0aa8061a2703e1fcba72e361",
+  "sourceDigest": "sha256:c206ea8bb7432382d66fa43cfe27164991f4572fe8b275d56b46ba72832e35a6",
+  "resolvedDigest": "sha256:e2ab03e76b2c1e78a477766eb686db23357ffa56c92c58ae3908809e2c68c757",
   "feature": {
     "id": "feature.host_event_manage",
     "name": "Host Event Manage",
@@ -3457,7 +3457,9 @@
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
                 "CatchBadge.privacy",
-                "CatchBadge.status"
+                "CatchBadge.status",
+                "CatchBadge.ticketStatus",
+                "CatchBadge.optional"
               ]
             }
           },
@@ -3470,7 +3472,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -3502,12 +3506,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },
@@ -3515,10 +3520,10 @@
             "id": "catch.option_card",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionCard",
-              "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
+              "symbol": "CatchChoiceTile",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_tile.dart",
               "constructors": [
-                "CatchOptionCard"
+                "CatchChoiceTile"
               ]
             }
           },
@@ -3531,8 +3536,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -3543,7 +3547,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }
@@ -3588,12 +3595,12 @@
         ],
         "componentContracts": [
           "catch.button",
-          "catch.error_banner",
+          "catch.banner",
           "catch.error_state",
           "catch.field",
           "catch.map_preview",
           "catch.option_card",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.surface",
           "catch.top_bar"
         ],
@@ -5303,19 +5310,23 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
           {
-            "id": "catch.error_banner",
+            "id": "catch.banner",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchErrorBanner",
-              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
+              "symbol": "CatchBanner",
+              "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
               "constructors": [
-                "CatchErrorBanner",
-                "CatchErrorBanner.withRetry"
+                "CatchBanner",
+                "CatchBanner.error",
+                "CatchBanner.errorWithRetry",
+                "CatchBanner.statuses"
               ]
             }
           },
@@ -5369,21 +5380,24 @@
             "id": "catch.option_card",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionCard",
-              "file": "packages/catch_ui/lib/src/components/catch_option_card.dart",
+              "symbol": "CatchChoiceTile",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_tile.dart",
               "constructors": [
-                "CatchOptionCard"
+                "CatchChoiceTile"
               ]
             }
           },
           {
-            "id": "catch.option_group",
-            "kind": "composite",
+            "id": "catch.chip.field",
+            "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
+              "symbol": "CatchChoiceInput",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
               "constructors": [
-                "CatchOptionGroup"
+                "CatchChoiceInput",
+                "CatchChoiceInput.described",
+                "CatchChoiceInput.segmented",
+                "CatchChoiceInput.form"
               ]
             }
           },
@@ -5396,8 +5410,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -5408,7 +5421,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

@@ -39,7 +39,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchViewportSliver(
+    return CatchViewport.sliver(
       sliverBuilder: (context, viewport) {
         const d = CatchTokens.dark;
         final t = CatchTokens.of(context);
@@ -65,7 +65,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
           elevation: 0,
           centerTitle: false,
           titleSpacing: 0,
-          title: CatchCollapsedSliverTitle(
+          title: CatchCollapsedHeaderTitle(
             title: event.title,
             textKey: ValueKey(
               context
@@ -74,15 +74,15 @@ class EventDetailHeroAppBar extends StatelessWidget {
             ),
             style: CatchTextStyles.eventDisplay(
               context,
-              step: CatchDisplayStep.m,
+              step: CatchTextStylesSize.m,
               height: 0.95,
               color: collapsedForeground,
             ),
           ),
-          leadingWidth: CatchSpacing.screenPx + CatchIconButton.navSize,
+          leadingWidth: CatchSpacing.screenPx + CatchIconAction.navSize,
           leading: Padding(
             padding: CatchInsets.topBarLeadingAction,
-            child: CatchIconAction(
+            child: CatchIconAction.toolbar(
               icon: CatchIcons.backArrow,
               tooltip: context.l10n.eventsEventDetailHeroAppBarTooltipBack,
               backgroundColor: overlayScrim,
@@ -93,11 +93,11 @@ class EventDetailHeroAppBar extends StatelessWidget {
           actions: [
             Padding(
               padding: CatchInsets.topBarTrailingActions,
-              child: CatchTopBarActionGroup(
+              child: CatchTopBarActionRow(
                 actions: [
                   if (showShareAction)
                     Builder(
-                      builder: (buttonContext) => CatchIconAction(
+                      builder: (buttonContext) => CatchIconAction.toolbar(
                         icon: CatchIcons.platformShare(
                           platform: Theme.of(context).platform,
                         ),
@@ -111,7 +111,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
                     ),
                   if (showAddToCalendar)
                     Builder(
-                      builder: (buttonContext) => CatchIconAction(
+                      builder: (buttonContext) => CatchIconAction.toolbar(
                         icon: CatchIcons.calendarAdd,
                         tooltip: context
                             .l10n
@@ -121,7 +121,7 @@ class EventDetailHeroAppBar extends StatelessWidget {
                         foregroundColor: d.ink,
                       ),
                     ),
-                  CatchIconAction(
+                  CatchIconAction.toolbar(
                     icon: isSaved ? CatchIcons.saved : CatchIcons.savedOutlined,
                     tooltip: isSaved
                         ? context
@@ -208,7 +208,7 @@ class EventPhotoHeroSurface extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.eventDisplay(
                   context,
-                  step: CatchDisplayStep.l,
+                  step: CatchTextStylesSize.l,
                   height: CatchLayout.eventDetailTicketTitleLineHeight,
                   weight: FontWeight.w700,
                   color: d.ink,
@@ -272,16 +272,16 @@ class EventDetailTicketSurface extends StatelessWidget {
 
     return ColoredBox(
       color: bodyColor,
-      child: CatchTicketHeroLayout(
-        divider: CatchTicketPerforatedDivider(lineColor: lineColor),
-        visualBuilder: (context, compact) => Stack(
+      child: CatchTicket.hero(
+        lineColor: lineColor,
+        mediaBuilder: (context, compact) => Stack(
           fit: StackFit.expand,
           children: [
             CatchEventThumbnail(
               photoUrl: event.photoUrl,
               pace: event.pace,
               activityKind: event.activityKind,
-              scrim: CatchEventThumbnailScrim.none,
+              scrim: CatchMediaOverlayVariant.none,
               iconAlignment: Alignment.centerRight,
               fallbackIconSize: CatchLayout.eventHeroBackdropIconSize,
               fallbackIconOpacity: 0.15,
@@ -336,7 +336,7 @@ class EventDetailTicketSurface extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.eventDisplay(
                 context,
-                step: CatchDisplayStep.l,
+                step: CatchTextStylesSize.l,
                 height: CatchLayout.eventDetailTicketTitleLineHeight,
                 weight: FontWeight.w700,
                 color: titleColor,

@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_context.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/startup/catch_native_splash.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
@@ -76,13 +76,13 @@ class MyApp extends ConsumerWidget {
               ),
             );
           },
-          child: CatchNoticeHost(
+          child: CatchNoticeOverlay(
             child: ForegroundNotificationListener(
               router: goRouter,
-              child: CatchStatusStripScope(
+              child: CatchBannerStatusScope(
                 statuses: [
                   if (isOffline)
-                    CatchStatusStripData(
+                    CatchBannerStatus(
                       id: 'connectivity.offline',
                       label: context.l10n.sharedOfflineTitle,
                       message: context.l10n.sharedOfflineBody,
@@ -237,7 +237,7 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
     final diagnostic = forceUpdateDevelopmentDiagnostic(error);
     final l10n = context.l10n;
 
-    return CatchScreenScaffold.standalone(
+    return CatchScaffold.standalone(
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(CatchSpacing.s6),
@@ -274,7 +274,7 @@ class ForceUpdateCheckErrorScreen extends StatelessWidget {
                 CatchButton(
                   label: l10n.sharedActionTryAgain,
                   onPressed: onRetry,
-                  icon: Icon(CatchIcons.refresh),
+                  leading: Icon(CatchIcons.refresh),
                   fullWidth: true,
                 ),
               ],

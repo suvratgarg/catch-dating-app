@@ -13,8 +13,7 @@ void main() {
         theme: AppTheme.light,
         home: const Scaffold(
           body: CatchSection.contained(
-            focused: true,
-            hasError: true,
+            states: {WidgetState.focused, WidgetState.error},
             child: Text('Section body'),
           ),
         ),

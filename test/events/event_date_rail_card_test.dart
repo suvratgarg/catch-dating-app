@@ -41,8 +41,8 @@ void main() {
     expect(find.text('Social run'), findsOneWidget);
     expect(find.text('FREE'), findsOneWidget);
     expect(find.byType(EventActivityStamp), findsNothing);
-    expect(find.byType(CatchTicketClock), findsNothing);
-    expect(find.byType(CatchTicketStatusBadge), findsNothing);
+    expect(find.byType(CatchClockIndicator), findsNothing);
+    expect(find.byType(CatchBadge), findsNothing);
 
     final glyph = tester.widget<Icon>(
       find.byKey(const ValueKey('event_date_rail_card.activity_glyph')),
@@ -129,12 +129,16 @@ void main() {
       ),
     );
 
-    final stack = tester.widget<CatchPersonAvatarStack>(
-      find.byType(CatchPersonAvatarStack),
-    );
+    final stack = tester.widget<CatchAvatarRow>(find.byType(CatchAvatarRow));
     expect(stack.items, isEmpty);
     expect(stack.totalCount, 5);
     expect(stack.veiledCount, 5);
-    expect(find.byType(CatchVeiledPersonAvatar), findsNWidgets(4));
+    final avatars = find.descendant(
+      of: find.byType(CatchAvatarRow),
+      matching: find.byType(CatchAvatar),
+    );
+    expect(avatars, findsNWidgets(5));
+    expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(4));
+    expect(find.text('+1'), findsOneWidget);
   });
 }

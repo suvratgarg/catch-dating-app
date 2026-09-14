@@ -982,7 +982,7 @@ bool _catchSurfacesToUser(List<String> lines, int lineIndex) {
       'ScaffoldMessenger',
       'showCatchErrorSnackBar',
       'showSnackBar',
-      'CatchErrorBanner',
+      'CatchBanner.error',
       'ErrorBanner',
       '_searchError',
       '_error =',

@@ -1,7 +1,7 @@
 {
   "$schema": "./state_matrix.schema.json",
   "version": 1,
-  "updated": "2026-09-04",
+  "updated": "2026-09-14",
   "requiredStateKinds": [
     "loading",
     "populated",
@@ -240,7 +240,7 @@
               "tests": [
                 "test/auth/presentation/auth_screen_test.dart"
               ],
-              "notes": "AuthController.sendOtpMutation drives the Send code loading state and CatchErrorBanner failure surface; Widgetbook and deterministic route captures cover send pending/error."
+              "notes": "AuthController.sendOtpMutation drives the Send code loading state and CatchBanner.error failure surface; Widgetbook and deterministic route captures cover send pending/error."
             },
             {
               "id": "verify_otp_mutation",
@@ -943,7 +943,6 @@
             "catch.button",
             "catch.chip",
             "catch.club_cover",
-            "catch.count_pill",
             "catch.cover_story",
             "catch.event_card",
             "catch.field",
@@ -1107,7 +1106,7 @@
                 "ExploreScreen/Screen states",
                 "ExploreEventsSection/Feed states",
                 "ExploreEventTypeBrowseGrid/Activity states",
-                "CatchCountPill/Map launcher states"
+                "CatchButton/Map launcher states"
               ],
               "tests": [
                 "test/explore/explore_widgets_test.dart"
@@ -1281,7 +1280,7 @@
               "status": "captured",
               "previewIds": [
                 "ExploreScreen/Screen states",
-                "CatchCountPill/Map launcher states"
+                "CatchButton/Map launcher states"
               ],
               "captureIds": [
                 "explore_text_scale_2"
@@ -1305,7 +1304,7 @@
             {
               "id": "DP-EXPLORE-001",
               "status": "closed",
-              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.count_pill for CountPill/map launcher, catch.event_card for DateTicket/EventTicket roles, catch.organizer_poster for organizer spotlights, and catch.person_polaroid for server-ranked, consent-safe Cross Paths profiles."
+              "nextAction": "Closed by the screen-local Explore section registry plus formal component mappings: catch.cover_story for CoverStory, catch.button for the floating count/map launcher, catch.event_card for DateTicket/EventTicket roles, catch.organizer_poster for organizer spotlights, and catch.person_polaroid for server-ranked, consent-safe Cross Paths profiles."
             },
             {
               "id": "DP-EXPLORE-002",
@@ -1734,7 +1733,7 @@
             "lib/events/presentation/event_map_view_model.dart"
           ],
           "componentIds": [
-            "catch.count_pill",
+            "catch.button",
             "catch.event_card",
             "catch.icon_button",
             "catch.surface"
@@ -1795,7 +1794,7 @@
               "tests": [
                 "test/explore/explore_widgets_test.dart"
               ],
-              "notes": "Distance-ring capture seeds user location plus an active distance filter in the neutral fixture; native runtime uses a geographic circle and projected CatchDistanceRingLabel."
+              "notes": "Distance-ring capture seeds user location plus an active distance filter in the neutral fixture; native runtime uses a geographic circle and projected CatchDistanceOverlay.label."
             },
             {
               "id": "no_exact_pins",
@@ -2598,7 +2597,7 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "Micro-pod assignment, peer-loading, and table group rotation variants are captured. Live assignment opt-in controls use the handoff CatchToggle primitive.",
+              "notes": "Micro-pod assignment, peer-loading, and table group rotation variants are captured. Live assignment opt-in controls use the handoff CatchToggleInput primitive.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
@@ -2615,7 +2614,7 @@
               "tests": [
                 "test/event_success/event_success_live_screens_test.dart"
               ],
-              "notes": "Guided rotation schedule and peer-loading variants are captured. Include-me controls use the handoff CatchToggle primitive.",
+              "notes": "Guided rotation schedule and peer-loading variants are captured. Include-me controls use the handoff CatchToggleInput primitive.",
               "previewIds": [
                 "EventSuccessCompanionScreen/Screen states"
               ],
@@ -3419,7 +3418,7 @@
           "componentIds": [
             "catch.badge",
             "catch.field",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -4110,7 +4109,7 @@
             "catch.field",
             "catch.icon_button",
             "catch.range_slider",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.section",
             "catch.surface",
             "catch.top_bar"
@@ -4403,7 +4402,7 @@
             {
               "id": "DP-PROFILE-SELF-005",
               "status": "closed",
-              "nextAction": "Closed for the implementation-safe primitive tranche. CatchField, CatchSection, and CatchToggle implement and test the handoff footer/header metrics, 16 px caret, exact field typography, spinner/status/error anatomy, directional underline and disclosure motion, animated saving states, repeat boundary, keyboard activation, focus-visible rings, dedicated 2/3-line content clamps, and unchanged legacy 1/2-line value-row defaults. Existing semantic colors already match, so no palette values changed."
+              "nextAction": "Closed for the implementation-safe primitive tranche. CatchField, CatchSection, and CatchToggleInput implement and test the handoff footer/header metrics, 16 px caret, exact field typography, spinner/status/error anatomy, directional underline and disclosure motion, animated saving states, repeat boundary, keyboard activation, focus-visible rings, dedicated 2/3-line content clamps, and unchanged legacy 1/2-line value-row defaults. Existing semantic colors already match, so no palette values changed."
             },
             {
               "id": "DP-PROFILE-SELF-006",
@@ -4550,7 +4549,7 @@
               "tests": [
                 "test/public_profile/public_profile_screen_test.dart"
               ],
-              "notes": "public_profile_report_sheet captures the extracted PublicProfileReportSheet with shared CatchBottomSheetScaffold and CatchField reason choices.",
+              "notes": "public_profile_report_sheet captures the extracted PublicProfileReportSheet with shared CatchSheet and CatchField reason choices.",
               "previewIds": [
                 "PublicProfileScreen/Safety action states"
               ],
@@ -5114,7 +5113,7 @@
             "catch.error_state",
             "catch.field",
             "catch.notice",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.person_row",
             "catch.search_field",
             "catch.section",
@@ -5724,7 +5723,7 @@
             "catch.chip",
             "catch.field",
             "catch.icon_button",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -6009,7 +6008,7 @@
               "id": "update_club_error",
               "kind": "mutation",
               "status": "captured",
-              "notes": "HostClubEditController.updateClubMutation failures keep the expanded editor open and render CatchErrorBanner with AppErrorContext.club copy. Captures cover generic and offline save failures.",
+              "notes": "HostClubEditController.updateClubMutation failures keep the expanded editor open and render CatchBanner.error with AppErrorContext.club copy. Captures cover generic and offline save failures.",
               "previewIds": [
                 "HostClubsScreen/Route states"
               ],
@@ -6089,7 +6088,7 @@
               "tests": [
                 "test/hosts/host_team_management_controller_test.dart"
               ],
-              "notes": "HostTeamManagementController mutations drive add/remove/transfer pending and error feedback in the embedded team section and inline add-host sheet. The section renders a persistent CatchErrorBanner for mutation failures, HostTeamAddHostSheet renders inline add errors, and HostTeamHostActionDialog supplies typed remove/transfer confirmation copy; captures cover pending, generic error, and offline states.",
+              "notes": "HostTeamManagementController mutations drive add/remove/transfer pending and error feedback in the embedded team section and inline add-host sheet. The section renders a persistent CatchBanner.error for mutation failures, HostTeamAddHostSheet renders inline add errors, and HostTeamHostActionDialog supplies typed remove/transfer confirmation copy; captures cover pending, generic error, and offline states.",
               "previewIds": [
                 "HostClubsScreen/Route states",
                 "hostTeamAddHostSheetStates",
@@ -6290,7 +6289,7 @@
               "status": "implemented",
               "previewIds": [
                 "HostClubTeamScreen/Route states",
-                "CatchTabRail/Contract states"
+                "CatchPageTabBar/Contract states"
               ]
             },
             {
@@ -6389,7 +6388,7 @@
               ],
               "previewIds": [
                 "HostClubTeamScreen/Route states",
-                "CatchTabRail/Contract states"
+                "CatchPageTabBar/Contract states"
               ]
             },
             {
@@ -6415,7 +6414,7 @@
                 "HostClubTeamScreen/Route states",
                 "HostTeamProfileSection/Profile summary states",
                 "HostTeamHostedClubsSection/Clubs states",
-                "CatchTabRail/Contract states"
+                "CatchPageTabBar/Contract states"
               ]
             },
             {
@@ -6823,7 +6822,7 @@
             "catch.button",
             "catch.chip",
             "catch.field",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -7226,7 +7225,7 @@
               "tests": [
                 "test/hosts/host_create_event_screen_test.dart"
               ],
-              "notes": "submitMutation.hasError renders CatchErrorBanner with AppErrorContext.event mapped copy. Captures now cover generic submit failure and offline submit failure; backend-validation variants remain follow-up if design requires distinct copy.",
+              "notes": "submitMutation.hasError renders CatchBanner.error with AppErrorContext.event mapped copy. Captures now cover generic submit failure and offline submit failure; backend-validation variants remain follow-up if design requires distinct copy.",
               "previewIds": [
                 "HostCreateEventRouteScreen/Route and wizard states"
               ],
@@ -7508,7 +7507,7 @@
             "catch.field",
             "catch.icon_button",
             "catch.option_card",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -8740,7 +8739,7 @@
             "lib/chats/presentation/inbox/widgets/chat_conversations_list.dart",
             "lib/chats/presentation/chat_screen.dart",
             "packages/catch_ui/lib/src/components/catch_person_row.dart",
-            "packages/catch_ui/lib/src/patterns/catch_master_detail_layout.dart",
+            "packages/catch_ui/lib/src/patterns/catch_master_detail_viewport.dart",
             "lib/chats/presentation/inbox/widgets/chats_empty_state.dart",
             "lib/events/data/event_repository.dart",
             "lib/events/data/event_participation_repository.dart"
@@ -8748,7 +8747,7 @@
           "componentIds": [
             "catch.badge",
             "catch.field",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.surface",
             "catch.top_bar"
           ],
@@ -9937,7 +9936,7 @@
                 "create_club_save_draft_pending",
                 "create_club_save_draft_error"
               ],
-              "notes": "CreateClubDraftController.saveDraftMutation now has deterministic pending and error captures that exercise footer loading and CatchErrorBanner feedback; draft restore/save success feedback uses the shared Catch snackbar helper."
+              "notes": "CreateClubDraftController.saveDraftMutation now has deterministic pending and error captures that exercise footer loading and CatchBanner.error feedback; draft restore/save success feedback uses the shared Catch snackbar helper."
             },
             {
               "id": "submit_pending",
@@ -9958,7 +9957,7 @@
               "captureIds": [
                 "create_club_submit_error"
               ],
-              "notes": "Submit mutation errors now have a deterministic capture with inline CatchErrorBanner feedback anchored above the footer."
+              "notes": "Submit mutation errors now have a deterministic capture with inline CatchBanner.error feedback anchored above the footer."
             },
             {
               "id": "success_pop",
@@ -11797,7 +11796,7 @@
           "componentIds": [
             "catch.button",
             "catch.field",
-            "catch.option_group",
+            "catch.chip.field",
             "catch.top_bar"
           ],
           "captureIds": [
@@ -12087,7 +12086,7 @@
               "tests": [
                 "test/safety/settings_screen_test.dart"
               ],
-              "notes": "Preference toggles optimistically update local CatchToggle state and persist through SettingsController.savePreference; settings_preference_pending captures the disabled pending affordance.",
+              "notes": "Preference toggles optimistically update local CatchToggleInput state and persist through SettingsController.savePreference; settings_preference_pending captures the disabled pending affordance.",
               "previewIds": [
                 "SettingsScreen/Screen states",
                 "SettingsScreen/Mutation states"
@@ -12196,7 +12195,7 @@
               ],
               "notes": "Delete account row opens confirm danger dialog and delegates confirmed deletion to SettingsController.requestAccountDeletion; pending and error route captures cover the request lifecycle.",
               "previewIds": [
-                "CatchConfirmDialog/Dialog states",
+                "CatchDialog/Dialog states",
                 "SettingsScreen/Mutation states"
               ]
             },
@@ -12450,7 +12449,7 @@
               "tests": [
                 "test/payments/payment_history_screen_test.dart"
               ],
-              "notes": "Tapping a payment tile opens CatchBottomSheetScaffold receipt details with payment/order/event ids and date rows; route captures now cover standard and failed sign-up receipt variants.",
+              "notes": "Tapping a payment tile opens CatchSheet receipt details with payment/order/event ids and date rows; route captures now cover standard and failed sign-up receipt variants.",
               "previewIds": [
                 "PaymentHistoryScreen/Screen states",
                 "PaymentReceiptSheet/Receipt states"

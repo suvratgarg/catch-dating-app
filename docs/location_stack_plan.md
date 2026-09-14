@@ -1,7 +1,7 @@
 ---
 doc_id: location_stack
-version: 1.1.5
-updated: 2026-07-13
+version: 1.1.6
+updated: 2026-09-09
 owner: recursive_audit_loop
 status: active
 ---
@@ -40,7 +40,7 @@ The app currently uses:
   deterministic fixture for tests, Widgetbook, and captures, never painted
   substitute geography.
 - Explore's native distance circle owns metre-accurate map geometry while the
-  projected `CatchDistanceRingLabel` keeps the handoff typography and tap
+  projected `CatchDistanceOverlay.label` keeps the handoff typography and tap
   target attached to its visible edge.
 - `DeviceLocation.build()` is passive: it may reuse an already granted
   permission, but never opens the system prompt. Explore's `Use my location`

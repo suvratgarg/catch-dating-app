@@ -404,10 +404,14 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
       child: CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEditHostedEventScreenTitleEditEvent,
-          leadingType: mutation.isPending
-              ? CatchTopBarLeading.none
-              : CatchTopBarLeading.auto,
-          divider: scrolledUnder,
+          navigation: CatchTopBarNavigation(
+            mode: mutation.isPending
+                ? CatchTopBarNavigationMode.none
+                : CatchTopBarNavigationMode.auto,
+          ),
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
         body: CatchRouteBody.standard(
           child: IgnorePointer(
@@ -485,7 +489,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               min: CatchBusinessRules.eventMinDurationMinutes,
                               max: CatchBusinessRules.eventMaxDurationMinutes,
                               step: CatchBusinessRules.eventDurationStepMinutes,
-                              formatter: (value) =>
+                              valueLabelBuilder: (value) =>
                                   EventFormatters.durationMinutes(
                                     value.round(),
                                   ),
@@ -517,7 +521,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             contract: CatchContractConstraints
                                 .updateEventCallablePayloadFieldsMeetingPoint,
                             controller: _meetingPointController,
-                            enabled: screenState.canEdit,
+                            states: <WidgetState>{
+                              if (!screenState.canEdit) WidgetState.disabled,
+                            },
                             inputHint: context
                                 .l10n
                                 .hostsEditHostedEventScreenPlaceholderEGBandstandPromenade,
@@ -530,7 +536,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             onChanged: (value) => _handleIntent(
                               HostEventEditMeetingPointChangedIntent(value),
                             ),
-                            validator: (value) =>
+                            onValidate: (value) =>
                                 value == null || value.trim().isEmpty
                                 ? context
                                       .l10n
@@ -566,9 +572,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 .hostsEditHostedEventScreenTitleExtraDirections,
                             contract: CatchContractConstraints
                                 .updateEventCallablePayloadFieldsLocationDetails,
-                            isOptional: true,
+                            labelMode: CatchFieldLabelTextMode.optional,
                             controller: _locationDetailsController,
-                            enabled: screenState.canEdit,
+                            states: <WidgetState>{
+                              if (!screenState.canEdit) WidgetState.disabled,
+                            },
                             inputHint: context
                                 .l10n
                                 .hostsEditHostedEventScreenPlaceholderEGMeetOutside,
@@ -627,14 +635,16 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                             contract: CatchContractConstraints
                                 .updateEventCallablePayloadFieldsName,
                             controller: _nameController,
-                            enabled: screenState.canEdit,
+                            states: <WidgetState>{
+                              if (!screenState.canEdit) WidgetState.disabled,
+                            },
                             inputHint: context
                                 .l10n
                                 .hostsEventDetailsStepPlaceholderEventName,
                             icon: CatchIcons.editNoteOutlined,
                             textCapitalization: TextCapitalization.words,
                             textInputAction: TextInputAction.next,
-                            validator: (value) =>
+                            onValidate: (value) =>
                                 value == null || value.trim().isEmpty
                                 ? context
                                       .l10n
@@ -651,7 +661,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                               contract: CatchContractConstraints
                                   .updateEventCallablePayloadFieldsDistanceKm,
                               controller: _distanceController,
-                              enabled: screenState.canEdit,
+                              states: <WidgetState>{
+                                if (!screenState.canEdit) WidgetState.disabled,
+                              },
                               inputHint: '10',
                               icon: CatchIcons.straightenOutlined,
                               keyboardType:
@@ -668,7 +680,7 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 ),
                               ],
                               textInputAction: TextInputAction.next,
-                              validator: (value) {
+                              onValidate: (value) {
                                 if (value == null || value.trim().isEmpty) {
                                   return context
                                       .l10n
@@ -695,11 +707,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                   .hostsEventDetailsStepLabelPaceLevel,
                               contract: CatchContractConstraints
                                   .updateEventCallablePayloadFieldsPace,
-                              contractValue: (value) => value.name,
+                              contractValueBuilder: (value) => value.name,
                               body: detailsFields.selectedPace.label,
                               values: PaceLevel.values,
-                              itemLabel: (pace) => pace.label,
-                              itemAccent: (_) => ActivityPalette.resolve(
+                              itemLabelBuilder: (pace) => pace.label,
+                              itemAccentBuilder: (_) => ActivityPalette.resolve(
                                 context,
                                 widget.event.eventFormat.activityKind,
                               ).accent,
@@ -711,7 +723,9 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                       ),
                                     )
                                   : null,
-                              enabled: screenState.canEdit,
+                              states: <WidgetState>{
+                                if (!screenState.canEdit) WidgetState.disabled,
+                              },
                               icon: CatchIcons.speedOutlined,
                             ),
                           ],
@@ -723,9 +737,11 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
                                 .hostsEditHostedEventScreenTitleDescription,
                             contract: CatchContractConstraints
                                 .updateEventCallablePayloadFieldsDescription,
-                            isOptional: true,
+                            labelMode: CatchFieldLabelTextMode.optional,
                             controller: _descriptionController,
-                            enabled: screenState.canEdit,
+                            states: <WidgetState>{
+                              if (!screenState.canEdit) WidgetState.disabled,
+                            },
                             inputHint: context
                                 .l10n
                                 .hostsEditHostedEventScreenPlaceholderWhatShouldAttendeesExpect,
@@ -776,16 +792,18 @@ class _EditHostedEventScreenState extends ConsumerState<EditHostedEventScreen> {
             ),
           ),
         ),
-        bottomNavigationBar: CatchBottomDock(
+        footer: CatchDockSurface(
           child: CatchButton(
             key: EditHostedEventKeys.saveButton,
             label: screenState.footer.label,
             onPressed: screenState.footer.isEnabled
                 ? () => _handleIntent(const HostEventEditSaveIntent())
                 : null,
-            isLoading: screenState.footer.isLoading,
+            status: (screenState.footer.isLoading)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             fullWidth: true,
-            icon: Icon(CatchIcons.saveOutlined),
+            leading: Icon(CatchIcons.saveOutlined),
           ),
         ),
       ),
@@ -1206,7 +1224,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           textInputAction: TextInputAction.next,
-          validator: (value) => positiveRequiredValidator(value, context.l10n),
+          onValidate: (value) => positiveRequiredValidator(value, context.l10n),
         ),
         CatchField.input(
           copy: catchFieldCopy(context.l10n),
@@ -1227,7 +1245,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
             ),
           ],
           textInputAction: TextInputAction.next,
-          validator: (value) => _moneyRequiredValidator(
+          onValidate: (value) => _moneyRequiredValidator(
             value,
             currencyCode: state.currencyCode,
             l10n: context.l10n,
@@ -1238,15 +1256,15 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
           title: context.l10n.hostsEditHostedEventScreenLabelAdmissionFormat,
           contract: CatchContractConstraints
               .updateEventCallablePayloadFieldsEventPolicyAdmissionFormat,
-          contractValue: (preset) => switch (preset) {
+          contractValueBuilder: (preset) => switch (preset) {
             EventAdmissionPreset.openCapacity => 'open',
             EventAdmissionPreset.inviteOnly => 'inviteOnly',
             EventAdmissionPreset.requestToJoin => 'manualApproval',
             EventAdmissionPreset.balancedSingles => 'balancedRatio',
           },
           values: EventAdmissionPreset.values,
-          itemTitle: (preset) => preset.title(context.l10n),
-          itemDescription: (preset) => preset.description(context.l10n),
+          itemTitleBuilder: (preset) => preset.title(context.l10n),
+          itemDescriptionBuilder: (preset) => preset.description(context.l10n),
           selected: state.admissionPreset,
           onChanged: onAdmissionPresetChanged,
           icon: CatchIcons.howToRegOutlined,
@@ -1275,7 +1293,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                 ),
               ),
             ],
-            validator: (value) => inviteCodeValidator(value, context.l10n),
+            onValidate: (value) => inviteCodeValidator(value, context.l10n),
           ),
         if (state.showCohortCapsToggle) ...[
           CatchField.toggle(
@@ -1302,13 +1320,13 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       .hostsEditHostedEventScreenTitleMaxStraightMen,
                   contract: CatchContractConstraints
                       .updateEventCallablePayloadFieldsConstraintsMaxMen,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   controller: maxMenController,
                   icon: CatchIcons.maleOutlined,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: (value) =>
+                  onValidate: (value) =>
                       positiveOptionalValidator(value, context.l10n),
                 ),
                 CatchField.input(
@@ -1319,13 +1337,13 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                       .hostsEditHostedEventScreenTitleMaxStraightWomen,
                   contract: CatchContractConstraints
                       .updateEventCallablePayloadFieldsConstraintsMaxWomen,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   controller: maxWomenController,
                   icon: CatchIcons.femaleOutlined,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: (value) =>
+                  onValidate: (value) =>
                       positiveOptionalValidator(value, context.l10n),
                 ),
               ],
@@ -1370,7 +1388,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: (value) =>
+                  onValidate: (value) =>
                       positiveRequiredValidator(value, context.l10n),
                 ),
                 CatchField.input(
@@ -1388,7 +1406,7 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
-                  validator: (value) =>
+                  onValidate: (value) =>
                       positiveRequiredValidator(value, context.l10n),
                 ),
               ],
@@ -1419,12 +1437,12 @@ class EditableHostedEventPolicyCard extends StatelessWidget {
                     .hostsEditHostedEventScreenLabelCancellationPolicy,
                 contract: CatchContractConstraints
                     .updateEventCallablePayloadFieldsEventPolicyCancellationPolicyId,
-                contractValue: (value) => value.name,
+                contractValueBuilder: (value) => value.name,
                 values: EventCancellationPolicyId.values
                     .where((value) => value.isApplicable)
                     .toList(growable: false),
-                itemTitle: (policyId) => policyFor(policyId).title,
-                itemDescription: (policyId) =>
+                itemTitleBuilder: (policyId) => policyFor(policyId).title,
+                itemDescriptionBuilder: (policyId) =>
                     policyFor(policyId).attendeeSummary,
                 selected: state.cancellationPolicyId.isApplicable
                     ? state.cancellationPolicyId

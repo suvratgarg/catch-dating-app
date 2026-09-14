@@ -1,29 +1,64 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
-import 'package:catch_ui/src/components/catch_field_interaction_shape.dart';
+import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart';
 import 'package:catch_ui/src/components/catch_field_motion.dart';
 import 'package:flutter/material.dart';
 
-/// Field interaction background, border, and shadow beneath its content.
+/// Field state paint: row backgrounds and the focus ring of a small target.
 ///
 /// The field owns gestures, focus, and expansion. This surface paints their
 /// resolved states using the containing section's shape and horizontal outsets.
 /// [WidgetState.selected] represents an active field (focused or expanded).
+/// [CatchFieldSurface.focusTarget] paints the layout-neutral outer focus ring
+/// of a stepper or commit target, without adding a row background.
 class CatchFieldSurface extends StatelessWidget {
   const CatchFieldSurface({
     super.key,
     required this.child,
-    required this.pressedOverlayKey,
+    required Key this._pressedOverlayKey,
     this.states = const {},
-  });
+  }) : _focusTarget = null;
+
+  const CatchFieldSurface.focusTarget({
+    super.key,
+    required Key outlineKey,
+    required BorderRadius borderRadius,
+    required this.child,
+    this.states = const {},
+  }) : _pressedOverlayKey = null,
+       _focusTarget = (key: outlineKey, borderRadius: borderRadius);
 
   final Widget child;
-  final Key pressedOverlayKey;
   final Set<WidgetState> states;
+  final Key? _pressedOverlayKey;
+  final ({Key key, BorderRadius borderRadius})? _focusTarget;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    if (_focusTarget case final target?) {
+      final focusBorder = CatchBorder.resolve(t, CatchBorderRole.focus);
+      return Stack(
+        key: target.key,
+        fit: StackFit.passthrough,
+        clipBehavior: Clip.none,
+        children: [
+          child,
+          if (states.contains(WidgetState.focused))
+            Positioned.fill(
+              child: IgnorePointer(
+                child: CustomPaint(
+                  painter: _CatchFieldFocusPainter(
+                    color: focusBorder.color,
+                    width: focusBorder.width,
+                    borderRadius: target.borderRadius,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      );
+    }
     final active = states.contains(WidgetState.selected);
     final focused = states.contains(WidgetState.focused);
     final pressed = states.contains(WidgetState.pressed);
@@ -31,11 +66,11 @@ class CatchFieldSurface extends StatelessWidget {
       context,
     );
     final interactionBorderRadius = switch (interactionShape) {
-      CatchFieldInteractionShape.roundedTile => BorderRadius.circular(
+      CatchFieldGeometryScopeVariant.roundedTile => BorderRadius.circular(
         CatchFieldTokens.tileRadius,
       ),
-      CatchFieldInteractionShape.sectionClipped ||
-      CatchFieldInteractionShape.fullBleedBand => BorderRadius.zero,
+      CatchFieldGeometryScopeVariant.sectionClipped ||
+      CatchFieldGeometryScopeVariant.fullBleedBand => BorderRadius.zero,
     };
     final interactionBorder = CatchBorder.resolve(
       t,
@@ -46,7 +81,7 @@ class CatchFieldSurface extends StatelessWidget {
       CatchBorderRole.focus,
     ).all;
     final fullBleedFocused =
-        interactionShape == CatchFieldInteractionShape.fullBleedBand &&
+        interactionShape == CatchFieldGeometryScopeVariant.fullBleedBand &&
         focused &&
         !pressed;
     final activeDecoration = BoxDecoration(
@@ -60,11 +95,12 @@ class CatchFieldSurface extends StatelessWidget {
           ? fullBleedFocusBorder
           : active &&
                 !pressed &&
-                interactionShape != CatchFieldInteractionShape.fullBleedBand
+                interactionShape != CatchFieldGeometryScopeVariant.fullBleedBand
           ? interactionBorder
           : null,
       boxShadow:
-          active && interactionShape == CatchFieldInteractionShape.roundedTile
+          active &&
+              interactionShape == CatchFieldGeometryScopeVariant.roundedTile
           ? CatchElevation.fieldActive(Theme.of(context).brightness)
           : CatchElevation.none,
     );
@@ -76,7 +112,8 @@ class CatchFieldSurface extends StatelessWidget {
       // internal band. A rounded row temporarily owns the one shared stroke
       // while pressed, whether or not it was already active.
       border:
-          pressed && interactionShape == CatchFieldInteractionShape.roundedTile
+          pressed &&
+              interactionShape == CatchFieldGeometryScopeVariant.roundedTile
           ? interactionBorder
           : null,
     );
@@ -98,7 +135,7 @@ class CatchFieldSurface extends StatelessWidget {
               clipBehavior: Clip.none,
               children: [
                 AnimatedContainer(
-                  key: pressedOverlayKey,
+                  key: _pressedOverlayKey,
                   duration: catchFieldMotionDuration(
                     context,
                     pressed
@@ -127,4 +164,36 @@ class CatchFieldSurface extends StatelessWidget {
       ],
     );
   }
+}
+
+class _CatchFieldFocusPainter extends CustomPainter {
+  const _CatchFieldFocusPainter({
+    required this.color,
+    required this.width,
+    required this.borderRadius,
+  });
+
+  final Color color;
+  final double width;
+  final BorderRadius borderRadius;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final reach =
+        CatchFieldTokens.focusRingOffset + CatchFieldTokens.focusRingWidth / 2;
+    final outline = borderRadius.toRRect(Offset.zero & size).inflate(reach);
+    canvas.drawRRect(
+      outline,
+      Paint()
+        ..color = color
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = width,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_CatchFieldFocusPainter oldDelegate) =>
+      color != oldDelegate.color ||
+      width != oldDelegate.width ||
+      borderRadius != oldDelegate.borderRadius;
 }

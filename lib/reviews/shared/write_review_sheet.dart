@@ -99,7 +99,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
             );
       });
     } catch (_) {
-      // Inline CatchErrorBanner owns user-facing error display.
+      // Inline CatchBanner owns user-facing error display.
     }
   }
 
@@ -121,7 +121,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
         await tx.get(writeReviewControllerProvider.notifier).delete(review.id);
       });
     } catch (_) {
-      // Inline CatchErrorBanner owns user-facing error display.
+      // Inline CatchBanner owns user-facing error display.
     }
   }
 
@@ -144,7 +144,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
 
     return PopScope(
       canPop: !submitting,
-      child: CatchBottomSheetScaffold(
+      child: CatchSheet(
         title: _isEdit
             ? context.l10n.reviewsWriteReviewSheetTitleEditReview
             : context.l10n.reviewsWriteReviewSheetTitleWriteAReview,
@@ -155,7 +155,7 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
           CatchSpacing.s4,
           CatchSpacing.s4 + MediaQuery.viewInsetsOf(context).bottom,
         ),
-        action: Column(
+        footer: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (_isEdit) ...[
@@ -163,7 +163,9 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
                 key: ReviewKeys.deleteReviewButton,
                 label: context.l10n.reviewsWriteReviewSheetLabelDeleteReview,
                 onPressed: submitting ? null : _confirmDelete,
-                isLoading: deleteMutation.isPending,
+                status: (deleteMutation.isPending)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 variant: CatchButtonVariant.danger,
                 fullWidth: true,
               ),
@@ -175,7 +177,9 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
                   ? context.l10n.reviewsWriteReviewSheetLabelSave
                   : context.l10n.reviewsWriteReviewSheetLabelSubmit,
               onPressed: _rating == 0 || submitting ? null : _submit,
-              isLoading: mutation.isPending,
+              status: (mutation.isPending)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               fullWidth: true,
             ),
           ],
@@ -197,9 +201,9 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
               title: context.l10n.reviewsWriteReviewSheetTitleReview,
               contract: CatchContractConstraints
                   .createEventReviewCallablePayloadComment,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: _commentController,
-              enabled: !submitting,
+              states: <WidgetState>{if (submitting) WidgetState.disabled},
               maxLines: 3,
               placeholder: context
                   .l10n
@@ -208,13 +212,13 @@ class _WriteReviewSheetState extends ConsumerState<WriteReviewSheet> {
             ),
             if (mutation.hasError) ...[
               gapH12,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: mutationErrorMessage(mutation, l10n: context.l10n),
               ),
             ],
             if (deleteMutation.hasError) ...[
               gapH12,
-              CatchErrorBanner(
+              CatchBanner.error(
                 message: mutationErrorMessage(
                   deleteMutation,
                   l10n: context.l10n,

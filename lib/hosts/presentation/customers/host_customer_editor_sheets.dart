@@ -34,7 +34,7 @@ class _HostSaveAudienceSheetState extends ConsumerState<HostSaveAudienceSheet> {
   }
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostSavedAudienceSaveTitle,
     subtitle: context.l10n.hostSavedAudienceSaveBody,
     keyboardSafe: true,
@@ -57,7 +57,9 @@ class _HostSaveAudienceSheetState extends ConsumerState<HostSaveAudienceSheet> {
           CatchButton(
             key: const ValueKey('host-saved-audience-save-and-message'),
             label: context.l10n.hostSavedAudienceSaveAndMessage,
-            isLoading: _saving,
+            status: (_saving)
+                ? CatchButtonStatus.loading
+                : CatchButtonStatus.idle,
             onPressed: _saving ? null : _save,
           ),
         ],

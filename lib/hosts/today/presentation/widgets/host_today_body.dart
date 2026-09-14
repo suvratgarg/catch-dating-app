@@ -36,15 +36,12 @@ class HostTodayBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return CatchRootScreenScaffold.standard(
       scrollKey: const ValueKey<String>('host-today-scroll-view'),
-      header: HostTodayHeader(now: now),
+      title: HostTodayHeader(now: now),
       maxContentExtent: CatchLayout.hostTodayWorkspacePageMaxExtent,
-      slivers: [
+      children: [
         switch (state.status) {
           HostTodayStatus.loading => const SliverToBoxAdapter(
-            child: CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.mediaTile,
-              count: 4,
-            ),
+            child: CatchSkeleton.mediaRows(count: 4),
           ),
           HostTodayStatus.error => CatchLocalizedSliverErrorState(
             state.error!,
@@ -84,15 +81,15 @@ class HostTodayHeader extends StatelessWidget {
     final date = now == null
         ? null
         : MaterialLocalizations.of(context).formatFullDate(now!);
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
-      compactBuilder: (_) => CatchScreenHeaderTitle.block(
+      compactBuilder: (_) => CatchScreenHeader.block(
         title: context.l10n.hostNavigationToday,
         titleStyle: CatchTextStyles.eventTitle(context),
       ),
-      expandedBuilder: (_) => CatchScreenHeaderTitle.block(
+      expandedBuilder: (_) => CatchScreenHeader.block(
         title: context.l10n.hostNavigationToday,
-        eyebrow: date,
+        kicker: date,
         titleStyle: CatchTextStyles.eventTitle(context),
       ),
     );
@@ -118,11 +115,11 @@ class HostTodayQuietState extends StatelessWidget {
         key: const ValueKey<String>('host-today-quiet-state'),
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchEmptyStateIcon(
+          CatchIconTile.empty(
             icon: CatchIcons.eventBusy,
-            style: CatchEmptyStateIconStyle.bubble,
-            size: CatchIcon.md,
-            containerSize: CatchSpacing.s12,
+            variant: CatchIconTileVariant.bubble,
+            iconSize: CatchIcon.md,
+            size: CatchSpacing.s12,
           ),
           gapH20,
           Text(
@@ -149,7 +146,7 @@ class HostTodayQuietState extends StatelessWidget {
               CatchButton(
                 key: const ValueKey<String>('host-today-start-dress-rehearsal'),
                 label: context.l10n.hostEventRehearsalEntryTitle,
-                icon: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
+                leading: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
                 variant: CatchButtonVariant.ghost,
                 size: CatchButtonSize.sm,
                 onPressed: onStartRehearsal,

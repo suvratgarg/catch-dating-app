@@ -225,7 +225,7 @@ class CatchRosterRow extends StatelessWidget {
               flex: 5,
               child: Row(
                 children: [
-                  CatchPersonAvatar(
+                  CatchAvatar(
                     size: CatchLayout.rosterRowAvatarExtent,
                     name: person,
                     imageUrl: imageUrl,
@@ -353,7 +353,7 @@ class CatchRosterActionCell extends StatelessWidget {
           variant: primary
               ? CatchButtonVariant.primary
               : CatchButtonVariant.secondary,
-          icon: icon == null ? null : Icon(icon),
+          leading: icon == null ? null : Icon(icon),
           onPressed: disabled ? null : onPressed,
         ),
     };
@@ -377,11 +377,13 @@ class CatchRosterDecideTarget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchIconButton(
-      onTap: onTap,
-      disabled: onTap == null,
-      variant: CatchIconButtonVariant.plain,
-      background: t.surface,
+    return CatchIconAction(
+      onPressed: onTap,
+      status: (onTap == null)
+          ? CatchIconActionStatus.disabled
+          : CatchIconActionStatus.enabled,
+      variant: CatchIconActionVariant.plain,
+      backgroundColor: t.surface,
       borderColor: color.withValues(alpha: CatchOpacity.mutedBorderUrgent),
       size: CatchLayout.rosterDecideTargetExtent,
       tooltip: label,
@@ -417,13 +419,13 @@ class CatchRosterTable extends StatelessWidget {
       color: t.ink3,
     ).copyWith(fontSize: 8.5);
 
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: ComponentBreakpoints.hostRosterTableCompactBreakpoint,
       compactBuilder: (context) {
         if (showEmpty) {
           return CatchEmptyState(
             surface: true,
-            layout: CatchEmptyStateLayout.inline,
+            variant: CatchEmptyStateVariant.inline,
             icon: CatchIcons.group,
             title: emptyTitle,
             message: emptyMessage,

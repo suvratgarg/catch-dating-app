@@ -1,4 +1,4 @@
-import 'package:catch_ui/src/primitives/catch_network_image_fallback.dart';
+import 'package:catch_ui/src/primitives/catch_image_fallback_surface.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical network-image primitive — the single seam every remote image in
@@ -54,7 +54,7 @@ class CatchNetworkImage extends StatelessWidget {
         semanticLabel: semanticLabel,
         errorBuilder:
             errorBuilder ??
-            (context, error, stack) => const CatchNetworkImageFallback(),
+            (context, error, stack) => const CatchImageFallbackSurface(),
       );
     }
 
@@ -81,7 +81,7 @@ class CatchNetworkImage extends StatelessWidget {
       semanticLabel: semanticLabel,
       errorBuilder:
           errorBuilder ??
-          (context, error, stack) => const CatchNetworkImageFallback(),
+          (context, error, stack) => const CatchImageFallbackSurface(),
       loadingBuilder: loadingBuilder,
     );
   }

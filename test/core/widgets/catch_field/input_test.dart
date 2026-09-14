@@ -16,6 +16,42 @@ import 'test_support.dart';
 part 'input_selection_tests.dart';
 
 void main() {
+  for (final (mode, canFocus, readOnly, selectable) in [
+    (CatchTextInputMode.editable, true, false, true),
+    (CatchTextInputMode.readOnly, true, true, true),
+    (CatchTextInputMode.inactive, false, true, true),
+    (CatchTextInputMode.editableWithoutSelection, true, false, false),
+    (CatchTextInputMode.readOnlyWithoutSelection, true, true, false),
+    (CatchTextInputMode.inactiveWithoutSelection, false, true, false),
+  ]) {
+    testWidgets('CatchField preserves native ${mode.name} permissions', (
+      tester,
+    ) async {
+      final focus = FocusNode();
+      addTearDown(focus.dispose);
+      await tester.pumpWidget(
+        _wrap(
+          CatchField.input(
+            copy: catchFieldCopy(AppLocalizationsEn()),
+            title: 'Code',
+            initialValue: 'ABC',
+            focusNode: focus,
+            labelMode: CatchFieldLabelTextMode.hidden,
+            inputMode: mode,
+          ),
+        ),
+      );
+      // Inactive modes deliberately remove the input from hit testing.
+      await tester.tapAt(tester.getCenter(find.byType(TextField)));
+      await tester.pump();
+      expect(focus.hasFocus, canFocus);
+      final native = tester.widget<EditableText>(find.byType(EditableText));
+      expect(native.readOnly, readOnly);
+      expect(native.enableInteractiveSelection, selectable);
+      expect(native.controller.text, 'ABC');
+    });
+  }
+
   testWidgets(
     'CatchField input derives length and validation from its contract',
     (tester) async {
@@ -67,11 +103,11 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Activity',
           contract: contract,
-          contractValue: (value) => value,
+          contractValueBuilder: (value) => value,
           values: const ['run', 'walk', 'swim'],
-          itemLabel: (value) => value,
+          itemLabelBuilder: (value) => value,
           selected: const {'run'},
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onSelectionChanged: (_) {},
         ),
       ),
@@ -122,10 +158,10 @@ void main() {
             title: 'Languages',
             body: 'English',
             values: const ['English', 'Hindi', 'Marathi', 'Gujarati'],
-            itemLabel: (value) => value,
+            itemLabelBuilder: (value) => value,
             selected: const {'English'},
-            multi: true,
-            initiallyOpen: true,
+            mode: CatchChipMode.multiple,
+            disclosureMode: CatchFieldMode.localExpanded,
             onSelectionChanged: (selection) => nextSelection = selection,
             onCancel: () {},
             onSubmit: () {},
@@ -171,7 +207,7 @@ void main() {
     expect(englishLabel.style?.color, CatchTokens.editorialLight.primaryInk);
     final fieldRect = tester.getRect(find.byType(CatchField));
     final controlRect = tester.getRect(
-      find.byWidgetPredicate((widget) => widget is CatchFieldChoiceControl),
+      find.byWidgetPredicate((widget) => widget is CatchChoiceInput),
     );
     expect(
       controlRect.right,
@@ -199,11 +235,12 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Languages',
           body: 'English',
-          control: const Text('Language control'),
-          initiallyOpen: true,
+
+          disclosureMode: CatchFieldMode.localExpanded,
           error: 'Choose at least one language.',
           onCancel: () {},
           onSubmit: () {},
+          child: const Text('Language control'),
         ),
       ),
     );
@@ -234,10 +271,10 @@ void main() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'City',
             values: const ['Indore', 'Mumbai'],
-            itemLabel: (value) => value,
+            itemLabelBuilder: (value) => value,
             selected: selected,
             allowEmptySelection: true,
-            initiallyOpen: true,
+            disclosureMode: CatchFieldMode.localExpanded,
             onSelectionChanged: (next) => setState(() => selected = next),
             onCancel: () {},
             onSubmit: () {},
@@ -272,7 +309,7 @@ void main() {
                   key: inputKey,
                   title: 'Job title',
                   icon: CatchIcons.workOutline,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
                 CatchField.input(
                   copy: catchFieldCopy(AppLocalizationsEn()),
@@ -280,18 +317,18 @@ void main() {
                   title: 'Review',
                   minLines: 2,
                   maxLines: 4,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
                 CatchField<String>.choices(
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   key: choiceKey,
                   title: 'Workout',
                   values: const ['Never', 'Often'],
-                  itemLabel: (value) => value,
+                  itemLabelBuilder: (value) => value,
                   selected: const {},
                   onSelectionChanged: (_) {},
                   addable: true,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   icon: CatchIcons.fitnessCenterOutlined,
                 ),
               ],
@@ -361,9 +398,9 @@ void main() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Date of birth',
             controller: controller,
-            readOnly: true,
+            inputMode: CatchTextInputMode.readOnly,
             onTap: () => controller.text = '15/04/1997',
-            validator: (value) =>
+            onValidate: (value) =>
                 value == null || value.isEmpty ? 'Pick a date' : null,
           ),
         ),
@@ -446,7 +483,7 @@ void main() {
         CatchField.input(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Bio',
-          isOptional: true,
+          labelMode: CatchFieldLabelTextMode.optional,
           placeholder: 'Share a little about yourself',
         ),
       ),
@@ -658,7 +695,7 @@ void main() {
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Public name',
                 inputHint: 'e.g. Aanya',
-                validator: _requiredPublicName,
+                onValidate: _requiredPublicName,
               ),
             ),
           ),
@@ -775,10 +812,10 @@ void main() {
             child: CatchField.input(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Search',
-              showLabel: false,
+              labelMode: CatchFieldLabelTextMode.hidden,
               placeholder: 'Search by name',
               size: CatchFieldSize.compact,
-              prefixIcon: Icon(CatchIcons.searchRounded, size: 18),
+              leading: Icon(CatchIcons.searchRounded, size: 18),
             ),
           ),
         ),
@@ -809,7 +846,7 @@ void main() {
           child: CatchField.input(
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Search for a meeting point',
-            showLabel: false,
+            labelMode: CatchFieldLabelTextMode.hidden,
             placeholder: 'Search for a meeting point',
             size: CatchFieldSize.floating,
           ),
@@ -843,7 +880,7 @@ void main() {
               helperText: 'Three digits',
               maxLength: 3,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              validator: (value) => value == null || value.length != 3
+              onValidate: (value) => value == null || value.length != 3
                   ? 'Enter three digits'
                   : null,
               onSubmitted: (value) => submitted = value,
@@ -893,7 +930,9 @@ void main() {
                   open = next;
                   if (next) original = controller.text;
                 }),
-                isLoading: saving,
+                status: saving
+                    ? CatchFieldStatus.saving
+                    : CatchFieldStatus.idle,
                 onCancel: () => setState(() {
                   controller.text = original;
                   open = false;
@@ -975,9 +1014,9 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Preferred city',
               values: defaultCityOptions,
-              itemLabel: (city) => city.label,
+              itemLabelBuilder: (city) => city.label,
               value: selected,
-              prefixIcon: Icon(CatchIcons.locationOnOutlined),
+              leading: Icon(CatchIcons.locationOnOutlined),
               onChanged: (_) {},
             ),
           ),
@@ -1004,7 +1043,7 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'City',
               initialValue: 'Mumbai',
-              prefixIcon: Icon(CatchIcons.locationOnOutlined),
+              leading: Icon(CatchIcons.locationOnOutlined),
             ),
           ),
         ),
@@ -1028,9 +1067,9 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'City',
               values: defaultCityOptions,
-              itemLabel: (city) => city.label,
+              itemLabelBuilder: (city) => city.label,
               value: cityOptionByName('mumbai'),
-              prefixIcon: Icon(CatchIcons.locationOnOutlined),
+              leading: Icon(CatchIcons.locationOnOutlined),
               onChanged: (_) {},
             ),
           ),

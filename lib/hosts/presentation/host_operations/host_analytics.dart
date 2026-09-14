@@ -69,14 +69,14 @@ class _HostClubInsightsPaneState extends ConsumerState<HostClubInsightsPane> {
         fallbackTimezone;
     final query = _hostAnalyticsQueryFor(_state.query, timezone: timezone);
     final analyticsAsync = ref.watch(hostAnalyticsProvider(query));
-    return CatchAsyncValueView<HostAnalyticsReport>(
+    return CatchAsyncBoundary<HostAnalyticsReport>(
       value: analyticsAsync,
       onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
       loadingBuilder: (_) => const HostAnalyticsReportSkeleton(),
-      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(hostAnalyticsProvider(query)),
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, report) => HostAnalyticsReportView(
         report: report,
@@ -300,7 +300,8 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
           (card) => card.status != HostAnalyticsMetricStatus.ready,
         );
 
-    return CatchSectionStack(
+    return CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       children: [
         CatchSection.divided(
@@ -342,10 +343,10 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
         ),
         CatchSection.divided(
           title: context.l10n.hostsHostAnalyticsLabelPerformancePeriod,
-          child: CatchOptionGroup<HostClubInsightsRangePreset>(
+          child: CatchChoiceInput<HostClubInsightsRangePreset>.segmented(
             contract: CatchContractConstraints
                 .hostAnalyticsQueryCallablePayloadRangePreset,
-            contractValue: (preset) => switch (preset) {
+            contractValueBuilder: (preset) => switch (preset) {
               HostClubInsightsRangePreset.thirtyDays => '30d',
               HostClubInsightsRangePreset.ninetyDays => '90d',
               HostClubInsightsRangePreset.twelveMonths => '12m',
@@ -372,7 +373,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
           title: context.l10n.hostsHostAnalyticsLabelPerformance,
           child: Column(
             children: [
-              CatchAnalyticsMetricGrid(
+              CatchMetricSection.dataQuality(
                 key: const ValueKey('host-analytics-primary-grid'),
                 metrics: [
                   for (final metric in primaryMetrics)
@@ -395,11 +396,13 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                     'Disclosure-only analytics layout; no editable value is '
                     'submitted or persisted.',
                 body: context.l10n.hostsHostAnalyticsBodyCheckoutChatsAndSaves,
-                open: _moreMetricsOpen,
+                disclosureMode: _moreMetricsOpen
+                    ? CatchFieldMode.controlledExpanded
+                    : CatchFieldMode.controlledCollapsed,
                 onOpenChanged: (open) {
                   setState(() => _moreMetricsOpen = open);
                 },
-                control: CatchAnalyticsMetricGrid(
+                child: CatchMetricSection.dataQuality(
                   key: const ValueKey('host-analytics-secondary-grid'),
                   metrics: [
                     for (final metric in secondaryMetrics)
@@ -797,7 +800,7 @@ class HostAnalyticsEventTile extends StatelessWidget {
           event.grossRevenueMinor,
           currencyCode: event.currency,
         ),
-        action: hasPaymentIssues
+        actions: hasPaymentIssues
             ? CatchBadge(
                 label: context.l10n.hostsHostAnalyticsLabelPaymentIssues,
                 tone: CatchBadgeTone.warning,
@@ -825,13 +828,13 @@ class HostAnalyticsReviewsPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: context.l10n.hostsHostAnalyticsLabelNewReviews,
                     value: _compactCount(report.reviewSummary.newReviews),
                   ),
                 ),
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: context.l10n.hostsHostAnalyticsLabelAverageRating,
                     value: report.reviewSummary.averageRating <= 0
                         ? '—'
@@ -844,13 +847,13 @@ class HostAnalyticsReviewsPanel extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: context.l10n.hostsHostAnalyticsLabelPublishedReviews,
                     value: _compactCount(report.reviewSummary.publishedReviews),
                   ),
                 ),
                 Expanded(
-                  child: CatchStatColumn(
+                  child: CatchMetricTile(
                     label: context.l10n.hostsHostAnalyticsLabelResponses,
                     value: _compactCount(
                       report.reviewSummary.ownerResponseCount,
@@ -981,13 +984,13 @@ IconData _metricIcon(String metricId) {
   };
 }
 
-CatchMetricCardData _hostMetricCardData(
+CatchMetricData _hostMetricCardData(
   BuildContext context,
   HostAnalyticsMetricCard metric, {
   required HostClubInsightsRangePreset rangePreset,
   required String currencyCode,
 }) {
-  return CatchMetricCardData(
+  return CatchMetricData(
     icon: _metricIcon(metric.id),
     value: _formatMetricValue(metric, currencyCode: currencyCode),
     label: _metricLabel(context, metric),
@@ -995,9 +998,9 @@ CatchMetricCardData _hostMetricCardData(
     partialBadgeLabel: context.l10n.hostsHostAnalyticsLabelPartial,
     missingBadgeLabel: context.l10n.hostsHostAnalyticsLabelMissing,
     status: switch (metric.status) {
-      HostAnalyticsMetricStatus.ready => CatchMetricStatus.ready,
-      HostAnalyticsMetricStatus.partial => CatchMetricStatus.partial,
-      HostAnalyticsMetricStatus.missing => CatchMetricStatus.missing,
+      HostAnalyticsMetricStatus.ready => CatchMetricDataStatus.ready,
+      HostAnalyticsMetricStatus.partial => CatchMetricDataStatus.partial,
+      HostAnalyticsMetricStatus.missing => CatchMetricDataStatus.missing,
     },
   );
 }

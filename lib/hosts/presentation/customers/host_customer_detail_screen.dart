@@ -4,8 +4,8 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -82,14 +82,16 @@ class _HostCustomerDetailScreenState
     return CatchRouteScaffold(
       topBarBuilder: (context, scrolledUnder) => CatchTopBar(
         title: displayName,
-        titleRole:
+        variant:
             detailState.value != null ||
                 (initialDisplayName?.isNotEmpty ?? false)
-            ? CatchTopBarTitleRole.identity
-            : CatchTopBarTitleRole.route,
-        leadingType: widget.embedded
-            ? CatchTopBarLeading.none
-            : CatchTopBarLeading.back,
+            ? CatchTopBarVariant.identity
+            : CatchTopBarVariant.route,
+        navigation: CatchTopBarNavigation(
+          mode: widget.embedded
+              ? CatchTopBarNavigationMode.none
+              : CatchTopBarNavigationMode.back,
+        ),
         actions: [
           if (detailState.value != null &&
               communicationPlanState
@@ -99,7 +101,7 @@ class _HostCustomerDetailScreenState
                   null) ...[
             if (MediaQuery.textScalerOf(context).scale(1) <
                 CatchRecordTokens.largeTextBreakpoint)
-              CatchTopBarTextAction(
+              CatchButton.text(
                 key: const ValueKey('host-customer-message'),
                 label: context.l10n.hostCustomersWhatsappMessage,
                 onPressed: _openingConversation
@@ -111,10 +113,10 @@ class _HostCustomerDetailScreenState
               ),
           ],
           if (detailState.value case final customer?)
-            CatchTopBarMenuAction<_HostCustomerRecordAction>(
+            CatchActionMenu<_HostCustomerRecordAction>(
               key: const ValueKey('host-customer-record-actions'),
               tooltip: context.l10n.hostCustomersMoreActions,
-              variant: CatchIconButtonVariant.plain,
+              variant: CatchIconActionVariant.plain,
               enabled: !_updatingCustomer && !_openingConversation,
               items: [
                 if (MediaQuery.textScalerOf(context).scale(1) >=
@@ -145,10 +147,12 @@ class _HostCustomerDetailScreenState
               }),
             ),
         ],
-        divider: scrolledUnder,
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standard(
-        child: CatchAsyncValueView<HostAudienceContactDetail>(
+        child: CatchAsyncBoundary<HostAudienceContactDetail>(
           value: detail,
           onRetry: () => ref.invalidate(
             hostAudienceContactDetailProvider(
@@ -157,7 +161,7 @@ class _HostCustomerDetailScreenState
             ),
           ),
           initialLoadTimeout: null,
-          loadingBuilder: (_) => CatchSkeletonized(
+          loadingBuilder: (_) => CatchSkeleton.content(
             child: HostCustomerDetailBody(
               customer: _hostCustomerSkeletonDetail(
                 organizerId: widget.organizerId,
@@ -192,16 +196,12 @@ class _HostCustomerDetailScreenState
               onUndoMerge: (_) {},
             ),
           ),
-          errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-            error,
-            context: AppErrorContext.customer,
-            onRetry: () => ref.invalidate(
-              hostAudienceContactDetailProvider(
-                widget.organizerId,
-                widget.contactId,
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              CatchLocalizedErrorState(
+                error,
+                context: AppErrorContext.customer,
+                onRetry: onBoundaryRetry,
               ),
-            ),
-          ),
           builder: (context, customer) => HostCustomerDetailBody(
             customer: customer,
             currentUid: currentUid,
@@ -604,17 +604,17 @@ class _HostWhatsappHandoffSheetState
   @override
   Widget build(BuildContext context) {
     final message = _message.text.trim();
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostCustomersWhatsappHandoffTitle,
       subtitle: context.l10n.hostCustomersWhatsappHandoffSubtitle(
         name: widget.customer.displayName,
         phone: widget.customer.phoneE164!,
       ),
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         key: const ValueKey('host-customer-confirm-whatsapp'),
         label: context.l10n.hostCustomersOpenWhatsapp,
-        isLoading: _opening,
+        status: (_opening) ? CatchButtonStatus.loading : CatchButtonStatus.idle,
         onPressed: _opening || message.isEmpty ? null : _open,
         fullWidth: true,
       ),
@@ -643,7 +643,7 @@ class _HostWhatsappHandoffSheetState
               contractExemption:
                   'Editable handoff copy is persisted only in the bounded '
                   'TTL manual-send task, then passed to the external app.',
-              enabled: !_opening,
+              states: <WidgetState>{if (_opening) WidgetState.disabled},
               onChanged: (_) => setState(() {}),
             ),
           ),

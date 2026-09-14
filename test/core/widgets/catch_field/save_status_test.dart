@@ -18,7 +18,7 @@ void main() {
             title: 'Religion',
             body: 'Christian',
             status: status,
-            control: const Text('Religion choices'),
+            child: const Text('Religion choices'),
           ),
         ),
       );
@@ -30,7 +30,15 @@ void main() {
         findsNothing,
       );
       expect(
-        tester.getCenter(find.byType(CatchFieldSpinner)).dy,
+        tester
+            .getCenter(
+              find.byWidgetPredicate(
+                (widget) =>
+                    widget is CatchLoadingIndicator &&
+                    widget.variant == CatchLoadingIndicatorVariant.inline,
+              ),
+            )
+            .dy,
         closeTo(tester.getCenter(find.text('Christian')).dy, 0.1),
       );
 
@@ -47,7 +55,6 @@ void main() {
   ) async {
     Future<void> pumpField({
       bool open = true,
-      bool isLoading = false,
       CatchFieldStatus status = CatchFieldStatus.idle,
     }) => tester.pumpWidget(
       _wrap(
@@ -55,12 +62,13 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           body: '168 cm',
-          open: open,
-          isLoading: isLoading,
+          disclosureMode: open
+              ? CatchFieldMode.controlledExpanded
+              : CatchFieldMode.controlledCollapsed,
           status: status,
-          control: const Text('Height control'),
           onCancel: _noop,
           onSubmit: _noop,
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -72,20 +80,35 @@ void main() {
       CatchIcons.checkCircleFilled,
     );
 
-    await pumpField(isLoading: true);
+    await pumpField(status: CatchFieldStatus.saving);
     expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
-    expect(find.byType(CatchFieldSpinner), findsOneWidget);
     expect(
-      find.descendant(
-        of: find.byKey(const ValueKey('catch-field-done')),
-        matching: find.byType(CatchFieldSpinner),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchLoadingIndicator &&
+            widget.variant == CatchLoadingIndicatorVariant.inline,
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
-        of: find.byType(CatchFieldTrailing),
-        matching: find.byType(CatchFieldSpinner),
+        of: find.byKey(const ValueKey('catch-field-done')),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.inline,
+        ),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(CatchFieldTrailingRow),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.inline,
+        ),
       ),
       findsNothing,
     );
@@ -126,38 +149,101 @@ void main() {
       CatchPlatformTokens.minimumInteractiveExtent,
     );
 
-    // The legacy aggregate status input coalesces into the same visible owner.
-    await pumpField(status: CatchFieldStatus.saving);
-    expect(find.byType(CatchFieldSpinner), findsOneWidget);
+    // If the commit bar is not visible, the trailing lane remains the only
+    // place where saving progress can be communicated.
+    await tester.pumpWidget(const SizedBox.shrink());
+    await pumpField(open: false, status: CatchFieldStatus.saving);
     expect(
-      find.descendant(
-        of: find.byKey(const ValueKey('catch-field-done')),
-        matching: find.byType(CatchFieldSpinner),
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchLoadingIndicator &&
+            widget.variant == CatchLoadingIndicatorVariant.inline,
       ),
       findsOneWidget,
     );
     expect(
       find.descendant(
-        of: find.byType(CatchFieldTrailing),
-        matching: find.byType(CatchFieldSpinner),
-      ),
-      findsNothing,
-    );
-
-    // If the commit bar is not visible, the trailing lane remains the only
-    // place where saving progress can be communicated.
-    await tester.pumpWidget(const SizedBox.shrink());
-    await pumpField(open: false, isLoading: true);
-    expect(find.byType(CatchFieldSpinner), findsOneWidget);
-    expect(
-      find.descendant(
-        of: find.byType(CatchFieldTrailing),
-        matching: find.byType(CatchFieldSpinner),
+        of: find.byType(CatchFieldTrailingRow),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.inline,
+        ),
       ),
       findsOneWidget,
     );
     expect(find.byKey(const ValueKey('catch-field-action-bar')), findsNothing);
   });
+
+  for (final recipe in ['choices', 'optionCards', 'stepper']) {
+    testWidgets('CatchField $recipe locks selection for its saving status', (
+      tester,
+    ) async {
+      var status = CatchFieldStatus.saving;
+      var changes = 0;
+      late StateSetter update;
+      final copy = catchFieldCopy(AppLocalizationsEn());
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) {
+              update = setState;
+              return switch (recipe) {
+                'choices' => CatchField<String>.choices(
+                  copy: copy,
+                  title: 'Activity',
+                  values: const ['Run', 'Walk'],
+                  selected: const {'Run'},
+                  itemLabelBuilder: (value) => value,
+                  disclosureMode: CatchFieldMode.localExpanded,
+                  status: status,
+                  onSelectionChanged: (_) => changes++,
+                ),
+                'optionCards' => CatchField<String>.optionCards(
+                  copy: copy,
+                  title: 'Activity',
+                  values: const ['Run', 'Walk'],
+                  selected: 'Run',
+                  itemTitleBuilder: (value) => value,
+                  itemDescriptionBuilder: (value) => '$value outside',
+                  disclosureMode: CatchFieldMode.localExpanded,
+                  status: status,
+                  onChanged: (_) => changes++,
+                ),
+                _ => CatchField.stepper(
+                  copy: copy,
+                  title: 'Guests',
+                  value: 2,
+                  min: 1,
+                  max: 3,
+                  disclosureMode: CatchFieldMode.localExpanded,
+                  status: status,
+                  decreaseSemanticLabel: 'Decrease guests',
+                  increaseSemanticLabel: 'Increase guests',
+                  onChanged: (_) => changes++,
+                ),
+              };
+            },
+          ),
+        ),
+      );
+      final target = recipe == 'stepper'
+          ? find.bySemanticsLabel('Increase guests')
+          : find.text('Walk');
+      // Saving may ignore pointer events; still exercise the painted control.
+      await tester.tapAt(tester.getCenter(target));
+      await tester.pump();
+      expect(changes, 0);
+      expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
+
+      update(() => status = CatchFieldStatus.idle);
+      await _pumpCatchFieldMotion(tester);
+      await tester.tap(target);
+      await tester.pump();
+      expect(changes, 1);
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  }
 
   testWidgets('CatchField toggle stays visible and disabled while saving', (
     tester,
@@ -176,11 +262,11 @@ void main() {
     );
 
     expect(find.byKey(const ValueKey('catch-field-toggle')), findsOneWidget);
-    expect(find.byType(CatchToggle), findsOneWidget);
+    expect(find.byType(CatchToggleInput), findsOneWidget);
     expect(find.byKey(const ValueKey('catch-field-spinner')), findsOneWidget);
     final opacity = tester.widget<AnimatedOpacity>(
       find.descendant(
-        of: find.byType(CatchToggle),
+        of: find.byType(CatchToggleInput),
         matching: find.byType(AnimatedOpacity),
       ),
     );
@@ -210,11 +296,11 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          initiallyOpen: true,
-          isLoading: true,
-          control: const Text('Height control'),
+          disclosureMode: CatchFieldMode.localExpanded,
+          status: CatchFieldStatus.saving,
           onCancel: () {},
           onSubmit: () => submitCount++,
+          child: const Text('Height control'),
         ),
       ),
     );

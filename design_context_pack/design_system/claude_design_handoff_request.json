@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "9d73b972778f9724e3f97d06007e65d767c3e971b52bd627f7cea3de0ad749dc",
+  "sourceDigest": "1040084cdc695844183d04214c242b0effe1ba416430d930886fa3a2358de1e0",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",
@@ -34,10 +34,12 @@
         "on-dark",
         "privacy",
         "truncated",
-        "readable-status"
+        "readable-status",
+        "ticket-status",
+        "optional-field"
       ],
-      "supportedStatesDigest": "307015995a74b7d6adbd4da8066dfe03802cd7352fd3bc1e8ae21a796348ca7b",
-      "propsDigest": "6136231d9fe38c2b4aedd9a28686a3b604aefbf0fc5e133fcf96027d47d99796",
+      "supportedStatesDigest": "f960ec7c1065e6409902ec0b6d4e05ee2e73d57630ccaa2f69c6f5c30d27e6f7",
+      "propsDigest": "be6f4fad6593803721a4c9f2e558f7206a3517c41843815ce5913c9f56ac26ac",
       "tokens": [
         "layout.statusHorizontalPadding",
         "layout.statusVerticalPadding",
@@ -117,7 +119,7 @@
         "add"
       ],
       "supportedStatesDigest": "adb5de9605a60a3474197d597d00871e7dc8135bc9ce2bc3f6153521a4d48db3",
-      "propsDigest": "c0b0fcf03c1c96c80983edb1df4929d9479247c7a24fe1d9b6cfd53bc5a32718",
+      "propsDigest": "da56be5c9de4f97ebfdbd6119cadd61b3e82bc0de949d7900d28cbe2cc527f0d",
       "tokens": [
         "space.micro10",
         "space.micro14",

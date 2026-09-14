@@ -190,7 +190,7 @@ class _EventFocusRailState extends State<EventFocusRail> {
           gapH10,
           Center(
             key: EventFocusRail.pageIndicatorKey,
-            child: CatchPageDots(
+            child: CatchPageIndicator(
               selectedIndex: _selectedIndex,
               itemCount: items.length,
               semanticLabel: context.l10n

@@ -269,10 +269,7 @@ class _FiltersContentFrame extends StatelessWidget {
       appBar: CatchTopBar(
         title: 'Filters',
         actions: [
-          CatchTopBarTextAction(
-            label: 'Reset',
-            onPressed: saving ? null : _noopTap,
-          ),
+          CatchButton.text(label: 'Reset', onPressed: saving ? null : _noopTap),
         ],
       ),
       body: FiltersContent(

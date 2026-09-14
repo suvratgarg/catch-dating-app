@@ -16,29 +16,24 @@ typedef _SectionCommonConfig = ({
 
 typedef _DividedSectionConfig = ({
   _SectionCommonConfig common,
-  Color? leadAccent,
-  bool lead,
   bool first,
   Color? dividerColor,
   double dividerIndent,
-  CatchDividerRole dividerRole,
-  CatchDividerRole internalDividerRole,
+  CatchDividerVariant dividerVariant,
+  CatchDividerVariant internalDividerVariant,
   bool showInternalDividers,
 });
 
 typedef _DividedFieldRowsSectionConfig = ({
   _SectionCommonConfig common,
-  Color? leadAccent,
-  bool lead,
   bool first,
-  CatchDividedFieldInteraction? interaction,
+  CatchDividedFieldInteractionScopeMode? interaction,
 });
 
 typedef _ContainedFieldRowsSectionConfig = ({
   _SectionCommonConfig common,
   List<CatchSectionFieldGroup>? groups,
-  bool focused,
-  bool hasError,
+  Set<WidgetState> states,
   CatchSectionHeaderPlacement headerPlacement,
 });
 
@@ -48,15 +43,26 @@ typedef _ContainedSectionConfig = ({
   Color? backgroundColor,
   Color? borderColor,
   CatchSurfaceTone tone,
-  CatchSurfaceElevation elevation,
+  CatchSurfaceEmphasis emphasis,
   List<BoxShadow>? boxShadow,
   bool showInternalDividers,
-  bool focused,
-  bool hasError,
+  Set<WidgetState> states,
 });
 
 typedef _PlainSectionConfig = ({
   _SectionCommonConfig common,
   EdgeInsetsGeometry? padding,
   bool showInternalDividers,
+});
+
+typedef _HorizontalSectionConfig = ({
+  _SectionCommonConfig common,
+  int itemCount,
+  IndexedWidgetBuilder itemBuilder,
+  double? height,
+  double spacing,
+  CatchRailItemWidth? itemWidth,
+  bool showDivider,
+  EdgeInsets headerPadding,
+  EdgeInsetsGeometry listPadding,
 });

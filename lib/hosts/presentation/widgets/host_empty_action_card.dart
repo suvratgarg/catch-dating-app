@@ -25,14 +25,16 @@ class HostEmptyActionCard extends StatelessWidget {
       title: title,
       message: body,
       padding: EdgeInsets.zero,
-      action: actions.isEmpty
-          ? null
-          : Wrap(
-              alignment: WrapAlignment.center,
-              spacing: CatchSpacing.s2,
-              runSpacing: CatchSpacing.s2,
-              children: actions,
-            ),
+      actions: [
+        ?actions.isEmpty
+            ? null
+            : Wrap(
+                alignment: WrapAlignment.center,
+                spacing: CatchSpacing.s2,
+                runSpacing: CatchSpacing.s2,
+                children: actions,
+              ),
+      ],
     );
   }
 }

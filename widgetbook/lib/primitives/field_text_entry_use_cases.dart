@@ -7,7 +7,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Native input and validation states',
-  type: CatchFieldTextEntry,
+  type: CatchFieldInput,
   path: '[Core primitives]/Fields',
 )
 Widget fieldTextEntryStates(BuildContext context) {
@@ -38,22 +38,22 @@ Widget fieldTextEntryStates(BuildContext context) {
         copy: copy,
         title: 'Invitation code',
         initialValue: 'ABCD',
-        readOnly: true,
-        prefixIcon: Icon(CatchIcons.tabEvents),
+        inputMode: CatchTextInputMode.inactiveWithoutSelection,
+        leading: Icon(CatchIcons.tabEvents),
       ),
       CatchField.input(
         copy: copy,
         title: 'Private code',
         initialValue: '1234',
-        obscureText: true,
-        enabled: false,
+        inputVariant: CatchTextInputVariant.obscured,
+        states: const <WidgetState>{WidgetState.disabled},
       ),
       Form(
         key: formKey,
         child: CatchField.input(
           copy: copy,
           title: 'Required name',
-          validator: (value) =>
+          onValidate: (value) =>
               value?.isNotEmpty == true ? null : 'Enter a name.',
         ),
       ),

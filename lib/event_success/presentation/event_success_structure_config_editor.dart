@@ -46,12 +46,12 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
               .eventSuccessEventSuccessStructureConfigEditorTextGroupPeopleInto,
           contract: CatchContractConstraints
               .eventSuccessPlanDocumentStructureConfigUnitKind,
-          contractValue: (value) => value.name,
+          contractValueBuilder: (value) => value.name,
           values: EventSuccessUnitKind.values,
-          itemTitle: (kind) => kind.label,
-          itemDescription: (kind) => kind.setupHint,
+          itemTitleBuilder: (kind) => kind.label,
+          itemDescriptionBuilder: (kind) => kind.setupHint,
           selected: value.unitKind,
-          enabled: enabled,
+          states: <WidgetState>{if (!enabled) WidgetState.disabled},
           onChanged: enabled ? (kind) => onChanged(_withUnitKind(kind)) : null,
         ),
         if (value.unitKind != EventSuccessUnitKind.wholeGroup)
@@ -67,7 +67,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             value: value.unitSize,
             min: 2,
             max: 12,
-            formatter: (number) => context.l10n
+            valueLabelBuilder: (number) => context.l10n
                 .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointPeople(
                   toInt: number.toInt(),
                 ),
@@ -77,7 +77,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             increaseSemanticLabel: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorSemanticIncreasePeoplePerUnit,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: enabled
                 ? (number) =>
                       onChanged(value.copyWith(unitSize: number.toInt()))
@@ -89,22 +89,22 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             title: value.unitKind.countLabel,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigUnitCount,
-            contractValue: (value) => value.toString(),
+            contractValueBuilder: (value) => value.toString(),
             values: const [false, true],
-            itemTitle: (fixed) => fixed
+            itemTitleBuilder: (fixed) => fixed
                 ? context
                       .l10n
                       .eventSuccessEventSuccessStructureConfigEditorLabelFixed
                 : context
                       .l10n
                       .eventSuccessEventSuccessStructureConfigEditorLabelAuto,
-            itemDescription: (fixed) => fixed
+            itemDescriptionBuilder: (fixed) => fixed
                 ? context
                       .l10n
                       .eventSuccessEventSuccessStructureConfigEditorDetailSetTheNumberYourselfOrLetCatchWorkItOutFromAttendance
                 : autoUnitCountSummary,
             selected: value.unitCount != null,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: enabled
                 ? (fixed) => onChanged(
                     value.copyWith(
@@ -125,7 +125,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             value: value.unitCount ?? estimatedUnitCount,
             min: 1,
             max: 40,
-            formatter: (number) => context.l10n
+            valueLabelBuilder: (number) => context.l10n
                 .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointTolowercase(
                   toInt: number.toInt(),
                   toLowerCase: value.unitKind.label.toLowerCase(),
@@ -136,7 +136,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             increaseSemanticLabel: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseUnitCount,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: enabled
                 ? (number) =>
                       onChanged(value.copyWith(unitCount: number.toInt()))
@@ -150,15 +150,15 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 .eventSuccessEventSuccessStructureConfigEditorTitleSpreadPeopleOutBy,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigBalanceActivityAttributes,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
             values: EventSuccessActivityAssignmentAttribute.values,
-            itemLabel: (attribute) => attribute.balanceLabel,
+            itemLabelBuilder: (attribute) => attribute.balanceLabel,
             selected: value.balanceActivityAttributes.toSet(),
-            multi: true,
-            enabled: enabled,
+            mode: CatchChipMode.multiple,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onSelectionChanged: enabled
                 ? (selection) => onChanged(
                     value.copyWith(
@@ -177,15 +177,15 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 .eventSuccessEventSuccessStructureConfigEditorTitleKeepSimilarPeopleTogetherBy,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigClusterActivityAttributes,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             body: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorTextCatchUsesThisWhenItBuildsTheGroups,
             values: EventSuccessActivityAssignmentAttribute.values,
-            itemLabel: (attribute) => attribute.clusterLabel,
+            itemLabelBuilder: (attribute) => attribute.clusterLabel,
             selected: value.clusterActivityAttributes.toSet(),
-            multi: true,
-            enabled: enabled,
+            mode: CatchChipMode.multiple,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onSelectionChanged: enabled
                 ? (selection) => onChanged(
                     value.copyWith(
@@ -206,11 +206,11 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
                 .eventSuccessEventSuccessStructureConfigEditorTextMeetingTheSamePersonAgain,
             contract: CatchContractConstraints
                 .eventSuccessPlanDocumentStructureConfigRotationRepeatStrategy,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: EventSuccessRotationRepeatStrategy.values,
-            itemLabel: (strategy) => strategy.label,
+            itemLabelBuilder: (strategy) => strategy.label,
             selected: {value.rotationRepeatStrategy},
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onSelectionChanged: enabled
                 ? (selection) => onChanged(
                     value.copyWith(rotationRepeatStrategy: selection.single),
@@ -230,7 +230,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             value: value.maxPairMeetings,
             min: 1,
             max: 10,
-            formatter: (number) => context.l10n
+            valueLabelBuilder: (number) => context.l10n
                 .eventSuccessEventSuccessStructureConfigEditorVisiblecopyTointValue2(
                   toInt: number.toInt(),
                   value2: number.toInt() == 1 ? 'time' : 'times',
@@ -241,7 +241,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             increaseSemanticLabel: context
                 .l10n
                 .eventSuccessEventSuccessStructureConfigEditorSemanticIncreaseMeetingsPerPair,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: enabled
                 ? (number) =>
                       onChanged(value.copyWith(maxPairMeetings: number.toInt()))

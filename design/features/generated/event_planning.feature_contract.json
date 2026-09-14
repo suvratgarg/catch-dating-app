@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_planning.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:ced80bb2dc64948a90e2ef412e0d4b1ef61cc13358bd1fa52e688eb8ba843e27",
-  "resolvedDigest": "sha256:b7cba4b1c6191b3dd1dc36fa941c4fc4695c73d9272f6dc43c08ad8406870f7d",
+  "resolvedDigest": "sha256:dee28ff60f3e7548f9361743cf313509b37c69c0e2e03544f2e4024cefc4b547",
   "feature": {
     "id": "feature.event_planning",
     "name": "Event Planning",
@@ -874,7 +874,9 @@
                 "CatchBadge.onDark",
                 "CatchBadge.onDarkStatus",
                 "CatchBadge.privacy",
-                "CatchBadge.status"
+                "CatchBadge.status",
+                "CatchBadge.ticketStatus",
+                "CatchBadge.optional"
               ]
             }
           },
@@ -887,7 +889,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -922,8 +926,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -934,7 +937,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }
@@ -1681,8 +1687,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -1693,7 +1698,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

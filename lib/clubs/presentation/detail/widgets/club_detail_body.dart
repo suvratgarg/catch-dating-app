@@ -125,10 +125,11 @@ class ClubDetailSliverBody extends StatelessWidget {
               ? ClubHeroPresentationMode.embeddedReadOnlyPreview
               : ClubHeroPresentationMode.route,
         ),
-        CatchDetailSliverSectionList(
+        CatchSectionList.sliver(
+          emptyStateOmitted: true,
           gap: CatchSpacing.screenPt,
           bottomPadding: 0,
-          sections: [
+          children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -148,7 +149,7 @@ class ClubDetailSliverBody extends StatelessWidget {
                   ),
                 ),
                 gapH12,
-                CatchMetricStrip(items: _clubMetricItems(club, context.l10n)),
+                CatchMetricSection(items: _clubMetricItems(club, context.l10n)),
               ],
             ),
             Column(
@@ -200,9 +201,10 @@ class ClubDetailSliverBody extends StatelessWidget {
               : CatchLayout.detailScreenBottomPadding,
         ),
         if (showTrailingSections)
-          CatchDetailSliverSectionList(
+          CatchSectionList.sliver(
+            emptyStateOmitted: true,
             topPadding: 0,
-            sections: [
+            children: [
               if (state.showReviews)
                 CatchSection.divided(
                   title: context.l10n.clubsClubDetailBodyTitleReviews,
@@ -227,21 +229,21 @@ class ClubDetailSliverBody extends StatelessWidget {
   }
 }
 
-List<CatchMetricStripItem> _clubMetricItems(Club club, AppLocalizations l10n) {
+List<CatchMetricValue> _clubMetricItems(Club club, AppLocalizations l10n) {
   return [
-    CatchMetricStripItem(
+    CatchMetricValue(
       value: '${club.memberCount}',
       label: l10n.clubsClubDetailBodyLabelMembers,
     ),
-    CatchMetricStripItem(
+    CatchMetricValue(
       value: club.rating > 0 ? club.rating.toStringAsFixed(1) : '—',
       label: l10n.clubsClubDetailBodyLabelRating,
     ),
-    CatchMetricStripItem(
+    CatchMetricValue(
       value: '${club.reviewCount}',
       label: l10n.clubsClubDetailBodyLabelReviews,
     ),
-    CatchMetricStripItem(
+    CatchMetricValue(
       value: clubEstablishedLabel(club),
       label: l10n.clubsClubDetailBodyLabelEst,
     ),

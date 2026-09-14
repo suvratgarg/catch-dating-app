@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/host_customers.feature.json",
   "generatedFor": "2026-09-03",
-  "sourceDigest": "sha256:433972724a574d2ed2ad224f776aaa89038abcfe3ddde9a996305f3c5b04ee91",
-  "resolvedDigest": "sha256:25ddd8d57d68715820a0b043442864970f3c6f336a01abd891a811e7109f6927",
+  "sourceDigest": "sha256:32bd03c638130d61d5160badf88c4e5f9606e2cb61dd8414a6f228d89755374a",
+  "resolvedDigest": "sha256:e638d7e8cffe42a0c09090039429420a9e390e6132c1739927d0b5d18afc3b44",
   "feature": {
     "id": "feature.host_customers",
     "name": "Host Audience CRM",
@@ -117,7 +117,7 @@
           "catch.error_state",
           "catch.field",
           "catch.notice",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.person_row",
           "catch.search_field",
           "catch.section",
@@ -6115,7 +6115,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -6128,6 +6130,7 @@
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
+                "CatchChip.choice",
                 "CatchChip.activity",
                 "CatchChip.removable"
               ]
@@ -6191,13 +6194,16 @@
             }
           },
           {
-            "id": "catch.option_group",
-            "kind": "composite",
+            "id": "catch.chip.field",
+            "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
+              "symbol": "CatchChoiceInput",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
               "constructors": [
-                "CatchOptionGroup"
+                "CatchChoiceInput",
+                "CatchChoiceInput.described",
+                "CatchChoiceInput.segmented",
+                "CatchChoiceInput.form"
               ]
             }
           },
@@ -6209,7 +6215,8 @@
               "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
               "constructors": [
                 "CatchPersonRow",
-                "CatchPersonRow.directory"
+                "CatchPersonRow.directory",
+                "CatchPersonRow.contact"
               ]
             }
           },
@@ -6238,7 +6245,8 @@
                 "CatchSection.containedFieldRows",
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
-                "CatchSection.plain"
+                "CatchSection.plain",
+                "CatchSection.horizontal"
               ]
             }
           },
@@ -6254,7 +6262,14 @@
                 "CatchSkeleton.text",
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
-                "CatchSkeleton.custom"
+                "CatchSkeleton.custom",
+                "CatchSkeleton.content",
+                "CatchSkeleton.cards",
+                "CatchSkeleton.rows",
+                "CatchSkeleton.boxes",
+                "CatchSkeleton.chips",
+                "CatchSkeleton.mediaRows",
+                "CatchSkeleton.iconRows"
               ]
             }
           },
@@ -6267,8 +6282,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -6276,10 +6290,11 @@
             "id": "catch.tab_rail",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchTabRail",
-              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
+              "symbol": "CatchPageTabBar",
+              "file": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
               "constructors": [
-                "CatchTabRail"
+                "CatchPageTabBar",
+                "CatchPageTabBar.controlled"
               ]
             }
           },
@@ -6290,7 +6305,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

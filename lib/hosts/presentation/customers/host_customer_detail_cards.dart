@@ -141,10 +141,10 @@ class _HostCustomerIdentityCardState extends State<HostCustomerIdentityCard> {
                   ),
                   gapH12,
                   if (_contactMethodError != null) ...[
-                    CatchErrorBanner(message: _contactMethodError!),
+                    CatchBanner.error(message: _contactMethodError!),
                     gapH12,
                   ],
-                  CatchFieldActionBar(
+                  CatchFieldActionRow(
                     cancelLabel: context.l10n.coreCatchFieldLabelCancel,
                     doneLabel: context.l10n.coreCatchFieldLabelDone,
                     savingLabel: context.l10n.coreCatchFieldLabelSaving,
@@ -312,10 +312,10 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
       children: [
         CatchPersonRow.directory(
           data: CatchPersonRowData(name: displayName, seed: customer.contactId),
-          status: segmentLabel == null
+          trailing: segmentLabel == null
               ? null
               : CatchBadge.status(label: segmentLabel, tone: segmentTone),
-          metadata: Text(
+          meta: Text(
             [
               context.l10n.hostCustomersCompactEventCount(
                 count: customer.traits.attendedEventCount,
@@ -323,7 +323,7 @@ class _HostCustomerIdentitySummary extends StatelessWidget {
             ].join(' · '),
             style: CatchTextStyles.supporting(context),
           ),
-          contextContent: showContacts
+          body: showContacts
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -424,7 +424,7 @@ class HostCustomerAttendanceCard extends StatelessWidget {
                 children: [
                   for (final (index, item) in metrics.indexed) ...[
                     if (index > 0) ...[gapH12, const CatchDivider(), gapH12],
-                    CatchStatColumn(
+                    CatchMetricTile(
                       value: item.value,
                       label: item.label,
                       center: true,
@@ -442,7 +442,7 @@ class HostCustomerAttendanceCard extends StatelessWidget {
                         child: ColoredBox(color: CatchTokens.of(context).line),
                       ),
                     Expanded(
-                      child: CatchStatColumn(
+                      child: CatchMetricTile(
                         value: item.value,
                         label: item.label,
                         center: true,
@@ -679,7 +679,7 @@ class HostCustomerRevenueCard extends StatelessWidget {
         if (onOpen != null)
           Align(
             alignment: AlignmentDirectional.centerStart,
-            child: CatchTextButton(
+            child: CatchButton.text(
               key: const ValueKey('host-customer-revenue-breakdown'),
               label: context.l10n.hostCustomersViewBreakdown,
               onPressed: onOpen,
@@ -713,7 +713,7 @@ class HostCustomerRevenueBreakdown extends StatelessWidget {
   final ValueChanged<String> onOpenEvent;
 
   @override
-  Widget build(BuildContext context) => CatchBottomSheetScaffold(
+  Widget build(BuildContext context) => CatchSheet(
     title: context.l10n.hostCustomersDetailRevenue,
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

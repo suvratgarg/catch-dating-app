@@ -21,9 +21,9 @@ Widget fieldChoiceDisclosureProtocol(BuildContext context) {
           copy: catchFieldCopy(context.l10n),
           title: 'Preferred time',
           values: const ['Morning', 'Evening'],
-          itemLabel: (value) => value,
+          itemLabelBuilder: (value) => value,
           selected: {selected},
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onSelectionChanged: (values) =>
               setState(() => selected = values.single),
         ),
@@ -31,12 +31,12 @@ Widget fieldChoiceDisclosureProtocol(BuildContext context) {
           copy: catchFieldCopy(context.l10n),
           title: 'Time details',
           values: const ['Morning', 'Evening'],
-          itemTitle: (value) => value,
-          itemDescription: (value) => value == 'Morning'
+          itemTitleBuilder: (value) => value,
+          itemDescriptionBuilder: (value) => value == 'Morning'
               ? 'Start your day together.'
               : 'Meet after the working day.',
           selected: selected,
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onChanged: (value) => setState(() => selected = value),
         ),
       ],

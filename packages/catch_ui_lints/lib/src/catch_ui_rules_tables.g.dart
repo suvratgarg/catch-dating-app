@@ -24,12 +24,12 @@ const catchRawControlConstructors = <String>{
 
 const catchRawControlReplacements = <String, String>{
   'ActionChip': 'CatchChip',
-  'AppBar': 'CatchTopBar or CatchScreenTopBar',
+  'AppBar': 'CatchTopBar or CatchTopBar.screen',
   'Badge': 'CatchBadge',
   'Card': 'CatchSurface or CatchSectionCard',
   'Chip': 'CatchChip',
   'ChoiceChip': 'CatchChip',
-  'CupertinoNavigationBar': 'CatchTopBar or CatchScreenTopBar',
+  'CupertinoNavigationBar': 'CatchTopBar or CatchTopBar.screen',
   'FilterChip': 'CatchChip',
   'InputChip': 'CatchChip',
   'RawChip': 'CatchChip',

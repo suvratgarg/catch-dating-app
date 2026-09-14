@@ -56,11 +56,11 @@ class EventBookingDock extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (error != null) CatchErrorBanner(message: error),
-        CatchBottomAction(
+        if (error != null) CatchBanner.error(message: error),
+        CatchDockSurface.primary(
           label: label,
           onPressed: onPressed,
-          leadingContent: leadingContent,
+          leading: leadingContent,
           buttonKey: buttonKey,
           isLoading: isLoading,
           backgroundColor: backgroundColor,
@@ -452,12 +452,12 @@ class WaitlistOfferLeading extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
-        CatchTextButton(
+        CatchButton.text(
           label: isDeclining
               ? context.l10n.eventsEventDetailCtaLabelDeclining
               : context.l10n.eventsEventDetailCtaLabelDecline,
           onPressed: onDecline,
-          tone: CatchTextButtonTone.neutral,
+          tone: CatchButtonTone.neutral,
           padding: EdgeInsets.zero,
         ),
       ],

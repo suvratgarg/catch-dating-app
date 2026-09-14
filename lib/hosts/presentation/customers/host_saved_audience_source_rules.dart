@@ -39,14 +39,14 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             title: context.l10n.hostSavedAudienceAttendanceComparison,
             contract: CatchContractConstraints
                 .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsOperator,
-            contractValue: (value) => value.name,
+            contractValueBuilder: (value) => value.name,
             values: HostSavedAudienceAttendanceOperator.values,
-            itemLabel: (value) =>
+            itemLabelBuilder: (value) =>
                 value == HostSavedAudienceAttendanceOperator.atLeast
                 ? context.l10n.hostSavedAudienceAtLeast
                 : context.l10n.hostSavedAudienceAtMost,
             value: rule.operator,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: (value) {
               if (value != null) onChanged(rule.copyWith(operator: value));
             },
@@ -61,9 +61,9 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               ...supportedCurrencyDefinitions.map((c) => c.code),
               rule.currency,
             }.toList(),
-            itemLabel: (value) => value,
+            itemLabelBuilder: (value) => value,
             value: rule.currency,
-            enabled: enabled,
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onChanged: (value) {
               if (value != null && value != rule.currency) {
                 onChanged(rule.copyWith(currency: value, amountMinor: 0));
@@ -81,8 +81,8 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               currencyCode: rule.currency,
             ),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            enabled: enabled,
-            validator: (text) {
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
+            onValidate: (text) {
               final amount = parseMajorCurrencyAmountToMinorUnits(
                 text ?? '',
                 currencyCode: rule.currency,
@@ -110,8 +110,8 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
                 'Blank means lifetime (null); an entered value must be an integer from 1 to 3650, matching withinDays.',
             initialValue: rule.withinDays?.toString() ?? '',
             keyboardType: TextInputType.number,
-            enabled: enabled,
-            validator: (text) {
+            states: <WidgetState>{if (!enabled) WidgetState.disabled},
+            onValidate: (text) {
               if ((text ?? '').trim().isEmpty) return null;
               final days = int.tryParse(text!.trim());
               return days == null || days < 1 || days > 3650
@@ -140,11 +140,13 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
           title: context.l10n.hostAudienceRuleNamedEvent,
           contract: CatchContractConstraints
               .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsEventId,
-          contractValue: (value) => value.id,
+          contractValueBuilder: (value) => value.id,
           values: options.events,
-          itemLabel: (value) => value.title,
+          itemLabelBuilder: (value) => value.title,
           value: options.events.where((e) => e.id == rule?.eventId).firstOrNull,
-          enabled: enabled && options.events.isNotEmpty,
+          states: <WidgetState>{
+            if (!(enabled && options.events.isNotEmpty)) WidgetState.disabled,
+          },
           hintText: context.l10n.hostAudienceChooseEvent,
           onChanged: (value) {
             if (value != null) {
@@ -166,13 +168,16 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               title: context.l10n.hostAudienceChooseForm,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsFormId,
-              contractValue: (value) => value.id,
+              contractValueBuilder: (value) => value.id,
               values: options.forms,
-              itemLabel: (value) => value.title,
+              itemLabelBuilder: (value) => value.title,
               value: options.forms
                   .where((f) => f.id == rule?.formId)
                   .firstOrNull,
-              enabled: enabled && options.forms.isNotEmpty,
+              states: <WidgetState>{
+                if (!(enabled && options.forms.isNotEmpty))
+                  WidgetState.disabled,
+              },
               hintText: context.l10n.hostAudienceChooseForm,
               onChanged: (value) {
                 if (value != null) {
@@ -194,14 +199,16 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
               title: context.l10n.hostApplicationsReviewStatusFilter,
               contract: CatchContractConstraints
                   .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsReviewStatus,
-              contractValue: (value) => value.name,
+              contractValueBuilder: (value) => value.name,
               values: HostSavedAudienceApplicationStatus.values,
-              itemLabel: (value) =>
+              itemLabelBuilder: (value) =>
                   _audienceApplicationStatusLabel(context, value),
               value:
                   rule?.reviewStatus ??
                   HostSavedAudienceApplicationStatus.submitted,
-              enabled: enabled && rule != null,
+              states: <WidgetState>{
+                if (!(enabled && rule != null)) WidgetState.disabled,
+              },
               onChanged: (value) {
                 if (value != null && rule != null) {
                   onChanged(
@@ -238,12 +245,15 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
             helperText: context.l10n.hostAudienceFilterableQuestionsHelp,
             contract: CatchContractConstraints
                 .upsertOrganizerSavedAudienceCallablePayloadDefinitionPredicatesItemsQuestionId,
-            contractValue: (value) => value.questionId,
+            contractValueBuilder: (value) => value.questionId,
             values: options.questions,
             value: question,
-            itemLabel: (value) =>
+            itemLabelBuilder: (value) =>
                 '${value.formTitle} · v${value.version} · ${value.label}',
-            enabled: enabled && options.questions.isNotEmpty,
+            states: <WidgetState>{
+              if (!(enabled && options.questions.isNotEmpty))
+                WidgetState.disabled,
+            },
             hintText: context.l10n.hostAudienceChooseQuestion,
             onChanged: (value) {
               final answer = value?.options.firstOrNull;
@@ -270,11 +280,11 @@ class HostAudienceSourceRuleFields extends StatelessWidget {
                   'Values come from the scoped immutable form version; '
                   'the callable validates the selected string or boolean again.',
               values: question.options,
-              itemLabel: (value) => _audienceAnswerLabel(context, value),
+              itemLabelBuilder: (value) => _audienceAnswerLabel(context, value),
               value: question.options
                   .where((o) => o.value == rule?.value)
                   .firstOrNull,
-              enabled: enabled,
+              states: <WidgetState>{if (!enabled) WidgetState.disabled},
               onChanged: (value) {
                 if (value != null) {
                   onChanged(

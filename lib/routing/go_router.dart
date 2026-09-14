@@ -284,7 +284,7 @@ Page<void> _clubDetailPage(BuildContext _, GoRouterState state) {
     transitionDuration: CatchMotion.calendarScroll,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        CatchFadeScaleViewport(animation: animation, child: child),
+        CatchRevealViewport(animation: animation, child: child),
   );
 }
 
@@ -296,7 +296,7 @@ Page<void> _exploreMapPage(BuildContext _, GoRouterState state) {
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return CatchMapRevealViewport(animation: animation, child: child);
+      return CatchRevealViewport.stationary(animation: animation, child: child);
     },
   );
 }
@@ -318,7 +318,7 @@ Page<void> _eventDetailPage(BuildContext _, GoRouterState state) {
     transitionDuration: CatchMotion.slow,
     reverseTransitionDuration: CatchMotion.base,
     transitionsBuilder: (context, animation, secondaryAnimation, child) =>
-        CatchFadeScaleViewport(animation: animation, child: child),
+        CatchRevealViewport(animation: animation, child: child),
   );
 }
 
@@ -677,19 +677,16 @@ class _RouteLoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchScreenScaffold.standalone(
+    return CatchScaffold.standalone(
       backgroundColor: t.bg,
-      body: CatchScreenBody(
-        scrollable: false,
+      body: CatchPageBody.screen(
+        variant: CatchPageBodyVariant.fixed,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             CatchSkeleton.text(width: CatchLayout.skeletonTextPageTitleWidth),
             const SizedBox(height: CatchSpacing.s5),
-            const CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.mediaTile,
-              divided: true,
-            ),
+            const CatchSkeleton.mediaRows(divided: true),
           ],
         ),
       ),

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/host_home.feature.json",
   "generatedFor": "2026-09-04",
   "sourceDigest": "sha256:b6fce0d6f26d684fe1ebc296c605c29b01b48e80de88b2be121eea1845effc70",
-  "resolvedDigest": "sha256:f3a0a5746988319943b6345676de0a1e5a4523dcb7d39b3eaf6de23481779b46",
+  "resolvedDigest": "sha256:8e640903f553be20ec1feb97885f1e14d7698ffdace683f129189e82f171331a",
   "feature": {
     "id": "feature.host_home",
     "name": "Host Today and Events",
@@ -1898,7 +1898,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -1966,7 +1968,8 @@
               "symbol": "CatchMenu",
               "file": "packages/catch_ui/lib/src/components/catch_menu.dart",
               "constructors": [
-                "CatchMenu"
+                "CatchMenu",
+                "CatchMenu.anchored"
               ]
             }
           },
@@ -1993,7 +1996,8 @@
                 "CatchSection.containedFieldRows",
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
-                "CatchSection.plain"
+                "CatchSection.plain",
+                "CatchSection.horizontal"
               ]
             }
           },
@@ -2009,7 +2013,14 @@
                 "CatchSkeleton.text",
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
-                "CatchSkeleton.custom"
+                "CatchSkeleton.custom",
+                "CatchSkeleton.content",
+                "CatchSkeleton.cards",
+                "CatchSkeleton.rows",
+                "CatchSkeleton.boxes",
+                "CatchSkeleton.chips",
+                "CatchSkeleton.mediaRows",
+                "CatchSkeleton.iconRows"
               ]
             }
           },
@@ -2022,8 +2033,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -2034,7 +2044,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

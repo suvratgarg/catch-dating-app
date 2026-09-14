@@ -7,7 +7,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Text-entry suffix and clear states',
-  type: CatchFieldTrailing,
+  type: CatchFieldTrailingRow,
   path: '[Core primitives]/Fields',
 )
 Widget fieldInputSuffixStates(BuildContext context) => WidgetbookCatalogFrame(
@@ -23,7 +23,7 @@ Widget fieldInputSuffixStates(BuildContext context) => WidgetbookCatalogFrame(
         controller: controller,
         variant: CatchFieldVariant.underline,
         showClearButton: true,
-        suffixIcon: Icon(CatchIcons.checkRounded),
+        trailing: Icon(CatchIcons.checkRounded),
       ),
     ),
     WidgetbookTextControllerScope(
@@ -34,7 +34,7 @@ Widget fieldInputSuffixStates(BuildContext context) => WidgetbookCatalogFrame(
         contractExemption: 'Catalog-only text-entry suffix fixture.',
         controller: controller,
         variant: CatchFieldVariant.underline,
-        action: CatchTextButton(label: 'Verify', onPressed: () {}),
+        actions: CatchButton.text(label: 'Verify', onPressed: () {}),
       ),
     ),
     WidgetbookTextControllerScope(
@@ -45,7 +45,7 @@ Widget fieldInputSuffixStates(BuildContext context) => WidgetbookCatalogFrame(
         contractExemption: 'Catalog-only text-entry suffix fixture.',
         controller: controller,
         variant: CatchFieldVariant.underline,
-        suffixIcon: Icon(CatchIcons.checkRounded),
+        trailing: Icon(CatchIcons.checkRounded),
       ),
     ),
     WidgetbookTextControllerScope(

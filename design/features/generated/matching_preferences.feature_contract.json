@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/matching_preferences.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:dad9312a088ed392bdf912be323907c24ca86d0ab76c2b54ccb73dacb66b9b15",
-  "resolvedDigest": "sha256:ecadd54e0394bf131b093c8f7f200546a86dd246dbc80acd1b13a25a3738e4ab",
+  "resolvedDigest": "sha256:54f66d3e43ab6862039c74ba233488b55053e36742f63ccb9314fd96144e1bae",
   "feature": {
     "id": "feature.matching_preferences",
     "name": "Matching Preferences",
@@ -814,7 +814,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -827,6 +829,7 @@
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
+                "CatchChip.choice",
                 "CatchChip.activity",
                 "CatchChip.removable"
               ]
@@ -847,10 +850,10 @@
             "id": "catch.range_slider",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchRangeSlider",
-              "file": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
+              "symbol": "CatchRangeInput",
+              "file": "packages/catch_ui/lib/src/components/catch_range_input.dart",
               "constructors": [
-                "CatchRangeSlider"
+                "CatchRangeInput"
               ]
             }
           },
@@ -863,8 +866,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -875,7 +877,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

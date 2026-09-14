@@ -35,14 +35,10 @@ void main() {
 
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('You matched!'), findsOneWidget);
-    expect(find.byType(CatchPersonAvatar), findsOneWidget);
-    expect(find.byType(CatchPersonChatLayout), findsOneWidget);
-    expect(find.byType(CatchPersonChatTrailing), findsOneWidget);
-    expect(find.byType(CatchPersonNewMatchDot), findsOneWidget);
+    expect(find.byType(CatchAvatar), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
     expect(
-      tester
-          .widget<CatchPersonAvatar>(find.byType(CatchPersonAvatar))
-          .borderWidth,
+      tester.widget<CatchAvatar>(find.byType(CatchAvatar)).borderWidth,
       CatchStroke.underline,
     );
 
@@ -80,15 +76,11 @@ void main() {
 
     final context = tester.element(find.byType(CatchPersonRow));
     final tokens = CatchTokens.of(context);
-    final avatar = tester.widget<CatchPersonAvatar>(
-      find.byType(CatchPersonAvatar),
-    );
+    final avatar = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
 
     expect(avatar.borderWidth, CatchStroke.underline);
     expect(avatar.borderColor, tokens.primary);
-    expect(find.byType(CatchPersonChatLayout), findsOneWidget);
-    expect(find.byType(CatchPersonChatTrailing), findsOneWidget);
-    expect(find.byType(CatchPersonUnreadCountPill), findsOneWidget);
+    expect(find.byType(CatchCountBadge), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
@@ -178,8 +170,6 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.byType(CatchPersonRosterLayout), findsOneWidget);
-    expect(find.byType(CatchPersonChatLayout), findsNothing);
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('5:20 /km'), findsOneWidget);
     expect(find.text('Sundowner 5K'), findsOneWidget);

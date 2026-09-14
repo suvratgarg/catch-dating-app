@@ -527,7 +527,10 @@ void main() {
       find.byKey(CreateEventFormKeys.distance, skipOffstage: false),
     );
     expect(
-      find.byType(CatchFieldChoiceChip, skipOffstage: false),
+      find.byWidgetPredicate(
+        (widget) => widget is CatchChip && widget.mode != null,
+        skipOffstage: false,
+      ),
       findsWidgets,
     );
     expect(
@@ -545,7 +548,8 @@ void main() {
     await pumpFeatureUi(tester);
     final fastPace = find.byWidgetPredicate(
       (widget) =>
-          widget is CatchFieldChoiceChip &&
+          widget is CatchChip &&
+          widget.mode != null &&
           widget.label == PaceLevel.fast.label,
     );
     await _scrollToFinder(tester, fastPace);
@@ -558,8 +562,8 @@ void main() {
     await _scrollToFinder(tester, durationField);
     await tester.tap(durationField);
     await pumpFeatureUi(tester);
-    final durationStepper = tester.widget<CatchFieldStepper>(
-      find.byType(CatchFieldStepper),
+    final durationStepper = tester.widget<CatchStepper>(
+      find.byType(CatchStepper),
     );
     durationStepper.onChanged?.call(75);
     await tester.pump();
@@ -623,8 +627,8 @@ void main() {
     await tester.pump();
 
     expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).leadingType,
-      CatchTopBarLeading.none,
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).navigation.mode,
+      CatchTopBarNavigationMode.none,
     );
     expect(
       tester

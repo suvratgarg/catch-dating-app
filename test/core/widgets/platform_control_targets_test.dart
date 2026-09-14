@@ -16,27 +16,26 @@ typedef _ControlBuilder = Widget Function(VoidCallback? activate);
 
 void main() {
   final controls = <String, _ControlBuilder>{
-    'toggle': (activate) => CatchToggle(
+    'toggle': (activate) => CatchToggleInput(
       key: _controlKey,
       value: false,
       semanticLabel: 'Go',
       onChanged: activate == null ? null : (_) => activate(),
     ),
-    'field toggle': (activate) => CatchToggle.field(
+    'field toggle': (activate) => CatchToggleInput.field(
       key: _controlKey,
       value: false,
       semanticLabel: 'Go',
       onChanged: activate == null ? null : (_) => activate(),
     ),
-    'field choice': (activate) => CatchFieldChoiceChip(
+    'field choice': (activate) => CatchChip.choice(
       key: _controlKey,
       label: 'Go',
       selected: false,
-      multi: false,
-      enabled: activate != null,
-      onPressed: () => activate?.call(),
+      onPressed: activate,
+      mode: CatchChipMode.single,
     ),
-    'field repeat': (activate) => CatchFieldRepeatButton(
+    'field repeat': (activate) => CatchStepperRepeatButton(
       key: _controlKey,
       icon: Icons.add,
       semanticLabel: 'Go',
@@ -48,7 +47,7 @@ void main() {
       label: 'Go',
       onPressed: activate,
     ),
-    'distance label': (activate) => CatchDistanceRingLabel(
+    'distance label': (activate) => CatchDistanceOverlay.label(
       key: _controlKey,
       label: '3 km',
       onTap: activate,
@@ -72,26 +71,26 @@ void main() {
       label: 'Go',
       onPressed: activate,
     ),
-    'explicit small icon': (activate) => CatchIconButton(
+    'explicit small icon': (activate) => CatchIconAction(
       key: _controlKey,
       size: 20,
       tooltip: 'Go',
-      onTap: activate,
+      onPressed: activate,
       child: const Icon(Icons.add),
     ),
-    'top-bar icon': (activate) => CatchIconAction(
+    'top-bar icon': (activate) => CatchIconAction.toolbar(
       key: _controlKey,
       icon: Icons.add,
       tooltip: 'Go',
       onPressed: activate,
     ),
-    'top-bar primary': (activate) => CatchTopBarPrimaryAction(
+    'top-bar primary': (activate) => CatchTopBarPrimaryButton(
       key: _controlKey,
       icon: Icons.add,
       label: 'Go',
       onPressed: activate,
     ),
-    'text button with compact overrides': (activate) => CatchTextButton(
+    'text button with compact overrides': (activate) => CatchButton.text(
       key: _controlKey,
       label: 'Go',
       onPressed: activate,
@@ -112,9 +111,9 @@ void main() {
       enabled: activate != null,
       onRemove: () => activate?.call(),
     ),
-    'compact control shell': (activate) => CatchControlShell(
+    'compact control shell': (activate) => CatchControlSurface(
       key: _controlKey,
-      size: CatchControlSize.compact,
+      size: CatchControlSurfaceSize.compact,
       semanticButton: true,
       enabled: activate != null,
       onTap: activate,
@@ -156,7 +155,7 @@ void main() {
         });
       }
 
-      for (final variant in CatchOptionGroupVariant.values) {
+      for (final variant in CatchChoiceInputVariant.values) {
         testWidgets('$variant choices retain targets at $scale $platform', (
           tester,
         ) async {
@@ -167,7 +166,7 @@ void main() {
             tester,
             SizedBox(
               width: 280,
-              child: CatchOptionGroup<int>(
+              child: CatchChoiceInput<int>.segmented(
                 variant: variant,
                 selected: 1,
                 options: const [
@@ -183,7 +182,7 @@ void main() {
             ),
             scale: scale,
           );
-          final items = find.byType(CatchOptionGroupItem<int>);
+          final items = find.byType(CatchChoiceButton<int>);
           for (final item in items.evaluate()) {
             final size = tester.getSize(find.byWidget(item.widget));
             expect(
@@ -225,14 +224,14 @@ void main() {
         debugDefaultTargetPlatformOverride = platform;
         addTearDown(() => debugDefaultTargetPlatformOverride = null);
         for (final variant in [
-          CatchOptionGroupVariant.label,
-          CatchOptionGroupVariant.operational,
+          CatchChoiceInputVariant.label,
+          CatchChoiceInputVariant.operational,
         ]) {
           await _pump(
             tester,
             SizedBox(
               width: 300,
-              child: CatchTabRail<int>(
+              child: CatchPageTabBar<int>(
                 variant: variant,
                 selected: 1,
                 options: const [
@@ -244,15 +243,14 @@ void main() {
             ),
             scale: scale,
           );
-          final rail = find.byType(CatchTabRail<int>);
-          final widget = tester.widget<CatchTabRail<int>>(rail);
+          final rail = find.byType(CatchPageTabBar<int>);
+          final widget = tester.widget<CatchPageTabBar<int>>(rail);
           expect(
             tester.getSize(rail).height,
             widget.preferredSizeFor(tester.element(rail)).height,
           );
           final bounds = tester.getRect(rail);
-          for (final item
-              in find.byType(CatchOptionGroupItem<int>).evaluate()) {
+          for (final item in find.byType(CatchChoiceButton<int>).evaluate()) {
             final rect = tester.getRect(find.byWidget(item.widget));
             expect(
               rect.height,
@@ -286,7 +284,7 @@ void main() {
                   size: CatchButtonSize.sm,
                   onPressed: () {},
                 ),
-                CatchTextButton(
+                CatchButton.text(
                   label: 'Retry saving these changes',
                   onPressed: () {},
                 ),
@@ -317,7 +315,7 @@ void main() {
             copy: catchSearchFieldCopy(AppLocalizationsEn()),
             key: _controlKey,
             tooltip: 'Search',
-            expanded: false,
+            status: CatchSearchFieldStatus.collapsed,
             collapsedExtent: 20,
             onOpenSearch: () => opened = true,
           ),
@@ -346,7 +344,7 @@ void main() {
           ),
           scale: scale,
         );
-        final clear = find.byType(CatchIconButton);
+        final clear = find.byType(CatchIconAction);
         expect(
           tester.getSize(clear).height,
           greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
@@ -418,22 +416,22 @@ void main() {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchIconButton(
+            CatchIconAction(
               size: 20,
               tooltip: 'Left',
-              onTap: () => left++,
+              onPressed: () => left++,
               child: const Icon(Icons.chevron_left),
             ),
-            CatchIconButton(
+            CatchIconAction(
               size: 20,
               tooltip: 'Right',
-              onTap: () => right++,
+              onPressed: () => right++,
               child: const Icon(Icons.chevron_right),
             ),
           ],
         ),
       );
-      final icons = find.byType(CatchIconButton);
+      final icons = find.byType(CatchIconAction);
       final first = tester.getRect(icons.first);
       final second = tester.getRect(icons.last);
       expect(first.right, lessThanOrEqualTo(second.left));
@@ -453,7 +451,7 @@ void main() {
         tester,
         SizedBox(
           width: 300,
-          child: CatchRangeSlider(
+          child: CatchRangeInput(
             values: const RangeValues(20, 80),
             onChanged: (_) {},
           ),
@@ -483,13 +481,15 @@ void main() {
             supportedLocales: AppLocalizations.supportedLocales,
             home: SizedBox(
               width: 320,
-              child: CatchScreenScaffold.workspace(
-                appBar: CatchTopBar(
+              child: CatchScaffold.workspace(
+                title: CatchTopBar(
                   title: 'Workspace',
-                  leadingType: CatchTopBarLeading.none,
+                  navigation: const CatchTopBarNavigation(
+                    mode: CatchTopBarNavigationMode.none,
+                  ),
                   actions: [
                     for (var i = 0; i < 3; i++)
-                      CatchIconAction(
+                      CatchIconAction.toolbar(
                         icon: Icons.add,
                         tooltip: 'Action $i',
                         onPressed: () {},
@@ -501,7 +501,7 @@ void main() {
             ),
           ),
         );
-        for (final item in find.byType(CatchIconButton).evaluate()) {
+        for (final item in find.byType(CatchIconAction).evaluate()) {
           expect(
             tester.getSize(find.byWidget(item.widget)).width,
             greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
@@ -555,7 +555,7 @@ void main() {
         onSelected: (_) {},
       ),
     );
-    final trigger = find.byType(CatchIconButton);
+    final trigger = find.byType(CatchIconAction);
     expect(
       tester.getSize(trigger).height,
       greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
@@ -569,11 +569,11 @@ void main() {
     var calls = 0;
     await _pump(
       tester,
-      CatchCountPill.label(
+      CatchButton.floating(
         key: _controlKey,
         label: 'Filters',
         count: 2,
-        semanticLabel: 'Two filters',
+        semanticsLabel: 'Two filters',
         onPressed: () => calls++,
       ),
       scale: 2,
@@ -601,7 +601,7 @@ void main() {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchOptionGroup<int>(
+            CatchChoiceInput<int>.segmented(
               selected: 0,
               onChanged: (_) {},
               options: const [
@@ -611,7 +611,7 @@ void main() {
             ),
             CatchSearchField.expanding(
               copy: catchSearchFieldCopy(AppLocalizationsEn()),
-              expanded: false,
+              status: CatchSearchFieldStatus.collapsed,
               onOpenSearch: () {},
             ),
           ],
@@ -639,10 +639,10 @@ void main() {
   ) async {
     await _pump(
       tester,
-      CatchIconButton(
+      CatchIconAction(
         size: 20,
         tooltip: 'Open',
-        onTap: () {},
+        onPressed: () {},
         child: const Icon(Icons.add),
       ),
     );
@@ -652,12 +652,12 @@ void main() {
     final visualRect = tester.getRect(find.byType(CatchSurface));
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     await mouse.addPointer(location: const Offset(400, 400));
-    await mouse.moveTo(tester.getCenter(find.byType(CatchIconButton)));
+    await mouse.moveTo(tester.getCenter(find.byType(CatchIconAction)));
     await tester.pump();
     final hovered = fill();
     expect(hovered, isNot(resting));
     expect(tester.getRect(find.byType(CatchSurface)), visualRect);
-    await mouse.down(tester.getCenter(find.byType(CatchIconButton)));
+    await mouse.down(tester.getCenter(find.byType(CatchIconAction)));
     await tester.pump();
     expect(fill(), isNot(hovered));
     await mouse.up();

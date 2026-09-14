@@ -1793,17 +1793,18 @@ const renderSafetyTriageWorkspace = () => (
   </AdminWorkspace>
 );
 
+// Shared preview clock keeps queue ages at their reviewed capture date.
+const installReviewedQueueClock = () => {
+  const realNow = Date.now;
+  Date.now = () => Date.parse("2026-07-14T12:00:00.000Z");
+  return () => {
+    Date.now = realNow;
+  };
+};
+
 export const SafetyTriageRouteStory: Story = {
   name: "Safety",
-  beforeEach: () => {
-    // Keep relative ages at the reviewed baseline date as real time advances.
-    // Restore the clock when Storybook switches to another story.
-    const realNow = Date.now;
-    Date.now = () => Date.parse("2026-07-14T12:00:00.000Z");
-    return () => {
-      Date.now = realNow;
-    };
-  },
+  beforeEach: installReviewedQueueClock,
   parameters: {
     catchComponent: {
       id: "route_safety_triage",
@@ -2174,6 +2175,7 @@ export const AdminActionExecutionsWorkspaceStory: Story = {
 
 export const OverviewRouteStory: Story = {
   name: "Overview",
+  beforeEach: installReviewedQueueClock,
   parameters: {
     catchComponent: {
       id: "route_overview",

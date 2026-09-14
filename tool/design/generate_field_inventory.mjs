@@ -58,6 +58,8 @@ const slotByParameter = Object.freeze({
   leadingUnit: "leading",
   value: "value",
   valueText: "value",
+  metadata: "value",
+  valueLabelBuilder: "value",
   selected: "value",
   initialValue: "value",
   controller: "value",
@@ -65,29 +67,24 @@ const slotByParameter = Object.freeze({
   emptyValueText: "placeholder",
   hintText: "placeholder",
   inputHint: "placeholder",
-  control: "control",
   values: "control",
-  itemLabel: "control",
-  itemTitle: "control",
-  itemDescription: "control",
+  itemLabelBuilder: "control",
+  itemTitleBuilder: "control",
+  itemDescriptionBuilder: "control",
   helperText: "support",
   helperTone: "support",
-  supporting: "support",
+  meta: "support",
   badgeLabel: "badge",
   badgeTone: "badge",
-  action: "action",
-  prefixIcon: "prefix",
   prefixText: "prefix",
-  suffixIcon: "suffix",
+  trailing: "suffix",
   suffixText: "suffix",
-  secondaryAction: "actions",
-  feedback: "feedback",
+  actions: "actions",
   status: "status",
   valid: "status",
-  isLoading: "status",
   error: "error",
   errorText: "error",
-  validator: "error",
+  onValidate: "error",
   onCancel: "actions",
   onSubmit: "actions",
 });
@@ -101,7 +98,6 @@ const slotOrder = Object.freeze([
   "control",
   "support",
   "badge",
-  "action",
   "prefix",
   "suffix",
   "feedback",
@@ -109,6 +105,13 @@ const slotOrder = Object.freeze([
   "error",
   "actions",
 ]);
+
+function fieldSlotForParameter(mode, name) {
+  // The same public slot can have different semantic placement by recipe.
+  if (name === "child") return mode === "inputActions" ? "feedback" : "control";
+  if (name === "leading" && mode === "input") return "prefix";
+  return slotByParameter[name];
+}
 
 const sectionSlotByParameter = Object.freeze({
   title: "title",
@@ -160,7 +163,7 @@ export function extractCatchFieldFacades(source, {useWhen = facadeUseWhen} = {})
       throw new Error(`CatchField.${name} is missing owner-reviewed use-when metadata.`);
     }
     const observedSlots = new Set(
-      parameters.map((parameter) => slotByParameter[parameter.name]).filter(Boolean),
+      parameters.map((parameter) => fieldSlotForParameter(name, parameter.name)).filter(Boolean),
     );
     return {
       facade: `CatchField.${name}`,

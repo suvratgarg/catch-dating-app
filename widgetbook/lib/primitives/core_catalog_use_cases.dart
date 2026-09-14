@@ -8,15 +8,11 @@ import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_sliver.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listener.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_listeners.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_notice_controller.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_notice_host.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_art.dart';
 import 'package:catch_dating_app/core/widgets/catch_activity_map_pin.dart';
@@ -46,6 +42,7 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../preview_layout_contracts.dart';
 import '../support/widgetbook_harness.dart';
+import 'code_input_demo.dart';
 
 const _choices = <_Choice>[
   _Choice('Social run'),
@@ -203,13 +200,13 @@ Widget catchSelectionMenuCatalogStates(BuildContext context) {
           label: 'adaptive single selection',
           description:
               'Uses an anchored picker on wider layouts and a sheet on phones.',
-          child: CatchAdaptiveSelectionControl<String>(
+          child: CatchSelectionMenu<String>.control(
             title: 'Sort customers',
             subtitle: 'Choose how customers are ordered.',
             tooltip: 'Sort customers',
             items: items,
             value: selected,
-            triggerLabel: (item) => 'Sort: ${item.label}',
+            labelBuilder: (item) => 'Sort: ${item.label}',
             onSelected: (value) => setState(() => selected = value),
           ),
         ),
@@ -240,7 +237,7 @@ Widget catchMenuCatalogStates(BuildContext context) {
               sublabel: 'Confirmed attendee view',
               icon: CatchIcons.checkCircle,
               selected: true,
-              role: CatchMenuItemRole.choice,
+              variant: CatchMenuItemVariant.choice,
             ),
             CatchMenuItem(
               value: 'waitlist',
@@ -287,7 +284,7 @@ Widget catchMenuRowCatalogStates(BuildContext context) {
             sublabel: 'Confirmed attendee view',
             icon: CatchIcons.checkCircle,
             selected: true,
-            role: CatchMenuItemRole.choice,
+            variant: CatchMenuItemVariant.choice,
           ),
           onSelected: (value, _) => _ignoreString(value),
         ),
@@ -337,24 +334,24 @@ Widget catchSearchFieldCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchMonoLabel,
+  type: CatchMetadataText,
   path: '[Core catalog]/Typography',
 )
-Widget catchMonoLabelCatalogStates(BuildContext context) {
+Widget catchMetadataTextCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchMonoLabel',
-    catalogId: 'core.widgets.catch_mono_label',
+    title: 'CatchMetadataText',
+    catalogId: 'core.widgets.catch_metadata_text',
     children: [
       _StateCard(
         label: 'metadata labels',
         child: _InlineWrap(
           children: [
-            CatchMonoLabel('6 going', color: t.ink2),
-            CatchMonoLabel('2.4 km away', color: t.primary),
+            CatchMetadataText('6 going', color: t.ink2),
+            CatchMetadataText('2.4 km away', color: t.primary),
             SizedBox(
               width: WidgetbookPreviewLayout.monoLabelTruncationWidth,
-              child: CatchMonoLabel(
+              child: CatchMetadataText(
                 'A very long metadata label',
                 color: t.ink3,
               ),
@@ -368,14 +365,14 @@ Widget catchMonoLabelCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchSectionLabel,
+  type: CatchSectionHeaderTitle,
   path: '[Core catalog]/Typography',
 )
-Widget catchSectionLabelCatalogStates(BuildContext context) {
+Widget catchSectionHeaderTitleCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchSectionLabel',
-    catalogId: 'core.widgets.catch_section_label',
+    title: 'CatchSectionHeaderTitle',
+    catalogId: 'core.widgets.catch_section_header_title',
     children: [
       _StateCard(
         label: 'plain / icon / truncated',
@@ -384,15 +381,15 @@ Widget catchSectionLabelCatalogStates(BuildContext context) {
           gap: CatchSpacing.s3,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const CatchSectionLabel(label: 'How it works'),
-            CatchSectionLabel(
+            const CatchSectionHeaderTitle(label: 'How it works'),
+            CatchSectionHeaderTitle(
               label: 'Social run format',
               icon: CatchIcons.directionsRunRounded,
               accentColor: t.primary,
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.compactControlWidth,
-              child: CatchSectionLabel(
+              child: CatchSectionHeaderTitle(
                 label: 'A very long activity section label',
                 icon: CatchIcons.sparkle,
               ),
@@ -405,31 +402,31 @@ Widget catchSectionLabelCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchTextButton,
+  name: 'Text states',
+  type: CatchButton,
   path: '[Core catalog]/Actions',
 )
 Widget catchTextButtonCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTextButton',
-    catalogId: 'core.widgets.catch_text_button',
+    title: 'CatchButton.text',
+    catalogId: 'core.widgets.catch_button',
     children: [
       _StateCard(
         label: 'tones',
         child: _InlineWrap(
           children: [
-            CatchTextButton(label: 'Retry', onPressed: _noop),
-            CatchTextButton(
+            CatchButton.text(label: 'Retry', onPressed: _noop),
+            CatchButton.text(
               label: 'Cancel',
-              tone: CatchTextButtonTone.neutral,
+              tone: CatchButtonTone.neutral,
               onPressed: _noop,
             ),
-            CatchTextButton(
+            CatchButton.text(
               label: 'Remove',
-              tone: CatchTextButtonTone.danger,
+              tone: CatchButtonTone.danger,
               onPressed: _noop,
             ),
-            const CatchTextButton(label: 'Disabled', onPressed: null),
+            const CatchButton.text(label: 'Disabled', onPressed: null),
           ],
         ),
       ),
@@ -439,22 +436,25 @@ Widget catchTextButtonCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchOtpCodeField,
+  type: CatchCodeInput,
   path: '[Core catalog]/Inputs',
 )
-Widget catchOtpCodeFieldCatalogStates(BuildContext context) {
+Widget catchCodeInputCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchOtpCodeField',
-    catalogId: 'core.widgets.catch_otp_code_field',
+    title: 'CatchCodeInput',
+    catalogId: 'core.widgets.catch_code_input',
     children: const [
-      _StateCard(label: 'editable platform input', child: _OtpCodeFieldDemo()),
+      _StateCard(
+        label: 'editable platform input',
+        child: WidgetbookCodeInputDemo(value: '48'),
+      ),
     ],
   );
 }
 
-Widget catchRangeSliderCatalogStates(BuildContext context) {
+Widget catchRangeInputCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchRangeSlider',
+    title: 'CatchRangeInput',
     catalogId: 'core.widgets.catch_range_slider',
     children: const [
       _StateCard(label: 'interactive', child: _RangeSliderDemo()),
@@ -464,46 +464,46 @@ Widget catchRangeSliderCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchFormFieldLabel,
+  type: CatchFieldLabelText,
   path: '[Core catalog]/Inputs',
 )
-Widget catchFormFieldLabelCatalogStates(BuildContext context) {
+Widget catchFieldLabelTextCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchFormFieldLabel',
-    catalogId: 'core.widgets.catch_form_field_label',
+    title: 'Field labels',
+    catalogId: 'catch.field.form_field_label',
     children: [
       _StateCard(
         label: 'required / optional / error / large',
         child: _InlineWrap(
           children: [
-            CatchFormFieldLabel(
-              copy: catchFormFieldLabelCopy(context.l10n),
+            CatchFieldLabelText(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: 'Name',
             ),
-            CatchFormFieldLabel(
-              copy: catchFormFieldLabelCopy(context.l10n),
+            CatchFieldLabelText(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: 'Note',
-              isOptional: true,
+              mode: CatchFieldLabelTextMode.optional,
             ),
-            CatchFormFieldLabel(
-              copy: catchFormFieldLabelCopy(context.l10n),
+            CatchFieldLabelText(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: 'Activity',
               hasError: true,
             ),
-            CatchFormFieldLabel(
-              copy: catchFormFieldLabelCopy(context.l10n),
+            CatchFieldLabelText(
+              copy: catchFieldLabelTextCopy(context.l10n),
               label: 'Host copy',
-              large: true,
+              size: CatchFieldLabelTextSize.lg,
             ),
           ],
         ),
       ),
       _StateCard(
         label: 'field inline optional suffix',
-        child: CatchFormFieldLabel.inline(
-          copy: catchFormFieldLabelCopy(context.l10n),
+        child: CatchFieldLabelText.inline(
+          copy: catchFieldLabelTextCopy(context.l10n),
           label: 'Religion',
-          isOptional: true,
+          mode: CatchFieldLabelTextMode.optional,
           style: CatchTextStyles.fieldRowTitle(context),
         ),
       ),
@@ -513,29 +513,34 @@ Widget catchFormFieldLabelCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchControlShell,
+  type: CatchControlSurface,
   path: '[Core catalog]/Inputs',
 )
 Widget catchControlShellCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   Widget shell({
     required String label,
-    CatchControlSize size = CatchControlSize.md,
-    CatchControlShape shape = CatchControlShape.rounded,
-    CatchControlTone tone = CatchControlTone.surface,
+    CatchControlSurfaceSize size = CatchControlSurfaceSize.md,
+    CatchControlSurfaceVariant shape = CatchControlSurfaceVariant.rounded,
+    CatchControlSurfaceTone tone = CatchControlSurfaceTone.surface,
     bool enabled = true,
     bool hasError = false,
     bool focused = false,
   }) {
     return SizedBox(
       width: WidgetbookPreviewLayout.controlShellWidth,
-      child: CatchControlShell(
+      child: CatchControlSurface(
+        status: hasError
+            ? CatchControlSurfaceStatus.error
+            : focused
+            ? CatchControlSurfaceStatus.focused
+            : CatchControlSurfaceStatus.resting,
+
         size: size,
-        shape: shape,
+        variant: shape,
         tone: tone,
         enabled: enabled,
-        hasError: hasError,
-        focused: focused,
+
         child: Text(
           label,
           style: CatchTextStyles.fieldLabel(context, color: t.ink),
@@ -545,7 +550,7 @@ Widget catchControlShellCatalogStates(BuildContext context) {
   }
 
   return WidgetbookCatalogFrame(
-    title: 'CatchControlShell',
+    title: 'CatchControlSurface',
     catalogId: 'core.widgets.catch_control_shell',
     children: [
       _StateCard(
@@ -555,9 +560,9 @@ Widget catchControlShellCatalogStates(BuildContext context) {
             shell(label: 'Regular field'),
             shell(
               label: 'Compact pill',
-              size: CatchControlSize.compact,
-              shape: CatchControlShape.pill,
-              tone: CatchControlTone.raised,
+              size: CatchControlSurfaceSize.compact,
+              shape: CatchControlSurfaceVariant.pill,
+              tone: CatchControlSurfaceTone.raised,
             ),
             shell(label: 'Focused', focused: true),
             shell(label: 'Error', hasError: true),
@@ -597,12 +602,12 @@ Widget catchDividerCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchFormReviewBody,
+  type: CatchFormReviewPageBody,
   path: '[Core catalog]/Layout',
 )
 Widget catchFormReviewBodyCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchFormReviewBody',
+    title: 'CatchFormReviewPageBody',
     catalogId: 'core.widgets.catch_form_review_body',
     children: [
       _StateCard(
@@ -612,7 +617,7 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
             WidgetbookPreviewLayout.phoneChromeWidth,
             WidgetbookPreviewLayout.paperScaffoldViewportHeight,
           ),
-          child: CatchFormReviewBody(
+          child: CatchFormReviewPageBody(
             fieldCopy: catchFieldCopy(context.l10n),
             statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
             message: 'Review the event before publishing.',
@@ -624,12 +629,12 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
               CatchFormStepReviewItem(
                 index: 0,
                 title: 'Event basics',
-                status: CatchFormStepStatus.complete,
+                status: CatchFormStepRowListStatus.complete,
               ),
               CatchFormStepReviewItem(
                 index: 1,
                 title: 'Meeting point',
-                status: CatchFormStepStatus.needsInformation,
+                status: CatchFormStepRowListStatus.needsInformation,
               ),
             ],
           ),
@@ -640,14 +645,14 @@ Widget catchFormReviewBodyCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
+  name: 'Page insets',
   type: CatchPageBody,
   path: '[Core catalog]/Layout',
 )
 Widget catchPageBodyCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchPageBody',
-    catalogId: 'core.widgets.catch_page_body',
+    title: 'Page insets',
+    catalogId: 'catch.screen_body',
     children: [
       _StateCard(
         label: 'standard body insets',
@@ -664,14 +669,14 @@ Widget catchPageBodyCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchFormStepBody,
+  name: 'Form step insets',
+  type: CatchPageBody,
   path: '[Core catalog]/Layout',
 )
 Widget catchFormStepBodyCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchFormStepBody',
-    catalogId: 'core.widgets.catch_form_step_body',
+    title: 'Form step insets',
+    catalogId: 'catch.screen_body',
     children: [
       _StateCard(
         label: 'form-step insets',
@@ -679,7 +684,9 @@ Widget catchFormStepBodyCatalogStates(BuildContext context) {
           height: WidgetbookPreviewLayout.insetPreviewHeight,
           child: ColoredBox(
             color: CatchTokens.of(context).raised,
-            child: CatchFormStepBody(child: _textData('Form step content')),
+            child: CatchPageBody.formStep(
+              child: _textData('Form step content'),
+            ),
           ),
         ),
       ),
@@ -688,14 +695,14 @@ Widget catchFormStepBodyCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchSliverPageBody,
+  name: 'Sliver insets',
+  type: CatchPageBody,
   path: '[Core catalog]/Layout',
 )
 Widget catchSliverPageBodyCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchSliverPageBody',
-    catalogId: 'core.widgets.catch_sliver_page_body',
+    title: 'Sliver insets',
+    catalogId: 'catch.screen_body',
     children: [
       _StateCard(
         label: 'sliver-native insets',
@@ -705,8 +712,8 @@ Widget catchSliverPageBodyCatalogStates(BuildContext context) {
             color: CatchTokens.of(context).raised,
             child: CustomScrollView(
               slivers: [
-                CatchSliverPageBody(
-                  sliver: _sliverTextData('Sliver page content'),
+                CatchPageBody.sliver(
+                  child: _sliverTextData('Sliver page content'),
                 ),
               ],
             ),
@@ -719,10 +726,10 @@ Widget catchSliverPageBodyCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchScrollTerminalPadding,
+  type: CatchScrollTerminalGap,
   path: '[Core catalog]/Layout',
 )
-Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
+Widget catchScrollTerminalGapCatalogStates(BuildContext context) {
   const safeBottom = CatchSpacing.s5;
   const previewMediaQuery = MediaQueryData(
     padding: EdgeInsets.only(bottom: safeBottom),
@@ -737,7 +744,7 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
           color: t.primary.withValues(alpha: 0.12),
           child: const SizedBox(
             width: double.infinity,
-            child: CatchScrollTerminalPadding(),
+            child: CatchScrollTerminalGap(),
           ),
         ),
         Positioned.fill(
@@ -773,8 +780,8 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
   }
 
   return WidgetbookCatalogFrame(
-    title: 'CatchScrollTerminalPadding',
-    catalogId: 'catch.scroll_terminal_padding',
+    title: 'Terminal scroll space',
+    catalogId: 'catch.screen_body.scroll_terminal_gap',
     children: [
       _StateCard(
         label: 'floating / anchored / no shell',
@@ -846,17 +853,17 @@ Widget catchScrollTerminalPaddingCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTicketHeroViewport,
+  type: CatchHeroViewport,
   path: '[Core catalog]/Motion',
 )
 Widget catchTicketHeroCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'Ticket hero viewport',
+    title: 'CatchHeroViewport.ticket',
     catalogId: 'core.motion.catch_ticket_hero',
     children: [
       _StateCard(
         label: 'ticket hero wrapper',
-        child: CatchTicketHeroViewport(
+        child: CatchHeroViewport.ticket(
           prefix: 'event',
           id: 'widgetbook-ticket',
           child: CatchSurface.card(
@@ -873,12 +880,12 @@ Widget catchTicketHeroCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchMapRevealViewport,
+  type: CatchRevealViewport,
   path: '[Core catalog]/Motion',
 )
 Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'Map reveal viewport',
+    title: 'CatchRevealViewport.stationary',
     catalogId: 'core.motion.catch_map_reveal_transition',
     children: [
       for (final reducedMotion in [false, true])
@@ -890,7 +897,7 @@ Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
             ).copyWith(disableAnimations: reducedMotion),
             child: SizedBox(
               height: CatchLayout.distanceRingDefaultSize,
-              child: CatchMapRevealViewport(
+              child: CatchRevealViewport.stationary(
                 animation: const AlwaysStoppedAnimation<double>(0.58),
                 child: CatchSurface.card(
                   child: Center(
@@ -911,7 +918,7 @@ Widget catchMapRevealTransitionCatalogStates(BuildContext context) {
 
 Widget catchOptionGroupCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchOptionGroup',
+    title: 'CatchChoiceInput',
     catalogId: 'core.widgets.catch_option_group',
     children: const [
       _StateCard(label: 'label / mono / trailing', child: _OptionGroupDemo()),
@@ -921,26 +928,26 @@ Widget catchOptionGroupCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchChipField,
+  type: CatchChoiceInput,
   path: '[Core catalog]/Selection',
 )
-Widget catchChipFieldCatalogStates(BuildContext context) {
+Widget catchChoiceInputFormCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchChipField',
-    catalogId: 'core.widgets.catch_chip_field',
+    title: 'CatchChoiceInput',
+    catalogId: 'core.widgets.catch_choice_input_form',
     children: const [
       _StateCard(
         label: 'multi-select / single-select',
-        child: _ChipFieldDemo(),
+        child: _ChoiceInputFormDemo(),
       ),
     ],
   );
 }
 
-Widget catchToggleCatalogStates(BuildContext context) {
+Widget catchToggleInputCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchToggle',
-    catalogId: 'core.widgets.catch_toggle',
+    title: 'CatchToggleInput',
+    catalogId: 'core.widgets.catch_toggle_input',
     children: const [
       _StateCard(label: 'on / off / disabled', child: _ToggleDemo()),
     ],
@@ -949,22 +956,22 @@ Widget catchToggleCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchScreenTopBar,
+  type: CatchTopBar,
   path: '[Core catalog]/Navigation',
 )
-Widget catchScreenTopBarCatalogStates(BuildContext context) {
+Widget catchTopBarScreenCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchScreenTopBar',
-    catalogId: 'core.widgets.catch_screen_top_bar',
+    title: 'CatchTopBar',
+    catalogId: 'core.widgets.catch_top_bar_screen',
     children: [
       _StateCard(
         label: 'root title / subtitle / action',
-        child: CatchScreenTopBar(
+        child: CatchTopBar.screen(
           context: context,
           title: 'Chats',
           subtitle: 'Messages from your matches',
           actions: [
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.search,
               tooltip: 'Search chats',
               onPressed: _noop,
@@ -974,9 +981,9 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
       ),
       _StateCard(
         label: 'root search chrome',
-        child: CatchScreenTopBar(
+        child: CatchTopBar.screen(
           context: context,
-          leading: CatchIconAction(
+          leading: CatchIconAction.toolbar(
             icon: CatchIcons.locationOnOutlined,
             tooltip: 'Change city',
             onPressed: _noop,
@@ -996,29 +1003,34 @@ Widget catchScreenTopBarCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchTopBarTabBar,
+  name: 'App-bar placement',
+  type: CatchPageTabBar,
   path: '[Core catalog]/Navigation',
 )
-Widget catchTopBarTabBarCatalogStates(BuildContext context) {
+Widget catchPageTabBarAppBarStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBarTabBar',
-    catalogId: 'core.widgets.catch_top_bar_tab_bar',
+    title: 'CatchPageTabBar',
+    catalogId: 'catch.tab_rail',
     children: [
       _StateCard(
         label: 'inside CatchTopBar',
         child: DefaultTabController(
           length: 3,
-          child: CatchTopBar(
-            title: 'Explore',
-            leadingType: CatchTopBarLeading.none,
-            surface: true,
-            bottom: const CatchTopBarTabBar(
-              tabs: [
-                Tab(text: 'Tonight'),
-                Tab(text: 'Week'),
-                Tab(text: 'Saved'),
-              ],
+          child: Builder(
+            builder: (context) => CatchTopBar(
+              title: 'Explore',
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.none,
+              ),
+              tone: CatchTopBarTone.surface,
+              footer: CatchPageTabBar<int>.controlled(
+                controller: DefaultTabController.of(context),
+                options: const [
+                  CatchOption(value: 0, label: 'Tonight'),
+                  CatchOption(value: 1, label: 'Week'),
+                  CatchOption(value: 2, label: 'Saved'),
+                ],
+              ),
             ),
           ),
         ),
@@ -1028,8 +1040,8 @@ Widget catchTopBarTabBarCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchTopBarMenuAction,
+  name: 'Toolbar actions',
+  type: CatchActionMenu,
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarActionsCatalogStates(BuildContext context) {
@@ -1041,17 +1053,20 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
         label: 'icon / text / menu',
         child: CatchTopBar(
           title: 'Event details',
-          leadingType: CatchTopBarLeading.back,
-          onBack: _noop,
-          surface: true,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+            onPressed: _noop,
+          ),
+
+          tone: CatchTopBarTone.surface,
           actions: [
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.savedOutlined,
               tooltip: 'Save',
               onPressed: _noop,
             ),
-            CatchTopBarTextAction(label: 'Done', onPressed: _noop),
-            CatchTopBarMenuAction<String>(
+            CatchButton.text(label: 'Done', onPressed: _noop),
+            CatchActionMenu<String>(
               tooltip: 'More',
               onSelected: _ignoreString,
               items: const [
@@ -1068,13 +1083,13 @@ Widget catchTopBarActionsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTopBarActionGroup,
+  type: CatchTopBarActionRow,
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBarActionGroup',
-    catalogId: 'core.widgets.catch_top_bar_action_group',
+    title: 'CatchTopBarActionRow',
+    catalogId: 'core.widgets.catch_top_bar_action_row',
     children: [
       _StateCard(
         label: 'two actions / conditional third / disabled',
@@ -1083,14 +1098,14 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CatchTopBarActionGroup(
+            CatchTopBarActionRow(
               actions: [
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.share,
                   tooltip: 'Share',
                   onPressed: _noop,
                 ),
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.savedOutlined,
                   tooltip: 'Save',
                   onPressed: _noop,
@@ -1098,19 +1113,19 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
               ],
             ),
             gapH12,
-            CatchTopBarActionGroup(
+            CatchTopBarActionRow(
               actions: [
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.share,
                   tooltip: 'Share',
                   onPressed: _noop,
                 ),
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.calendarAdd,
                   tooltip: 'Add to calendar',
                   onPressed: _noop,
                 ),
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.savedOutlined,
                   tooltip: 'Save pending',
                   onPressed: null,
@@ -1126,20 +1141,20 @@ Widget catchTopBarActionGroupCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTopBarPrimaryAction,
+  type: CatchTopBarPrimaryButton,
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
   final mediaQuery = MediaQuery.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBarPrimaryAction',
-    catalogId: 'core.widgets.catch_top_bar_primary_action',
+    title: 'CatchTopBarPrimaryButton',
+    catalogId: 'core.widgets.catch_top_bar_primary_button',
     children: [
       _StateCard(
         label: 'compact phone / icon action',
         child: MediaQuery(
           data: mediaQuery.copyWith(size: const Size(390, 844)),
-          child: CatchTopBarPrimaryAction(
+          child: CatchTopBarPrimaryButton(
             label: 'Create event',
             icon: CatchIcons.addRounded,
             onPressed: _noop,
@@ -1150,7 +1165,7 @@ Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
         label: 'medium viewport / labelled action',
         child: MediaQuery(
           data: mediaQuery.copyWith(size: const Size(800, 900)),
-          child: CatchTopBarPrimaryAction(
+          child: CatchTopBarPrimaryButton(
             label: 'Create event',
             icon: CatchIcons.addRounded,
             onPressed: _noop,
@@ -1168,25 +1183,25 @@ Widget catchTopBarPrimaryActionCatalogStates(BuildContext context) {
 )
 Widget catchIconActionCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchIconAction',
+    title: 'CatchIconAction.toolbar',
     catalogId: 'core.widgets.catch_icon_action',
     children: [
       _StateCard(
         label: 'default / plain / disabled',
         child: _InlineWrap(
           children: [
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.savedOutlined,
               tooltip: 'Save',
               onPressed: _noop,
             ),
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.share,
               tooltip: 'Share',
-              variant: CatchIconButtonVariant.plain,
+              variant: CatchIconActionVariant.plain,
               onPressed: _noop,
             ),
-            CatchIconAction(
+            CatchIconAction.toolbar(
               icon: CatchIcons.moreHorizRounded,
               tooltip: 'Disabled',
               onPressed: null,
@@ -1199,27 +1214,27 @@ Widget catchIconActionCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchTopBarTextAction,
+  name: 'Toolbar text states',
+  type: CatchButton,
   path: '[Core catalog]/Navigation',
 )
 Widget catchTopBarTextActionCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchTopBarTextAction',
-    catalogId: 'core.widgets.catch_top_bar_text_action',
+    title: 'CatchButton.text',
+    catalogId: 'core.widgets.catch_button',
     children: [
       _StateCard(
         label: 'primary / neutral / disabled',
         child: _InlineWrap(
           children: [
-            CatchTopBarTextAction(label: 'Done', onPressed: _noop),
-            CatchTopBarTextAction(
+            CatchButton.text(label: 'Done', onPressed: _noop),
+            CatchButton.text(
               label: 'Skip',
               foregroundColor: t.ink2,
               onPressed: _noop,
             ),
-            const CatchTopBarTextAction(label: 'Disabled', onPressed: null),
+            const CatchButton.text(label: 'Disabled', onPressed: null),
           ],
         ),
       ),
@@ -1317,40 +1332,6 @@ Widget catchStepHeaderCatalogStates(BuildContext context) {
   );
 }
 
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchStepProgress,
-  path: '[Core catalog]/Navigation',
-)
-Widget catchStepProgressCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchStepProgress',
-    catalogId: 'core.widgets.catch_step_progress',
-    children: [
-      _StateCard(
-        label: 'counter / unlabeled',
-        child: Column(
-          children: [
-            CatchStepProgress(
-              counterLabelBuilder: (step, total) => '$step/$total',
-              currentStep: 1,
-              totalSteps: 5,
-              label: 'Basics',
-            ),
-            SizedBox(height: CatchSpacing.s4),
-            CatchStepProgress(
-              counterLabelBuilder: (step, total) => '$step/$total',
-              currentStep: 3,
-              totalSteps: 5,
-              showCounter: false,
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
 Widget catchTabDockCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
     title: 'CatchTabBar',
@@ -1363,21 +1344,21 @@ Widget catchTabDockCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchPageDots,
+  type: CatchPageIndicator,
   path: '[Core catalog]/Navigation',
 )
 Widget catchPageDotsCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchPageDots',
+    title: 'CatchPageIndicator',
     catalogId: 'core.widgets.catch_page_dots',
     children: [
       _StateCard(
         label: 'selected positions',
         child: Column(
           children: [
-            CatchPageDots(selectedIndex: 0, itemCount: 4),
+            CatchPageIndicator(selectedIndex: 0, itemCount: 4),
             SizedBox(height: CatchSpacing.s3),
-            CatchPageDots(selectedIndex: 2, itemCount: 4),
+            CatchPageIndicator(selectedIndex: 2, itemCount: 4),
           ],
         ),
       ),
@@ -1387,17 +1368,17 @@ Widget catchPageDotsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchSkeletonList,
+  type: CatchSkeleton,
   path: '[Core catalog]/Loading',
 )
 Widget catchSkeletonListCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchSkeletonList',
+    title: 'CatchSkeleton.cards',
     catalogId: 'core.widgets.catch_skeleton_list',
     children: [
       _StateCard(
         label: 'list',
-        child: CatchSkeletonList(
+        child: CatchSkeleton.cards(
           count: 3,
           height: WidgetbookPreviewLayout.skeletonListItemHeight,
         ),
@@ -1463,19 +1444,19 @@ Widget catchStartupLoadingScreenCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchAsyncValueView,
+  type: CatchAsyncBoundary,
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncValueViewCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchAsyncValueView',
-    catalogId: 'core.widgets.catch_async_value_view',
+    title: 'Async state boundary',
+    catalogId: 'catch.async_value',
     children: [
       _StateCard(
         label: 'data / loading / error',
         child: Column(
           children: [
-            CatchAsyncValueView<String>(
+            CatchAsyncBoundary<String>(
               value: const AsyncValue.data('3 events ready'),
               builder: (context, value) =>
                   CatchSurface.card(child: Text(value)),
@@ -1483,7 +1464,7 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
             gapH12,
             SizedBox(
               height: WidgetbookPreviewLayout.loadingSlotHeight,
-              child: CatchAsyncValueView<String>(
+              child: CatchAsyncBoundary<String>(
                 value: AsyncValue.loading(),
                 builder: (context, value) => _textData(value),
               ),
@@ -1491,7 +1472,7 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
             gapH12,
             SizedBox(
               height: WidgetbookPreviewLayout.stateViewportHeight,
-              child: CatchAsyncValueView<String>(
+              child: CatchAsyncBoundary<String>(
                 value: AsyncValue.error(
                   Exception('Could not load events'),
                   StackTrace.current,
@@ -1508,14 +1489,14 @@ Widget catchAsyncValueViewCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchAsyncValueSliver,
+  name: 'Sliver states',
+  type: CatchAsyncBoundary,
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchAsyncValueSliver',
-    catalogId: 'core.widgets.catch_async_value_sliver',
+    title: 'Sliver async boundary',
+    catalogId: 'catch.async_value',
     children: [
       _StateCard(
         label: 'sliver data / loading / error',
@@ -1523,7 +1504,7 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
           height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CustomScrollView(
             slivers: [
-              CatchAsyncValueSliver<String>(
+              CatchAsyncBoundary<String>.sliver(
                 value: const AsyncValue.data('Sliver data loaded'),
                 builder: (context, value) => SliverToBoxAdapter(
                   child: Padding(
@@ -1532,18 +1513,18 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
                   ),
                 ),
               ),
-              CatchAsyncValueSliver<String>(
+              CatchAsyncBoundary<String>.sliver(
                 value: AsyncValue.loading(),
                 builder: (context, value) => _sliverTextData(value),
               ),
-              CatchAsyncValueSliver<String>(
+              CatchAsyncBoundary<String>.sliver(
                 value: AsyncValue.error(
                   Exception('Could not load sliver list'),
                   StackTrace.current,
                 ),
                 builder: (context, value) => _sliverTextData(value),
                 onRetry: _noop,
-                fillErrorRemaining: false,
+                fillRemaining: false,
               ),
             ],
           ),
@@ -1555,19 +1536,19 @@ Widget catchAsyncValueSliverCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchAsyncScreenLoading,
+  type: CatchScreenSkeleton,
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncScreenLoadingCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchAsyncScreenLoading',
-    catalogId: 'core.widgets.catch_async_screen_loading',
+    title: 'CatchScreenSkeleton',
+    catalogId: 'core.widgets.catch_screen_skeleton',
     children: const [
       _StateCard(
         label: 'screen skeleton',
         child: _PhoneFrame(
           height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchAsyncScreenLoading(
+          child: CatchScreenSkeleton(
             count: 4,
             itemHeight: CatchLayout.skeletonCardCompactHeight,
           ),
@@ -1579,13 +1560,13 @@ Widget catchAsyncScreenLoadingCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchAsyncSliverLoading,
+  type: CatchSliverSkeleton,
   path: '[Core catalog]/Loading',
 )
 Widget catchAsyncSliverLoadingCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchAsyncSliverLoading',
-    catalogId: 'core.widgets.catch_async_sliver_loading',
+    title: 'CatchSliverSkeleton',
+    catalogId: 'core.widgets.catch_sliver_skeleton',
     children: const [
       _StateCard(
         label: 'sliver skeleton',
@@ -1593,7 +1574,7 @@ Widget catchAsyncSliverLoadingCatalogStates(BuildContext context) {
           height: WidgetbookPreviewLayout.startupViewportHeight,
           child: CustomScrollView(
             slivers: [
-              CatchAsyncSliverLoading(
+              CatchSliverSkeleton(
                 count: 4,
                 itemHeight: CatchLayout.skeletonCardCompactHeight,
               ),
@@ -1670,14 +1651,14 @@ Widget catchSliverErrorStateCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
+  name: 'Box optical center',
   type: CatchStateViewport,
   path: '[Core catalog]/Feedback',
 )
 Widget catchStateViewportCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchStateViewport',
-    catalogId: 'core.widgets.catch_state_viewport',
+    title: 'Box state viewport',
+    catalogId: 'catch.empty_state.state_viewport',
     children: [
       _StateCard(
         label: 'box body / floating-shell optical center',
@@ -1702,14 +1683,14 @@ Widget catchStateViewportCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchSliverStateViewport,
+  name: 'Sliver optical center',
+  type: CatchStateViewport,
   path: '[Core catalog]/Feedback',
 )
-Widget catchSliverStateViewportCatalogStates(BuildContext context) {
+Widget catchStateViewportSliverCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchSliverStateViewport',
-    catalogId: 'core.widgets.catch_sliver_state_viewport',
+    title: 'Sliver state viewport',
+    catalogId: 'catch.empty_state.state_viewport',
     children: [
       _StateCard(
         label: 'floating-shell optical center',
@@ -1721,7 +1702,7 @@ Widget catchSliverStateViewportCatalogStates(BuildContext context) {
             bottomBarPlacement: CatchTabViewportScopePlacement.floating,
             child: CustomScrollView(
               slivers: [
-                CatchSliverStateViewport(
+                CatchStateViewport.sliver(
                   child: CatchEmptyState(
                     icon: CatchIcons.calendarTodayOutlined,
                     title: 'No upcoming events',
@@ -1757,7 +1738,7 @@ Widget catchSliverEmptyStateCatalogStates(BuildContext context) {
                 icon: CatchIcons.eventBusyOutlined,
                 title: 'Nothing scheduled',
                 message: 'Create an event to start filling this list.',
-                action: CatchButton(label: 'New event', onPressed: _noop),
+                actions: [CatchButton(label: 'New event', onPressed: _noop)],
               ),
             ],
           ),
@@ -1769,29 +1750,30 @@ Widget catchSliverEmptyStateCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchInlineErrorState,
+  type: CatchErrorState,
   path: '[Core catalog]/Feedback',
 )
 Widget catchInlineErrorStateCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchInlineErrorState',
-    catalogId: 'core.widgets.catch_inline_error_state',
+    title: 'CatchErrorState',
+    catalogId: 'core.widgets.catch_error_state.inline',
     children: [
       _StateCard(
         label: 'regular / compact',
         child: Column(
           children: [
-            CatchInlineErrorState(
+            CatchErrorState(
               retryLabel: context.l10n.sharedActionTryAgain,
               title: 'Could not save',
               message: 'Your changes are still local.',
               onRetry: _noop,
+              mode: CatchErrorStateMode.inline,
             ),
             gapH12,
-            const CatchInlineErrorState(
+            const CatchErrorState(
               title: 'Unavailable',
               message: 'Try again later.',
-              compact: true,
+              mode: CatchErrorStateMode.compact,
             ),
           ],
         ),
@@ -1801,20 +1783,25 @@ Widget catchInlineErrorStateCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchErrorBanner,
+  name: 'Error recipes',
+  type: CatchBanner,
   path: '[Core catalog]/Feedback',
 )
-Widget catchErrorBannerCatalogStates(BuildContext context) {
+Widget catchBannerErrorRecipes(BuildContext context) {
+  final saveMutation = Mutation<void>();
+  final deleteMutation = Mutation<void>();
+
   return WidgetbookCatalogFrame(
-    title: 'Mutation error banner',
-    catalogId: 'core.widgets.catch_error_banner',
+    title: 'Error feedback',
+    catalogId: 'catch.banner',
     children: [
       _StateCard(
         label: 'persistent inline error',
         child: Column(
           children: [
-            const CatchErrorBanner(message: 'Card details could not be saved.'),
+            const CatchBanner.error(
+              message: 'Card details could not be saved.',
+            ),
             CatchLocalizedErrorBanner(
               Exception('Booking failed. Try once more.'),
               onRetry: _noop,
@@ -1822,102 +1809,12 @@ Widget catchErrorBannerCatalogStates(BuildContext context) {
           ],
         ),
       ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMutationErrorBanner,
-  path: '[Core catalog]/Feedback',
-)
-Widget catchMutationErrorBannerCatalogStates(BuildContext context) {
-  final mutation = Mutation<void>();
-  return WidgetbookCatalogFrame(
-    title: 'CatchMutationErrorBanner',
-    catalogId: 'core.widgets.catch_mutation_error_banner',
-    children: [
-      _StateCard(
-        label: 'persistent mutation error',
-        child: Consumer(
-          builder: (context, ref, _) {
-            final state = ref.watch(mutation);
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                CatchButton(
-                  label: 'Simulate failed save',
-                  icon: Icon(CatchIcons.errorOutlineRounded),
-                  onPressed: () => unawaited(
-                    mutation
-                        .run(ref, (_) async => throw StateError('Save failed'))
-                        .catchError((_) {}),
-                  ),
-                ),
-                gapH12,
-                CatchMutationErrorBanner(mutation: state, onRetry: _noop),
-              ],
-            );
-          },
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchInlineMessageSurface,
-  path: '[Core catalog]/Feedback',
-)
-Widget catchInlineMessageSurfaceCatalogStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return WidgetbookCatalogFrame(
-    title: 'CatchInlineMessageSurface',
-    catalogId: 'core.widgets.catch_inline_message_surface',
-    children: [
-      _StateCard(
-        label: 'message / title / action',
-        child: Column(
-          children: [
-            CatchInlineMessageSurface(
-              title: 'Booking pending',
-              message: 'We will confirm your spot after payment settles.',
-              icon: CatchIcons.infoOutlineRounded,
-              iconColor: t.primary,
-              backgroundColor: t.surface,
-              borderColor: t.line,
-              actions: [CatchTextButton(label: 'View', onPressed: _noop)],
-            ),
-            gapH12,
-            CatchInlineMessageSurface(
-              message: 'Host approval is required for this event.',
-              icon: CatchIcons.lockOutlineRounded,
-              iconColor: t.ink2,
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMutationErrorListener,
-  path: '[Core catalog]/Feedback',
-)
-Widget catchMutationErrorListenerCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'Action error snackbar',
-    catalogId: 'core.widgets.catch_mutation_error_listener',
-    children: [
       _StateCard(
         label: 'transient action failure',
         child: Builder(
           builder: (context) => CatchButton(
             label: 'Show action error',
-            icon: Icon(CatchIcons.errorOutlineRounded),
+            leading: Icon(CatchIcons.errorOutlineRounded),
             onPressed: () => showCatchErrorSnackBar(
               context,
               Exception('Share sheet is unavailable right now.'),
@@ -1926,28 +1823,16 @@ Widget catchMutationErrorListenerCatalogStates(BuildContext context) {
           ),
         ),
       ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMutationErrorListeners,
-  path: '[Core catalog]/Feedback',
-)
-Widget catchMutationErrorListenersCatalogStates(BuildContext context) {
-  final saveMutation = Mutation<void>();
-  final deleteMutation = Mutation<void>();
-  return WidgetbookCatalogFrame(
-    title: 'CatchMutationErrorListeners',
-    catalogId: 'core.widgets.catch_mutation_error_listeners',
-    children: [
       _StateCard(
-        label: 'multiple snackbar boundaries',
+        label: 'mutation subscriptions',
         child: Consumer(
-          builder: (context, ref, _) => CatchMutationErrorListeners(
-            mutations: [saveMutation, deleteMutation],
-            child: _InlineWrap(
+          builder: (context, ref, _) {
+            listenToCatchMutationErrors(
+              context,
+              ref,
+              mutations: [saveMutation, deleteMutation],
+            );
+            return _InlineWrap(
               children: [
                 CatchButton(
                   label: 'Fail save',
@@ -1970,8 +1855,8 @@ Widget catchMutationErrorListenersCatalogStates(BuildContext context) {
                   ),
                 ),
               ],
-            ),
-          ),
+            );
+          },
         ),
       ),
     ],
@@ -1980,19 +1865,94 @@ Widget catchMutationErrorListenersCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchFrameworkErrorView,
+  type: CatchLocalizedErrorBanner,
   path: '[Core catalog]/Feedback',
 )
-Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
+Widget catchLocalizedErrorBannerMutationStates(BuildContext context) {
+  final mutation = Mutation<void>();
   return WidgetbookCatalogFrame(
-    title: 'CatchFrameworkErrorView',
-    catalogId: 'core.widgets.catch_framework_error_view',
+    title: 'Mutation error banner',
+    catalogId: 'catch.banner.localized',
+    children: [
+      _StateCard(
+        label: 'mutation state',
+        child: Consumer(
+          builder: (context, ref, _) {
+            final state = ref.watch(mutation);
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                CatchButton(
+                  label: 'Simulate failed save',
+                  leading: Icon(CatchIcons.errorOutlineRounded),
+                  onPressed: () => unawaited(
+                    mutation
+                        .run(ref, (_) async => throw StateError('Save failed'))
+                        .catchError((_) {}),
+                  ),
+                ),
+                gapH12,
+                CatchLocalizedErrorBanner.mutation(
+                  mutation: state,
+                  onRetry: _noop,
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchBanner,
+  path: '[Core catalog]/Feedback',
+)
+Widget catchBannerCatalogStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'CatchBanner',
+    catalogId: 'core.widgets.catch_banner',
+    children: [
+      _StateCard(
+        label: 'message / title / action',
+        child: Column(
+          children: [
+            CatchBanner(
+              title: 'Booking pending',
+              message: 'We will confirm your spot after payment settles.',
+              icon: CatchIcons.infoOutlineRounded,
+              actions: [CatchButton.text(label: 'View', onPressed: _noop)],
+            ),
+            gapH12,
+            CatchBanner(
+              message: 'Host approval is required for this event.',
+              icon: CatchIcons.lockOutlineRounded,
+              tone: CatchBannerTone.neutral,
+            ),
+          ],
+        ),
+      ),
+    ],
+  );
+}
+
+@widgetbook.UseCase(
+  name: 'Catalog states',
+  type: CatchFrameworkErrorState,
+  path: '[Core catalog]/Feedback',
+)
+Widget catchFrameworkErrorStateCatalogStates(BuildContext context) {
+  return WidgetbookCatalogFrame(
+    title: 'Framework error',
+    catalogId: 'catch.error_state.framework_error_view',
     children: [
       _StateCard(
         label: 'user-safe / debug details',
         child: SizedBox(
           height: WidgetbookPreviewLayout.startupViewportHeight,
-          child: CatchFrameworkErrorView(
+          child: CatchFrameworkErrorState(
             copy: catchFrameworkErrorCopy(context.l10n),
             details: FlutterErrorDetails(
               exception: StateError('Widgetbook sample framework failure'),
@@ -2007,24 +1967,24 @@ Widget catchFrameworkErrorViewCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchFrameworkErrorDebugDetails,
+  type: CatchErrorDetailsAccordion,
   path: '[Core catalog]/Feedback',
 )
-Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
+Widget catchErrorDetailsAccordionCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchFrameworkErrorDebugDetails',
-    catalogId: 'core.widgets.catch_framework_error_debug_details',
+    title: 'Error details',
+    catalogId: 'catch.error_state.framework_error_debug_details',
     children: [
       _StateCard(
         label: 'collapsed',
-        child: CatchFrameworkErrorDebugDetails(
+        child: CatchErrorDetailsAccordion(
           label: context.l10n.coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'StateError: Widgetbook sample framework failure',
         ),
       ),
       _StateCard(
         label: 'expanded',
-        child: CatchFrameworkErrorDebugDetails(
+        child: CatchErrorDetailsAccordion(
           label: context.l10n.coreCatchFrameworkErrorViewTextDeveloperDetails,
           details: 'StateError: Widgetbook sample framework failure',
           initiallyExpanded: true,
@@ -2036,19 +1996,19 @@ Widget catchFrameworkErrorDebugDetailsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchNoticeHost,
+  type: CatchNoticeOverlay,
   path: '[Core catalog]/Feedback',
 )
-Widget catchNoticeHostCatalogStates(BuildContext context) {
+Widget catchNoticeOverlayCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchNoticeHost',
-    catalogId: 'core.widgets.catch_notice_host',
+    title: 'Notice overlay',
+    catalogId: 'catch.notice',
     children: [
       _StateCard(
-        label: 'overlay host',
+        label: 'app-level overlay',
         child: SizedBox(
           height: WidgetbookPreviewLayout.stateViewportHeight,
-          child: CatchNoticeHost(
+          child: CatchNoticeOverlay(
             child: CatchSurface.card(
               height: WidgetbookPreviewLayout.mediaPanelHeight,
               child: Center(
@@ -2083,7 +2043,7 @@ Widget catchNoticeQueueCatalogState(BuildContext context) =>
           ],
           child: const SizedBox(
             height: WidgetbookPreviewLayout.stateViewportHeight,
-            child: CatchNoticeHost(child: SizedBox.expand()),
+            child: CatchNoticeOverlay(child: SizedBox.expand()),
           ),
         ),
       ],
@@ -2192,7 +2152,7 @@ class _ArrivalPreviewState extends ConsumerState<_ArrivalPreview> {
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     routerConfig: _router,
-    builder: (context, child) => CatchNoticeHost(
+    builder: (context, child) => CatchNoticeOverlay(
       child: ForegroundNotificationListener(router: _router, child: child!),
     ),
   );
@@ -2200,19 +2160,19 @@ class _ArrivalPreviewState extends ConsumerState<_ArrivalPreview> {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchStatusStripScope,
+  type: CatchBannerStatusScope,
   path: '[Core catalog]/Feedback',
 )
 Widget catchStatusStripScopeCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchStatusStripScope',
+    title: 'CatchBannerStatusScope',
     catalogId: 'core.widgets.catch_status_strip_scope',
     children: [
       SizedBox(
         height: WidgetbookPreviewLayout.stateViewportHeight,
-        child: CatchStatusStripScope(
+        child: CatchBannerStatusScope(
           statuses: [
-            CatchStatusStripData(
+            CatchBannerStatus(
               id: 'offline',
               label: context.l10n.sharedOfflineTitle,
               message: context.l10n.sharedOfflineBody,
@@ -2221,8 +2181,8 @@ Widget catchStatusStripScopeCatalogStates(BuildContext context) {
             ),
           ],
           child: CatchRootScreenScaffold.standard(
-            header: const CatchScreenHeaderTitle.block(title: 'Today'),
-            slivers: const [
+            title: const CatchScreenHeader.block(title: 'Today'),
+            children: const [
               SliverToBoxAdapter(child: Text('Content below status')),
             ],
           ),
@@ -2265,40 +2225,22 @@ Widget catchActivityMapPinCatalogStates(BuildContext context) {
   );
 }
 
-Widget catchDistanceRingCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchDistanceRing',
-    catalogId: 'core.widgets.catch_distance_ring',
-    children: [
-      _StateCard(
-        label: 'ring / tappable label',
-        child: _InlineWrap(
-          children: [
-            const CatchDistanceRing(size: 96),
-            CatchDistanceRing(size: 132, label: '2 km', onTap: _noop),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchDistanceRingLabel,
+  type: CatchDistanceOverlay,
   path: '[Core catalog]/Activity',
 )
-Widget catchDistanceRingLabelCatalogStates(BuildContext context) {
+Widget catchDistanceOverlayLabelCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchDistanceRingLabel',
-    catalogId: 'core.widgets.catch_distance_ring_label',
+    title: 'CatchDistanceOverlay.label',
+    catalogId: 'catch.distance_ring',
     children: [
       _StateCard(
         label: 'resting / tappable',
         child: _InlineWrap(
           children: [
-            const CatchDistanceRingLabel(label: '3 km'),
-            CatchDistanceRingLabel(label: '5 km', onTap: _noop),
+            const CatchDistanceOverlay.label(label: '3 km'),
+            CatchDistanceOverlay.label(label: '5 km', onTap: _noop),
           ],
         ),
       ),
@@ -2308,13 +2250,13 @@ Widget catchDistanceRingLabelCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchDetailHeroBackdrop,
+  type: CatchHeroImage,
   path: '[Core catalog]/Media',
 )
-Widget catchDetailHeroBackdropCatalogStates(BuildContext context) {
+Widget catchHeroImageCatalogStates(BuildContext context) {
   return const WidgetbookCatalogFrame(
-    title: 'CatchDetailHeroBackdrop',
-    catalogId: 'core.widgets.catch_detail_hero_backdrop',
+    title: 'CatchHeroImage',
+    catalogId: 'catch.detail_media',
     children: [
       _StateCard(
         label: 'fallback / no scrim',
@@ -2326,7 +2268,7 @@ Widget catchDetailHeroBackdropCatalogStates(BuildContext context) {
               height: WidgetbookPreviewLayout.compactCardHeight,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(CatchRadius.md)),
-                child: CatchDetailHeroBackdrop(),
+                child: CatchHeroImage(),
               ),
             ),
             SizedBox(
@@ -2334,7 +2276,7 @@ Widget catchDetailHeroBackdropCatalogStates(BuildContext context) {
               height: WidgetbookPreviewLayout.compactCardHeight,
               child: ClipRRect(
                 borderRadius: BorderRadius.all(Radius.circular(CatchRadius.md)),
-                child: CatchDetailHeroBackdrop(showScrim: false),
+                child: CatchHeroImage(showScrim: false),
               ),
             ),
           ],
@@ -2371,7 +2313,7 @@ Widget catchEventThumbnailCatalogStates(BuildContext context) {
                 photoUrl: null,
                 pace: PaceLevel.moderate,
                 activityKind: ActivityKind.dinner,
-                scrim: CatchEventThumbnailScrim.full,
+                scrim: CatchMediaOverlayVariant.full,
               ),
             ),
             _ThumbnailBox(
@@ -2379,7 +2321,7 @@ Widget catchEventThumbnailCatalogStates(BuildContext context) {
                 photoUrl: null,
                 pace: PaceLevel.fast,
                 activityKind: ActivityKind.pickleball,
-                scrim: CatchEventThumbnailScrim.none,
+                scrim: CatchMediaOverlayVariant.none,
               ),
             ),
           ],
@@ -2497,7 +2439,7 @@ Widget catchEventCardCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchTicketPerforatedDivider,
+  type: CatchTicketDivider,
   path: '[Core catalog]/Event cards',
 )
 Widget eventTicketSurfaceCatalogStates(BuildContext context) {
@@ -2510,7 +2452,7 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
         label: 'perforated divider / clipped shape',
         child: Column(
           children: [
-            const CatchTicketPerforatedDivider(),
+            const CatchTicketDivider(),
             gapH16,
             PhysicalShape(
               clipper: const CatchTicketShapeClipper(
@@ -2534,7 +2476,7 @@ Widget eventTicketSurfaceCatalogStates(BuildContext context) {
                         dense: true,
                       ),
                     ),
-                    const CatchTicketPerforatedDivider(),
+                    const CatchTicketDivider(),
                     const Padding(
                       padding: EdgeInsets.all(CatchSpacing.s4),
                       child: Text('Ticket body surface'),
@@ -2894,30 +2836,32 @@ Widget eventDetailMechanismListCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchHostRow,
+  name: 'Contact states',
+  type: CatchPersonRow,
   path: '[Core catalog]/Event detail',
 )
 Widget eventDetailHostCardCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchHostRow',
-    catalogId: 'core.widgets.catch_host_row',
+    title: 'CatchPersonRow.contact',
+    catalogId: 'catch.person_row',
     children: [
       _StateCard(
-        label: 'actions / no stats / dark surface',
+        label: 'actions / identity / color overrides',
         child: _InlineWrap(
           crossAxisAlignment: WrapCrossAlignment.start,
           children: [
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
-              child: CatchHostRow(
+              child: CatchPersonRow.contact(
+                data: const CatchPersonRowData(
+                  name: 'Sunday sea-face crew',
+                  metaLine: 'HOSTING SINCE FEB 2026 - BANDRA',
+                ),
                 colors: ActivityPalette.resolve(
                   context,
                   ActivityKind.socialRun,
                 ).avatarColors,
-                name: 'Sunday sea-face crew',
-                meta: 'HOSTING SINCE FEB 2026 - BANDRA',
                 onMessage: _noop,
                 messageTooltip: 'Message host',
                 onTap: _noop,
@@ -2925,29 +2869,38 @@ Widget eventDetailHostCardCatalogStates(BuildContext context) {
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
-              child: CatchHostRow(
+              child: CatchPersonRow.contact(
+                data: const CatchPersonRowData(
+                  name: 'Catch supper club',
+                  metaLine: 'HOSTING SINCE MAR 2026',
+                ),
                 colors: ActivityPalette.resolve(
                   context,
                   ActivityKind.dinner,
                 ).avatarColors,
-                name: 'Catch supper club',
-                meta: 'HOSTING SINCE MAR 2026',
                 verified: false,
               ),
             ),
             SizedBox(
               width: WidgetbookPreviewLayout.mediaPanelWidth,
-              child: CatchHostRow(
-                colors: ActivityPalette.resolve(
-                  context,
-                  ActivityKind.pickleball,
-                ).avatarColors,
-                name: 'Courtside social',
-                meta: 'HOSTING SINCE JAN 2026 - REPLIES FAST',
-                nameColor: t.primaryInk,
-                metaColor: t.primaryInk.withValues(alpha: 0.72),
-                actionColor: t.primaryInk,
-                onTap: _noop,
+              child: CatchSurface(
+                backgroundColor: t.primary,
+                child: CatchPersonRow.contact(
+                  data: const CatchPersonRowData(
+                    name: 'Courtside social',
+                    metaLine: 'HOSTING SINCE JAN 2026 - REPLIES FAST',
+                  ),
+                  colors: ActivityPalette.resolve(
+                    context,
+                    ActivityKind.pickleball,
+                  ).avatarColors,
+                  nameColor: t.primaryInk,
+                  metaColor: t.primaryInk.withValues(
+                    alpha: CatchOpacity.eventHeroMutedInk,
+                  ),
+                  actionColor: t.primaryInk,
+                  onTap: _noop,
+                ),
               ),
             ),
           ],
@@ -3029,17 +2982,17 @@ Widget eventVisualAtomsCatalogStates(BuildContext context) {
         child: _InlineWrap(
           children: [
             EventActivityStamp(visual: visual),
-            CatchTicketClock(
+            CatchClockIndicator(
               accent: visual.accent,
               time: const TimeOfDay(hour: 18, minute: 30),
               size: 42,
               centerDotRadius: 2,
             ),
-            CatchTicketStatusBadge(label: 'Going', color: visual.accent),
-            CatchTicketStatusBadge(
+            CatchBadge.ticketStatus(label: 'Going', color: visual.accent),
+            CatchBadge.ticketStatus(
               label: 'Full',
               color: visual.accent,
-              tone: CatchTicketStatusBadgeTone.dark,
+              emphasis: CatchBadgeEmphasis.strong,
             ),
           ],
         ),
@@ -3050,38 +3003,38 @@ Widget eventVisualAtomsCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchStatColumn,
+  type: CatchMetricTile,
   path: '[Core catalog]/Data display',
 )
 Widget catchStatColumnCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchStatColumn',
+    title: 'CatchMetricTile',
     catalogId: 'core.widgets.catch_stat_column',
     children: [
       _StateCard(
         label: 'plain / highlighted / centered / surfaced',
         child: _InlineWrap(
           children: [
-            CatchStatColumn(value: '12', label: 'Going'),
-            CatchStatColumn(
+            CatchMetricTile(value: '12', label: 'Going'),
+            CatchMetricTile(
               value: '4',
               label: 'Left',
               highlight: true,
-              monoValue: true,
+              variant: CatchMetricTileVariant.mono,
             ),
-            CatchStatColumn(
+            CatchMetricTile(
               icon: CatchIcons.group,
               value: '86%',
               label: 'Return rate',
               center: true,
             ),
-            CatchStatColumn(
+            CatchMetricTile(
               icon: CatchIcons.confirmationNumberOutlined,
               value: 'Rs 1,200',
               label: 'Base',
               center: true,
-              monoValue: true,
-              surface: true,
+              variant: CatchMetricTileVariant.mono,
+              mode: CatchMetricTileMode.surface,
             ),
           ],
         ),
@@ -3091,20 +3044,20 @@ Widget catchStatColumnCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMetaDotRow,
+  name: 'Group states',
+  type: CatchMetaRow,
   path: '[Core catalog]/Data display',
 )
-Widget catchMetaDotRowCatalogStates(BuildContext context) {
+Widget catchMetaRowGroupStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchMetaDotRow',
+    title: 'CatchMetaRow.group',
     catalogId: 'core.widgets.catch_meta_dot_row',
     children: [
       _StateCard(
         label: 'entries / trailing / truncation',
         child: SizedBox(
           width: WidgetbookPreviewLayout.standardContractWidth,
-          child: CatchMetaDotRow(
+          child: CatchMetaRow.group(
             entries: [
               CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
               CatchMetaEntry(
@@ -3122,20 +3075,20 @@ Widget catchMetaDotRowCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMetaEntryFlow,
+  name: 'Flow states',
+  type: CatchMetaRow,
   path: '[Core catalog]/Data display',
 )
-Widget catchMetaEntryFlowCatalogStates(BuildContext context) {
+Widget catchMetaRowFlowStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchMetaEntryFlow',
+    title: 'CatchMetaRow.flow',
     catalogId: 'core.widgets.catch_meta_dot_row.flow',
     children: [
       _StateCard(
         label: 'entries / truncation',
         child: SizedBox(
           width: WidgetbookPreviewLayout.compactComponentWidth,
-          child: CatchMetaEntryFlow(
+          child: CatchMetaRow.flow(
             entries: [
               CatchMetaEntry(label: 'Tonight', icon: CatchIcons.calendarAdd),
               CatchMetaEntry(
@@ -3152,15 +3105,15 @@ Widget catchMetaEntryFlowCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchMetaEntryView,
+  name: 'Entry states',
+  type: CatchMetaRow,
   path: '[Core catalog]/Data display',
 )
-Widget catchMetaEntryViewCatalogStates(BuildContext context) {
+Widget catchMetaRowEntryStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return WidgetbookCatalogFrame(
-    title: 'CatchMetaEntryView',
+    title: 'CatchMetaRow.entry',
     catalogId: 'core.widgets.catch_meta_dot_row.entry',
     children: [
       _StateCard(
@@ -3168,9 +3121,9 @@ Widget catchMetaEntryViewCatalogStates(BuildContext context) {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CatchMetaEntryView(entry: CatchMetaEntry(label: 'Tonight')),
+            const CatchMetaRow.entry(entry: CatchMetaEntry(label: 'Tonight')),
             const SizedBox(width: CatchSpacing.s4),
-            CatchMetaEntryView(
+            CatchMetaRow.entry(
               entry: CatchMetaEntry(
                 label: 'Bandra',
                 icon: CatchIcons.pinOutlined,
@@ -3178,7 +3131,7 @@ Widget catchMetaEntryViewCatalogStates(BuildContext context) {
               ),
             ),
             const SizedBox(width: CatchSpacing.s4),
-            const CatchMetaEntryView(
+            const CatchMetaRow.entry(
               entry: CatchMetaEntry(label: '2.4 km'),
               isStrong: true,
             ),
@@ -3190,20 +3143,20 @@ Widget catchMetaEntryViewCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchBottomDock,
+  name: 'Utility states',
+  type: CatchDockSurface,
   path: '[Core catalog]/Sheets and footers',
 )
-Widget catchBottomDockCatalogStates(BuildContext context) {
+Widget catchDockUtilityCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchBottomDock',
-    catalogId: 'core.widgets.catch_bottom_dock',
+    title: 'CatchDockSurface',
+    catalogId: 'catch.bottom_action',
     children: [
       _StateCard(
         label: 'safe-area utility dock',
         child: Column(
           children: [
-            CatchBottomDock(
+            CatchDockSurface(
               child: Row(
                 children: [
                   Expanded(
@@ -3213,15 +3166,15 @@ Widget catchBottomDockCatalogStates(BuildContext context) {
                     ),
                   ),
                   gapW12,
-                  CatchIconButton(
-                    onTap: _noop,
+                  CatchIconAction(
+                    onPressed: _noop,
                     child: Icon(CatchIcons.sendRounded),
                   ),
                 ],
               ),
             ),
             gapH12,
-            CatchBottomDock(
+            CatchDockSurface(
               includeSafeArea: false,
               child: CatchButton(
                 label: 'Apply filters',
@@ -3237,31 +3190,31 @@ Widget catchBottomDockCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchBottomAction,
+  name: 'Primary action states',
+  type: CatchDockSurface,
   path: '[Core catalog]/Sheets and footers',
 )
-Widget catchBottomActionCatalogStates(BuildContext context) {
+Widget catchDockPrimaryCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchBottomAction',
-    catalogId: 'core.widgets.catch_bottom_action',
+    title: 'CatchDockSurface.primary',
+    catalogId: 'catch.bottom_action',
     children: [
       _StateCard(
         label: 'platform-adaptive CTA variants',
         child: Column(
           children: [
-            CatchBottomAction(
+            CatchDockSurface.primary(
               label: 'Join event',
               onPressed: _noop,
               catchLine: 'Matching opens after check-in',
               catchLineAccent: t.primary,
             ),
             gapH12,
-            CatchBottomAction(
+            CatchDockSurface.primary(
               label: 'Book spot',
               onPressed: _noop,
-              leadingContent: Column(
+              leading: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('₹799', style: CatchTextStyles.titleL(context)),
@@ -3274,13 +3227,13 @@ Widget catchBottomActionCatalogStates(BuildContext context) {
               footnote: 'Refundable until 24 hours before start.',
             ),
             gapH12,
-            CatchBottomAction(
+            CatchDockSurface.primary(
               label: 'Joining',
               onPressed: _noop,
               isLoading: true,
             ),
             gapH12,
-            const CatchBottomAction(label: 'Sold out', onPressed: null),
+            const CatchDockSurface.primary(label: 'Sold out', onPressed: null),
           ],
         ),
       ),
@@ -3312,26 +3265,29 @@ Widget catchBottomActionCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchBottomActionContent,
+  name: 'Embedded primary action states',
+  type: CatchDockSurface,
   path: '[Core catalog]/Sheets and footers',
 )
-Widget catchBottomActionContentCatalogStates(BuildContext context) {
+Widget catchDockEmbeddedPrimaryCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
   return WidgetbookCatalogFrame(
-    title: 'CatchBottomActionContent',
-    catalogId: 'core.widgets.catch_bottom_action_content',
+    title: 'CatchDockSurface.primaryContent',
+    catalogId: 'catch.bottom_action',
     children: [
       _StateCard(
         label: 'default',
-        child: CatchBottomActionContent(label: 'Join event', onPressed: _noop),
+        child: CatchDockSurface.primaryContent(
+          label: 'Join event',
+          onPressed: _noop,
+        ),
       ),
       _StateCard(
         label: 'leading content / catch line / footnote',
-        child: CatchBottomActionContent(
+        child: CatchDockSurface.primaryContent(
           label: 'Book spot',
           onPressed: _noop,
-          leadingContent: Column(
+          leading: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text('₹799', style: CatchTextStyles.titleL(context)),
@@ -3348,13 +3304,13 @@ Widget catchBottomActionContentCatalogStates(BuildContext context) {
         label: 'loading / disabled',
         child: Column(
           children: [
-            CatchBottomActionContent(
+            CatchDockSurface.primaryContent(
               label: 'Joining',
               onPressed: null,
               isLoading: true,
             ),
             SizedBox(height: CatchSpacing.s3),
-            CatchBottomActionContent(label: 'Sold out', onPressed: null),
+            CatchDockSurface.primaryContent(label: 'Sold out', onPressed: null),
           ],
         ),
       ),
@@ -3364,57 +3320,25 @@ Widget catchBottomActionContentCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchBottomSheetGrabber,
+  type: CatchSheetDragIndicator,
   path: '[Core catalog]/Sheets and footers',
 )
 Widget catchBottomSheetGrabberCatalogStates(BuildContext context) {
   return const WidgetbookCatalogFrame(
-    title: 'CatchBottomSheetGrabber',
+    title: 'CatchSheetDragIndicator',
     catalogId: 'core.widgets.catch_bottom_sheet_grabber',
     children: [
       _StateCard(
         label: 'default / wide',
         child: Column(
           children: [
-            CatchBottomSheetGrabber(),
+            CatchSheetDragIndicator(),
             SizedBox(height: CatchSpacing.s4),
-            CatchBottomSheetGrabber(
+            CatchSheetDragIndicator(
               width: WidgetbookPreviewLayout.catalogSheetGrabberWidth,
               height: WidgetbookPreviewLayout.catalogSheetGrabberHeight,
             ),
           ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchDraggableSheetShell,
-  path: '[Core catalog]/Sheets and footers',
-)
-Widget catchDraggableSheetShellCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchDraggableSheetShell',
-    catalogId: 'core.widgets.catch_draggable_sheet_shell',
-    children: [
-      _StateCard(
-        label: 'persistent shell',
-        child: SizedBox(
-          height: WidgetbookPreviewLayout.routeViewportHeight,
-          child: CatchDraggableSheetShell(
-            child: ListView(
-              padding: const EdgeInsets.all(CatchSpacing.s4),
-              children: const [
-                CatchSurface.card(
-                  child: Text('Persistent map/list sheet content'),
-                ),
-                SizedBox(height: CatchSpacing.s3),
-                CatchSurface.card(child: Text('Second row')),
-              ],
-            ),
-          ),
         ),
       ),
     ],
@@ -3438,12 +3362,12 @@ Widget catchShareCardSheetCatalogStates(BuildContext context) {
           onShare: (_) {},
           buttonLabel: 'Share card',
           footnote: 'Preview rendered through RepaintBoundary.',
-          card: CatchSurface.card(
+          media: CatchSurface.card(
             width: WidgetbookPreviewLayout.compactComponentWidth,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const CatchKicker(label: 'Tonight'),
+                const CatchKickerText(label: 'Tonight'),
                 gapH8,
                 Text('Bandra easy 5K', style: CatchTextStyles.titleL(context)),
                 gapH6,
@@ -3476,7 +3400,7 @@ Widget catchShareCardSheetSharingState(BuildContext context) =>
           footnote: 'Preparing the card for the system share sheet.',
           isSharing: true,
           onShare: (_) {},
-          card: CatchSurface.card(
+          media: CatchSurface.card(
             child: Text('Card preview', style: CatchTextStyles.bodyM(context)),
           ),
         ),
@@ -3485,24 +3409,24 @@ Widget catchShareCardSheetSharingState(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchShareCardFooter,
+  type: CatchAttributionRow,
   path: '[Core catalog]/Sheets and footers',
 )
-Widget catchShareCardFooterCatalogStates(BuildContext context) {
+Widget catchAttributionRowCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchShareCardFooter',
-    catalogId: 'core.widgets.catch_share_card_footer',
+    title: 'CatchAttributionRow',
+    catalogId: 'catch.sheet.share_card_footer',
     children: [
       _StateCard(
         label: 'default',
-        child: CatchShareCardFooter(
+        child: CatchAttributionRow(
           brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
           trailing: 'Curated singles event',
         ),
       ),
       _StateCard(
         label: 'long trailing',
-        child: CatchShareCardFooter(
+        child: CatchAttributionRow(
           brandLabel: context.l10n.coreCatchShareCardFooterTextCatch,
           trailing: 'Hosted by The Longest Possible Club Collective',
         ),
@@ -3512,63 +3436,46 @@ Widget catchShareCardFooterCatalogStates(BuildContext context) {
 }
 
 @widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchHorizontalRail,
+  name: 'Horizontal collection',
+  type: CatchSection,
   path: '[Core catalog]/Sections',
 )
-Widget catchHorizontalRailCatalogStates(BuildContext context) {
+Widget catchSectionHorizontalCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchHorizontalRail',
-    catalogId: 'core.widgets.catch_horizontal_rail',
+    title: 'CatchSection.horizontal',
+    catalogId: 'catch.section',
     children: [
       _StateCard(
         label: 'embedded rail',
-        child: CatchHorizontalRail(
+        child: CatchSection.horizontal(
           title: 'Recommended',
           itemCount: 4,
           height: WidgetbookPreviewLayout.catalogRailHeight,
           itemBuilder: (context, index) => CatchSurface.card(
             width: WidgetbookPreviewLayout.catalogCardWidth,
-            child: Text('Card ${index + 1}'),
+            child: Text(
+              'Card ${index + 1}',
+              style: CatchTextStyles.labelM(context),
+            ),
           ),
-          trailing: CatchButton(label: 'More', onPressed: _noop),
+          footer: CatchButton(label: 'More', onPressed: _noop),
         ),
       ),
       _StateCard(
         label: 'full-bleed rail',
-        child: CatchHorizontalRail(
+        child: CatchSection.horizontal(
           title: 'Recommended',
           itemCount: 4,
           fullBleed: true,
           height: WidgetbookPreviewLayout.catalogRailHeight,
           itemBuilder: (context, index) => CatchSurface.card(
             width: WidgetbookPreviewLayout.catalogCardWidth,
-            child: Text('Card ${index + 1}'),
+            child: Text(
+              'Card ${index + 1}',
+              style: CatchTextStyles.labelM(context),
+            ),
           ),
-          trailing: CatchButton(label: 'More', onPressed: _noop),
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchVerticalSection,
-  path: '[Core catalog]/Sections',
-)
-Widget catchVerticalSectionCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchVerticalSection',
-    catalogId: 'core.widgets.catch_vertical_section',
-    children: [
-      _StateCard(
-        label: 'embedded list',
-        child: CatchVerticalSection(
-          title: 'Today',
-          itemCount: 3,
-          itemBuilder: (context, index) =>
-              CatchSurface.card(child: Text('List item ${index + 1}')),
+          footer: CatchButton(label: 'More', onPressed: _noop),
         ),
       ),
     ],
@@ -3591,7 +3498,7 @@ Widget catchSectionHeaderCatalogStates(BuildContext context) {
           children: [
             CatchSectionHeader(
               title: 'Upcoming events',
-              trailing: CatchTextButton(label: 'See all', onPressed: _noop),
+              trailing: CatchButton.text(label: 'See all', onPressed: _noop),
             ),
             const CatchSectionHeader(
               title: 'Host checklist',
@@ -3660,14 +3567,14 @@ Widget catchDaySectionHeaderCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Catalog states',
-  type: CatchDaySectionHeaderCount,
+  type: CatchCountText,
   path: '[Core catalog]/Sections',
 )
 Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
   return WidgetbookCatalogFrame(
-    title: 'CatchDaySectionHeaderCount',
+    title: 'CatchCountText',
     catalogId: 'core.widgets.catch_day_section_header.count',
     children: [
       _StateCard(
@@ -3675,112 +3582,9 @@ Widget catchDaySectionHeaderCountCatalogStates(BuildContext context) {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CatchDaySectionHeaderCount(count: 3),
+            const CatchCountText(count: 3),
             const SizedBox(width: CatchSpacing.s6),
-            CatchDaySectionHeaderCount(count: 12, color: t.primary),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-Widget catchPersonAvatarCatalogStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  return WidgetbookCatalogFrame(
-    title: 'CatchPersonAvatar',
-    catalogId: 'core.widgets.catch_person_avatar',
-    children: [
-      _StateCard(
-        label: 'fallback / ring / status / obscured / square / count',
-        child: _InlineWrap(
-          children: [
-            const CatchPersonAvatar(size: 48, name: 'Aarav Kapoor'),
-            CatchPersonAvatar(
-              size: 56,
-              name: 'Riya Shah',
-              borderWidth: 3,
-              borderColor: t.primary,
-            ),
-            const CatchPersonAvatar(
-              size: 48,
-              name: 'Maya Patel',
-              showStatusDot: true,
-            ),
-            const CatchPersonAvatar(
-              size: 48,
-              name: 'Hidden Guest',
-              obscured: true,
-            ),
-            const CatchPersonAvatar(
-              size: 48,
-              name: 'Host Team',
-              shape: CatchPersonAvatarShape.square,
-            ),
-            CatchPersonAvatar(
-              size: 48,
-              name: 'Social run',
-              initials: 'SR',
-              colors: ActivityPalette.resolve(
-                context,
-                ActivityKind.socialRun,
-              ).avatarColors,
-            ),
-            CatchPersonAvatar(
-              size: 48,
-              name: 'Dinner',
-              initials: 'DN',
-              colors: ActivityPalette.resolve(
-                context,
-                ActivityKind.dinner,
-              ).avatarColors,
-              dim: true,
-            ),
-            CatchPersonAvatar.count(
-              size: 48,
-              count: 8,
-              countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
-            ),
-          ],
-        ),
-      ),
-    ],
-  );
-}
-
-@widgetbook.UseCase(
-  name: 'Catalog states',
-  type: CatchPersonAvatarStack,
-  path: '[Core catalog]/People',
-)
-Widget catchPersonAvatarStackCatalogStates(BuildContext context) {
-  return WidgetbookCatalogFrame(
-    title: 'CatchPersonAvatarStack',
-    catalogId: 'core.widgets.catch_person_avatar_stack',
-    children: [
-      _StateCard(
-        label: 'stack / veiled / overflow',
-        child: _InlineWrap(
-          children: [
-            CatchPersonAvatarStack(
-              countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
-              items: [
-                CatchPersonAvatarItem(name: 'Aarav Kapoor', initials: 'AK'),
-                CatchPersonAvatarItem(name: 'Riya Shah', initials: 'RS'),
-                CatchPersonAvatarItem(name: 'Maya Patel', initials: 'MP'),
-              ],
-              totalCount: 8,
-            ),
-            CatchPersonAvatarStack(
-              countLabelBuilder: catchAvatarCountLabelBuilder(context.l10n),
-              items: [CatchPersonAvatarItem(name: 'Visible guest')],
-              totalCount: 6,
-              veiledCount: 3,
-              veiledColors: ActivityPalette.resolve(
-                context,
-                ActivityKind.dinner,
-              ).avatarColors,
-            ),
+            CatchCountText(count: 12, color: t.primary),
           ],
         ),
       ),
@@ -4112,8 +3916,8 @@ Widget celebrationNoteCatalogStates(BuildContext context) {
 )
 Widget responsiveBuilderCatalogStates(BuildContext context) {
   return WidgetbookCatalogFrame(
-    title: 'CatchViewport',
-    catalogId: 'core.responsive.responsive_builder',
+    title: 'Viewport layouts',
+    catalogId: 'catch.viewport',
     children: [
       _StateCard(
         label: 'compact / medium / expanded',
@@ -4147,12 +3951,12 @@ Widget responsiveBuilderCatalogStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Local breakpoint',
-  type: CatchViewportBreakpoint,
+  type: CatchViewport,
   path: '[Core catalog]/Layout',
 )
 Widget catchViewportBreakpointCatalogStates(BuildContext context) =>
     WidgetbookCatalogFrame(
-      title: 'CatchViewportBreakpoint',
+      title: 'Local breakpoint',
       catalogId: 'catch.viewport',
       children: [
         for (final width in [319.0, 320.0, 321.0])
@@ -4162,7 +3966,7 @@ Widget catchViewportBreakpointCatalogStates(BuildContext context) =>
               alignment: Alignment.centerLeft,
               child: SizedBox(
                 width: width,
-                child: CatchViewportBreakpoint(
+                child: CatchViewport.atWidth(
                   breakpoint: 320,
                   compactBuilder: (_) => CatchSurface.card(
                     child: Text(
@@ -4185,13 +3989,13 @@ Widget catchViewportBreakpointCatalogStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Local sliver geometry',
-  type: CatchViewportSliver,
+  type: CatchViewport,
   path: '[Core catalog]/Layout',
 )
 Widget catchViewportSliverCatalogStates(
   BuildContext context,
 ) => WidgetbookCatalogFrame(
-  title: 'CatchViewportSliver',
+  title: 'Sliver geometry',
   catalogId: 'catch.viewport',
   children: [
     for (final width in [320.0, 600.0, 840.0])
@@ -4204,7 +4008,7 @@ Widget catchViewportSliverCatalogStates(
             height: 100,
             child: CustomScrollView(
               slivers: [
-                CatchViewportSliver(
+                CatchViewport.sliver(
                   sliverBuilder:
                       (
                         BuildContext context,
@@ -4246,7 +4050,7 @@ class _StateCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchKicker(label: label, color: t.primary),
+          CatchKickerText(label: label, color: t.primary),
           if (description != null) ...[
             gapH6,
             Text(description!, style: CatchTextStyles.supporting(context)),
@@ -4454,39 +4258,6 @@ class _SearchFieldExpansionDemoState extends State<_SearchFieldExpansionDemo> {
   }
 }
 
-class _OtpCodeFieldDemo extends StatefulWidget {
-  const _OtpCodeFieldDemo();
-
-  @override
-  State<_OtpCodeFieldDemo> createState() => _OtpCodeFieldDemoState();
-}
-
-class _OtpCodeFieldDemoState extends State<_OtpCodeFieldDemo> {
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: '48');
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchOtpCodeField(
-      semanticsLabel: context.l10n.coreCatchOtpCodeFieldSemanticLabel,
-      controller: _controller,
-      onChanged: (_) => setState(() {}),
-      onSubmitted: (_) {},
-    );
-  }
-}
-
 class _RangeSliderDemo extends StatefulWidget {
   const _RangeSliderDemo();
 
@@ -4499,7 +4270,7 @@ class _RangeSliderDemoState extends State<_RangeSliderDemo> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchRangeSlider(
+    return CatchRangeInput(
       values: _values,
       min: 18,
       max: 60,
@@ -4507,7 +4278,7 @@ class _RangeSliderDemoState extends State<_RangeSliderDemo> {
       minLabel: '18',
       maxLabel: '60',
       onChanged: (values) => setState(() => _values = values),
-      semanticFormatterCallback: (value) => '${value.round()} years',
+      semanticValueBuilder: (value) => '${value.round()} years',
     );
   }
 }
@@ -4527,7 +4298,7 @@ class _OptionGroupDemoState extends State<_OptionGroupDemo> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CatchOptionGroup<String>(
+        CatchChoiceInput<String>.segmented(
           options: const [
             CatchOption(value: 'tonight', label: 'Tonight'),
             CatchOption(value: 'week', label: 'This week'),
@@ -4538,14 +4309,14 @@ class _OptionGroupDemoState extends State<_OptionGroupDemo> {
           trailing: CatchBadge(label: '12'),
         ),
         gapH16,
-        CatchOptionGroup<String>(
+        CatchChoiceInput<String>.segmented(
           options: const [
             CatchOption(value: 'all', label: 'All'),
             CatchOption(value: 'hosts', label: 'Hosts'),
             CatchOption(value: 'clubs', label: 'Clubs'),
           ],
           selected: _mono,
-          variant: CatchOptionGroupVariant.mono,
+          variant: CatchChoiceInputVariant.mono,
           onChanged: (value) => setState(() => _mono = value),
         ),
       ],
@@ -4553,14 +4324,14 @@ class _OptionGroupDemoState extends State<_OptionGroupDemo> {
   }
 }
 
-class _ChipFieldDemo extends StatefulWidget {
-  const _ChipFieldDemo();
+class _ChoiceInputFormDemo extends StatefulWidget {
+  const _ChoiceInputFormDemo();
 
   @override
-  State<_ChipFieldDemo> createState() => _ChipFieldDemoState();
+  State<_ChoiceInputFormDemo> createState() => _ChoiceInputFormDemoState();
 }
 
-class _ChipFieldDemoState extends State<_ChipFieldDemo> {
+class _ChoiceInputFormDemoState extends State<_ChoiceInputFormDemo> {
   var _multi = <_Choice>{_choices.first};
   var _single = <_Choice>{_choices[1]};
 
@@ -4569,26 +4340,26 @@ class _ChipFieldDemoState extends State<_ChipFieldDemo> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchChipField<_Choice>(
-          copy: catchFormFieldLabelCopy(context.l10n),
-          itemLabel: (value) => value.label,
+        CatchChoiceInput<_Choice>.form(
+          copy: catchFieldLabelTextCopy(context.l10n),
           label: 'Activities',
           values: _choices,
           selected: _multi,
-          multiSelect: true,
           onChanged: (next) => setState(() => _multi = next),
+          mode: CatchChipMode.multiple,
+          itemLabelBuilder: (value) => value.label,
         ),
         gapH16,
-        CatchChipField<_Choice>(
-          copy: catchFormFieldLabelCopy(context.l10n),
-          itemLabel: (value) => value.label,
+        CatchChoiceInput<_Choice>.form(
+          copy: catchFieldLabelTextCopy(context.l10n),
           label: 'One vibe',
           values: _choices,
           selected: _single,
-          multiSelect: false,
           isOptional: true,
-          allowEmptySingleSelection: true,
           onChanged: (next) => setState(() => _single = next),
+          mode: CatchChipMode.single,
+          itemLabelBuilder: (value) => value.label,
+          allowEmptySelection: true,
         ),
       ],
     );
@@ -4610,15 +4381,15 @@ class _ToggleDemoState extends State<_ToggleDemo> {
   Widget build(BuildContext context) {
     return _InlineWrap(
       children: [
-        CatchToggle(
+        CatchToggleInput(
           value: _on,
           onChanged: (value) => setState(() => _on = value),
         ),
-        CatchToggle(
+        CatchToggleInput(
           value: _off,
           onChanged: (value) => setState(() => _off = value),
         ),
-        const CatchToggle(value: true, onChanged: null),
+        const CatchToggleInput(value: true, onChanged: null),
       ],
     );
   }

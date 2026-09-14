@@ -11,7 +11,7 @@ void main() {
         alignment: Alignment.topLeft,
         child: SizedBox(
           width: width,
-          child: CatchViewportBreakpoint(
+          child: CatchViewport.atWidth(
             breakpoint: 320,
             compactBuilder: (_) => const Text('compact'),
             expandedBuilder: (_) => const Text('expanded'),
@@ -41,7 +41,7 @@ void main() {
             height: 300,
             child: CustomScrollView(
               slivers: [
-                CatchViewportSliver(
+                CatchViewport.sliver(
                   sliverBuilder: (context, viewport) => SliverToBoxAdapter(
                     child: Text('${viewport.width.toInt()}'),
                   ),

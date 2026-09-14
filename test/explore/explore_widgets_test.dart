@@ -377,7 +377,7 @@ Finder _field(String label) {
 Finder _fieldChoice(String label, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchFieldChoiceChip &&
+        widget is CatchChip &&
         widget.label == label &&
         (selected == null || widget.selected == selected),
   );
@@ -386,7 +386,7 @@ Finder _fieldChoice(String label, {bool? selected}) {
 Finder _fieldOptionCard(String title, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchOptionCard &&
+        widget is CatchChoiceTile &&
         widget.title == title &&
         (selected == null || widget.selected == selected),
   );

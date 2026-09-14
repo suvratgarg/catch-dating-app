@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/launch_access.feature.json",
   "generatedFor": "2026-08-10",
-  "sourceDigest": "sha256:9144e9203377240a18827da4e9cefe96a2ec7f49cc3c202764df46cefff181cc",
-  "resolvedDigest": "sha256:6c1dbbe1467bfa2c495c3392fd2995724ab2580bfdd1f2e3ad595a3fb78668ce",
+  "sourceDigest": "sha256:bd6746da8d1ba1d695799cbedfb572015b899741fd7bdecdc32f35f1fabc9fba",
+  "resolvedDigest": "sha256:8ac7bd496eedda083677a62908a2b9bd488215121d146313e75fb7ea27527a8e",
   "feature": {
     "id": "feature.launch_access",
     "name": "Launch Access",
@@ -59,10 +59,10 @@
         "componentContracts": [
           "catch.button",
           "catch.empty_state",
-          "catch.error_banner",
+          "catch.banner",
           "catch.error_state",
           "catch.field",
-          "catch.option_group",
+          "catch.chip.field",
           "catch.skeleton",
           "catch.top_bar"
         ],
@@ -871,7 +871,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -887,14 +889,16 @@
             }
           },
           {
-            "id": "catch.error_banner",
+            "id": "catch.banner",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchErrorBanner",
-              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
+              "symbol": "CatchBanner",
+              "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
               "constructors": [
-                "CatchErrorBanner",
-                "CatchErrorBanner.withRetry"
+                "CatchBanner",
+                "CatchBanner.error",
+                "CatchBanner.errorWithRetry",
+                "CatchBanner.statuses"
               ]
             }
           },
@@ -934,13 +938,16 @@
             }
           },
           {
-            "id": "catch.option_group",
-            "kind": "composite",
+            "id": "catch.chip.field",
+            "kind": "primitive",
             "dart": {
-              "symbol": "CatchOptionGroup",
-              "file": "packages/catch_ui/lib/src/components/catch_option_group.dart",
+              "symbol": "CatchChoiceInput",
+              "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",
               "constructors": [
-                "CatchOptionGroup"
+                "CatchChoiceInput",
+                "CatchChoiceInput.described",
+                "CatchChoiceInput.segmented",
+                "CatchChoiceInput.form"
               ]
             }
           },
@@ -956,7 +963,14 @@
                 "CatchSkeleton.text",
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
-                "CatchSkeleton.custom"
+                "CatchSkeleton.custom",
+                "CatchSkeleton.content",
+                "CatchSkeleton.cards",
+                "CatchSkeleton.rows",
+                "CatchSkeleton.boxes",
+                "CatchSkeleton.chips",
+                "CatchSkeleton.mediaRows",
+                "CatchSkeleton.iconRows"
               ]
             }
           },
@@ -967,7 +981,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

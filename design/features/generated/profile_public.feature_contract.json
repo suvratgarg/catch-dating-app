@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/profile_public.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:712743d9c1ca230cfdb52a2366c0bccb239167eee7224eb1d1cc9f394fd79e89",
-  "resolvedDigest": "sha256:c014d6788eabb92e8ac2718900a3156fb55e8f47cfa40d858d50f9f652f16aad",
+  "resolvedDigest": "sha256:f1f88c56375345edfa6a76c886278be0f6156365f16ce67737f35ec748c0c5c8",
   "feature": {
     "id": "feature.profile_public",
     "name": "Public Profile",
@@ -928,7 +928,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -936,12 +938,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },
@@ -954,8 +957,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -966,7 +968,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

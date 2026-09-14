@@ -23,8 +23,8 @@ CatchSelectChip(label: "real");
 });
 
 test("finds generic constructor calls", () => {
-  const source = "CatchChipField<ExampleValue>(values: values);\n";
-  assert.deepEqual(findCallLines(source, "CatchChipField"), [1]);
+  const source = "CatchChoiceInput<ExampleValue>.form(values: values);\n";
+  assert.deepEqual(findCallLines(source, "CatchChoiceInput.form"), [1]);
 });
 
 test("finds named generic constructor calls", () => {

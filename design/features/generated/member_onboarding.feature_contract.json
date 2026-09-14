@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/member_onboarding.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:6ac75dbeefe9632bac57a55502c1787d27578d3401ed5de7b5f1a88a6b577a56",
-  "resolvedDigest": "sha256:84fb514d51b253febdc0ef93df1ac8fe2c3fca0a7ec0d6afde3ecdaa8a54cad5",
+  "sourceDigest": "sha256:6dd188ec35d38b9518f53e6b5a9c07af49b1d16c01ecbd2f062b6ea52cb2dd8d",
+  "resolvedDigest": "sha256:994a43add9c3a38632d6bbf3405ba5152ac2fe3c43ee3e155991ad5421f52f4c",
   "feature": {
     "id": "feature.member_onboarding",
     "name": "Member Onboarding",
@@ -95,7 +95,7 @@
         ],
         "componentContracts": [
           "catch.button",
-          "catch.error_banner",
+          "catch.banner",
           "catch.field",
           "catch.range_slider",
           "catch.section"
@@ -2296,19 +2296,23 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
           {
-            "id": "catch.error_banner",
+            "id": "catch.banner",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchErrorBanner",
-              "file": "packages/catch_ui/lib/src/components/catch_error_banner.dart",
+              "symbol": "CatchBanner",
+              "file": "packages/catch_ui/lib/src/components/catch_banner.dart",
               "constructors": [
-                "CatchErrorBanner",
-                "CatchErrorBanner.withRetry"
+                "CatchBanner",
+                "CatchBanner.error",
+                "CatchBanner.errorWithRetry",
+                "CatchBanner.statuses"
               ]
             }
           },
@@ -2340,10 +2344,10 @@
             "id": "catch.range_slider",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchRangeSlider",
-              "file": "packages/catch_ui/lib/src/components/catch_range_slider.dart",
+              "symbol": "CatchRangeInput",
+              "file": "packages/catch_ui/lib/src/components/catch_range_input.dart",
               "constructors": [
-                "CatchRangeSlider"
+                "CatchRangeInput"
               ]
             }
           },
@@ -2359,7 +2363,8 @@
                 "CatchSection.containedFieldRows",
                 "CatchSection.containedFieldGroups",
                 "CatchSection.contained",
-                "CatchSection.plain"
+                "CatchSection.plain",
+                "CatchSection.horizontal"
               ]
             }
           }
@@ -2795,7 +2800,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -2808,8 +2815,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           }

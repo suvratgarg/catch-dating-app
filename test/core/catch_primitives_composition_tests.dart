@@ -1,16 +1,18 @@
 part of 'catch_primitives_test.dart';
 
 void _registerCatchPrimitivesCompositionTests() {
-  testWidgets('CatchCodeInput renders handoff cells and active caret', (
+  testWidgets('CatchCodeInputRow renders handoff cells and active caret', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchCodeInput(length: 4, value: '12', active: 3, height: 72),
+        const CatchCodeInputRow(length: 4, value: '12', active: 3, height: 72),
       ),
     );
 
-    final tokens = CatchTokens.of(tester.element(find.byType(CatchCodeInput)));
+    final tokens = CatchTokens.of(
+      tester.element(find.byType(CatchCodeInputRow)),
+    );
     final activeCellFinder = find.byKey(const ValueKey('code_digit_3'));
     final activeContainerFinder = find.descendant(
       of: activeCellFinder,
@@ -21,8 +23,8 @@ void _registerCatchPrimitivesCompositionTests() {
     final border = decoration.border! as Border;
 
     expect(find.byType(CatchCodeInputRow), findsOneWidget);
-    expect(find.byType(CatchCodeInputCell), findsNWidgets(4));
-    expect(find.byType(CatchCodeInputCaret), findsOneWidget);
+    expect(find.byType(CatchCodeDigitSurface), findsNWidgets(4));
+    expect(find.byType(CatchCodeCaretIndicator), findsOneWidget);
     expect(find.text('1'), findsOneWidget);
     expect(find.text('2'), findsOneWidget);
     expect(
@@ -38,7 +40,7 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(border.top.width, 1.5);
     expect(
       find.descendant(
-        of: find.byType(CatchCodeInput),
+        of: find.byType(CatchCodeInputRow),
         matching: find.byWidgetPredicate(
           (widget) =>
               widget is SizedBox && widget.width == CatchLayout.otpDigitGap,
@@ -60,12 +62,12 @@ void _registerCatchPrimitivesCompositionTests() {
     );
   });
 
-  testWidgets('CatchRangeSlider hides tick marks while preserving divisions', (
+  testWidgets('CatchRangeInput hides tick marks while preserving divisions', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchRangeSlider(
+        CatchRangeInput(
           values: const RangeValues(18, 60),
           min: 18,
           max: 60,
@@ -91,7 +93,7 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(find.text('60+'), findsOneWidget);
   });
 
-  testWidgets('CatchNumberStepper formats and clamps numeric changes', (
+  testWidgets('CatchStepper formats and clamps numeric changes', (
     tester,
   ) async {
     num value = 170;
@@ -99,13 +101,13 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchNumberStepper(
+          builder: (context, setState) => CatchStepper(
             value: value,
             min: 169,
             max: 171,
-            decreaseTooltip: 'Decrease height',
-            increaseTooltip: 'Increase height',
-            formatValue: (next) => '${next.round()} cm',
+            decreaseSemanticLabel: 'Decrease height',
+            increaseSemanticLabel: 'Increase height',
+            valueLabelBuilder: (next) => '${next.round()} cm',
             onChanged: (next) => setState(() => value = next),
           ),
         ),
@@ -118,17 +120,17 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pump();
     expect(find.text('171 cm'), findsOneWidget);
 
-    final disabledIncrease = tester.widget<IconButton>(
-      find.widgetWithIcon(IconButton, CatchIcons.addRounded),
+    final disabledIncrease = tester.widget<CatchStepperRepeatButton>(
+      find.widgetWithIcon(CatchStepperRepeatButton, CatchIcons.addRounded),
     );
-    expect(disabledIncrease.onPressed, isNull);
+    expect(disabledIncrease.enabled, isFalse);
 
     await tester.tap(find.byTooltip('Decrease height'));
     await tester.pump();
     expect(find.text('170 cm'), findsOneWidget);
   });
 
-  testWidgets('standalone controls share the md minimum height contract', (
+  testWidgets('standalone controls preserve their canonical target heights', (
     tester,
   ) async {
     CityOption? selected;
@@ -146,20 +148,20 @@ void _registerCatchPrimitivesCompositionTests() {
                 title: 'City',
                 values: defaultCityOptions,
                 value: selected,
-                itemLabel: (city) => city.label,
+                itemLabelBuilder: (city) => city.label,
                 hintText: 'Select city',
                 showLabel: false,
                 onChanged: (value) => selected = value,
               ),
               const SizedBox(height: 12),
-              CatchNumberStepper(
-                decreaseTooltip: 'Decrease',
-                increaseTooltip: 'Increase',
+              CatchStepper(
+                decreaseSemanticLabel: 'Decrease',
+                increaseSemanticLabel: 'Increase',
                 key: const Key('control-number-stepper'),
                 value: 60,
                 min: 30,
                 max: 120,
-                formatValue: (value) => '${value.round()} min',
+                valueLabelBuilder: (value) => '${value.round()} min',
                 onChanged: (_) {},
               ),
             ],
@@ -175,7 +177,7 @@ void _registerCatchPrimitivesCompositionTests() {
     );
     expect(
       tester.getSize(find.byKey(const Key('control-number-stepper'))).height,
-      expectedHeight,
+      CatchStepperRepeatButton.hitExtent,
     );
   });
 
@@ -215,31 +217,31 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(removals, 2);
   });
 
-  testWidgets('CatchFormFieldLabel renders optional badge leaf', (
+  testWidgets('CatchFieldLabelText renders optional badge leaf', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchFormFieldLabel(
-          copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
+        CatchFieldLabelText(
+          copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
           label: 'Instagram',
-          isOptional: true,
+          mode: CatchFieldLabelTextMode.optional,
         ),
       ),
     );
 
     expect(find.text('Instagram'), findsOneWidget);
-    expect(find.byType(CatchFormFieldOptionalBadge), findsOneWidget);
+    expect(find.byType(CatchBadge), findsOneWidget);
     expect(find.text('Optional'), findsOneWidget);
   });
 
-  testWidgets('CatchOptionGroup composes public option items', (tester) async {
+  testWidgets('CatchChoiceInput composes public option items', (tester) async {
     var selected = 'all';
 
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchOptionGroup<String>(
+          builder: (context, setState) => CatchChoiceInput<String>.segmented(
             selected: selected,
             onChanged: (value) => setState(() => selected = value),
             options: const [
@@ -252,13 +254,13 @@ void _registerCatchPrimitivesCompositionTests() {
       ),
     );
 
-    expect(find.byType(CatchOptionGroupItem<String>), findsNWidgets(3));
+    expect(find.byType(CatchChoiceButton<String>), findsNWidgets(3));
     await tester.tap(find.text('Saved'));
     await tester.pump();
     expect(selected, 'saved');
   });
 
-  testWidgets('CatchOptionGroup keeps option labels on a stable axis', (
+  testWidgets('CatchChoiceInput keeps option labels on a stable axis', (
     tester,
   ) async {
     var selected = 'first';
@@ -266,7 +268,7 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchOptionGroup<String>(
+          builder: (context, setState) => CatchChoiceInput<String>.segmented(
             selected: selected,
             onChanged: (value) => setState(() => selected = value),
             options: const [
@@ -293,12 +295,12 @@ void _registerCatchPrimitivesCompositionTests() {
     );
   });
 
-  testWidgets('CatchTabRail aligns trailing actions with option labels', (
+  testWidgets('CatchPageTabBar aligns trailing actions with option labels', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchTabRail<String>(
+        CatchPageTabBar<String>(
           selected: 'all',
           options: const [
             CatchOption(value: 'all', label: 'All'),
@@ -319,69 +321,74 @@ void _registerCatchPrimitivesCompositionTests() {
     expect((labelCenter.dy - iconCenter.dy).abs(), lessThan(8));
   });
 
-  testWidgets('operational CatchTabRail keeps labels and actions at 2x text', (
-    tester,
-  ) async {
-    var selected = 'now';
-    final options = [
-      CatchOption(value: 'now', label: 'Now', icon: CatchIcons.scheduleRounded),
-      CatchOption(
-        value: 'guests',
-        label: 'Guests',
-        icon: CatchIcons.groupsOutlined,
-      ),
-      CatchOption(
-        value: 'room',
-        label: 'Room',
-        icon: CatchIcons.gridViewRounded,
-      ),
-    ];
-
-    await tester.pumpWidget(
-      _wrap(
-        CatchTabRail<String>(
-          selected: selected,
-          options: options,
-          variant: CatchOptionGroupVariant.operational,
-          onChanged: (value) => selected = value,
+  testWidgets(
+    'operational CatchPageTabBar keeps labels and actions at 2x text',
+    (tester) async {
+      var selected = 'now';
+      final options = [
+        CatchOption(
+          value: 'now',
+          label: 'Now',
+          icon: CatchIcons.scheduleRounded,
         ),
-      ),
-    );
-    expect(find.byIcon(CatchIcons.gridViewRounded), findsOneWidget);
-    await tester.tap(find.text('Room'));
-    expect(selected, 'room');
-
-    await tester.pumpWidget(
-      _wrap(
-        CatchTabRail<String>(
-          selected: selected,
-          options: options,
-          variant: CatchOptionGroupVariant.operational,
-          onChanged: (value) => selected = value,
+        CatchOption(
+          value: 'guests',
+          label: 'Guests',
+          icon: CatchIcons.groupsOutlined,
         ),
-        textScale: 2,
-      ),
-    );
-    await tester.pump();
-    expect(find.text('Now'), findsOneWidget);
-    expect(find.text('Guests'), findsOneWidget);
-    expect(find.text('Room'), findsOneWidget);
-    expect(find.byIcon(CatchIcons.gridViewRounded), findsNothing);
-    expect(tester.takeException(), isNull);
-  });
+        CatchOption(
+          value: 'room',
+          label: 'Room',
+          icon: CatchIcons.gridViewRounded,
+        ),
+      ];
 
-  testWidgets('CatchOptionGroupItem renders mono uppercase label and tap', (
+      await tester.pumpWidget(
+        _wrap(
+          CatchPageTabBar<String>(
+            selected: selected,
+            options: options,
+            variant: CatchChoiceInputVariant.operational,
+            onChanged: (value) => selected = value,
+          ),
+        ),
+      );
+      expect(find.byIcon(CatchIcons.gridViewRounded), findsOneWidget);
+      await tester.tap(find.text('Room'));
+      expect(selected, 'room');
+
+      await tester.pumpWidget(
+        _wrap(
+          CatchPageTabBar<String>(
+            selected: selected,
+            options: options,
+            variant: CatchChoiceInputVariant.operational,
+            onChanged: (value) => selected = value,
+          ),
+          textScale: 2,
+        ),
+      );
+      await tester.pump();
+      expect(find.text('Now'), findsOneWidget);
+      expect(find.text('Guests'), findsOneWidget);
+      expect(find.text('Room'), findsOneWidget);
+      expect(find.byIcon(CatchIcons.gridViewRounded), findsNothing);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets('CatchChoiceButton renders mono uppercase label and tap', (
     tester,
   ) async {
     var tapped = false;
 
     await tester.pumpWidget(
       _wrap(
-        CatchOptionGroupItem<String>(
+        CatchChoiceButton<String>(
           option: const CatchOption(value: 'mine', label: 'Mine'),
           selected: true,
           selectedRule: Colors.black,
-          variant: CatchOptionGroupVariant.mono,
+          variant: CatchChoiceInputVariant.mono,
           onTap: () => tapped = true,
         ),
       ),
@@ -392,7 +399,7 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(tapped, isTrue);
   });
 
-  testWidgets('CatchChipField single select keeps a selected chip selected', (
+  testWidgets('CatchChoiceInput single select keeps a selected chip selected', (
     tester,
   ) async {
     Set<CityOption> selected = {cityOptionByName('indore')!};
@@ -400,14 +407,14 @@ void _registerCatchPrimitivesCompositionTests() {
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => CatchChipField<CityOption>(
-            copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-            itemLabel: (value) => value.label,
+          builder: (context, setState) => CatchChoiceInput<CityOption>.form(
+            copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
             label: 'City',
             values: defaultCityOptions,
             selected: selected,
-            multiSelect: false,
             onChanged: (next) => setState(() => selected = next),
+            mode: CatchChipMode.single,
+            itemLabelBuilder: (value) => value.label,
           ),
         ),
       ),
@@ -420,23 +427,23 @@ void _registerCatchPrimitivesCompositionTests() {
   });
 
   testWidgets(
-    'CatchChipField optional single select clears a selected chip when enabled',
+    'CatchChoiceInput optional single select clears a selected chip when enabled',
     (tester) async {
       Set<CityOption> selected = {cityOptionByName('indore')!};
 
       await tester.pumpWidget(
         _wrap(
           StatefulBuilder(
-            builder: (context, setState) => CatchChipField<CityOption>(
-              copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-              itemLabel: (value) => value.label,
+            builder: (context, setState) => CatchChoiceInput<CityOption>.form(
+              copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
               label: 'City',
               values: defaultCityOptions,
               selected: selected,
-              multiSelect: false,
               isOptional: true,
-              allowEmptySingleSelection: true,
               onChanged: (next) => setState(() => selected = next),
+              mode: CatchChipMode.single,
+              itemLabelBuilder: (value) => value.label,
+              allowEmptySelection: true,
             ),
           ),
         ),
@@ -450,18 +457,18 @@ void _registerCatchPrimitivesCompositionTests() {
   );
 
   testWidgets(
-    'CatchChipField single select keeps chips inactive when selected is empty',
+    'CatchChoiceInput single select keeps chips inactive when selected is empty',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          CatchChipField<CityOption>(
-            copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-            itemLabel: (value) => value.label,
+          CatchChoiceInput<CityOption>.form(
+            copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
             label: 'City',
             values: defaultCityOptions,
             selected: const {},
-            multiSelect: false,
             onChanged: (_) {},
+            mode: CatchChipMode.single,
+            itemLabelBuilder: (value) => value.label,
           ),
         ),
       );
@@ -474,61 +481,62 @@ void _registerCatchPrimitivesCompositionTests() {
     },
   );
 
-  testWidgets('CatchChipField multi select marks selected chips with a check', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        CatchChipField<CityOption>(
-          copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-          itemLabel: (value) => value.label,
-          label: 'Cities',
-          values: defaultCityOptions.take(2).toList(),
-          selected: {cityOptionByName('mumbai')!},
-          multiSelect: true,
-          onChanged: (_) {},
+  testWidgets(
+    'CatchChoiceInput multi select marks selected chips with a check',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          CatchChoiceInput<CityOption>.form(
+            copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
+            label: 'Cities',
+            values: defaultCityOptions.take(2).toList(),
+            selected: {cityOptionByName('mumbai')!},
+            onChanged: (_) {},
+            mode: CatchChipMode.multiple,
+            itemLabelBuilder: (value) => value.label,
+          ),
         ),
-      ),
-    );
+      );
 
-    final selectedChip = find.widgetWithText(CatchChip, cityLabel('mumbai'));
-    final unselectedChip = find.widgetWithText(CatchChip, cityLabel('delhi'));
+      final selectedChip = find.widgetWithText(CatchChip, cityLabel('mumbai'));
+      final unselectedChip = find.widgetWithText(CatchChip, cityLabel('delhi'));
 
-    expect(_chipSelected(tester, selectedChip), isTrue);
-    expect(
-      find.descendant(
-        of: selectedChip,
-        matching: find.byIcon(CatchIcons.checkRounded),
-      ),
-      findsOneWidget,
-    );
-    expect(_chipSelected(tester, unselectedChip), isFalse);
-    expect(
-      find.descendant(
-        of: unselectedChip,
-        matching: find.byIcon(CatchIcons.checkRounded),
-      ),
-      findsNothing,
-    );
-    expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
-  });
+      expect(_chipSelected(tester, selectedChip), isTrue);
+      expect(
+        find.descendant(
+          of: selectedChip,
+          matching: find.byIcon(CatchIcons.checkRounded),
+        ),
+        findsOneWidget,
+      );
+      expect(_chipSelected(tester, unselectedChip), isFalse);
+      expect(
+        find.descendant(
+          of: unselectedChip,
+          matching: find.byIcon(CatchIcons.checkRounded),
+        ),
+        findsNothing,
+      );
+      expect(find.byIcon(CatchIcons.checkRounded), findsOneWidget);
+    },
+  );
 
   testWidgets(
-    'CatchChipField required multi select keeps the last chip selected',
+    'CatchChoiceInput required multi select keeps the last chip selected',
     (tester) async {
       Set<CityOption> selected = {cityOptionByName('mumbai')!};
 
       await tester.pumpWidget(
         _wrap(
           StatefulBuilder(
-            builder: (context, setState) => CatchChipField<CityOption>(
-              copy: catchFormFieldLabelCopy(AppLocalizationsEn()),
-              itemLabel: (value) => value.label,
+            builder: (context, setState) => CatchChoiceInput<CityOption>.form(
+              copy: catchFieldLabelTextCopy(AppLocalizationsEn()),
               label: 'Cities',
               values: defaultCityOptions.take(2).toList(),
               selected: selected,
-              multiSelect: true,
               onChanged: (next) => setState(() => selected = next),
+              mode: CatchChipMode.multiple,
+              itemLabelBuilder: (value) => value.label,
             ),
           ),
         ),
@@ -615,70 +623,70 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(taps, 1);
   });
 
-  testWidgets(
-    'CatchPersonAvatar renders activity-context initials and dim states',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          Wrap(
-            children: [
-              CatchPersonAvatar(
-                size: 48,
-                name: 'Social run',
-                colors: ActivityPalette.light
-                    .getActivity(ActivityKind.socialRun)
-                    .avatarColors,
-                initials: 'SR',
-                borderWidth: 2,
-              ),
-              CatchPersonAvatar(
-                size: 44,
-                name: 'Pickleball',
-                colors: ActivityPalette.light
-                    .getActivity(ActivityKind.pickleball)
-                    .avatarColors,
-                initials: 'PB',
-                dim: true,
-              ),
-            ],
-          ),
+  testWidgets('CatchAvatar renders activity-context initials and dim states', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        Wrap(
+          children: [
+            CatchAvatar(
+              size: 48,
+              name: 'Social run',
+              colors: ActivityPalette.light
+                  .getActivity(ActivityKind.socialRun)
+                  .avatarColors,
+              initials: 'SR',
+              borderWidth: 2,
+            ),
+            CatchAvatar(
+              size: 44,
+              name: 'Pickleball',
+              colors: ActivityPalette.light
+                  .getActivity(ActivityKind.pickleball)
+                  .avatarColors,
+              initials: 'PB',
+              dim: true,
+            ),
+          ],
         ),
-      );
+      ),
+    );
 
-      expect(find.text('SR'), findsOneWidget);
-      expect(find.text('PB'), findsOneWidget);
-      expect(find.byType(CatchPersonAvatarShell), findsNWidgets(2));
-      expect(find.byType(CatchActivityInitialsPlaceholder), findsNWidgets(2));
-      expect(CatchPersonAvatar.initialsOf('Social run'), 'SR');
-    },
-  );
+    expect(find.text('SR'), findsOneWidget);
+    expect(find.text('PB'), findsOneWidget);
+    expect(find.byType(CatchAvatarViewport), findsNWidgets(4));
+    expect(find.byType(CatchAvatarInitialsSurface), findsNWidgets(2));
+    expect(CatchAvatar.initialsOf('Social run'), 'SR');
+  });
 
-  testWidgets(
-    'CatchPersonAvatar composes obscured initials fallback renderers',
-    (tester) async {
-      await tester.pumpWidget(
-        _wrap(
-          const CatchPersonAvatar(
-            size: 48,
-            name: 'Private guest',
-            obscured: true,
+  testWidgets('CatchAvatar composes obscured initials fallback renderers', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const CatchAvatar(size: 48, name: 'Private guest', obscured: true)),
+    );
+
+    expect(find.text('PG'), findsOneWidget);
+    expect(find.byType(CatchAvatarViewport), findsNWidgets(2));
+    expect(
+      tester
+          .widgetList<CatchAvatarViewport>(find.byType(CatchAvatarViewport))
+          .where(
+            (viewport) => viewport.mode == CatchAvatarViewportMode.obscured,
           ),
-        ),
-      );
-
-      expect(find.text('PG'), findsOneWidget);
-      expect(find.byType(CatchPersonAvatarShell), findsOneWidget);
-      expect(find.byType(CatchObscuredAvatarContent), findsOneWidget);
-      expect(find.byType(CatchInitialsAvatarPlaceholder), findsOneWidget);
-    },
-  );
+      hasLength(1),
+    );
+    expect(find.byType(ImageFiltered), findsOneWidget);
+    expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
+  });
 
   testWidgets(
-    'CatchPersonAvatar keeps activity fallback when a supplied logo fails',
+    'CatchAvatar keeps activity fallback when a supplied logo fails',
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          CatchPersonAvatar(
+          CatchAvatar(
             size: 48,
             name: 'Sea Face Social',
             imageUrl: 'assets/fixtures/does-not-exist.png',
@@ -691,18 +699,25 @@ void _registerCatchPrimitivesCompositionTests() {
       );
       await pumpFeatureUi(tester);
 
-      expect(find.byType(CatchActivityInitialsPlaceholder), findsOneWidget);
-      expect(find.byType(CatchInitialsAvatarPlaceholder), findsNothing);
+      expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
+      expect(
+        tester
+            .widget<CatchAvatarInitialsSurface>(
+              find.byType(CatchAvatarInitialsSurface),
+            )
+            .variant,
+        CatchAvatarInitialsSurfaceVariant.activity,
+      );
       expect(find.text('SF'), findsOneWidget);
     },
   );
 
-  testWidgets('CatchPersonAvatarStack renders initials, veils, and overflow', (
+  testWidgets('CatchAvatarRow renders initials, veils, and overflow', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchPersonAvatarStack(
+        CatchAvatarRow(
           countLabelBuilder: catchAvatarCountLabelBuilder(AppLocalizationsEn()),
           items: const [CatchPersonAvatarItem(name: 'Asha Shah')],
           totalCount: 4,
@@ -718,8 +733,8 @@ void _registerCatchPrimitivesCompositionTests() {
 
     expect(find.text('AS'), findsOneWidget);
     expect(find.byIcon(CatchIcons.personOutlined), findsNWidgets(2));
-    expect(find.byType(CatchVeiledPersonAvatar), findsNWidgets(2));
-    expect(find.byType(CatchInitialsAvatarPlaceholder), findsOneWidget);
+    expect(find.byType(CatchAvatar), findsNWidgets(4));
+    expect(find.byType(CatchAvatarInitialsSurface), findsOneWidget);
     expect(find.text('+1'), findsOneWidget);
   });
 
@@ -741,13 +756,13 @@ void _registerCatchPrimitivesCompositionTests() {
     },
   );
 
-  testWidgets('CatchDistanceRing renders tappable map radius label', (
+  testWidgets('CatchDistanceOverlay renders tappable map radius label', (
     tester,
   ) async {
     var taps = 0;
 
     await tester.pumpWidget(
-      _wrap(CatchDistanceRing(label: 'WITHIN 3 KM', onTap: () => taps++)),
+      _wrap(CatchDistanceOverlay(label: 'WITHIN 3 KM', onTap: () => taps++)),
     );
 
     expect(find.text('WITHIN 3 KM'), findsOneWidget);
@@ -758,13 +773,13 @@ void _registerCatchPrimitivesCompositionTests() {
     expect(taps, 1);
   });
 
-  testWidgets('CatchDistanceRingLabel is reusable over native maps', (
+  testWidgets('CatchDistanceOverlay is reusable over native maps', (
     tester,
   ) async {
     var taps = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchDistanceRingLabel(
+        CatchDistanceOverlay.label(
           label: 'Within 5 km · tap to change',
           onTap: () => taps += 1,
         ),
@@ -809,7 +824,7 @@ void _registerCatchPrimitivesCompositionTests() {
     );
     await tester.pump();
 
-    expect(find.byType(CatchNetworkImageFallback), findsOneWidget);
+    expect(find.byType(CatchImageFallbackSurface), findsOneWidget);
     expect(find.byIcon(CatchIcons.imageOutlined), findsOneWidget);
   });
 }

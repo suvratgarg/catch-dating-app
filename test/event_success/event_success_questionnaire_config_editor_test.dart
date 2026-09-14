@@ -116,7 +116,7 @@ Future<void> _pumpEditor(
 }
 
 void _invokeChoice(WidgetTester tester, String label) {
-  tester.widgetList<CatchOptionCard>(_choice(label)).last.onTap!();
+  tester.widgetList<CatchChoiceTile>(_choice(label)).last.onTap!();
 }
 
 Future<void> _openQuestionSetField(WidgetTester tester) async {
@@ -148,7 +148,7 @@ Finder _field(String title) => find.byWidgetPredicate(
 Finder _choice(String label, {bool? selected}) {
   return find.byWidgetPredicate(
     (widget) =>
-        widget is CatchOptionCard &&
+        widget is CatchChoiceTile &&
         widget.title == label &&
         (selected == null || widget.selected == selected),
   );

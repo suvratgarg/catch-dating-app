@@ -110,7 +110,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
   final result = await showDialog<_ItineraryDialogResult>(
     context: context,
     builder: (dialogContext) => StatefulBuilder(
-      builder: (context, setState) => CatchFormDialog(
+      builder: (context, setState) => CatchDialog(
         title: existing == null
             ? context.l10n.hostsEventItineraryDialogAdd
             : context.l10n.hostsEventItineraryDialogEdit,
@@ -196,7 +196,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                       .createEventCallablePayloadItineraryItemsDurationMinutes,
                   controller: duration,
                   keyboardType: TextInputType.number,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   icon: CatchIcons.timerOutlined,
                 ),
                 CatchField.input(
@@ -207,7 +207,7 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                       .createEventCallablePayloadItineraryItemsDescription,
                   controller: description,
                   maxLines: 3,
-                  isOptional: true,
+                  labelMode: CatchFieldLabelTextMode.optional,
                   icon: CatchIcons.descriptionOutlined,
                 ),
                 CatchField<EventItineraryKind>.choices(
@@ -215,13 +215,13 @@ Future<_ItineraryDialogResult?> _showItineraryDialog(
                   title: context.l10n.hostsEventItineraryFieldKind,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadItineraryItemsKind,
-                  contractValue: (value) =>
+                  contractValueBuilder: (value) =>
                       value == EventItineraryKind.breakTime
                       ? 'break'
                       : value.name,
                   values: EventItineraryKind.values,
                   selected: {kind},
-                  itemLabel: (value) => _kindLabel(context, value),
+                  itemLabelBuilder: (value) => _kindLabel(context, value),
                   onSelectionChanged: (selection) =>
                       setState(() => kind = selection.single),
                 ),
