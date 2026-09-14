@@ -120,6 +120,68 @@ async function participation(h: Awaited<ReturnType<typeof harness>>,
         resumeAtUnit: null}}});
 }
 
+test("handover choices expose only current receiving authority and safe names",
+  async () => {
+    const h = await harness();
+    const before = h.fake.entries();
+    const initial = await view(h);
+    const review = initial.handoverReview!;
+    assert.equal(review.expiresAt, start + 1_800_000);
+    assert.deepEqual(review.receivers.map((r) => r.operatorId).sort(),
+      [manager, easy, fast].sort());
+    const target = review.receivers.find((r) => r.operatorId === fast)!;
+    assert.deepEqual(target, {operatorId: fast, displayName: "Crew",
+      groups: [{groupId: "fast", validUntil: start + 100_000}]});
+    assert.deepEqual(h.fake.entries(), before);
+    await place(h);
+    assert.equal((await view(h, sweep)).handoverReview, undefined);
+    const lead = (await view(h, easy)).handoverReview!;
+    assert.deepEqual(lead.receivers, review.receivers);
+    const fastPath = "eventStaffGrants/" +
+      eventStaffGrantId(h.scope.context.eventId, fast);
+    await h.put(fastPath, {...(await h.read(fastPath)), status: "revoked"});
+    assert.ok(!(await view(h)).handoverReview!.receivers.some((r) =>
+      r.operatorId === fast));
+    // A previously offered receiver is still reauthorized at submission.
+    await assert.rejects(h.store.transfer(easy, command(await view(h, easy),
+      {kind: "propose", from: "easy", to: "fast", receivingOperatorId: fast,
+        expiresAtMillis: start + 10_000})), {code: "permission-denied"});
+    h.clock.now = start + 100_000;
+    assert.deepEqual((await view(h)).handoverReview!.receivers.map((r) =>
+      r.operatorId), [manager]);
+  });
+
+test("handover reviews bound deadlines, overflow and foreign grants",
+  async () => {
+    const h = await harness();
+    h.clock.now = 2_990_000;
+    assert.equal((await view(h)).handoverReview!.expiresAt, 3_000_000);
+    h.clock.now = start;
+    const original = (await h.read("eventStaffGrants/" +
+      eventStaffGrantId(h.scope.context.eventId, fast)))!;
+    await h.put("eventStaffGrants/foreign-document-id", original);
+    await assert.rejects(view(h), {code: "failed-precondition"});
+    const other = await harness();
+    const source = (await other.read("eventStaffGrants/" +
+      eventStaffGrantId(other.scope.context.eventId, fast)))!;
+    for (let i = 0; i < 49; i++) {
+      const uid = "extra-" + i;
+      await other.put("eventStaffGrants/" +
+        eventStaffGrantId(other.scope.context.eventId, uid), {...source, uid});
+    }
+    await assert.rejects(view(other), {code: "failed-precondition"});
+  });
+
+test("changed duties are withheld from receiver choices", async () => {
+  const h = await harness();
+  const event = structuredClone(h.event);
+  event.eventFormat.activityDetails.routePlan.paceGroups[1].label = "Changed";
+  await h.put(h.eventPath, event);
+  const review = (await view(h)).handoverReview!;
+  assert.ok(!review.receivers.some((r) => r.operatorId === fast));
+  assert.ok(review.receivers.some((r) => r.operatorId === easy));
+});
+
 test("placement and acknowledged transfers preserve one group and the roster",
   async () => {
     const h = await harness();

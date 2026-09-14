@@ -389,6 +389,76 @@ const schemaEventAssistanceMembershipCallableResponseSchema = <String, Object?>{
             ],
           },
         },
+        'handoverReview': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'expiresAt',
+            'receivers',
+          ],
+          'properties': <String, Object?>{
+            'expiresAt': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'receivers': <String, Object?>{
+              'type': 'array',
+              'maxItems': 92,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'operatorId',
+                  'displayName',
+                  'groups',
+                ],
+                'properties': <String, Object?>{
+                  'operatorId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                  },
+                  'displayName': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                  'groups': <String, Object?>{
+                    'type': 'array',
+                    'minItems': 1,
+                    'maxItems': 40,
+                    'items': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'groupId',
+                        'validUntil',
+                      ],
+                      'properties': <String, Object?>{
+                        'groupId': <String, Object?>{
+                          'type': 'string',
+                          'minLength': 1,
+                          'maxLength': 160,
+                          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                        },
+                        'validUntil': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 0,
+                          'maximum': 9007199254740991,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          'description': 'Bounded receiving-operator choices for the reviewed guest. Read evidence only; the command rechecks current target authority. Omitted when proposing is unavailable or an older server does not provide this projection.',
+        },
       },
     },
   },

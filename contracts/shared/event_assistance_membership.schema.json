@@ -342,6 +342,10 @@
               "leave"
             ]
           }
+        },
+        "handoverReview": {
+          "$ref": "#/definitions/HandoverReview",
+          "description": "Bounded receiving-operator choices for the reviewed guest. Read evidence only; the command rechecks current target authority. Omitted when proposing is unavailable or an older server does not provide this projection."
         }
       }
     },
@@ -604,6 +608,75 @@
           }
         }
       ]
+    },
+    "HandoverReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "expiresAt",
+        "receivers"
+      ],
+      "properties": {
+        "expiresAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "receivers": {
+          "type": "array",
+          "maxItems": 92,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "operatorId",
+              "displayName",
+              "groups"
+            ],
+            "properties": {
+              "operatorId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 180
+              },
+              "displayName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "groups": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 40,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "groupId",
+                    "validUntil"
+                  ],
+                  "properties": {
+                    "groupId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 160,
+                      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                    },
+                    "validUntil": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

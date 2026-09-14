@@ -74,5 +74,26 @@ export interface EventAssistanceMembershipCallableResponse {
      * @maxItems 6
      */
     actions: ("place" | "propose" | "accept" | "reject" | "cancel" | "leave")[];
+    /**
+     * Bounded receiving-operator choices for the reviewed guest. Read evidence only; the command rechecks current target authority. Omitted when proposing is unavailable or an older server does not provide this projection.
+     */
+    handoverReview?: {
+      expiresAt: number;
+      /**
+       * @maxItems 92
+       */
+      receivers: {
+        operatorId: string;
+        displayName: string | null;
+        /**
+         * @minItems 1
+         * @maxItems 40
+         */
+        groups: {
+          groupId: string;
+          validUntil: number;
+        }[];
+      }[];
+    };
   };
 }

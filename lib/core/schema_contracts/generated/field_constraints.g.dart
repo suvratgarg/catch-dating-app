@@ -18805,6 +18805,63 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const eventAssistanceMembershipCallableResponseViewHandoverReviewExpiresAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.handoverReview.expiresAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewHandoverReviewReceivers = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 92,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsGroups = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.groups',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 40,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsGroupsItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.groups.items.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsGroupsItemsValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.groups.items.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsOperatorId = CatchContractFieldConstraints(
+    path: 'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.operatorId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAssistanceMembershipCallableResponseViewParticipationRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceMembershipCallableResponse.view.participationRevision',
     required: true,
@@ -93304,6 +93361,13 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMembershipCallableResponse.view.groups': eventAssistanceMembershipCallableResponseViewGroups,
     'eventAssistanceMembershipCallableResponse.view.groups.items.groupId': eventAssistanceMembershipCallableResponseViewGroupsItemsGroupId,
     'eventAssistanceMembershipCallableResponse.view.groups.items.label': eventAssistanceMembershipCallableResponseViewGroupsItemsLabel,
+    'eventAssistanceMembershipCallableResponse.view.handoverReview.expiresAt': eventAssistanceMembershipCallableResponseViewHandoverReviewExpiresAt,
+    'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers': eventAssistanceMembershipCallableResponseViewHandoverReviewReceivers,
+    'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.displayName': eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsDisplayName,
+    'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.groups': eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsGroups,
+    'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.groups.items.groupId': eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsGroupsItemsGroupId,
+    'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.groups.items.validUntil': eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsGroupsItemsValidUntil,
+    'eventAssistanceMembershipCallableResponse.view.handoverReview.receivers.items.operatorId': eventAssistanceMembershipCallableResponseViewHandoverReviewReceiversItemsOperatorId,
     'eventAssistanceMembershipCallableResponse.view.participationRevision': eventAssistanceMembershipCallableResponseViewParticipationRevision,
     'eventAssistanceMembershipCallableResponse.view.ready': eventAssistanceMembershipCallableResponseViewReady,
     'eventAssistanceMembershipCallableResponse.view.revision': eventAssistanceMembershipCallableResponseViewRevision,

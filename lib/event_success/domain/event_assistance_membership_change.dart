@@ -54,6 +54,17 @@ final class EventAssistanceMembershipChange {
   }) {
     assistanceId(operationId);
     validateAssistanceMembershipDecision(snapshot.facts, decision, actorUid);
+    if (decision case AssistanceProposeGroup(
+      :final groupId,
+      :final receivingOperatorId,
+      :final expiresAt,
+    )) {
+      snapshot.handoverReview?.requireChoice(
+        operatorId: receivingOperatorId,
+        groupId: groupId,
+        expiresAt: expiresAt,
+      );
+    }
   }
   final EventAssistanceMembershipView snapshot;
   final AssistanceMembershipDecision decision;

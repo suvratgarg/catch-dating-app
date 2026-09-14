@@ -1600,6 +1600,22 @@ cannot accept on another operator's behalf. Pending transfers retain the origina
 accepted group and responsible operator. Reject, cancel and timeout never move a
 guest. A pending initial assignment cannot be bypassed by direct placement.
 
+Live membership reads now include an optional `handoverReview` when proposing is
+available. It supplies current organizer managers and named event staff with
+receiving authority for each saved group. The projection exposes no phone numbers,
+private grant details or expanded guest roster. Each group choice carries its own
+authority deadline, capped by the event end and the 30-minute handover window.
+Expired, revoked, stale-source and sweep-only duties cannot supply a receiving
+choice. The read verifies source-guest access before the bounded staff query and
+rechecks time and access afterward. It reads one overflow witness beyond the
+50-active-staff limit and rejects incomplete or malformed coverage rather than
+claiming a partial directory is complete. The writer independently reauthorizes
+the named receiver; a previously offered choice grants no lasting permission.
+Native readers retain immutable receiver choices, validate their group/deadline
+bounds, and accept older responses without this optional projection. New proposals
+assembled against this projection cannot substitute an unoffered receiver, group
+or later deadline. This is review evidence, not a membership change or a message.
+
 The pending/closed transfer records are correlated schema unions. Closed records
 require a resolving actor and time; pending records require both to be null.
 Acceptance replaces the single accepted membership atomically. There is no interval

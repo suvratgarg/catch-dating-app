@@ -26,7 +26,8 @@ export function membershipActions(s: MembershipState): View["actions"] {
   return availableMembershipActions(decisionReview(s));
 }
 export function membershipResponse(outcome: Response["outcome"],
-  s: MembershipState, operationRevision: number | null = null): Response {
+  s: MembershipState, operationRevision: number | null = null,
+  handoverReview?: View["handoverReview"]): Response {
   const value: Response = {outcome, operationRevision, view: {
     ...s.scope, sourceHash: s.sourceHash, serverTime: s.now,
     revision: s.membership?.revision ?? 0,
@@ -37,7 +38,8 @@ export function membershipResponse(outcome: Response["outcome"],
     accepted: s.membership?.accepted ?? null,
     transfer: s.membership?.transfer ?? null, transferState: transferState(s),
     groups: s.groups.map(({groupId, label}) => ({groupId, label})),
-    actions: membershipActions(s)}};
+    actions: membershipActions(s),
+    ...(handoverReview === undefined ? {} : {handoverReview})}};
   if (!validateEventAssistanceMembershipCallableResponse(value)) {
     throw invalidSource();
   }

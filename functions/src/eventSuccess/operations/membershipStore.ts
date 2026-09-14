@@ -16,6 +16,7 @@ import {MEMBERSHIPS, MEMBERSHIP_RECEIPTS, readMembership,
   "./membershipReader";
 import {membershipResponse, transitionMembership, membershipConflict} from
   "./membershipTransitions";
+import {readMembershipReceivers} from "./membershipReceivers";
 
 export class EventMembershipStore {
   constructor(private readonly db: Firestore,
@@ -30,7 +31,9 @@ export class EventMembershipStore {
       const state = await readMembership(this.db, tx, input, actorUid,
         this.clock);
       if (!canReadMembership(state)) throw membershipDenied();
-      return membershipResponse("read", state);
+      const handoverReview = await readMembershipReceivers(this.db, tx,
+        state, this.clock);
+      return membershipResponse("read", state, null, handoverReview);
     });
   }
 

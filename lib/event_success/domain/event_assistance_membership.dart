@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_success/domain/event_assistance_membership_receivers.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
 
@@ -242,9 +243,14 @@ final class AssistanceMembershipFacts {
 }
 
 final class EventAssistanceMembershipView {
-  const EventAssistanceMembershipView._(this.scope, this.facts);
+  const EventAssistanceMembershipView._(
+    this.scope,
+    this.facts,
+    this.handoverReview,
+  );
   final EventAssistanceGuestScope scope;
   final AssistanceMembershipFacts facts;
+  final AssistanceMembershipHandoverReview? handoverReview;
   String get sourceHash => facts.sourceHash;
   int get serverTime => facts.serverTime;
   int get participationRevision => facts.participationRevision;
@@ -264,6 +270,8 @@ final class EventAssistanceMembershipView {
     final map = assistanceObject(value, {
       'context',
       'attendeeId',
+      if (assistanceObject(value).containsKey('handoverReview'))
+        'handoverReview',
       'sourceHash',
       'serverTime',
       'revision',
@@ -288,13 +296,22 @@ final class EventAssistanceMembershipView {
         map['attendeeId'] != expectedScope.attendeeId) {
       throw const FormatException('Group membership scope mismatch.');
     }
+    final facts = AssistanceMembershipFacts.fromJson({
+      for (final entry in map.entries)
+        if (entry.key != 'context' &&
+            entry.key != 'attendeeId' &&
+            entry.key != 'handoverReview')
+          entry.key: entry.value,
+    });
     return EventAssistanceMembershipView._(
       expectedScope,
-      AssistanceMembershipFacts.fromJson({
-        for (final entry in map.entries)
-          if (entry.key != 'context' && entry.key != 'attendeeId')
-            entry.key: entry.value,
-      }),
+      facts,
+      !map.containsKey('handoverReview')
+          ? null
+          : AssistanceMembershipHandoverReview.fromJson(
+              map['handoverReview'],
+              facts: facts,
+            ),
     );
   }
 }
