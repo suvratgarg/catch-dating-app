@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.65.2
+version: 1.65.3
 updated: 2026-09-15
 owner: app_architecture
 status: active
@@ -3333,6 +3333,7 @@ Reference files:
 
 - `functions/src/communications/organizerCommunicationPlan.ts`
 - `functions/src/organizers/organizerCommunicationPlans.ts`
+- `lib/hosts/domain/crm/host_communication_plan.dart`
 - `lib/hosts/data/host_crm_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_cards.dart`
@@ -3390,6 +3391,7 @@ Reference files:
 
 - `contracts/firestore/organizer_manual_send_tasks.schema.json`
 - `functions/src/organizers/organizerManualSendTasks.ts`
+- `lib/hosts/domain/crm/host_manual_send_task.dart`
 - `lib/hosts/data/host_crm_repository.dart`
 - `lib/hosts/presentation/customers/host_customer_detail_screen.dart`
 - `lib/hosts/presentation/inbox/host_manual_send_queue.dart`
@@ -3453,6 +3455,7 @@ Reference files:
 - `contracts/firestore/organizer_saved_audiences.schema.json`
 - `functions/src/organizers/organizerSavedAudiences.ts`
 - `functions/src/organizers/organizerCampaigns.ts`
+- `lib/hosts/domain/crm/host_saved_audience.dart`
 - `lib/hosts/data/host_crm_repository.dart`
 - `lib/hosts/presentation/customers/host_customers_screen.dart`
 - `lib/hosts/presentation/customers/host_saved_audiences_workspace.dart`
