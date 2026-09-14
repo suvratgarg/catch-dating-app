@@ -135,9 +135,7 @@ export function preparePracticeSettings(sessionId: string, session: Session,
         configuration.responseDeadline > endAt) ||
       review.groups.some((g) => g.status === "configured" &&
         g.effective?.config.unanswered === "hostReviewAtDeadline") &&
-        configuration.responseDeadline === null ||
-      configuration.deliveryPolicy.maxAttemptsPerRoute >
-        configuration.deliveryPolicy.maxAttempts) {
+        configuration.responseDeadline === null) {
     throw invalid("Review the practice timing and delivery limits.");
   }
   const choices = configuration.laterChoices ?? [];

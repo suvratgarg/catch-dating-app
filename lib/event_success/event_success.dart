@@ -34,8 +34,12 @@ export 'presentation/event_assistance_group_staff_copy.dart'; // public-api: sha
 export 'presentation/event_assistance_help_decision_section.dart'; // public-api: shared live and rehearsal practical help decisions
 export 'presentation/event_assistance_help_entry.dart'; // public-api: shared live and rehearsal practical help entry
 export 'presentation/event_assistance_help_queue_section.dart'; // public-api: shared live and rehearsal practical help records
+export 'presentation/event_assistance_late_join_section.dart'; // public-api: shared live and rehearsal rule controls
 export 'presentation/event_assistance_membership_section.dart'; // public-api: shared live and rehearsal group responsibility controls
 export 'presentation/event_assistance_movement_section.dart'; // public-api: shared live and rehearsal group movement entry
+export 'presentation/event_assistance_runtime_copy.dart'
+    show runtimeRouteLabel; // public-api: shared channel labels
+export 'presentation/event_assistance_runtime_limits.dart'; // public-api: shared value controls without sender authority
 export 'presentation/event_assistance_sweep_section.dart'; // public-api: shared live and rehearsal sweep roster
 export 'presentation/event_assistance_visit_section.dart'; // public-api: shared live and rehearsal visit observation controls
 export 'presentation/event_sender_preference_controller.dart'; // public-api: verified participant WhatsApp and RCS sender navigation and consent state

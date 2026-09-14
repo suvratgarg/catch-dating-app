@@ -21,7 +21,6 @@ final class RehearsalRuntimeConfiguration {
     if (routes.isEmpty ||
         routes.length > 3 ||
         routes.toSet().length != routes.length ||
-        deliveryPolicy.maxAttemptsPerRoute > deliveryPolicy.maxAttempts ||
         laterChoices != null &&
             (laterChoices.length > 17 ||
                 laterChoices.map((c) => c.target).toSet().length !=

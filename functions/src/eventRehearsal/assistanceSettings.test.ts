@@ -213,3 +213,20 @@ test("event edits never replace an individual delivery takeover", () => {
   assert.deepEqual(after.actor.assistanceAutomation?.evaluation?.delivery,
     {kind: "stop", reason: "hostStopped"});
 });
+
+test("overall attempts cap larger per-channel limits", () => {
+  const h = harness(); const command = configure(h);
+  command.configuration.deliveryPolicy.maxAttempts = 1;
+  command.configuration.deliveryPolicy.maxAttemptsPerRoute = 3;
+  save(h, command); save(h, rule(h));
+  const sent = evaluatePracticeAutomation(h.session, h.actors[0], [],
+    departed(h));
+  assert.equal(sent.messages[0].record.attempts.length, 1);
+  assert.equal(sent.actor.assistanceAutomation?.plan.deliveryPolicy.maxAttempts,
+    1);
+  h.session.virtualNow = Timestamp.fromMillis(
+    h.session.virtualNow.toMillis() + 60000);
+  const again = evaluatePracticeAutomation(h.session, sent.actor,
+    sent.messages, departed(h));
+  assert.equal(again.messages[0].record.attempts.length, 1);
+});

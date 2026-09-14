@@ -46,6 +46,7 @@ flutter:
   assets:
     - assets/branding/catch_icon.png
     - assets/fixtures/club_hero_portrait.jpg
+    - ../test/event_rehearsal/fixtures/settings_reviews.json
     - ../test/event_rehearsal/fixtures/staff_reviews.json
     - ../test/event_rehearsal/fixtures/movement_reviews.json
     - ../test/event_success/fixtures/checkpoint_reviews.json

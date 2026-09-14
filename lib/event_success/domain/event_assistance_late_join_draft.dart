@@ -92,8 +92,20 @@ final class LateJoinSettingDraft {
     return null;
   }
 
-  LateJoinPreference preferenceFor(LateJoinSettingView view) {
-    if (issueFor(view) != null) {
+  LateJoinPreference preferenceFor(LateJoinSettingView view) =>
+      preferenceForSetup(
+        groupId: view.scope.groupId,
+        serverTime: view.serverTime,
+        setup: view.setup,
+      );
+
+  LateJoinPreference preferenceForSetup({
+    required String groupId,
+    required int serverTime,
+    required LateJoinSettingSetup? setup,
+  }) {
+    if (issueForSetup(groupId: groupId, serverTime: serverTime, setup: setup) !=
+        null) {
       throw StateError('Review the late arrival rules.');
     }
     if (mode == LateJoinDraftMode.inherit) return const LateJoinInherit();

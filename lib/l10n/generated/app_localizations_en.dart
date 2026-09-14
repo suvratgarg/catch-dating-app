@@ -19413,4 +19413,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventAssistanceRuntimeSaving => 'Saving settings';
+
+  @override
+  String get hostEventRehearsalUpdatesBody =>
+      'Choose how to deliver practice updates. After saving, choose a late-arrival rule for everyone or a group.';
+
+  @override
+  String get hostEventRehearsalUpdatesEntry =>
+      'Choose simulated channels, fallback and delivery outcomes.';
+
+  @override
+  String get hostEventRehearsalUpdatesChannels =>
+      'Channels are simulated; no real messages are sent. Fallback follows the same delivery rules as a live event.';
+
+  @override
+  String get hostEventRehearsalUpdatesScript => 'Practice delivery outcomes';
+
+  @override
+  String get hostEventRehearsalUpdatesScriptBody =>
+      'Each guest uses this sequence for their delivery attempts. An uncertain attempt waits for reconciliation; it does not trigger fallback. After the sequence ends, further attempts wait for review.';
+
+  @override
+  String hostEventRehearsalUpdatesAttempt({required int number}) {
+    return 'Attempt $number';
+  }
+
+  @override
+  String get hostEventRehearsalUpdatesUsed => 'Already used in this run';
+
+  @override
+  String get hostEventRehearsalUpdatesAddOutcome => 'Add an outcome';
+
+  @override
+  String get hostEventRehearsalUpdatesRemoveOutcome => 'Remove last outcome';
+
+  @override
+  String get hostEventRehearsalUpdatesIssue =>
+      'Review the channels, response deadline and practice outcomes before saving. Outcomes already used and saved joining choices must still match this run.';
+
+  @override
+  String get hostEventRehearsalUpdatesSaved =>
+      'Saved. The settings shown below are the current settings for this rehearsal.';
+
+  @override
+  String get hostEventRehearsalUpdatesDelivered => 'Delivered';
+
+  @override
+  String get hostEventRehearsalUpdatesRead => 'Read by guest';
+
+  @override
+  String get hostEventRehearsalUpdatesAccepted => 'Accepted, delivery pending';
+
+  @override
+  String get hostEventRehearsalUpdatesRevoked => 'Message revoked';
+
+  @override
+  String get hostEventRehearsalUpdatesTechnical => 'Technical failure';
+
+  @override
+  String get hostEventRehearsalUpdatesPolicy => 'Blocked by channel policy';
+
+  @override
+  String get hostEventRehearsalUpdatesSuppressed => 'Guest opted out';
+
+  @override
+  String get hostEventRehearsalUpdatesInvalidRecipient => 'Invalid recipient';
+
+  @override
+  String get hostEventRehearsalUpdatesTimeout => 'Unknown: request timed out';
+
+  @override
+  String get hostEventRehearsalUpdatesConnectionLost =>
+      'Unknown: connection lost';
+
+  @override
+  String get hostEventRehearsalUpdatesInterrupted =>
+      'Unknown: delivery interrupted';
 }

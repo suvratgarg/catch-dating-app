@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.129.0
+version: 1.130.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -265,8 +265,26 @@ reevaluation and receipt together. It requires current Host authority, reviewed
 setup/runtime revisions and the current configuration source. Synthetic staff
 can inspect settings but cannot change them. Reset, fork and setup replacement
 do not inherit settings. Native readers, typed decisions and repository bindings
-retain this review and reject mismatched confirmations; the visible shared
-settings controls and their state owner remain the next integration step.
+retain this review and reject mismatched confirmations. The Host runtime now
+mounts a compact rehearsal settings entry in its existing setup slot. Event
+rules use the same late-arrival form as live mode, with current group overrides
+under progressive disclosure. Simulated channel order, timing, retry limits and
+all eleven delivery outcomes remain configurable; the suggested configuration
+is never submitted automatically. Consumed script entries are read-only.
+
+One account-bound settings owner retains an unresolved event or group decision
+through dismissal, source refresh and navigation to another settings choice.
+Exact retry cannot change the decision, and account transitions retire private
+state. Confirmed results show current settings, including newer state returned
+by a replay. Pending and completed controls display readable values without
+interactive affordances. Rehearsal and live mode share timing/limit controls;
+the overall attempt ceiling may be lower than the per-channel ceiling.
+
+Focused widget tests exercise entry, optional configuration, exact retry,
+subsequent rule editing and closed runs at normal and double text size. Isolated
+Widgetbook previews mount these same controls; their shared generated index and
+widget inventory registration await the existing file claim. Provider activation,
+real delivery and device verification remain separate integration work.
 
 New event-enrolled recipes follow current accepted group membership and saved
 departure. Unassigned pace-group guests receive no inferred route. Explicit

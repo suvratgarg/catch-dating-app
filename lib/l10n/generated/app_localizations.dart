@@ -29146,103 +29146,103 @@ abstract class AppLocalizations {
   /// **'Removing an earlier observation'**
   String get eventAssistanceCheckpointRemovingObservation;
 
-  /// No description provided for @eventAssistanceCheckpointRequestTitle.
+  /// Title for a saved checkpoint reporting request.
   ///
   /// In en, this message translates to:
   /// **'Checkpoint request'**
   String get eventAssistanceCheckpointRequestTitle;
 
-  /// No description provided for @eventAssistanceCheckpointRequestManage.
+  /// Opens checkpoint request closeout and reporter controls.
   ///
   /// In en, this message translates to:
   /// **'Review checkpoint request'**
   String get eventAssistanceCheckpointRequestManage;
 
-  /// No description provided for @eventAssistanceCheckpointRequestBody.
+  /// Explains which guest outcomes must be recorded before closeout.
   ///
   /// In en, this message translates to:
   /// **'Close this request after every unconfirmed guest has a recorded outcome. Arrival observations stay unchanged.'**
   String get eventAssistanceCheckpointRequestBody;
 
-  /// No description provided for @eventAssistanceCheckpointRequestMissing.
+  /// Empty state when the departure has no reporting request.
   ///
   /// In en, this message translates to:
   /// **'No checkpoint report was requested for this departure.'**
   String get eventAssistanceCheckpointRequestMissing;
 
-  /// No description provided for @eventAssistanceCheckpointRequestUnknown.
+  /// Prompts a fresh review when closeout eligibility is unknown.
   ///
   /// In en, this message translates to:
   /// **'Reload to check whether this request can be closed.'**
   String get eventAssistanceCheckpointRequestUnknown;
 
-  /// No description provided for @eventAssistanceCheckpointRequestReady.
+  /// Indicates that all missing guests have a recorded disposition.
   ///
   /// In en, this message translates to:
   /// **'All unconfirmed guests have been recorded as returned or departed.'**
   String get eventAssistanceCheckpointRequestReady;
 
-  /// No description provided for @eventAssistanceCheckpointRequestReportFirst.
+  /// Explains the prerequisite arrival report for closeout.
   ///
   /// In en, this message translates to:
   /// **'Save an arrival report before reviewing closeout.'**
   String get eventAssistanceCheckpointRequestReportFirst;
 
-  /// No description provided for @eventAssistanceCheckpointRequestResolveFirst.
+  /// Explains why unresolved guest dispositions prevent closeout.
   ///
   /// In en, this message translates to:
   /// **'Some unconfirmed guests still need an outcome. Review their visit status before closing this request.'**
   String get eventAssistanceCheckpointRequestResolveFirst;
 
-  /// No description provided for @eventAssistanceCheckpointRequestReason.
+  /// Label for the host reason accompanying a checkpoint decision.
   ///
   /// In en, this message translates to:
   /// **'Reason for this decision'**
   String get eventAssistanceCheckpointRequestReason;
 
-  /// No description provided for @eventAssistanceCheckpointRequestClose.
+  /// Explicit action to close a reviewed checkpoint request.
   ///
   /// In en, this message translates to:
   /// **'Close checkpoint request'**
   String get eventAssistanceCheckpointRequestClose;
 
-  /// No description provided for @eventAssistanceCheckpointRequestReopen.
+  /// Explicit action to reopen a checkpoint request.
   ///
   /// In en, this message translates to:
   /// **'Reopen checkpoint request'**
   String get eventAssistanceCheckpointRequestReopen;
 
-  /// No description provided for @eventAssistanceCheckpointRequestAuthority.
+  /// Explains who may close or reopen a reporting request.
   ///
   /// In en, this message translates to:
   /// **'Only an organizer or the responsible reporter with current group access can close or reopen this request.'**
   String get eventAssistanceCheckpointRequestAuthority;
 
-  /// No description provided for @eventAssistanceCheckpointRequestSaving.
+  /// Progress label while a checkpoint decision is being saved.
   ///
   /// In en, this message translates to:
   /// **'Saving your checkpoint decision…'**
   String get eventAssistanceCheckpointRequestSaving;
 
-  /// No description provided for @eventAssistanceCheckpointRequestUnconfirmed.
+  /// Explains recovery when a checkpoint save outcome is unknown.
   ///
   /// In en, this message translates to:
   /// **'The outcome is not confirmed. Retry this same decision to check its result.'**
   String get eventAssistanceCheckpointRequestUnconfirmed;
 
-  /// No description provided for @eventAssistanceCheckpointRequestSaved.
+  /// Confirms the saved decision while displaying current request state.
   ///
   /// In en, this message translates to:
   /// **'Your decision was saved. The latest request status is shown above.'**
   String get eventAssistanceCheckpointRequestSaved;
 
-  /// No description provided for @eventAssistanceCheckpointRequestReassign.
+  /// Opens the eligible reporter selection.
   ///
   /// In en, this message translates to:
   /// **'Change responsible reporter'**
   String get eventAssistanceCheckpointRequestReassign;
 
-  /// No description provided for @eventAssistanceCheckpointRequestRetry.
+  /// Retries the exact unresolved checkpoint decision.
   ///
   /// In en, this message translates to:
   /// **'Retry checkpoint decision'**
@@ -29278,49 +29278,49 @@ abstract class AppLocalizations {
   /// **'Review guest status'**
   String get eventAssistanceCheckpointVisitReview;
 
-  /// No description provided for @eventAssistanceCheckpointReporterBody.
+  /// Explains required reporter access and the unchanged deadline.
   ///
   /// In en, this message translates to:
   /// **'Choose someone with access to this group through the original reporting deadline. The deadline stays the same.'**
   String get eventAssistanceCheckpointReporterBody;
 
-  /// No description provided for @eventAssistanceCheckpointReporterLabel.
+  /// Label for the checkpoint reporter selection.
   ///
   /// In en, this message translates to:
   /// **'Reporter'**
   String get eventAssistanceCheckpointReporterLabel;
 
-  /// No description provided for @eventAssistanceCheckpointReporterEmpty.
+  /// Explains when no eligible replacement reporter is available.
   ///
   /// In en, this message translates to:
   /// **'No other eligible reporter is available. Review group duties before changing this request.'**
   String get eventAssistanceCheckpointReporterEmpty;
 
-  /// No description provided for @eventAssistanceCheckpointReporterUnnamed.
+  /// Explains why unnamed eligible hosts cannot be selected.
   ///
   /// In en, this message translates to:
   /// **'Some eligible hosts have no display name. Add their name before selecting them.'**
   String get eventAssistanceCheckpointReporterUnnamed;
 
-  /// No description provided for @eventAssistanceCheckpointReporterUnknown.
+  /// Fallback when current reporter details are unavailable.
   ///
   /// In en, this message translates to:
   /// **'Reporter details unavailable'**
   String get eventAssistanceCheckpointReporterUnknown;
 
-  /// No description provided for @eventAssistanceCheckpointReporterCurrent.
+  /// Shows the current responsible reporter by display name.
   ///
   /// In en, this message translates to:
   /// **'Responsible reporter: {name}'**
   String eventAssistanceCheckpointReporterCurrent({required String name});
 
-  /// No description provided for @eventAssistanceCheckpointReporterCancel.
+  /// Dismisses a reporter change without saving.
   ///
   /// In en, this message translates to:
   /// **'Cancel reporter change'**
   String get eventAssistanceCheckpointReporterCancel;
 
-  /// No description provided for @eventAssistanceCheckpointReporterSave.
+  /// Submits a reviewed reporter reassignment.
   ///
   /// In en, this message translates to:
   /// **'Save reporter change'**
@@ -30864,6 +30864,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saving settings'**
   String get eventAssistanceRuntimeSaving;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how to deliver practice updates. After saving, choose a late-arrival rule for everyone or a group.'**
+  String get hostEventRehearsalUpdatesBody;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose simulated channels, fallback and delivery outcomes.'**
+  String get hostEventRehearsalUpdatesEntry;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Channels are simulated; no real messages are sent. Fallback follows the same delivery rules as a live event.'**
+  String get hostEventRehearsalUpdatesChannels;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice delivery outcomes'**
+  String get hostEventRehearsalUpdatesScript;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Each guest uses this sequence for their delivery attempts. An uncertain attempt waits for reconciliation; it does not trigger fallback. After the sequence ends, further attempts wait for review.'**
+  String get hostEventRehearsalUpdatesScriptBody;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Attempt {number}'**
+  String hostEventRehearsalUpdatesAttempt({required int number});
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Already used in this run'**
+  String get hostEventRehearsalUpdatesUsed;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an outcome'**
+  String get hostEventRehearsalUpdatesAddOutcome;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove last outcome'**
+  String get hostEventRehearsalUpdatesRemoveOutcome;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Review the channels, response deadline and practice outcomes before saving. Outcomes already used and saved joining choices must still match this run.'**
+  String get hostEventRehearsalUpdatesIssue;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved. The settings shown below are the current settings for this rehearsal.'**
+  String get hostEventRehearsalUpdatesSaved;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get hostEventRehearsalUpdatesDelivered;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Read by guest'**
+  String get hostEventRehearsalUpdatesRead;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted, delivery pending'**
+  String get hostEventRehearsalUpdatesAccepted;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Message revoked'**
+  String get hostEventRehearsalUpdatesRevoked;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical failure'**
+  String get hostEventRehearsalUpdatesTechnical;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked by channel policy'**
+  String get hostEventRehearsalUpdatesPolicy;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest opted out'**
+  String get hostEventRehearsalUpdatesSuppressed;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid recipient'**
+  String get hostEventRehearsalUpdatesInvalidRecipient;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown: request timed out'**
+  String get hostEventRehearsalUpdatesTimeout;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown: connection lost'**
+  String get hostEventRehearsalUpdatesConnectionLost;
+
+  /// Rehearsal event-wide update settings copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown: delivery interrupted'**
+  String get hostEventRehearsalUpdatesInterrupted;
 }
 
 class _AppLocalizationsDelegate

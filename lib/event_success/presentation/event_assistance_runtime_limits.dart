@@ -9,60 +9,121 @@ import 'package:flutter/material.dart';
 
 /// Optional timing and delivery limits preserve the rest of the configuration.
 class EventAssistanceRuntimeLimits extends StatelessWidget {
-  const EventAssistanceRuntimeLimits({
+  factory EventAssistanceRuntimeLimits({
+    Key? key,
+    required AssistanceRuntimeDraft draft,
+    required int eventEnd,
+    required bool enabled,
+    required ValueChanged<AssistanceRuntimeDraft> onChanged,
+    required ValueChanged<bool> onChooseTime,
+  }) => EventAssistanceRuntimeLimits.values(
+    key: key,
+    expiresAt: draft.expiresAt,
+    responseDeadline: draft.responseDeadline,
+    deliveryPolicy: draft.deliveryPolicy,
+    eventEnd: eventEnd,
+    enabled: enabled,
+    onDeliveryChanged: (policy) => onChanged(draft.withDelivery(policy)),
+    onClearDeadline: () => onChanged(draft.withDeadline(null)),
+    onUseEventEnd: () => onChanged(draft.withExpiry(eventEnd)),
+    onChooseTime: onChooseTime,
+  );
+
+  /// Both modes share these value controls. No sender or execution scope is needed.
+  const EventAssistanceRuntimeLimits.values({
     super.key,
-    required this.draft,
+    required this.expiresAt,
+    required this.responseDeadline,
+    required this.deliveryPolicy,
     required this.eventEnd,
     required this.enabled,
-    required this.onChanged,
+    required this.onDeliveryChanged,
+    required this.onClearDeadline,
     required this.onChooseTime,
+    this.onUseEventEnd,
   });
-  final AssistanceRuntimeDraft draft;
-  final int eventEnd;
+  final int expiresAt, eventEnd;
+  final int? responseDeadline;
+  final AssistanceDeliveryPolicy deliveryPolicy;
   final bool enabled;
-  final ValueChanged<AssistanceRuntimeDraft> onChanged;
+  final ValueChanged<AssistanceDeliveryPolicy> onDeliveryChanged;
+  final VoidCallback onClearDeadline;
+  final VoidCallback? onUseEventEnd;
   final ValueChanged<bool> onChooseTime;
   @override
   Widget build(BuildContext context) {
     final l = context.l10n;
-    final policy = draft.deliveryPolicy;
+    final policy = deliveryPolicy;
     final states = <WidgetState>{if (!enabled) WidgetState.disabled};
-    void change({int? total, int? perRoute, int? gap}) => onChanged(
-      draft.withDelivery(
-        AssistanceDeliveryPolicy(
-          maxAttempts: total ?? policy.maxAttempts,
-          maxAttemptsPerRoute: perRoute ?? policy.maxAttemptsPerRoute,
-          minimumRetrySeconds: gap ?? policy.minimumRetrySeconds,
-        ),
+    void change({int? total, int? perRoute, int? gap}) => onDeliveryChanged(
+      AssistanceDeliveryPolicy(
+        maxAttempts: total ?? policy.maxAttempts,
+        maxAttemptsPerRoute: perRoute ?? policy.maxAttemptsPerRoute,
+        minimumRetrySeconds: gap ?? policy.minimumRetrySeconds,
       ),
     );
+    if (!enabled) {
+      return CatchSection.fieldRows(
+        children: [
+          CatchField.content(
+            copy: catchFieldCopy(l),
+            title: l.eventAssistanceRuntimeUntil,
+            body: lateJoinTimeLabel(context, expiresAt),
+          ),
+          CatchField.content(
+            copy: catchFieldCopy(l),
+            title: l.eventAssistanceRuntimeDeadline,
+            body: responseDeadline == null
+                ? l.eventAssistanceRuntimeNoDeadline
+                : lateJoinTimeLabel(context, responseDeadline!),
+          ),
+          CatchField.content(
+            copy: catchFieldCopy(l),
+            title: l.eventAssistanceRuntimeAttempts,
+            body: '${policy.maxAttempts}',
+          ),
+          CatchField.content(
+            copy: catchFieldCopy(l),
+            title: l.eventAssistanceRuntimePerChannel,
+            body: '${policy.maxAttemptsPerRoute}',
+          ),
+          CatchField.content(
+            copy: catchFieldCopy(l),
+            title: l.eventAssistanceRuntimeGap,
+            body: '${policy.minimumRetrySeconds}',
+          ),
+        ],
+      );
+    }
     return CatchSection.fieldRows(
       children: [
         CatchField.action(
           copy: catchFieldCopy(l),
           title: l.eventAssistanceRuntimeUntil,
-          body: lateJoinTimeLabel(context, draft.expiresAt),
-          onTap: enabled ? () => onChooseTime(false) : null,
+          body: lateJoinTimeLabel(context, expiresAt),
+          onTap: enabled && onUseEventEnd != null
+              ? () => onChooseTime(false)
+              : null,
         ),
-        if (draft.expiresAt != eventEnd)
+        if (expiresAt != eventEnd && onUseEventEnd != null)
           CatchField.action(
             copy: catchFieldCopy(l),
             title: l.eventAssistanceRuntimeUseEventEnd,
-            onTap: enabled ? () => onChanged(draft.withExpiry(eventEnd)) : null,
+            onTap: enabled ? onUseEventEnd : null,
           ),
         CatchField.action(
           copy: catchFieldCopy(l),
           title: l.eventAssistanceRuntimeDeadline,
-          body: draft.responseDeadline == null
+          body: responseDeadline == null
               ? l.eventAssistanceRuntimeSetDeadline
-              : lateJoinTimeLabel(context, draft.responseDeadline!),
+              : lateJoinTimeLabel(context, responseDeadline!),
           onTap: enabled ? () => onChooseTime(true) : null,
         ),
-        if (draft.responseDeadline != null)
+        if (responseDeadline != null)
           CatchField.action(
             copy: catchFieldCopy(l),
             title: l.eventAssistanceRuntimeNoDeadline,
-            onTap: enabled ? () => onChanged(draft.withDeadline(null)) : null,
+            onTap: enabled ? onClearDeadline : null,
           ),
         CatchField.content(
           copy: catchFieldCopy(l),
