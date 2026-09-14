@@ -459,7 +459,7 @@ void main() {
               itemLabelBuilder: (value) => value,
               selected: const {'English'},
               onSelectionChanged: (_) {},
-              multi: true,
+              mode: CatchChipMode.multiple,
               initiallyOpen: true,
             ),
           ),

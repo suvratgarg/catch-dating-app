@@ -157,7 +157,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             values: EventSuccessActivityAssignmentAttribute.values,
             itemLabelBuilder: (attribute) => attribute.balanceLabel,
             selected: value.balanceActivityAttributes.toSet(),
-            multi: true,
+            mode: CatchChipMode.multiple,
             states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onSelectionChanged: enabled
                 ? (selection) => onChanged(
@@ -184,7 +184,7 @@ class EventSuccessStructureConfigEditor extends StatelessWidget {
             values: EventSuccessActivityAssignmentAttribute.values,
             itemLabelBuilder: (attribute) => attribute.clusterLabel,
             selected: value.clusterActivityAttributes.toSet(),
-            multi: true,
+            mode: CatchChipMode.multiple,
             states: <WidgetState>{if (!enabled) WidgetState.disabled},
             onSelectionChanged: enabled
                 ? (selection) => onChanged(

@@ -294,7 +294,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   onSelectionChanged: state.requestControlsEnabled
                       ? callbacks.onDistancesChanged
                       : null,
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   states: <WidgetState>{
                     if (!state.requestControlsEnabled) WidgetState.disabled,
                   },
@@ -319,7 +319,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   onSelectionChanged: state.requestControlsEnabled
                       ? callbacks.onReasonsChanged
                       : null,
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   states: <WidgetState>{
                     if (!state.requestControlsEnabled) WidgetState.disabled,
                   },
@@ -344,7 +344,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   onSelectionChanged: state.requestControlsEnabled
                       ? callbacks.onRunTimesChanged
                       : null,
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   states: <WidgetState>{
                     if (!state.requestControlsEnabled) WidgetState.disabled,
                   },

@@ -1421,7 +1421,7 @@ class _HostLumaConnectionSheetState extends State<_HostLumaConnectionSheet> {
               contract: CatchContractConstraints
                   .listOrganizerLumaEventsCallablePayloadApiKey,
               controller: _apiKeyController,
-              obscureText: true,
+              inputVariant: CatchTextInputVariant.obscured,
               helperText: context.l10n.hostsOperationalRosterProviderApiKeyHelp,
               errorText: _showErrors && apiKey.length < 16
                   ? context.l10n.hostsOperationalRosterProviderFieldRequired

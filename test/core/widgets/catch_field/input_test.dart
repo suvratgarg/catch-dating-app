@@ -124,7 +124,7 @@ void main() {
             values: const ['English', 'Hindi', 'Marathi', 'Gujarati'],
             itemLabelBuilder: (value) => value,
             selected: const {'English'},
-            multi: true,
+            mode: CatchChipMode.multiple,
             initiallyOpen: true,
             onSelectionChanged: (selection) => nextSelection = selection,
             onCancel: () {},

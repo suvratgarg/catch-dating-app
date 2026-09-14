@@ -129,7 +129,9 @@ class _CatchFormChoiceFieldState<P, T>
       contractValueBuilder: descriptor.contractValue,
       itemLabelBuilder: descriptor.itemLabel,
       selected: _selected,
-      multi: descriptor.isMultiple,
+      mode: descriptor.isMultiple
+          ? CatchChipMode.multiple
+          : CatchChipMode.single,
       allowEmptySelection: descriptor.allowEmptySelection,
       onSelectionChanged: (selection) {
         setState(() {

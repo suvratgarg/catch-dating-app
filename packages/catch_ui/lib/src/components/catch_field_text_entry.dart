@@ -193,9 +193,7 @@ class CatchFieldTextEntry extends StatelessWidget {
             explicitMaxLength: field._editConfig?.maxLength,
           ),
           autofillHints: field.autofillHints,
-          variant: field.obscureText
-              ? CatchTextInputVariant.obscured
-              : CatchTextInputVariant.plain,
+          variant: field.inputVariant,
           maxLines: field.obscureText || inlineAddHint ? 1 : field.maxLines,
           minLines: inlineAddHint ? null : field.minLines,
           maxLength: field.maxLength,

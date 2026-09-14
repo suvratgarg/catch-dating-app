@@ -2677,6 +2677,30 @@
             ]
           },
           {
+            "name": "mode",
+            "type": "enum",
+            "required": false,
+            "default": "single",
+            "dartType": "CatchChipMode",
+            "values": [
+              "single",
+              "multiple"
+            ],
+            "notes": "Choices use the canonical chip selection mode. Empty-selection policy and optional-label copy remain independent."
+          },
+          {
+            "name": "inputVariant",
+            "type": "enum",
+            "required": false,
+            "default": "plain",
+            "dartType": "CatchTextInputVariant",
+            "values": [
+              "plain",
+              "obscured"
+            ],
+            "notes": "Passes the canonical native text-concealment axis to CatchTextInput. Obscured entry remains single-line."
+          },
+          {
             "name": "variant",
             "type": "enum",
             "required": false,

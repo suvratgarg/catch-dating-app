@@ -48,7 +48,7 @@ test("records top-level generated bindings without accepting nested arguments", 
       CatchField.control(
         title: 'Range',
         contract: CatchContractConstraints.userProfileDocumentAgeRange,
-        control: Builder(
+        child: Builder(
           builder: (_) => CatchField.input(
             title: 'Nested',
             contract: nestedContract,

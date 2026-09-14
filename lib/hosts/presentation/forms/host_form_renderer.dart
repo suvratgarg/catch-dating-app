@@ -166,7 +166,9 @@ class _HostFormSchemaQuestionField extends StatelessWidget {
                 .firstWhere((option) => option.value == value)
                 .label,
             selected: selected,
-            multi: question.kind == HostFormQuestionKind.multiChoice,
+            mode: question.kind == HostFormQuestionKind.multiChoice
+                ? CatchChipMode.multiple
+                : CatchChipMode.single,
             allowEmptySelection: optional,
             isOptional: optional,
             onSelectionChanged: (values) => onChanged(

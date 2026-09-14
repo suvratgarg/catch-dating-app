@@ -36,7 +36,7 @@ void main() {
                   values: const ['English', 'Hindi'],
                   itemLabelBuilder: (value) => value,
                   selected: selected,
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   initiallyOpen: true,
                   onSelectionChanged: (next) => setState(() => selected = next),
                   onCancel: () {},

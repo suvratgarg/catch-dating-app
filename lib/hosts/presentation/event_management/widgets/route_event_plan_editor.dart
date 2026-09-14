@@ -193,7 +193,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   values: RouteStopKind.values,
                   itemLabelBuilder: (value) => _stopLabel(context, value),
                   selected: plan.stopKinds.toSet(),
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(
                       stopKinds: RouteStopKind.values
@@ -216,7 +216,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   values: RouteRoleKind.values,
                   itemLabelBuilder: (value) => _roleLabel(context, value),
                   selected: plan.roleKinds.toSet(),
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(
                       roleKinds: RouteRoleKind.values
@@ -264,7 +264,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   values: _PacePreset.values,
                   itemLabelBuilder: (value) => _pacePresetLabel(context, value),
                   selected: _selectedPacePresets(plan),
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(paceGroups: _paceGroupsFor(selection)),
                   ),

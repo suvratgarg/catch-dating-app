@@ -109,7 +109,9 @@ mixin _CatchFieldProperties {
       ? _inputConfig!.inputFormatters
       : CatchContractFieldPolicy.effectiveInputFormatters(contract, null);
   Iterable<String>? get autofillHints => _inputConfig?.autofillHints;
-  bool get obscureText => _inputConfig?.obscureText ?? false;
+  CatchTextInputVariant get inputVariant =>
+      _inputConfig?.inputVariant ?? CatchTextInputVariant.plain;
+  bool get obscureText => inputVariant == CatchTextInputVariant.obscured;
   int? get maxLines => _inputConfig == null ? 1 : _inputConfig!.maxLines;
   int? get minLines => _inputConfig?.minLines;
   int? get maxLength => _inputConfig != null
@@ -153,7 +155,7 @@ mixin _CatchFieldProperties {
   String? get prefixText => _inputConfig?.prefixText;
   String? get suffixText => _inputConfig?.suffixText;
   bool get showClearButton => _inputConfig?.showClearButton ?? false;
-  bool get floatingLabel => _inputConfig?.floatingLabel ?? true;
+  bool get floatingLabel => !_explicitSaveInput;
 
   List<Object?>? get _selectValues => _selectConfig?.values;
   String Function(Object? item)? get _selectItemLabel =>

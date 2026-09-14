@@ -829,7 +829,9 @@ class _RazorpaySetupInput extends StatelessWidget {
         contract: contract,
         states: <WidgetState>{if (pending) WidgetState.disabled},
         keyboardType: keyboardType,
-        obscureText: obscureText,
+        inputVariant: obscureText
+            ? CatchTextInputVariant.obscured
+            : CatchTextInputVariant.plain,
         maxLines: maxLines,
         onValidate:
             validator ??

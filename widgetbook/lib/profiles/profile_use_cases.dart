@@ -1384,7 +1384,7 @@ Widget profileChipPlaceholderStates(BuildContext context) {
                 values: const [Language.english, Language.hindi],
                 itemLabelBuilder: (value) => value.label,
                 selected: const {},
-                multi: true,
+                mode: CatchChipMode.multiple,
                 onSelectionChanged: (_) {},
               ),
               CatchField<Language>.choices(
@@ -1393,7 +1393,7 @@ Widget profileChipPlaceholderStates(BuildContext context) {
                 values: const [Language.english, Language.hindi],
                 itemLabelBuilder: (value) => value.label,
                 selected: const {Language.english, Language.hindi},
-                multi: true,
+                mode: CatchChipMode.multiple,
                 onSelectionChanged: (_) {},
               ),
             ],

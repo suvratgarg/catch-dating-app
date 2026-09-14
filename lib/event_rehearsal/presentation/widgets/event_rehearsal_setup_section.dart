@@ -159,7 +159,7 @@ class _EventRehearsalSetupSectionState
                 itemLabelBuilder: (module) =>
                     eventRehearsalModuleLabel(context.l10n, module),
                 selected: _modules,
-                multi: true,
+                mode: CatchChipMode.multiple,
                 initiallyOpen: true,
                 onSelectionChanged: (selection) =>
                     setState(() => _modules = selection),

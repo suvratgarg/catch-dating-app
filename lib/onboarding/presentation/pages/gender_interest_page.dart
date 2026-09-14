@@ -188,7 +188,7 @@ class OnboardingGenderInterestStep extends StatelessWidget {
                                 field.didChange(selection);
                               }
                             : null,
-                        multi: true,
+                        mode: CatchChipMode.multiple,
                         states: <WidgetState>{
                           if (!state.requestControlsEnabled)
                             WidgetState.disabled,

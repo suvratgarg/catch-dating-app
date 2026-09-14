@@ -304,7 +304,7 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
         values: widget.values,
         itemLabelBuilder: (value) => value.label,
         selected: _selected,
-        multi: true,
+        mode: CatchChipMode.multiple,
         allowEmptySelection: widget.allowEmptySelection,
         onSelectionChanged: (selection) {
           _savedStatusTimer?.cancel();

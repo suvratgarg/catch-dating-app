@@ -459,7 +459,7 @@ class _HostAutomationRuleEditorState
                               contractExemption:
                                   'Blank preserves an existing secret only for the same URL; otherwise 32 through 256 characters are required by the callable.',
                               controller: action.secret,
-                              obscureText: true,
+                              inputVariant: CatchTextInputVariant.obscured,
                               states: <WidgetState>{
                                 if (_busy) WidgetState.disabled,
                               },

@@ -101,7 +101,7 @@ void main() {
           values: const ['5K', '10K'],
           itemLabelBuilder: (value) => value,
           selected: const {'5K', '10K'},
-          multi: true,
+          mode: CatchChipMode.multiple,
           onSelectionChanged: (_) {},
         ),
       ),
@@ -733,7 +733,7 @@ void main() {
             values: const ['Run', 'Walk'],
             itemLabelBuilder: (value) => value,
             selected: selected,
-            multi: true,
+            mode: CatchChipMode.multiple,
             states: const <WidgetState>{
               WidgetState.disabled,
               WidgetState.focused,
