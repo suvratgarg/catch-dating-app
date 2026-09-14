@@ -179,6 +179,14 @@ class EventAssistanceCaseEditor extends _$EventAssistanceCaseEditor {
     }
     try {
       _requireReview(form.review);
+      final choices = form.review.session.page.managerOptions;
+      if (decision is AssistanceCaseTransfer &&
+          decision.managerUid != form.review.account.uid &&
+          (choices == null || !choices.contains(decision.managerUid))) {
+        throw const ValidationException(
+          'Choose a host from this request review.',
+        );
+      }
       final random = Random.secure();
       final id = List.generate(
         16,

@@ -165,6 +165,14 @@ const schemaEventAssistanceCasesCallableResponseSchema = <String, Object?>{
                   },
                 ],
               },
+              'displayName': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 120,
+              },
             },
           },
           <String, Object?>{
@@ -296,6 +304,14 @@ const schemaEventAssistanceCasesCallableResponseSchema = <String, Object?>{
                   },
                 ],
               },
+              'displayName': <String, Object?>{
+                'type': <Object?>[
+                  'string',
+                  'null',
+                ],
+                'minLength': 1,
+                'maxLength': 120,
+              },
             },
           },
           <String, Object?>{
@@ -372,6 +388,9 @@ const schemaEventAssistanceCasesCallableResponseSchema = <String, Object?>{
                   },
                 },
               },
+              'displayName': <String, Object?>{
+                'type': 'null',
+              },
             },
           },
           <String, Object?>{
@@ -446,6 +465,9 @@ const schemaEventAssistanceCasesCallableResponseSchema = <String, Object?>{
                   },
                 },
               },
+              'displayName': <String, Object?>{
+                'type': 'null',
+              },
             },
           },
         ],
@@ -458,6 +480,57 @@ const schemaEventAssistanceCasesCallableResponseSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 160,
           'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'managerOptions': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'actorUid',
+            'managers',
+          ],
+          'properties': <String, Object?>{
+            'actorUid': <String, Object?>{
+              'type': 'string',
+              'minLength': 1,
+              'maxLength': 160,
+              'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+            },
+            'managers': <String, Object?>{
+              'type': 'array',
+              'maxItems': 42,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'uid',
+                  'displayName',
+                ],
+                'properties': <String, Object?>{
+                  'uid': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 160,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  'displayName': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                },
+              },
+            },
+          },
         },
         <String, Object?>{
           'type': 'null',

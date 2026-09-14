@@ -9,6 +9,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_req
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_case.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
@@ -114,6 +115,61 @@ final class RehearsalResolveAssistance extends RehearsalAssistanceCommand {
       },
     },
   };
+
+  void _requireResult(
+    EventRehearsalSession before,
+    EventRehearsalBootstrap result,
+  ) {
+    final rows = result.helpRequests?.cases.where(
+      (r) => r.caseId == snapshot.caseId,
+    );
+    final next = rows?.firstOrNull;
+    final receipts = result.actions.where(
+      (a) => a.runtimeRevision == before.runtimeRevision + 1,
+    );
+    if (next == null ||
+        result.session.virtualStartedAt != before.virtualStartedAt ||
+        rows!.length != 1 ||
+        next.actorId != snapshot.actorId ||
+        next.category != snapshot.category ||
+        next.receivedAt != snapshot.receivedAt ||
+        next.revision < snapshot.revision + 1 ||
+        next.sourceHash == snapshot.sourceHash ||
+        result.session.virtualNow.isBefore(before.virtualNow) ||
+        result.session.actionCount < before.actionCount + 1 ||
+        receipts.length != 1 ||
+        receipts.single.virtualNow != before.virtualNow) {
+      throw const FormatException('Practice response lost its help decision.');
+    }
+    if (next.revision == snapshot.revision + 1) {
+      final matches = switch (decision) {
+        AssistanceCaseTransfer(:final managerUid) =>
+          next is RehearsalOpenHelpCase &&
+              next.assignment is AssistanceCaseAssigned &&
+              (next.assignment as AssistanceCaseAssigned).managerUid ==
+                  managerUid,
+        AssistanceCaseResolve() || AssistanceCaseDecline() =>
+          next is RehearsalClosedHelpCase &&
+              next.resolution.actorUid == actorUid &&
+              next.resolution.at == before.virtualNow.millisecondsSinceEpoch &&
+              next.resolution.outcome ==
+                  (decision is AssistanceCaseResolve
+                      ? AssistanceCaseResolutionOutcome.resolved
+                      : AssistanceCaseResolutionOutcome.declined),
+      };
+      if (!matches) {
+        throw const FormatException('Practice help outcome changed.');
+      }
+    }
+    if (result.session.runtimeRevision == before.runtimeRevision + 1 &&
+        (result.session.status != before.status ||
+            result.session.virtualNow != before.virtualNow ||
+            next.revision != snapshot.revision + 1)) {
+      throw const FormatException(
+        'Practice help confirmation changed the runtime.',
+      );
+    }
+  }
 }
 
 final class RehearsalDispatchMessage extends RehearsalAssistanceCommand {
@@ -379,6 +435,15 @@ final class RehearsalAssistanceChange {
               .length !=
           1) {
         throw const FormatException('Ambiguous practice membership receipt.');
+      }
+      decision._requireResult(session, result);
+    }
+    if (command case final RehearsalResolveAssistance decision) {
+      if (result.actions
+              .where((a) => a.clientActionId == clientActionId)
+              .length !=
+          1) {
+        throw const FormatException('Ambiguous practice help receipt.');
       }
       decision._requireResult(session, result);
     }

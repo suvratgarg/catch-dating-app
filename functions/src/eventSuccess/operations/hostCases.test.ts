@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
+import {readFileSync, writeFileSync} from "node:fs";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
@@ -20,13 +21,14 @@ import {setup} from "./liveLateJoinTestHarness";
 import {keys} from "./whatsappTestHarness";
 
 const manager = "host-1";
-async function harness(realDb?: Firestore) {
-  const h = await setup(realDb);
+async function harness(realDb?: Firestore,
+  fixtureId?: ReturnType<typeof randomUUID>) {
+  const h = await setup(realDb, fixtureId);
   const cases = new EventAssistanceCasesStore(h.db, () => h.clock.now);
   const input = {context: h.context, status: "open" as const, cursor: null};
   const create = async (category: "eventLogistics" | "accessibility" |
-    "other" | "comfortSafety" = "eventLogistics") => {
-    const id = randomUUID();
+    "other" | "comfortSafety" = "eventLogistics",
+  id: string = randomUUID()) => {
     const intent = {...h.intent, intentId: "help:" + id,
       workflow: {kind: "lateJoin" as const, occurrenceId: id},
       choices: [{choiceId: "help", label: "I need help",
@@ -48,7 +50,8 @@ async function harness(realDb?: Firestore) {
     return {data, path: guestCollections.cases + "/" + data.caseId,
       submission};
   };
-  const created = await create();
+  const created = await create("eventLogistics",
+    fixtureId ? "native-help" : undefined);
   const list = () => cases.list(manager, input);
   const command = async (outcome: Command["command"]["payload"]["outcome"] =
   "resolved", owner = manager): Promise<Command> => {
@@ -401,4 +404,47 @@ test("Firestore contending resolutions apply once and fence recreated guests", {
     await db.terminate();
     await deleteApp(app);
   }
+});
+
+
+test("guest-help names and manager choices remain bound to current sources",
+  async () => {
+    const h = await harness();
+    const attendee = (await h.read(h.attendeePath))!;
+    await h.write(h.attendeePath, {...attendee, displayName: "Alex"});
+    const before = await h.list();
+    assert.equal(before.cases[0].displayName, "Alex");
+    assert.equal(before.managerOptions!.actorUid, manager);
+    const command = await h.command();
+    await h.write(h.attendeePath, {...attendee, displayName: "Alex M"});
+    await assert.rejects(h.cases.resolve(manager, command), {code: "aborted"});
+    await h.write(h.attendeePath, {...attendee, displayName: "Replacement",
+      createdAt: Timestamp.fromMillis(h.clock.now + 1)});
+    const changed = await h.list();
+    assert.equal(changed.cases[0].availability, "sourceChanged");
+    assert.equal(changed.cases[0].displayName, null);
+    assert.ok(!JSON.stringify(changed).includes("Replacement"));
+  });
+
+test("native help queue fixtures use actual case projections", async () => {
+  const h = await harness(undefined, "00000000-0000-0000-0000-000000000123");
+  const path = "organizers/" + h.context.organizerId;
+  await h.write(path, {...await h.read(path), hostProfiles: [
+    {uid: manager, displayName: "Sam", avatarUrl: null, role: "host"},
+    {uid: "host-2", displayName: "Priya", avatarUrl: null, role: "host"},
+  ]});
+  await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+    displayName: "Alex Morgan"});
+  const initial = await h.list();
+  const transfer = await h.cases.resolve(manager,
+    await h.command("transferred", "host-2"));
+  const assigned = await h.list();
+  const resolved = await h.cases.resolve(manager, await h.command());
+  const handled = await h.cases.list(manager, {...h.input, status: "resolved"});
+  const samples = {initial, transfer, assigned, resolved, handled};
+  const file = "../test/event_success/fixtures/help_queue.json";
+  if (process.env.UPDATE_HELP_QUEUE_FIXTURE === "1") {
+    writeFileSync(file, JSON.stringify(samples, null, 2) + "\n");
+  }
+  assert.deepEqual(JSON.parse(readFileSync(file, "utf8")), samples);
 });

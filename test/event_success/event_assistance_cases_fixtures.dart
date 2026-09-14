@@ -41,6 +41,7 @@ Map<String, Object?> casesPageResponse({
   List<Object?>? rows,
   String? nextCursor,
   int serverTime = 2000,
+  String? managerActor,
 }) {
   final scope = query ?? caseQuery();
   return {
@@ -50,14 +51,23 @@ Map<String, Object?> casesPageResponse({
     'status': scope.status.name,
     'cases': rows ?? [caseRow()],
     'nextCursor': nextCursor,
+    if (managerActor != null)
+      'managerOptions': {
+        'actorUid': managerActor,
+        'managers': [
+          {'uid': 'host-1', 'displayName': 'Sam'},
+          {'uid': 'host-2', 'displayName': 'Priya'},
+        ],
+      },
   };
 }
 
 EventAssistanceCasesPage casesPage({
+  String? managerActor,
   EventAssistanceCaseQuery? query,
   List<Object?>? rows,
 }) => EventAssistanceCasesPage.fromCallableData(
-  casesPageResponse(query: query, rows: rows),
+  casesPageResponse(query: query, rows: rows, managerActor: managerActor),
   expectedQuery: query ?? caseQuery(),
 );
 

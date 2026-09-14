@@ -220,7 +220,7 @@ final class EventRehearsalAssistanceForAccountProvider
 }
 
 String _$eventRehearsalAssistanceForAccountHash() =>
-    r'316d8dfc828b683ceaf115d76a2907d5f2862f4f';
+    r'10fdce2530030c651f2f243f138083fe1abdadd8';
 
 final class EventRehearsalAssistanceForAccountFamily extends $Family
     with

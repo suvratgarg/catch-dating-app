@@ -35,6 +35,7 @@ export interface EventAssistanceCasesCallableResponse {
               uid: string;
               authority: "current" | "revoked";
             };
+        displayName?: string | null;
       }
     | {
         caseId: string;
@@ -60,6 +61,7 @@ export interface EventAssistanceCasesCallableResponse {
               uid: string;
               authority: "current" | "revoked";
             };
+        displayName?: string | null;
       }
     | {
         caseId: string;
@@ -75,6 +77,7 @@ export interface EventAssistanceCasesCallableResponse {
         assignment: {
           kind: "unavailable";
         };
+        displayName?: null;
       }
     | {
         caseId: string;
@@ -90,7 +93,18 @@ export interface EventAssistanceCasesCallableResponse {
         assignment: {
           kind: "unavailable";
         };
+        displayName?: null;
       }
   )[];
   nextCursor: string | null;
+  managerOptions?: {
+    actorUid: string;
+    /**
+     * @maxItems 42
+     */
+    managers: {
+      uid: string;
+      displayName: string | null;
+    }[];
+  } | null;
 }

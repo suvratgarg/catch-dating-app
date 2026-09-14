@@ -24810,5 +24810,378 @@
   "eventAssistanceCheckpointReporterCancel": "Cancel reporter change",
   "@eventAssistanceCheckpointReporterCancel": {},
   "eventAssistanceCheckpointReporterSave": "Save reporter change",
-  "@eventAssistanceCheckpointReporterSave": {}
+  "@eventAssistanceCheckpointReporterSave": {},
+  "eventAssistanceHelpTitle": "Guest help",
+  "@eventAssistanceHelpTitle": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpBody": "Review practical requests and decide who will follow up.",
+  "@eventAssistanceHelpBody": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpOpen": "Open",
+  "@eventAssistanceHelpOpen": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpHandled": "Handled",
+  "@eventAssistanceHelpHandled": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpEmptyOpen": "No open requests on this page.",
+  "@eventAssistanceHelpEmptyOpen": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpEmptyHandled": "No handled requests on this page.",
+  "@eventAssistanceHelpEmptyHandled": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpReview": "Review requests",
+  "@eventAssistanceHelpReview": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpPageBody": "This is one page of requests. Reload to check for updates.",
+  "@eventAssistanceHelpPageBody": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpPrevious": "Previous page",
+  "@eventAssistanceHelpPrevious": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpNext": "Next page",
+  "@eventAssistanceHelpNext": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpReload": "Reload requests",
+  "@eventAssistanceHelpReload": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpUnknownGuest": "Guest details unavailable",
+  "@eventAssistanceHelpUnknownGuest": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpLogistics": "Event logistics",
+  "@eventAssistanceHelpLogistics": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpAccessibility": "Accessibility help",
+  "@eventAssistanceHelpAccessibility": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpOther": "Other practical help",
+  "@eventAssistanceHelpOther": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpUnassigned": "No host assigned",
+  "@eventAssistanceHelpUnassigned": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpUnknownHost": "Assigned host details unavailable",
+  "@eventAssistanceHelpUnknownHost": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpOwnerRemoved": "Needs a new host",
+  "@eventAssistanceHelpOwnerRemoved": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpResolved": "Resolved",
+  "@eventAssistanceHelpResolved": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpDeclined": "Declined",
+  "@eventAssistanceHelpDeclined": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpSourceChanged": "The guest record has changed. This request is read-only.",
+  "@eventAssistanceHelpSourceChanged": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpLegacy": "This older request needs a source review before it can be handled.",
+  "@eventAssistanceHelpLegacy": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpTake": "I’ll handle this",
+  "@eventAssistanceHelpTake": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpTransfer": "Assign to a host",
+  "@eventAssistanceHelpTransfer": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpResolve": "Mark resolved",
+  "@eventAssistanceHelpResolve": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpDecline": "Decline request",
+  "@eventAssistanceHelpDecline": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpTakeBody": "Record yourself as responsible for following up with this guest.",
+  "@eventAssistanceHelpTakeBody": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpTransferBody": "Choose an existing host to follow up with this guest.",
+  "@eventAssistanceHelpTransferBody": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpResolveBody": "Confirm that this guest’s request has been handled.",
+  "@eventAssistanceHelpResolveBody": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpDeclineBody": "Record that this request cannot be fulfilled.",
+  "@eventAssistanceHelpDeclineBody": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpHost": "Responsible host",
+  "@eventAssistanceHelpHost": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpNoHosts": "Reload to review available hosts.",
+  "@eventAssistanceHelpNoHosts": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpUnnamedHosts": "Hosts need a distinct display name to appear here.",
+  "@eventAssistanceHelpUnnamedHosts": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpConfirm": "Save decision",
+  "@eventAssistanceHelpConfirm": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpChooseAgain": "Choose another action",
+  "@eventAssistanceHelpChooseAgain": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpSaving": "Saving this decision…",
+  "@eventAssistanceHelpSaving": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpUnconfirmed": "The save has not been confirmed. Retry the same decision to find out whether it was saved.",
+  "@eventAssistanceHelpUnconfirmed": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpChanged": "The request or your access changed. Reload before making a new decision.",
+  "@eventAssistanceHelpChanged": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpSaved": "Decision saved.",
+  "@eventAssistanceHelpSaved": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpPending": "Confirmation needed",
+  "@eventAssistanceHelpPending": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpPendingBody": "Review this earlier decision to confirm its outcome.",
+  "@eventAssistanceHelpPendingBody": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpMissing": "This request is no longer on the current page. Reload the queue to review its latest state.",
+  "@eventAssistanceHelpMissing": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpPracticeUnknown": "Some older practice help flags do not have a reviewable request.",
+  "@eventAssistanceHelpPracticeUnknown": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpPracticeHost": "Switch to the host role to handle practical help requests.",
+  "@eventAssistanceHelpPracticeHost": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpAssigned": "Responsible: {name}",
+  "@eventAssistanceHelpAssigned": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpReceived": "Requested {date} at {time}",
+  "@eventAssistanceHelpReceived": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpSelected": "Decision: {action}",
+  "@eventAssistanceHelpSelected": {
+    "description": "Shared live and rehearsal guest-help interface.",
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpReadOnly": "Review only",
+  "@eventAssistanceHelpReadOnly": {
+    "description": "A help request is visible but the current role cannot handle it.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpRetry": "Retry this decision",
+  "@eventAssistanceHelpRetry": {
+    "description": "Retry the same uncertain help decision.",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceHelpTransferValue": "Assign to {name}",
+  "@eventAssistanceHelpTransferValue": {
+    "description": "The host chosen for this help decision.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    },
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_help"
+  }
 }

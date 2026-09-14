@@ -84,6 +84,7 @@ void main() {
       EventRehearsalBootstrap.fromCallableData(
         practiceBootstrap(
           runtimeRevision: runtimeRevision,
+          actionCount: write.change.session.actionCount + 1,
           actions: [practiceReceipt(write.change)],
           actors: actors,
           helpRequests: helpRequests,

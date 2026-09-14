@@ -188,7 +188,7 @@ final class EventAssistanceCasesForAccountProvider
 }
 
 String _$eventAssistanceCasesForAccountHash() =>
-    r'520d84c20ecb0d20c4adbc63d6741870e586f591';
+    r'ef9a1cc254333a48d6b960b19ac7c65047b46e7a';
 
 final class EventAssistanceCasesForAccountFamily extends $Family
     with

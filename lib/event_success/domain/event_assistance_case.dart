@@ -64,6 +64,7 @@ sealed class AssistanceHostCase {
     required this.receivedAt,
     required this.observedAt,
     required this.category,
+    required this.displayName,
   });
 
   final EventAssistanceCaseScope scope;
@@ -71,6 +72,7 @@ sealed class AssistanceHostCase {
   final int receivedAt;
   final int observedAt;
   final AssistanceCaseCategory category;
+  final String? displayName;
   AssistanceCaseStatus get status;
 
   factory AssistanceHostCase.fromJson(
@@ -91,6 +93,7 @@ sealed class AssistanceHostCase {
       'resolution',
       'canChange',
       'assignment',
+      if (assistanceObject(value).containsKey('displayName')) 'displayName',
     });
     if (map['caseId'] != scope.caseId) {
       throw const FormatException('Help request identity mismatch.');
@@ -108,9 +111,13 @@ sealed class AssistanceHostCase {
     final canChange = assistanceBoolean(map['canChange']);
     final assignment = assistanceObject(map['assignment']);
     final availability = map['availability'];
+    final displayName = map['displayName'] == null
+        ? null
+        : assistanceText(map['displayName'], 120);
     if (availability == 'legacy' || availability == 'sourceChanged') {
       assistanceObject(assignment, {'kind'});
-      if (map['attendeeId'] != null ||
+      if (displayName != null ||
+          map['attendeeId'] != null ||
           map['resolution'] != null ||
           canChange ||
           assignment['kind'] != 'unavailable') {
@@ -126,6 +133,7 @@ sealed class AssistanceHostCase {
           scope: scope,
           sourceHash: sourceHash,
           category: category,
+          displayName: displayName,
           receivedAt: receivedAt,
           observedAt: serverTime,
           status: status,
@@ -135,6 +143,7 @@ sealed class AssistanceHostCase {
         scope: scope,
         sourceHash: sourceHash,
         category: category,
+        displayName: displayName,
         receivedAt: receivedAt,
         observedAt: serverTime,
         status: status,
@@ -159,6 +168,7 @@ sealed class AssistanceHostCase {
         scope: scope,
         sourceHash: sourceHash,
         category: category,
+        displayName: displayName,
         receivedAt: receivedAt,
         observedAt: serverTime,
         revision: revision,
@@ -177,6 +187,7 @@ sealed class AssistanceHostCase {
       scope: scope,
       sourceHash: sourceHash,
       category: category,
+      displayName: displayName,
       receivedAt: receivedAt,
       observedAt: serverTime,
       revision: revision,
@@ -194,6 +205,7 @@ final class AssistanceOpenHostCase extends AssistanceHostCase {
     required super.receivedAt,
     required super.observedAt,
     required super.category,
+    required super.displayName,
     required this.revision,
     required this.guestScope,
     required this.assignment,
@@ -212,6 +224,7 @@ final class AssistanceClosedHostCase extends AssistanceHostCase {
     required super.receivedAt,
     required super.observedAt,
     required super.category,
+    required super.displayName,
     required this.revision,
     required this.guestScope,
     required this.assignment,
@@ -232,6 +245,7 @@ final class AssistanceStaleHostCase extends AssistanceHostCase {
     required super.receivedAt,
     required super.observedAt,
     required super.category,
+    required super.displayName,
     required this.revision,
     required this.status,
   }) : super._();
@@ -247,6 +261,7 @@ final class AssistanceLegacyHostCase extends AssistanceHostCase {
     required super.receivedAt,
     required super.observedAt,
     required super.category,
+    required super.displayName,
     required this.status,
   }) : super._();
   @override

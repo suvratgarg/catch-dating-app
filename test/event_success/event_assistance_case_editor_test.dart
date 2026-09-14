@@ -43,7 +43,7 @@ void main() {
     );
     container.listen(queue, (_, _) {});
     await signIn('host-1');
-    repository.reads.single.result.complete(casesPage());
+    repository.reads.single.result.complete(casesPage(managerActor: 'host-1'));
     await container.pump();
     final session = container.read(queue).requireValue;
     review = session.review(
@@ -69,6 +69,9 @@ void main() {
       expect(form().canDismiss, isTrue);
       expect(form().canReload, isTrue);
       await expectLater(editor.submit(), throwsA(isA<ValidationException>()));
+      expect(repository.writes, isEmpty);
+      editor.select(AssistanceCaseDecision.transfer('foreign'));
+      expect(form().canSubmit, isFalse);
       expect(repository.writes, isEmpty);
       editor.select(AssistanceCaseDecision.transfer('host-2'));
       expect(form().decision, isA<AssistanceCaseTransfer>());

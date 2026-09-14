@@ -1,3 +1,5 @@
+import {projectCaseManagerOptions} from
+  "../eventSuccess/operations/hostCaseRecords";
 import type {Firestore, Transaction} from "firebase-admin/firestore";
 import {HttpsError} from "firebase-functions/v2/https";
 import type {EventRehearsalDocument as Session,
@@ -89,7 +91,7 @@ export async function resolvePracticeHelp(db: Firestore, tx: Transaction,
       "Practice help request not found.");
   }
   const value = readPracticeCase(snap.data(), snap.id, session, actor);
-  if (hash(value) !== expectedSourceHash) {
+  if (hash([value, actor.displayName]) !== expectedSourceHash) {
     throw new HttpsError("aborted",
       "This help request changed. Review it again.");
   }
@@ -132,8 +134,10 @@ export async function practiceHelpProjection(db: Firestore, sessionId: string,
     const value = readPracticeCase(doc.data(), doc.id, session, actor);
     const uid = value.handling.assigneeUid;
     const common = {caseId: value.caseId, revision: value.handling.revision,
-      sourceHash: hash(value), availability: "current" as const,
-      attendeeId: value.actorId, category: value.category,
+      sourceHash: hash([value, actor.displayName]),
+      availability: "current" as const,
+      attendeeId: value.actorId, displayName: actor.displayName,
+      category: value.category,
       receivedAt: value.receivedAt, assignment: uid ?
         {kind: "assigned" as const, uid,
           authority: isOrganizerManager(organizer, uid) ?
@@ -145,6 +149,7 @@ export async function practiceHelpProjection(db: Firestore, sessionId: string,
         resolution: value.handling.resolution, canChange: false as const};
   }).sort((a, b) => a.caseId.localeCompare(b.caseId));
   return {clockId, coverage: "boundedSession", cases: rows,
+    managerOptions: projectCaseManagerOptions(organizer, actorUid),
     untrackedActorIds: actors.filter((a) =>
       a.untrackedHelpRequested ?? a.helpRequested)
       .map((a) => a.actorId).sort()};

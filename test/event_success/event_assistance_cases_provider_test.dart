@@ -73,6 +73,14 @@ void main() {
     },
   );
 
+  test('manager choices for another caller never enter the queue', () async {
+    await signIn('host-1');
+    repository.reads.single.result.complete(casesPage(managerActor: 'host-2'));
+    await container.pump();
+    expect(container.read(provider).hasValue, isFalse);
+    expect(container.read(provider).error, isA<FormatException>());
+  });
+
   test('old-account reads cannot publish into a different account', () async {
     await signIn('host-1');
     await signIn('host-2');

@@ -99,6 +99,12 @@ Future<EventAssistanceCasesSession> eventAssistanceCasesForAccount(
       .watch(eventAssistanceCasesRepositoryProvider)
       .fetch(query);
   requireCaseReviewAccount(ref, account);
+  if (page.managerOptions != null &&
+      page.managerOptions!.actorUid != account.uid) {
+    throw const FormatException(
+      'Guest-help choices belong to another manager.',
+    );
+  }
   final session = EventAssistanceCasesSession._(account, page);
   ref.onDispose(() => session._current = false);
   return session;

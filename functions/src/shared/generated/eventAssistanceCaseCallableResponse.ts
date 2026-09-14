@@ -32,6 +32,7 @@ export interface EventAssistanceCaseCallableResponse {
               uid: string;
               authority: "current" | "revoked";
             };
+        displayName?: string | null;
       }
     | {
         caseId: string;
@@ -57,6 +58,7 @@ export interface EventAssistanceCaseCallableResponse {
               uid: string;
               authority: "current" | "revoked";
             };
+        displayName?: string | null;
       }
     | {
         caseId: string;
@@ -72,6 +74,7 @@ export interface EventAssistanceCaseCallableResponse {
         assignment: {
           kind: "unavailable";
         };
+        displayName?: null;
       }
     | {
         caseId: string;
@@ -87,5 +90,6 @@ export interface EventAssistanceCaseCallableResponse {
         assignment: {
           kind: "unavailable";
         };
+        displayName?: null;
       };
 }

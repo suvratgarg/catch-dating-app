@@ -28,7 +28,8 @@ import {assertCommandContext, assertCommandRole} from "./commands";
 import {guestCollections} from "./guestRecords";
 import {invalidSource} from "./groupProgressSource";
 import {resolvePracticalCaseHandling} from "./practicalCaseHandling";
-import {HostCase, hostCaseBindingHash, parseHostCase, projectHostCase} from
+import {HostCase, hostCaseBindingHash, parseHostCase, projectHostCase,
+  projectCaseManagerOptions} from
   "./hostCaseRecords";
 
 export const CASE_RECEIPTS = "eventAssistanceCaseReceipts";
@@ -63,6 +64,7 @@ export class EventAssistanceCasesStore {
         this.db.collection("eventAttendees").doc(request.attendeeId))) : [];
       const result: ListResponse = {context: input.context, serverTime: now,
         coverage: "page", status: input.status,
+        managerOptions: projectCaseManagerOptions(organizer, actorUid),
         cases: page.map((request, i) =>
           projectHostCase(request, event, attendees[i], organizer)),
         nextCursor: requests.length > pageSize ? page.at(-1)!.caseId : null};

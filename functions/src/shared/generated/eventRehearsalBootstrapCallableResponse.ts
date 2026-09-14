@@ -606,6 +606,7 @@ export interface EventRehearsalBootstrapCallableResponse {
                 uid: string;
                 authority: "current" | "revoked";
               };
+          displayName?: string | null;
         }
       | {
           caseId: string;
@@ -631,6 +632,7 @@ export interface EventRehearsalBootstrapCallableResponse {
                 uid: string;
                 authority: "current" | "revoked";
               };
+          displayName?: string | null;
         }
       | {
           caseId: string;
@@ -646,6 +648,7 @@ export interface EventRehearsalBootstrapCallableResponse {
           assignment: {
             kind: "unavailable";
           };
+          displayName?: null;
         }
       | {
           caseId: string;
@@ -661,12 +664,23 @@ export interface EventRehearsalBootstrapCallableResponse {
           assignment: {
             kind: "unavailable";
           };
+          displayName?: null;
         }
     )[];
     /**
      * @maxItems 50
      */
     untrackedActorIds: string[];
+    managerOptions?: {
+      actorUid: string;
+      /**
+       * @maxItems 42
+       */
+      managers: {
+        uid: string;
+        displayName: string | null;
+      }[];
+    } | null;
   };
   deliveryReviews?: {
     context: (

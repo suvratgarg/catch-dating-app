@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {readFileSync} from "node:fs";
+import {readFileSync, writeFileSync} from "node:fs";
 import {randomUUID, createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
@@ -31,12 +31,13 @@ function organizer(): OrganizerDocument {
   organizerType: "community", hostUserIds: ["host-1", "host-2"]} as
     unknown as OrganizerDocument;
 }
-async function harness() {
+async function harness(now?: number) {
   const fake = new FakeFirestore();
   const db = fake as unknown as Firestore;
-  const session = practiceSession();
-  let actor = buildRehearsalActors("practice-help", 2, 1,
-    session.virtualNow)[0];
+  const session = practiceSession(now);
+  const actors = buildRehearsalActors("practice-help", 2, 1,
+    session.virtualNow);
+  let actor = actors[0];
   const departure = practiceDeparture(session, "practice-help");
   fake.write(departure.path, {...departure.record});
   const org = organizer();
@@ -53,7 +54,7 @@ async function harness() {
     });
   };
   const view = () => practiceHelpProjection(db, actor.sessionId,
-    session, [actor], "host-1");
+    session, [actor, actors[1]], "host-1");
   const resolve = async (row: Awaited<ReturnType<typeof view>>["cases"][number],
     outcome: "resolved" | "declined" | "transferred", owner = "host-1") => {
     actor = await db.runTransaction(async (tx) => {
@@ -66,7 +67,8 @@ async function harness() {
     });
   };
   return {fake, db, session, org, open, view, resolve,
-    actor: () => actor, setActor: (next: typeof actor) => {
+    actor: () => actor, actors: () => [actor, actors[1]],
+    setActor: (next: typeof actor) => {
       actor = next;
     }};
 }
@@ -240,3 +242,43 @@ test("Firestore help uses exact Host receipts and reset cleanup", {
   await expireEventRehearsalsHandler(db, Timestamp.fromMillis(0));
   await db.collection("organizers").doc(session.organizerId).delete();
 });
+
+
+test("native practice help fixture names and managers come from source",
+  async () => {
+    const h = await harness(1000);
+    h.org.hostProfiles = [
+      {uid: "host-1", displayName: "Sam", avatarUrl: null, role: "host"},
+      {uid: "host-2", displayName: "Priya", avatarUrl: null, role: "host"},
+    ];
+    h.fake.write("organizers/" + h.session.organizerId, h.org as unknown as
+      Record<string, unknown>);
+    await h.open();
+    const samples: Record<string, unknown> = {};
+    const sample = async (name: string) => {
+      samples[name] = JSON.parse(JSON.stringify({session: {
+        id: h.actor().sessionId, ...h.session,
+        virtualStartedAtMillis: h.session.virtualStartedAt.toMillis(),
+        virtualNowMillis: h.session.virtualNow.toMillis(),
+        expiresAtMillis: h.session.expiresAt.toMillis()},
+      actors: h.actors(), actions: [], canUseInternalFaults: false,
+      guestUrl: "https://catchdates.com/rehearse/practicepublic1234567890",
+      helpRequests: await h.view()}));
+    };
+    await sample("initial");
+    let row = (await h.view()).cases[0];
+    assert.equal(row.displayName, h.actor().displayName);
+    await h.resolve(row, "transferred", "host-2");
+    await sample("assigned");
+    row = (await h.view()).cases[0];
+    h.setActor({...h.actor(), displayName: "Changed name"});
+    await assert.rejects(h.resolve(row, "resolved"), {code: "aborted"});
+    h.setActor({...h.actor(), displayName: row.displayName!});
+    await h.resolve((await h.view()).cases[0], "resolved");
+    await sample("resolved");
+    const path = "../test/event_rehearsal/fixtures/help_queue.json";
+    if (process.env.UPDATE_HELP_QUEUE_FIXTURE === "1") {
+      writeFileSync(path, JSON.stringify(samples, null, 2) + "\n");
+    }
+    assert.deepEqual(JSON.parse(readFileSync(path, "utf8")), samples);
+  });

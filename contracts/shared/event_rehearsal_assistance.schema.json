@@ -1064,6 +1064,16 @@
           "items": {
             "$ref": "event_common.schema.json#/definitions/documentId"
           }
+        },
+        "managerOptions": {
+          "anyOf": [
+            {
+              "$ref": "event_assistance_cases.schema.json#/definitions/ManagerOptions"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },

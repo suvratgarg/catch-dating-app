@@ -161,6 +161,14 @@
             },
             "assignment": {
               "$ref": "#/definitions/Assignment"
+            },
+            "displayName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
             }
           }
         },
@@ -228,6 +236,14 @@
             },
             "assignment": {
               "$ref": "#/definitions/Assignment"
+            },
+            "displayName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
             }
           }
         },
@@ -304,6 +320,9 @@
                   "const": "unavailable"
                 }
               }
+            },
+            "displayName": {
+              "type": "null"
             }
           }
         },
@@ -378,6 +397,9 @@
                   "const": "unavailable"
                 }
               }
+            },
+            "displayName": {
+              "type": "null"
             }
           }
         }
@@ -426,6 +448,16 @@
               "minLength": 1,
               "maxLength": 160,
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "managerOptions": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ManagerOptions"
             },
             {
               "type": "null"
@@ -647,6 +679,50 @@
         },
         "resolution": {
           "$ref": "event_assistance_cases.schema.json#/definitions/Resolution"
+        }
+      }
+    },
+    "ManagerOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actorUid",
+        "managers"
+      ],
+      "properties": {
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "managers": {
+          "type": "array",
+          "maxItems": 42,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "uid",
+              "displayName"
+            ],
+            "properties": {
+              "uid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160,
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+              },
+              "displayName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 120
+              }
+            }
+          }
         }
       }
     }

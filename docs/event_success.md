@@ -1,7 +1,7 @@
 ---
 doc_id: event_success
-version: 1.118.0
-updated: 2026-09-14
+version: 1.119.0
+updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -574,12 +574,37 @@ receipt. Each successful or definitively rejected operation removes only its own
 reference; account changes retire the index. Tests cover missing rows, multiple
 pending cases, detached retries, reentrant taps and same-UID sign-in replacement.
 
+The shared runtime now mounts a practical-help entry, open/handled queue and atomic
+request decision sheet in live mode and rehearsal. Verified guest names, category,
+request time, assignee and outcome use readable records. Only transfer configuration
+reveals a manager picker; self-assignment, transfer, resolution and decline require
+an explicit save. Unnamed or indistinguishable other managers cannot be selected.
+A review binds the current guest name into its source hash. Missing or replaced
+sources redact the name; omitted older name/choice projections remain unknown.
+Manager choices are caller-bound snapshots; every server write independently
+rechecks current manager authority. The choice list cannot grant or extend access.
+
+Live pagination preserves an explicit cursor history without claiming an event-wide
+count. Practice pages slice the bounded session queue and preserve untracked legacy
+flags separately. Both queues expose pending-command discovery even when a case is
+no longer open. The rehearsal case owner binds organizer/session, setup generation,
+clock and case; it retains one exact command across refresh and detached sheets,
+retires account authority on sign-out, and verifies the specific help outcome behind
+the parent receipt. Current manager choices gate transfer selection in both owners.
+Delegated practice roles can review help but cannot handle it as the Host.
+
+The help entry also remains in every report availability state, including waiting
+for feedback or a disabled report module. Event completion never hides practical
+follow-up. Actual backend read fixtures exercise both adapters; shared widget tests
+cover handoff, unconfirmed save, sheet closure, exact retry and resolution at normal
+and 2x text size. Isolated Widgetbook previews use those fixtures and simulated
+uncertainty; their shared generated index remains claimed by another task.
+
 Handling never changes attendance, participation, allocations, guest intention,
 message delivery, consent or the restricted safety queue. Check-in, a new guest
 episode, event cancellation and the event end time do not settle an unanswered
 help request. A retried guest reply cannot reopen a settled case. Case records
-and receipts remain server-only. Host Today integration, the actionable runtime
-sheet, audited legacy repair and terminal retention remain
+and receipts remain server-only. Host Today integration, audited legacy repair and terminal retention remain
 subsequent work; these callables have not been deployed by this source change.
 
 ### Delivery review and manual handling

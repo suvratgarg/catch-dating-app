@@ -10,7 +10,8 @@ import {validateEventAssistanceCaseDocument} from
   "../../shared/generated/validators/eventAssistanceCaseDocument";
 import {validateEventAttendeeDocument} from
   "../../shared/generated/validators/eventAttendeeDocument";
-import {isOrganizerManager} from "../../shared/organizerHosts";
+import {isOrganizerManager, organizerHostProfiles,
+  organizerManagerUserIds} from "../../shared/organizerHosts";
 import {guestIdentity, guestSourceFactsFromSnapshots} from "./guestRecords";
 import {invalidSource} from "./groupProgressSource";
 import {sameMessageContext} from "./messagingPolicy";
@@ -65,12 +66,14 @@ export function projectHostCase(value: HostCase, event: DocumentSnapshot,
     modern.sourceGeneration === sourceGeneration &&
       modern.attendeeGeneration === attendeeGeneration ?
       "current" : "sourceChanged";
-  const common = {caseId: value.caseId,
+  const displayName = availability === "current" ?
+    row!.displayName as string : null;
+  const common = {caseId: value.caseId, displayName,
     sourceHash: operationContentHash([value, sourceGeneration,
-      attendeeGeneration]), category: value.category,
+      attendeeGeneration, displayName]), category: value.category,
     receivedAt: value.receivedAt};
   if (!modern || availability !== "current") {
-    const unavailable = {...common, status: value.status,
+    const unavailable = {...common, displayName: null, status: value.status,
       attendeeId: null, resolution: null, canChange: false as const,
       assignment: {kind: "unavailable" as const}};
     return modern ? {...unavailable, availability: "sourceChanged",
@@ -87,4 +90,15 @@ export function projectHostCase(value: HostCase, event: DocumentSnapshot,
   return modern.status === "open" ? {...current, status: "open",
     resolution: null, canChange: true} : {...current, status: "resolved",
     resolution: modern.handling.resolution, canChange: false};
+}
+
+
+/** Current organizer managers only; selected identity is rechecked on write. */
+export function projectCaseManagerOptions(organizer: OrganizerDocument,
+  actorUid: string): Response["managerOptions"] {
+  if (!isOrganizerManager(organizer, actorUid)) throw invalidSource();
+  const profiles = organizerHostProfiles(organizer);
+  const managers = organizerManagerUserIds(organizer).map((uid) => ({uid,
+    displayName: profiles.find((p) => p.uid === uid)?.displayName ?? null}));
+  return {actorUid, managers};
 }

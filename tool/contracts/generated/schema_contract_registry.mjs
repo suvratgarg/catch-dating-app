@@ -5167,6 +5167,14 @@ export const eventAssistanceCasesCallableResponseSchema = {
                     }
                   }
                 ]
+              },
+              "displayName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 120
               }
             }
           },
@@ -5298,6 +5306,14 @@ export const eventAssistanceCasesCallableResponseSchema = {
                     }
                   }
                 ]
+              },
+              "displayName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 120
               }
             }
           },
@@ -5374,6 +5390,9 @@ export const eventAssistanceCasesCallableResponseSchema = {
                     "const": "unavailable"
                   }
                 }
+              },
+              "displayName": {
+                "type": "null"
               }
             }
           },
@@ -5448,6 +5467,9 @@ export const eventAssistanceCasesCallableResponseSchema = {
                     "const": "unavailable"
                   }
                 }
+              },
+              "displayName": {
+                "type": "null"
               }
             }
           }
@@ -5461,6 +5483,57 @@ export const eventAssistanceCasesCallableResponseSchema = {
           "minLength": 1,
           "maxLength": 160,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "managerOptions": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actorUid",
+            "managers"
+          ],
+          "properties": {
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "managers": {
+              "type": "array",
+              "maxItems": 42,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "uid",
+                  "displayName"
+                ],
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "displayName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 120
+                  }
+                }
+              }
+            }
+          }
         },
         {
           "type": "null"
@@ -5629,6 +5702,14 @@ export const eventAssistanceCaseCallableResponseSchema = {
                   }
                 }
               ]
+            },
+            "displayName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
             }
           }
         },
@@ -5760,6 +5841,14 @@ export const eventAssistanceCaseCallableResponseSchema = {
                   }
                 }
               ]
+            },
+            "displayName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
             }
           }
         },
@@ -5836,6 +5925,9 @@ export const eventAssistanceCaseCallableResponseSchema = {
                   "const": "unavailable"
                 }
               }
+            },
+            "displayName": {
+              "type": "null"
             }
           }
         },
@@ -5910,6 +6002,9 @@ export const eventAssistanceCaseCallableResponseSchema = {
                   "const": "unavailable"
                 }
               }
+            },
+            "displayName": {
+              "type": "null"
             }
           }
         }
@@ -154896,6 +154991,14 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                         }
                       }
                     ]
+                  },
+                  "displayName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 120
                   }
                 }
               },
@@ -155027,6 +155130,14 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                         }
                       }
                     ]
+                  },
+                  "displayName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 120
                   }
                 }
               },
@@ -155103,6 +155214,9 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                         "const": "unavailable"
                       }
                     }
+                  },
+                  "displayName": {
+                    "type": "null"
                   }
                 }
               },
@@ -155177,6 +155291,9 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                         "const": "unavailable"
                       }
                     }
+                  },
+                  "displayName": {
+                    "type": "null"
                   }
                 }
               }
@@ -155192,6 +155309,57 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
             "minLength": 1,
             "maxLength": 180
           }
+        },
+        "managerOptions": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "actorUid",
+                "managers"
+              ],
+              "properties": {
+                "actorUid": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 160,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "managers": {
+                  "type": "array",
+                  "maxItems": 42,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "uid",
+                      "displayName"
+                    ],
+                    "properties": {
+                      "uid": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160,
+                        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                      },
+                      "displayName": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 120
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },

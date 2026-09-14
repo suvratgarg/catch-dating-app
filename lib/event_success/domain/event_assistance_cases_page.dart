@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/event_success/domain/event_assistance_case.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_case_managers.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_scope.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
@@ -8,12 +9,14 @@ final class EventAssistanceCasesPage {
     required this.serverTime,
     required this.cases,
     required this.nextCursor,
+    required this.managerOptions,
   });
 
   final EventAssistanceCaseQuery query;
   final int serverTime;
   final List<AssistanceHostCase> cases;
   final String? nextCursor;
+  final AssistanceCaseManagerOptions? managerOptions;
 
   factory EventAssistanceCasesPage.fromCallableData(
     Object? value, {
@@ -26,6 +29,8 @@ final class EventAssistanceCasesPage {
       'status',
       'cases',
       'nextCursor',
+      if (assistanceObject(value).containsKey('managerOptions'))
+        'managerOptions',
     });
     validateAssistanceCaseContext(
       map['context'],
@@ -74,6 +79,9 @@ final class EventAssistanceCasesPage {
       serverTime: serverTime,
       cases: List.unmodifiable(cases),
       nextCursor: nextCursor,
+      managerOptions: map['managerOptions'] == null
+          ? null
+          : AssistanceCaseManagerOptions.fromJson(map['managerOptions']),
     );
   }
 

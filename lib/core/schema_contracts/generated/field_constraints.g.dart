@@ -12680,6 +12680,39 @@ abstract final class CatchContractConstraints {
     required: true,
   );
 
+  static const eventAssistanceCasesCallableResponseManagerOptionsActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceCasesCallableResponse.managerOptions.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceCasesCallableResponseManagerOptionsManagers = CatchContractFieldConstraints(
+    path: 'eventAssistanceCasesCallableResponse.managerOptions.managers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 42,
+  );
+
+  static const eventAssistanceCasesCallableResponseManagerOptionsManagersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventAssistanceCasesCallableResponse.managerOptions.managers.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceCasesCallableResponseManagerOptionsManagersItemsUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceCasesCallableResponse.managerOptions.managers.items.uid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceCasesCallableResponseNextCursor = CatchContractFieldConstraints(
     path: 'eventAssistanceCasesCallableResponse.nextCursor',
     maxLength: 160,
@@ -31919,6 +31952,39 @@ abstract final class CatchContractConstraints {
   static const eventRehearsalBootstrapCallableResponseHelpRequestsCoverage = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.helpRequests.coverage',
     required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsManagerOptionsActorUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.managerOptions.actorUid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsManagerOptionsManagers = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.managerOptions.managers',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 42,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsManagerOptionsManagersItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.managerOptions.managers.items.displayName',
+    maxLength: 120,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseHelpRequestsManagerOptionsManagersItemsUid = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.helpRequests.managerOptions.managers.items.uid',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const eventRehearsalBootstrapCallableResponseHelpRequestsUntrackedActorIds = CatchContractFieldConstraints(
@@ -93060,6 +93126,10 @@ abstract final class CatchContractConstraints {
     'eventAssistanceCasesCallableResponse.context.mode': eventAssistanceCasesCallableResponseContextMode,
     'eventAssistanceCasesCallableResponse.context.organizerId': eventAssistanceCasesCallableResponseContextOrganizerId,
     'eventAssistanceCasesCallableResponse.coverage': eventAssistanceCasesCallableResponseCoverage,
+    'eventAssistanceCasesCallableResponse.managerOptions.actorUid': eventAssistanceCasesCallableResponseManagerOptionsActorUid,
+    'eventAssistanceCasesCallableResponse.managerOptions.managers': eventAssistanceCasesCallableResponseManagerOptionsManagers,
+    'eventAssistanceCasesCallableResponse.managerOptions.managers.items.displayName': eventAssistanceCasesCallableResponseManagerOptionsManagersItemsDisplayName,
+    'eventAssistanceCasesCallableResponse.managerOptions.managers.items.uid': eventAssistanceCasesCallableResponseManagerOptionsManagersItemsUid,
     'eventAssistanceCasesCallableResponse.nextCursor': eventAssistanceCasesCallableResponseNextCursor,
     'eventAssistanceCasesCallableResponse.serverTime': eventAssistanceCasesCallableResponseServerTime,
     'eventAssistanceCasesCallableResponse.status': eventAssistanceCasesCallableResponseStatus,
@@ -95628,6 +95698,10 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.helpRequests.cases.items.status': eventRehearsalBootstrapCallableResponseHelpRequestsCasesItemsStatus,
     'eventRehearsalBootstrapCallableResponse.helpRequests.clockId': eventRehearsalBootstrapCallableResponseHelpRequestsClockId,
     'eventRehearsalBootstrapCallableResponse.helpRequests.coverage': eventRehearsalBootstrapCallableResponseHelpRequestsCoverage,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.managerOptions.actorUid': eventRehearsalBootstrapCallableResponseHelpRequestsManagerOptionsActorUid,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.managerOptions.managers': eventRehearsalBootstrapCallableResponseHelpRequestsManagerOptionsManagers,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.managerOptions.managers.items.displayName': eventRehearsalBootstrapCallableResponseHelpRequestsManagerOptionsManagersItemsDisplayName,
+    'eventRehearsalBootstrapCallableResponse.helpRequests.managerOptions.managers.items.uid': eventRehearsalBootstrapCallableResponseHelpRequestsManagerOptionsManagersItemsUid,
     'eventRehearsalBootstrapCallableResponse.helpRequests.untrackedActorIds': eventRehearsalBootstrapCallableResponseHelpRequestsUntrackedActorIds,
     'eventRehearsalBootstrapCallableResponse.helpRequests.untrackedActorIds.items': eventRehearsalBootstrapCallableResponseHelpRequestsUntrackedActorIdsItems,
     'eventRehearsalBootstrapCallableResponse.membershipReviews.actorUid': eventRehearsalBootstrapCallableResponseMembershipReviewsActorUid,

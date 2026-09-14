@@ -160,6 +160,14 @@ export const eventAssistanceCaseCallableResponseSchema: Record<string, unknown> 
                   }
                 }
               ]
+            },
+            "displayName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
             }
           }
         },
@@ -291,6 +299,14 @@ export const eventAssistanceCaseCallableResponseSchema: Record<string, unknown> 
                   }
                 }
               ]
+            },
+            "displayName": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "minLength": 1,
+              "maxLength": 120
             }
           }
         },
@@ -367,6 +383,9 @@ export const eventAssistanceCaseCallableResponseSchema: Record<string, unknown> 
                   "const": "unavailable"
                 }
               }
+            },
+            "displayName": {
+              "type": "null"
             }
           }
         },
@@ -441,6 +460,9 @@ export const eventAssistanceCaseCallableResponseSchema: Record<string, unknown> 
                   "const": "unavailable"
                 }
               }
+            },
+            "displayName": {
+              "type": "null"
             }
           }
         }

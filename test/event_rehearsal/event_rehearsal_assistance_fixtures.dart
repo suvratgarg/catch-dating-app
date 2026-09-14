@@ -183,7 +183,7 @@ Map<String, Object?> practiceAutomation({
 Map<String, Object?> practiceHelpCase({bool settled = false}) => {
   'caseId': 'practice-case:${'a' * 64}',
   'revision': settled ? 1 : 0,
-  'sourceHash': 'b' * 64,
+  'sourceHash': (settled ? 'c' : 'b') * 64,
   'availability': 'current',
   'attendeeId': 'actor-01',
   'category': 'eventLogistics',

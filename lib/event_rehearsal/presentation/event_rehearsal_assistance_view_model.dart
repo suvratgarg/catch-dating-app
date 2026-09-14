@@ -106,6 +106,13 @@ Future<RehearsalAssistanceReview> eventRehearsalAssistanceForAccount(
       'Rehearsal review returned a different session.',
     );
   }
+  if (snapshot.helpRequests?.managerOptions case final choices?) {
+    if (choices.actorUid != account.uid) {
+      throw const FormatException(
+        'Practice help choices belong to another Host.',
+      );
+    }
+  }
   final review = RehearsalAssistanceReview._(account, snapshot);
   ref.onDispose(() => review._current = false);
   return review;

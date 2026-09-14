@@ -163,6 +163,14 @@ const schemaEventAssistanceCaseCallableResponseSchema = <String, Object?>{
                 },
               ],
             },
+            'displayName': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 120,
+            },
           },
         },
         <String, Object?>{
@@ -294,6 +302,14 @@ const schemaEventAssistanceCaseCallableResponseSchema = <String, Object?>{
                 },
               ],
             },
+            'displayName': <String, Object?>{
+              'type': <Object?>[
+                'string',
+                'null',
+              ],
+              'minLength': 1,
+              'maxLength': 120,
+            },
           },
         },
         <String, Object?>{
@@ -370,6 +386,9 @@ const schemaEventAssistanceCaseCallableResponseSchema = <String, Object?>{
                 },
               },
             },
+            'displayName': <String, Object?>{
+              'type': 'null',
+            },
           },
         },
         <String, Object?>{
@@ -443,6 +462,9 @@ const schemaEventAssistanceCaseCallableResponseSchema = <String, Object?>{
                   'const': 'unavailable',
                 },
               },
+            },
+            'displayName': <String, Object?>{
+              'type': 'null',
             },
           },
         },

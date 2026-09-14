@@ -3,7 +3,33 @@ import 'dart:convert';
 import 'package:catch_dating_app/core/cryptography/sha256_digest.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_case_managers.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
+
+typedef RehearsalHelpScope = ({
+  String sessionId,
+  String organizerId,
+  int setupRevision,
+  String clockId,
+  String caseId,
+});
+
+RehearsalHelpScope rehearsalHelpScope(
+  EventRehearsalBootstrap snapshot,
+  RehearsalHelpCase request,
+) {
+  if (!(snapshot.helpRequests?.cases.any((r) => identical(r, request)) ??
+      false)) {
+    throw const FormatException('Review a request from this practice run.');
+  }
+  return (
+    sessionId: snapshot.session.id,
+    organizerId: snapshot.session.organizerId,
+    setupRevision: snapshot.session.setupRevision,
+    clockId: snapshot.helpRequests!.clockId,
+    caseId: request.caseId,
+  );
+}
 
 /// A bounded rehearsal queue; it never carries a live event command scope.
 final class RehearsalHelpRequests {
@@ -11,10 +37,12 @@ final class RehearsalHelpRequests {
     this.clockId,
     this.cases,
     this.untrackedActorIds,
+    this.managerOptions,
   );
   final String clockId;
   final List<RehearsalHelpCase> cases;
   final List<String> untrackedActorIds;
+  final AssistanceCaseManagerOptions? managerOptions;
 
   factory RehearsalHelpRequests.fromJson(
     Object? value, {
@@ -26,6 +54,8 @@ final class RehearsalHelpRequests {
       'coverage',
       'cases',
       'untrackedActorIds',
+      if (assistanceObject(value).containsKey('managerOptions'))
+        'managerOptions',
     });
     final startedAt = session.virtualStartedAt?.millisecondsSinceEpoch;
     final expectedClock =
@@ -49,6 +79,13 @@ final class RehearsalHelpRequests {
     if (rows.map((r) => r.caseId).toSet().length != rows.length ||
         unknown.toSet().length != unknown.length ||
         rows.any((r) => !actorIds.contains(r.actorId)) ||
+        rows.any(
+          (r) =>
+              r.displayName != null &&
+              !actors.any(
+                (a) => a.actorId == r.actorId && a.displayName == r.displayName,
+              ),
+        ) ||
         unknown.any((id) => !actorIds.contains(id))) {
       throw const FormatException(
         'Practice help request guest scope mismatch.',
@@ -58,6 +95,9 @@ final class RehearsalHelpRequests {
       expectedClock,
       List.unmodifiable(rows),
       List.unmodifiable(unknown),
+      map['managerOptions'] == null
+          ? null
+          : AssistanceCaseManagerOptions.fromJson(map['managerOptions']),
     );
   }
 }
@@ -72,6 +112,7 @@ sealed class RehearsalHelpCase {
     required this.revision,
     required this.receivedAt,
     required this.category,
+    required this.displayName,
     required this.assignment,
   });
   final String sessionId;
@@ -82,6 +123,7 @@ sealed class RehearsalHelpCase {
   final int revision;
   final int receivedAt;
   final AssistanceCaseCategory category;
+  final String? displayName;
   final AssistanceCaseAssignment assignment;
 
   factory RehearsalHelpCase.fromJson(
@@ -100,6 +142,7 @@ sealed class RehearsalHelpCase {
       'resolution',
       'canChange',
       'assignment',
+      if (assistanceObject(value).containsKey('displayName')) 'displayName',
     });
     final caseId = assistanceId(map['caseId']);
     final receivedAt = assistanceInteger(map['receivedAt']);
@@ -120,6 +163,9 @@ sealed class RehearsalHelpCase {
       AssistanceCaseCategory.values,
       map['category'],
     );
+    final displayName = map['displayName'] == null
+        ? null
+        : assistanceText(map['displayName'], 120);
     final assigned = AssistanceCaseAssignment.fromJson(map['assignment']);
     if (map['status'] == 'open') {
       if (!canChange || map['resolution'] != null) {
@@ -134,6 +180,7 @@ sealed class RehearsalHelpCase {
         revision: revision,
         receivedAt: receivedAt,
         category: category,
+        displayName: displayName,
         assignment: assigned,
       );
     }
@@ -156,6 +203,7 @@ sealed class RehearsalHelpCase {
       revision: revision,
       receivedAt: receivedAt,
       category: category,
+      displayName: displayName,
       assignment: assigned,
       resolution: resolved,
     );
@@ -172,6 +220,7 @@ final class RehearsalOpenHelpCase extends RehearsalHelpCase {
     required super.revision,
     required super.receivedAt,
     required super.category,
+    required super.displayName,
     required super.assignment,
   }) : super._();
 }
@@ -186,6 +235,7 @@ final class RehearsalClosedHelpCase extends RehearsalHelpCase {
     required super.revision,
     required super.receivedAt,
     required super.category,
+    required super.displayName,
     required super.assignment,
     required this.resolution,
   }) : super._();

@@ -162,6 +162,14 @@ export const eventAssistanceCasesCallableResponseSchema: Record<string, unknown>
                     }
                   }
                 ]
+              },
+              "displayName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 120
               }
             }
           },
@@ -293,6 +301,14 @@ export const eventAssistanceCasesCallableResponseSchema: Record<string, unknown>
                     }
                   }
                 ]
+              },
+              "displayName": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "minLength": 1,
+                "maxLength": 120
               }
             }
           },
@@ -369,6 +385,9 @@ export const eventAssistanceCasesCallableResponseSchema: Record<string, unknown>
                     "const": "unavailable"
                   }
                 }
+              },
+              "displayName": {
+                "type": "null"
               }
             }
           },
@@ -443,6 +462,9 @@ export const eventAssistanceCasesCallableResponseSchema: Record<string, unknown>
                     "const": "unavailable"
                   }
                 }
+              },
+              "displayName": {
+                "type": "null"
               }
             }
           }
@@ -456,6 +478,57 @@ export const eventAssistanceCasesCallableResponseSchema: Record<string, unknown>
           "minLength": 1,
           "maxLength": 160,
           "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "managerOptions": {
+      "anyOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actorUid",
+            "managers"
+          ],
+          "properties": {
+            "actorUid": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+            },
+            "managers": {
+              "type": "array",
+              "maxItems": 42,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "uid",
+                  "displayName"
+                ],
+                "properties": {
+                  "uid": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "displayName": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 120
+                  }
+                }
+              }
+            }
+          }
         },
         {
           "type": "null"

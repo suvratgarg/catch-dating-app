@@ -29325,6 +29325,309 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save reporter change'**
   String get eventAssistanceCheckpointReporterSave;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest help'**
+  String get eventAssistanceHelpTitle;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Review practical requests and decide who will follow up.'**
+  String get eventAssistanceHelpBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get eventAssistanceHelpOpen;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Handled'**
+  String get eventAssistanceHelpHandled;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'No open requests on this page.'**
+  String get eventAssistanceHelpEmptyOpen;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'No handled requests on this page.'**
+  String get eventAssistanceHelpEmptyHandled;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Review requests'**
+  String get eventAssistanceHelpReview;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'This is one page of requests. Reload to check for updates.'**
+  String get eventAssistanceHelpPageBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous page'**
+  String get eventAssistanceHelpPrevious;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Next page'**
+  String get eventAssistanceHelpNext;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload requests'**
+  String get eventAssistanceHelpReload;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Guest details unavailable'**
+  String get eventAssistanceHelpUnknownGuest;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Event logistics'**
+  String get eventAssistanceHelpLogistics;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessibility help'**
+  String get eventAssistanceHelpAccessibility;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Other practical help'**
+  String get eventAssistanceHelpOther;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'No host assigned'**
+  String get eventAssistanceHelpUnassigned;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned host details unavailable'**
+  String get eventAssistanceHelpUnknownHost;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs a new host'**
+  String get eventAssistanceHelpOwnerRemoved;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get eventAssistanceHelpResolved;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get eventAssistanceHelpDeclined;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'The guest record has changed. This request is read-only.'**
+  String get eventAssistanceHelpSourceChanged;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'This older request needs a source review before it can be handled.'**
+  String get eventAssistanceHelpLegacy;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'I’ll handle this'**
+  String get eventAssistanceHelpTake;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to a host'**
+  String get eventAssistanceHelpTransfer;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark resolved'**
+  String get eventAssistanceHelpResolve;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline request'**
+  String get eventAssistanceHelpDecline;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Record yourself as responsible for following up with this guest.'**
+  String get eventAssistanceHelpTakeBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an existing host to follow up with this guest.'**
+  String get eventAssistanceHelpTransferBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm that this guest’s request has been handled.'**
+  String get eventAssistanceHelpResolveBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Record that this request cannot be fulfilled.'**
+  String get eventAssistanceHelpDeclineBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsible host'**
+  String get eventAssistanceHelpHost;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload to review available hosts.'**
+  String get eventAssistanceHelpNoHosts;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Hosts need a distinct display name to appear here.'**
+  String get eventAssistanceHelpUnnamedHosts;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Save decision'**
+  String get eventAssistanceHelpConfirm;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose another action'**
+  String get eventAssistanceHelpChooseAgain;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving this decision…'**
+  String get eventAssistanceHelpSaving;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'The save has not been confirmed. Retry the same decision to find out whether it was saved.'**
+  String get eventAssistanceHelpUnconfirmed;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'The request or your access changed. Reload before making a new decision.'**
+  String get eventAssistanceHelpChanged;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision saved.'**
+  String get eventAssistanceHelpSaved;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation needed'**
+  String get eventAssistanceHelpPending;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Review this earlier decision to confirm its outcome.'**
+  String get eventAssistanceHelpPendingBody;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'This request is no longer on the current page. Reload the queue to review its latest state.'**
+  String get eventAssistanceHelpMissing;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Some older practice help flags do not have a reviewable request.'**
+  String get eventAssistanceHelpPracticeUnknown;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to the host role to handle practical help requests.'**
+  String get eventAssistanceHelpPracticeHost;
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Responsible: {name}'**
+  String eventAssistanceHelpAssigned({required String name});
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested {date} at {time}'**
+  String eventAssistanceHelpReceived({
+    required String date,
+    required String time,
+  });
+
+  /// Shared live and rehearsal guest-help interface.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision: {action}'**
+  String eventAssistanceHelpSelected({required String action});
+
+  /// A help request is visible but the current role cannot handle it.
+  ///
+  /// In en, this message translates to:
+  /// **'Review only'**
+  String get eventAssistanceHelpReadOnly;
+
+  /// Retry the same uncertain help decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this decision'**
+  String get eventAssistanceHelpRetry;
+
+  /// The host chosen for this help decision.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to {name}'**
+  String eventAssistanceHelpTransferValue({required String name});
 }
 
 class _AppLocalizationsDelegate

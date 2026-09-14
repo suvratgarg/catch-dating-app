@@ -27,6 +27,9 @@ export 'presentation/event_assistance_departure_history_section.dart'; // public
 export 'presentation/event_assistance_departure_section.dart'; // public-api: shared live and rehearsal departure controls
 export 'presentation/event_assistance_group_roster_section.dart'; // public-api: shared live and rehearsal group guest selection
 export 'presentation/event_assistance_group_staff_copy.dart'; // public-api: shared live and rehearsal group duty descriptions
+export 'presentation/event_assistance_help_decision_section.dart'; // public-api: shared live and rehearsal practical help decisions
+export 'presentation/event_assistance_help_entry.dart'; // public-api: shared live and rehearsal practical help entry
+export 'presentation/event_assistance_help_queue_section.dart'; // public-api: shared live and rehearsal practical help records
 export 'presentation/event_assistance_membership_section.dart'; // public-api: shared live and rehearsal group responsibility controls
 export 'presentation/event_assistance_movement_section.dart'; // public-api: shared live and rehearsal group movement entry
 export 'presentation/event_assistance_sweep_section.dart'; // public-api: shared live and rehearsal sweep roster

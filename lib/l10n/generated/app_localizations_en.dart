@@ -18504,4 +18504,182 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventAssistanceCheckpointReporterSave => 'Save reporter change';
+
+  @override
+  String get eventAssistanceHelpTitle => 'Guest help';
+
+  @override
+  String get eventAssistanceHelpBody =>
+      'Review practical requests and decide who will follow up.';
+
+  @override
+  String get eventAssistanceHelpOpen => 'Open';
+
+  @override
+  String get eventAssistanceHelpHandled => 'Handled';
+
+  @override
+  String get eventAssistanceHelpEmptyOpen => 'No open requests on this page.';
+
+  @override
+  String get eventAssistanceHelpEmptyHandled =>
+      'No handled requests on this page.';
+
+  @override
+  String get eventAssistanceHelpReview => 'Review requests';
+
+  @override
+  String get eventAssistanceHelpPageBody =>
+      'This is one page of requests. Reload to check for updates.';
+
+  @override
+  String get eventAssistanceHelpPrevious => 'Previous page';
+
+  @override
+  String get eventAssistanceHelpNext => 'Next page';
+
+  @override
+  String get eventAssistanceHelpReload => 'Reload requests';
+
+  @override
+  String get eventAssistanceHelpUnknownGuest => 'Guest details unavailable';
+
+  @override
+  String get eventAssistanceHelpLogistics => 'Event logistics';
+
+  @override
+  String get eventAssistanceHelpAccessibility => 'Accessibility help';
+
+  @override
+  String get eventAssistanceHelpOther => 'Other practical help';
+
+  @override
+  String get eventAssistanceHelpUnassigned => 'No host assigned';
+
+  @override
+  String get eventAssistanceHelpUnknownHost =>
+      'Assigned host details unavailable';
+
+  @override
+  String get eventAssistanceHelpOwnerRemoved => 'Needs a new host';
+
+  @override
+  String get eventAssistanceHelpResolved => 'Resolved';
+
+  @override
+  String get eventAssistanceHelpDeclined => 'Declined';
+
+  @override
+  String get eventAssistanceHelpSourceChanged =>
+      'The guest record has changed. This request is read-only.';
+
+  @override
+  String get eventAssistanceHelpLegacy =>
+      'This older request needs a source review before it can be handled.';
+
+  @override
+  String get eventAssistanceHelpTake => 'I’ll handle this';
+
+  @override
+  String get eventAssistanceHelpTransfer => 'Assign to a host';
+
+  @override
+  String get eventAssistanceHelpResolve => 'Mark resolved';
+
+  @override
+  String get eventAssistanceHelpDecline => 'Decline request';
+
+  @override
+  String get eventAssistanceHelpTakeBody =>
+      'Record yourself as responsible for following up with this guest.';
+
+  @override
+  String get eventAssistanceHelpTransferBody =>
+      'Choose an existing host to follow up with this guest.';
+
+  @override
+  String get eventAssistanceHelpResolveBody =>
+      'Confirm that this guest’s request has been handled.';
+
+  @override
+  String get eventAssistanceHelpDeclineBody =>
+      'Record that this request cannot be fulfilled.';
+
+  @override
+  String get eventAssistanceHelpHost => 'Responsible host';
+
+  @override
+  String get eventAssistanceHelpNoHosts => 'Reload to review available hosts.';
+
+  @override
+  String get eventAssistanceHelpUnnamedHosts =>
+      'Hosts need a distinct display name to appear here.';
+
+  @override
+  String get eventAssistanceHelpConfirm => 'Save decision';
+
+  @override
+  String get eventAssistanceHelpChooseAgain => 'Choose another action';
+
+  @override
+  String get eventAssistanceHelpSaving => 'Saving this decision…';
+
+  @override
+  String get eventAssistanceHelpUnconfirmed =>
+      'The save has not been confirmed. Retry the same decision to find out whether it was saved.';
+
+  @override
+  String get eventAssistanceHelpChanged =>
+      'The request or your access changed. Reload before making a new decision.';
+
+  @override
+  String get eventAssistanceHelpSaved => 'Decision saved.';
+
+  @override
+  String get eventAssistanceHelpPending => 'Confirmation needed';
+
+  @override
+  String get eventAssistanceHelpPendingBody =>
+      'Review this earlier decision to confirm its outcome.';
+
+  @override
+  String get eventAssistanceHelpMissing =>
+      'This request is no longer on the current page. Reload the queue to review its latest state.';
+
+  @override
+  String get eventAssistanceHelpPracticeUnknown =>
+      'Some older practice help flags do not have a reviewable request.';
+
+  @override
+  String get eventAssistanceHelpPracticeHost =>
+      'Switch to the host role to handle practical help requests.';
+
+  @override
+  String eventAssistanceHelpAssigned({required String name}) {
+    return 'Responsible: $name';
+  }
+
+  @override
+  String eventAssistanceHelpReceived({
+    required String date,
+    required String time,
+  }) {
+    return 'Requested $date at $time';
+  }
+
+  @override
+  String eventAssistanceHelpSelected({required String action}) {
+    return 'Decision: $action';
+  }
+
+  @override
+  String get eventAssistanceHelpReadOnly => 'Review only';
+
+  @override
+  String get eventAssistanceHelpRetry => 'Retry this decision';
+
+  @override
+  String eventAssistanceHelpTransferValue({required String name}) {
+    return 'Assign to $name';
+  }
 }

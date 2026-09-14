@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.109.0
-updated: 2026-09-14
+version: 1.110.0
+updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -310,6 +310,12 @@ cannot invent their missing source binding or authorize their mutation.
 
 `listEventAssistanceCases` provides a manager-only, bounded page of practical
 requests, with stale identity redaction and no event-wide completeness claim.
+Optional current-source guest names and manager choice snapshots are shared with
+rehearsal help projections. Source-changed and legacy rows can expose only a null
+name. Manager options bind the caller and contain at most 42 distinct canonical
+managers; every assignment rechecks current authority. Native parsers reject duplicate/missing-caller
+choices and a rehearsal name that differs from its actor. Guest-name changes alter
+the reviewed source hash, independently of the immutable retry binding.
 `resolveEventAssistanceCase` owns resolution, decline and manager handoff. The
 canonical command includes the expected case revision; its callable also
 requires the reviewed source hash. `eventAssistanceCaseReceipts` records exact
