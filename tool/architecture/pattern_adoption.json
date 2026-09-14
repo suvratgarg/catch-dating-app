@@ -2109,7 +2109,7 @@
         "lib/swipes/shared/profile_surface/catch_profile_view.dart",
         "test/clubs/club_hero_app_bar_test.dart",
         "test/swipes/profile_surface_contract_test.dart",
-        "widgetbook/lib/clubs/club_detail_use_cases.dart",
+        "widgetbook/lib/clubs/catalog/poster.dart",
         "widgetbook/lib/catches/catalog/profile_media.dart"
       ],
       "adopters": [
