@@ -64,7 +64,8 @@ final class RehearsalMovementForm extends RehearsalMovementEditorState {
   bool get canRetry => phase == RehearsalMovementPhase.retryRequired;
   bool get canReload =>
       phase == RehearsalMovementPhase.ready ||
-      phase == RehearsalMovementPhase.refreshRequired;
+      phase == RehearsalMovementPhase.refreshRequired ||
+      phase == RehearsalMovementPhase.saved;
   RehearsalMovementForm _after(
     RehearsalMovementPhase phase, {
     required RehearsalMovementChange change,
@@ -156,6 +157,7 @@ class EventRehearsalMovementController
   }
 
   void reload() {
+    if (!ref.mounted) return;
     final form = state;
     if (form is! RehearsalMovementForm ||
         !form.canReload ||

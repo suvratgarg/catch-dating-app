@@ -192,3 +192,58 @@ AssistanceCheckpointSupplement<T> _managementSupplement<T>(
   }
   return AssistanceCheckpointProvided(m[key] == null ? null : parse(m[key]));
 }
+
+/// Shared eligibility for practice controls and their typed commands.
+final class RehearsalCheckpointRequestPermissions {
+  const RehearsalCheckpointRequestPermissions(this.snapshot);
+  final RehearsalMovementReview snapshot;
+  RehearsalMovementCheckpoint? get _checkpoint => snapshot.checkpoint;
+  bool get _active =>
+      snapshot.session.actionCount < 500 &&
+      snapshot.session.runtimeRevision < 2147483647 &&
+      {
+        EventRehearsalStatus.running,
+        EventRehearsalStatus.paused,
+        EventRehearsalStatus.complete,
+      }.contains(snapshot.session.status) &&
+      (snapshot.staffReview?.canPerform(
+            snapshot.scope.groupId,
+            AssistanceGroupPermission.recordCheckpoint,
+          ) ??
+          true) &&
+      _checkpoint?.request != null;
+  bool get _manager => snapshot.staffReview?.isManager ?? true;
+  bool get _responsible =>
+      _manager ||
+      _checkpoint?.request?.responsibleOperatorId == snapshot.actorUid;
+  bool get canReassign {
+    final c = _checkpoint;
+    return _active &&
+        _manager &&
+        c!.assignment.value != null &&
+        c.assignment.value!.revision < 9007199254740991 &&
+        c.availability is AssistanceCheckpointRoster &&
+        c.request!.state != AssistanceCheckpointRequestState.complete &&
+        c.request!.state != AssistanceCheckpointRequestState.closedOut;
+  }
+
+  bool get canClose {
+    final c = _checkpoint?.closeout.value;
+    return _active &&
+        _responsible &&
+        c != null &&
+        c.revision < 9007199254740991 &&
+        c.eligibility is AssistanceCheckpointCloseoutReady;
+  }
+
+  bool get canReopen {
+    final c = _checkpoint?.closeout.value;
+    return _active &&
+        _responsible &&
+        c != null &&
+        c.revision < 9007199254740991 &&
+        c.change?.decision is RehearsalCheckpointClosed &&
+        _checkpoint!.request!.state !=
+            AssistanceCheckpointRequestState.complete;
+  }
+}

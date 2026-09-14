@@ -102,6 +102,18 @@ void main() {
     );
   }
 
+  test('explicit reload retires an unsubmitted request review', () async {
+    final session = await review();
+    final actions = editor(session)..select(reassignReporter);
+    actions.reload();
+    expect(container.read(command), isA<CheckpointRequestIdle>());
+    await settleReview();
+    expect(session.isCurrent, isFalse);
+    actions.open(container.read(query).requireValue);
+    expect(form().change, isNull);
+    expect(repository.writes, isEmpty);
+  });
+
   test('rate limiting preserves an earlier uncertain request', () async {
     final actions = editor(await review())..select(reassignReporter);
     await fail(0, actions.submit());
@@ -207,6 +219,8 @@ void main() {
       actions.select(CloseCheckpointRequest('Replace'));
       expect(form().change, same(original));
       expect(form().canReload, isFalse);
+      actions.reload();
+      expect(form().change, same(original));
       final retry = actions.retry();
       expect(repository.writes.last.change, same(original));
       expect(repository.writes.last.change.command, original.command);

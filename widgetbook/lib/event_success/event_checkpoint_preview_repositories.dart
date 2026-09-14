@@ -5,6 +5,7 @@ import 'package:catch_dating_app/event_success/data/event_assistance_departure_h
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_request.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure_history.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
 import 'package:flutter/services.dart';
@@ -50,6 +51,10 @@ class CheckpointPreviewLiveRepository
   @override
   Future<EventAssistanceCheckpointResult> apply(
     EventAssistanceCheckpointChange change,
+  ) async => throw previewUnconfirmed;
+  @override
+  Future<EventAssistanceCheckpointResult> manageRequest(
+    EventAssistanceCheckpointRequestChange change,
   ) async => throw previewUnconfirmed;
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -101,4 +106,24 @@ class CheckpointPreviewPracticeRepository
   @override
   Map<String, Object?> get sample =>
       (fixtures['departed'] as Map).cast<String, Object?>();
+}
+
+Future<Map<String, Object?>>? _requestCache;
+Future<Map<String, Object?>> loadCheckpointRequestPreviewFixtures() =>
+    _requestCache ??= _loadRequests();
+Future<Map<String, Object?>> _loadRequests() async =>
+    (jsonDecode(
+              await rootBundle.loadString(
+                '../test/event_rehearsal/fixtures/checkpoint_management.json',
+              ),
+            )
+            as Map)
+        .cast<String, Object?>();
+
+class CheckpointRequestPreviewPracticeRepository
+    extends DeparturePreviewPracticeRepository {
+  CheckpointRequestPreviewPracticeRepository(super.fixtures);
+  @override
+  Map<String, Object?> get sample =>
+      (fixtures['resolved'] as Map).cast<String, Object?>();
 }

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_departure_history_section.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ void main() {
         () => Future.wait([
           loadCheckpointPreviewFixtures(),
           loadDeparturePreviewFixtures(),
+          loadCheckpointRequestPreviewFixtures(),
         ]),
       );
       for (final preview in [
@@ -22,6 +24,8 @@ void main() {
         assistancePracticeCheckpoint,
         assistanceLiveCheckpointHistory,
         assistancePracticeCheckpointHistory,
+        assistanceLiveCheckpointRequest,
+        assistancePracticeCheckpointRequest,
       ]) {
         await tester.pumpWidget(
           MaterialApp(
@@ -34,6 +38,7 @@ void main() {
           () => Future.wait([
             loadCheckpointPreviewFixtures(),
             loadDeparturePreviewFixtures(),
+            loadCheckpointRequestPreviewFixtures(),
           ]),
         );
         for (var i = 0; i < 10; i++) {
@@ -44,6 +49,9 @@ void main() {
           preview == assistanceLiveCheckpoint ||
                   preview == assistancePracticeCheckpoint
               ? find.byType(EventAssistanceCheckpointSection)
+              : preview == assistanceLiveCheckpointRequest ||
+                    preview == assistancePracticeCheckpointRequest
+              ? find.byType(EventAssistanceCheckpointRequestSection)
               : find.byType(EventAssistanceDepartureHistorySection),
           findsOneWidget,
           reason: tester

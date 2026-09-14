@@ -18387,4 +18387,71 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventAssistanceCheckpointRemovingObservation =>
       'Removing an earlier observation';
+
+  @override
+  String get eventAssistanceCheckpointRequestTitle => 'Checkpoint request';
+
+  @override
+  String get eventAssistanceCheckpointRequestManage =>
+      'Review checkpoint request';
+
+  @override
+  String get eventAssistanceCheckpointRequestBody =>
+      'Close this request after every unconfirmed guest has a recorded outcome. Arrival observations stay unchanged.';
+
+  @override
+  String get eventAssistanceCheckpointRequestMissing =>
+      'No checkpoint report was requested for this departure.';
+
+  @override
+  String get eventAssistanceCheckpointRequestUnknown =>
+      'Reload to check whether this request can be closed.';
+
+  @override
+  String get eventAssistanceCheckpointRequestReady =>
+      'All unconfirmed guests have been recorded as returned or departed.';
+
+  @override
+  String get eventAssistanceCheckpointRequestReportFirst =>
+      'Save an arrival report before reviewing closeout.';
+
+  @override
+  String get eventAssistanceCheckpointRequestResolveFirst =>
+      'Some unconfirmed guests still need an outcome. Review their visit status before closing this request.';
+
+  @override
+  String get eventAssistanceCheckpointRequestReason =>
+      'Reason for this decision';
+
+  @override
+  String get eventAssistanceCheckpointRequestClose =>
+      'Close checkpoint request';
+
+  @override
+  String get eventAssistanceCheckpointRequestReopen =>
+      'Reopen checkpoint request';
+
+  @override
+  String get eventAssistanceCheckpointRequestAuthority =>
+      'Only an organizer or the responsible reporter with current group access can close or reopen this request.';
+
+  @override
+  String get eventAssistanceCheckpointRequestSaving =>
+      'Saving your checkpoint decision…';
+
+  @override
+  String get eventAssistanceCheckpointRequestUnconfirmed =>
+      'The outcome is not confirmed. Retry this same decision to check its result.';
+
+  @override
+  String get eventAssistanceCheckpointRequestSaved =>
+      'Your decision was saved. The latest request status is shown above.';
+
+  @override
+  String get eventAssistanceCheckpointRequestReassign =>
+      'Change responsible reporter';
+
+  @override
+  String get eventAssistanceCheckpointRequestRetry =>
+      'Retry checkpoint decision';
 }

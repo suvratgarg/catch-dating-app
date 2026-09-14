@@ -6,50 +6,14 @@ final class RehearsalManageCheckpoint extends RehearsalMovementCommand {
     required RehearsalMovementReview snapshot,
     required this.decision,
   }) : super(snapshot) {
-    final c = snapshot.checkpoint;
-    final request = c?.request;
-    final assignment = c?.assignment.value;
-    final closeout = c?.closeout.value;
-    final active =
-        snapshot.session.actionCount < 500 &&
-        snapshot.session.runtimeRevision < 2147483647 &&
-        [
-          EventRehearsalStatus.running,
-          EventRehearsalStatus.paused,
-          EventRehearsalStatus.complete,
-        ].contains(snapshot.session.status);
-    final manager = snapshot.staffReview?.isManager ?? true;
-    final canClose =
-        manager || request?.responsibleOperatorId == snapshot.actorUid;
-    final allowed =
-        active &&
-        (snapshot.staffReview?.canPerform(
-              snapshot.scope.groupId,
-              AssistanceGroupPermission.recordCheckpoint,
-            ) ??
-            true) &&
-        request != null &&
-        switch (decision) {
-          ReassignCheckpointReporter(:final reporterId) =>
-            manager &&
-                assignment != null &&
-                assignment.revision < 9007199254740991 &&
-                c!.availability is AssistanceCheckpointRoster &&
-                request.state != AssistanceCheckpointRequestState.complete &&
-                request.state != AssistanceCheckpointRequestState.closedOut &&
-                reporterId != request.responsibleOperatorId,
-          CloseCheckpointRequest() =>
-            canClose &&
-                closeout != null &&
-                closeout.revision < 9007199254740991 &&
-                closeout.eligibility is AssistanceCheckpointCloseoutReady,
-          ReopenCheckpointRequest() =>
-            canClose &&
-                closeout != null &&
-                closeout.revision < 9007199254740991 &&
-                closeout.change?.decision is RehearsalCheckpointClosed &&
-                request.state != AssistanceCheckpointRequestState.complete,
-        };
+    final request = snapshot.checkpoint?.request;
+    final permissions = RehearsalCheckpointRequestPermissions(snapshot);
+    final allowed = switch (decision) {
+      ReassignCheckpointReporter(:final reporterId) =>
+        permissions.canReassign && reporterId != request!.responsibleOperatorId,
+      CloseCheckpointRequest() => permissions.canClose,
+      ReopenCheckpointRequest() => permissions.canReopen,
+    };
     if (decision case ReassignCheckpointReporter(:final reporterId)) {
       if (snapshot.staffReview != null &&
           reporterId.startsWith('practice-staff:')) {

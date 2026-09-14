@@ -155,6 +155,19 @@ class EventAssistanceCheckpointRequestController
     state = CheckpointRequestForm._(review);
   }
 
+  void reload() {
+    if (!ref.mounted) return;
+    final form = state;
+    if (form is! CheckpointRequestForm ||
+        !form.canReload ||
+        _pending != null ||
+        _inFlight != null) {
+      return;
+    }
+    ref.read(eventAssistanceCheckpointRequestProvider(scope).notifier).reload();
+    state = const CheckpointRequestIdle();
+  }
+
   void select(CheckpointRequestDecision? decision) {
     if (!ref.mounted) return;
     final form = state;

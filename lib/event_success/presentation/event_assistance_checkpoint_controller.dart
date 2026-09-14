@@ -61,7 +61,8 @@ final class CheckpointForm extends CheckpointEditorState {
   bool get canRetry => phase == CheckpointPhase.retryRequired;
   bool get canReload =>
       phase == CheckpointPhase.ready ||
-      phase == CheckpointPhase.refreshRequired;
+      phase == CheckpointPhase.refreshRequired ||
+      phase == CheckpointPhase.saved;
   CheckpointForm _after(
     CheckpointPhase phase, {
     required EventAssistanceCheckpointChange change,
@@ -147,6 +148,7 @@ class EventAssistanceCheckpointController
   }
 
   void reload() {
+    if (!ref.mounted) return;
     final form = state;
     if (form is! CheckpointForm ||
         !form.canReload ||

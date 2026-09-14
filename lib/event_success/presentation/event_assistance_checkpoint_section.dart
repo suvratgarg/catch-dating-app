@@ -61,6 +61,7 @@ class EventAssistanceCheckpointSection extends StatefulWidget {
     this.submittedObservation,
     this.error,
     this.requestMessage,
+    this.onManageRequest,
   });
   final Object reviewIdentity;
   final AssistanceCheckpointAvailability availability;
@@ -72,6 +73,7 @@ class EventAssistanceCheckpointSection extends StatefulWidget {
   final AssistanceCheckpointObservation? submittedObservation;
   final Object? error;
   final String? requestMessage;
+  final VoidCallback? onManageRequest;
   final ValueChanged<AssistanceCheckpointObservation> onConfirm;
   final VoidCallback onRetry, onReload, onDone;
   @override
@@ -264,6 +266,20 @@ class _EventAssistanceCheckpointSectionState
             label: l10n.eventAssistanceCheckpointReload,
             variant: CatchButtonVariant.ghost,
             onPressed: widget.onReload,
+          ),
+        ],
+        if (widget.requestMessage != null &&
+            widget.onManageRequest != null &&
+            (widget.phase == EventAssistanceCheckpointPhase.ready ||
+                widget.phase == EventAssistanceCheckpointPhase.saved ||
+                widget.phase ==
+                    EventAssistanceCheckpointPhase.refreshRequired)) ...[
+          gapH8,
+          CatchButton(
+            key: const ValueKey('checkpoint.manageRequest'),
+            label: l10n.eventAssistanceCheckpointRequestManage,
+            variant: CatchButtonVariant.secondary,
+            onPressed: widget.onManageRequest,
           ),
         ],
         gapH8,

@@ -7,19 +7,21 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_request_sheet.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show
-        EventAssistanceCheckpointSection,
-        EventAssistanceCheckpointPhase,
-        assistanceCheckpointRequestCopy;
+        EventAssistanceCheckpointRequestSection,
+        EventAssistanceCheckpointPhase;
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EventRehearsalCheckpointSheet extends ConsumerWidget {
-  const EventRehearsalCheckpointSheet({super.key, required this.selection});
+class EventRehearsalCheckpointRequestSheet extends ConsumerWidget {
+  const EventRehearsalCheckpointRequestSheet({
+    super.key,
+    required this.selection,
+  });
   final RehearsalMovementSelection selection;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,7 +33,7 @@ class EventRehearsalCheckpointSheet extends ConsumerWidget {
     final candidate = state is RehearsalMovementForm ? state : null;
     final command = candidate?.change?.command;
     final sameReport =
-        command is RehearsalRecordCheckpoint &&
+        command is RehearsalManageCheckpoint &&
         command.selectedRevision == selection.progressRevision;
     final pendingOther =
         !sameReport &&
@@ -49,22 +51,10 @@ class EventRehearsalCheckpointSheet extends ConsumerWidget {
       }());
     }
 
-    Future<void> manageRequest() async {
-      await showCatchBottomSheet<void>(
-        context: context,
-        builder: (_) =>
-            EventRehearsalCheckpointRequestSheet(selection: selection),
-      );
-      if (context.mounted) {
-        controller.reload();
-        ref.read(query.notifier).reload();
-      }
-    }
-
     return PopScope(
       canPop: state.canDismiss,
       child: CatchSheet(
-        title: context.l10n.eventAssistanceCheckpointTitle,
+        title: context.l10n.eventAssistanceCheckpointRequestTitle,
         badge: context.l10n.hostEventRehearsalBadge,
         badgeTone: CatchBadgeTone.danger,
         mode: CatchSheetMode.scrollable,
@@ -78,17 +68,7 @@ class EventRehearsalCheckpointSheet extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(context.l10n.eventAssistanceDepartureOtherPending),
-                      if (command is RehearsalManageCheckpoint &&
-                          command.selectedRevision ==
-                              selection.progressRevision)
-                        CatchButton(
-                          key: const ValueKey('checkpoint.manageRequest'),
-                          label: context
-                              .l10n
-                              .eventAssistanceCheckpointRequestManage,
-                          onPressed: candidate.canRetry ? manageRequest : null,
-                        )
-                      else if (candidate.canRetry)
+                      if (candidate.canRetry)
                         CatchButton(
                           label: context.l10n.eventAssistanceGroupRetry,
                           onPressed: () => run(controller.retry),
@@ -127,38 +107,43 @@ class EventRehearsalCheckpointSheet extends ConsumerWidget {
                               RehearsalMovementPhase.saved =>
                                 EventAssistanceCheckpointPhase.saved,
                             };
-                      return EventAssistanceCheckpointSection(
+                      final permissions = RehearsalCheckpointRequestPermissions(
+                        snapshot,
+                      );
+                      final available = checkpoint.availability;
+                      return EventAssistanceCheckpointRequestSection(
                         reviewIdentity: review,
-                        availability: checkpoint.availability,
-                        names: {
-                          for (final m
-                              in checkpoint.departure.roster?.members ??
-                                  <RehearsalDepartureMember>[])
-                            m.attendeeId: m.displayName,
-                        },
-                        progressRevision: checkpoint.progressRevision,
+                        request: checkpoint.request,
+                        eligibility: checkpoint.closeout.value?.eligibility,
+                        canClose: permissions.canClose,
+                        canReopen: permissions.canReopen,
+                        checkpointLabel: available is AssistanceCheckpointRoster
+                            ? available.label
+                            : null,
+                        observationSummary:
+                            available is AssistanceCheckpointRoster
+                            ? context.l10n.eventAssistanceHistoryObserved(
+                                count: available.members
+                                    .where((m) => m.accountedFor)
+                                    .length,
+                                total: available.members.length,
+                              )
+                            : null,
                         contextMessage:
                             '${snapshot.groups.firstWhere((g) => g.groupId == snapshot.scope.groupId).label}\n${context.l10n.hostEventRehearsalAssistanceAs(name: role?.practiceOperatorId == null ? context.l10n.hostEventRehearsalHostRole : role?.operators[role.practiceOperatorId]?.displayName ?? context.l10n.hostEventRehearsalUnavailableRole)}',
-                        canReport: snapshot.canReport,
                         phase:
                             phase == EventAssistanceCheckpointPhase.ready &&
                                 !review.isCurrent
                             ? EventAssistanceCheckpointPhase.refreshRequired
                             : phase,
-                        submittedObservation: sameReport
-                            ? command.observation
-                            : null,
+                        submittedDecision: sameReport ? command.decision : null,
                         error: form?.error,
-                        requestMessage: assistanceCheckpointRequestCopy(
-                          context,
-                          checkpoint.request,
-                        ),
-                        onConfirm: (observation) => run(() {
+                        onConfirm: (decision) => run(() {
                           controller.open(review);
                           return controller.submit(
-                            RehearsalRecordCheckpoint(
+                            RehearsalManageCheckpoint(
                               snapshot: snapshot,
-                              observation: observation,
+                              decision: decision,
                             ),
                           );
                         }),
@@ -170,7 +155,6 @@ class EventRehearsalCheckpointSheet extends ConsumerWidget {
                             ref.read(query.notifier).reload();
                           }
                         },
-                        onManageRequest: manageRequest,
                         onDone: () => Navigator.of(context).pop(),
                       );
                     },

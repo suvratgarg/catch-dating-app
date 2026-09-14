@@ -1,10 +1,14 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_request_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_checkpoint_sheet.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_departure_history_sheet.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_checkpoint_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_departure_history_repository.dart';
+import 'package:catch_dating_app/event_success/data/event_assistance_departure_repository.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_section.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_roster_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_sheet.dart';
@@ -76,7 +80,36 @@ Widget assistanceLiveCheckpointHistory(BuildContext context) =>
 Widget assistancePracticeCheckpointHistory(BuildContext context) =>
     const _CheckpointPreview(surface: _Surface.practiceHistory);
 
-enum _Surface { liveReport, practiceReport, liveHistory, practiceHistory }
+@widgetbook.UseCase(
+  name: 'Shared checkpoint closeout and reopen',
+  type: EventAssistanceCheckpointRequestSection,
+  path: _path,
+)
+Widget assistanceCheckpointRequest(BuildContext context) =>
+    const _CheckpointPreview(surface: _Surface.practiceRequest);
+@widgetbook.UseCase(
+  name: 'Live legacy request availability',
+  type: EventAssistanceCheckpointRequestSheet,
+  path: _path,
+)
+Widget assistanceLiveCheckpointRequest(BuildContext context) =>
+    const _CheckpointPreview(surface: _Surface.liveRequest);
+@widgetbook.UseCase(
+  name: 'Practice checkpoint closeout and reopen',
+  type: EventRehearsalCheckpointRequestSheet,
+  path: _path,
+)
+Widget assistancePracticeCheckpointRequest(BuildContext context) =>
+    const _CheckpointPreview(surface: _Surface.practiceRequest);
+
+enum _Surface {
+  liveReport,
+  practiceReport,
+  liveHistory,
+  practiceHistory,
+  liveRequest,
+  practiceRequest,
+}
 
 class _CheckpointPreview extends StatefulWidget {
   const _CheckpointPreview({required this.surface});
@@ -89,6 +122,7 @@ class _CheckpointPreviewState extends State<_CheckpointPreview> {
   late final _fixtures = Future.wait([
     loadCheckpointPreviewFixtures(),
     loadDeparturePreviewFixtures(),
+    loadCheckpointRequestPreviewFixtures(),
   ]);
   @override
   Widget build(
@@ -99,13 +133,22 @@ class _CheckpointPreviewState extends State<_CheckpointPreview> {
       if (value.hasError) return Text('Preview unavailable: ${value.error}');
       if (!value.hasData) return const CatchSkeleton.rows();
       final fixtures = value.requireData;
-      final repository = CheckpointPreviewPracticeRepository(fixtures[1]);
+      final repository = widget.surface == _Surface.practiceRequest
+          ? CheckpointRequestPreviewPracticeRepository(fixtures[2])
+          : CheckpointPreviewPracticeRepository(fixtures[1]);
       final selection = repository.snapshot.movementReview!.selection;
       final reportSelection = RehearsalMovementSelection(
         scope: selection.scope,
         progressRevision: 1,
       );
       final surface = switch (widget.surface) {
+        _Surface.liveRequest => EventAssistanceCheckpointRequestSheet(
+          scope: checkpointPreviewScope,
+          groupLabel: 'Everyone',
+        ),
+        _Surface.practiceRequest => EventRehearsalCheckpointRequestSheet(
+          selection: reportSelection,
+        ),
         _Surface.liveReport => EventAssistanceCheckpointSheet(
           scope: checkpointPreviewScope,
           groupLabel: 'Everyone',
@@ -125,6 +168,9 @@ class _CheckpointPreviewState extends State<_CheckpointPreview> {
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
           eventRehearsalRepositoryProvider.overrideWith((ref) => repository),
+          eventAssistanceDepartureRepositoryProvider.overrideWith(
+            (ref) => DeparturePreviewLiveRepository(repository),
+          ),
           eventAssistanceCheckpointRepositoryProvider.overrideWith(
             (ref) => CheckpointPreviewLiveRepository(fixtures[0]),
           ),

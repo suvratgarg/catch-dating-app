@@ -70,7 +70,7 @@ final class EventAssistanceCheckpointRequestControllerProvider
 }
 
 String _$eventAssistanceCheckpointRequestControllerHash() =>
-    r'a5003c8c53f228dd809e3d36ba919846dcc96244';
+    r'6ab63aecbb3ca6dd796a920965bd1466914b0a6a';
 
 /// One departure owns one pending request action across review refresh and sheet closure.
 

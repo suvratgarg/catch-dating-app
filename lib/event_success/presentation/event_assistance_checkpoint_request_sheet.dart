@@ -4,17 +4,17 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_provider.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_sheet.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_provider.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_request_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_section.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class EventAssistanceCheckpointSheet extends ConsumerWidget {
-  const EventAssistanceCheckpointSheet({
+class EventAssistanceCheckpointRequestSheet extends ConsumerWidget {
+  const EventAssistanceCheckpointRequestSheet({
     super.key,
     required this.scope,
     required this.groupLabel,
@@ -23,12 +23,12 @@ class EventAssistanceCheckpointSheet extends ConsumerWidget {
   final String groupLabel;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final query = eventAssistanceCheckpointProvider(scope);
+    final query = eventAssistanceCheckpointRequestProvider(scope);
     final page = ref.watch(query);
-    final owner = eventAssistanceCheckpointControllerProvider(scope);
+    final owner = eventAssistanceCheckpointRequestControllerProvider(scope);
     final state = ref.watch(owner);
     final controller = ref.read(owner.notifier);
-    final form = state is CheckpointForm ? state : null;
+    final form = state is CheckpointRequestForm ? state : null;
     void run(Future<Object?> Function() action) {
       unawaited(() async {
         try {
@@ -42,14 +42,13 @@ class EventAssistanceCheckpointSheet extends ConsumerWidget {
     return PopScope(
       canPop: state.canDismiss,
       child: CatchSheet(
-        title: context.l10n.eventAssistanceCheckpointTitle,
+        title: context.l10n.eventAssistanceCheckpointRequestTitle,
         mode: CatchSheetMode.scrollable,
         child: switch (state) {
-          CheckpointUnavailable(:final error) => CatchLocalizedErrorBanner(
-            error,
-          ),
-          CheckpointIdle() || CheckpointForm() =>
-            CatchAsyncBoundary<EventAssistanceCheckpointSession>(
+          CheckpointRequestUnavailable(:final error) =>
+            CatchLocalizedErrorBanner(error),
+          CheckpointRequestIdle() || CheckpointRequestForm() =>
+            CatchAsyncBoundary<EventAssistanceCheckpointRequestSession>(
               value: form == null ? page : AsyncData(form.review),
               initialLoadTimeout: null,
               onRetry: () => ref.read(query.notifier).reload(),
@@ -57,47 +56,51 @@ class EventAssistanceCheckpointSheet extends ConsumerWidget {
               errorBuilder: (_, error, _, retry) =>
                   CatchLocalizedErrorBanner(error, onRetry: retry),
               builder: (_, review) {
-                final view = form?.result?.view ?? review.view;
+                final view = form?.result?.view ?? review.view.checkpoint;
                 final available = view.availability;
                 final phase = form == null
                     ? EventAssistanceCheckpointPhase.ready
                     : switch (form.phase) {
-                        CheckpointPhase.ready =>
+                        CheckpointRequestPhase.ready =>
                           EventAssistanceCheckpointPhase.ready,
-                        CheckpointPhase.submitting =>
+                        CheckpointRequestPhase.submitting =>
                           EventAssistanceCheckpointPhase.submitting,
-                        CheckpointPhase.retryRequired =>
+                        CheckpointRequestPhase.retryRequired =>
                           EventAssistanceCheckpointPhase.retryRequired,
-                        CheckpointPhase.refreshRequired =>
+                        CheckpointRequestPhase.refreshRequired =>
                           EventAssistanceCheckpointPhase.refreshRequired,
-                        CheckpointPhase.saved =>
+                        CheckpointRequestPhase.saved =>
                           EventAssistanceCheckpointPhase.saved,
                       };
-                return EventAssistanceCheckpointSection(
+                return EventAssistanceCheckpointRequestSection(
                   reviewIdentity: review,
-                  availability: available,
-                  names: {
-                    if (available is AssistanceCheckpointRoster)
-                      for (final m in available.members)
-                        if (m.displayName != null) m.attendeeId: m.displayName!,
-                  },
-                  progressRevision: view.scope.progressRevision,
-                  contextMessage: groupLabel,
-                  canReport: review.view.canReport,
+                  contextMessage:
+                      '$groupLabel · ${context.l10n.eventAssistanceCheckpointDeparture(number: scope.progressRevision)}',
+                  request: view.request,
+                  eligibility: view.closeout.value?.eligibility,
+                  canClose: review.view.canClose,
+                  canReopen: review.view.canReopen,
+                  checkpointLabel: available is AssistanceCheckpointRoster
+                      ? available.label
+                      : null,
+                  observationSummary: available is AssistanceCheckpointRoster
+                      ? context.l10n.eventAssistanceHistoryObserved(
+                          count: available.members
+                              .where((m) => m.accountedFor)
+                              .length,
+                          total: available.members.length,
+                        )
+                      : null,
                   phase:
                       phase == EventAssistanceCheckpointPhase.ready &&
                           !review.isCurrent
                       ? EventAssistanceCheckpointPhase.refreshRequired
                       : phase,
-                  submittedObservation: form?.change?.decision,
+                  submittedDecision: form?.change?.decision,
                   error: form?.error,
-                  requestMessage: assistanceCheckpointRequestCopy(
-                    context,
-                    view.request,
-                  ),
-                  onConfirm: (observation) => run(() {
+                  onConfirm: (decision) => run(() {
                     controller.open(review);
-                    controller.select(observation);
+                    controller.select(decision);
                     return controller.submit();
                   }),
                   onRetry: () => run(controller.retry),
@@ -105,19 +108,6 @@ class EventAssistanceCheckpointSheet extends ConsumerWidget {
                     if (form != null) {
                       controller.reload();
                     } else {
-                      ref.read(query.notifier).reload();
-                    }
-                  },
-                  onManageRequest: () async {
-                    await showCatchBottomSheet<void>(
-                      context: context,
-                      builder: (_) => EventAssistanceCheckpointRequestSheet(
-                        scope: scope,
-                        groupLabel: groupLabel,
-                      ),
-                    );
-                    if (context.mounted) {
-                      controller.reload();
                       ref.read(query.notifier).reload();
                     }
                   },

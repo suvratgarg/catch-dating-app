@@ -49,3 +49,4 @@ flutter:
     - ../test/event_rehearsal/fixtures/staff_reviews.json
     - ../test/event_rehearsal/fixtures/movement_reviews.json
     - ../test/event_success/fixtures/checkpoint_reviews.json
+    - ../test/event_rehearsal/fixtures/checkpoint_management.json

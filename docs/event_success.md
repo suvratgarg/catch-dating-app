@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.114.0
+version: 1.115.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -1167,7 +1167,7 @@ normal and 2x text, the real rehearsal runtime entry, optional/empty rosters, ch
 dependencies, detached retries and authentication transitions. The backend-produced
 movement fixture also exercises the shared self-reporter default. This change does
 not activate messaging. Checkpoint reporting now mounts as described below;
-request-management controls remain subsequent work.
+reporter-selection controls remain subsequent work.
 
 An existing link follows the workflow thread once a fresh instruction is
 published. Until then it returns `noInstructions`, and neither web nor native
@@ -1322,8 +1322,8 @@ automatic closeout of unresolved departure members.
 Acceptance covers atomic enrollment/interruption/retry, current authority,
 deadline/lease races, corrected reports, bounded source fanout, source failures
 and Firestore concurrency. The hooks and scheduler remain explicitly dormant.
-Staff notifications, Host controls and
-rehearsal adapters remain integration work; no provider effect is activated.
+Staff notifications and reporter-selection controls remain integration work;
+no provider effect is activated.
 
 The native checkpoint boundary now retains the exact group, saved stop and
 recorded departure revision. Its roster view keeps each original member, visit
@@ -1345,7 +1345,7 @@ refresh and sheet closure. Account changes retire old state. Applied results mus
 confirm the actor, report identity, timestamp and chosen observations; replays
 preserve newer corrections. Reads and writes use the generated callable DTOs.
 The shared native observation and historical navigation controls are mounted in
-both runtimes. Notifications and request-management controls remain integration
+both runtimes. Notifications and reporter-selection controls remain integration
 work. Reporting does not change physical attendance, group movement, membership,
 consent or event-visit accountability.
 
@@ -1383,8 +1383,23 @@ does not maintain a separate historical accountability ledger for every visit.
 A fully confirmed arrival report supersedes closeout; correcting that report
 can reopen the obligation. Explicit reopening records a new decision rather
 than deleting history. Event completion or cancellation does not itself close
-an unresolved request. Host controls, staff notifications, rehearsal execution
-and terminal retention remain separate integration work.
+an unresolved request. Staff notifications and terminal retention remain separate
+integration work.
+
+The shared checkpoint request section is now reachable from the arrival report in
+both live and rehearsal mode. It retains the original deadline and saved arrival
+count, explains missing report, unresolved member and changed-source blockers, and
+offers explicit close/reopen actions only after current permission review. Each
+decision requires a reason. Live uses the existing account-scoped request owner;
+rehearsal uses its existing group movement owner and the same typed decision.
+`RehearsalCheckpointRequestPermissions` supplies both the UI and command eligibility.
+An unconfirmed practice decision remains reachable from the parent checkpoint after
+sheet closure. Reopening retries the original decision; it never creates a new one.
+A confirmed related action may reload the settled observation form, while unknown
+outcomes cannot be cleared by reload. Normal and 2x-text tests cover the real parent
+entry, close, detached retry, fresh reopen and sign-out in both execution modes.
+Verified reporter selection and direct original-roster visit resolution remain the
+next controls to mount. This change sends no staff or guest messages.
 
 ### Checkpoint reporter reassignment
 
@@ -1439,8 +1454,8 @@ requires fresh review and an explicit new action. Account transitions retire the
 pending action, including callbacks retained by a closed sheet. Applied results
 verify ownership, original deadline and unchanged arrival facts; exact replays
 preserve later changes. Success refreshes the shared checkpoint read and its
-permission-dependent review. Native screen mounting, staff notifications and
-rehearsal execution remain integration work.
+permission-dependent review. Close/reopen controls are mounted in both runtimes;
+reporter selection and staff notifications remain integration work.
 
 ### Scoped group staff
 

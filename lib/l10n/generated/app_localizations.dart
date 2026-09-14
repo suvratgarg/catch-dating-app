@@ -29145,6 +29145,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Removing an earlier observation'**
   String get eventAssistanceCheckpointRemovingObservation;
+
+  /// No description provided for @eventAssistanceCheckpointRequestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkpoint request'**
+  String get eventAssistanceCheckpointRequestTitle;
+
+  /// No description provided for @eventAssistanceCheckpointRequestManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Review checkpoint request'**
+  String get eventAssistanceCheckpointRequestManage;
+
+  /// No description provided for @eventAssistanceCheckpointRequestBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Close this request after every unconfirmed guest has a recorded outcome. Arrival observations stay unchanged.'**
+  String get eventAssistanceCheckpointRequestBody;
+
+  /// No description provided for @eventAssistanceCheckpointRequestMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'No checkpoint report was requested for this departure.'**
+  String get eventAssistanceCheckpointRequestMissing;
+
+  /// No description provided for @eventAssistanceCheckpointRequestUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload to check whether this request can be closed.'**
+  String get eventAssistanceCheckpointRequestUnknown;
+
+  /// No description provided for @eventAssistanceCheckpointRequestReady.
+  ///
+  /// In en, this message translates to:
+  /// **'All unconfirmed guests have been recorded as returned or departed.'**
+  String get eventAssistanceCheckpointRequestReady;
+
+  /// No description provided for @eventAssistanceCheckpointRequestReportFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Save an arrival report before reviewing closeout.'**
+  String get eventAssistanceCheckpointRequestReportFirst;
+
+  /// No description provided for @eventAssistanceCheckpointRequestResolveFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Some unconfirmed guests still need an outcome. Review their visit status before closing this request.'**
+  String get eventAssistanceCheckpointRequestResolveFirst;
+
+  /// No description provided for @eventAssistanceCheckpointRequestReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for this decision'**
+  String get eventAssistanceCheckpointRequestReason;
+
+  /// No description provided for @eventAssistanceCheckpointRequestClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close checkpoint request'**
+  String get eventAssistanceCheckpointRequestClose;
+
+  /// No description provided for @eventAssistanceCheckpointRequestReopen.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen checkpoint request'**
+  String get eventAssistanceCheckpointRequestReopen;
+
+  /// No description provided for @eventAssistanceCheckpointRequestAuthority.
+  ///
+  /// In en, this message translates to:
+  /// **'Only an organizer or the responsible reporter with current group access can close or reopen this request.'**
+  String get eventAssistanceCheckpointRequestAuthority;
+
+  /// No description provided for @eventAssistanceCheckpointRequestSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your checkpoint decision…'**
+  String get eventAssistanceCheckpointRequestSaving;
+
+  /// No description provided for @eventAssistanceCheckpointRequestUnconfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'The outcome is not confirmed. Retry this same decision to check its result.'**
+  String get eventAssistanceCheckpointRequestUnconfirmed;
+
+  /// No description provided for @eventAssistanceCheckpointRequestSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Your decision was saved. The latest request status is shown above.'**
+  String get eventAssistanceCheckpointRequestSaved;
+
+  /// No description provided for @eventAssistanceCheckpointRequestReassign.
+  ///
+  /// In en, this message translates to:
+  /// **'Change responsible reporter'**
+  String get eventAssistanceCheckpointRequestReassign;
+
+  /// No description provided for @eventAssistanceCheckpointRequestRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry checkpoint decision'**
+  String get eventAssistanceCheckpointRequestRetry;
 }
 
 class _AppLocalizationsDelegate
