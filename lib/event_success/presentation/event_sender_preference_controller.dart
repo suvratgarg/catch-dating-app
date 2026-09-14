@@ -185,6 +185,11 @@ class EventSenderPreferenceController
         .read(eventSenderPreferenceRepositoryProvider)
         .list(scope);
     if (!_current(account, epoch)) return;
+    if (page.scope != scope) {
+      throw const FormatException(
+        'Sender choices belong to another participant.',
+      );
+    }
     _review = null;
     final navigation = _navigation = EventSenderPreferenceNavigation._(
       account: account,
@@ -215,6 +220,11 @@ class EventSenderPreferenceController
         .read(eventSenderPreferenceRepositoryProvider)
         .fetch(scope, senderId);
     if (!_current(navigation.account, epoch)) return;
+    if (view.scope != scope || view.senderId != senderId) {
+      throw const FormatException(
+        'The sender review does not match this selection.',
+      );
+    }
     final old = _review?.view;
     if (old != null &&
         old.senderId == view.senderId &&
@@ -292,6 +302,12 @@ class EventSenderPreferenceController
           .read(eventSenderPreferenceRepositoryProvider)
           .list(scope, cursor: navigation.nextCursor);
       if (!_current(navigation.account, epoch)) return;
+      if (page.scope != scope ||
+          page.nextCursor != null &&
+              navigation.nextCursor != null &&
+              page.nextCursor!.compareTo(navigation.nextCursor!) <= 0) {
+        throw const FormatException('Invalid sender discovery page.');
+      }
       if (page.configuredSenderId != navigation.configuredSenderId ||
           page.serverTime < navigation.serverTime) {
         _navigation = null;
@@ -441,6 +457,11 @@ class EventSenderPreferenceController
     release?.call();
   }
 
+  void _publishReady(EventSenderPreferenceReady next) {
+    _writeInFlight = null;
+    state = next;
+  }
+
   Future<EventSenderPreferenceResult> _apply(
     EventSenderPreferenceReview review,
     EventSenderPreferenceChange change,
@@ -451,16 +472,19 @@ class EventSenderPreferenceController
           .read(eventSenderPreferenceRepositoryProvider)
           .apply(change);
       if (!_current(review.account, epoch)) throw _sessionChanged;
+      result.requireChange(change);
       final next = _review = EventSenderPreferenceReview._(
         review.account,
         result.view,
       );
-      state = EventSenderPreferenceReady._(
-        _navigation!,
-        next,
-        notice: result.outcome == EventSenderPreferenceOutcome.conflict
-            ? EventSenderPreferenceNotice.changed
-            : EventSenderPreferenceNotice.saved,
+      _publishReady(
+        EventSenderPreferenceReady._(
+          _navigation!,
+          next,
+          notice: result.outcome == EventSenderPreferenceOutcome.conflict
+              ? EventSenderPreferenceNotice.changed
+              : EventSenderPreferenceNotice.saved,
+        ),
       );
       _clearPending();
       return result;
@@ -476,13 +500,15 @@ class EventSenderPreferenceController
               'sign-in-required',
               'callable-unavailable',
             }.contains(error.code);
-        state = EventSenderPreferenceReady._(
-          _navigation!,
-          review,
-          error: error,
-          phase: definitive
-              ? EventSenderPreferencePhase.refreshRequired
-              : EventSenderPreferencePhase.uncertain,
+        _publishReady(
+          EventSenderPreferenceReady._(
+            _navigation!,
+            review,
+            error: error,
+            phase: definitive
+                ? EventSenderPreferencePhase.refreshRequired
+                : EventSenderPreferencePhase.uncertain,
+          ),
         );
         if (definitive) _clearPending();
       }

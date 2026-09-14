@@ -340,4 +340,106 @@ void main() {
       expect(repository.writes, hasLength(1));
     },
   );
+
+  test(
+    'an uncertain SMS decision survives closing and reopening its sheet',
+    () async {
+      await load();
+      final original = controller();
+      final review = ready().review;
+      final request = original.enable(review);
+      final failed = expectLater(request, throwsA(isA<NetworkException>()));
+      final first = repository.writes.single;
+      first.result.completeError(
+        const NetworkException('unavailable', 'Offline'),
+      );
+      await failed;
+      subscription.close();
+      await container.pump();
+      subscription = container.listen(provider, (_, _) {});
+      await container.pump();
+      expect(controller(), same(original));
+      expect(repository.reads, hasLength(1));
+      expect(ready().canRetry, isTrue);
+      final retry = controller().retry(ready().review);
+      expect(repository.writes.last.change, same(first.change));
+      repository.writes.last.result.complete(smsApplied(first.change));
+      await retry;
+      expect(ready().review.view.preference, EventSmsPreference.enabled);
+    },
+  );
+
+  for (final transition in ['signOut', 'sameUidReturn', 'authError']) {
+    test('a detached SMS retry cannot survive $transition', () async {
+      await load();
+      final review = ready().review;
+      final original = controller();
+      final request = original.enable(review);
+      final failed = expectLater(request, throwsA(isA<NetworkException>()));
+      repository.writes.single.result.completeError(
+        const NetworkException('unavailable', 'Offline'),
+      );
+      await failed;
+      subscription.close();
+      await container.pump();
+      if (transition == 'authError') {
+        auth.addError(StateError('Auth unavailable'));
+      } else {
+        auth.add(null);
+      }
+      await container.pump();
+      if (transition == 'sameUidReturn') {
+        auth.add('guest-1');
+        await container.pump();
+      }
+      subscription = container.listen(provider, (_, _) {});
+      await container.pump();
+      expect(state(), isNot(isA<EventSmsPreferenceReady>()));
+      await expectLater(original.retry(review), throwsA(isA<Object>()));
+      expect(repository.writes, hasLength(1));
+    });
+  }
+
+  test(
+    'the state owner rejects a receipt from a different participant',
+    () async {
+      await load();
+      final request = controller().enable(ready().review);
+      final rejected = expectLater(request, throwsFormatException);
+      final change = repository.writes.single.change;
+      repository.writes.single.result.complete(
+        EventSmsPreferenceResult.fromCallableData(
+          smsAppliedRaw(change, patch: {'attendeeId': 'foreign'}),
+          expectedScope: smsScope(attendeeId: 'foreign'),
+        ),
+      );
+      await rejected;
+      expect(ready().phase, EventSmsPreferencePhase.uncertain);
+      expect(ready().notice, EventSmsPreferenceNotice.none);
+    },
+  );
+
+  test('a retry from the error state receives a fresh active future', () async {
+    await load();
+    Future<EventSmsPreferenceResult>? next;
+    final observer = container.listen(provider, (_, state) {
+      if (state is EventSmsPreferenceReady && state.canRetry && next == null) {
+        next = controller().retry(state.review);
+      }
+    });
+    final request = controller().enable(ready().review);
+    final failed = expectLater(request, throwsA(isA<NetworkException>()));
+    repository.writes.single.result.completeError(
+      const NetworkException('unavailable', 'Offline'),
+    );
+    await failed;
+    expect(next, isNot(same(request)));
+    expect(repository.writes, hasLength(2));
+    final retry = repository.writes.last;
+    expect(retry.change, same(repository.writes.first.change));
+    retry.result.complete(smsApplied(retry.change));
+    await next;
+    observer.close();
+    expect(ready().notice, EventSmsPreferenceNotice.saved);
+  });
 }

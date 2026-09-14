@@ -68,7 +68,7 @@ final class EventSenderPreferenceControllerProvider
 }
 
 String _$eventSenderPreferenceControllerHash() =>
-    r'b4fab6a2d8e8407717b66442f8cdaa2603e32123';
+    r'15c4c6d41d4248ddb5b2c9701e5a2c80f15626dc';
 
 /// Shared navigation/retry ownership with channel-specific reviewed payloads.
 

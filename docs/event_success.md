@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.125.0
+version: 1.126.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -2258,6 +2258,16 @@ state without reapplying consent, even when the original review is now stale.
 The control is hidden when there is no preference and enabling is unavailable;
 an existing grant retains a withdrawal control when the sender is paused.
 
+The native SMS preference controller now retains the exact unresolved request
+through sheet dismissal, including after a response is lost. Its temporary
+strong authentication subscription clears detached private state on sign-out,
+same-UID re-entry or authentication errors; a confirmed result or definite
+rejection releases the lease. The controller independently validates the review
+scope and returned decision before presenting saved consent. An uncertain error
+is actionable immediately, so a retry callback cannot accidentally reuse the
+previous failed future. These controllers do not yet mount native consent
+controls or persist pending requests across an app restart.
+
 The required review hash is a coordinated API/client rollout change. Old web
 tabs must reload before making a new decision; submissions without a review
 hash fail validation. Do not deploy the server contract without the updated
@@ -2482,6 +2492,14 @@ A-to-B-to-A account change. `EventWhatsappPreferenceView` retains the displayed
 business number and sender/STOP hashes. `EventRcsPreferenceView` retains its
 event title and sender name. Both use the required server review hash and
 separate consent-copy versions; no channel can authorize another.
+
+The native state owner repeats the repository's participant/channel, selected
+sender and applied-receipt checks before exposing terms or saved consent. Foreign
+pages and reviews become failures; invalid confirmations retain the original
+uncertain request. Sender paging must advance even when records are filtered.
+Immediate retry callbacks receive the new active future, preserving the exact
+reviewed request. Focused tests exercise these boundaries separately for WhatsApp
+and RCS.
 
 Only the configured sender offers enrollment. Earlier senders are fetched on
 selection and permit withdrawal only. History loads in explicit bounded pages,

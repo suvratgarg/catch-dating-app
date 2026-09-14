@@ -76,6 +76,7 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
   Future<void>? _readInFlight;
   Future<EventSmsPreferenceResult>? _writeInFlight;
   EventSmsPreferenceChange? _pending;
+  void Function()? _releasePending;
 
   @override
   EventSmsPreferenceState build(EventSmsPreferenceScope scope) {
@@ -84,9 +85,10 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
     _account = null;
     _readInFlight = null;
     _writeInFlight = null;
-    _pending = null;
+    _clearPending();
     ref.onDispose(() {
       _epoch++;
+      _clearPending();
     });
     if (auth.isLoading) return const EventSmsPreferenceLoading();
     if (auth.hasError) {
@@ -125,6 +127,11 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
           .read(eventSmsPreferenceRepositoryProvider)
           .fetch(scope);
       if (!_current(account, epoch)) return;
+      if (view.scope != scope) {
+        throw const FormatException(
+          'Event text review belongs to another guest.',
+        );
+      }
       state = view.isOptionalOfferHidden
           ? const EventSmsPreferenceHidden()
           : EventSmsPreferenceReady._(
@@ -223,18 +230,53 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
   ) {
     final epoch = _epoch;
     _pending = change;
+    _retainPending(review.account);
     state = EventSmsPreferenceReady._(
       review,
       phase: EventSmsPreferencePhase.saving,
     );
-    final keepAlive = ref.keepAlive();
     late final Future<EventSmsPreferenceResult> tracked;
     tracked = _apply(review, change, epoch).whenComplete(() {
       if (identical(_writeInFlight, tracked)) _writeInFlight = null;
-      keepAlive.close();
     });
     _writeInFlight = tracked;
     return tracked;
+  }
+
+  void _retainPending(AuthenticatedSession account) {
+    if (_releasePending != null) return;
+    final lease = ref.keepAlive();
+    // Keep an uncertain decision after its sheet closes, while observing auth
+    // outside Riverpod's paused dependencies for this pending request only.
+    final auth = ref.container.listen(authenticatedSessionProvider, (_, next) {
+      if (next.isLoading ||
+          next.hasError ||
+          !identical(next.asData?.value, account)) {
+        _epoch++;
+        _account = null;
+        _readInFlight = null;
+        _writeInFlight = null;
+        _clearPending();
+        if (ref.mounted) ref.invalidateSelf();
+      }
+    });
+    _releasePending = () {
+      auth.close();
+      lease.close();
+    };
+  }
+
+  void _clearPending() {
+    _pending = null;
+    final release = _releasePending;
+    _releasePending = null;
+    release?.call();
+  }
+
+  void _publishReady(EventSmsPreferenceReady next) {
+    // A retry callback can run before the previous async stack unwinds.
+    _writeInFlight = null;
+    state = next;
   }
 
   Future<EventSmsPreferenceResult> _apply(
@@ -247,12 +289,15 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
           .read(eventSmsPreferenceRepositoryProvider)
           .apply(change);
       if (!_current(review.account, epoch)) throw _sessionChanged;
-      _pending = null;
-      state = EventSmsPreferenceReady._(
-        EventSmsPreferenceReview._(review.account, result.view),
-        notice: result.outcome == EventSmsPreferenceOutcome.conflict
-            ? EventSmsPreferenceNotice.changed
-            : EventSmsPreferenceNotice.saved,
+      result.requireChange(change);
+      _clearPending();
+      _publishReady(
+        EventSmsPreferenceReady._(
+          EventSmsPreferenceReview._(review.account, result.view),
+          notice: result.outcome == EventSmsPreferenceOutcome.conflict
+              ? EventSmsPreferenceNotice.changed
+              : EventSmsPreferenceNotice.saved,
+        ),
       );
       return result;
     } catch (error) {
@@ -267,13 +312,15 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
               'sign-in-required',
               'callable-unavailable',
             }.contains(error.code);
-        if (refresh) _pending = null;
-        state = EventSmsPreferenceReady._(
-          review,
-          error: error,
-          phase: refresh
-              ? EventSmsPreferencePhase.refreshRequired
-              : EventSmsPreferencePhase.uncertain,
+        if (refresh) _clearPending();
+        _publishReady(
+          EventSmsPreferenceReady._(
+            review,
+            error: error,
+            phase: refresh
+                ? EventSmsPreferencePhase.refreshRequired
+                : EventSmsPreferencePhase.uncertain,
+          ),
         );
       }
       rethrow;
