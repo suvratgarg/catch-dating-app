@@ -23,7 +23,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/matches/matches_chat_use_cases.dart"
+          "widgetbook/lib/matches/catalog/consumer_thread.dart"
         ],
         "actionOwners": [
           {
@@ -711,7 +711,9 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/matches/matches_chat_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/matches/catalog/host_thread.dart"
+        ],
         "actionOwners": [
           {"id": "chat_screen", "language": "dart", "file": "lib/chats/presentation/chat_screen.dart", "symbol": "ChatScreen"},
           {"id": "retry_controller", "language": "dart", "file": "lib/chats/presentation/chat_retry_controller.dart", "symbol": "ChatRetryController"},

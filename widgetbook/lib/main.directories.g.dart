@@ -257,8 +257,32 @@ import 'package:widgetbook_workspace/hosts/operations/team_management.dart'
     as _widgetbook_workspace_hosts_operations_team_management;
 import 'package:widgetbook_workspace/hosts/operations/wizard_chrome.dart'
     as _widgetbook_workspace_hosts_operations_wizard_chrome;
-import 'package:widgetbook_workspace/matches/matches_chat_use_cases.dart'
-    as _widgetbook_workspace_matches_matches_chat_use_cases;
+import 'package:widgetbook_workspace/matches/catalog/celebration.dart'
+    as _widgetbook_workspace_matches_catalog_celebration;
+import 'package:widgetbook_workspace/matches/catalog/consumer_inbox.dart'
+    as _widgetbook_workspace_matches_catalog_consumer_inbox;
+import 'package:widgetbook_workspace/matches/catalog/consumer_thread.dart'
+    as _widgetbook_workspace_matches_catalog_consumer_thread;
+import 'package:widgetbook_workspace/matches/catalog/event_context.dart'
+    as _widgetbook_workspace_matches_catalog_event_context;
+import 'package:widgetbook_workspace/matches/catalog/host_inbox.dart'
+    as _widgetbook_workspace_matches_catalog_host_inbox;
+import 'package:widgetbook_workspace/matches/catalog/host_thread.dart'
+    as _widgetbook_workspace_matches_catalog_host_thread;
+import 'package:widgetbook_workspace/matches/catalog/inbox_header.dart'
+    as _widgetbook_workspace_matches_catalog_inbox_header;
+import 'package:widgetbook_workspace/matches/catalog/lists.dart'
+    as _widgetbook_workspace_matches_catalog_lists;
+import 'package:widgetbook_workspace/matches/catalog/loading.dart'
+    as _widgetbook_workspace_matches_catalog_loading;
+import 'package:widgetbook_workspace/matches/catalog/messages.dart'
+    as _widgetbook_workspace_matches_catalog_messages;
+import 'package:widgetbook_workspace/matches/catalog/share.dart'
+    as _widgetbook_workspace_matches_catalog_share;
+import 'package:widgetbook_workspace/matches/catalog/suvbot.dart'
+    as _widgetbook_workspace_matches_catalog_suvbot;
+import 'package:widgetbook_workspace/matches/catalog/tester.dart'
+    as _widgetbook_workspace_matches_catalog_tester;
 import 'package:widgetbook_workspace/onboarding/catalog/boot.dart'
     as _widgetbook_workspace_onboarding_catalog_boot;
 import 'package:widgetbook_workspace/onboarding/catalog/identity.dart'
@@ -9737,12 +9761,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Host chat states',
-                builder: _widgetbook_workspace_matches_matches_chat_use_cases
+                builder: _widgetbook_workspace_matches_catalog_host_thread
                     .hostChatRouteStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Route states',
-                builder: _widgetbook_workspace_matches_matches_chat_use_cases
+                builder: _widgetbook_workspace_matches_catalog_consumer_thread
                     .matchChatRouteStates,
               ),
             ],
@@ -9752,7 +9776,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Consumer route states',
-                builder: _widgetbook_workspace_matches_matches_chat_use_cases
+                builder: _widgetbook_workspace_matches_catalog_consumer_inbox
                     .matchesListConsumerRouteStates,
               ),
             ],
@@ -9765,9 +9789,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Sheet states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatShareCardSheetStates,
+                    builder: _widgetbook_workspace_matches_catalog_share
+                        .chatShareCardSheetStates,
                   ),
                 ],
               ),
@@ -9776,9 +9799,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Sliver states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatConversationsListStates,
+                    builder: _widgetbook_workspace_matches_catalog_lists
+                        .chatConversationsListStates,
                   ),
                 ],
               ),
@@ -9787,9 +9809,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Renderer states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatMessageListRendererStates,
+                    builder: _widgetbook_workspace_matches_catalog_messages
+                        .chatMessageListRendererStates,
                   ),
                 ],
               ),
@@ -9798,9 +9819,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Skeleton states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatPersonRowSkeletonStates,
+                    builder: _widgetbook_workspace_matches_catalog_loading
+                        .chatPersonRowSkeletonStates,
                   ),
                 ],
               ),
@@ -9809,9 +9829,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Card states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatShareCardStates,
+                    builder: _widgetbook_workspace_matches_catalog_share
+                        .chatShareCardStates,
                   ),
                 ],
               ),
@@ -9820,9 +9839,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Header states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatsBrowseHeaderStates,
+                    builder: _widgetbook_workspace_matches_catalog_inbox_header
+                        .chatsBrowseHeaderStates,
                   ),
                 ],
               ),
@@ -9831,9 +9849,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Empty states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatsEmptyStateVariants,
+                    builder: _widgetbook_workspace_matches_catalog_lists
+                        .chatsEmptyStateVariants,
                   ),
                 ],
               ),
@@ -9842,9 +9859,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Sliver states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatsListSliverStates,
+                    builder: _widgetbook_workspace_matches_catalog_lists
+                        .chatsListSliverStates,
                   ),
                 ],
               ),
@@ -9853,9 +9869,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Body states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatsListBodyStates,
+                    builder: _widgetbook_workspace_matches_catalog_lists
+                        .chatsListBodyStates,
                   ),
                 ],
               ),
@@ -9864,9 +9879,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Skeleton states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatsListSkeletonStates,
+                    builder: _widgetbook_workspace_matches_catalog_loading
+                        .chatsListSkeletonStates,
                   ),
                 ],
               ),
@@ -9875,9 +9889,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Dialog states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .matchCelebrationDialogStates,
+                    builder: _widgetbook_workspace_matches_catalog_celebration
+                        .matchCelebrationDialogStates,
                   ),
                 ],
               ),
@@ -9886,9 +9899,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Share card bubbles',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatShareCardBubbleStates,
+                    builder: _widgetbook_workspace_matches_catalog_share
+                        .chatShareCardBubbleStates,
                   ),
                 ],
               ),
@@ -9897,9 +9909,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Share card header',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatShareCardHeaderState,
+                    builder: _widgetbook_workspace_matches_catalog_share
+                        .chatShareCardHeaderState,
                   ),
                 ],
               ),
@@ -9913,9 +9924,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Timestamped message text',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .timestampedMessageTextState,
+                    builder: _widgetbook_workspace_matches_catalog_messages
+                        .timestampedMessageTextState,
                   ),
                 ],
               ),
@@ -9924,9 +9934,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Primitive states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .chatEventContextHeaderPrimitiveStates,
+                    builder: _widgetbook_workspace_matches_catalog_event_context
+                        .chatEventContextHeaderPrimitiveStates,
                   ),
                 ],
               ),
@@ -9935,9 +9944,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Sheet states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .matchTesterSheetStates,
+                    builder: _widgetbook_workspace_matches_catalog_tester
+                        .matchTesterSheetStates,
                   ),
                 ],
               ),
@@ -9946,9 +9954,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Media message body',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .mediaMessageBodyState,
+                    builder: _widgetbook_workspace_matches_catalog_messages
+                        .mediaMessageBodyState,
                   ),
                 ],
               ),
@@ -9957,9 +9964,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Primitive states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .messageBubblePrimitiveStates,
+                    builder: _widgetbook_workspace_matches_catalog_messages
+                        .messageBubblePrimitiveStates,
                   ),
                 ],
               ),
@@ -9968,9 +9974,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Primitive states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .suvbotActionBarPrimitiveStates,
+                    builder: _widgetbook_workspace_matches_catalog_suvbot
+                        .suvbotActionBarPrimitiveStates,
                   ),
                 ],
               ),
@@ -9979,9 +9984,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Primitive states',
-                    builder:
-                        _widgetbook_workspace_matches_matches_chat_use_cases
-                            .suvbotResetActionRowPrimitiveStates,
+                    builder: _widgetbook_workspace_matches_catalog_suvbot
+                        .suvbotResetActionRowPrimitiveStates,
                   ),
                 ],
               ),
@@ -10803,7 +10807,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Legacy shared Host list states',
-                builder: _widgetbook_workspace_matches_matches_chat_use_cases
+                builder: _widgetbook_workspace_matches_catalog_host_inbox
                     .matchesListHostInboxStates,
               ),
             ],
