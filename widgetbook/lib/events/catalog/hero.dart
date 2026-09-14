@@ -10,7 +10,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../../preview_layout_contracts.dart';
 import '../../support/page_preview.dart';
 import 'fixtures.dart';
-import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Photo hero states',
@@ -18,7 +17,7 @@ import 'preview.dart';
   path: '[Event Detail]/Hero',
 )
 Widget eventDetailPhotoHeroSurfaceStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventPhotoHeroSurface',
     catalogId: 'event_detail.hero.photo_surface',
     children: [
@@ -42,7 +41,7 @@ Widget eventDetailPhotoHeroSurfaceStates(BuildContext context) {
   path: '[Event Detail]/Hero',
 )
 Widget eventDetailTicketHeroSurfaceStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailTicketHeroSurface',
     catalogId: 'event_detail.hero.ticket_hero_surface',
     children: [
@@ -82,7 +81,7 @@ Widget eventDetailTicketHeroSurfaceStates(BuildContext context) {
   path: '[Event Detail]/Hero',
 )
 Widget eventDetailTicketSurfaceStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailTicketSurface',
     catalogId: 'event_detail.hero.ticket_surface',
     children: [
@@ -127,7 +126,7 @@ Widget eventDetailTicketSurfaceStates(BuildContext context) {
   path: '[Event Detail]/Hero',
 )
 Widget eventDetailHeroActivityBadgeStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'HeroActivityBadge',
     catalogId: 'event_detail.hero.activity_badge',
     children: [
@@ -174,7 +173,7 @@ Widget eventDetailHeroActivityBadgeStates(BuildContext context) {
   path: '[Event Detail]/Hero',
 )
 Widget eventDetailHeroTimeChipStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'HeroTimeChip',
     catalogId: 'event_detail.hero.time_chip',
     children: [

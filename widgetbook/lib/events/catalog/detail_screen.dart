@@ -34,7 +34,7 @@ final _hostViewer = widgetbookEventsViewer.copyWith(
   path: '[Event Detail]/Screen states',
 )
 Widget eventDetailScreenStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailScreen',
     catalogId: 'screen.event.detail',
     children: [

@@ -44,7 +44,7 @@ Widget locationPickerScreenStates(BuildContext context) {
 )
 Widget eventMapViewStates(BuildContext context) {
   final items = _eventMapItems();
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventMapView',
     catalogId: 'screen.events.map',
     children: [
@@ -215,7 +215,7 @@ Widget mapOverlayControlsState(BuildContext context) {
   path: '[Events]/Map',
 )
 Widget mapPinTileStates(BuildContext context) {
-  return const WidgetbookEventCatalogFrame(
+  return const WidgetbookScrollCatalogFrame(
     title: 'MapPinTile',
     catalogId: 'control.events.map_pin',
     children: [

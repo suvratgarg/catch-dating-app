@@ -44,7 +44,7 @@ final _attended = EventParticipation(
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailSocialSectionStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailSocialSection',
     catalogId: 'section.event.who_is_going',
     children: [
@@ -155,7 +155,7 @@ Widget eventDetailSocialSectionStates(BuildContext context) {
 )
 Widget eventDetailHostSectionStates(BuildContext context) {
   final style = EventDetailSurfaceStyle.light(CatchTokens.of(context));
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailHostsSection',
     catalogId: 'section.event.hosts',
     children: [
@@ -260,7 +260,7 @@ Widget eventHypeAvatarStackState(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget whoIsGoingStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'WhoIsGoing',
     catalogId: 'section.event.who_is_going.roster',
     children: [
@@ -291,7 +291,7 @@ Widget whoIsGoingStates(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget whoIsGoingContentStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'WhoIsGoingContent',
     catalogId: 'section.event.who_is_going.content',
     children: [
@@ -328,7 +328,7 @@ Widget whoIsGoingContentStates(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget emptyRosterMessageStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EmptyRosterMessage',
     catalogId: 'section.event.who_is_going.empty_roster_message',
     children: [
@@ -362,7 +362,7 @@ Widget emptyRosterMessageStates(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget swipeWindowBannerStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'SwipeWindowBanner',
     catalogId: 'section.event.who_is_going.swipe_window_banner',
     children: [

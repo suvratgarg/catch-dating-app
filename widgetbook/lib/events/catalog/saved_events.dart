@@ -34,7 +34,7 @@ Widget savedEventsScreenStates(BuildContext context) {
       ),
     ),
   ];
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'SavedEventsScreen',
     catalogId: 'screen.events.saved',
     children: [

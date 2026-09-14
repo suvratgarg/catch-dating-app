@@ -46,7 +46,7 @@ Widget eventDetailOverviewSectionStates(BuildContext context) {
     ),
   );
 
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailOverviewSection',
     catalogId: 'section.event.plan',
     children: [
@@ -123,7 +123,7 @@ Widget crossPathsEventConsentStates(BuildContext context) {
     ),
   );
 
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'CrossPathsEventConsentSection',
     catalogId: 'section.event.cross_paths_consent',
     children: [
@@ -149,7 +149,7 @@ Widget crossPathsEventConsentStates(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailInitialEventLoadingBodyStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailBody initial loading',
     catalogId: 'section.event.initial_loading_body',
     children: [
@@ -279,7 +279,7 @@ Widget eventDetailHostsSkeletonState(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailCompanionSkeletonState(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailCompanionSkeleton',
     catalogId: 'section.event.companion_skeleton',
     children: [
