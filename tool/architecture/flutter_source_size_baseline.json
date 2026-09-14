@@ -214,10 +214,6 @@
       "maxLines": 2389
     },
     {
-      "path": "widgetbook/lib/foundation/foundation_token_use_cases.dart",
-      "maxLines": 1983
-    },
-    {
       "path": "widgetbook/lib/geometry/component_geometry_use_cases.dart",
       "maxLines": 1627
     },

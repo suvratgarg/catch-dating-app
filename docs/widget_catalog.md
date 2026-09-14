@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 4.5.1
-updated: 2026-09-14
+version: 4.5.2
+updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -33,7 +33,7 @@ mode does not change validation requirements or selection clearing.
 
 L0 token definitions live in `packages/catch_tokens` and are consumed through
 `package:catch_tokens/catch_tokens.dart`. Widgetbook foundation specimens in
-`widgetbook/lib/foundation/foundation_token_use_cases.dart` mount those same
+`widgetbook/lib/foundation/specimens/` mount those same
 production values. Theme wiring, typography, icons, motion, and bundled font assets now live
 in `packages/catch_ui/lib/src/foundations`, consumed through
 `package:catch_ui/catch_ui.dart`. `AppTheme` retains the app-specific activity

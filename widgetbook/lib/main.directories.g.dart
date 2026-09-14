@@ -81,8 +81,22 @@ import 'package:widgetbook_workspace/explore/catalog/organizers.dart'
     as _widgetbook_workspace_explore_catalog_organizers;
 import 'package:widgetbook_workspace/explore/catalog/screen.dart'
     as _widgetbook_workspace_explore_catalog_screen;
-import 'package:widgetbook_workspace/foundation/foundation_token_use_cases.dart'
-    as _widgetbook_workspace_foundation_foundation_token_use_cases;
+import 'package:widgetbook_workspace/foundation/specimens/brand.dart'
+    as _widgetbook_workspace_foundation_specimens_brand;
+import 'package:widgetbook_workspace/foundation/specimens/colors.dart'
+    as _widgetbook_workspace_foundation_specimens_colors;
+import 'package:widgetbook_workspace/foundation/specimens/media.dart'
+    as _widgetbook_workspace_foundation_specimens_media;
+import 'package:widgetbook_workspace/foundation/specimens/motion.dart'
+    as _widgetbook_workspace_foundation_specimens_motion;
+import 'package:widgetbook_workspace/foundation/specimens/photo_data.dart'
+    as _widgetbook_workspace_foundation_specimens_photo_data;
+import 'package:widgetbook_workspace/foundation/specimens/shape.dart'
+    as _widgetbook_workspace_foundation_specimens_shape;
+import 'package:widgetbook_workspace/foundation/specimens/spacing.dart'
+    as _widgetbook_workspace_foundation_specimens_spacing;
+import 'package:widgetbook_workspace/foundation/specimens/typography.dart'
+    as _widgetbook_workspace_foundation_specimens_typography;
 import 'package:widgetbook_workspace/geometry/component_geometry_use_cases.dart'
     as _widgetbook_workspace_geometry_component_geometry_use_cases;
 import 'package:widgetbook_workspace/geometry/field_transition_prototype.dart'
@@ -5287,9 +5301,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Wordmark',
-                builder:
-                    _widgetbook_workspace_foundation_foundation_token_use_cases
-                        .foundationBrandTokens,
+                builder: _widgetbook_workspace_foundation_specimens_brand
+                    .foundationBrandTokens,
               ),
             ],
           ),
@@ -5298,9 +5311,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Color roles',
-                builder:
-                    _widgetbook_workspace_foundation_foundation_token_use_cases
-                        .foundationColorRoles,
+                builder: _widgetbook_workspace_foundation_specimens_colors
+                    .foundationColorRoles,
               ),
             ],
           ),
@@ -5309,9 +5321,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Data pairs and photo grade',
-                builder:
-                    _widgetbook_workspace_foundation_foundation_token_use_cases
-                        .foundationDataPhotoTokens,
+                builder: _widgetbook_workspace_foundation_specimens_photo_data
+                    .foundationDataPhotoTokens,
               ),
             ],
           ),
@@ -5320,9 +5331,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Icons and media geometry',
-                builder:
-                    _widgetbook_workspace_foundation_foundation_token_use_cases
-                        .foundationIconMediaTokens,
+                builder: _widgetbook_workspace_foundation_specimens_media
+                    .foundationIconMediaTokens,
               ),
             ],
           ),
@@ -5331,9 +5341,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Radius elevation opacity',
-                builder:
-                    _widgetbook_workspace_foundation_foundation_token_use_cases
-                        .foundationShapeTokens,
+                builder: _widgetbook_workspace_foundation_specimens_shape
+                    .foundationShapeTokens,
               ),
             ],
           ),
@@ -5342,9 +5351,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Spacing and layout',
-                builder:
-                    _widgetbook_workspace_foundation_foundation_token_use_cases
-                        .foundationSpacingAndLayout,
+                builder: _widgetbook_workspace_foundation_specimens_spacing
+                    .foundationSpacingAndLayout,
               ),
             ],
           ),
@@ -5353,9 +5361,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Stroke and motion',
-                builder:
-                    _widgetbook_workspace_foundation_foundation_token_use_cases
-                        .foundationStrokeMotionTokens,
+                builder: _widgetbook_workspace_foundation_specimens_motion
+                    .foundationStrokeMotionTokens,
               ),
             ],
           ),
@@ -5364,9 +5371,8 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Typography roles',
-                builder:
-                    _widgetbook_workspace_foundation_foundation_token_use_cases
-                        .foundationTypographyRoles,
+                builder: _widgetbook_workspace_foundation_specimens_typography
+                    .foundationTypographyRoles,
               ),
             ],
           ),

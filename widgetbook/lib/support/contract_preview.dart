@@ -37,7 +37,18 @@ class WidgetbookContractFrame extends StatelessWidget {
     required this.contractId,
     required this.states,
     required this.children,
-  });
+  }) : _maxWidth = 920,
+       _stateAlignment = WrapCrossAlignment.center;
+
+  /// Preserves the wider canvas and start-aligned state labels of token specimens.
+  const WidgetbookContractFrame.foundation({
+    super.key,
+    required this.title,
+    required this.contractId,
+    required this.states,
+    required this.children,
+  }) : _maxWidth = 980,
+       _stateAlignment = WrapCrossAlignment.start;
 
   /// The same review canvas for an interaction demo outside the component registry.
   const WidgetbookContractFrame.behavior({
@@ -46,12 +57,16 @@ class WidgetbookContractFrame extends StatelessWidget {
     required String behaviorId,
     required this.states,
     required this.children,
-  }) : contractId = behaviorId;
+  }) : contractId = behaviorId,
+       _maxWidth = 920,
+       _stateAlignment = WrapCrossAlignment.center;
 
   final String title;
   final String contractId;
   final List<String> states;
   final List<Widget> children;
+  final double _maxWidth;
+  final WrapCrossAlignment _stateAlignment;
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +78,7 @@ class WidgetbookContractFrame extends StatelessWidget {
         padding: CatchInsets.pageBodyRelaxed,
         child: Center(
           child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 920),
+            constraints: BoxConstraints(maxWidth: _maxWidth),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -72,6 +87,7 @@ class WidgetbookContractFrame extends StatelessWidget {
                 Text(title, style: CatchTextStyles.headlineS(context)),
                 const SizedBox(height: CatchSpacing.s3),
                 WidgetbookContractWrap(
+                  crossAxisAlignment: _stateAlignment,
                   children: [
                     for (final state in states)
                       CatchBadge(
