@@ -317,6 +317,40 @@ export const setEventAssistanceRuntimeConfigCallablePayloadSchema: Record<string
                   "maximum": 10000
                 }
               }
+            },
+            "senderReviews": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "routeId",
+                  "senderId",
+                  "reviewHash"
+                ],
+                "properties": {
+                  "routeId": {
+                    "type": "string",
+                    "enum": [
+                      "catchEventSms",
+                      "organizerEventWhatsapp",
+                      "catchEventRcs"
+                    ]
+                  },
+                  "senderId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "reviewHash": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                }
+              }
             }
           }
         },

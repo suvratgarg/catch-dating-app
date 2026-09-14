@@ -37,6 +37,31 @@ const schemaGetEventAssistanceRuntimeConfigCallablePayloadSchema = <String, Obje
         },
       },
     },
+    'senderCursors': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[],
+      'properties': <String, Object?>{
+        'catchEventSms': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'organizerEventWhatsapp': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+        'catchEventRcs': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 180,
+          'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+        },
+      },
+    },
   },
   'title': 'GetEventAssistanceRuntimeConfigCallablePayload',
 };

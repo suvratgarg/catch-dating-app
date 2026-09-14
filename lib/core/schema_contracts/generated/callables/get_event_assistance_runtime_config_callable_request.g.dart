@@ -8,11 +8,14 @@
 final class GetEventAssistanceRuntimeConfigCallableRequest {
   const GetEventAssistanceRuntimeConfigCallableRequest({
     required this.context,
+    this.senderCursors,
   });
 
   final Map<String, Object?> context;
+  final Map<String, Object?>? senderCursors;
 
   Map<String, Object?> toJson() => {
     'context': context,
+    'senderCursors': ?senderCursors,
   };
 }

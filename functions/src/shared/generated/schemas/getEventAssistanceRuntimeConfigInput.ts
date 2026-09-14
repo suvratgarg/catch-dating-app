@@ -34,6 +34,31 @@ export const getEventAssistanceRuntimeConfigCallablePayloadSchema: Record<string
           "maxLength": 2000
         }
       }
+    },
+    "senderCursors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "catchEventSms": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerEventWhatsapp": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "catchEventRcs": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
     }
   },
   "title": "GetEventAssistanceRuntimeConfigCallablePayload"

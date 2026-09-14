@@ -21645,6 +21645,86 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoices = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 63,
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsAvailability = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.availability',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['eligible', 'setupRequired', 'approvalExpired', 'joiningTemplateMissing'],
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsDisplayAddress = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.displayAddress',
+    maxLength: 32,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsDisplayName = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.displayName',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsReviewHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'organizerEventWhatsapp', 'catchEventRcs'],
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsSenderId = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.senderId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupNextCursorsCatchEventRcs = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.nextCursors.catchEventRcs',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupNextCursorsCatchEventSms = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.nextCursors.catchEventSms',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceRuntimeConfigCallableResponseViewSenderSetupNextCursorsOrganizerEventWhatsapp = CatchContractFieldConstraints(
+    path: 'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.nextCursors.organizerEventWhatsapp',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const eventAssistanceRuntimeConfigCallableResponseViewServerTime = CatchContractFieldConstraints(
     path: 'eventAssistanceRuntimeConfigCallableResponse.view.serverTime',
     required: true,
@@ -49559,6 +49639,33 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceRuntimeConfigCallablePayloadSenderCursorsCatchEventRcs = CatchContractFieldConstraints(
+    path: 'getEventAssistanceRuntimeConfigCallablePayload.senderCursors.catchEventRcs',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceRuntimeConfigCallablePayloadSenderCursorsCatchEventSms = CatchContractFieldConstraints(
+    path: 'getEventAssistanceRuntimeConfigCallablePayload.senderCursors.catchEventSms',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const getEventAssistanceRuntimeConfigCallablePayloadSenderCursorsOrganizerEventWhatsapp = CatchContractFieldConstraints(
+    path: 'getEventAssistanceRuntimeConfigCallablePayload.senderCursors.organizerEventWhatsapp',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const getEventAssistanceSettingCallablePayloadContextEventId = CatchContractFieldConstraints(
@@ -82573,6 +82680,37 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['string'],
   );
 
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandSenderReviews = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.senderReviews',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 3,
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandSenderReviewsItemsReviewHash = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.senderReviews.items.reviewHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandSenderReviewsItemsRouteId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.senderReviews.items.routeId',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'organizerEventWhatsapp', 'catchEventRcs'],
+  );
+
+  static const setEventAssistanceRuntimeConfigCallablePayloadCommandSenderReviewsItemsSenderId = CatchContractFieldConstraints(
+    path: 'setEventAssistanceRuntimeConfigCallablePayload.command.senderReviews.items.senderId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const setEventAssistanceRuntimeConfigCallablePayloadContextEventId = CatchContractFieldConstraints(
     path: 'setEventAssistanceRuntimeConfigCallablePayload.context.eventId',
     maxLength: 160,
@@ -94431,6 +94569,16 @@ abstract final class CatchContractConstraints {
     'eventAssistanceRuntimeConfigCallableResponse.view.context.organizerId': eventAssistanceRuntimeConfigCallableResponseViewContextOrganizerId,
     'eventAssistanceRuntimeConfigCallableResponse.view.eventEnd': eventAssistanceRuntimeConfigCallableResponseViewEventEnd,
     'eventAssistanceRuntimeConfigCallableResponse.view.revision': eventAssistanceRuntimeConfigCallableResponseViewRevision,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoices,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.availability': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsAvailability,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.displayAddress': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsDisplayAddress,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.displayName': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsDisplayName,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.reviewHash': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsReviewHash,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.routeId': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsRouteId,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.choices.items.senderId': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupChoicesItemsSenderId,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.nextCursors.catchEventRcs': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupNextCursorsCatchEventRcs,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.nextCursors.catchEventSms': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupNextCursorsCatchEventSms,
+    'eventAssistanceRuntimeConfigCallableResponse.view.senderSetup.nextCursors.organizerEventWhatsapp': eventAssistanceRuntimeConfigCallableResponseViewSenderSetupNextCursorsOrganizerEventWhatsapp,
     'eventAssistanceRuntimeConfigCallableResponse.view.serverTime': eventAssistanceRuntimeConfigCallableResponseViewServerTime,
     'eventAssistanceRuntimeConfigCallableResponse.view.sourceHash': eventAssistanceRuntimeConfigCallableResponseViewSourceHash,
     'eventAssistanceRuntimeConfigCallableResponse.view.status': eventAssistanceRuntimeConfigCallableResponseViewStatus,
@@ -98169,6 +98317,9 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceRuntimeConfigCallablePayload.context.eventId': getEventAssistanceRuntimeConfigCallablePayloadContextEventId,
     'getEventAssistanceRuntimeConfigCallablePayload.context.mode': getEventAssistanceRuntimeConfigCallablePayloadContextMode,
     'getEventAssistanceRuntimeConfigCallablePayload.context.organizerId': getEventAssistanceRuntimeConfigCallablePayloadContextOrganizerId,
+    'getEventAssistanceRuntimeConfigCallablePayload.senderCursors.catchEventRcs': getEventAssistanceRuntimeConfigCallablePayloadSenderCursorsCatchEventRcs,
+    'getEventAssistanceRuntimeConfigCallablePayload.senderCursors.catchEventSms': getEventAssistanceRuntimeConfigCallablePayloadSenderCursorsCatchEventSms,
+    'getEventAssistanceRuntimeConfigCallablePayload.senderCursors.organizerEventWhatsapp': getEventAssistanceRuntimeConfigCallablePayloadSenderCursorsOrganizerEventWhatsapp,
     'getEventAssistanceSettingCallablePayload.context.eventId': getEventAssistanceSettingCallablePayloadContextEventId,
     'getEventAssistanceSettingCallablePayload.context.mode': getEventAssistanceSettingCallablePayloadContextMode,
     'getEventAssistanceSettingCallablePayload.context.organizerId': getEventAssistanceSettingCallablePayloadContextOrganizerId,
@@ -102704,6 +102855,10 @@ abstract final class CatchContractConstraints {
     'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.routes.items.routeId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsRoutesItemsRouteId,
     'setEventAssistanceRuntimeConfigCallablePayload.command.configuration.options.routes.items.senderId': setEventAssistanceRuntimeConfigCallablePayloadCommandConfigurationOptionsRoutesItemsSenderId,
     'setEventAssistanceRuntimeConfigCallablePayload.command.kind': setEventAssistanceRuntimeConfigCallablePayloadCommandKind,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.senderReviews': setEventAssistanceRuntimeConfigCallablePayloadCommandSenderReviews,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.senderReviews.items.reviewHash': setEventAssistanceRuntimeConfigCallablePayloadCommandSenderReviewsItemsReviewHash,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.senderReviews.items.routeId': setEventAssistanceRuntimeConfigCallablePayloadCommandSenderReviewsItemsRouteId,
+    'setEventAssistanceRuntimeConfigCallablePayload.command.senderReviews.items.senderId': setEventAssistanceRuntimeConfigCallablePayloadCommandSenderReviewsItemsSenderId,
     'setEventAssistanceRuntimeConfigCallablePayload.context.eventId': setEventAssistanceRuntimeConfigCallablePayloadContextEventId,
     'setEventAssistanceRuntimeConfigCallablePayload.context.mode': setEventAssistanceRuntimeConfigCallablePayloadContextMode,
     'setEventAssistanceRuntimeConfigCallablePayload.context.organizerId': setEventAssistanceRuntimeConfigCallablePayloadContextOrganizerId,

@@ -5,6 +5,9 @@ import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, getFirestore} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
 import {harness} from "./whatsappTestHarness";
+import {rcsTestConfig} from "./rcsTestFixtures";
+import {operationContentHash} from "../../operations/durableActions";
+import {whatsappTemplateSnapshot} from "./whatsappTemplate";
 import {WhatsappPreferenceOptionsStore} from "./whatsappPreferenceOptionsStore";
 import {listEventWhatsappPreferencesHandler} from
   "./whatsappPreferenceOptionsHandlers";
@@ -18,6 +21,11 @@ import {validateListEventWhatsappPreferencesCallableResponse} from
 
 async function fixture(db?: Firestore) {
   const h = await harness(db, randomUUID());
+  const rcs = rcsTestConfig();
+  await h.write("eventAssistanceRcsSenders/rcs-sender", {...rcs,
+    senderId: "rcs-sender", activation: {...rcs.activation,
+      approvedAt: h.clock.now - 1000, validUntil: h.clock.now + 3_600_000},
+    quote: {...rcs.quote, validUntil: h.clock.now + 3_600_000}});
   const scope = {eventId: h.context.eventId, attendeeId: h.scope.attendeeId,
     cursor: null};
   const store = new WhatsappPreferenceOptionsStore(h.db, () => h.clock.now);
@@ -39,8 +47,15 @@ async function fixture(db?: Firestore) {
   const addSender = async (senderId: string, decision: "grant" | "revoke") => {
     await h.write("organizerSenderConnections/" + senderId,
       (await h.read(h.senderPath))!);
+    const templateId = "template-" + senderId;
+    const template = {...await h.read(h.templatePath), connectionId: senderId};
+    await h.write("organizerMessageTemplates/" + templateId, template);
     await h.write("eventAssistanceWhatsappPolicies/" + senderId,
-      {...await h.read(h.policyPath), senderId});
+      {...h.expected.policy, senderId, templates: h.expected.policy.templates
+        .map((t) => ({...t, templateDocumentId: templateId,
+          templateHash: operationContentHash(
+            whatsappTemplateSnapshot(template)),
+        }))});
     const nextScope = {...h.scope, senderId};
     const {view} = await h.preferences.get(h.actor, nextScope);
     await h.preferences.set(h.actor, {...nextScope,
@@ -89,15 +104,18 @@ test("paused execution and sender retain selection", async () => {
 
 test("new sender selection preserves revoked history without inventing a grant",
   async () => {
-    const h = await fixture(); await h.configure("unprovisioned");
+    const h = await fixture();
+    await h.addSender("replacement", "revoke");
+    await h.configure("replacement");
+    h.fake.remove("organizerSenderConnections/replacement");
     await h.preferences.set(h.actor, {...h.grant, requestId: "withdraw",
       expectedRevision: 1, decision: {kind: "revoke"}});
     await h.addSender("never-granted", "revoke");
     const result = await h.list();
-    assert.equal(result.configuredSenderId, "unprovisioned");
+    assert.equal(result.configuredSenderId, "replacement");
     assert.deepEqual(result.previousSenderIds, [h.grant.senderId]);
     assert.equal((await h.preferences.get(h.actor, {...h.grant,
-      senderId: "unprovisioned"})).view.canEnable, false);
+      senderId: "replacement"})).view.canEnable, false);
   });
 
 test("changed runtime and recipient sources withhold stale choices",

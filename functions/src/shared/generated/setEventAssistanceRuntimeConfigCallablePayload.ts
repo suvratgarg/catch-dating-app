@@ -67,6 +67,15 @@ export interface SetEventAssistanceRuntimeConfigCallablePayload {
           expiresAt: number;
           maxEvaluations: number;
         };
+        /**
+         * @minItems 1
+         * @maxItems 3
+         */
+        senderReviews?: {
+          routeId: "catchEventSms" | "organizerEventWhatsapp" | "catchEventRcs";
+          senderId: string;
+          reviewHash: string;
+        }[];
       }
     | {
         kind: "pause";

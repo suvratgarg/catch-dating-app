@@ -19,6 +19,8 @@ import {validateEventAssistanceRuntimeConfigReceiptDocument} from
 import type {EventAssistanceRuntimeConfigCallableResponse as Response} from
   "../../shared/generated/eventAssistanceRuntimeConfigCallableResponse";
 import {invalidSource} from "./groupProgressSource";
+import {readRuntimeSenderChoice, readRuntimeSenderSetup} from
+  "./runtimeSenderSetup";
 import {prepareRosterWorkEnqueue, runtimeRosterInput} from
   "./rosterWorkEnqueue";
 import {RuntimeContext, RUNTIME_CONFIGS, RUNTIME_CONFIG_RECEIPTS,
@@ -34,8 +36,13 @@ export class EventAssistanceRuntimeConfigStore {
     if (!validateGetEventAssistanceRuntimeConfigCallablePayload(input)) {
       throw new HttpsError("invalid-argument", "Invalid automation scope.");
     }
-    return transact(this.db, async (tx) =>
-      response("read", await this.read(tx, actorUid, input.context)));
+    return transact(this.db, async (tx) => {
+      const state = await this.read(tx, actorUid, input.context);
+      const senderSetup = await readRuntimeSenderSetup(this.db, tx,
+        input.context, state.now, input.senderCursors,
+        state.record?.configuration?.options.routes);
+      return response("read", state, null, senderSetup);
+    });
   }
 
   async set(actorUid: string, input: unknown): Promise<Response> {
@@ -76,6 +83,28 @@ export class EventAssistanceRuntimeConfigStore {
         throw new HttpsError("failed-precondition",
           "Automation must end within the current open event.");
       }
+      const requireSenders = async (at: number) => {
+        if (input.command.kind !== "configure") return;
+        const routes = input.command.configuration.options.routes;
+        const reviews = input.command.senderReviews;
+        if (reviews && (reviews.length !== routes.length ||
+            new Set(reviews.map((r) => r.routeId)).size !== reviews.length)) {
+          throw new HttpsError("invalid-argument",
+            "Review each selected sender.");
+        }
+        for (const route of routes) {
+          const choice = await readRuntimeSenderChoice(this.db, tx,
+            input.context, route, at);
+          if (!choice || choice.availability !== "eligible") {
+            throw new HttpsError("failed-precondition",
+              "A selected event message sender needs setup.");
+          }
+          if (reviews && !reviews.some((r) => r.routeId === route.routeId &&
+              r.senderId === route.senderId &&
+              r.reviewHash === choice.reviewHash)) throw conflict();
+        }
+      };
+      await requireSenders(now);
       const record = parseRuntimeConfig({schemaVersion: 1,
         runtimeId: runtimeConfigId(input.context), context: input.context,
         workflowKind: "lateJoin", revision: (state.record?.revision ?? 0) + 1,
@@ -97,6 +126,7 @@ export class EventAssistanceRuntimeConfigStore {
       const committedAt = this.clock();
       if (committedAt < now || (roster &&
           committedAt >= record.configuration!.expiresAt)) throw conflict();
+      if (committedAt !== now) await requireSenders(committedAt);
       tx.set(this.db.collection(RUNTIME_CONFIGS).doc(record.runtimeId), record);
       tx.create(receiptRef, savedReceipt);
       roster?.commit();
@@ -133,14 +163,16 @@ type State = {
   record: ReturnType<typeof parseRuntimeConfig> | null;
 };
 function response(outcome: Response["outcome"], state: State,
-  operationRevision: number | null = null): Response {
+  operationRevision: number | null = null,
+  senderSetup?: Response["view"]["senderSetup"]): Response {
   const value: Response = {outcome, operationRevision, view: {
     context: state.context, serverTime: state.now,
     sourceHash: state.source.hash, revision: state.record?.revision ?? 0,
     runtime: state.record,
     status: runtimeConfigStatus(state.record, state.source, state.now),
     canConfigure: !state.source.closed && state.now < state.source.eventEnd,
-    eventEnd: state.source.eventEnd}};
+    eventEnd: state.source.eventEnd,
+    ...(senderSetup ? {senderSetup} : {})}};
   if (!validateEventAssistanceRuntimeConfigCallableResponse(value)) {
     throw invalidSource();
   }

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.124.0
+version: 1.125.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -1033,6 +1033,30 @@ A replay shows current saved state, including a newer pause. Conflicts require a
 fresh review. Focused tests cover detached recovery, account changes, rejected
 foreign receipts and reentrant retry callbacks. Screen composition and rehearsal
 integration remain separate work.
+
+The runtime read now includes optional `senderSetup`: up to 20 scanned records
+per SMS, organizer WhatsApp and RCS channel, plus any saved selections outside
+those pages. Cursors advance by scanned document identity, including filtered
+records; a deleted cursor does not strand the next page. WhatsApp discovery is
+restricted to the current organizer. Closed projections contain only channel,
+sender reference, display name/address, review hash and a typed eligibility
+state. They distinguish setup required, approval/quote expiry and unavailable
+joining templates. Neither eligibility nor a saved runtime proves guest consent,
+recipient capability, budget, current credentials or provider delivery. Missing
+setup in an older response stays unknown, never an empty verified directory.
+
+Each configure command now re-reads its selected sender sources and rejects
+missing, foreign or currently ineligible senders, including expiry during
+preparation. Optional `senderReviews` binds each selected channel and sender to
+the exact displayed source hash; native changes from a reviewed directory include
+these hashes. Paging preserves channel identity, immutable choices and cursor
+progress. Legacy requests without hashes still undergo current provisioning
+checks, but have no displayed-identity comparison. Pause and exact receipt replay
+do not depend on current sender eligibility. Reads and command review neither
+load secrets nor contact providers. Cross-stack fixtures are generated from real
+server reads and a reviewed configure, with focused coverage of paging, ownership,
+source changes, template withdrawal, expiry and immutable native payloads. The
+visible sender picker and runtime control adapter remain the next UI work.
 
 Runtime options cover the whole event. After verifying the complete saved
 configuration, publication includes only later joining choices allowed by that

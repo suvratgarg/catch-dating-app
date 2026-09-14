@@ -804,6 +804,99 @@ const schemaEventAssistanceRuntimeConfigCallableResponseSchema = <String, Object
           'minimum': 0,
           'maximum': 9007199254740991,
         },
+        'senderSetup': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'choices',
+            'nextCursors',
+          ],
+          'properties': <String, Object?>{
+            'choices': <String, Object?>{
+              'type': 'array',
+              'maxItems': 63,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'routeId',
+                  'senderId',
+                  'displayName',
+                  'displayAddress',
+                  'reviewHash',
+                  'availability',
+                ],
+                'properties': <String, Object?>{
+                  'routeId': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'catchEventSms',
+                      'organizerEventWhatsapp',
+                      'catchEventRcs',
+                    ],
+                  },
+                  'senderId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  'displayName': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 160,
+                  },
+                  'displayAddress': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'minLength': 1,
+                    'maxLength': 32,
+                  },
+                  'reviewHash': <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^[a-f0-9]{64}\$',
+                  },
+                  'availability': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'eligible',
+                      'setupRequired',
+                      'approvalExpired',
+                      'joiningTemplateMissing',
+                    ],
+                  },
+                },
+              },
+            },
+            'nextCursors': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[],
+              'properties': <String, Object?>{
+                'catchEventSms': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'organizerEventWhatsapp': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+                'catchEventRcs': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 180,
+                  'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                },
+              },
+            },
+          },
+        },
       },
     },
   },

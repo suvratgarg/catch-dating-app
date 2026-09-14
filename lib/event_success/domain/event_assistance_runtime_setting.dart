@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_sender.dart';
 
 sealed class AssistanceRuntimeCommand {
   const AssistanceRuntimeCommand();
@@ -120,6 +121,7 @@ final class AssistanceRuntimeView {
     required this.status,
     required this.canConfigure,
     required this.eventEnd,
+    required this.senderSetup,
   });
   final EventAssistanceRuntimeScope scope;
   final int serverTime;
@@ -129,11 +131,13 @@ final class AssistanceRuntimeView {
   final AssistanceRuntimeStatus status;
   final bool canConfigure;
   final int eventEnd;
+  final AssistanceRuntimeSenderSetup? senderSetup;
   factory AssistanceRuntimeView.fromJson(
     Object? value, {
     required EventAssistanceRuntimeScope expectedScope,
   }) {
-    final map = assistanceObject(value, {
+    final raw = assistanceObject(value);
+    final map = assistanceObject(raw, {
       'context',
       'serverTime',
       'sourceHash',
@@ -142,6 +146,7 @@ final class AssistanceRuntimeView {
       'status',
       'canConfigure',
       'eventEnd',
+      if (raw.containsKey('senderSetup')) 'senderSetup',
     });
     expectedScope.requireMatch(map['context']);
     final now = assistanceInteger(map['serverTime']);
@@ -157,6 +162,12 @@ final class AssistanceRuntimeView {
       status: assistanceEnum(AssistanceRuntimeStatus.values, map['status']),
       canConfigure: assistanceBoolean(map['canConfigure']),
       eventEnd: assistanceInteger(map['eventEnd']),
+      senderSetup: map.containsKey('senderSetup')
+          ? AssistanceRuntimeSenderSetup.fromJson(
+              map['senderSetup'],
+              expectedScope,
+            )
+          : null,
     );
     view._validate();
     return view;
@@ -194,33 +205,60 @@ final class AssistanceRuntimeView {
   AssistanceRuntimeChange prepareChange({
     required String requestId,
     required AssistanceRuntimeCommand command,
+    List<AssistanceRuntimeSenderChoice>? reviewedSenders,
   }) {
     assistanceId(requestId);
     if (revision == 9007199254740991) {
       throw StateError('Automation revision exhausted.');
     }
+    List<AssistanceRuntimeSenderChoice>? senderReviews;
     if (command case AssistanceRuntimeConfigure(:final configuration)) {
       if (!canConfigure ||
           configuration.expiresAt <= serverTime ||
           configuration.expiresAt > eventEnd) {
         throw StateError('Configure execution within the current open event.');
       }
+      final available = reviewedSenders ?? senderSetup?.choices;
+      if (available != null) {
+        senderReviews = [
+          for (final route in configuration.routes)
+            available.singleWhere(
+              (choice) =>
+                  choice.scope == scope &&
+                  choice.route == route.route &&
+                  choice.senderId == route.senderId &&
+                  choice.canSelect,
+            ),
+        ];
+      }
     }
-    return AssistanceRuntimeChange._(this, requestId, command);
+    return AssistanceRuntimeChange._(this, requestId, command, senderReviews);
   }
 }
 
 /// Keeps pause and configure distinct; retries never replace the reviewed basis.
 final class AssistanceRuntimeChange {
-  const AssistanceRuntimeChange._(this.snapshot, this.requestId, this.command);
+  AssistanceRuntimeChange._(
+    this.snapshot,
+    this.requestId,
+    this.command,
+    List<AssistanceRuntimeSenderChoice>? senderReviews,
+  ) : senderReviews = senderReviews == null
+          ? null
+          : List.unmodifiable(senderReviews);
   final AssistanceRuntimeView snapshot;
   final String requestId;
   final AssistanceRuntimeCommand command;
+  final List<AssistanceRuntimeSenderChoice>? senderReviews;
   Map<String, Object?> toJson() => {
     'context': snapshot.scope.context,
     'requestId': requestId,
     'expectedRevision': snapshot.revision,
     'expectedSourceHash': snapshot.sourceHash,
-    'command': command.toJson(),
+    'command': {
+      ...command.toJson(),
+      if (senderReviews != null)
+        'senderReviews': senderReviews!.map((s) => s.reviewJson()).toList(),
+    },
   };
 }

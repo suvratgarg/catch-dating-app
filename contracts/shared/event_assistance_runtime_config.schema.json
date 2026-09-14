@@ -222,6 +222,9 @@
       "properties": {
         "context": {
           "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "senderCursors": {
+          "$ref": "#/definitions/SenderCursors"
         }
       }
     },
@@ -266,6 +269,14 @@
                 },
                 "configuration": {
                   "$ref": "#/definitions/Configuration"
+                },
+                "senderReviews": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 3,
+                  "items": {
+                    "$ref": "#/definitions/SenderReview"
+                  }
                 }
               }
             },
@@ -344,6 +355,9 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "senderSetup": {
+          "$ref": "#/definitions/SenderSetup"
         }
       }
     },
@@ -378,6 +392,117 @@
         },
         "view": {
           "$ref": "#/definitions/View"
+        }
+      }
+    },
+    "SenderCursors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "catchEventSms": {
+          "$ref": "../operations/common.schema.json#/definitions/id"
+        },
+        "organizerEventWhatsapp": {
+          "$ref": "../operations/common.schema.json#/definitions/id"
+        },
+        "catchEventRcs": {
+          "$ref": "../operations/common.schema.json#/definitions/id"
+        }
+      }
+    },
+    "SenderReview": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeId",
+        "senderId",
+        "reviewHash"
+      ],
+      "properties": {
+        "routeId": {
+          "type": "string",
+          "enum": [
+            "catchEventSms",
+            "organizerEventWhatsapp",
+            "catchEventRcs"
+          ]
+        },
+        "senderId": {
+          "$ref": "../operations/common.schema.json#/definitions/id"
+        },
+        "reviewHash": {
+          "$ref": "../operations/common.schema.json#/definitions/sha256"
+        }
+      }
+    },
+    "SenderChoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "routeId",
+        "senderId",
+        "displayName",
+        "displayAddress",
+        "reviewHash",
+        "availability"
+      ],
+      "properties": {
+        "routeId": {
+          "type": "string",
+          "enum": [
+            "catchEventSms",
+            "organizerEventWhatsapp",
+            "catchEventRcs"
+          ]
+        },
+        "senderId": {
+          "$ref": "../operations/common.schema.json#/definitions/id"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "displayAddress": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "reviewHash": {
+          "$ref": "../operations/common.schema.json#/definitions/sha256"
+        },
+        "availability": {
+          "type": "string",
+          "enum": [
+            "eligible",
+            "setupRequired",
+            "approvalExpired",
+            "joiningTemplateMissing"
+          ]
+        }
+      }
+    },
+    "SenderSetup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "choices",
+        "nextCursors"
+      ],
+      "properties": {
+        "choices": {
+          "type": "array",
+          "maxItems": 63,
+          "items": {
+            "$ref": "#/definitions/SenderChoice"
+          }
+        },
+        "nextCursors": {
+          "$ref": "#/definitions/SenderCursors"
         }
       }
     }

@@ -320,6 +320,40 @@ const schemaSetEventAssistanceRuntimeConfigCallablePayloadSchema = <String, Obje
                 },
               },
             },
+            'senderReviews': <String, Object?>{
+              'type': 'array',
+              'minItems': 1,
+              'maxItems': 3,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'routeId',
+                  'senderId',
+                  'reviewHash',
+                ],
+                'properties': <String, Object?>{
+                  'routeId': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'catchEventSms',
+                      'organizerEventWhatsapp',
+                      'catchEventRcs',
+                    ],
+                  },
+                  'senderId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 180,
+                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                  },
+                  'reviewHash': <String, Object?>{
+                    'type': 'string',
+                    'pattern': '^[a-f0-9]{64}\$',
+                  },
+                },
+              },
+            },
           },
         },
         <String, Object?>{

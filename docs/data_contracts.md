@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.112.0
+version: 1.113.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -689,6 +689,20 @@ the complete query. This prevents a reservation from consuming its own logical s
 twice and preserves the shared cap across replaced instructions. Instruction refresh
 and permission to send remain separate. No new collection, client rule, credential
 read or provider submission is introduced by publication.
+
+The runtime configuration read optionally returns a closed `senderSetup`
+projection with bounded, channel-specific pagination and safe named sender
+choices. The read request accepts typed `senderCursors`; each response advances
+by scanned document identity and also includes current saved selections. A
+configure command can include one `senderReviews` hash per selected route. The
+server revalidates current provisioning and exact supplied hashes in the same
+transaction before saving runtime permission and roster work. Pause and exact
+receipt replay do not require sender readiness. No new collection, secret access,
+consent grant or provider submission is introduced. New native parsers accept an
+older response without discovery as unknown; older closed response clients need
+a coordinated API/app rollout or reload before receiving the additional field.
+The optional hashes retain request compatibility, while new reviewed native
+changes bind displayed sender identity explicitly.
 
 The strict `event_assistance_roster_work.schema.json` payload adds resumable
 roster enrollment to the existing Operations collections. It binds the source

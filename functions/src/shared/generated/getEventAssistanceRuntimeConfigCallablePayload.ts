@@ -8,4 +8,9 @@ export interface GetEventAssistanceRuntimeConfigCallablePayload {
     eventId: string;
     organizerId: string;
   };
+  senderCursors?: {
+    catchEventSms?: string;
+    organizerEventWhatsapp?: string;
+    catchEventRcs?: string;
+  };
 }

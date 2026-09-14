@@ -11016,6 +11016,31 @@ export const getEventAssistanceRuntimeConfigCallablePayloadSchema = {
           "maxLength": 2000
         }
       }
+    },
+    "senderCursors": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [],
+      "properties": {
+        "catchEventSms": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "organizerEventWhatsapp": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "catchEventRcs": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 180,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        }
+      }
     }
   },
   "title": "GetEventAssistanceRuntimeConfigCallablePayload"
@@ -11334,6 +11359,40 @@ export const setEventAssistanceRuntimeConfigCallablePayloadSchema = {
                   "type": "integer",
                   "minimum": 1,
                   "maximum": 10000
+                }
+              }
+            },
+            "senderReviews": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 3,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "routeId",
+                  "senderId",
+                  "reviewHash"
+                ],
+                "properties": {
+                  "routeId": {
+                    "type": "string",
+                    "enum": [
+                      "catchEventSms",
+                      "organizerEventWhatsapp",
+                      "catchEventRcs"
+                    ]
+                  },
+                  "senderId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "reviewHash": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
                 }
               }
             }
@@ -12157,6 +12216,99 @@ export const eventAssistanceRuntimeConfigCallableResponseSchema = {
           "type": "integer",
           "minimum": 0,
           "maximum": 9007199254740991
+        },
+        "senderSetup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "choices",
+            "nextCursors"
+          ],
+          "properties": {
+            "choices": {
+              "type": "array",
+              "maxItems": 63,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "routeId",
+                  "senderId",
+                  "displayName",
+                  "displayAddress",
+                  "reviewHash",
+                  "availability"
+                ],
+                "properties": {
+                  "routeId": {
+                    "type": "string",
+                    "enum": [
+                      "catchEventSms",
+                      "organizerEventWhatsapp",
+                      "catchEventRcs"
+                    ]
+                  },
+                  "senderId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 180,
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                  },
+                  "displayName": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 160
+                  },
+                  "displayAddress": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "minLength": 1,
+                    "maxLength": 32
+                  },
+                  "reviewHash": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "availability": {
+                    "type": "string",
+                    "enum": [
+                      "eligible",
+                      "setupRequired",
+                      "approvalExpired",
+                      "joiningTemplateMissing"
+                    ]
+                  }
+                }
+              }
+            },
+            "nextCursors": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [],
+              "properties": {
+                "catchEventSms": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "organizerEventWhatsapp": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                },
+                "catchEventRcs": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 180,
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                }
+              }
+            }
+          }
         }
       }
     }

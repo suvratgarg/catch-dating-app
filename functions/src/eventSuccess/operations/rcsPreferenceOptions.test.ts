@@ -77,9 +77,12 @@ test("pausing runtime or sender does not remove the configured preference",
 test("changing senders preserves the earlier preference for separate review",
   async () => {
     const h = await fixture();
-    await h.configure("new-sender-without-provisioning");
+    await h.write(rcsConsentCollections.senders + "/replacement",
+      {...h.rcsConfig, senderId: "replacement"});
+    await h.configure("replacement");
+    h.fake.remove(rcsConsentCollections.senders + "/replacement");
     const result = await h.list();
-    assert.equal(result.configuredSenderId, "new-sender-without-provisioning");
+    assert.equal(result.configuredSenderId, "replacement");
     assert.deepEqual(result.previousSenderIds, [h.rcsConfig.senderId]);
     const unavailable = await new RcsPreferenceStore(h.db, () => h.clock.now)
       .get(h.actor, {...h.scope, senderId: result.configuredSenderId!});

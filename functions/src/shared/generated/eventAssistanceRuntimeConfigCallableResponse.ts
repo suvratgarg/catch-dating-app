@@ -167,5 +167,27 @@ export interface EventAssistanceRuntimeConfigCallableResponse {
       | "configured";
     canConfigure: boolean;
     eventEnd: number;
+    senderSetup?: {
+      /**
+       * @maxItems 63
+       */
+      choices: {
+        routeId: "catchEventSms" | "organizerEventWhatsapp" | "catchEventRcs";
+        senderId: string;
+        displayName: string;
+        displayAddress: string | null;
+        reviewHash: string;
+        availability:
+          | "eligible"
+          | "setupRequired"
+          | "approvalExpired"
+          | "joiningTemplateMissing";
+      }[];
+      nextCursors: {
+        catchEventSms?: string;
+        organizerEventWhatsapp?: string;
+        catchEventRcs?: string;
+      };
+    };
   };
 }
