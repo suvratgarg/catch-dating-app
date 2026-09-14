@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'GetEventAssistanceParticipantContextCallablePayload',
+    source: 'callables/get_event_assistance_participant_context_payload.schema.json',
+    schema: schemaGetEventAssistanceParticipantContextCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceParticipantContextCallableResponse',
+    source: 'callable_responses/event_assistance_participant_context_response.schema.json',
+    schema: schemaEventAssistanceParticipantContextCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ListEventAssistanceDepartureRostersCallablePayload',
     source: 'callables/list_event_assistance_departure_rosters_payload.schema.json',
     schema: schemaListEventAssistanceDepartureRostersCallablePayloadSchema,
@@ -3349,6 +3359,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'GetEventAssistanceParticipantContextCallablePayload': schemaGetEventAssistanceParticipantContextCallablePayloadSchema,
+  'EventAssistanceParticipantContextCallableResponse': schemaEventAssistanceParticipantContextCallableResponseSchema,
   'ListEventAssistanceDepartureRostersCallablePayload': schemaListEventAssistanceDepartureRostersCallablePayloadSchema,
   'EventAssistanceDepartureRostersCallableResponse': schemaEventAssistanceDepartureRostersCallableResponseSchema,
   'ListEventWhatsappPreferencesCallablePayload': schemaListEventWhatsappPreferencesCallablePayloadSchema,
@@ -4018,6 +4030,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/get_event_assistance_participant_context_payload.schema.json': schemaGetEventAssistanceParticipantContextCallablePayloadSchema,
+  'callable_responses/event_assistance_participant_context_response.schema.json': schemaEventAssistanceParticipantContextCallableResponseSchema,
   'callables/list_event_assistance_departure_rosters_payload.schema.json': schemaListEventAssistanceDepartureRostersCallablePayloadSchema,
   'callable_responses/event_assistance_departure_rosters_response.schema.json': schemaEventAssistanceDepartureRostersCallableResponseSchema,
   'callables/list_event_whatsapp_preferences_payload.schema.json': schemaListEventWhatsappPreferencesCallablePayloadSchema,

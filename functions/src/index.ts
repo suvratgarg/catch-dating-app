@@ -76,6 +76,8 @@ export {
 export {
   getEventWhatsappWithdrawal, withdrawEventWhatsapp,
 } from "./eventSuccess/operations/whatsappWithdrawalHandlers";
+export {getEventAssistanceParticipantContext} from
+  "./eventSuccess/operations/participantContext";
 export {
   getEventAssistanceSmsPreference,
   setEventAssistanceSmsPreference,

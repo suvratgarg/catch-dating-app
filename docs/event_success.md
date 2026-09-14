@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.130.0
+version: 1.131.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -2340,6 +2340,16 @@ state to the current account and event. Exact receipt replays return current
 state without reapplying consent, even when the original review is now stale.
 The control is hidden when there is no preference and enabling is unavailable;
 an existing grant retains a withdrawal control when the sender is paused.
+
+The native entry can now resolve its own operational attendee through
+`getEventAssistanceParticipantContext`. A signed-in booking ID is never treated
+as an attendee ID. The read-only boundary returns one verified linked scope,
+explicitly unlinked state, or ambiguity without a candidate list. Native reviews
+are bound to an uninterrupted account and retire on refresh or account changes.
+This supplies identity for future consent mounting; it neither claims a roster
+row nor copies a private account phone into Host-visible attendee data. Native
+message controls and private endpoint enrollment remain the next integration
+steps.
 
 The native SMS preference controller now retains the exact unresolved request
 through sheet dismissal, including after a response is lost. Its temporary

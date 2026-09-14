@@ -20711,6 +20711,62 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventAssistanceParticipantContextCallableResponseEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceParticipantContextCallableResponse.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceParticipantContextCallableResponseResolutionAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceParticipantContextCallableResponse.resolution.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceParticipantContextCallableResponseResolutionKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceParticipantContextCallableResponse.resolution.kind',
+    required: true,
+    enumValues: <String>['unlinked', 'ambiguous'],
+  );
+
+  static const eventAssistanceParticipantContextCallableResponseResolutionOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceParticipantContextCallableResponse.resolution.organizerId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceParticipantContextCallableResponseResolutionSourceHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceParticipantContextCallableResponse.resolution.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceParticipantContextCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceParticipantContextCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceParticipantContextCallableResponseSubjectUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceParticipantContextCallableResponse.subjectUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
   static const eventAssistanceParticipationCallableResponseOperationRevision = CatchContractFieldConstraints(
     path: 'eventAssistanceParticipationCallableResponse.operationRevision',
     valueTypes: <String>['integer'],
@@ -50490,6 +50546,15 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const getEventAssistanceParticipantContextCallablePayloadEventId = CatchContractFieldConstraints(
+    path: 'getEventAssistanceParticipantContextCallablePayload.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
   );
 
   static const getEventAssistanceParticipationCallablePayloadAttendeeId = CatchContractFieldConstraints(
@@ -95351,6 +95416,13 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageIntent.title': eventAssistanceMessageIntentTitle,
     'eventAssistanceMessageIntent.workflow.kind': eventAssistanceMessageIntentWorkflowKind,
     'eventAssistanceMessageIntent.workflow.occurrenceId': eventAssistanceMessageIntentWorkflowOccurrenceId,
+    'eventAssistanceParticipantContextCallableResponse.eventId': eventAssistanceParticipantContextCallableResponseEventId,
+    'eventAssistanceParticipantContextCallableResponse.resolution.attendeeId': eventAssistanceParticipantContextCallableResponseResolutionAttendeeId,
+    'eventAssistanceParticipantContextCallableResponse.resolution.kind': eventAssistanceParticipantContextCallableResponseResolutionKind,
+    'eventAssistanceParticipantContextCallableResponse.resolution.organizerId': eventAssistanceParticipantContextCallableResponseResolutionOrganizerId,
+    'eventAssistanceParticipantContextCallableResponse.resolution.sourceHash': eventAssistanceParticipantContextCallableResponseResolutionSourceHash,
+    'eventAssistanceParticipantContextCallableResponse.serverTime': eventAssistanceParticipantContextCallableResponseServerTime,
+    'eventAssistanceParticipantContextCallableResponse.subjectUid': eventAssistanceParticipantContextCallableResponseSubjectUid,
     'eventAssistanceParticipationCallableResponse.operationRevision': eventAssistanceParticipationCallableResponseOperationRevision,
     'eventAssistanceParticipationCallableResponse.outcome': eventAssistanceParticipationCallableResponseOutcome,
     'eventAssistanceParticipationCallableResponse.view.attendeeId': eventAssistanceParticipationCallableResponseViewAttendeeId,
@@ -99344,6 +99416,7 @@ abstract final class CatchContractConstraints {
     'getEventAssistanceMembershipCallablePayload.context.eventId': getEventAssistanceMembershipCallablePayloadContextEventId,
     'getEventAssistanceMembershipCallablePayload.context.mode': getEventAssistanceMembershipCallablePayloadContextMode,
     'getEventAssistanceMembershipCallablePayload.context.organizerId': getEventAssistanceMembershipCallablePayloadContextOrganizerId,
+    'getEventAssistanceParticipantContextCallablePayload.eventId': getEventAssistanceParticipantContextCallablePayloadEventId,
     'getEventAssistanceParticipationCallablePayload.attendeeId': getEventAssistanceParticipationCallablePayloadAttendeeId,
     'getEventAssistanceParticipationCallablePayload.context.eventId': getEventAssistanceParticipationCallablePayloadContextEventId,
     'getEventAssistanceParticipationCallablePayload.context.mode': getEventAssistanceParticipationCallablePayloadContextMode,

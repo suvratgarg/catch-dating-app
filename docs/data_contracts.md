@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.115.0
+version: 1.116.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -3351,6 +3351,20 @@ evidence. Changed attendee creation stamps invalidate existing consent.
 Responses reveal only the participant's masked number,
 status, availability and consent text; there is no client collection access.
 Sender approval and activation remain separate trusted provisioning steps.
+
+`getEventAssistanceParticipantContext` resolves only the authenticated caller's
+operational attendee identity for one event. A read-only transaction reads the
+event and at most two rows matching both event ID and server-owned `linkedUid`.
+No match returns `unlinked`; two matches return `ambiguous` without candidate
+IDs. A single match is re-read and validated against canonical event/attendee
+source facts before returning its scope and a source-generation hash. Cancelled
+rows remain in this identity check so existing preferences can still be reviewed;
+a booking ID, name, phone guess or status ordering cannot choose a different row.
+The response exposes neither contact information nor roster contents. It creates
+no link, consent, attendance record or provider permission. The event/linked-UID
+index must be deployed with this callable. Native strict readers and an explicit,
+account-bound refresh owner reject foreign identities and stale responses,
+including sign-out followed by re-entry with the same UID.
 
 Native `EventSmsPreferenceView` and `EventSmsPreferenceChange` model the closed
 review and explicit grant/revoke payloads without Firebase types. The read uses

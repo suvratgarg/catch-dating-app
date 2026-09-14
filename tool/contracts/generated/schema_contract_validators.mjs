@@ -3,6 +3,8 @@
 
 import {createRequire} from "node:module";
 import {
+  getEventAssistanceParticipantContextCallablePayloadSchema,
+  eventAssistanceParticipantContextCallableResponseSchema,
   listEventAssistanceDepartureRostersCallablePayloadSchema,
   eventAssistanceDepartureRostersCallableResponseSchema,
   listEventWhatsappPreferencesCallablePayloadSchema,
@@ -693,6 +695,8 @@ const addFormats = requireContractDependency("ajv-formats");
 const ajv = new Ajv({allErrors: true, strict: false});
 addFormats(ajv);
 
+export const validateGetEventAssistanceParticipantContextCallablePayload = ajv.compile(getEventAssistanceParticipantContextCallablePayloadSchema);
+export const validateEventAssistanceParticipantContextCallableResponse = ajv.compile(eventAssistanceParticipantContextCallableResponseSchema);
 export const validateListEventAssistanceDepartureRostersCallablePayload = ajv.compile(listEventAssistanceDepartureRostersCallablePayloadSchema);
 export const validateEventAssistanceDepartureRostersCallableResponse = ajv.compile(eventAssistanceDepartureRostersCallableResponseSchema);
 export const validateListEventWhatsappPreferencesCallablePayload = ajv.compile(listEventWhatsappPreferencesCallablePayloadSchema);

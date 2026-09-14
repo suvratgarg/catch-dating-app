@@ -15,6 +15,16 @@ const contractRoot = path.join(repoRoot, "contracts");
 const checkOnly = process.argv.includes("--check");
 
 const schemaSpecs = [
+{
+  "name": "GetEventAssistanceParticipantContextCallablePayload",
+  "source": "callables/get_event_assistance_participant_context_payload.schema.json",
+  "typeOutput": "functions/src/shared/generated/getEventAssistanceParticipantContextCallablePayload.ts"
+},
+{
+  "name": "EventAssistanceParticipantContextCallableResponse",
+  "source": "callable_responses/event_assistance_participant_context_response.schema.json",
+  "typeOutput": "functions/src/shared/generated/eventAssistanceParticipantContextCallableResponse.ts"
+},
   {
   "name": "ListEventAssistanceDepartureRostersCallablePayload",
   "source": "callables/list_event_assistance_departure_rosters_payload.schema.json",
