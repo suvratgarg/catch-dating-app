@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.64.0
-updated: 2026-09-14
+version: 1.65.0
+updated: 2026-09-15
 owner: app_architecture
 status: active
 ---
@@ -3763,7 +3763,7 @@ Reference files:
 - `test/events/event_detail_controller_test.dart`
 - `test/events/event_detail_widgets_test.dart`
 - `design/screens/catch.screens.json`
-- `widgetbook/lib/events/event_detail_use_cases.dart`
+- `widgetbook/lib/events/catalog/detail_screen.dart`
 
 Use this pattern for route-level or major navigable feature screens. The screen
 owns route parameters, provider watches, top-level async/error branches, route
