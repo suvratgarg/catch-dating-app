@@ -60,13 +60,17 @@ void main() {
   }
 
   EventRehearsalAssistanceEditor editor(RehearsalAssistanceReview review) {
-    final provider = eventRehearsalAssistanceEditorProvider(review);
+    final provider = eventRehearsalAssistanceEditorProvider(
+      review.snapshot.session.id,
+    );
     container.listen(provider, (_, _) {});
-    return container.read(provider.notifier);
+    return container.read(provider.notifier)..open(review);
   }
 
   RehearsalAssistanceEditorState state(RehearsalAssistanceReview review) =>
-      container.read(eventRehearsalAssistanceEditorProvider(review));
+      container.read(
+        eventRehearsalAssistanceEditorProvider(review.snapshot.session.id),
+      );
   RehearsalAssistanceForm form(RehearsalAssistanceReview review) =>
       state(review) as RehearsalAssistanceForm;
   void confirm(
@@ -90,6 +94,105 @@ void main() {
 
   RehearsalPublishInstruction publish() =>
       RehearsalPublishInstruction(actorId: 'actor-01', plan: practicePlan());
+
+  test(
+    'unverified provider success stays pending until a verified receipt',
+    () async {
+      final current = await review();
+      final actions = editor(current)..select(publish());
+      final original = form(current).change;
+      final pending = actions.submit();
+      final failure = expectLater(pending, throwsA(isA<FormatException>()));
+      repository.writes.single.result.complete(
+        EventRehearsalBootstrap.fromCallableData(
+          practiceBootstrap(runtimeRevision: 5),
+        ),
+      );
+      await failure;
+      expect(form(current).phase, RehearsalAssistancePhase.retryRequired);
+      final retry = actions.submit();
+      expect(repository.writes.last.change, same(original));
+      confirm(1);
+      await retry;
+    },
+  );
+
+  test(
+    'a detached pending owner observes sign-out and same-account sign-in',
+    () async {
+      final current = await review();
+      final provider = eventRehearsalAssistanceEditorProvider('session-1');
+      final attached = container.listen(provider, (_, _) {});
+      final actions = container.read(provider.notifier)
+        ..open(current)
+        ..select(publish());
+      final failure = expectLater(
+        actions.submit(),
+        throwsA(isA<NetworkException>()),
+      );
+      repository.writes.single.result.completeError(
+        const NetworkException('unavailable', 'Offline'),
+      );
+      await failure;
+      attached.close();
+      await container.pump();
+      await signIn(null);
+      await signIn('host-1');
+      await completeRead(1);
+      final fresh = container.read(query).requireValue;
+      final reopened = editor(fresh);
+      expect(form(fresh).change, isNull);
+      expect(form(fresh).canEdit, isTrue);
+      expect(form(fresh).review.account, isNot(same(current.account)));
+      await expectLater(reopened.submit(), throwsA(isA<ValidationException>()));
+      expect(repository.writes, hasLength(1));
+    },
+  );
+
+  test(
+    'rate limit after an unknown outcome keeps the original request',
+    () async {
+      final current = await review();
+      final actions = editor(current)..select(publish());
+      final original = form(current).change;
+      for (final code in ['unavailable', 'resource-exhausted']) {
+        final pending = actions.submit();
+        final failure = expectLater(pending, throwsA(isA<NetworkException>()));
+        repository.writes.last.result.completeError(
+          NetworkException(code, 'Unconfirmed'),
+        );
+        await failure;
+        expect(form(current).phase, RehearsalAssistancePhase.retryRequired);
+        expect(form(current).canReload, isFalse);
+        actions.reload();
+        expect(form(current).change, same(original));
+      }
+      final retried = actions.submit();
+      expect(repository.writes.last.change, same(original));
+      confirm(2);
+      await retried;
+    },
+  );
+
+  test('reentrant submit shares the original future', () async {
+    final current = await review();
+    final actions = editor(current)..select(publish());
+    Future<EventRehearsalBootstrap>? reentrant;
+    container.listen(eventRehearsalAssistanceEditorProvider('session-1'), (
+      _,
+      next,
+    ) {
+      if (next is RehearsalAssistanceForm &&
+          next.phase == RehearsalAssistancePhase.submitting) {
+        reentrant = actions.submit();
+      }
+    });
+    final pending = actions.submit();
+    expect(reentrant, same(pending));
+    expect(repository.writes, hasLength(1));
+    confirm(0);
+    await pending;
+  });
 
   test(
     'help resolution keeps its reviewed case through an uncertain retry',
@@ -275,12 +378,16 @@ void main() {
   );
 
   test(
-    'closing and reopening retains an uncertain command until review refresh',
+    'closing and refreshing retain one unresolved command across reviews',
     () async {
       final current = await review();
-      final provider = eventRehearsalAssistanceEditorProvider(current);
+      final provider = eventRehearsalAssistanceEditorProvider(
+        current.snapshot.session.id,
+      );
       final subscription = container.listen(provider, (_, _) {});
-      final actions = container.read(provider.notifier)..select(publish());
+      final actions = container.read(provider.notifier)
+        ..open(current)
+        ..select(publish());
       final original = form(current).change;
       final failure = expectLater(
         actions.submit(),
@@ -301,7 +408,18 @@ void main() {
       container.read(query.notifier).reload();
       await container.pump();
       expect(current.isCurrent, isFalse);
-      expect(container.exists(provider), isFalse);
+      expect(container.exists(provider), isTrue);
+      await completeRead(1, data: practiceBootstrap(runtimeRevision: 6));
+      final fresh = container.read(query).requireValue;
+      final replacement = editor(fresh)
+        ..select(RehearsalPauseAutomation(actorId: 'actor-01'));
+      expect(replacement, same(actions));
+      expect(form(fresh).change, same(original));
+      expect(form(fresh).canReload, isFalse);
+      final retried = replacement.submit();
+      expect(repository.writes.last.change, same(original));
+      confirm(1, runtimeRevision: 8);
+      await retried;
     },
   );
 
@@ -347,7 +465,7 @@ void main() {
       await signIn('host-1');
       confirm(0);
       await failure;
-      expect(state(current), isA<RehearsalAssistanceUnavailable>());
+      expect(state(current), isA<RehearsalAssistanceIdle>());
       await expectLater(
         actions.submit(),
         throwsA(same(rehearsalReviewSessionChanged)),
@@ -357,28 +475,24 @@ void main() {
         container.read(query).requireValue.account,
         isNot(same(current.account)),
       );
-      expect(state(current), isA<RehearsalAssistanceUnavailable>());
+      expect(state(current), isA<RehearsalAssistanceIdle>());
       expect(repository.writes, hasLength(1));
     },
   );
 
   test(
-    'refresh during an in-flight command cannot restore an obsolete result',
+    'refresh does not discard a verified receipt for the original command',
     () async {
       final current = await review();
       final actions = editor(current)..select(publish());
       final pending = actions.submit();
-      final failure = expectLater(
-        pending,
-        throwsA(same(rehearsalReviewExpired)),
-      );
       container.read(query.notifier).reload();
       await container.pump();
       expect(form(current).phase, RehearsalAssistancePhase.submitting);
       confirm(0);
-      await failure;
-      expect(form(current).phase, RehearsalAssistancePhase.refreshRequired);
-      expect(form(current).result, isNull);
+      final result = await pending;
+      expect(form(current).phase, RehearsalAssistancePhase.applied);
+      expect(form(current).result, same(result));
     },
   );
 
@@ -433,9 +547,7 @@ class _Repository extends Fake implements EventRehearsalRepository {
   ) {
     final result = Completer<EventRehearsalBootstrap>();
     writes.add((change: change, result: result));
-    return result.future.then((value) {
-      change.requireResult(value);
-      return value;
-    });
+    // The controller independently verifies responses; this fake must not do it for it.
+    return result.future;
   }
 }

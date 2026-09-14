@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
@@ -27,8 +28,12 @@ sealed class RehearsalAssistanceEditorState {
   bool get canDismiss => switch (this) {
     RehearsalAssistanceForm(:final phase) =>
       phase != RehearsalAssistancePhase.submitting,
-    RehearsalAssistanceUnavailable() => true,
+    RehearsalAssistanceIdle() || RehearsalAssistanceUnavailable() => true,
   };
+}
+
+final class RehearsalAssistanceIdle extends RehearsalAssistanceEditorState {
+  const RehearsalAssistanceIdle();
 }
 
 final class RehearsalAssistanceUnavailable
@@ -54,7 +59,9 @@ final class RehearsalAssistanceForm extends RehearsalAssistanceEditorState {
   bool get canSubmit =>
       canEdit && change != null ||
       phase == RehearsalAssistancePhase.retryRequired;
-  bool get canReload => canDismiss && phase != RehearsalAssistancePhase.applied;
+  bool get canReload =>
+      phase == RehearsalAssistancePhase.choosing ||
+      phase == RehearsalAssistancePhase.refreshRequired;
   RehearsalAssistanceForm _after(
     RehearsalAssistancePhase phase, {
     EventRehearsalBootstrap? result,
@@ -68,72 +75,121 @@ final class RehearsalAssistanceForm extends RehearsalAssistanceEditorState {
   );
 }
 
-/// One reviewed practice command. Applied means its action receipt was verified;
+/// One unresolved command per rehearsal. Applied means its receipt was verified;
 /// it never promotes an accepted send or reported intention into delivery/arrival.
 @riverpod
 class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
   static final applyMutation = Mutation<EventRehearsalBootstrap>();
+  int _epoch = 0;
+  AuthenticatedSession? _account;
   Future<EventRehearsalBootstrap>? _inFlight;
-  bool _revoked = false;
+  RehearsalAssistanceChange? _pending;
   RehearsalMovementPage? _movementPage;
-  void Function()? _releaseReview;
+  void Function()? _releasePending;
+  void Function()? _cancelReviewListener;
 
   @override
-  RehearsalAssistanceEditorState build(RehearsalAssistanceReview review) {
-    ref.listen(authenticatedSessionProvider, (_, next) {
-      if (next.isLoading ||
-          next.hasError ||
-          !identical(next.asData?.value, review.account)) {
-        _revoked = true;
-        state = const RehearsalAssistanceUnavailable._(
-          rehearsalReviewSessionChanged,
-        );
-        _releasePendingReview();
-      }
+  RehearsalAssistanceEditorState build(String sessionId) {
+    final auth = ref.watch(authenticatedSessionProvider);
+    _epoch++;
+    _account = null;
+    _clearPending();
+    _inFlight = null;
+    _movementPage = null;
+    _cancelReviewListener?.call();
+    _cancelReviewListener = null;
+    ref.onDispose(() {
+      _epoch++;
+      _clearPending();
     });
-    ref.listen(
-      eventRehearsalAssistanceForAccountProvider(
-        review.snapshot.session.id,
-        account: review.account,
-        practiceOperatorId: review.snapshot.staffReview?.practiceOperatorId,
-      ),
-      (_, next) {
-        if (_revoked || state is! RehearsalAssistanceForm) return;
-        final form = state as RehearsalAssistanceForm;
-        if (next.isLoading ||
-            next.hasError ||
-            !identical(next.asData?.value, review)) {
-          if (form.phase != RehearsalAssistancePhase.submitting &&
-              form.phase != RehearsalAssistancePhase.applied) {
-            state = form._after(
-              RehearsalAssistancePhase.refreshRequired,
-              error: rehearsalReviewExpired,
-            );
-          }
-          _releasePendingReview();
-        }
-      },
-    );
-    try {
-      requireRehearsalReviewAccount(ref, review.account);
-      if (_revoked) throw rehearsalReviewSessionChanged;
-    } catch (error) {
-      _revoked = true;
-      return RehearsalAssistanceUnavailable._(error);
+    if (auth.isLoading || auth.hasError || auth.asData == null) {
+      return RehearsalAssistanceUnavailable._(
+        auth.error ?? rehearsalReviewSessionChanged,
+      );
     }
-    return RehearsalAssistanceForm._(
-      review: review,
-      phase: review.isCurrent
-          ? RehearsalAssistancePhase.choosing
-          : RehearsalAssistancePhase.refreshRequired,
-      error: review.isCurrent ? null : rehearsalReviewExpired,
-    );
+    _account = auth.requireValue;
+    return const RehearsalAssistanceIdle();
+  }
+
+  bool _current(AuthenticatedSession account, int epoch) {
+    if (!ref.mounted || epoch != _epoch || !identical(_account, account)) {
+      return false;
+    }
+    final auth = ref.read(authenticatedSessionProvider);
+    return !auth.isLoading &&
+        !auth.hasError &&
+        identical(auth.asData?.value, account);
   }
 
   RehearsalAssistanceForm? get _form => switch (state) {
-    final RehearsalAssistanceForm form when !_revoked => form,
+    final RehearsalAssistanceForm form => form,
     _ => null,
   };
+  RehearsalAssistanceReview get review => _form!.review;
+
+  /// One rehearsal owns an unresolved operation across refreshed reviews and roles.
+  void open(RehearsalAssistanceReview review) {
+    if (!_current(review.account, _epoch)) throw rehearsalReviewSessionChanged;
+    if (review.snapshot.session.id != sessionId) throw rehearsalReviewExpired;
+    if (_pending != null || _inFlight != null) return;
+    _requireReview(review);
+    _cancelReviewListener?.call();
+    _movementPage = null;
+    state = RehearsalAssistanceForm._(review: review);
+    final subscription = ref.listen(
+      eventRehearsalAssistanceProvider(
+        sessionId,
+        practiceOperatorId: review.snapshot.staffReview?.practiceOperatorId,
+      ),
+      (_, next) {
+        final form = _form;
+        if (!_current(review.account, _epoch)) return;
+        if (form == null || !identical(form.review, review) || !form.canEdit) {
+          return;
+        }
+        if (next.isLoading ||
+            next.hasError ||
+            !identical(next.asData?.value, review)) {
+          state = form._after(
+            RehearsalAssistancePhase.refreshRequired,
+            error: rehearsalReviewExpired,
+          );
+        }
+      },
+    );
+    _cancelReviewListener = subscription.close;
+  }
+
+  void reload() {
+    final form = _form;
+    if (form == null ||
+        !form.canReload ||
+        _pending != null ||
+        _inFlight != null) {
+      return;
+    }
+    _refresh();
+    state = const RehearsalAssistanceIdle();
+  }
+
+  void _requireReview(RehearsalAssistanceReview review) {
+    if (!_current(review.account, _epoch)) throw rehearsalReviewSessionChanged;
+    final page = ref.read(
+      eventRehearsalAssistanceProvider(
+        sessionId,
+        practiceOperatorId: review.snapshot.staffReview?.practiceOperatorId,
+      ),
+    );
+    if (review.snapshot.session.id != sessionId ||
+        !review.isCurrent ||
+        page.isLoading ||
+        page.hasError ||
+        !identical(page.asData?.value, review)) {
+      throw rehearsalReviewExpired;
+    }
+  }
+
+  void _requireCurrentReview() => _requireReview(review);
 
   void select(RehearsalAssistanceCommand? command) => _select(() => command);
 
@@ -223,7 +279,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
       _movementPage = movement;
       state = RehearsalAssistanceForm._(review: review, change: change);
     } catch (error) {
-      if (ref.mounted && !_revoked) {
+      if (_current(form.review.account, _epoch)) {
         _movementPage = null;
         state = RehearsalAssistanceForm._(
           review: review,
@@ -237,13 +293,10 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
   }
 
   Future<EventRehearsalBootstrap> submit() {
-    try {
-      _requireAccount();
-    } catch (error, stackTrace) {
-      return Future.error(error, stackTrace);
-    }
     final form = _form;
-    if (form == null) return Future.error(rehearsalReviewSessionChanged);
+    if (form == null || !_current(form.review.account, _epoch)) {
+      return Future.error(rehearsalReviewSessionChanged);
+    }
     if (_inFlight case final pending?) return pending;
     if (form.result case final result?) return Future.value(result);
     if (!form.canSubmit) {
@@ -254,25 +307,17 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
       );
     }
     try {
-      _requireCurrentReview();
-      if (form.phase == RehearsalAssistancePhase.choosing &&
-          _movementPage != null) {
-        _requireMovementPage(_movementPage!);
+      if (form.phase == RehearsalAssistancePhase.choosing) {
+        _requireCurrentReview();
+        if (_movementPage case final movement?) _requireMovementPage(movement);
+      } else if (!identical(form.change, _pending)) {
+        throw const ValidationException(
+          'Resolve the original practice action first.',
+        );
       }
-      final submitted = form._after(RehearsalAssistancePhase.submitting);
-      // Retain uncertain intent across a dismissed review in this app session.
-      _releaseReview ??= ref.keepAlive().close;
-      state = submitted;
-      final keepAlive = ref.keepAlive();
-      late final Future<EventRehearsalBootstrap> tracked;
-      tracked = _submit(submitted).whenComplete(() {
-        if (identical(_inFlight, tracked)) _inFlight = null;
-        keepAlive.close();
-      });
-      _inFlight = tracked;
-      return tracked;
+      return _submit(form);
     } catch (error, stackTrace) {
-      if (ref.mounted && !_revoked) {
+      if (_current(form.review.account, _epoch)) {
         state = form._after(
           RehearsalAssistancePhase.refreshRequired,
           error: error,
@@ -282,71 +327,106 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
     }
   }
 
-  void _releasePendingReview() {
-    final release = _releaseReview;
-    _releaseReview = null;
+  Future<EventRehearsalBootstrap> _submit(RehearsalAssistanceForm form) {
+    final epoch = _epoch;
+    final completion = Completer<EventRehearsalBootstrap>();
+    final tracked = completion.future;
+    _inFlight = tracked;
+    _pending = form.change!;
+    _retainPending(form.review.account);
+    state = form._after(RehearsalAssistancePhase.submitting);
+    unawaited(
+      _apply(form, epoch)
+          .then(
+            completion.complete,
+            onError: (Object error, StackTrace stackTrace) =>
+                completion.completeError(error, stackTrace),
+          )
+          .whenComplete(() {
+            if (identical(_inFlight, tracked)) _inFlight = null;
+          }),
+    );
+    return tracked;
+  }
+
+  void _retainPending(AuthenticatedSession account) {
+    if (_releasePending != null) return;
+    final lease = ref.keepAlive();
+    // Detached sheets pause their normal dependencies. Keep auth transitions observable.
+    final auth = ref.container.listen(authenticatedSessionProvider, (_, next) {
+      if (next.isLoading ||
+          next.hasError ||
+          !identical(next.asData?.value, account)) {
+        _epoch++;
+        _account = null;
+        _inFlight = null;
+        _clearPending();
+        if (ref.mounted) ref.invalidateSelf();
+      }
+    });
+    _releasePending = () {
+      auth.close();
+      lease.close();
+    };
+  }
+
+  void _clearPending() {
+    _pending = null;
+    final release = _releasePending;
+    _releasePending = null;
     release?.call();
   }
 
-  void _requireAccount() {
-    try {
-      requireRehearsalReviewAccount(ref, review.account);
-      if (_revoked) throw rehearsalReviewSessionChanged;
-    } catch (error) {
-      _revoked = true;
-      if (ref.mounted) state = RehearsalAssistanceUnavailable._(error);
-      _releasePendingReview();
-      rethrow;
-    }
-  }
-
-  void _requireCurrentReview() {
-    _requireAccount();
-    if (!review.isCurrent) throw rehearsalReviewExpired;
-  }
-
-  Future<EventRehearsalBootstrap> _submit(
-    RehearsalAssistanceForm submitted,
-  ) async {
-    try {
-      _requireCurrentReview();
-      final result = await ref
-          .read(eventRehearsalRepositoryProvider)
-          .applyAssistance(submitted.change!);
-      _requireCurrentReview();
-      state = submitted._after(
-        RehearsalAssistancePhase.applied,
-        result: result,
-      );
-      _releasePendingReview();
-      if (_movementPage case final movement?) {
-        ref.invalidate(
-          eventRehearsalMovementForAccountProvider(
-            movement.snapshot.selection,
-            account: movement.account,
-          ),
-        );
-      }
-      ref.invalidate(eventRehearsalProvider(review.snapshot.session.id));
+  void _refresh() {
+    if (_movementPage case final movement?) {
       ref.invalidate(
-        eventRehearsalAssistanceForAccountProvider(
-          review.snapshot.session.id,
-          account: review.account,
-          practiceOperatorId: review.snapshot.staffReview?.practiceOperatorId,
+        eventRehearsalMovementForAccountProvider(
+          movement.snapshot.selection,
+          account: movement.account,
         ),
       );
+    }
+    ref.invalidate(eventRehearsalProvider(sessionId));
+    ref.invalidate(eventRehearsalAssistanceForAccountProvider);
+  }
+
+  void _publish(RehearsalAssistanceForm form) {
+    _inFlight = null;
+    state = form;
+  }
+
+  Future<EventRehearsalBootstrap> _apply(
+    RehearsalAssistanceForm form,
+    int epoch,
+  ) async {
+    final change = form.change!;
+    try {
+      final result = await ref
+          .read(eventRehearsalRepositoryProvider)
+          .applyAssistance(change);
+      if (!_current(form.review.account, epoch)) {
+        throw rehearsalReviewSessionChanged;
+      }
+      change.requireResult(result);
+      _clearPending();
+      _refresh();
+      _publish(form._after(RehearsalAssistancePhase.applied, result: result));
       return result;
     } catch (error) {
-      if (_revoked || !ref.mounted) throw rehearsalReviewSessionChanged;
-      if (ref.mounted) {
-        final refresh = !review.isCurrent || _needsFreshReview(error);
-        state = submitted._after(
-          refresh
-              ? RehearsalAssistancePhase.refreshRequired
-              : RehearsalAssistancePhase.retryRequired,
-          error: error,
+      if (_current(form.review.account, epoch)) {
+        final refresh = _needsFreshReview(error);
+        if (refresh) {
+          _clearPending();
+          _refresh();
+        }
+        _publish(
+          form._after(
+            refresh
+                ? RehearsalAssistancePhase.refreshRequired
+                : RehearsalAssistancePhase.retryRequired,
+            error: error,
+          ),
         );
-        if (refresh) _releasePendingReview();
       }
       rethrow;
     }
@@ -363,11 +443,11 @@ bool _needsFreshReview(Object error) =>
     {
       'aborted',
       'permission-denied',
+      'unauthenticated',
       'sign-in-required',
       'session-changed',
       'review-changed',
       'failed-precondition',
       'not-found',
       'invalid-argument',
-      'resource-exhausted',
     }.contains(error.code);

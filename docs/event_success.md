@@ -202,14 +202,22 @@ shared `AuthenticatedSession` period. Live assistance retains its existing
 account API through that same auth-owned provider. Sign-out, authentication
 failure or a changed account invalidates old reviews even if the same UID
 returns. Rehearsal reviews also retire when explicitly refreshed; slow or
-foreign-session reads cannot replace the current review. The rehearsal editor
-freezes one typed command, shares in-flight submissions, and retains an
-uncertain request across closing and reopening the review within this app
-session. It cannot switch choices after an uncertain result. Conflicts require
-fresh review; confirmed results refresh the runtime. Account or review changes
-during a request cannot restore a stale result. This controller still needs
-Host UI and coach wiring; it does not persist pending requests across app
-restarts or automatically retry them.
+foreign-session reads cannot replace the current review. The rehearsal editor is
+owned by session ID and opens an explicit current review. One unresolved command
+keeps its original review, role, payload and request ID across dismissal, refresh
+and attempted replacement with another command. Reentrant taps share the same
+future. A rate limit preserves an earlier unknown outcome; reload is unavailable
+until that operation is confirmed or definitively rejected. First submission
+requires current review and movement evidence; exact retry retains the original
+request so the server can confirm its receipt or reject its stale generation.
+The controller independently verifies the receipt before reporting confirmation.
+A refreshed page does not invalidate proof that the original action was applied;
+the runtime is fetched again for current state. A temporary strong auth listener
+retires detached pending work on sign-out or same-UID re-entry, and old completions
+cannot restore it. Dedicated delivery, membership and visit controllers retain
+ownership of those commands. The generic editor still needs Host UI and coach
+wiring; it does not persist pending requests across app restarts or retry them
+automatically.
 
 `RehearsalPublicationDraft` now assembles a practice instruction through that
 same guarded editor. Joining choices come from the copied venue, configured

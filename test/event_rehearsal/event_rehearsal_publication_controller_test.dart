@@ -61,13 +61,17 @@ void main() {
   }
 
   EventRehearsalAssistanceEditor editor() {
-    final provider = eventRehearsalAssistanceEditorProvider(review);
+    final provider = eventRehearsalAssistanceEditorProvider(
+      review.snapshot.session.id,
+    );
     container.listen(provider, (_, _) {});
-    return container.read(provider.notifier);
+    return container.read(provider.notifier)..open(review);
   }
 
   RehearsalAssistanceForm form() =>
-      container.read(eventRehearsalAssistanceEditorProvider(review))
+      container.read(
+            eventRehearsalAssistanceEditorProvider(review.snapshot.session.id),
+          )
           as RehearsalAssistanceForm;
   RehearsalPublicationDraft draft({
     DateTime? deadline,

@@ -8,14 +8,14 @@ part of 'event_rehearsal_assistance_editor.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// One reviewed practice command. Applied means its action receipt was verified;
+/// One unresolved command per rehearsal. Applied means its receipt was verified;
 /// it never promotes an accepted send or reported intention into delivery/arrival.
 
 @ProviderFor(EventRehearsalAssistanceEditor)
 final eventRehearsalAssistanceEditorProvider =
     EventRehearsalAssistanceEditorFamily._();
 
-/// One reviewed practice command. Applied means its action receipt was verified;
+/// One unresolved command per rehearsal. Applied means its receipt was verified;
 /// it never promotes an accepted send or reported intention into delivery/arrival.
 final class EventRehearsalAssistanceEditorProvider
     extends
@@ -23,11 +23,11 @@ final class EventRehearsalAssistanceEditorProvider
           EventRehearsalAssistanceEditor,
           RehearsalAssistanceEditorState
         > {
-  /// One reviewed practice command. Applied means its action receipt was verified;
+  /// One unresolved command per rehearsal. Applied means its receipt was verified;
   /// it never promotes an accepted send or reported intention into delivery/arrival.
   EventRehearsalAssistanceEditorProvider._({
     required EventRehearsalAssistanceEditorFamily super.from,
-    required RehearsalAssistanceReview super.argument,
+    required String super.argument,
   }) : super(
          retry: null,
          name: r'eventRehearsalAssistanceEditorProvider',
@@ -73,9 +73,9 @@ final class EventRehearsalAssistanceEditorProvider
 }
 
 String _$eventRehearsalAssistanceEditorHash() =>
-    r'f05c5e3d94a5f522b4ac43db08c0f1013224186a';
+    r'b4c886ea0284f41de4f3f4280618f3df894f9b6b';
 
-/// One reviewed practice command. Applied means its action receipt was verified;
+/// One unresolved command per rehearsal. Applied means its receipt was verified;
 /// it never promotes an accepted send or reported intention into delivery/arrival.
 
 final class EventRehearsalAssistanceEditorFamily extends $Family
@@ -85,7 +85,7 @@ final class EventRehearsalAssistanceEditorFamily extends $Family
           RehearsalAssistanceEditorState,
           RehearsalAssistanceEditorState,
           RehearsalAssistanceEditorState,
-          RehearsalAssistanceReview
+          String
         > {
   EventRehearsalAssistanceEditorFamily._()
     : super(
@@ -96,26 +96,25 @@ final class EventRehearsalAssistanceEditorFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One reviewed practice command. Applied means its action receipt was verified;
+  /// One unresolved command per rehearsal. Applied means its receipt was verified;
   /// it never promotes an accepted send or reported intention into delivery/arrival.
 
-  EventRehearsalAssistanceEditorProvider call(
-    RehearsalAssistanceReview review,
-  ) => EventRehearsalAssistanceEditorProvider._(argument: review, from: this);
+  EventRehearsalAssistanceEditorProvider call(String sessionId) =>
+      EventRehearsalAssistanceEditorProvider._(argument: sessionId, from: this);
 
   @override
   String toString() => r'eventRehearsalAssistanceEditorProvider';
 }
 
-/// One reviewed practice command. Applied means its action receipt was verified;
+/// One unresolved command per rehearsal. Applied means its receipt was verified;
 /// it never promotes an accepted send or reported intention into delivery/arrival.
 
 abstract class _$EventRehearsalAssistanceEditor
     extends $Notifier<RehearsalAssistanceEditorState> {
-  late final _$args = ref.$arg as RehearsalAssistanceReview;
-  RehearsalAssistanceReview get review => _$args;
+  late final _$args = ref.$arg as String;
+  String get sessionId => _$args;
 
-  RehearsalAssistanceEditorState build(RehearsalAssistanceReview review);
+  RehearsalAssistanceEditorState build(String sessionId);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {

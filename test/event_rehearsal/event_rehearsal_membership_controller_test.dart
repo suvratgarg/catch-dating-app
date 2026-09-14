@@ -169,8 +169,11 @@ void main() {
         () => actions.open(current, h.row(current, 1)),
         throwsA(isA<ValidationException>()),
       );
-      final generic = eventRehearsalAssistanceEditorProvider(current);
+      final generic = eventRehearsalAssistanceEditorProvider(
+        current.snapshot.session.id,
+      );
       h.container.listen(generic, (_, _) {});
+      h.container.read(generic.notifier).open(current);
       h.container
           .read(generic.notifier)
           .select(

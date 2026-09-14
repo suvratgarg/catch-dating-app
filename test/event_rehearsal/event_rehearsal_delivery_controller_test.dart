@@ -205,8 +205,11 @@ void main() {
         () => actions.open(current, foreign),
         throwsA(isA<ValidationException>()),
       );
-      final genericProvider = eventRehearsalAssistanceEditorProvider(current);
+      final genericProvider = eventRehearsalAssistanceEditorProvider(
+        current.snapshot.session.id,
+      );
       container.listen(genericProvider, (_, _) {});
+      container.read(genericProvider.notifier).open(current);
       container
           .read(genericProvider.notifier)
           .select(
