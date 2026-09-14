@@ -138,10 +138,6 @@
       "maxLines": 837
     },
     {
-      "path": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
-      "maxLines": 1037
-    },
-    {
       "path": "lib/hosts/presentation/payments/host_payment_account_card.dart",
       "maxLines": 923
     },

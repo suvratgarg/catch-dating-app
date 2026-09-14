@@ -211,6 +211,8 @@ import 'package:widgetbook_workspace/hosts/host_inbox_use_cases.dart'
     as _widgetbook_workspace_hosts_host_inbox_use_cases;
 import 'package:widgetbook_workspace/hosts/host_saved_audience_use_cases.dart'
     as _widgetbook_workspace_hosts_host_saved_audience_use_cases;
+import 'package:widgetbook_workspace/hosts/host_send_intent_use_cases.dart'
+    as _widgetbook_workspace_hosts_host_send_intent_use_cases;
 import 'package:widgetbook_workspace/hosts/operations/analytics.dart'
     as _widgetbook_workspace_hosts_operations_analytics;
 import 'package:widgetbook_workspace/hosts/operations/audiences.dart'
@@ -7905,6 +7907,17 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Components',
                 children: [
                   _widgetbook.WidgetbookComponent(
+                    name: 'HostEventAnnouncementField',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Ready and disabled announcement',
+                        builder:
+                            _widgetbook_workspace_hosts_host_send_intent_use_cases
+                                .hostEventAnnouncementFieldStates,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
                     name: 'HostInboxAudienceRail',
                     useCases: [
                       _widgetbook.WidgetbookUseCase(
@@ -7945,6 +7958,28 @@ final directories = <_widgetbook.WidgetbookNode>[
                         builder:
                             _widgetbook_workspace_hosts_host_inbox_use_cases
                                 .hostInboxWorkspaceStates,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSendIntentMenu',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Ready and unavailable channels',
+                        builder:
+                            _widgetbook_workspace_hosts_host_send_intent_use_cases
+                                .hostSendIntentMenuStates,
+                      ),
+                    ],
+                  ),
+                  _widgetbook.WidgetbookComponent(
+                    name: 'HostSendsBackButton',
+                    useCases: [
+                      _widgetbook.WidgetbookUseCase(
+                        name: 'Enabled and busy',
+                        builder:
+                            _widgetbook_workspace_hosts_host_send_intent_use_cases
+                                .hostSendsBackButtonStates,
                       ),
                     ],
                   ),
