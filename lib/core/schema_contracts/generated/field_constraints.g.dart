@@ -22166,6 +22166,136 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventAssistanceSettingCallableResponseViewSetupDestinations = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 41,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.label',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationAddress = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.address',
+    maxLength: 500,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationLatitude = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.latitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -90,
+    maximum: 90,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationLongitude = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.longitude',
+    required: true,
+    valueTypes: <String>['number'],
+    minimum: -180,
+    maximum: 180,
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationName = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.name',
+    maxLength: 240,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationNotes = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.notes',
+    maxLength: 1000,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.placeId',
+    maxLength: 256,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceSettingCallableResponseViewSetupEventEnd = CatchContractFieldConstraints(
+    path: 'eventAssistanceSettingCallableResponse.view.setup.eventEnd',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceSettingCallableResponseViewSourceHash = CatchContractFieldConstraints(
     path: 'eventAssistanceSettingCallableResponse.view.sourceHash',
     required: true,
@@ -94372,6 +94502,23 @@ abstract final class CatchContractConstraints {
     'eventAssistanceSettingCallableResponse.view.own.workflowKind': eventAssistanceSettingCallableResponseViewOwnWorkflowKind,
     'eventAssistanceSettingCallableResponse.view.ownRevision': eventAssistanceSettingCallableResponseViewOwnRevisionAtViewPropertyOwnRevision,
     'eventAssistanceSettingCallableResponse.view.serverTime': eventAssistanceSettingCallableResponseViewServerTime,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations': eventAssistanceSettingCallableResponseViewSetupDestinations,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.label': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLabel,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.address': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationAddress,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.latitude': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationLatitude,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.longitude': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationLongitude,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.name': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationName,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.notes': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationNotes,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.location.placeId': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsLocationPlaceId,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.checkpointId': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetCheckpointId,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.groupId': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetGroupId,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.itineraryId': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetItineraryId,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.kind': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetKind,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.lateEntry': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetLateEntry,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.placeId': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetPlaceId,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.routeId': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetRouteId,
+    'eventAssistanceSettingCallableResponse.view.setup.destinations.items.target.stopId': eventAssistanceSettingCallableResponseViewSetupDestinationsItemsTargetStopId,
+    'eventAssistanceSettingCallableResponse.view.setup.eventEnd': eventAssistanceSettingCallableResponseViewSetupEventEnd,
     'eventAssistanceSettingCallableResponse.view.sourceHash': eventAssistanceSettingCallableResponseViewSourceHash,
     'eventAssistanceSettingCallableResponse.view.status': eventAssistanceSettingCallableResponseViewStatus,
     'eventAssistanceSettingCallableResponse.view.workflowKind': eventAssistanceSettingCallableResponseViewWorkflowKind,

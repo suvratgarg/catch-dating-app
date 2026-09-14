@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/event_success/domain/event_assistance_joining_option.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
-import 'package:catch_dating_app/events/domain/event_meeting_location.dart';
 
 /// A live group scope. Rehearsal commands use a separate simulated boundary.
 final class EventAssistanceGroupScope {
@@ -96,11 +96,7 @@ enum AssistanceProgressFreshness { unconfirmed, current, sourceChanged }
 
 enum AssistanceProgressOutcome { read, applied, replayed }
 
-typedef AssistanceDepartureDestination = ({
-  AssistanceJoiningTarget target,
-  String label,
-  EventMeetingLocation location,
-});
+typedef AssistanceDepartureDestination = AssistanceJoiningOption;
 
 /// A confirmed fact, not an inference from the event schedule or a GPS fix.
 final class AssistanceConfirmedProgress {
@@ -294,11 +290,9 @@ final class EventAssistanceGroupProgressResult {
     }
     final destinations = rawDestinations
         .map((raw) {
-          final item = assistanceObject(raw, {'target', 'label', 'location'});
-          return (
-            target: _target(item['target'], expectedScope),
-            label: assistanceText(item['label'], 240),
-            location: _location(item['location']),
+          return parseAssistanceJoiningOption(
+            raw,
+            expectedGroupId: expectedScope.groupId,
           );
         })
         .toList(growable: false);
@@ -371,39 +365,4 @@ String _recordId(Object? value, String prefix) {
   }
   assistanceHash(text.substring(prefix.length + 1));
   return text;
-}
-
-EventMeetingLocation _location(Object? value) {
-  final map = assistanceObject(value);
-  const requiredKeys = {'name', 'latitude', 'longitude'};
-  const optional = {'address', 'placeId', 'notes'};
-  if (!requiredKeys.every(map.containsKey) ||
-      map.keys.any(
-        (key) => !requiredKeys.contains(key) && !optional.contains(key),
-      )) {
-    throw const FormatException('Invalid departure location.');
-  }
-  String? text(String key, int maxLength, {bool allowEmpty = true}) {
-    final value = map[key];
-    if (value == null) return null;
-    if (allowEmpty && value == '') return '';
-    return assistanceText(value, maxLength);
-  }
-
-  double coordinate(String key, int max) {
-    final value = map[key];
-    if (value is! num || !value.isFinite || value < -max || value > max) {
-      throw const FormatException('Invalid departure coordinates.');
-    }
-    return value.toDouble();
-  }
-
-  return EventMeetingLocation(
-    name: assistanceText(map['name'], 240),
-    latitude: coordinate('latitude', 90),
-    longitude: coordinate('longitude', 180),
-    address: text('address', 500),
-    notes: text('notes', 1000),
-    placeId: text('placeId', 256, allowEmpty: false),
-  );
 }

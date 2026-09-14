@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_setup.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_late_join_template.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_parsing.dart';
 
@@ -131,6 +132,7 @@ final class LateJoinSettingView {
     required this.origin,
     required this.effective,
     required this.suggested,
+    required this.setup,
   });
   final EventAssistanceGroupScope scope;
   final int serverTime;
@@ -141,12 +143,14 @@ final class LateJoinSettingView {
   final AssistanceSettingOrigin origin;
   final AssistanceLateJoinTemplate? effective;
   final AssistanceLateJoinTemplate? suggested;
+  final LateJoinSettingSetup? setup;
 
   factory LateJoinSettingView.fromJson(
     Object? value, {
     required EventAssistanceGroupScope expectedScope,
   }) {
-    final map = assistanceObject(value, {
+    final map = assistanceObject(value);
+    assistanceObject(map, {
       'context',
       'groupId',
       'workflowKind',
@@ -158,6 +162,7 @@ final class LateJoinSettingView {
       'origin',
       'effective',
       'suggested',
+      if (map.containsKey('setup')) 'setup',
     });
     expectedScope.requireMatch(map['context'], map['groupId']);
     if (map['workflowKind'] != 'lateJoin') {
@@ -170,6 +175,12 @@ final class LateJoinSettingView {
     final view = LateJoinSettingView._(
       scope: expectedScope,
       serverTime: now,
+      setup: map.containsKey('setup')
+          ? LateJoinSettingSetup.fromJson(
+              map['setup'],
+              groupId: expectedScope.groupId,
+            )
+          : null,
       sourceHash: assistanceHash(map['sourceHash']),
       ownRevision: assistanceInteger(map['ownRevision']),
       own: own,

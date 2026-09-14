@@ -28,7 +28,7 @@ export function settingSource(event: EventDocument, generation: unknown,
   const progress = groupProgressSource({context: scope.context,
     groupId: scope.groupId, event, eventGeneration: generation, plan: null,
     planGeneration: null, now});
-  return {destinations: progress.destinations,
+  return {destinations: progress.destinations, endAt: progress.endAt,
     hash: operationContentHash([scope.context, scope.groupId,
       timestampEvidence(generation), event.eventFormat,
       timestampEvidence(event.startTime), timestampEvidence(event.endTime),

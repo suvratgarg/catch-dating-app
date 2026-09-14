@@ -13393,6 +13393,181 @@ const schemaEventAssistanceSettingCallableResponseSchema = <String, Object?>{
             },
           ],
         },
+        'setup': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'eventEnd',
+            'destinations',
+          ],
+          'properties': <String, Object?>{
+            'eventEnd': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 9007199254740991,
+            },
+            'destinations': <String, Object?>{
+              'type': 'array',
+              'maxItems': 41,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'target',
+                  'label',
+                  'location',
+                ],
+                'properties': <String, Object?>{
+                  'target': <String, Object?>{
+                    'anyOf': <Object?>[
+                      <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'kind',
+                          'placeId',
+                          'lateEntry',
+                        ],
+                        'properties': <String, Object?>{
+                          'kind': <String, Object?>{
+                            'type': 'string',
+                            'const': 'fixedPlace',
+                          },
+                          'placeId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 160,
+                            'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                          },
+                          'lateEntry': <String, Object?>{
+                            'type': 'string',
+                            'enum': <Object?>[
+                              'allowed',
+                              'hostDecision',
+                              'closed',
+                            ],
+                          },
+                        },
+                      },
+                      <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'kind',
+                          'itineraryId',
+                          'stopId',
+                        ],
+                        'properties': <String, Object?>{
+                          'kind': <String, Object?>{
+                            'type': 'string',
+                            'const': 'itineraryStop',
+                          },
+                          'itineraryId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 2000,
+                          },
+                          'stopId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 2000,
+                          },
+                        },
+                      },
+                      <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'kind',
+                          'routeId',
+                          'groupId',
+                          'checkpointId',
+                        ],
+                        'properties': <String, Object?>{
+                          'kind': <String, Object?>{
+                            'type': 'string',
+                            'const': 'groupCheckpoint',
+                          },
+                          'routeId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 2000,
+                          },
+                          'groupId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 160,
+                            'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                          },
+                          'checkpointId': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 2000,
+                          },
+                        },
+                      },
+                    ],
+                  },
+                  'label': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 240,
+                  },
+                  'location': <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'description': 'Canonical meeting location selected from Google Places or a manually pinned map coordinate.',
+                    'required': <Object?>[
+                      'name',
+                      'latitude',
+                      'longitude',
+                    ],
+                    'properties': <String, Object?>{
+                      'name': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 240,
+                      },
+                      'address': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 500,
+                      },
+                      'placeId': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'minLength': 1,
+                        'maxLength': 256,
+                      },
+                      'latitude': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -90,
+                        'maximum': 90,
+                      },
+                      'longitude': <String, Object?>{
+                        'type': 'number',
+                        'minimum': -180,
+                        'maximum': 180,
+                      },
+                      'notes': <String, Object?>{
+                        'type': <Object?>[
+                          'string',
+                          'null',
+                        ],
+                        'maxLength': 1000,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          'description': 'Current event timing and joining destinations from this review source. Omitted by older API versions; absence is not an empty setup.',
+        },
       },
     },
   },

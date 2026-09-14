@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.111.0
+version: 1.112.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -632,8 +632,13 @@ revision/source hash fails. Neither collection has client access or a TTL;
 terminal retention must be decided before activation.
 
 The two settings callables require Auth, App Check, rate limiting and current
-organizer-manager authority. They expose only settings and source hashes, not
-roster details. A projection cannot claim current configuration after a
+organizer-manager authority. They expose settings, source hashes and a bounded `setup` containing the
+reviewed event end and named joining destinations with locations, without roster
+details. Setup comes from the same event/group source; changes to timing or
+locations invalidate the old editing basis. It does not assert current movement,
+provider readiness or permission to send. New clients tolerate an older response
+without setup as unavailable configuration choices. Older closed-response clients
+need a coordinated API/client rollout or reload before receiving the added field. A projection cannot claim current configuration after a
 structural source change, while explicit disablement remains suppressive.
 Current participation, capability/readiness, consent and execution authority
 must still be resolved by their owning runtime boundaries. Saving an automatic

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.122.0
+version: 1.123.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -820,6 +820,16 @@ and reset-to-inherit remain distinct. A disabled configured template retains its
 configuration; stale enabled settings preserve the recorded choice for review
 while withholding an effective policy. The server suggestion remains unselected
 until the Host chooses it. These types describe settings, not provider readiness.
+The settings review also supplies a bounded list of named joining destinations
+with locations and the current event end, from the same source hash as the
+preference. Event-wide choices include configured meeting places and itinerary
+stops; pace-group choices contain that group's configured route checkpoints.
+They describe setup, never current movement. The native parser shares joining
+option validation with group progress, rejects duplicate or foreign-group
+options, and distinguishes an older response without setup from a confirmed
+empty list. Cross-stack fixtures come from actual settings reads and writes,
+including custom, disabled and replayed preferences. This projection prepares
+configuration controls without selecting a destination or saving a preference.
 
 The callable repository validates closed response shapes, event/group/workflow
 scope, own revision, inheritance origin, source freshness and recorded timestamps.

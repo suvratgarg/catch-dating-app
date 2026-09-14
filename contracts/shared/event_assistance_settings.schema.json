@@ -1594,6 +1594,10 @@
               "type": "null"
             }
           ]
+        },
+        "setup": {
+          "$ref": "#/definitions/Setup",
+          "description": "Current event timing and joining destinations from this review source. Omitted by older API versions; absence is not an empty setup."
         }
       }
     },
@@ -1627,6 +1631,24 @@
         },
         "view": {
           "$ref": "#/definitions/View"
+        }
+      }
+    },
+    "Setup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "eventEnd",
+        "destinations"
+      ],
+      "properties": {
+        "eventEnd": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "destinations": {
+          "$ref": "event_assistance_progress.schema.json#/definitions/View/properties/destinations"
         }
       }
     }

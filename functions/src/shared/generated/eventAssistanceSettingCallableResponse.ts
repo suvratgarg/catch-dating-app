@@ -2991,5 +2991,45 @@ export interface EventAssistanceSettingCallableResponse {
             }
         )
       | null;
+    /**
+     * Current event timing and joining destinations from this review source. Omitted by older API versions; absence is not an empty setup.
+     */
+    setup?: {
+      eventEnd: number;
+      /**
+       * @maxItems 41
+       */
+      destinations: {
+        target:
+          | {
+              kind: "fixedPlace";
+              placeId: string;
+              lateEntry: "allowed" | "hostDecision" | "closed";
+            }
+          | {
+              kind: "itineraryStop";
+              itineraryId: string;
+              stopId: string;
+            }
+          | {
+              kind: "groupCheckpoint";
+              routeId: string;
+              groupId: string;
+              checkpointId: string;
+            };
+        label: string;
+        /**
+         * Canonical meeting location selected from Google Places or a manually pinned map coordinate.
+         */
+        location: {
+          name: string;
+          address?: string | null;
+          placeId?: string | null;
+          latitude: number;
+          longitude: number;
+          notes?: string | null;
+        };
+      }[];
+    };
   };
 }

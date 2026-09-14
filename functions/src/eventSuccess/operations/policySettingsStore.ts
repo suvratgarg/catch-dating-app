@@ -131,7 +131,8 @@ function response(outcome: Response["outcome"], state: State,
         "event" : "group", status,
       effective: status === "configured" || status === "disabled" ?
         template : null,
-      suggested: suggestedTemplate(scope.workflowKind)}};
+      suggested: suggestedTemplate(scope.workflowKind),
+      setup: {eventEnd: source.endAt, destinations: source.destinations}}};
   if (!validateEventAssistanceSettingCallableResponse(value)) {
     throw invalidSource();
   }

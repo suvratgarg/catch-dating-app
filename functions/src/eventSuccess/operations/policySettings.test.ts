@@ -1,9 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {randomUUID} from "node:crypto";
+import {readFileSync, writeFileSync} from "node:fs";
+import path from "node:path";
 import {initializeApp, deleteApp} from "firebase-admin/app";
 import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
 import type {CallableRequest} from "firebase-functions/v2/https";
+import type {EventDocument} from "../../shared/generated/eventDocument";
 import {ProgressFirestore, seedJoiningProgress, progressFixtureManager} from
   "./groupProgressTestFixtures";
 import {
@@ -18,10 +21,10 @@ import type {EventAssistanceSettingCallableResponse as Response} from
 
 const now = 1_000_000;
 const manager = progressFixtureManager;
-async function harness(realDb?: Firestore) {
+async function harness(realDb?: Firestore, fixtureId?: string) {
   const fake = new ProgressFirestore();
   const db = realDb ?? fake as unknown as Firestore;
-  const id = randomUUID();
+  const id = fixtureId ?? randomUUID();
   const context = {mode: "live" as const, organizerId: "o-" + id,
     eventId: "e-" + id};
   const progress = await seedJoiningProgress(db, context, now, now + 3_600_000);
@@ -52,6 +55,8 @@ test("suggestions are read-only; saving does not create messages or episodes",
     assert.equal(view.origin, "none");
     assert.equal(view.effective, null);
     assert.equal(view.suggested?.kind, "lateJoin");
+    assert.deepEqual(view.setup, {eventEnd: now + 3_600_000,
+      destinations: h.progress.view.destinations});
     assert.deepEqual(h.fake.entries(), before);
     const input = configure(view);
     const result = await h.store.set(manager, input);
@@ -106,6 +111,10 @@ test("group preferences inherit defaults, override and reset independently",
     const initial = (await h.store.get(manager, group)).view;
     assert.equal(initial.origin, "event");
     assert.equal(initial.ownRevision, 0);
+    assert.deepEqual(initial.setup?.destinations.map((d) => d.target),
+      ["one", "two"].map((checkpointId) => ({kind: "groupCheckpoint",
+        groupId: "easy", routeId: h.scope.context.eventId + ":route",
+        checkpointId})));
     const disabled = await h.store.set(manager, {...configure(initial),
       preference: {kind: "disabled"}});
     assert.equal(disabled.view.origin, "group");
@@ -269,4 +278,54 @@ test("explicit joining destinations must belong to the reviewed event setup",
           ...template.config, destination}}}}), {code: "failed-precondition"});
     }
     assert.equal((await h.store.get(manager, h.scope)).view.ownRevision, 0);
+  });
+
+
+test("joining options and timing change with the reviewed event source",
+  async () => {
+    const h = await harness();
+    const initial = (await h.store.get(manager, h.scope)).view;
+    await h.put("events/" + h.scope.context.eventId, {...h.progress.event,
+      endTime: Timestamp.fromMillis(now + 7_200_000),
+      itinerary: (h.progress.event.itinerary as
+      NonNullable<EventDocument["itinerary"]>)
+        .map((stop, index) => index === 0 ?
+          {...stop, title: "Updated first stop"} : stop)});
+    const changed = (await h.store.get(manager, h.scope)).view;
+    assert.notEqual(changed.sourceHash, initial.sourceHash);
+    assert.equal(changed.setup?.eventEnd, now + 7_200_000);
+    assert.equal(changed.setup?.destinations.find((d) =>
+      d.target.kind === "itineraryStop" && d.target.stopId === "one")?.label,
+    "Updated first stop");
+    await assert.rejects(h.store.set(manager, configure(initial)),
+      {code: "aborted"});
+  });
+
+test("native late joining setup fixture is an actual settings projection",
+  async () => {
+    const h = await harness(undefined, "00000000-0000-0000-0000-000000000457");
+    const initial = await h.store.get(manager, h.scope);
+    const input = configure(initial.view);
+    const template = input.preference.template;
+    assert.ok(template.kind === "lateJoin");
+    const customInput = {...input, preference: {kind: "configured" as const,
+      template: {...template, config: {...template.config,
+        destination: {kind: "itineraryStop" as const,
+          itineraryId: h.scope.context.eventId + ":itinerary",
+          permittedStopIds: ["two"]},
+        cutoff: {kind: "time" as const, at: now + 1_800_000}}}}};
+    const custom = await h.store.set(manager, customInput);
+    const disabled = await h.store.set(manager, {
+      ...configure(custom.view, "off"),
+      preference: {kind: "configured", template: {
+        ...customInput.preference.template,
+        setting: {kind: "disabled", reason: "hostChoice"}}}});
+    const replayed = await h.store.set(manager, customInput);
+    const samples = {initial, customInput, custom, disabled, replayed};
+    const file = path.resolve(__dirname,
+      "../../../../test/event_success/fixtures/late_join_settings.json");
+    if (process.env.UPDATE_LATE_JOIN_SETTINGS_FIXTURE === "1") {
+      writeFileSync(file, JSON.stringify(samples, null, 2) + "\n");
+    }
+    assert.deepEqual(JSON.parse(readFileSync(file, "utf8")), samples);
   });

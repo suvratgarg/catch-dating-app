@@ -38595,6 +38595,181 @@ export const eventAssistanceSettingCallableResponseSchema = {
               "type": "null"
             }
           ]
+        },
+        "setup": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "eventEnd",
+            "destinations"
+          ],
+          "properties": {
+            "eventEnd": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "destinations": {
+              "type": "array",
+              "maxItems": 41,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "target",
+                  "label",
+                  "location"
+                ],
+                "properties": {
+                  "target": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "placeId",
+                          "lateEntry"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "fixedPlace"
+                          },
+                          "placeId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          "lateEntry": {
+                            "type": "string",
+                            "enum": [
+                              "allowed",
+                              "hostDecision",
+                              "closed"
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "itineraryId",
+                          "stopId"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "itineraryStop"
+                          },
+                          "itineraryId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "stopId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          }
+                        }
+                      },
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "kind",
+                          "routeId",
+                          "groupId",
+                          "checkpointId"
+                        ],
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "groupCheckpoint"
+                          },
+                          "routeId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          },
+                          "groupId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 160,
+                            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+                          },
+                          "checkpointId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 240
+                  },
+                  "location": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "description": "Canonical meeting location selected from Google Places or a manually pinned map coordinate.",
+                    "required": [
+                      "name",
+                      "latitude",
+                      "longitude"
+                    ],
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "address": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 500
+                      },
+                      "placeId": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "latitude": {
+                        "type": "number",
+                        "minimum": -90,
+                        "maximum": 90
+                      },
+                      "longitude": {
+                        "type": "number",
+                        "minimum": -180,
+                        "maximum": 180
+                      },
+                      "notes": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "maxLength": 1000
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "description": "Current event timing and joining destinations from this review source. Omitted by older API versions; absence is not an empty setup."
         }
       }
     }
