@@ -1528,10 +1528,24 @@ roster, including explicit non-applicability for events without pace groups. It
 does not expose group audit data to guest pages or write live memberships. Native
 readers and commands reuse `AssistanceMembershipFacts` and the shared membership
 decision validation/confirmation logic. The ordinary assistance editor cannot
-submit group changes; a dedicated pending-command controller and runtime screen
-composition remain integration work. Reporter reassignment and closeout now
+submit group changes; the dedicated membership controller retains one unresolved
+command per synthetic guest across role changes. Runtime screen composition
+remains integration work. Reporter reassignment and closeout now
 execute in rehearsal with independent revisions and the original arrival proof;
-native staff-role controls and screen mounting remain open.
+`EventRehearsalStaffController` now owns one unresolved staff edit per rehearsal,
+including new fictional operators. The optional Practice team section in Practice
+tools supports assignment, removal, group, duty, name and expiry with configured
+group and event-end defaults. Invalid input cannot reuse a previously valid draft.
+Dismissal and refresh preserve an uncertain save for exact retry; a definitive
+rejection requires fresh review. Sign-out retires the private draft and delayed
+responses. Group duties and responsibilities reuse live types and copy.
+
+The role-selection controller is scoped to the authenticated Host and clock
+generation. Deliberate assistance reads include the chosen synthetic operator in
+query identity and independently verify returned Host and role. Membership and
+accountability controllers use that exact role review while retaining the original
+role on an unresolved command. Role selection and operational action mounting in
+the shared Event Success runtime remain open.
 
 Group-checkpoint practice messages now bind the accepted assignment, group source
 and participation episode. The server derives this proof when publishing; Host

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'event_rehearsal_assistance_provider.dart';
+part of 'event_rehearsal_assistance_view_model.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -23,7 +23,7 @@ final class EventRehearsalAssistanceProvider
   /// A deliberate review fetch, separate from the constantly polling runtime.
   EventRehearsalAssistanceProvider._({
     required EventRehearsalAssistanceFamily super.from,
-    required String super.argument,
+    required (String, {String? practiceOperatorId}) super.argument,
   }) : super(
          retry: null,
          name: r'eventRehearsalAssistanceProvider',
@@ -39,7 +39,7 @@ final class EventRehearsalAssistanceProvider
   String toString() {
     return r'eventRehearsalAssistanceProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -68,7 +68,7 @@ final class EventRehearsalAssistanceProvider
 }
 
 String _$eventRehearsalAssistanceHash() =>
-    r'29ca272c92fc9746cb68edefca0f63e120227a44';
+    r'eb7f109b406bff539d64201eae87e0fcc8f154c2';
 
 /// A deliberate review fetch, separate from the constantly polling runtime.
 
@@ -79,7 +79,7 @@ final class EventRehearsalAssistanceFamily extends $Family
           AsyncValue<RehearsalAssistanceReview>,
           AsyncValue<RehearsalAssistanceReview>,
           AsyncValue<RehearsalAssistanceReview>,
-          String
+          (String, {String? practiceOperatorId})
         > {
   EventRehearsalAssistanceFamily._()
     : super(
@@ -92,8 +92,13 @@ final class EventRehearsalAssistanceFamily extends $Family
 
   /// A deliberate review fetch, separate from the constantly polling runtime.
 
-  EventRehearsalAssistanceProvider call(String sessionId) =>
-      EventRehearsalAssistanceProvider._(argument: sessionId, from: this);
+  EventRehearsalAssistanceProvider call(
+    String sessionId, {
+    String? practiceOperatorId,
+  }) => EventRehearsalAssistanceProvider._(
+    argument: (sessionId, practiceOperatorId: practiceOperatorId),
+    from: this,
+  );
 
   @override
   String toString() => r'eventRehearsalAssistanceProvider';
@@ -103,10 +108,14 @@ final class EventRehearsalAssistanceFamily extends $Family
 
 abstract class _$EventRehearsalAssistance
     extends $Notifier<AsyncValue<RehearsalAssistanceReview>> {
-  late final _$args = ref.$arg as String;
-  String get sessionId => _$args;
+  late final _$args = ref.$arg as (String, {String? practiceOperatorId});
+  String get sessionId => _$args.$1;
+  String? get practiceOperatorId => _$args.practiceOperatorId;
 
-  AsyncValue<RehearsalAssistanceReview> build(String sessionId);
+  AsyncValue<RehearsalAssistanceReview> build(
+    String sessionId, {
+    String? practiceOperatorId,
+  });
   @$mustCallSuper
   @override
   WhenComplete runBuild() {
@@ -127,7 +136,10 @@ abstract class _$EventRehearsalAssistance
               Object?,
               Object?
             >;
-    return element.handleCreate(ref, () => build(_$args));
+    return element.handleCreate(
+      ref,
+      () => build(_$args.$1, practiceOperatorId: _$args.practiceOperatorId),
+    );
   }
 }
 
@@ -147,7 +159,12 @@ final class EventRehearsalAssistanceForAccountProvider
         $FutureProvider<RehearsalAssistanceReview> {
   EventRehearsalAssistanceForAccountProvider._({
     required EventRehearsalAssistanceForAccountFamily super.from,
-    required (String, {AuthenticatedSession account}) super.argument,
+    required (
+      String, {
+      AuthenticatedSession account,
+      String? practiceOperatorId,
+    })
+    super.argument,
   }) : super(
          retry: _noReviewRetry,
          name: r'eventRehearsalAssistanceForAccountProvider',
@@ -175,11 +192,18 @@ final class EventRehearsalAssistanceForAccountProvider
 
   @override
   FutureOr<RehearsalAssistanceReview> create(Ref ref) {
-    final argument = this.argument as (String, {AuthenticatedSession account});
+    final argument =
+        this.argument
+            as (
+              String, {
+              AuthenticatedSession account,
+              String? practiceOperatorId,
+            });
     return eventRehearsalAssistanceForAccount(
       ref,
       argument.$1,
       account: argument.account,
+      practiceOperatorId: argument.practiceOperatorId,
     );
   }
 
@@ -196,13 +220,13 @@ final class EventRehearsalAssistanceForAccountProvider
 }
 
 String _$eventRehearsalAssistanceForAccountHash() =>
-    r'8c34745d87993911f2fb481e2f2046e4f7beaefb';
+    r'316d8dfc828b683ceaf115d76a2907d5f2862f4f';
 
 final class EventRehearsalAssistanceForAccountFamily extends $Family
     with
         $FunctionalFamilyOverride<
           FutureOr<RehearsalAssistanceReview>,
-          (String, {AuthenticatedSession account})
+          (String, {AuthenticatedSession account, String? practiceOperatorId})
         > {
   EventRehearsalAssistanceForAccountFamily._()
     : super(
@@ -216,8 +240,13 @@ final class EventRehearsalAssistanceForAccountFamily extends $Family
   EventRehearsalAssistanceForAccountProvider call(
     String sessionId, {
     required AuthenticatedSession account,
+    String? practiceOperatorId,
   }) => EventRehearsalAssistanceForAccountProvider._(
-    argument: (sessionId, account: account),
+    argument: (
+      sessionId,
+      account: account,
+      practiceOperatorId: practiceOperatorId,
+    ),
     from: this,
   );
 

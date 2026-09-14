@@ -17715,4 +17715,104 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hostsCreateEventCreateAction => 'Create event';
+
+  @override
+  String get hostEventRehearsalStaffTitle => 'Practice team';
+
+  @override
+  String get hostEventRehearsalStaffBody =>
+      'Try running the event with a lead, pacer or sweep. These are fictional staff, with access only to their assigned groups.';
+
+  @override
+  String get hostEventRehearsalStaffAdd => 'Add practice staff';
+
+  @override
+  String hostEventRehearsalStaffDefaultName({required int number}) {
+    return 'Practice staff $number';
+  }
+
+  @override
+  String get hostEventRehearsalStaffName => 'Name';
+
+  @override
+  String get hostEventRehearsalStaffGroup => 'Group';
+
+  @override
+  String get hostEventRehearsalStaffDuty => 'Duty';
+
+  @override
+  String get hostEventRehearsalStaffExpiry => 'Access ends';
+
+  @override
+  String hostEventRehearsalStaffUntil({required String time}) {
+    return 'Until $time on the practice clock';
+  }
+
+  @override
+  String get hostEventRehearsalStaffNoDuty => 'No group duties';
+
+  @override
+  String get hostEventRehearsalStaffFormerGroup => 'Former group';
+
+  @override
+  String get hostEventRehearsalStaffEdit => 'Edit duty';
+
+  @override
+  String get hostEventRehearsalStaffRemove => 'Remove duty';
+
+  @override
+  String get hostEventRehearsalStaffSave => 'Save practice staff';
+
+  @override
+  String get hostEventRehearsalStaffSaved => 'Practice team updated';
+
+  @override
+  String get hostEventRehearsalStaffRetry => 'Check this save again';
+
+  @override
+  String get hostEventRehearsalStaffPending =>
+      'The result is not confirmed yet. Check the same save before making another change.';
+
+  @override
+  String get hostEventRehearsalStaffRefresh => 'Reload practice team';
+
+  @override
+  String get hostEventRehearsalStaffReviewChanged =>
+      'This run has changed. Reload the team before editing.';
+
+  @override
+  String get hostEventRehearsalStaffExpired => 'Access ended';
+
+  @override
+  String get hostEventRehearsalStaffReadOnly =>
+      'Staff can be added or reassigned while this rehearsal is active. Saved duties can still be removed.';
+
+  @override
+  String get hostEventRehearsalStaffEndOfEvent => 'End of event';
+
+  @override
+  String hostEventRehearsalStaffMinutes({required int minutes}) {
+    return 'In $minutes minutes';
+  }
+
+  @override
+  String get eventAssistanceDutyLead => 'Group lead';
+
+  @override
+  String get eventAssistanceDutyPacer => 'Pacer';
+
+  @override
+  String get eventAssistanceDutySweep => 'Sweep';
+
+  @override
+  String get eventAssistanceDutyLeadBody =>
+      'Lead departures, hand guests over to another group, record checkpoints and account for guests.';
+
+  @override
+  String get eventAssistanceDutyPacerBody =>
+      'Lead this pace group, hand guests over to another group, record checkpoints and account for guests.';
+
+  @override
+  String get eventAssistanceDutySweepBody =>
+      'Record checkpoints and account for guests in this group.';
 }

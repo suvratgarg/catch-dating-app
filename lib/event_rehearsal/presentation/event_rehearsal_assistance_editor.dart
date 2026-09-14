@@ -5,7 +5,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_help_requests.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_publication.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_provider.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_change.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -95,6 +95,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
       eventRehearsalAssistanceForAccountProvider(
         review.snapshot.session.id,
         account: review.account,
+        practiceOperatorId: review.snapshot.staffReview?.practiceOperatorId,
       ),
       (_, next) {
         if (_revoked || state is! RehearsalAssistanceForm) return;
@@ -331,6 +332,7 @@ class EventRehearsalAssistanceEditor extends _$EventRehearsalAssistanceEditor {
         eventRehearsalAssistanceForAccountProvider(
           review.snapshot.session.id,
           account: review.account,
+          practiceOperatorId: review.snapshot.staffReview?.practiceOperatorId,
         ),
       );
       return result;

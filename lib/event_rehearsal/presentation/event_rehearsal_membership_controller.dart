@@ -6,7 +6,7 @@ import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_membership.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_provider.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_membership_change.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -141,7 +141,13 @@ class EventRehearsalMembershipController
     if (!_current(selected.account, _epoch)) {
       throw rehearsalReviewSessionChanged;
     }
-    final page = ref.read(eventRehearsalAssistanceProvider(scope.sessionId));
+    final page = ref.read(
+      eventRehearsalAssistanceProvider(
+        scope.sessionId,
+        practiceOperatorId:
+            selected.session.snapshot.staffReview?.practiceOperatorId,
+      ),
+    );
     if (selected.membership.scope != scope ||
         selected.membership.hostUid != selected.account.uid ||
         page.isLoading ||
@@ -312,12 +318,7 @@ class EventRehearsalMembershipController
 
   void _refresh(AuthenticatedSession account) {
     ref.invalidate(eventRehearsalProvider(scope.sessionId));
-    ref.invalidate(
-      eventRehearsalAssistanceForAccountProvider(
-        scope.sessionId,
-        account: account,
-      ),
-    );
+    ref.invalidate(eventRehearsalAssistanceForAccountProvider);
   }
 
   void _publish(RehearsalMembershipForm form) {

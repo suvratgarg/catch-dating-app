@@ -8,14 +8,14 @@ part of 'event_rehearsal_movement_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// A group owns one pending departure or report across history selection,
+/// A group owns one pending departure, report or checkpoint decision across
 /// refresh and sheet closure. It is never keyed to an arbitrary guest.
 
 @ProviderFor(EventRehearsalMovementController)
 final eventRehearsalMovementControllerProvider =
     EventRehearsalMovementControllerFamily._();
 
-/// A group owns one pending departure or report across history selection,
+/// A group owns one pending departure, report or checkpoint decision across
 /// refresh and sheet closure. It is never keyed to an arbitrary guest.
 final class EventRehearsalMovementControllerProvider
     extends
@@ -23,7 +23,7 @@ final class EventRehearsalMovementControllerProvider
           EventRehearsalMovementController,
           RehearsalMovementEditorState
         > {
-  /// A group owns one pending departure or report across history selection,
+  /// A group owns one pending departure, report or checkpoint decision across
   /// refresh and sheet closure. It is never keyed to an arbitrary guest.
   EventRehearsalMovementControllerProvider._({
     required EventRehearsalMovementControllerFamily super.from,
@@ -74,7 +74,7 @@ final class EventRehearsalMovementControllerProvider
 String _$eventRehearsalMovementControllerHash() =>
     r'f15e00e8ab04c0768e1ef54b7910094e82f03311';
 
-/// A group owns one pending departure or report across history selection,
+/// A group owns one pending departure, report or checkpoint decision across
 /// refresh and sheet closure. It is never keyed to an arbitrary guest.
 
 final class EventRehearsalMovementControllerFamily extends $Family
@@ -95,7 +95,7 @@ final class EventRehearsalMovementControllerFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// A group owns one pending departure or report across history selection,
+  /// A group owns one pending departure, report or checkpoint decision across
   /// refresh and sheet closure. It is never keyed to an arbitrary guest.
 
   EventRehearsalMovementControllerProvider call(RehearsalMovementScope scope) =>
@@ -105,7 +105,7 @@ final class EventRehearsalMovementControllerFamily extends $Family
   String toString() => r'eventRehearsalMovementControllerProvider';
 }
 
-/// A group owns one pending departure or report across history selection,
+/// A group owns one pending departure, report or checkpoint decision across
 /// refresh and sheet closure. It is never keyed to an arbitrary guest.
 
 abstract class _$EventRehearsalMovementController

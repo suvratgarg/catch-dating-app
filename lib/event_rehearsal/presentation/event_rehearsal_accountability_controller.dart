@@ -6,7 +6,7 @@ import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_accountability.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_provider.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -143,7 +143,13 @@ class EventRehearsalAccountabilityController
         'Review this practice visit before continuing.',
       );
     }
-    final page = ref.read(eventRehearsalAssistanceProvider(scope.sessionId));
+    final page = ref.read(
+      eventRehearsalAssistanceProvider(
+        scope.sessionId,
+        practiceOperatorId:
+            review.session.snapshot.staffReview?.practiceOperatorId,
+      ),
+    );
     if (page.isLoading ||
         page.hasError ||
         !review.session.isCurrent ||
@@ -297,12 +303,7 @@ class EventRehearsalAccountabilityController
 
   void _refresh(AuthenticatedSession account) {
     ref.invalidate(eventRehearsalProvider(scope.sessionId));
-    ref.invalidate(
-      eventRehearsalAssistanceForAccountProvider(
-        scope.sessionId,
-        account: account,
-      ),
-    );
+    ref.invalidate(eventRehearsalAssistanceForAccountProvider);
   }
 
   void _publish(RehearsalAccountabilityForm form) {

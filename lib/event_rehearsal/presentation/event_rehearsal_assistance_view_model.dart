@@ -4,7 +4,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'event_rehearsal_assistance_provider.g.dart';
+part 'event_rehearsal_assistance_view_model.g.dart';
 
 final class RehearsalAssistanceReview {
   RehearsalAssistanceReview._(this.account, this.snapshot);
@@ -48,7 +48,10 @@ void requireRehearsalReviewAccount(Ref ref, AuthenticatedSession expected) {
 @riverpod
 class EventRehearsalAssistance extends _$EventRehearsalAssistance {
   @override
-  AsyncValue<RehearsalAssistanceReview> build(String sessionId) {
+  AsyncValue<RehearsalAssistanceReview> build(
+    String sessionId, {
+    String? practiceOperatorId,
+  }) {
     final auth = ref.watch(authenticatedSessionProvider);
     if (auth.isLoading) return const AsyncLoading();
     if (auth.hasError) return AsyncError(auth.error!, auth.stackTrace!);
@@ -56,6 +59,7 @@ class EventRehearsalAssistance extends _$EventRehearsalAssistance {
       eventRehearsalAssistanceForAccountProvider(
         sessionId,
         account: auth.requireValue,
+        practiceOperatorId: practiceOperatorId,
       ),
     );
     if (page.isLoading) return const AsyncLoading();
@@ -70,6 +74,7 @@ class EventRehearsalAssistance extends _$EventRehearsalAssistance {
       eventRehearsalAssistanceForAccountProvider(
         sessionId,
         account: auth.requireValue,
+        practiceOperatorId: practiceOperatorId,
       ),
     );
   }
@@ -80,14 +85,23 @@ Future<RehearsalAssistanceReview> eventRehearsalAssistanceForAccount(
   Ref ref,
   String sessionId, {
   required AuthenticatedSession account,
+  String? practiceOperatorId,
 }) async {
   ref.watch(authenticatedSessionProvider);
   requireRehearsalReviewAccount(ref, account);
-  final snapshot = await ref
-      .watch(eventRehearsalRepositoryProvider)
-      .fetch(sessionId);
+  final repository = ref.watch(eventRehearsalRepositoryProvider);
+  final snapshot = practiceOperatorId == null
+      ? await repository.fetch(sessionId)
+      : await repository.fetchPracticeRole(
+          sessionId: sessionId,
+          practiceOperatorId: practiceOperatorId,
+          hostUid: account.uid,
+        );
   requireRehearsalReviewAccount(ref, account);
-  if (snapshot.session.id != sessionId) {
+  if (snapshot.session.id != sessionId ||
+      snapshot.staffReview?.practiceOperatorId != practiceOperatorId ||
+      snapshot.staffReview != null &&
+          snapshot.staffReview!.hostUid != account.uid) {
     throw const FormatException(
       'Rehearsal review returned a different session.',
     );

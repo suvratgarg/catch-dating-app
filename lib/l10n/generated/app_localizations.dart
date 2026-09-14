@@ -28043,6 +28043,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create event'**
   String get hostsCreateEventCreateAction;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice team'**
+  String get hostEventRehearsalStaffTitle;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Try running the event with a lead, pacer or sweep. These are fictional staff, with access only to their assigned groups.'**
+  String get hostEventRehearsalStaffBody;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Add practice staff'**
+  String get hostEventRehearsalStaffAdd;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice staff {number}'**
+  String hostEventRehearsalStaffDefaultName({required int number});
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hostEventRehearsalStaffName;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Group'**
+  String get hostEventRehearsalStaffGroup;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Duty'**
+  String get hostEventRehearsalStaffDuty;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Access ends'**
+  String get hostEventRehearsalStaffExpiry;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Until {time} on the practice clock'**
+  String hostEventRehearsalStaffUntil({required String time});
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'No group duties'**
+  String get hostEventRehearsalStaffNoDuty;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Former group'**
+  String get hostEventRehearsalStaffFormerGroup;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit duty'**
+  String get hostEventRehearsalStaffEdit;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove duty'**
+  String get hostEventRehearsalStaffRemove;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Save practice staff'**
+  String get hostEventRehearsalStaffSave;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice team updated'**
+  String get hostEventRehearsalStaffSaved;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Check this save again'**
+  String get hostEventRehearsalStaffRetry;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'The result is not confirmed yet. Check the same save before making another change.'**
+  String get hostEventRehearsalStaffPending;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload practice team'**
+  String get hostEventRehearsalStaffRefresh;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This run has changed. Reload the team before editing.'**
+  String get hostEventRehearsalStaffReviewChanged;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Access ended'**
+  String get hostEventRehearsalStaffExpired;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff can be added or reassigned while this rehearsal is active. Saved duties can still be removed.'**
+  String get hostEventRehearsalStaffReadOnly;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'End of event'**
+  String get hostEventRehearsalStaffEndOfEvent;
+
+  /// Practice staff configuration copy.
+  ///
+  /// In en, this message translates to:
+  /// **'In {minutes} minutes'**
+  String hostEventRehearsalStaffMinutes({required int minutes});
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Group lead'**
+  String get eventAssistanceDutyLead;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Pacer'**
+  String get eventAssistanceDutyPacer;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Sweep'**
+  String get eventAssistanceDutySweep;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead departures, hand guests over to another group, record checkpoints and account for guests.'**
+  String get eventAssistanceDutyLeadBody;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Lead this pace group, hand guests over to another group, record checkpoints and account for guests.'**
+  String get eventAssistanceDutyPacerBody;
+
+  /// Group duty label or responsibilities.
+  ///
+  /// In en, this message translates to:
+  /// **'Record checkpoints and account for guests in this group.'**
+  String get eventAssistanceDutySweepBody;
 }
 
 class _AppLocalizationsDelegate

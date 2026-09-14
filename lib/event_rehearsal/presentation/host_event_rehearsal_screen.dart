@@ -10,6 +10,7 @@ import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_ru
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -328,6 +329,10 @@ class _HostEventRehearsalScreenState
                   _saveSetup(rehearsal.session, setup, scenario, actorCount),
             ),
             gapH20,
+            if (rehearsal.staffReview != null) ...[
+              EventRehearsalStaffSection(sessionId: rehearsal.session.id),
+              gapH20,
+            ],
             EventRehearsalGuestLinkSection(
               guestUrl: rehearsal.guestUrl,
               isLoading: busy,
