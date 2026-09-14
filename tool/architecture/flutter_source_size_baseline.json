@@ -202,10 +202,6 @@
       "maxLines": 2147
     },
     {
-      "path": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-      "maxLines": 1222
-    },
-    {
       "path": "widgetbook/lib/event_success/event_success_companion_use_cases.dart",
       "maxLines": 955
     },

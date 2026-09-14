@@ -21,7 +21,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "widgetbook/lib/dashboard/catalog/activity.dart",
           "widgetbook/lib/utility/notifications.dart"
         ],
         "actionOwners": [

@@ -17,8 +17,22 @@ import 'package:widgetbook_workspace/clubs/club_detail_use_cases.dart'
     as _widgetbook_workspace_clubs_club_detail_use_cases;
 import 'package:widgetbook_workspace/consumer/p2_consumer_use_cases.dart'
     as _widgetbook_workspace_consumer_p2_consumer_use_cases;
-import 'package:widgetbook_workspace/dashboard/dashboard_use_cases.dart'
-    as _widgetbook_workspace_dashboard_dashboard_use_cases;
+import 'package:widgetbook_workspace/dashboard/catalog/activity.dart'
+    as _widgetbook_workspace_dashboard_catalog_activity;
+import 'package:widgetbook_workspace/dashboard/catalog/club_posts.dart'
+    as _widgetbook_workspace_dashboard_catalog_club_posts;
+import 'package:widgetbook_workspace/dashboard/catalog/empty_hero.dart'
+    as _widgetbook_workspace_dashboard_catalog_empty_hero;
+import 'package:widgetbook_workspace/dashboard/catalog/event_focus.dart'
+    as _widgetbook_workspace_dashboard_catalog_event_focus;
+import 'package:widgetbook_workspace/dashboard/catalog/header.dart'
+    as _widgetbook_workspace_dashboard_catalog_header;
+import 'package:widgetbook_workspace/dashboard/catalog/home.dart'
+    as _widgetbook_workspace_dashboard_catalog_home;
+import 'package:widgetbook_workspace/dashboard/catalog/recommendations.dart'
+    as _widgetbook_workspace_dashboard_catalog_recommendations;
+import 'package:widgetbook_workspace/dashboard/catalog/screen.dart'
+    as _widgetbook_workspace_dashboard_catalog_screen;
 import 'package:widgetbook_workspace/event_success/event_success_companion_use_cases.dart'
     as _widgetbook_workspace_event_success_event_success_companion_use_cases;
 import 'package:widgetbook_workspace/event_success/event_success_module_consolidation_prototypes.dart'
@@ -5931,7 +5945,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Skeleton states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_activity
                     .dashboardActivitySectionSkeletonReview,
               ),
             ],
@@ -5941,7 +5955,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Signed-out state',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_activity
                     .dashboardActivitySignedOutStateReview,
               ),
             ],
@@ -5951,7 +5965,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Grouped rows',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_activity
                     .dashboardNotificationDayGroupsReview,
               ),
             ],
@@ -5961,7 +5975,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Row states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_activity
                     .dashboardNotificationRowReviewStates,
               ),
             ],
@@ -5971,7 +5985,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Row skeleton states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_activity
                     .dashboardNotificationRowSkeletonReview,
               ),
             ],
@@ -5986,7 +6000,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Header content',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_header
                     .dashboardHeaderContentReview,
               ),
             ],
@@ -5996,7 +6010,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Card states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_club_posts
                     .dashboardClubPostHomeCardReviewStates,
               ),
             ],
@@ -6006,7 +6020,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Club post states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_club_posts
                     .dashboardClubPostsHomeSectionReviewStates,
               ),
             ],
@@ -6016,7 +6030,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Empty home sliver',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_home
                     .dashboardEmptySliverBodyReview,
               ),
             ],
@@ -6026,7 +6040,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Full sliver body',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_home
                     .dashboardFullSliverBodyReview,
               ),
             ],
@@ -6036,7 +6050,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Full home',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_home
                     .dashboardFullReview,
               ),
             ],
@@ -6046,7 +6060,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_screen
                     .dashboardScreenStates,
               ),
             ],
@@ -6056,7 +6070,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Hero states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_empty_hero
                     .dashboardEmptyHeroCardReviewStates,
               ),
             ],
@@ -6066,7 +6080,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Hero content states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_empty_hero
                     .dashboardEmptyHeroContentReviewStates,
               ),
             ],
@@ -6076,7 +6090,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Card states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_event_focus
                     .dashboardEventFocusCardReviewStates,
               ),
             ],
@@ -6086,7 +6100,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Rail states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_event_focus
                     .dashboardEventFocusRailReviewStates,
               ),
             ],
@@ -6101,7 +6115,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Counted notification action',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_header
                     .dashboardCountedNotificationActionReviewStates,
               ),
             ],
@@ -7739,7 +7753,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Recommendation rail',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_recommendations
                     .dashboardRecommendationsReview,
               ),
             ],
@@ -7754,7 +7768,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Review states',
-                builder: _widgetbook_workspace_dashboard_dashboard_use_cases
+                builder: _widgetbook_workspace_dashboard_catalog_recommendations
                     .dashboardRecommendCardReviewStates,
               ),
             ],
