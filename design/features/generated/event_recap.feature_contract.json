@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/event_recap.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:f471eb216b3ee2157fc8c2561324ad012069334b5c8be1b384d5428b13e6ba6c",
+  "sourceDigest": "sha256:e269308b4e0f26106555a2ebcc36b0911dc91a3df3b81cdd968e330e71d2a789",
   "resolvedDigest": "sha256:fee0a1b5fbcbc1618a970cd064a43a04a8488ab32bc960bc68ba11a0b72b44fb",
   "feature": {
     "id": "feature.event_recap",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/catches/catches_use_cases.dart"
+          "widgetbook/lib/catches/catalog/recap_route.dart"
         ],
         "actionOwners": [
           {

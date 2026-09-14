@@ -23,7 +23,10 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/catches/catches_use_cases.dart"
+          "widgetbook/lib/catches/catalog/deck.dart",
+          "widgetbook/lib/catches/catalog/deck_route.dart",
+          "widgetbook/lib/catches/catalog/empty.dart",
+          "widgetbook/lib/catches/catalog/reactions.dart"
         ],
         "actionOwners": [
           {

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/catches_hub.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:75e85878dff27bfc6076a7e5bd50bacde175d27b4c8394ad90d0ca7495675bc9",
+  "sourceDigest": "sha256:426d608b3c6ddb0e7876f024bce3fe8d43586e47b6c991088f38f7116ee2b0f4",
   "resolvedDigest": "sha256:697259bbc613cbeb769f4fb82b648087a124ad2137e8f6320e9bd1efc81fd005",
   "feature": {
     "id": "feature.catches_hub",
@@ -39,7 +39,8 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/catches/catches_use_cases.dart"
+          "widgetbook/lib/catches/catalog/hub.dart",
+          "widgetbook/lib/catches/catalog/hub_route.dart"
         ],
         "actionOwners": [
           {

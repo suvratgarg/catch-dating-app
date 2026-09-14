@@ -24,7 +24,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/catches/catches_use_cases.dart"
+          "widgetbook/lib/catches/catalog/recap_route.dart"
         ],
         "actionOwners": [
           {
