@@ -25959,5 +25959,294 @@
   "hostEventRehearsalUpdatesConnectionLost": "Unknown: connection lost",
   "@hostEventRehearsalUpdatesConnectionLost": {"description": "Rehearsal event-wide update settings copy.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
   "hostEventRehearsalUpdatesInterrupted": "Unknown: delivery interrupted",
-  "@hostEventRehearsalUpdatesInterrupted": {"description": "Rehearsal event-wide update settings copy.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"}
+  "@hostEventRehearsalUpdatesInterrupted": {"description": "Rehearsal event-wide update settings copy.", "x-audience": "host", "x-owner": "product", "x-surface": "event_rehearsal.presentation"},
+  "eventMessagesTitle": "Event messages",
+  "@eventMessagesTitle": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesEntryBody": "Choose SMS, WhatsApp and RCS updates for this event.",
+  "@eventMessagesEntryBody": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesIntro": "Choose the updates you want for this event. Each channel is optional and has its own permission.",
+  "@eventMessagesIntro": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesSms": "SMS",
+  "@eventMessagesSms": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesWhatsapp": "WhatsApp",
+  "@eventMessagesWhatsapp": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesRcs": "RCS",
+  "@eventMessagesRcs": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesNotSet": "Permission not given",
+  "@eventMessagesNotSet": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesEnabled": "Messages are on",
+  "@eventMessagesEnabled": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesDisabled": "Messages are off",
+  "@eventMessagesDisabled": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesExpired": "Permission has expired",
+  "@eventMessagesExpired": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesPhoneEnding": "Phone ending in {digits}",
+  "@eventMessagesPhoneEnding": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation",
+    "placeholders": {
+      "digits": {
+        "type": "String"
+      }
+    }
+  },
+  "eventMessagesUntil": "Permission expires {date} at {time}",
+  "@eventMessagesUntil": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "eventMessagesEarlierSender": "This sender is no longer selected for this event. You can turn off an existing permission.",
+  "@eventMessagesEarlierSender": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesVerifyPhone": "Your verified phone needs to match your guest record before you can allow messages.",
+  "@eventMessagesVerifyPhone": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesNotAdmitted": "You need a confirmed place at this event to allow messages.",
+  "@eventMessagesNotAdmitted": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesEventClosed": "This event is closed for new message permissions.",
+  "@eventMessagesEventClosed": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesSenderUnavailable": "This sender is not available for new permissions right now.",
+  "@eventMessagesSenderUnavailable": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesSubscriptionUnavailable": "This RCS sender cannot accept a new permission right now.",
+  "@eventMessagesSubscriptionUnavailable": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesSaving": "Saving your choice…",
+  "@eventMessagesSaving": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesUncertain": "We could not confirm your choice. Retry to check the same request.",
+  "@eventMessagesUncertain": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesReviewChanged": "Reload the current permission before making another change.",
+  "@eventMessagesReviewChanged": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesSaved": "Your choice is saved.",
+  "@eventMessagesSaved": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesChanged": "Your permission changed elsewhere. The current choice is shown.",
+  "@eventMessagesChanged": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesAllow": "Allow {channel} updates",
+  "@eventMessagesAllow": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation",
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "eventMessagesTurnOff": "Turn off {channel} updates",
+  "@eventMessagesTurnOff": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation",
+    "placeholders": {
+      "channel": {
+        "type": "String"
+      }
+    }
+  },
+  "eventMessagesRetry": "Check my previous choice",
+  "@eventMessagesRetry": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesRefresh": "Reload",
+  "@eventMessagesRefresh": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesLoading": "Checking availability…",
+  "@eventMessagesLoading": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesUnavailable": "No message option is available for this event.",
+  "@eventMessagesUnavailable": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesLoadFailed": "Could not load your permission",
+  "@eventMessagesLoadFailed": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesPending": "Confirm your previous choice",
+  "@eventMessagesPending": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesCurrentSender": "View current event sender",
+  "@eventMessagesCurrentSender": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesOtherSenders": "Review other senders",
+  "@eventMessagesOtherSenders": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesPreviousPermission": "Previous permission",
+  "@eventMessagesPreviousPermission": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesNextPermission": "Next permission",
+  "@eventMessagesNextPermission": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesMorePermissions": "Find more permissions",
+  "@eventMessagesMorePermissions": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesUnlinked": "Your account is not linked to a guest record for this event yet. Ask the host for help, then reload.",
+  "@eventMessagesUnlinked": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  },
+  "eventMessagesAmbiguous": "More than one guest record is linked to your account. Ask the host to resolve the duplicate, then reload.",
+  "@eventMessagesAmbiguous": {
+    "description": "Consumer event message permission review and recovery.",
+    "x-audience": "consumer",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation"
+  }
 }

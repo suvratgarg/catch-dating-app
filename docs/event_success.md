@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.131.0
+version: 1.132.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -2346,10 +2346,21 @@ The native entry can now resolve its own operational attendee through
 as an attendee ID. The read-only boundary returns one verified linked scope,
 explicitly unlinked state, or ambiguity without a candidate list. Native reviews
 are bound to an uninterrupted account and retire on refresh or account changes.
-This supplies identity for future consent mounting; it neither claims a roster
-row nor copies a private account phone into Host-visible attendee data. Native
-message controls and private endpoint enrollment remain the next integration
-steps.
+The Consumer event detail page now exposes Event messages for signed-in users
+with a booking record, including past or cancelled bookings. It uses this
+identity boundary before reading SMS, WhatsApp or RCS preferences. No attendee
+ID is inferred from the booking ID and no private account phone is copied into
+Host-visible attendee data. Private endpoint enrollment remains a separate gap.
+
+The single native sheet progressively discloses each channel's current
+permission, exact server consent, masked recipient, expiry and available actions.
+No initial read grants consent. Unlinked and ambiguous identities offer reload
+and Host help without reading channel permissions. Authentication loss removes
+all prior terms and actions. Each channel uses its retained owner, so dismissing
+and reopening an uncertain save offers the same request for retry. WhatsApp/RCS
+history loads explicitly; earlier senders permit withdrawal only, and opaque IDs
+are never presented as sender names. The normal and enlarged-text interaction
+checks exercise independent consent, historical withdrawal and recovery.
 
 The native SMS preference controller now retains the exact unresolved request
 through sheet dismissal, including after a response is lost. Its temporary
@@ -2358,8 +2369,7 @@ same-UID re-entry or authentication errors; a confirmed result or definite
 rejection releases the lease. The controller independently validates the review
 scope and returned decision before presenting saved consent. An uncertain error
 is actionable immediately, so a retry callback cannot accidentally reuse the
-previous failed future. These controllers do not yet mount native consent
-controls or persist pending requests across an app restart.
+previous failed future. These controllers do not persist pending requests across an app restart.
 
 The required review hash is a coordinated API/client rollout change. Old web
 tabs must reload before making a new decision; submissions without a review
@@ -2375,8 +2385,7 @@ identity or reopen event instructions. Its current-revision check prevents an
 old withdrawal request from undoing a later verified opt-in. Revoked links and
 replacement recipients cannot act on the original permission.
 
-Waitlist marketing preferences do not authorize event-service texts. Consumer
-app screen integration, provider inbound opt-out handling, deployed verification
+Waitlist marketing preferences do not authorize event-service texts. Provider inbound opt-out handling, deployed verification
 and retention cleanup remain integration work; no sender has been activated by
 these controls.
 
@@ -2506,7 +2515,7 @@ now supplies the canonical Google RBM sender configuration and rendering
 boundary described below; generated outputs come from the current generator.
 The RCS backend now includes consent and withdrawal APIs, capability/readiness
 checks, shared outbox dispatch, OAuth loading, authenticated HTTP ingress, and
-delivery/native-reply consumers. Remaining work includes Consumer app consent controls,
+delivery/native-reply consumers. Remaining work includes private verified endpoint enrollment,
 audited sender/budget onboarding, retention and financial reconciliation,
 provider registration, deployment, activation and end-to-end verification. On 2026-09-08 the user resumed independent RCS work while the
 Host UI handoff is pending. Neither the parked prototype nor the restored
@@ -2608,10 +2617,11 @@ Uncertain native saves retain the complete request even if the preference sheet
 is dismissed, until an exact retry resolves it or authentication invalidates the
 private state. Refresh and sender navigation cannot replace that request.
 Definite rejection requires fresh review. Generated request DTOs handle reads;
-canonical-schema tests verify the closed mutation unions. The controller and
-typed models are exported for route composition. Visible controls, guest route
-mounting, lifecycle refresh wiring, device verification and deployment remain
-pending; these bindings do not constitute an available Consumer consent flow.
+canonical-schema tests verify the closed mutation unions. The Consumer event-detail sheet mounts these owners through the verified
+participant context. Each disclosure shows current permission and exposes
+channel-specific terms and actions without enrolling other channels. Returning to the app refreshes identity and resolved channel reviews while
+retaining uncertain requests. Device verification and deployment remain pending; source
+integration is not evidence of a distributed or activated Consumer flow.
 
 ### RCS authenticated callback boundary
 

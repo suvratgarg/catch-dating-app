@@ -30996,6 +30996,234 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown: delivery interrupted'**
   String get hostEventRehearsalUpdatesInterrupted;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Event messages'**
+  String get eventMessagesTitle;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose SMS, WhatsApp and RCS updates for this event.'**
+  String get eventMessagesEntryBody;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the updates you want for this event. Each channel is optional and has its own permission.'**
+  String get eventMessagesIntro;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS'**
+  String get eventMessagesSms;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get eventMessagesWhatsapp;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'RCS'**
+  String get eventMessagesRcs;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission not given'**
+  String get eventMessagesNotSet;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages are on'**
+  String get eventMessagesEnabled;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages are off'**
+  String get eventMessagesDisabled;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission has expired'**
+  String get eventMessagesExpired;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone ending in {digits}'**
+  String eventMessagesPhoneEnding({required String digits});
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission expires {date} at {time}'**
+  String eventMessagesUntil({required String date, required String time});
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This sender is no longer selected for this event. You can turn off an existing permission.'**
+  String get eventMessagesEarlierSender;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Your verified phone needs to match your guest record before you can allow messages.'**
+  String get eventMessagesVerifyPhone;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'You need a confirmed place at this event to allow messages.'**
+  String get eventMessagesNotAdmitted;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This event is closed for new message permissions.'**
+  String get eventMessagesEventClosed;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This sender is not available for new permissions right now.'**
+  String get eventMessagesSenderUnavailable;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'This RCS sender cannot accept a new permission right now.'**
+  String get eventMessagesSubscriptionUnavailable;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your choice…'**
+  String get eventMessagesSaving;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not confirm your choice. Retry to check the same request.'**
+  String get eventMessagesUncertain;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload the current permission before making another change.'**
+  String get eventMessagesReviewChanged;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Your choice is saved.'**
+  String get eventMessagesSaved;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Your permission changed elsewhere. The current choice is shown.'**
+  String get eventMessagesChanged;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow {channel} updates'**
+  String eventMessagesAllow({required String channel});
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn off {channel} updates'**
+  String eventMessagesTurnOff({required String channel});
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Check my previous choice'**
+  String get eventMessagesRetry;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload'**
+  String get eventMessagesRefresh;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking availability…'**
+  String get eventMessagesLoading;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No message option is available for this event.'**
+  String get eventMessagesUnavailable;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your permission'**
+  String get eventMessagesLoadFailed;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your previous choice'**
+  String get eventMessagesPending;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'View current event sender'**
+  String get eventMessagesCurrentSender;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Review other senders'**
+  String get eventMessagesOtherSenders;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous permission'**
+  String get eventMessagesPreviousPermission;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Next permission'**
+  String get eventMessagesNextPermission;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Find more permissions'**
+  String get eventMessagesMorePermissions;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account is not linked to a guest record for this event yet. Ask the host for help, then reload.'**
+  String get eventMessagesUnlinked;
+
+  /// Consumer event message permission review and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'More than one guest record is linked to your account. Ask the host to resolve the duplicate, then reload.'**
+  String get eventMessagesAmbiguous;
 }
 
 class _AppLocalizationsDelegate

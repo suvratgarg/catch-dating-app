@@ -19489,4 +19489,140 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get hostEventRehearsalUpdatesInterrupted =>
       'Unknown: delivery interrupted';
+
+  @override
+  String get eventMessagesTitle => 'Event messages';
+
+  @override
+  String get eventMessagesEntryBody =>
+      'Choose SMS, WhatsApp and RCS updates for this event.';
+
+  @override
+  String get eventMessagesIntro =>
+      'Choose the updates you want for this event. Each channel is optional and has its own permission.';
+
+  @override
+  String get eventMessagesSms => 'SMS';
+
+  @override
+  String get eventMessagesWhatsapp => 'WhatsApp';
+
+  @override
+  String get eventMessagesRcs => 'RCS';
+
+  @override
+  String get eventMessagesNotSet => 'Permission not given';
+
+  @override
+  String get eventMessagesEnabled => 'Messages are on';
+
+  @override
+  String get eventMessagesDisabled => 'Messages are off';
+
+  @override
+  String get eventMessagesExpired => 'Permission has expired';
+
+  @override
+  String eventMessagesPhoneEnding({required String digits}) {
+    return 'Phone ending in $digits';
+  }
+
+  @override
+  String eventMessagesUntil({required String date, required String time}) {
+    return 'Permission expires $date at $time';
+  }
+
+  @override
+  String get eventMessagesEarlierSender =>
+      'This sender is no longer selected for this event. You can turn off an existing permission.';
+
+  @override
+  String get eventMessagesVerifyPhone =>
+      'Your verified phone needs to match your guest record before you can allow messages.';
+
+  @override
+  String get eventMessagesNotAdmitted =>
+      'You need a confirmed place at this event to allow messages.';
+
+  @override
+  String get eventMessagesEventClosed =>
+      'This event is closed for new message permissions.';
+
+  @override
+  String get eventMessagesSenderUnavailable =>
+      'This sender is not available for new permissions right now.';
+
+  @override
+  String get eventMessagesSubscriptionUnavailable =>
+      'This RCS sender cannot accept a new permission right now.';
+
+  @override
+  String get eventMessagesSaving => 'Saving your choice…';
+
+  @override
+  String get eventMessagesUncertain =>
+      'We could not confirm your choice. Retry to check the same request.';
+
+  @override
+  String get eventMessagesReviewChanged =>
+      'Reload the current permission before making another change.';
+
+  @override
+  String get eventMessagesSaved => 'Your choice is saved.';
+
+  @override
+  String get eventMessagesChanged =>
+      'Your permission changed elsewhere. The current choice is shown.';
+
+  @override
+  String eventMessagesAllow({required String channel}) {
+    return 'Allow $channel updates';
+  }
+
+  @override
+  String eventMessagesTurnOff({required String channel}) {
+    return 'Turn off $channel updates';
+  }
+
+  @override
+  String get eventMessagesRetry => 'Check my previous choice';
+
+  @override
+  String get eventMessagesRefresh => 'Reload';
+
+  @override
+  String get eventMessagesLoading => 'Checking availability…';
+
+  @override
+  String get eventMessagesUnavailable =>
+      'No message option is available for this event.';
+
+  @override
+  String get eventMessagesLoadFailed => 'Could not load your permission';
+
+  @override
+  String get eventMessagesPending => 'Confirm your previous choice';
+
+  @override
+  String get eventMessagesCurrentSender => 'View current event sender';
+
+  @override
+  String get eventMessagesOtherSenders => 'Review other senders';
+
+  @override
+  String get eventMessagesPreviousPermission => 'Previous permission';
+
+  @override
+  String get eventMessagesNextPermission => 'Next permission';
+
+  @override
+  String get eventMessagesMorePermissions => 'Find more permissions';
+
+  @override
+  String get eventMessagesUnlinked =>
+      'Your account is not linked to a guest record for this event yet. Ask the host for help, then reload.';
+
+  @override
+  String get eventMessagesAmbiguous =>
+      'More than one guest record is linked to your account. Ask the host to resolve the duplicate, then reload.';
 }

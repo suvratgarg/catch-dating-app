@@ -1,0 +1,227 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:ui' as ui;
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/event_success/data/event_participant_context_repository.dart';
+import 'package:catch_dating_app/event_success/data/event_sender_preference_repository.dart';
+import 'package:catch_dating_app/event_success/data/event_sms_preference_repository.dart';
+import 'package:catch_dating_app/event_success/presentation/event_message_preferences_entry.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/l10n/l10n.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import '../support/catch_test_fonts.dart';
+import '../test_pump_helpers.dart';
+import 'event_message_preferences_ui_fixtures.dart';
+import 'event_sender_preference_fixtures.dart';
+import 'event_sms_preference_fixtures.dart';
+
+void main() {
+  setUpAll(loadCatchTestFonts);
+  for (final scale in [1.0, 2.0]) {
+    testWidgets(
+      'independent consent and exact retry after dismissal at $scale',
+      (tester) async {
+        final fixtures = _Ui();
+        final capture = GlobalKey();
+        await _pump(tester, fixtures, scale: scale, boundary: capture);
+        expect(fixtures.identity.reads, 0);
+        expect(fixtures.sms.fetchCount, 0);
+        await _tap(tester, find.byKey(const ValueKey('event.messages.open')));
+        expect(fixtures.identity.reads, 1);
+        expect(fixtures.sms.fetchCount, 1);
+        expect(fixtures.sms.writes, isEmpty);
+        expect(fixtures.senders.writes, isEmpty);
+        await _capture(tester, capture, 'initial-$scale');
+        await _tap(tester, find.text('SMS'));
+        expect(
+          find.text('Fixture text consent for this event.'),
+          findsOneWidget,
+        );
+        await _tap(tester, find.byKey(const ValueKey('messages.sms.enable')));
+        expect(fixtures.sms.writes, hasLength(1));
+        final original = fixtures.sms.writes.single.change;
+        fixtures.sms.writes.single.result.completeError(
+          const NetworkException('unavailable', 'Lost confirmation'),
+        );
+        await pumpFeatureUi(tester);
+        expect(find.text('Confirm your previous choice'), findsOneWidget);
+        await _capture(tester, capture, 'uncertain-$scale');
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.resumed,
+        );
+        await pumpFeatureUi(tester);
+        expect(fixtures.sms.fetchCount, 1);
+        Navigator.of(
+          tester.element(find.text('Fixture text consent for this event.')),
+        ).pop();
+        await pumpFeatureUi(tester);
+        await _tap(tester, find.byKey(const ValueKey('event.messages.open')));
+        // The unresolved owner's private lease survives the sheet and fresh
+        // identity read; no new grant or review replaces the frozen request.
+        expect(fixtures.sms.fetchCount, 1);
+        final retry = find.byKey(const ValueKey('messages.sms.retry'));
+        if (retry.evaluate().isEmpty) await _tap(tester, find.text('SMS'));
+        await _tap(tester, retry);
+        expect(fixtures.sms.writes, hasLength(2));
+        expect(fixtures.sms.writes.last.change, same(original));
+        fixtures.sms.writes.last.result.complete(
+          smsApplied(
+            original,
+            outcome: 'replayed',
+            patch: {'revision': 3, 'preference': 'disabled'},
+          ),
+        );
+        await pumpFeatureUi(tester);
+        expect(find.text('Messages are off'), findsWidgets);
+        expect(fixtures.senders.writes, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+  testWidgets('previous sender can be withdrawn but never silently granted', (
+    tester,
+  ) async {
+    final fixtures = _Ui()..senders.history = true;
+    await _pump(tester, fixtures);
+    await _tap(tester, find.byKey(const ValueKey('event.messages.open')));
+    await _tap(tester, find.text('WhatsApp'));
+    expect(find.text('Current Organizer'), findsOneWidget);
+    expect(
+      find.byKey(const ValueKey('messages.whatsapp.enable')),
+      findsOneWidget,
+    );
+    await _tap(tester, find.text('Review other senders'));
+    expect(find.text('Previous Organizer'), findsOneWidget);
+    expect(find.text('sender-prior'), findsNothing);
+    expect(
+      find.byKey(const ValueKey('messages.whatsapp.enable')),
+      findsNothing,
+    );
+    await _tap(tester, find.byKey(const ValueKey('messages.whatsapp.disable')));
+    final write = fixtures.senders.writes.single;
+    expect(write.change.snapshot.senderId, 'sender-prior');
+    write.result.complete(senderApplied(write.change));
+    await pumpFeatureUi(tester);
+    expect(find.text('Messages are off'), findsWidgets);
+    expect(fixtures.sms.writes, isEmpty);
+  });
+  for (final resolution in ['unlinked', 'ambiguous']) {
+    testWidgets('$resolution identity offers recovery without channel reads', (
+      tester,
+    ) async {
+      final fixtures = _Ui()..identity.resolution = resolution;
+      await _pump(tester, fixtures);
+      await _tap(tester, find.byKey(const ValueKey('event.messages.open')));
+      expect(fixtures.sms.fetchCount, 0);
+      expect(fixtures.senders.pageCount, 0);
+      expect(find.text('SMS'), findsNothing);
+      expect(find.text('Reload'), findsOneWidget);
+      fixtures.identity.resolution = 'linked';
+      await _tap(tester, find.text('Reload'));
+      expect(fixtures.sms.fetchCount, 1);
+      expect(fixtures.senders.pageCount, 2);
+    });
+  }
+  testWidgets('sign-out removes the old terms and grant actions', (
+    tester,
+  ) async {
+    final auth = StreamController<String?>.broadcast();
+    addTearDown(auth.close);
+    final fixtures = _Ui();
+    await _pump(tester, fixtures, auth: auth.stream);
+    await tester.tap(find.byKey(const ValueKey('event.messages.open')));
+    await tester.pump();
+    auth.add('guest-1');
+    await pumpFeatureUi(tester);
+    await _tap(tester, find.text('SMS'));
+    expect(find.byKey(const ValueKey('messages.sms.enable')), findsOneWidget);
+    auth.add(null);
+    await pumpFeatureUi(tester);
+    expect(find.text('Fixture text consent for this event.'), findsNothing);
+    expect(find.byKey(const ValueKey('messages.sms.enable')), findsNothing);
+    expect(fixtures.sms.writes, isEmpty);
+  });
+}
+
+class _Ui {
+  final identity = MessageIdentityRepository();
+  final sms = MessageSmsRepository();
+  final senders = MessageSenderRepository();
+}
+
+Future<void> _pump(
+  WidgetTester tester,
+  _Ui fixtures, {
+  double scale = 1,
+  GlobalKey? boundary,
+  Stream<String?>? auth,
+}) async {
+  tester.view.devicePixelRatio = 1;
+  tester.view.physicalSize = const Size(390, 844);
+  addTearDown(tester.view.resetDevicePixelRatio);
+  addTearDown(tester.view.resetPhysicalSize);
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        uidProvider.overrideWith((ref) => auth ?? Stream.value('guest-1')),
+        eventParticipantContextRepositoryProvider.overrideWith(
+          (ref) => fixtures.identity,
+        ),
+        eventSmsPreferenceRepositoryProvider.overrideWith(
+          (ref) => fixtures.sms,
+        ),
+        eventSenderPreferenceRepositoryProvider.overrideWith(
+          (ref) => fixtures.senders,
+        ),
+      ],
+      child: RepaintBoundary(
+        key: boundary,
+        child: MaterialApp(
+          theme: AppTheme.light,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(
+              context,
+            ).copyWith(textScaler: TextScaler.linear(scale)),
+            child: child!,
+          ),
+          home: const Scaffold(
+            body: EventMessagePreferencesEntry(eventId: 'event-1'),
+          ),
+        ),
+      ),
+    ),
+  );
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _tap(WidgetTester tester, Finder target) async {
+  await tester.ensureVisible(target);
+  await tester.tap(target);
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _capture(
+  WidgetTester tester,
+  GlobalKey boundary,
+  String name,
+) async {
+  if (Platform.environment['CAPTURE_EVENT_MESSAGES'] != '1') return;
+  await tester.runAsync(() async {
+    final image =
+        await (boundary.currentContext!.findRenderObject()!
+                as RenderRepaintBoundary)
+            .toImage();
+    final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+    await File(
+      '/tmp/event-messages-$name.png',
+    ).writeAsBytes(bytes!.buffer.asUint8List());
+    image.dispose();
+  });
+}

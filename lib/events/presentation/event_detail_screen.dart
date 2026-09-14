@@ -15,6 +15,8 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_event_consent_controller.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/event_success/event_success.dart'
+    show EventMessagePreferencesEntry;
 import 'package:catch_dating_app/events/data/event_calendar_links.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
@@ -367,6 +369,18 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
           heroTag: widget.heroTag,
           enableMapNetworkTiles: widget.enableMapNetworkTiles,
           crossPathsConsentState: crossPathsConsentState,
+          messagePreferencesSection:
+              !isHostApp && vm.isAuthenticated && vm.participation != null
+              ? Theme(
+                  data: Theme.of(context).copyWith(
+                    extensions: [
+                      ...Theme.of(context).extensions.values,
+                      if (style.isDark) CatchTokens.editorialDark,
+                    ],
+                  ),
+                  child: EventMessagePreferencesEntry(eventId: vm.event.id),
+                )
+              : null,
           onCrossPathsConsentChanged: (enabled) =>
               CrossPathsEventConsentController.setConsentMutation.run(
                 ref,
