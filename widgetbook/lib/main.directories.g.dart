@@ -2546,6 +2546,17 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
+            name: 'CatchFieldInput',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Native input and validation states',
+                builder:
+                    _widgetbook_workspace_primitives_field_text_entry_use_cases
+                        .fieldTextEntryStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
             name: 'CatchFieldStatusIndicator',
             useCases: [
               _widgetbook.WidgetbookUseCase(
@@ -2563,17 +2574,6 @@ final directories = <_widgetbook.WidgetbookNode>[
                 builder:
                     _widgetbook_workspace_primitives_field_surface_use_cases
                         .fieldSurfaceStates,
-              ),
-            ],
-          ),
-          _widgetbook.WidgetbookComponent(
-            name: 'CatchFieldTextEntry',
-            useCases: [
-              _widgetbook.WidgetbookUseCase(
-                name: 'Native input and validation states',
-                builder:
-                    _widgetbook_workspace_primitives_field_text_entry_use_cases
-                        .fieldTextEntryStates,
               ),
             ],
           ),

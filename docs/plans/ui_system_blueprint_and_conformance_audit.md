@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.16.0
-updated: 2026-09-09
+version: 1.17.0
+updated: 2026-09-14
 owner: app_architecture
 status: active
 ---
@@ -1144,8 +1144,8 @@ directly in its owning State's build method. Lifecycle, timers, focus and
 expansion behavior move unchanged into a non-rendering part; the private row
 renderer is deleted and both resulting files stay within D6.
 
-`CatchFieldTextEntry` replaces the final private rendering helper. It consumes
-its facade's immutable configuration plus explicit state handles; controllers,
+`CatchFieldInput` replaces the final private rendering helper. It consumes
+the read-only `CatchFieldInputConfiguration` interface plus explicit state handles; controllers,
 focus, dismissal and save orchestration stay with the field. Native rendering
 uses the existing `CatchTextInput` primitive, extended with editing and obscuring
 enum axes and platform input options. The text-entry member and its facade now live together in `catch_ui`, with

@@ -7,7 +7,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Native input and validation states',
-  type: CatchFieldTextEntry,
+  type: CatchFieldInput,
   path: '[Core primitives]/Fields',
 )
 Widget fieldTextEntryStates(BuildContext context) {

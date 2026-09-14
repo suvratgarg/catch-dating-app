@@ -65,8 +65,8 @@ class _CatchFieldState extends State<CatchField>
   Widget build(BuildContext context) {
     final textEntry = !_isEdit
         ? null
-        : CatchFieldTextEntry(
-            field: widget,
+        : CatchFieldInput(
+            configuration: widget,
             formFieldKey: _fieldKey,
             controller: _controller,
             focusNode: _focusNode,
@@ -74,10 +74,10 @@ class _CatchFieldState extends State<CatchField>
             onValidationErrorChanged: _setTextEntryValidationError,
             onSubmitted: _handleSubmitted,
             mode: _usesUnderlineChrome
-                ? CatchFieldTextEntryMode.standalone
+                ? CatchFieldInputMode.standalone
                 : widget._explicitSaveInput
-                ? CatchFieldTextEntryMode.explicitSave
-                : CatchFieldTextEntryMode.row,
+                ? CatchFieldInputMode.explicitSave
+                : CatchFieldInputMode.row,
             states: {
               if (_active) WidgetState.selected,
               if (_focused) WidgetState.focused,

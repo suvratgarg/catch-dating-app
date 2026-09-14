@@ -3421,9 +3421,9 @@
           },
           {
             "id": "catch.field.text_entry",
-            "symbol": "CatchFieldTextEntry",
-            "file": "packages/catch_ui/lib/src/components/catch_field_text_entry.dart",
-            "summary": "Field-owned native text entry and validation renderer. The facade supplies immutable configuration and retains controllers, focus, dismissal and save orchestration; rendering uses the shared CatchTextInput primitive.",
+            "symbol": "CatchFieldInput",
+            "file": "packages/catch_ui/lib/src/components/catch_field_input.dart",
+            "summary": "Field-owned labelled native input, validation and support renderer. Consumes the read-only CatchFieldInputConfiguration data contract and explicit controller handles; the facade retains lifecycle, disclosure and save orchestration.",
             "states": [
               "underline",
               "row",
@@ -3438,6 +3438,16 @@
               "parentConceptId": "catch.field",
               "qualifier": "anatomy",
               "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L3",
+            "roleNoun": "Input",
+            "naming": {
+              "useCase": "Field",
+              "comparedWith": [
+                "catch.field",
+                "catch.field.text_input"
+              ],
+              "reason": "Owns the native editor inside a labelled field, including form validation, support/counter text and row or underline presentation. CatchTextInput owns only native editing configuration; CatchField owns disclosure, focus lifecycle and saving. This is registered field anatomy, not a competing form-field primary."
             }
           },
           {

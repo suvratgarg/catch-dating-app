@@ -1,17 +1,65 @@
 part of 'catch_field.dart';
 
 /// Placement of a field's native input inside its existing row or underline.
-enum CatchFieldTextEntryMode { standalone, row, explicitSave }
+enum CatchFieldInputMode { standalone, row, explicitSave }
+
+/// Read-only data consumed by the field input renderer.
+///
+/// Contains no widget lifecycle or build contract. CatchField implements it
+/// directly, retaining controller ownership without copying a configuration
+/// object on each rebuild; independent consumers can supply plain data.
+abstract interface class CatchFieldInputConfiguration {
+  Widget? get actions;
+  Iterable<String>? get autofillHints;
+  bool get autofocus;
+  String? get badgeLabel;
+  CatchBadgeTone? get badgeTone;
+  CatchContractFieldConstraints? get contract;
+  CatchFieldCopy get copy;
+  String? get error;
+  String? get errorText;
+  String? get helperText;
+  CatchFieldSupportRowTone get helperTone;
+  List<TextInputFormatter>? get inputFormatters;
+  CatchTextInputVariant get inputVariant;
+  bool get isOptional;
+  TextInputType? get keyboardType;
+  Widget? get leading;
+  String? get leadingUnit;
+  int? get maxLength;
+  int? get maxLines;
+  int? get minLines;
+  bool get mono;
+  ValueChanged<String>? get onChanged;
+  VoidCallback? get onTap;
+  FormFieldValidator<String>? get onValidate;
+  String? get prefixText;
+  bool get readOnly;
+  bool get retainFocusOnSubmitted;
+  bool get showClearButton;
+  bool get showLabel;
+  CatchFieldSize get size;
+  Set<WidgetState> get states;
+  String? get suffixText;
+  TextAlign get textAlign;
+  TextCapitalization get textCapitalization;
+  TextInputAction? get textInputAction;
+  String? get title;
+  int get titleMaxLines;
+  CatchFieldTone get tone;
+  Widget? get trailing;
+  CatchFieldVariant get variant;
+}
 
 /// Native input, validation, and text-entry chrome owned by a CatchField.
 ///
 /// The owner supplies immutable configuration and keeps controller, focus,
 /// dismissal and save orchestration. Product callers use CatchField's named
 /// constructors; this member moves with that facade into the shared package.
-class CatchFieldTextEntry extends StatelessWidget {
-  const CatchFieldTextEntry({
+class CatchFieldInput extends StatelessWidget {
+  const CatchFieldInput({
     super.key,
-    required this.field,
+    required this.configuration,
     required this.formFieldKey,
     required this.controller,
     required this.focusNode,
@@ -28,14 +76,14 @@ class CatchFieldTextEntry extends StatelessWidget {
     this.inlineAddAtRest = false,
   });
 
-  final CatchField field;
+  final CatchFieldInputConfiguration configuration;
   final GlobalKey<FormFieldState<String>> formFieldKey;
   final TextEditingController controller;
   final FocusNode focusNode;
   final Object tapRegionGroupId;
   final ValueChanged<bool> onValidationErrorChanged;
   final ValueChanged<String> onSubmitted;
-  final CatchFieldTextEntryMode mode;
+  final CatchFieldInputMode mode;
   final Set<WidgetState> states;
   final String? emptyValueText;
   final String? inputHintText;
@@ -44,17 +92,23 @@ class CatchFieldTextEntry extends StatelessWidget {
   final bool expanded;
   final bool inlineAddAtRest;
 
+  bool get _explicitSave => mode == CatchFieldInputMode.explicitSave;
+  bool get _hasRowActions => !_explicitSave && configuration.actions != null;
+  bool get _obscured =>
+      configuration.inputVariant == CatchTextInputVariant.obscured;
+  bool get _enabled => !configuration.states.contains(WidgetState.disabled);
+
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final rowBody = mode == CatchFieldTextEntryMode.row;
-    final explicitSave = mode == CatchFieldTextEntryMode.explicitSave;
-    final valueEmphasis = mode != CatchFieldTextEntryMode.standalone;
+    final rowBody = mode == CatchFieldInputMode.row;
+    final explicitSave = mode == CatchFieldInputMode.explicitSave;
+    final valueEmphasis = mode != CatchFieldInputMode.standalone;
     final effectiveVariant = valueEmphasis
         ? CatchFieldVariant.bare
-        : field.variant;
-    final effectiveShowLabel = valueEmphasis ? false : field.showLabel;
-    final canInteractOverride = explicitSave ? expanded && field.enabled : null;
+        : configuration.variant;
+    final effectiveShowLabel = valueEmphasis ? false : configuration.showLabel;
+    final canInteractOverride = explicitSave ? expanded && _enabled : null;
     final readOnlyOverride = explicitSave ? !expanded : null;
     final includeSupport = !explicitSave;
     final inputHintOverride = explicitSave && !inlineAddAtRest
@@ -76,33 +130,36 @@ class CatchFieldTextEntry extends StatelessWidget {
         : null;
     final addSemanticLabel = emptyValueText == null
         ? null
-        : field.isOptional
-        ? field.copy.label.optionalSemantics(emptyValueText!)
+        : configuration.isOptional
+        ? configuration.copy.label.optionalSemantics(emptyValueText!)
         : emptyValueText;
     final semanticLabelOverride = explicitSave && inlineAddAtRest
-        ? addSemanticLabel ?? field.title
-        : field.title;
+        ? addSemanticLabel ?? configuration.title
+        : configuration.title;
 
     return FormField<String>(
       key: formFieldKey,
       initialValue: controller.text,
       validator: (value) => CatchContractFieldPolicy.validateText(
-        copy: field.copy.validation,
-        label: field.title ?? '',
+        copy: configuration.copy.validation,
+        label: configuration.title ?? '',
         value: value ?? '',
-        contract: field.contract,
-        explicitValidator: field.onValidate,
+        contract: configuration.contract,
+        explicitValidator: configuration.onValidate,
       ),
-      enabled: field.enabled,
+      enabled: _enabled,
       builder: (state) {
         final t = CatchTokens.of(context);
-        final rawError = field.errorText ?? field.error ?? state.errorText;
+        final rawError =
+            configuration.errorText ?? configuration.error ?? state.errorText;
         final error = rawError?.trim().isNotEmpty == true
             ? rawError!.trim()
             : null;
         final hasError = error != null;
         onValidationErrorChanged(state.hasError);
-        final supportText = includeSupport ? error ?? field.helperText : null;
+        final supportText = includeSupport
+            ? error ?? configuration.helperText
+            : null;
 
         final inlineAddAtRest =
             rowBody && _inlineTextAddAtRestWith(hasError: hasError);
@@ -135,17 +192,20 @@ class CatchFieldTextEntry extends StatelessWidget {
             : _title;
 
         final canInteract =
-            canInteractOverride ?? (!field.readOnly || field.onTap != null);
-        final readOnly = readOnlyOverride ?? field.readOnly;
-        final effectiveFocused = focusNode.hasFocus || field.focused;
+            canInteractOverride ??
+            (!configuration.readOnly || configuration.onTap != null);
+        final readOnly = readOnlyOverride ?? configuration.readOnly;
+        final effectiveFocused =
+            focusNode.hasFocus ||
+            configuration.states.contains(WidgetState.focused);
         final inlineAddHint = effectiveHintWidget != null;
         final multiline =
             !inlineAddHint &&
-            !field.obscureText &&
-            (field.maxLines != 1 || (field.minLines ?? 1) > 1);
+            !_obscured &&
+            (configuration.maxLines != 1 || (configuration.minLines ?? 1) > 1);
         final multilineValueStyle = CatchTextStyles.fieldRowValue(
           context,
-          color: field.enabled ? t.ink : t.ink3,
+          color: _enabled ? t.ink : t.ink3,
         ).copyWith(height: CatchFieldTokens.multilineValueLineHeight);
         final multilineHintStyle = CatchTextStyles.fieldRowValue(
           context,
@@ -156,14 +216,14 @@ class CatchFieldTextEntry extends StatelessWidget {
                   ? multilineValueStyle
                   : CatchTextStyles.fieldRowValue(
                       context,
-                      color: field.enabled ? t.ink : t.ink3,
+                      color: _enabled ? t.ink : t.ink3,
                     )
-            : _textStyle(context, color: field.enabled ? t.ink : t.ink3);
+            : _textStyle(context, color: _enabled ? t.ink : t.ink3);
         final hintStyle = valueEmphasis
             ? multiline
                   ? multilineHintStyle
                   : CatchTextStyles.fieldRowValue(context, color: t.ink2)
-            : field.size == CatchFieldSize.floating
+            : configuration.size == CatchFieldSize.floating
             ? CatchTextStyles.bodyL(context, color: t.ink2)
             : _textStyle(context, color: t.ink2);
         final resolvedHintText = effectiveHintWidget == null
@@ -175,7 +235,7 @@ class CatchFieldTextEntry extends StatelessWidget {
           groupId: tapRegionGroupId,
           controller: controller,
           focusNode: focusNode,
-          status: field.enabled
+          status: _enabled
               ? CatchTextInputStatus.enabled
               : CatchTextInputStatus.disabled,
           mode: !canInteract
@@ -183,33 +243,34 @@ class CatchFieldTextEntry extends StatelessWidget {
               : readOnly
               ? CatchTextInputMode.readOnly
               : CatchTextInputMode.editable,
-          autofocus: field.autofocus,
-          keyboardType: field.keyboardType,
-          textInputAction: field.textInputAction ?? TextInputAction.done,
-          textCapitalization: field.textCapitalization,
+          autofocus: configuration.autofocus,
+          keyboardType: configuration.keyboardType,
+          textInputAction:
+              configuration.textInputAction ?? TextInputAction.done,
+          textCapitalization: configuration.textCapitalization,
           inputFormatters: CatchContractFieldPolicy.effectiveInputFormatters(
-            field.contract,
-            field.inputFormatters,
-            explicitMaxLength: field._editConfig?.maxLength,
+            configuration.contract,
+            configuration.inputFormatters,
+            explicitMaxLength: configuration.maxLength,
           ),
-          autofillHints: field.autofillHints,
-          variant: field.inputVariant,
-          maxLines: field.obscureText || inlineAddHint ? 1 : field.maxLines,
-          minLines: inlineAddHint ? null : field.minLines,
-          maxLength: field.maxLength,
-          textAlign: field.textAlign,
+          autofillHints: configuration.autofillHints,
+          variant: configuration.inputVariant,
+          maxLines: _obscured || inlineAddHint ? 1 : configuration.maxLines,
+          minLines: inlineAddHint ? null : configuration.minLines,
+          maxLength: configuration.maxLength,
+          textAlign: configuration.textAlign,
           textAlignVertical: inlineAddHint
               ? TextAlignVertical.center
               : _textAlignVertical,
-          onTap: field.onTap,
-          onTapOutside: field._explicitSaveInput
-              ? null
-              : (_) => focusNode.unfocus(),
+          onTap: configuration.onTap,
+          onTapOutside: _explicitSave ? null : (_) => focusNode.unfocus(),
           onChanged: (value) {
             state.didChange(value);
-            field.onChanged?.call(value);
+            configuration.onChanged?.call(value);
           },
-          onEditingComplete: field.retainFocusOnSubmitted ? () {} : null,
+          onEditingComplete: configuration.retainFocusOnSubmitted
+              ? () {}
+              : null,
           onSubmitted: onSubmitted,
           style: inputStyle,
           cursorColor: t.primary,
@@ -254,31 +315,31 @@ class CatchFieldTextEntry extends StatelessWidget {
                 ? null
                 : resolvedHintText,
             hintStyle: hintStyle,
-            prefixText: field.prefixText,
+            prefixText: configuration.prefixText,
             prefixStyle: _textStyle(context, color: t.ink2),
-            suffixText: field.suffixText,
+            suffixText: configuration.suffixText,
             suffixStyle: CatchTextStyles.bodyLead(context, color: t.ink2),
             prefixIconConstraints: _iconConstraints,
-            prefixIcon: _usesRowPrefixIcon || !field._hasInputLeading
+            prefixIcon: _usesRowPrefixIcon || configuration.leading == null
                 ? null
                 : IconTheme(
                     data: IconThemeData(color: t.ink3, size: CatchIcon.md),
-                    child: field.leading!,
+                    child: configuration.leading!,
                   ),
             suffixIconConstraints: _suffixIconConstraints,
             suffixIcon:
                 _usesRowTextEntryTrailing ||
-                    (!field.showClearButton &&
-                        !field._hasRowActions &&
-                        field.trailing == null)
+                    (!configuration.showClearButton &&
+                        !_hasRowActions &&
+                        configuration.trailing == null)
                 ? null
                 : CatchFieldTrailingRow.inputSuffix(
                     controller: controller,
-                    clearTooltip: field.copy.clearTooltip(_title),
-                    actions: field.actions,
-                    trailing: field.trailing,
-                    showClearButton: field.showClearButton,
-                    onChanged: field.onChanged,
+                    clearTooltip: configuration.copy.clearTooltip(_title),
+                    actions: configuration.actions,
+                    trailing: configuration.trailing,
+                    showClearButton: configuration.showClearButton,
+                    onChanged: configuration.onChanged,
                   ),
           ),
         );
@@ -290,7 +351,7 @@ class CatchFieldTextEntry extends StatelessWidget {
           final active = effectiveFocused || hasError;
           final baselineColor = hasError
               ? t.danger
-              : field.enabled
+              : _enabled
               ? t.line2
               : t.line;
           final sweepColor = hasError ? t.danger : t.ink;
@@ -359,20 +420,22 @@ class CatchFieldTextEntry extends StatelessWidget {
 
         if (rowBody) {
           final body = CatchFieldContentRow.value(
-            labelCopy: field.copy.label,
-            titleMaxLines: field.titleMaxLines,
-            isOptional: field.isOptional && field.showLabel,
-            badgeLabel: field.badgeLabel,
-            badgeTone: field.badgeTone,
-            tone: field.tone,
-            helperTone: field.helperTone,
+            labelCopy: configuration.copy.label,
+            titleMaxLines: configuration.titleMaxLines,
+            isOptional: configuration.isOptional && configuration.showLabel,
+            badgeLabel: configuration.badgeLabel,
+            badgeTone: configuration.badgeTone,
+            tone: configuration.tone,
+            helperTone: configuration.helperTone,
             headerTrailingReserve: headerTrailingReserve,
-            label: field.showLabel && !inlineAddAtRest ? _title : null,
+            label: configuration.showLabel && !inlineAddAtRest ? _title : null,
             supportText: supportText,
             counterText:
-                field.maxLength != null &&
-                    (_focused || field.focused || hasError)
-                ? '${controller.text.characters.length} / ${field.maxLength}'
+                configuration.maxLength != null &&
+                    (_focused ||
+                        configuration.states.contains(WidgetState.focused) ||
+                        hasError)
+                ? '${controller.text.characters.length} / ${configuration.maxLength}'
                 : null,
             status: hasError
                 ? CatchFieldContentRowStatus.error
@@ -391,9 +454,9 @@ class CatchFieldTextEntry extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.baseline,
               textBaseline: TextBaseline.alphabetic,
               children: [
-                if (!inlineAddAtRest && field.leadingUnit != null) ...[
+                if (!inlineAddAtRest && configuration.leadingUnit != null) ...[
                   Text(
-                    field.leadingUnit!,
+                    configuration.leadingUnit!,
                     style: CatchTextStyles.fieldRowValue(
                       context,
                       color: t.ink2,
@@ -422,9 +485,9 @@ class CatchFieldTextEntry extends StatelessWidget {
 
         final counterText =
             effectiveVariant == CatchFieldVariant.underline &&
-                field.maxLength != null &&
-                (_focused || field.focused)
-            ? '${controller.text.characters.length} / ${field.maxLength}'
+                configuration.maxLength != null &&
+                (_focused || configuration.states.contains(WidgetState.focused))
+            ? '${controller.text.characters.length} / ${configuration.maxLength}'
             : null;
         final hasMeta = supportText != null || counterText != null;
 
@@ -439,13 +502,13 @@ class CatchFieldTextEntry extends StatelessWidget {
             if (effectiveShowLabel &&
                 !_useFloatingLabel(effectiveVariant, effectiveShowLabel)) ...[
               CatchFieldLabelText.inline(
-                copy: field.copy.label,
+                copy: configuration.copy.label,
                 label: _title ?? '',
                 style: CatchFieldContentRow.captionStyle(
                   context,
                   color: _fieldLabelColor(t, hasError: hasError),
                 ),
-                isOptional: field.isOptional && field.showLabel,
+                isOptional: configuration.isOptional && configuration.showLabel,
               ),
               const SizedBox(height: CatchSpacing.s2),
             ],
@@ -459,7 +522,7 @@ class CatchFieldTextEntry extends StatelessWidget {
                     ? t.danger
                     : CatchFieldSupportRow.resolveColor(
                         context,
-                        field.helperTone,
+                        configuration.helperTone,
                       ),
                 showErrorIcon:
                     hasError && effectiveVariant != CatchFieldVariant.underline,
@@ -473,35 +536,37 @@ class CatchFieldTextEntry extends StatelessWidget {
 
   bool get _active => states.contains(WidgetState.selected);
   bool get _focused => states.contains(WidgetState.focused);
-  String? get _title => field.title;
+  String? get _title => configuration.title;
   bool get _hasInputValue => controller.text.isNotEmpty;
   bool get _textEntryCanCollapse =>
-      field.showLabel && (_title?.isNotEmpty ?? false);
+      configuration.showLabel && (_title?.isNotEmpty ?? false);
   bool _textEntryExpandedWith({required bool hasError}) =>
       !_textEntryCanCollapse ||
       _hasInputValue ||
       _active ||
       hasError ||
-      field.autofocus;
+      configuration.autofocus;
   bool _inlineTextAddAtRestWith({required bool hasError}) =>
-      !field.readOnly &&
+      !configuration.readOnly &&
       _textEntryCanCollapse &&
       !_hasInputValue &&
       !_active &&
       !hasError &&
-      !field.autofocus &&
+      !configuration.autofocus &&
       emptyValueText != null;
   bool get _compactTextEntry =>
-      field.size == CatchFieldSize.floating && !field.showLabel;
+      configuration.size == CatchFieldSize.floating && !configuration.showLabel;
   bool get _usesRowPrefixIcon =>
-      field.variant != CatchFieldVariant.underline &&
+      configuration.variant != CatchFieldVariant.underline &&
       !_compactTextEntry &&
-      field.showLabel &&
-      field._hasInputLeading;
+      configuration.showLabel &&
+      configuration.leading != null;
   bool get _usesRowTextEntryTrailing =>
-      field.variant != CatchFieldVariant.underline &&
+      configuration.variant != CatchFieldVariant.underline &&
       !_compactTextEntry &&
-      (field.showClearButton || field.trailing != null || field._hasRowActions);
+      (configuration.showClearButton ||
+          configuration.trailing != null ||
+          _hasRowActions);
   Color _fieldLabelColor(CatchTokens t, {required bool hasError}) => hasError
       ? t.danger
       : _active
@@ -509,9 +574,9 @@ class CatchFieldTextEntry extends StatelessWidget {
       : t.ink2;
 
   bool _useFloatingLabel(CatchFieldVariant variant, bool showLabel) {
-    return field.floatingLabel &&
+    return !_explicitSave &&
         showLabel &&
-        !field.isOptional &&
+        !configuration.isOptional &&
         variant == CatchFieldVariant.underline;
   }
 
@@ -531,11 +596,11 @@ class CatchFieldTextEntry extends StatelessWidget {
   }
 
   TextStyle _textStyle(BuildContext context, {required Color color}) {
-    final style = field.size == CatchFieldSize.floating
+    final style = configuration.size == CatchFieldSize.floating
         ? CatchTextStyles.bodyLead(context, color: color)
         : CatchTextStyles.bodyL(context, color: color);
 
-    if (!field.mono) return style;
+    if (!configuration.mono) return style;
 
     return style.copyWith(
       fontFeatures: [
@@ -546,19 +611,20 @@ class CatchFieldTextEntry extends StatelessWidget {
   }
 
   BoxConstraints? get _iconConstraints {
-    if (field.maxLines != 1 || field.minLines != null) return null;
+    if (configuration.maxLines != 1 || configuration.minLines != null)
+      return null;
 
     final extent = CatchControlMetrics.iconExtent(_controlSize);
     return CatchControlMetrics.squareConstraints(extent);
   }
 
   BoxConstraints? get _suffixIconConstraints {
-    if (!field._hasRowActions) return _iconConstraints;
+    if (!_hasRowActions) return _iconConstraints;
     return const BoxConstraints();
   }
 
   CatchControlSurfaceSize get _controlSize {
-    return switch (field.size) {
+    return switch (configuration.size) {
       CatchFieldSize.floating => CatchControlSurfaceSize.floating,
       CatchFieldSize.compact => CatchControlSurfaceSize.compact,
       CatchFieldSize.md => CatchControlSurfaceSize.md,
@@ -566,7 +632,8 @@ class CatchFieldTextEntry extends StatelessWidget {
   }
 
   TextAlignVertical? get _textAlignVertical {
-    if (field.maxLines != 1 || field.minLines != null) return null;
+    if (configuration.maxLines != 1 || configuration.minLines != null)
+      return null;
     return TextAlignVertical.center;
   }
 
@@ -574,7 +641,8 @@ class CatchFieldTextEntry extends StatelessWidget {
     if (variant == CatchFieldVariant.bare || variant == CatchFieldVariant.row) {
       return null;
     }
-    if (field.maxLines != 1 || field.minLines != null) return null;
+    if (configuration.maxLines != 1 || configuration.minLines != null)
+      return null;
     return CatchControlMetrics.minHeight(_controlSize);
   }
 }

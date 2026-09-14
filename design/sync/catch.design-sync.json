@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "59e5e632fb9c385145b5e3e2d8a42614b49590936ebfd51c348447774ac8c1f4",
+  "sourceDigest": "a7334bf29ee43fe367452036bf616103680280861b5d21dd732b57522c4d8026",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "59e5e632fb9c385145b5e3e2d8a42614b49590936ebfd51c348447774ac8c1f4",
-    "contractDigest": "59e5e632fb9c385145b5e3e2d8a42614b49590936ebfd51c348447774ac8c1f4"
+    "digest": "a7334bf29ee43fe367452036bf616103680280861b5d21dd732b57522c4d8026",
+    "contractDigest": "a7334bf29ee43fe367452036bf616103680280861b5d21dd732b57522c4d8026"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "25c936fc024d045669be08b4e6ef456f1a032757d9f974efdd35f21b9fa5211a",
+    "handoffRequestDigest": "7fa1c8ddc5734862a7ab2c176d68552860d85ac41fed3e7b5ebaea5e700e7616",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -202,6 +202,7 @@
           "CatchFieldDividerGeometry",
           "CatchFieldDrawer",
           "CatchFieldGeometryScope",
+          "CatchFieldInput",
           "CatchFieldInteractionPlaneScope",
           "CatchFieldLabelText",
           "CatchFieldLanes",
@@ -209,7 +210,6 @@
           "CatchFieldStatusIndicator",
           "CatchFieldSupportRow",
           "CatchFieldSurface",
-          "CatchFieldTextEntry",
           "CatchFieldTrailingRow",
           "CatchFieldVisibilityScope",
           "CatchFormChoiceField",
@@ -814,7 +814,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "Field",
       "claudeAllowed": true,
-      "contractDigest": "d31b40bdd9763e69fb566b046605f91fb0548bdb7f4ce815eb7901027f9e9404"
+      "contractDigest": "c80450b1076883ad128919a3d550121312b7b69ae84e495efe91c61ab1c459a9"
     },
     {
       "contractId": "catch.section",

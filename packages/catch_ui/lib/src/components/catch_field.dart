@@ -11,10 +11,10 @@ part 'catch_field_behavior.dart';
 part 'catch_field_configs.dart';
 part 'catch_field_control.dart';
 part 'catch_field_edit.dart';
+part 'catch_field_input.dart';
 part 'catch_field_properties.dart';
 part 'catch_field_row_modes.dart';
 part 'catch_field_state.dart';
-part 'catch_field_text_entry.dart';
 
 /// Design-system `Field`: the unified field primitive for row, text-entry,
 /// navigation, toggle, disclosure-control, add, validation, and helper states.
@@ -25,7 +25,7 @@ part 'catch_field_text_entry.dart';
 /// controller on a toggle. Sections consume its numeric divider geometry.
 class CatchField<T> extends StatefulWidget
     with _CatchFieldProperties
-    implements CatchFieldDividerGeometry {
+    implements CatchFieldDividerGeometry, CatchFieldInputConfiguration {
   /// Stable key for the contextual pressed surface used by field rows.
   ///
   /// The enclosing section or lane supplies the interaction shape. Divided
@@ -1042,9 +1042,11 @@ class CatchField<T> extends StatefulWidget
   }
 
   /// Resolved copy supplied by the caller for the current locale.
+  @override
   final CatchFieldCopy copy;
 
   /// Primary row text or input label.
+  @override
   final String? title;
 
   /// Generated schema constraint bound to this editable field.
@@ -1055,6 +1057,7 @@ class CatchField<T> extends StatefulWidget
   final String? body;
 
   /// End-aligned row action or input suffix.
+  @override
   final Widget? actions;
 
   // Explicit-save actions belong to the revealed area, never the native suffix.
@@ -1063,12 +1066,15 @@ class CatchField<T> extends StatefulWidget
   @override
   final Record _config;
   final CatchFieldEmphasis emphasis;
+  @override
   final CatchFieldTone tone;
+  @override
   final CatchFieldVariant variant;
   final IconData? icon;
   final Color? iconColor;
 
   /// Caller-owned leading content used instead of [icon].
+  @override
   final Widget? leading;
 
   bool get _hasInputLeading =>
@@ -1096,6 +1102,7 @@ class CatchField<T> extends StatefulWidget
 
   final Widget? child;
   final Widget? meta;
+  @override
   final Widget? trailing;
 
   // All modes retain one identity when a keyed field changes generic input type.
