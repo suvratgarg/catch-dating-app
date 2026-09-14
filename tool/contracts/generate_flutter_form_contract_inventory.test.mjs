@@ -22,13 +22,33 @@ test("known-bad missing binding is detected", () => {
   assert.equal(results[0].contract, null);
 });
 
+test("form choice recipe cannot hide a missing contract binding", () => {
+  const results = scanCatchFieldCalls({source:     "CatchChoiceInput<String>.form(values: values, onChanged: onChanged);"});
+  assert.equal(results.length, 1);
+  assert.equal(results[0].symbol, "choiceInputForm");
+  assert.equal(results[0].contract, null);
+});
+
+test("described input and individual choice tiles retain schema binding checks", () => {
+  const results = scanCatchFieldCalls({source: `
+    CatchChoiceInput<String>.described(values: values, contract: choicesContract);
+    CatchChoiceTile(title: 'Bound', contract: tileContract);
+    CatchChoiceInput<String>.described(values: values);
+    CatchChoiceTile(title: 'Missing binding');
+  `});
+  assert.deepEqual(results.map(({symbol, contract}) => [symbol, contract]), [
+    ["choiceInputDescribed", "choicesContract"], ["choiceTile", "tileContract"],
+    ["choiceInputDescribed", null], ["choiceTile", null],
+  ]);
+});
+
 test("records top-level generated bindings without accepting nested arguments", () => {
   const results = scanCatchFieldCalls({
     source: `
       CatchField.control(
         title: 'Range',
         contract: CatchContractConstraints.userProfileDocumentAgeRange,
-        control: Builder(
+        child: Builder(
           builder: (_) => CatchField.input(
             title: 'Nested',
             contract: nestedContract,
@@ -47,7 +67,7 @@ test("records top-level generated bindings without accepting nested arguments", 
 test("range sliders require both generated endpoint bindings", () => {
   const results = scanCatchFieldCalls({
     source: `
-      CatchRangeSlider(
+      CatchRangeInput(
         minimumContract: minimumContract,
         values: values,
         onChanged: onChanged,
@@ -73,11 +93,11 @@ test("inventory includes bound and unbound product callsites", () => {
         onChanged: null,
       );
       final unbound = CatchField.input(title: 'Name');
-      final chips = CatchChipField<String>(
+      final chips = CatchChoiceInput<String>.form(
         label: 'Kinds',
         contract: kindsContract,
       );
-      final option = CatchOptionGroup<String>(
+      final option = CatchChoiceInput<String>.segmented(
         contract: optionContract,
         options: options,
         selected: selected,
@@ -91,19 +111,19 @@ test("inventory includes bound and unbound product callsites", () => {
         placeholder: 'Search',
         tooltip: 'Search',
       );
-      final otp = CatchOtpCodeField(
+      final otp = CatchCodeInput(
         contract: otpContract,
         controller: controller,
         onChanged: onChanged,
         onSubmitted: onSubmitted,
       );
-      final range = CatchRangeSlider(
+      final range = CatchRangeInput(
         minimumContract: minContract,
         maximumContract: maxContract,
         values: values,
         onChanged: onChanged,
       );
-      final missingRange = CatchRangeSlider(
+      final missingRange = CatchRangeInput(
         minimumContract: minContract,
         values: values,
         onChanged: onChanged,
@@ -119,6 +139,7 @@ test("inventory includes bound and unbound product callsites", () => {
   const inventory = buildFormContractInventory({repoRoot: root});
 
   assert.equal(inventory.summary.editableCallsites, 9);
+  assert.equal(inventory.summary.bySymbol.choiceInputForm, 1);
   assert.equal(inventory.summary.boundCallsites, 7);
   assert.equal(inventory.summary.unboundCallsites, 2);
 });
@@ -128,3 +149,22 @@ function write(root, relative, source) {
   fs.mkdirSync(path.dirname(file), {recursive: true});
   fs.writeFileSync(file, source);
 }
+
+test("segmented choices cannot escape the missing-contract inventory", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "catch-segmented-contracts-"));
+  try {
+    write(root, "lib/feature/choices.dart", `
+      CatchChoiceInput<String>.segmented(options: options, selected: selected,
+        contract: choiceContract, contractValueBuilder: (value) => value);
+      CatchChoiceInput<String>.segmented(options: options, selected: selected);
+    `);
+    const result = buildFormContractInventory({repoRoot: root});
+    assert.equal(result.summary.bySymbol.choiceInputSegmented, 2);
+    assert.equal(result.summary.boundCallsites, 1);
+    assert.equal(result.summary.unboundCallsites, 1);
+    assert.equal(result.callsites[0].contractValue, "(value) => value");
+    assert.equal(result.callsites[1].contractValue, null);
+  } finally {
+    fs.rmSync(root, {recursive: true, force: true});
+  }
+});

@@ -28,9 +28,10 @@ class ClubDetailLoadingSliverBody extends StatelessWidget {
     return SliverMainAxisGroup(
       slivers: [
         const SliverToBoxAdapter(child: ClubHeroLoadingSkeleton()),
-        CatchDetailSliverSectionList(
+        CatchSectionList.sliver(
+          emptyStateOmitted: true,
           gap: CatchSpacing.screenPt,
-          sections: [
+          children: [
             const ClubStatsLoadingSkeleton(),
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,7 +43,7 @@ class ClubDetailLoadingSliverBody extends StatelessWidget {
                 ),
                 CatchSection.divided(
                   title: context.l10n.clubsClubDetailSkeletonTitleWhatWeDo,
-                  child: const CatchSkeletonChips(height: CatchSpacing.s8),
+                  child: const CatchSkeleton.chips(height: CatchSpacing.s8),
                 ),
                 CatchSection.divided(
                   title: context.l10n.clubsClubDetailSkeletonTitleYourHosts,
@@ -76,7 +77,7 @@ class ClubHeroLoadingSkeleton extends StatelessWidget {
           height: CatchLayout.clubDetailHeroLoadingExtent,
           borderColor: t.line,
           radius: CatchLayout.organizerPosterRadius,
-          elevation: CatchSurfaceElevation.card,
+          emphasis: CatchSurfaceEmphasis.subtle,
           backgroundColor: t.surface,
           padding: CatchInsets.contentDense,
           clipBehavior: Clip.antiAlias,

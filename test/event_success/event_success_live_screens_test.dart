@@ -240,7 +240,7 @@ EventAttendee _accountabilityAttendee({
 
 Finder _toggle(String label) {
   return find.byWidgetPredicate(
-    (widget) => widget is CatchToggle && widget.semanticLabel == label,
+    (widget) => widget is CatchToggleInput && widget.semanticLabel == label,
   );
 }
 

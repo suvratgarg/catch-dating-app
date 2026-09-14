@@ -209,7 +209,7 @@ function classifyEdgeInsets({
     return {
       level: "high",
       reason:
-        "horizontal CatchSpacing.screenPx/s5 EdgeInsets in screen or presentation surface; review for CatchInsets, CatchScreenBody, or CatchSection ownership",
+        "horizontal CatchSpacing.screenPx/s5 EdgeInsets in screen or presentation surface; review for CatchInsets, CatchPageBody.screen, or CatchSection ownership",
     };
   }
   if (usesScreenGutterToken) {

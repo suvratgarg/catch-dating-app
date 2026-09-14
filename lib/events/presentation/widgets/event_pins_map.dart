@@ -198,7 +198,7 @@ class _EventPinsMapState extends State<EventPinsMap> {
             top: offset.dy,
             child: FractionalTranslation(
               translation: const Offset(-0.5, -0.5),
-              child: CatchDistanceRingLabel(
+              child: CatchDistanceOverlay.label(
                 label: ringLabel,
                 semanticHint: widget.distanceRingSemanticHint,
                 onTap: widget.onDistanceRingTapped,
@@ -212,12 +212,12 @@ class _EventPinsMapState extends State<EventPinsMap> {
             child: SafeArea(
               child: Padding(
                 padding: CatchInsets.eventMapOverviewControl,
-                child: CatchIconButton(
-                  variant: CatchIconButtonVariant.float,
+                child: CatchIconAction(
+                  variant: CatchIconActionVariant.float,
                   tooltip: context
                       .l10n
                       .eventsEventPinsMapTooltipShowAllEventsAndDistance,
-                  onTap: _restoreOverview,
+                  onPressed: _restoreOverview,
                   child: Icon(CatchIcons.fitMap),
                 ),
               ),
@@ -957,7 +957,7 @@ class EventPinsMapPlaceholder extends StatelessWidget {
             if (showDistanceRing)
               Positioned.fill(
                 child: Center(
-                  child: CatchDistanceRing(
+                  child: CatchDistanceOverlay(
                     size: _eventMapFixtureRequestedRingSize(ringRadiusKm),
                     fitAvailable: true,
                     label: distanceRingLabel,

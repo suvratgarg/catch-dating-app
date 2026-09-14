@@ -122,7 +122,7 @@ class EventDateRailCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CatchMonoLabel(
+                    CatchMetadataText(
                       kicker,
                       color: visual.accent,
                       uppercase: true,
@@ -134,7 +134,7 @@ class EventDateRailCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: CatchTextStyles.eventDisplay(
                         context,
-                        step: CatchDisplayStep.s,
+                        step: CatchTextStylesSize.s,
                         height: 1.06,
                       ),
                     ),
@@ -153,7 +153,7 @@ class EventDateRailCard extends StatelessWidget {
                     ],
                     if (showAttendeeSignal && event.signedUpCount > 0) ...[
                       gapH8,
-                      CatchPersonAvatarStack(
+                      CatchAvatarRow(
                         countLabelBuilder: catchAvatarCountLabelBuilder(
                           context.l10n,
                         ),
@@ -580,7 +580,7 @@ class DateRail extends StatelessWidget {
                   ),
                   style: CatchTextStyles.eventDisplay(
                     context,
-                    step: CatchDisplayStep.l,
+                    step: CatchTextStylesSize.l,
                     height: 0.9,
                     color: onColor,
                   ),

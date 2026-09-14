@@ -10,24 +10,24 @@ const _items = [
   CatchFormStepReviewItem(
     index: 0,
     title: 'Basics',
-    status: CatchFormStepStatus.complete,
+    status: CatchFormStepRowListStatus.complete,
   ),
   CatchFormStepReviewItem(
     index: 1,
     title: 'Location',
-    status: CatchFormStepStatus.needsInformation,
+    status: CatchFormStepRowListStatus.needsInformation,
   ),
   CatchFormStepReviewItem(
     index: 2,
     title: 'Notes',
-    status: CatchFormStepStatus.optional,
+    status: CatchFormStepRowListStatus.optional,
   ),
 ];
 
-String _statusLabel(CatchFormStepStatus status) => switch (status) {
-  CatchFormStepStatus.complete => 'Terminé',
-  CatchFormStepStatus.needsInformation => 'À compléter',
-  CatchFormStepStatus.optional => 'Facultatif',
+String _statusLabel(CatchFormStepRowListStatus status) => switch (status) {
+  CatchFormStepRowListStatus.complete => 'Terminé',
+  CatchFormStepRowListStatus.needsInformation => 'À compléter',
+  CatchFormStepRowListStatus.optional => 'Facultatif',
 };
 
 Widget _app(Widget child) => MaterialApp(
@@ -39,12 +39,18 @@ void main() {
   test('app status formatter preserves the catalog labels', () {
     final l10n = AppLocalizationsEn();
     final label = catchFormStepStatusLabelBuilder(l10n);
-    expect(label(CatchFormStepStatus.complete), l10n.hostsWizardStatusComplete);
     expect(
-      label(CatchFormStepStatus.needsInformation),
+      label(CatchFormStepRowListStatus.complete),
+      l10n.hostsWizardStatusComplete,
+    );
+    expect(
+      label(CatchFormStepRowListStatus.needsInformation),
       l10n.hostsWizardStatusNeedsInformation,
     );
-    expect(label(CatchFormStepStatus.optional), l10n.hostsWizardStatusOptional);
+    expect(
+      label(CatchFormStepRowListStatus.optional),
+      l10n.hostsWizardStatusOptional,
+    );
   });
 
   testWidgets('overview renders caller labels and keeps section selection', (
@@ -53,7 +59,7 @@ void main() {
     int? selected;
     await tester.pumpWidget(
       _app(
-        CatchFormStepOverview(
+        CatchFormStepRowList(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           items: _items,
           statusLabelBuilder: _statusLabel,
@@ -76,7 +82,7 @@ void main() {
     int? selected;
     await tester.pumpWidget(
       _app(
-        CatchFormReviewBody(
+        CatchFormReviewPageBody(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           message: 'Review your details.',
           items: _items,
@@ -100,7 +106,7 @@ void main() {
         Builder(
           builder: (context) => TextButton(
             onPressed: () async {
-              selected = await showCatchFormStepOverview(
+              selected = await showCatchFormStepSheet(
                 fieldCopy: catchFieldCopy(AppLocalizationsEn()),
                 context: context,
                 title: 'Sections',
@@ -121,6 +127,6 @@ void main() {
     await tester.tap(find.text('Location'));
     await pumpFeatureUi(tester);
     expect(selected, 1);
-    expect(find.byType(CatchFormStepOverview), findsNothing);
+    expect(find.byType(CatchFormStepRowList), findsNothing);
   });
 }

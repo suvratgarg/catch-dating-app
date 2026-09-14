@@ -65,7 +65,7 @@ jobs:
         run: npm run web:tokens:check
 
       - name: Check cross-stack component lexicon
-        run: node tool/design/check_component_lexicon.mjs
+        run: node tool/design/check_component_lexicon.mjs --surfaces-only
 
       - name: Check marketing media
         if: ${{ inputs.surface == 'marketing' }}

@@ -32,7 +32,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchPersonPolaroid), findsOneWidget);
+    expect(find.byType(CatchPolaroid), findsOneWidget);
     expect(find.text('PEOPLE YOU COULD MEET'), findsOneWidget);
     expect(find.text('Rhea, 29'), findsOneWidget);
     expect(find.text('See the event'), findsOneWidget);

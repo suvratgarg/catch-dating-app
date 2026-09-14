@@ -41,11 +41,23 @@ test("source-derived widget classification passes its structural and semantic co
     widget.baseClass === "InheritedWidget",
   ));
   assert.ok(classification.widgets.some((widget) =>
-    widget.file === "packages/catch_ui/lib/src/primitives/catch_pager_focus_boundary.dart" &&
-    widget.name === "CatchPagerFocusBoundary" &&
+    widget.file === "packages/catch_ui/lib/src/primitives/catch_pager_focus_viewport.dart" &&
+    widget.name === "CatchPagerFocusViewport" &&
     widget.baseClass === "SingleChildRenderObjectWidget",
   ));
   assert.deepEqual(validate(classification), []);
+});
+
+test("classification reports existing feature naming debt without treating app bootstraps as feature UI", () => {
+  const legacyFeature = classification.widgets.find((widget) =>
+    widget.file === "lib/auth/presentation/otp_page.dart" && widget.name === "OtpPage");
+  assert.ok(legacyFeature);
+  assert.ok(legacyFeature.flags.includes("noncanonical-feature-widget-name"));
+  assert.ok(legacyFeature.flags.includes("noncanonical-feature-widget-file"));
+  const bootstrap = classification.widgets.find((widget) =>
+    widget.file === "apps/host/lib/host_platform_app.dart" && widget.name === "HostPlatformApp");
+  assert.ok(bootstrap);
+  assert.equal(bootstrap.flags.some((flag) => flag.includes("feature-widget")), false);
 });
 
 test("classification discovers indirect and nontraditional Widgets across roots", () => {
@@ -219,6 +231,15 @@ test("rejects missing and stale source classifications", () => {
   });
   const stale = sourceDeclarations.at(-1);
   assert.ok(failures.includes(`${stale.file}:${stale.name}: stale classification`));
+});
+
+test("classification enforces the reviewed role instead of trusting a registry ID", () => {
+  const changedContracts = clone(contracts);
+  changedContracts.find((row) => row.id === "catch.field").roleNoun = "Input";
+  const failures = validateWidgetClassification(classification, {
+    contracts: changedContracts, widgetbookNames, sourceDeclarations,
+  });
+  assert.ok(failures.some((failure) => /catch.field: expected CatchInput, found CatchField/u.test(failure)));
 });
 
 function validate(value) {

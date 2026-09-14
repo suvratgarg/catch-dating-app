@@ -37,7 +37,7 @@ class _ProductionInteractionTransitionPageState
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchScreenBody(
+    return CatchPageBody.screen(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -51,10 +51,11 @@ class _ProductionInteractionTransitionPageState
             style: CatchTextStyles.proseM(context, color: t.ink2),
           ),
           const SizedBox(height: CatchSpacing.s6),
-          CatchResponsiveSectionLayout(
-            composition: CatchResponsiveSectionComposition.adaptiveTwoColumn,
-            sections: [
-              CatchResponsiveSectionItem(
+          CatchSectionList.responsive(
+            emptyStateOmitted: true,
+            mode: CatchSectionListMode.adaptiveTwoColumn,
+            items: [
+              CatchSectionListItem(
                 child: _labelledSection(
                   context,
                   title: 'Contained section',
@@ -73,13 +74,15 @@ class _ProductionInteractionTransitionPageState
                           'Sunday Social',
                           'Bandra Runs',
                         ],
-                        itemLabel: _identity,
+                        itemLabelBuilder: _identity,
                         selected: _containedSelection,
                         onSelectionChanged: (selection) => setState(
                           () =>
                               _containedSelection = Set.unmodifiable(selection),
                         ),
-                        open: _containedOpen,
+                        disclosureMode: _containedOpen
+                            ? CatchFieldMode.controlledExpanded
+                            : CatchFieldMode.controlledCollapsed,
                         onOpenChanged: (open) =>
                             setState(() => _containedOpen = open),
                       ),
@@ -94,8 +97,8 @@ class _ProductionInteractionTransitionPageState
                   ),
                 ),
               ),
-              CatchResponsiveSectionItem(
-                lane: CatchResponsiveSectionLane.secondary,
+              CatchSectionListItem(
+                lane: CatchSectionListPlacement.secondary,
                 child: _labelledSection(
                   context,
                   title: 'Divided section',
@@ -114,12 +117,14 @@ class _ProductionInteractionTransitionPageState
                           'One day before',
                           'Off',
                         ],
-                        itemLabel: _identity,
+                        itemLabelBuilder: _identity,
                         selected: _dividedSelection,
                         onSelectionChanged: (selection) => setState(
                           () => _dividedSelection = Set.unmodifiable(selection),
                         ),
-                        open: _dividedOpen,
+                        disclosureMode: _dividedOpen
+                            ? CatchFieldMode.controlledExpanded
+                            : CatchFieldMode.controlledCollapsed,
                         onOpenChanged: (open) =>
                             setState(() => _dividedOpen = open),
                       ),

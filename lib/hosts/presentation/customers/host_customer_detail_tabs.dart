@@ -29,7 +29,7 @@ class _HostCustomerDetailTabsState extends State<HostCustomerDetailTabs> {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      CatchTabRail<_HostCustomerDetailView>(
+      CatchPageTabBar<_HostCustomerDetailView>(
         groupKey: const ValueKey('host-customer-detail-tabs'),
         scrollable: true,
         selected: selected,

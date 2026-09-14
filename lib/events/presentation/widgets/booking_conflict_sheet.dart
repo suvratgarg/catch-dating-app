@@ -51,7 +51,7 @@ class BookingConflictSheet extends StatelessWidget {
       child: CatchSurface(
         backgroundColor: t.surface,
         borderColor: t.line,
-        elevation: CatchSurfaceElevation.overlay,
+        emphasis: CatchSurfaceEmphasis.floating,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(CatchRadius.heroCard),
         ),
@@ -68,7 +68,7 @@ class BookingConflictSheet extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const CatchBottomSheetGrabber(),
+              const CatchSheetDragIndicator(),
               gapH16,
               Align(
                 alignment: Alignment.centerLeft,
@@ -118,7 +118,7 @@ class BookingConflictSheet extends StatelessWidget {
                     .l10n
                     .eventsBookingConflictSheetLabelCancelExistingBookThis,
                 fullWidth: true,
-                icon: Icon(CatchIcons.swapHorizRounded),
+                leading: Icon(CatchIcons.swapHorizRounded),
                 onPressed: onReplaceExisting,
               ),
               gapH10,

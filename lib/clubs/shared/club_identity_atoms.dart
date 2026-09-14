@@ -131,11 +131,7 @@ class ClubHostIdentityLine extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Row(
       children: [
-        CatchPersonAvatar(
-          name: hostName,
-          imageUrl: hostAvatarUrl,
-          size: avatarSize,
-        ),
+        CatchAvatar(name: hostName, imageUrl: hostAvatarUrl, size: avatarSize),
         gapW10,
         Expanded(
           child: Column(

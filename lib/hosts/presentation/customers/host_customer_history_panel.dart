@@ -28,7 +28,7 @@ class HostCustomerHistoryPanel extends ConsumerWidget {
     final history = customer.historyLoaded
         ? AsyncData(customer)
         : ref.watch(provider);
-    return CatchAsyncValueView<HostAudienceContactDetail>(
+    return CatchAsyncBoundary<HostAudienceContactDetail>(
       value: history,
       errorContext: AppErrorContext.customer,
       onRetry: () => ref.invalidate(provider),

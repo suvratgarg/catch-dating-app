@@ -18,7 +18,7 @@ void _registerCatchPrimitivesControlsTests() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Full name',
               metadata: 'Short text · Required',
-              reorderHandle: const SizedBox(
+              leading: const SizedBox(
                 key: ValueKey('sortable-handle'),
                 child: Icon(Icons.drag_indicator_rounded),
               ),
@@ -74,7 +74,7 @@ void _registerCatchPrimitivesControlsTests() {
         MediaQuery(
           data: MediaQueryData(disableAnimations: reduceMotion),
           child: Builder(
-            builder: (context) => CatchMapRevealViewport(
+            builder: (context) => CatchRevealViewport.stationary(
               animation: animation,
               child: const Text('Map surface'),
             ),
@@ -152,15 +152,15 @@ void _registerCatchPrimitivesControlsTests() {
     expect(badgeCaps.letterSpacing, 0.72);
   });
 
-  testWidgets('CatchKicker renders uppercase mono eyebrow sizes', (
+  testWidgets('CatchKickerText renders uppercase mono eyebrow sizes', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        const CatchKicker(
+        const CatchKickerText(
           label: 'Was at · Sundowner 5K',
           color: Colors.red,
-          size: CatchKickerSize.lg,
+          variant: CatchKickerTextVariant.lg,
         ),
       ),
     );
@@ -196,7 +196,7 @@ void _registerCatchPrimitivesControlsTests() {
                 CatchButton(
                   label: 'Loading',
                   onPressed: () => taps++,
-                  isLoading: true,
+                  status: CatchButtonStatus.loading,
                 ),
               ],
             ),
@@ -212,8 +212,15 @@ void _registerCatchPrimitivesControlsTests() {
         tester.getSize(find.widgetWithText(CatchButton, 'Join event')).width,
         240,
       );
-      expect(find.byType(CatchButtonLabel), findsOneWidget);
-      expect(find.byType(CatchButtonLoadingDots), findsOneWidget);
+      expect(find.byType(CatchButtonContentRow), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchLoadingIndicator &&
+              widget.variant == CatchLoadingIndicatorVariant.dots,
+        ),
+        findsOneWidget,
+      );
 
       await tester.tap(find.text('Join event'));
       await tester.pump();
@@ -232,12 +239,12 @@ void _registerCatchPrimitivesControlsTests() {
 
   _registerCatchPrimitivesButtonTests();
 
-  testWidgets('CatchBottomAction renders catch line and footnote', (
+  testWidgets('CatchDockSurface renders catch line and footnote', (
     tester,
   ) async {
     await tester.pumpWidget(
       _wrap(
-        CatchBottomAction(
+        CatchDockSurface.primary(
           label: 'Confirm',
           onPressed: () {},
           catchLine: 'free to join',
@@ -295,9 +302,11 @@ void _registerCatchPrimitivesControlsTests() {
       final actionsRect = tester.getRect(
         find.byKey(const ValueKey('catch_bottom_action_overlay.actions')),
       );
+      final overlayRect = tester.getRect(find.byType(CatchBottomActionOverlay));
       expect(scrimRect.top, lessThan(bodyRect.bottom));
       expect(actionsRect.top, greaterThan(scrimRect.top));
-      expect(actionsRect.bottom, lessThanOrEqualTo(bodyRect.bottom));
+      expect(actionsRect.top, bodyRect.bottom);
+      expect(actionsRect.bottom, lessThanOrEqualTo(overlayRect.bottom));
       expect(actionsRect.left, greaterThanOrEqualTo(CatchSpacing.screenPx));
       expect(actionsRect.right, lessThanOrEqualTo(320 - CatchSpacing.screenPx));
 
@@ -307,7 +316,7 @@ void _registerCatchPrimitivesControlsTests() {
     },
   );
 
-  testWidgets('CatchIconButton renders handoff icon button variants', (
+  testWidgets('CatchIconAction renders handoff icon button variants', (
     tester,
   ) async {
     var taps = 0;
@@ -317,32 +326,32 @@ void _registerCatchPrimitivesControlsTests() {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('bordered-icon-button'),
               icon: CatchIcons.search,
               tooltip: 'Search events',
-              onTap: () => taps++,
+              onPressed: () => taps++,
             ),
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('active-icon-button'),
               icon: CatchIcons.favoriteRounded,
               active: true,
               accent: CatchTokens.editorialLight.danger,
-              onTap: () {},
+              onPressed: () {},
             ),
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('float-icon-button'),
               icon: CatchIcons.close,
-              variant: CatchIconButtonVariant.float,
-              onTap: () {},
+              variant: CatchIconActionVariant.float,
+              onPressed: () {},
             ),
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('plain-icon-button'),
               icon: CatchIcons.more,
-              variant: CatchIconButtonVariant.plain,
+              variant: CatchIconActionVariant.plain,
               borderColor: CatchTokens.editorialLight.line2,
-              disabled: true,
-              onTap: () => taps++,
+              status: CatchIconActionStatus.disabled,
+              onPressed: () => taps++,
             ),
           ],
         ),
@@ -373,7 +382,7 @@ void _registerCatchPrimitivesControlsTests() {
 
     expect(
       tester.getSize(borderedFinder),
-      Size.square(CatchIconButton.targetExtentFor(CatchLayout.iconButtonSize)),
+      Size.square(CatchIconAction.targetExtentFor(CatchLayout.iconButtonSize)),
     );
     expect(
       tester.getSize(
@@ -414,26 +423,26 @@ void _registerCatchPrimitivesControlsTests() {
     'compact-control constructors reject invalid count and label states',
     () {
       expect(
-        () => CatchIconButton.counted(
+        () => CatchIconAction.counted(
           icon: CatchIcons.notificationsRounded,
           count: -1,
         ),
         throwsAssertionError,
       );
       expect(
-        () => CatchCountPill.label(label: '   ', onPressed: () {}),
+        () => CatchButton.floating(label: '   ', onPressed: () {}),
         throwsAssertionError,
       );
       expect(
         () =>
-            CatchCountPill.label(label: 'Filters', count: -1, onPressed: () {}),
+            CatchButton.floating(label: 'Filters', count: -1, onPressed: () {}),
         throwsAssertionError,
       );
     },
   );
 
   testWidgets(
-    'CatchIconButton.counted owns typed counts, target size, and semantics',
+    'CatchIconAction.counted owns typed counts, target size, and semantics',
     (tester) async {
       var taps = 0;
 
@@ -442,25 +451,25 @@ void _registerCatchPrimitivesControlsTests() {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              CatchIconButton.counted(
+              CatchIconAction.counted(
                 key: const ValueKey('zero-count-icon-button'),
                 icon: CatchIcons.notificationsNoneRounded,
                 count: 0,
                 tooltip: 'Notifications',
-                onTap: () => taps++,
+                onPressed: () => taps++,
               ),
-              CatchIconButton.counted(
+              CatchIconAction.counted(
                 key: const ValueKey('counted-icon-button'),
                 icon: CatchIcons.tuneRounded,
                 count: 3,
                 tooltip: 'Filters, 3 active',
-                onTap: () => taps++,
+                onPressed: () => taps++,
               ),
-              CatchIconButton.counted(
+              CatchIconAction.counted(
                 icon: CatchIcons.notificationsRounded,
                 count: 124,
                 tooltip: 'Notifications, 124 unread',
-                onTap: () {},
+                onPressed: () {},
               ),
             ],
           ),
@@ -482,7 +491,7 @@ void _registerCatchPrimitivesControlsTests() {
       expect(
         tester.getSize(counted),
         Size.square(
-          CatchIconButton.targetExtentFor(CatchIconButton.defaultSize),
+          CatchIconAction.targetExtentFor(CatchIconAction.defaultSize),
         ),
       );
       expect(semantics.properties.button, isTrue);
@@ -494,19 +503,19 @@ void _registerCatchPrimitivesControlsTests() {
     },
   );
 
-  testWidgets('CatchCountPill.label stays interactive and at least 44px', (
+  testWidgets('CatchButton.floating stays interactive and at least 44px', (
     tester,
   ) async {
     var taps = 0;
 
     await tester.pumpWidget(
       _wrap(
-        CatchCountPill.label(
+        CatchButton.floating(
           key: const ValueKey('labelled-count-pill'),
           icon: CatchIcons.tuneRounded,
           label: 'Filters',
           count: 3,
-          semanticLabel: 'Filters, 3 active',
+          semanticsLabel: 'Filters, 3 active',
           onPressed: () => taps++,
         ),
         textScale: 2,
@@ -592,10 +601,10 @@ void _registerCatchPrimitivesControlsTests() {
               variant: CatchButtonVariant.secondary,
               onPressed: () {},
             ),
-            CatchIconButton.icon(
+            CatchIconAction.icon(
               key: const ValueKey('outlined-icon-control'),
               icon: CatchIcons.search,
-              onTap: () {},
+              onPressed: () {},
             ),
           ],
         ),
@@ -623,27 +632,6 @@ void _registerCatchPrimitivesControlsTests() {
     expect(buttonBorder.color, iconSurface.borderSpec?.color);
     expect(buttonBorder.width, iconSurface.borderSpec?.width);
     expect(iconSurface.borderSpec?.role, CatchBorderRole.control);
-  });
-
-  testWidgets('CatchStepProgress renders count and full-width segments', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      _wrap(
-        SizedBox(
-          width: 320,
-          child: CatchStepProgress(
-            counterLabelBuilder: (step, total) => '$step/$total',
-            label: 'Profile setup',
-            currentStep: 1,
-            totalSteps: 5,
-          ),
-        ),
-      ),
-    );
-
-    expect(find.text('Profile setup'), findsOneWidget);
-    expect(find.text('2/5'), findsOneWidget);
   });
 
   testWidgets('CatchStepHeader renders AppBar anatomy and progress hairline', (
@@ -842,13 +830,13 @@ void _registerCatchPrimitivesControlsTests() {
     },
   );
 
-  testWidgets('CatchFormStepOverview renders status and opens a section', (
+  testWidgets('CatchFormStepRowList renders status and opens a section', (
     tester,
   ) async {
     int? selectedStep;
     await tester.pumpWidget(
       _wrap(
-        CatchFormStepOverview(
+        CatchFormStepRowList(
           fieldCopy: catchFieldCopy(AppLocalizationsEn()),
           statusLabelBuilder: catchFormStepStatusLabelBuilder(
             AppLocalizationsEn(),
@@ -857,17 +845,17 @@ void _registerCatchPrimitivesControlsTests() {
             CatchFormStepReviewItem(
               index: 0,
               title: 'Event basics',
-              status: CatchFormStepStatus.complete,
+              status: CatchFormStepRowListStatus.complete,
             ),
             CatchFormStepReviewItem(
               index: 1,
               title: 'Meeting location',
-              status: CatchFormStepStatus.needsInformation,
+              status: CatchFormStepRowListStatus.needsInformation,
             ),
             CatchFormStepReviewItem(
               index: 2,
               title: 'Live event guide',
-              status: CatchFormStepStatus.optional,
+              status: CatchFormStepRowListStatus.optional,
             ),
           ],
           onStepSelected: (index) => selectedStep = index,
@@ -923,13 +911,13 @@ void _registerCatchPrimitivesControlsTests() {
     expect(label.style?.color, CatchTokens.editorialDark.primaryInk);
   });
 
-  testWidgets('CatchTextButton applies token color and tap semantics', (
+  testWidgets('CatchButton applies token color and tap semantics', (
     tester,
   ) async {
     var taps = 0;
 
     await tester.pumpWidget(
-      _wrap(CatchTextButton(label: 'Retry', onPressed: () => taps++)),
+      _wrap(CatchButton.text(label: 'Retry', onPressed: () => taps++)),
     );
 
     await tester.tap(find.text('Retry'));
@@ -940,7 +928,7 @@ void _registerCatchPrimitivesControlsTests() {
     expect(label.style?.color, CatchTokens.editorialLight.primary);
   });
 
-  testWidgets('CatchTextButton keeps long localized labels constrained', (
+  testWidgets('CatchButton keeps long localized labels constrained', (
     tester,
   ) async {
     const plainLabel = 'Cancel this unexpectedly long localized action';
@@ -952,11 +940,11 @@ void _registerCatchPrimitivesControlsTests() {
           children: [
             SizedBox(
               width: 132,
-              child: CatchTextButton(label: plainLabel, onPressed: null),
+              child: CatchButton.text(label: plainLabel, onPressed: null),
             ),
             SizedBox(
               width: 132,
-              child: CatchTextButton(
+              child: CatchButton.text(
                 label: leadingLabel,
                 onPressed: null,
                 leading: SizedBox.square(dimension: 12),
@@ -991,12 +979,12 @@ void _registerCatchPrimitivesControlsTests() {
     }
   });
 
-  testWidgets('CatchToggle emits the next value on tap', (tester) async {
+  testWidgets('CatchToggleInput emits the next value on tap', (tester) async {
     bool? nextValue;
 
     await tester.pumpWidget(
       _wrap(
-        CatchToggle(
+        CatchToggleInput(
           value: false,
           semanticLabel: 'Push notifications',
           onChanged: (value) => nextValue = value,
@@ -1004,46 +992,42 @@ void _registerCatchPrimitivesControlsTests() {
       ),
     );
 
-    await tester.tap(find.byType(CatchToggle));
+    await tester.tap(find.byType(CatchToggleInput));
     await tester.pump();
 
     expect(nextValue, isTrue);
   });
 
-  testWidgets(
-    'CatchOtpCodeField renders visible digits over one hidden input',
-    (tester) async {
-      final controller = TextEditingController();
-      addTearDown(controller.dispose);
+  testWidgets('CatchCodeInput renders visible digits over one hidden input', (
+    tester,
+  ) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
 
-      await tester.pumpWidget(
-        _wrap(
-          StatefulBuilder(
-            builder: (context, setState) => CatchOtpCodeField(
-              semanticsLabel:
-                  AppLocalizationsEn().coreCatchOtpCodeFieldSemanticLabel,
-              inputKey: const ValueKey('otp-input'),
-              controller: controller,
-              autofocus: true,
-              onChanged: (_) => setState(() {}),
-              onSubmitted: (_) {},
-            ),
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchCodeInput(
+            semanticsLabel:
+                AppLocalizationsEn().coreCatchOtpCodeFieldSemanticLabel,
+            inputKey: const ValueKey('otp-input'),
+            controller: controller,
+            autofocus: true,
+            onChanged: (_) => setState(() {}),
+            onSubmitted: (_) {},
           ),
         ),
-      );
+      ),
+    );
 
-      await tester.enterText(
-        find.byKey(const ValueKey('otp-input')),
-        '1234567',
-      );
-      await tester.pump();
+    await tester.enterText(find.byKey(const ValueKey('otp-input')), '1234567');
+    await tester.pump();
 
-      expect(controller.text, '123456');
-      expect(find.byType(CatchCodeInputRow), findsOneWidget);
-      expect(find.byType(CatchCodeInputCell), findsNWidgets(6));
-      expect(find.text('1'), findsOneWidget);
-      expect(find.text('6'), findsOneWidget);
-      expect(find.text('7'), findsNothing);
-    },
-  );
+    expect(controller.text, '123456');
+    expect(find.byType(CatchCodeInputRow), findsOneWidget);
+    expect(find.byType(CatchCodeDigitSurface), findsNWidgets(6));
+    expect(find.text('1'), findsOneWidget);
+    expect(find.text('6'), findsOneWidget);
+    expect(find.text('7'), findsNothing);
+  });
 }

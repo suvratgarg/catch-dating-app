@@ -80,7 +80,6 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
     final accent = ActivityPalette.resolve(context, widget.activityKind).accent;
     return CatchSection.fieldRows(
       title: context.l10n.hostsRouteEventPlanSectionTitle,
-      leadAccent: accent,
       children: [
         if (widget.activityKind == ActivityKind.openActivity)
           CatchField.toggle(
@@ -110,7 +109,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                 'Disclosure for nested routePlan fields with generated bindings.',
             icon: CatchIcons.routeOutlined,
             iconColor: accent,
-            control: CatchSection.containedFieldRows(
+            child: CatchSection.containedFieldRows(
               children: [
                 CatchField<RouteMovementMode>.choices(
                   copy: catchFieldCopy(context.l10n),
@@ -118,14 +117,16 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanMovementTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanMovementMode,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteMovementMode.values,
-                  itemLabel: (value) => _movementLabel(context, value),
+                  itemLabelBuilder: (value) => _movementLabel(context, value),
                   selected: {plan.movementMode},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(movementMode: selection.single),
                   ),
-                  open: _accordion.isExpanded(_movementField),
+                  disclosureMode: _accordion.isExpanded(_movementField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_movementField, open),
                   icon: CatchIcons.syncAltRounded,
                   iconColor: accent,
@@ -136,14 +137,16 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanShapeTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanRouteShape,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteShape.values,
-                  itemLabel: (value) => _shapeLabel(context, value),
+                  itemLabelBuilder: (value) => _shapeLabel(context, value),
                   selected: {plan.routeShape},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(routeShape: selection.single),
                   ),
-                  open: _accordion.isExpanded(_shapeField),
+                  disclosureMode: _accordion.isExpanded(_shapeField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_shapeField, open),
                   icon: CatchIcons.mapOutlined,
                   iconColor: accent,
@@ -154,14 +157,16 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanGroupTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanGroupStrategy,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteGroupStrategy.values,
-                  itemLabel: (value) => _groupLabel(context, value),
+                  itemLabelBuilder: (value) => _groupLabel(context, value),
                   selected: {plan.groupStrategy},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(groupStrategy: selection.single),
                   ),
-                  open: _accordion.isExpanded(_groupField),
+                  disclosureMode: _accordion.isExpanded(_groupField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_groupField, open),
                   icon: CatchIcons.groups2Outlined,
                   iconColor: accent,
@@ -172,14 +177,16 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanCadenceTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopCadence,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteStopCadence.values,
-                  itemLabel: (value) => _cadenceLabel(context, value),
+                  itemLabelBuilder: (value) => _cadenceLabel(context, value),
                   selected: {plan.stopCadence},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(stopCadence: selection.single),
                   ),
-                  open: _accordion.isExpanded(_cadenceField),
+                  disclosureMode: _accordion.isExpanded(_cadenceField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_cadenceField, open),
                   icon: CatchIcons.ruleFolderOutlined,
                   iconColor: accent,
@@ -190,11 +197,11 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanStopsTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanStopKinds,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteStopKind.values,
-                  itemLabel: (value) => _stopLabel(context, value),
+                  itemLabelBuilder: (value) => _stopLabel(context, value),
                   selected: plan.stopKinds.toSet(),
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(
                       stopKinds: RouteStopKind.values
@@ -202,7 +209,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                           .toList(growable: false),
                     ),
                   ),
-                  open: _accordion.isExpanded(_stopsField),
+                  disclosureMode: _accordion.isExpanded(_stopsField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_stopsField, open),
                   icon: CatchIcons.tableRestaurantOutlined,
                   iconColor: accent,
@@ -213,11 +222,11 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   title: context.l10n.hostsRouteEventPlanRolesTitle,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanRoleKinds,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteRoleKind.values,
-                  itemLabel: (value) => _roleLabel(context, value),
+                  itemLabelBuilder: (value) => _roleLabel(context, value),
                   selected: plan.roleKinds.toSet(),
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(
                       roleKinds: RouteRoleKind.values
@@ -225,7 +234,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                           .toList(growable: false),
                     ),
                   ),
-                  open: _accordion.isExpanded(_rolesField),
+                  disclosureMode: _accordion.isExpanded(_rolesField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_rolesField, open),
                   icon: CatchIcons.peopleOutline,
                   iconColor: accent,
@@ -236,7 +247,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       CatchFieldContentRow(
-                        labelCopy: catchFormFieldLabelCopy(context.l10n),
+                        labelCopy: catchFieldLabelTextCopy(context.l10n),
 
                         title: context.l10n.hostsRouteEventPlanPathTitle,
                         body: plan.path.length >= 2
@@ -261,15 +272,17 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   body: context.l10n.hostsRouteEventPlanPaceGroupsBody,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanPaceGroups,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: _PacePreset.values,
-                  itemLabel: (value) => _pacePresetLabel(context, value),
+                  itemLabelBuilder: (value) => _pacePresetLabel(context, value),
                   selected: _selectedPacePresets(plan),
-                  multi: true,
+                  mode: CatchChipMode.multiple,
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(paceGroups: _paceGroupsFor(selection)),
                   ),
-                  open: _accordion.isExpanded(_paceGroupsField),
+                  disclosureMode: _accordion.isExpanded(_paceGroupsField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_paceGroupsField, open),
                   icon: CatchIcons.speedOutlined,
                   iconColor: accent,
@@ -281,9 +294,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                   body: context.l10n.hostsRouteEventPlanTrackingBody,
                   contract: CatchContractConstraints
                       .createEventCallablePayloadEventFormatActivityDetailsRoutePlanLiveTrackingPolicyMode,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   values: RouteLiveTrackingMode.values,
-                  itemLabel: (value) => _trackingLabel(context, value),
+                  itemLabelBuilder: (value) => _trackingLabel(context, value),
                   selected: {plan.liveTrackingPolicy.mode},
                   onSelectionChanged: (selection) => widget.onChanged(
                     plan.copyWith(
@@ -294,7 +307,9 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                       ),
                     ),
                   ),
-                  open: _accordion.isExpanded(_trackingField),
+                  disclosureMode: _accordion.isExpanded(_trackingField)
+                      ? CatchFieldMode.controlledExpanded
+                      : CatchFieldMode.controlledCollapsed,
                   onOpenChanged: (open) => _setOpen(_trackingField, open),
                   icon: CatchIcons.locationOnOutlined,
                   iconColor: accent,

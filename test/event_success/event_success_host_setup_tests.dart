@@ -103,8 +103,8 @@ void _registerEventSuccessHostSetupTests() {
     );
 
     expect(find.text('Setup'), findsWidgets);
-    expect(find.byType(CatchOptionGroup<EventSuccessHostTab>), findsOneWidget);
-    expect(find.byType(CatchTabRail<EventSuccessHostTab>), findsOneWidget);
+    expect(find.byType(CatchChoiceInput<EventSuccessHostTab>), findsOneWidget);
+    expect(find.byType(CatchPageTabBar<EventSuccessHostTab>), findsOneWidget);
     expect(find.text('Target attendees'), findsOneWidget);
     expect(find.text('How the room is grouped'), findsNothing);
     expect(find.text('Your goal for the event'), findsOneWidget);
@@ -143,7 +143,14 @@ void _registerEventSuccessHostSetupTests() {
     await tester.tap(find.text('Report'));
     await pumpFeatureUi(tester);
     expect(find.text('POST-EVENT HOST REPORT'), findsOneWidget);
-    expect(find.byType(CatchAnalyticsMetricGrid), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchMetricSection &&
+            widget.variant == CatchMetricSectionVariant.dataQuality,
+      ),
+      findsWidgets,
+    );
   });
 
   testWidgets('host setup collapses to a read-only plan after bookings start', (

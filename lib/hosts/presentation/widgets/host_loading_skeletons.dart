@@ -19,16 +19,14 @@ class HostRouteLoadingBody extends StatelessWidget {
         constraints: const BoxConstraints(
           maxWidth: CatchLayout.maxContentWidth,
         ),
-        child: CatchSectionStack(
+        child: CatchSectionList.inset(
+          emptyStateOmitted: true,
           padding: padding,
           gap: CatchSpacing.micro18,
           children: [
             if (showTabRail) const HostTabRailSkeleton(),
             const HostSummarySkeleton(),
-            const CatchSkeletonRows(
-              leading: CatchSkeletonRowLeading.mediaTile,
-              divided: true,
-            ),
+            const CatchSkeleton.mediaRows(divided: true),
           ],
         ),
       ),
@@ -104,7 +102,8 @@ class HostAnalyticsReportSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CatchSectionStack(
+    return const CatchSectionList.inset(
+      emptyStateOmitted: true,
       padding: EdgeInsets.zero,
       children: [
         CatchSection.divided(
@@ -112,18 +111,8 @@ class HostAnalyticsReportSkeleton extends StatelessWidget {
           child: HostAnalyticsMetricGridSkeleton(),
         ),
         CatchSection.divided(child: HostChartSkeleton()),
-        CatchSection.divided(
-          child: CatchSkeletonRows(
-            leading: CatchSkeletonRowLeading.mediaTile,
-            divided: true,
-          ),
-        ),
-        CatchSection.divided(
-          child: CatchSkeletonRows(
-            leading: CatchSkeletonRowLeading.icon,
-            divided: true,
-          ),
-        ),
+        CatchSection.divided(child: CatchSkeleton.mediaRows(divided: true)),
+        CatchSection.divided(child: CatchSkeleton.iconRows(divided: true)),
       ],
     );
   }

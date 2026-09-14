@@ -1,24 +1,28 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
-import 'package:catch_ui/src/components/catch_icon_button.dart';
-import 'package:catch_ui/src/components/catch_person_avatar.dart';
-import 'package:catch_ui/src/components/catch_screen_top_bar.dart';
+import 'package:catch_ui/src/components/catch_screen_header.dart';
 import 'package:catch_ui/src/components/catch_search_field.dart';
-import 'package:catch_ui/src/components/catch_top_bar_action_group.dart';
-import 'package:catch_ui/src/components/catch_top_bar_leading.dart';
+import 'package:catch_ui/src/components/catch_search_field_status.dart';
+import 'package:catch_ui/src/components/catch_top_bar_action_row.dart';
+import 'package:catch_ui/src/components/catch_top_bar_emphasis.dart';
+import 'package:catch_ui/src/components/catch_top_bar_mode.dart';
+import 'package:catch_ui/src/components/catch_top_bar_navigation.dart';
 import 'package:catch_ui/src/components/catch_top_bar_search.dart';
-import 'package:catch_ui/src/components/catch_top_bar_title_role.dart';
+import 'package:catch_ui/src/components/catch_top_bar_size.dart';
+import 'package:catch_ui/src/components/catch_top_bar_tone.dart';
+import 'package:catch_ui/src/components/catch_top_bar_variant.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
-import 'package:catch_ui/src/primitives/catch_kicker.dart';
+import 'package:catch_ui/src/primitives/catch_kicker_text.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
 import 'package:flutter/material.dart';
 
-/// Canonical Catch app-bar primitive.
+/// Canonical Catch top-bar component.
 ///
 /// Mirrors the design handoff's `AppBar`: compact or large title chrome,
-/// standard back/close [CatchIconButton] composition, optional trailing action, and
+/// standard back/close [CatchIconAction] composition, optional trailing action, and
 /// declarative expanding search.
 class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
   const CatchTopBar({
@@ -27,35 +31,32 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     this.subtitle,
     this.eyebrow,
     this.kicker,
-    this.large,
-    this.titleRole = CatchTopBarTitleRole.route,
+    this.size = CatchTopBarSize.automatic,
+    this.variant = CatchTopBarVariant.route,
     this.titleMaxLines,
-    this.titleWidget,
-    this.titleWidgetIncludesSupplementalText = false,
+    this.body,
     this.leading,
-    this.leadingType = CatchTopBarLeading.auto,
-    this.leadingActionVariant = CatchIconButtonVariant.bordered,
+    this.navigation = const CatchTopBarNavigation(),
     this.actions = const <Widget>[],
-    this.showBackButton,
-    this.onBack,
     this.backgroundColor,
-    this.surface = false,
-    this.divider = false,
+    this.tone = CatchTopBarTone.page,
+    this.emphasis = CatchTopBarEmphasis.plain,
     this.gutter = true,
     this.applySafeArea = true,
     this.contentPadding,
     this.height = CatchLayout.topBarHeight,
     this.largeHeight = CatchLayout.topBarLargeHeight,
-    this.allowContentHeightExpansion = false,
+    this.mode = CatchTopBarMode.fixed,
     this.contentCrossAxisAlignment = CrossAxisAlignment.center,
-    this.bottom,
+    this.footer,
     this.trailing,
     this.search,
   }) : assert(eyebrow == null || kicker == null),
        identityName = null,
        identitySemanticLabel = null,
        identityPhotoUrl = null,
-       onIdentityTap = null;
+       onIdentityTap = null,
+       _screen = null;
 
   const CatchTopBar.identity({
     super.key,
@@ -64,75 +65,261 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     this.identityPhotoUrl,
     this.onIdentityTap,
     this.leading,
-    this.leadingType = CatchTopBarLeading.auto,
-    this.leadingActionVariant = CatchIconButtonVariant.bordered,
+    this.navigation = const CatchTopBarNavigation(),
     this.actions = const <Widget>[],
-    this.showBackButton,
-    this.onBack,
     this.backgroundColor,
-    this.surface = false,
-    this.divider = false,
+    this.tone = CatchTopBarTone.page,
+    this.emphasis = CatchTopBarEmphasis.plain,
     this.gutter = true,
     this.applySafeArea = true,
     this.contentPadding,
     this.height = CatchLayout.topBarHeight,
     this.largeHeight = CatchLayout.topBarLargeHeight,
-    this.allowContentHeightExpansion = false,
+    this.mode = CatchTopBarMode.fixed,
     this.contentCrossAxisAlignment = CrossAxisAlignment.center,
-    this.bottom,
+    this.footer,
     this.trailing,
   }) : title = null,
        subtitle = null,
        eyebrow = null,
        kicker = null,
-       large = false,
-       titleRole = CatchTopBarTitleRole.identity,
+       size = CatchTopBarSize.compact,
+       variant = CatchTopBarVariant.identity,
        titleMaxLines = 1,
-       titleWidget = null,
-       titleWidgetIncludesSupplementalText = false,
-       search = null;
+       body = null,
+       search = null,
+       _screen = null;
+
+  /// Root-title chrome with synchronous, text-scaled preferred height.
+  factory CatchTopBar.screen({
+    Key? key,
+    required BuildContext context,
+    required String title,
+    String? eyebrow,
+    String? subtitle,
+    Widget? leading,
+    CatchTopBarNavigation navigation = const CatchTopBarNavigation(),
+    List<Widget> actions = const [],
+    int titleMaxLines = 1,
+    TextStyle? titleStyle,
+    CrossAxisAlignment rowCrossAxisAlignment = CrossAxisAlignment.center,
+    Color? backgroundColor,
+    CatchTopBarTone tone = CatchTopBarTone.page,
+    CatchTopBarEmphasis emphasis = CatchTopBarEmphasis.plain,
+    bool gutter = false,
+    bool applySafeArea = true,
+    PreferredSizeWidget? footer,
+    Widget? trailing,
+    CatchTopBarSearch? search,
+  }) => CatchTopBar._root(
+    key: key,
+    title: title,
+    eyebrow: eyebrow,
+    subtitle: subtitle,
+    leading: leading,
+    navigation: navigation,
+    actions: actions,
+    titleMaxLines: titleMaxLines,
+    titleStyle: titleStyle,
+    rowCrossAxisAlignment: rowCrossAxisAlignment,
+    backgroundColor: backgroundColor,
+    tone: tone,
+    emphasis: emphasis,
+    gutter: gutter,
+    applySafeArea: applySafeArea,
+    contentPadding: CatchInsets.screenTitleBlock,
+    height: heightFor(
+      context: context,
+      hasEyebrow: eyebrow?.isNotEmpty ?? false,
+      hasSubtitle: subtitle?.isNotEmpty ?? false,
+      titleMaxLines: titleMaxLines,
+      hasActions: actions.isNotEmpty,
+      titleStyle: titleStyle,
+    ),
+    footer: footer,
+    trailing: trailing,
+    search: search,
+  );
+
+  /// Embedded root title; the root scroll owner supplies safe area and rail.
+  factory CatchTopBar.primaryRail({
+    Key? key,
+    required BuildContext context,
+    required String title,
+    String? eyebrow,
+    String? subtitle,
+    Widget? leading,
+    List<Widget> actions = const [],
+    int titleMaxLines = 1,
+    CrossAxisAlignment rowCrossAxisAlignment = CrossAxisAlignment.center,
+    CatchTopBarSearch? search,
+  }) => CatchTopBar._root(
+    key: key,
+    title: title,
+    eyebrow: eyebrow,
+    subtitle: subtitle,
+    leading: leading,
+    navigation: const CatchTopBarNavigation(
+      mode: CatchTopBarNavigationMode.none,
+    ),
+    actions: actions,
+    titleMaxLines: titleMaxLines,
+    titleStyle: null,
+    rowCrossAxisAlignment: rowCrossAxisAlignment,
+    applySafeArea: false,
+    contentPadding: CatchInsets.primaryRailTitleBlock,
+    height: _heightFor(
+      context: context,
+      hasEyebrow: eyebrow?.isNotEmpty ?? false,
+      hasSubtitle: subtitle?.isNotEmpty ?? false,
+      titleMaxLines: titleMaxLines,
+      hasActions: actions.isNotEmpty,
+      contentPadding: CatchInsets.primaryRailTitleBlock,
+      minimumHeight: 0,
+    ),
+    search: search,
+  );
+
+  const CatchTopBar._root({
+    super.key,
+    required this.title,
+    this.eyebrow,
+    this.subtitle,
+    this.leading,
+    this.navigation = const CatchTopBarNavigation(),
+    this.actions = const [],
+    required this.titleMaxLines,
+    required TextStyle? titleStyle,
+    required CrossAxisAlignment rowCrossAxisAlignment,
+    this.backgroundColor,
+    this.tone = CatchTopBarTone.page,
+    this.emphasis = CatchTopBarEmphasis.plain,
+    this.gutter = false,
+    this.applySafeArea = true,
+    required this.contentPadding,
+    required this.height,
+    this.footer,
+    this.trailing,
+    this.search,
+  }) : _screen = (
+         titleStyle: titleStyle,
+         rowCrossAxisAlignment: rowCrossAxisAlignment,
+       ),
+       kicker = null,
+       size = CatchTopBarSize.compact,
+       variant = CatchTopBarVariant.route,
+       body = null,
+       identityName = null,
+       identitySemanticLabel = null,
+       identityPhotoUrl = null,
+       onIdentityTap = null,
+       largeHeight = CatchLayout.topBarLargeHeight,
+       mode = CatchTopBarMode.fixed,
+       contentCrossAxisAlignment = CrossAxisAlignment.start;
+
+  final ({TextStyle? titleStyle, CrossAxisAlignment rowCrossAxisAlignment})?
+  _screen;
+
+  static double heightFor({
+    required BuildContext context,
+    bool hasEyebrow = false,
+    bool hasSubtitle = false,
+    int titleMaxLines = 1,
+    bool hasActions = false,
+    TextStyle? titleStyle,
+  }) => _heightFor(
+    context: context,
+    hasEyebrow: hasEyebrow,
+    hasSubtitle: hasSubtitle,
+    titleMaxLines: titleMaxLines,
+    hasActions: hasActions,
+    titleStyle: titleStyle,
+    contentPadding: CatchInsets.screenTitleBlock,
+    minimumHeight: hasEyebrow || hasSubtitle || titleMaxLines > 1
+        ? CatchLayout.browseHeaderHeight
+        : CatchLayout.topBarHeight,
+  );
+
+  static double _heightFor({
+    required BuildContext context,
+    required bool hasEyebrow,
+    required bool hasSubtitle,
+    required int titleMaxLines,
+    required bool hasActions,
+    TextStyle? titleStyle,
+    required EdgeInsetsGeometry contentPadding,
+    required double minimumHeight,
+  }) {
+    final textScaler = MediaQuery.textScalerOf(context);
+    final largeText = textScaler.scale(1) >= 1.5;
+    final resolvedPadding = contentPadding.resolve(Directionality.of(context));
+    double lineHeight(TextStyle style) =>
+        textScaler.scale(style.fontSize!) * (style.height ?? 1);
+
+    var textHeight =
+        lineHeight(titleStyle ?? CatchTextStyles.headline(context)) *
+        titleMaxLines;
+    if (hasEyebrow) {
+      textHeight +=
+          lineHeight(CatchTextStyles.kicker(context)) + CatchSpacing.micro2;
+    }
+    if (hasSubtitle) {
+      textHeight +=
+          CatchGaps.headerTitleToSubtitle +
+          lineHeight(CatchTextStyles.supporting(context)) * (largeText ? 2 : 1);
+    }
+    if (largeText && hasActions) {
+      textHeight += CatchLayout.topBarLargeTextActionReserve;
+    }
+
+    final actionExtent = CatchIconAction.targetExtentFor(
+      CatchIconAction.navSize,
+    );
+    final contentHeight = textHeight > actionExtent ? textHeight : actionExtent;
+    // Text layout can round a scaled glyph run slightly above the nominal
+    // style height, so reserve the next logical pixel in the preferred size.
+    final requiredHeight = (contentHeight + resolvedPadding.vertical)
+        .ceilToDouble();
+    return requiredHeight > minimumHeight ? requiredHeight : minimumHeight;
+  }
 
   final String? title;
   final String? subtitle;
   final String? eyebrow;
   final String? kicker;
-  final bool? large;
-  final CatchTopBarTitleRole titleRole;
+  final CatchTopBarSize size;
+  final CatchTopBarVariant variant;
   final int? titleMaxLines;
-  final Widget? titleWidget;
-  final bool titleWidgetIncludesSupplementalText;
+  final Widget? body;
   final String? identityName;
   final String? identitySemanticLabel;
   final String? identityPhotoUrl;
   final VoidCallback? onIdentityTap;
   final Widget? leading;
-  final CatchTopBarLeading leadingType;
-  final CatchIconButtonVariant leadingActionVariant;
+  final CatchTopBarNavigation navigation;
   final List<Widget> actions;
-  final bool? showBackButton;
-  final VoidCallback? onBack;
   final Color? backgroundColor;
-  final bool surface;
-  final bool divider;
+  final CatchTopBarTone tone;
+  final CatchTopBarEmphasis emphasis;
   final bool gutter;
   final bool applySafeArea;
   final EdgeInsetsGeometry? contentPadding;
   final double height;
   final double largeHeight;
-  final bool allowContentHeightExpansion;
+  final CatchTopBarMode mode;
   final CrossAxisAlignment contentCrossAxisAlignment;
-  final PreferredSizeWidget? bottom;
+  final PreferredSizeWidget? footer;
   final Widget? trailing;
   final CatchTopBarSearch? search;
 
   @override
   Size get preferredSize => Size.fromHeight(
-    (isLarge ? largeHeight : height) + (bottom?.preferredSize.height ?? 0),
+    (isLarge ? largeHeight : height) + (footer?.preferredSize.height ?? 0),
   );
 
   @override
   Size preferredSizeFor(BuildContext context) {
-    final bottomHeight = switch (bottom) {
+    final bottomHeight = switch (footer) {
       final CatchScaledPreferredSize scaled =>
         scaled.preferredSizeFor(context).height,
       final bar? => bar.preferredSize.height,
@@ -155,7 +342,11 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     return required > original ? required : original;
   }
 
-  bool get isLarge => large ?? (kicker != null && kicker!.isNotEmpty);
+  bool get isLarge => switch (size) {
+    CatchTopBarSize.automatic => kicker?.isNotEmpty ?? false,
+    CatchTopBarSize.compact => false,
+    CatchTopBarSize.large => true,
+  };
 
   /// Preferred height for a compact operational workspace title stack.
   ///
@@ -169,7 +360,7 @@ class CatchTopBar extends StatefulWidget implements CatchScaledPreferredSize {
     bool hasSubtitle = false,
     int titleMaxLines = 1,
     bool hasActions = false,
-  }) => CatchScreenTopBar.heightFor(
+  }) => heightFor(
     context: context,
     hasEyebrow: hasEyebrow,
     hasSubtitle: hasSubtitle,
@@ -201,9 +392,10 @@ class _CatchTopBarState extends State<CatchTopBar> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final showDivider = widget.divider;
+    final showDivider = widget.emphasis == CatchTopBarEmphasis.divided;
     final background =
-        widget.backgroundColor ?? (widget.surface ? t.surface : t.bg);
+        widget.backgroundColor ??
+        (widget.tone == CatchTopBarTone.surface ? t.surface : t.bg);
     final large = widget.isLarge;
     final crossAxisAlignment = large
         ? CrossAxisAlignment.start
@@ -211,43 +403,40 @@ class _CatchTopBarState extends State<CatchTopBar> {
     Widget? leading = widget.leading;
     if (leading == null) {
       final canPop = Navigator.maybeOf(context)?.canPop() ?? false;
-      final type = widget.leadingType;
+      final type = widget.navigation.mode;
       final wantsLeading = switch (type) {
-        CatchTopBarLeading.none => false,
-        CatchTopBarLeading.back || CatchTopBarLeading.close => true,
-        CatchTopBarLeading.auto => widget.showBackButton ?? canPop,
+        CatchTopBarNavigationMode.none => false,
+        CatchTopBarNavigationMode.back ||
+        CatchTopBarNavigationMode.close => true,
+        CatchTopBarNavigationMode.auto => canPop,
       };
       if (wantsLeading) {
-        final isClose = type == CatchTopBarLeading.close;
+        final isClose = type == CatchTopBarNavigationMode.close;
         final localizations = MaterialLocalizations.of(context);
-        leading = CatchIconAction(
+        leading = CatchIconAction.toolbar(
           tooltip: isClose
               ? localizations.closeButtonTooltip
               : localizations.backButtonTooltip,
           icon: isClose ? CatchIcons.close : CatchIcons.arrowBackIosNewRounded,
-          variant: widget.leadingActionVariant,
-          onPressed: widget.onBack ?? () => Navigator.of(context).maybePop(),
+          variant: widget.navigation.variant,
+          onPressed:
+              widget.navigation.onPressed ??
+              () => Navigator.of(context).maybePop(),
         );
       }
     }
     final hasEyebrow = widget.eyebrow != null && widget.eyebrow!.isNotEmpty;
     final hasKicker = widget.kicker != null && widget.kicker!.isNotEmpty;
     final hasSubtitle = widget.subtitle != null && widget.subtitle!.isNotEmpty;
-    final titleWidgetOwnsSupplementalText =
-        widget.titleWidget != null &&
-        widget.titleWidgetIncludesSupplementalText;
+    final bodyOwnsSupplementalText = widget._screen != null;
     final textScale = MediaQuery.textScalerOf(context).scale(1);
     final collapseSupplementalText = widget.isLarge && textScale >= 1.4;
     final showKicker =
-        hasKicker &&
-        !titleWidgetOwnsSupplementalText &&
-        !collapseSupplementalText;
+        hasKicker && !bodyOwnsSupplementalText && !collapseSupplementalText;
     final showEyebrow =
-        hasEyebrow &&
-        !titleWidgetOwnsSupplementalText &&
-        !collapseSupplementalText;
+        hasEyebrow && !bodyOwnsSupplementalText && !collapseSupplementalText;
     final showSubtitle =
-        hasSubtitle && !titleWidgetOwnsSupplementalText && textScale < 1.4;
+        hasSubtitle && !bodyOwnsSupplementalText && textScale < 1.4;
     final hiddenTextLabel =
         widget.title != null &&
             ((hasEyebrow && !showEyebrow) ||
@@ -260,9 +449,26 @@ class _CatchTopBarState extends State<CatchTopBar> {
             if (hasSubtitle && !showSubtitle) widget.subtitle!,
           ].join('. ')
         : null;
+    final screen = widget._screen;
+    final largeText = textScale >= 1.5;
+    final effectiveActions = screen != null && largeText
+        ? const <Widget>[]
+        : widget.actions;
+    final screenBody = screen == null
+        ? null
+        : CatchScreenHeader(
+            title: widget.title!,
+            kicker: widget.eyebrow,
+            subtitle: widget.subtitle,
+            actions: largeText ? widget.actions : const <Widget>[],
+            titleMaxLines: widget.titleMaxLines!,
+            titleStyle: screen.titleStyle,
+            rowCrossAxisAlignment: screen.rowCrossAxisAlignment,
+          );
     final identityName = widget.identityName;
-    final titleWidget =
-        widget.titleWidget ??
+    final body =
+        screenBody ??
+        widget.body ??
         (identityName != null && identityName.isNotEmpty
             ? Semantics(
                 button: widget.onIdentityTap != null,
@@ -281,7 +487,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
                       padding: CatchInsets.controlVerticalTight,
                       child: Row(
                         children: [
-                          CatchPersonAvatar(
+                          CatchAvatar(
                             size: 36,
                             name: identityName,
                             imageUrl: widget.identityPhotoUrl,
@@ -315,10 +521,12 @@ class _CatchTopBarState extends State<CatchTopBar> {
                 overflow: TextOverflow.ellipsis,
                 style: widget.isLarge
                     ? CatchTextStyles.titleL(context, color: t.ink)
-                    : switch (widget.titleRole) {
-                        CatchTopBarTitleRole.route =>
-                          CatchTextStyles.routeTitle(context, color: t.ink),
-                        CatchTopBarTitleRole.identity => CatchTextStyles.titleL(
+                    : switch (widget.variant) {
+                        CatchTopBarVariant.route => CatchTextStyles.routeTitle(
+                          context,
+                          color: t.ink,
+                        ),
+                        CatchTopBarVariant.identity => CatchTextStyles.titleL(
                           context,
                           color: t.ink,
                         ),
@@ -338,8 +546,8 @@ class _CatchTopBarState extends State<CatchTopBar> {
           ),
           gapH2,
         ],
-        if (showKicker) ...[CatchKicker(label: widget.kicker!), gapH6],
-        titleWidget,
+        if (showKicker) ...[CatchKickerText(label: widget.kicker!), gapH6],
+        body,
         if (showSubtitle) ...[
           gapH3,
           Text(
@@ -352,8 +560,8 @@ class _CatchTopBarState extends State<CatchTopBar> {
       ],
     );
 
-    final trailing = widget.actions.isNotEmpty
-        ? CatchTopBarActionGroup(actions: widget.actions)
+    final trailing = effectiveActions.isNotEmpty
+        ? CatchTopBarActionRow(actions: effectiveActions)
         : widget.trailing;
     final title = large
         ? titleBlock
@@ -368,8 +576,8 @@ class _CatchTopBarState extends State<CatchTopBar> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          height: widget.allowContentHeightExpansion ? null : height,
-          constraints: widget.allowContentHeightExpansion
+          height: (widget.mode == CatchTopBarMode.content) ? null : height,
+          constraints: (widget.mode == CatchTopBarMode.content)
               ? BoxConstraints(minHeight: height)
               : null,
           padding:
@@ -388,7 +596,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
                     )),
           // The scroll divider paints inside the frame without reducing its title lane.
           foregroundDecoration: BoxDecoration(
-            border: showDivider && widget.bottom == null
+            border: showDivider && widget.footer == null
                 ? Border(bottom: BorderSide(color: t.line))
                 : const Border(),
           ),
@@ -406,7 +614,9 @@ class _CatchTopBarState extends State<CatchTopBar> {
                           : CatchSearchField.expanding(
                               copy: search.copy,
                               key: search.fieldKey,
-                              expanded: _searchOpenEffective,
+                              status: _searchOpenEffective
+                                  ? CatchSearchFieldStatus.expanded
+                                  : CatchSearchFieldStatus.collapsed,
                               maxWidth: laneConstraints.maxWidth,
                               value: search.value,
                               contract: search.contract,
@@ -431,7 +641,7 @@ class _CatchTopBarState extends State<CatchTopBar> {
                           frameConstraints.maxWidth *
                           CatchLayout.topBarTrailingMaxRatio;
                       final minimumTrailingWidth =
-                          trailing is CatchTopBarActionGroup
+                          trailing is CatchTopBarActionRow
                           ? trailing.minimumWidth
                           : CatchPlatformTokens.minimumInteractiveExtent;
                       final trailingEdge = trailing == null
@@ -475,9 +685,9 @@ class _CatchTopBarState extends State<CatchTopBar> {
                                   trailingEdge,
                                   if (trailing != null) gapW4,
                                   SizedBox(
-                                    width: CatchIconButton.targetExtentFor(
+                                    width: CatchIconAction.targetExtentFor(
                                       widget.search?.collapsedExtent ??
-                                          CatchIconButton.navSize,
+                                          CatchIconAction.navSize,
                                     ),
                                   ),
                                 ],
@@ -494,14 +704,14 @@ class _CatchTopBarState extends State<CatchTopBar> {
             ),
           ),
         ),
-        if (widget.bottom != null)
+        if (widget.footer != null)
           DecoratedBox(
             decoration: BoxDecoration(
               border: showDivider
                   ? Border(bottom: BorderSide(color: t.line))
                   : const Border(),
             ),
-            child: widget.bottom!,
+            child: widget.footer!,
           ),
       ],
     );

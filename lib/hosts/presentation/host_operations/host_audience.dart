@@ -30,19 +30,19 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
     final messaging = ref.watch(hostMessagingSetupProvider(widget.club.id));
     return CatchSection.divided(
       title: context.l10n.hostsHostAudienceWhatsappSender,
-      child: CatchAsyncValueView<HostMessagingSetup>(
+      child: CatchAsyncBoundary<HostMessagingSetup>(
         value: messaging,
         onRetry: () =>
             ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
         initialLoadTimeout: null,
-        loadingBuilder: (_) => const CatchSkeletonRows(count: 2),
-        errorBuilder: (_, error, _) => CatchLocalizedErrorState(
-          error,
-          context: AppErrorContext.club,
-          mode: CatchErrorStateMode.compact,
-          onRetry: () =>
-              ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
-        ),
+        loadingBuilder: (_) => const CatchSkeleton.rows(count: 2),
+        errorBuilder: (_, error, _, onBoundaryRetry) =>
+            CatchLocalizedErrorState(
+              error,
+              context: AppErrorContext.club,
+              mode: CatchErrorStateMode.compact,
+              onRetry: onBoundaryRetry,
+            ),
         builder: (context, setup) {
           final connection = setup.connection;
           return CatchFieldLanes.custom(
@@ -72,7 +72,9 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
                   CatchButton(
                     label: context.l10n.hostsHostAudienceConnectWhatsapp,
                     onPressed: _busy ? null : () => _connectWhatsapp(setup),
-                    isLoading: _busy,
+                    status: (_busy)
+                        ? CatchButtonStatus.loading
+                        : CatchButtonStatus.idle,
                   )
                 else ...[
                   CatchField.read(
@@ -102,7 +104,9 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
                         onPressed: _busy
                             ? null
                             : () => _syncTemplates(connection.connectionId),
-                        isLoading: _busy,
+                        status: (_busy)
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
                       ),
                       CatchButton(
                         label: context.l10n.hostsHostAudienceDisconnect,
@@ -135,7 +139,9 @@ class _HostWhatsappSetupPaneState extends ConsumerState<HostWhatsappSetupPane> {
                           ? null
                           : () =>
                                 _sendTest(setup, setup.approvedTemplates.first),
-                      isLoading: _busy,
+                      status: (_busy)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                     ),
                   ],
                 ],

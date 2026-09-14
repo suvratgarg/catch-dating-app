@@ -1,3 +1,5 @@
+import 'dart:ui' show SemanticsAction, Tristate;
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
@@ -578,11 +580,34 @@ void main() {
             ValueKey('app_shell.navigation.destination.$index'),
           );
           expect(destination, findsOneWidget);
-          final semantics = tester.widget<Semantics>(destination);
-          expect(semantics.properties.label, label);
-          expect(semantics.properties.button, isTrue);
-          expect(semantics.properties.selected, index == 0);
+          final semantics = find.semantics
+              .byLabel(label)
+              .evaluate()
+              .where((node) => node.flagsCollection.isButton)
+              .single;
+          expect(semantics.label, label);
+          expect(semantics.flagsCollection.isButton, isTrue);
+          expect(
+            semantics.flagsCollection.isSelected,
+            index == 0 ? Tristate.isTrue : Tristate.isFalse,
+          );
+          expect(
+            semantics.getSemanticsData().hasAction(SemanticsAction.tap),
+            isTrue,
+          );
         }
+        tester.semantics.tap(find.semantics.byLabel('Events'));
+        await pumpFeatureUi(tester);
+        expect(router.routeInformationProvider.value.uri.path, '/host/events');
+        expect(
+          find.semantics
+              .byLabel('Events')
+              .evaluate()
+              .single
+              .flagsCollection
+              .isSelected,
+          Tristate.isTrue,
+        );
       } else {
         expect(find.bySemanticsLabel(RegExp('Today')), findsOneWidget);
         expect(find.bySemanticsLabel(RegExp('Events')), findsOneWidget);

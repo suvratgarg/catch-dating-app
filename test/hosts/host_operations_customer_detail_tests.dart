@@ -78,8 +78,8 @@ void _registerHostOperationsCustomerDetailTests() {
       'Ananya Rao',
     );
     expect(
-      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).titleRole,
-      CatchTopBarTitleRole.identity,
+      tester.widget<CatchTopBar>(find.byType(CatchTopBar)).variant,
+      CatchTopBarVariant.identity,
     );
   });
 
@@ -106,7 +106,7 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(
       find.descendant(
         of: summary,
-        matching: find.byType(CatchOptionGroupItem<HostCustomerFilter>),
+        matching: find.byType(CatchChoiceButton<HostCustomerFilter>),
       ),
       findsNWidgets(3),
     );
@@ -161,7 +161,10 @@ void _registerHostOperationsCustomerDetailTests() {
 
     await tester.tap(find.text('Sort: Last seen'));
     await pumpFeatureUi(tester);
-    final sortMenu = find.byType(CatchMenu<HostCustomerSort>);
+    final sortMenu = find.byWidgetPredicate(
+      (widget) =>
+          widget is CatchMenu<HostCustomerSort> && widget.builder == null,
+    );
     expect(sortMenu, findsOneWidget);
     await tester.tap(
       find.descendant(of: sortMenu, matching: find.text('Name')),
@@ -412,7 +415,7 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    final header = find.byType(CatchScreenHeaderTitle);
+    final header = find.byType(CatchScreenHeader);
     final titleFinder = find.descendant(
       of: header,
       matching: find.text('Audience'),
@@ -431,7 +434,10 @@ void _registerHostOperationsCustomerDetailTests() {
     expect(
       find.descendant(
         of: find.byType(CatchTopBar),
-        matching: find.byType(CatchIconAction),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchIconAction && widget.tooltip == 'Add person',
+        ),
       ),
       findsOneWidget,
     );
@@ -533,8 +539,26 @@ void _registerHostOperationsCustomerDetailTests() {
       ],
     );
 
-    expect(find.byType(CatchSkeletonized), findsOneWidget);
-    expect(find.byType(CatchSkeletonRows), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSkeleton &&
+            widget.variant == CatchSkeletonVariant.content,
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchSkeleton &&
+            {
+              CatchSkeletonVariant.rows,
+              CatchSkeletonVariant.mediaRows,
+              CatchSkeletonVariant.iconRows,
+            }.contains(widget.variant),
+      ),
+      findsNothing,
+    );
     expect(find.byType(HostCustomerIdentityCard), findsOneWidget);
     expect(find.byType(HostCustomerMemoryPreview), findsOneWidget);
     expect(find.byType(HostCustomerDetailOverview), findsOneWidget);
@@ -567,6 +591,6 @@ void _expectAudienceStateOwner(
           find.byType(CatchRootScreenPageScrollView),
         )
         .bodyLayout,
-    CatchScreenBodyLayout.standard,
+    CatchPageBodyMode.standard,
   );
 }

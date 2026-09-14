@@ -9,7 +9,7 @@ String lengthLabel(String text, int length) => '$text $length';
 void tap() {}
 void toggle(bool value) {}
 const copy = CatchFieldCopy(
-  label: CatchFormFieldLabelCopy(
+  label: CatchFieldLabelTextCopy(
     optionalLabel: 'Optional',
     optionalSuffix: ' Optional',
     optionalSemantics: label,
@@ -36,6 +36,32 @@ const constraint = CatchContractFieldConstraints(
 const key = ValueKey('identity');
 const slot = SizedBox(width: 44);
 void main() {
+  test('row constructors reject hidden label modes', () {
+    for (final mode in [
+      CatchFieldLabelTextMode.hidden,
+      CatchFieldLabelTextMode.hiddenOptional,
+    ]) {
+      expect(
+        () => CatchField.content(
+          copy: copy,
+          title: 'Title',
+          body: 'Body',
+          labelMode: mode,
+        ),
+        throwsAssertionError,
+      );
+      expect(
+        () => CatchField.control(
+          copy: copy,
+          title: 'Title',
+          labelMode: mode,
+          child: slot,
+        ),
+        throwsAssertionError,
+      );
+    }
+  });
+
   test('const input configuration preserves caller bounds and defaults', () {
     const field = CatchField.input(
       copy: copy,
@@ -79,7 +105,7 @@ void main() {
         copy: copy,
         title: 'Sortable',
         metadata: 'Metadata',
-        reorderHandle: slot,
+        leading: slot,
         onTap: tap,
       );
       expect(field.leading, same(slot));

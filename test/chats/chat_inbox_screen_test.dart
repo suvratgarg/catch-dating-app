@@ -517,7 +517,7 @@ void main() {
     final rootScaffold = tester.widget<CatchRootScreenScaffold>(
       find.byType(CatchRootScreenScaffold),
     );
-    expect(rootScaffold.bodyLayout, CatchScreenBodyLayout.fullBleed);
+    expect(rootScaffold.bodyLayout, CatchPageBodyMode.fullBleed);
     expect(find.text('No catches yet'), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
     expect(

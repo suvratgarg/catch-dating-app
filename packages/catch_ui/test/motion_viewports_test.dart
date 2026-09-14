@@ -9,13 +9,13 @@ void main() {
       (tester) async {
         await tester.pumpWidget(
           MaterialApp(
-            home: CatchFadeScaleViewport(
+            home: CatchRevealViewport(
               animation: AlwaysStoppedAnimation(progress),
               child: const Text('Route content'),
             ),
           ),
         );
-        final viewport = find.byType(CatchFadeScaleViewport);
+        final viewport = find.byType(CatchRevealViewport);
         final fade = tester.widget<FadeTransition>(
           find.descendant(of: viewport, matching: find.byType(FadeTransition)),
         );
@@ -33,7 +33,7 @@ void main() {
   ) async {
     await tester.pumpWidget(
       const MaterialApp(
-        home: CatchTicketHeroViewport(
+        home: CatchHeroViewport.ticket(
           prefix: 'event',
           id: 'one',
           child: Text('Ticket'),
@@ -55,7 +55,7 @@ void main() {
           theme: CatchTheme.light,
           home: const MediaQuery(
             data: MediaQueryData(disableAnimations: true),
-            child: CatchMapRevealViewport(
+            child: CatchRevealViewport.stationary(
               animation: AlwaysStoppedAnimation(0.0),
               child: Text('Map content'),
             ),

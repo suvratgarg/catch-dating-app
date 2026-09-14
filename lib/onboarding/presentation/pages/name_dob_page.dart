@@ -169,7 +169,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 helperText: context
                     .l10n
                     .onboardingNameDobPageHelpertextDisplayedOnYourProfile,
-                validator: state.validateFirstName,
+                onValidate: state.validateFirstName,
               ),
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
@@ -184,7 +184,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 helperText: context
                     .l10n
                     .onboardingNameDobPageHelpertextPrivateWeNeverShow,
-                validator: state.validateLastName,
+                onValidate: state.validateLastName,
               ),
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
@@ -193,13 +193,13 @@ class OnboardingNameDobStep extends StatelessWidget {
                 contract: CatchContractConstraints
                     .mobileFormStateOnboardingDateOfBirthText,
                 controller: controllers.date,
-                readOnly: true,
+                inputMode: CatchTextInputMode.readOnly,
                 onTap: () => callbacks.onPickDate(state.datePickerRequest),
                 icon: CatchIcons.calendarTodayOutlined,
                 suffixText: state.ageSuffix,
                 helperText:
                     context.l10n.onboardingNameDobPageHelpertextWeNeverShowYour,
-                validator: (_) => state.validateDateOfBirth(),
+                onValidate: (_) => state.validateDateOfBirth(),
               ),
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
@@ -208,17 +208,17 @@ class OnboardingNameDobStep extends StatelessWidget {
                 contract:
                     CatchContractConstraints.onboardingDraftDocumentPhoneNumber,
                 controller: controllers.phone,
-                readOnly: true,
+                inputMode: CatchTextInputMode.inactiveWithoutSelection,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.done,
                 autofillHints: const [AutofillHints.telephoneNumberNational],
                 icon: CatchIcons.phoneOutlined,
                 prefixText: state.phonePrefix,
-                suffixIcon: Icon(CatchIcons.verifiedRounded),
+                trailing: Icon(CatchIcons.verifiedRounded),
                 helperText:
                     context.l10n.onboardingNameDobPageHelpertextVerifiedViaOtp,
-                helperTone: CatchFieldSupportTone.success,
-                validator: state.validatePhoneNumber,
+                helperTone: CatchFieldSupportRowTone.success,
+                onValidate: state.validatePhoneNumber,
               ),
             ],
           ),

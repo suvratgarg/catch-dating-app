@@ -37,40 +37,33 @@ void main() {
                     CatchSection.divided(
                       key: sectionKey,
                       title: 'Lead',
-                      lead: true,
-                      leadAccent: accent,
+                      titleColor: accent,
                       first: true,
                       child: const SizedBox.shrink(),
                     ),
                     CatchSection.fieldRows(
                       title: 'Lead fields',
-                      lead: true,
-                      leadAccent: accent,
+                      titleColor: accent,
                       first: true,
                       child: const SizedBox.shrink(),
                     ),
-                    CatchSection.divided(
+                    const CatchSection.divided(
                       title: 'Neutral',
-                      leadAccent: accent,
                       first: true,
-                      child: const SizedBox.shrink(),
+                      child: SizedBox.shrink(),
                     ),
-                    CatchSection.fieldRows(
+                    const CatchSection.fieldRows(
                       title: 'Neutral fields',
-                      leadAccent: accent,
                       first: true,
-                      child: const SizedBox.shrink(),
+                      child: SizedBox.shrink(),
                     ),
                     const CatchSection.fieldRows(
                       title: 'No accent',
-                      lead: true,
                       first: true,
                       child: SizedBox.shrink(),
                     ),
                     CatchSection.divided(
                       title: 'Override',
-                      lead: true,
-                      leadAccent: accent,
                       titleColor: tokens.danger,
                       first: true,
                       child: const SizedBox.shrink(),

@@ -359,7 +359,9 @@ class _ProfileInlinePromptEntryEditorState
     final answerSaving = _answerStatus == CatchFieldStatus.saving;
     return CatchSection.containedFieldRows(
       key: ValueKey('profile-prompt-card-${widget.promptIndex}'),
-      hasError: _validationError != null || saveError != null,
+      states: {
+        if (_validationError != null || saveError != null) WidgetState.error,
+      },
       children: [
         CatchField<String>.choices(
           copy: catchFieldCopy(context.l10n),
@@ -369,10 +371,11 @@ class _ProfileInlinePromptEntryEditorState
             number: widget.promptIndex + 1,
           ),
           contract: CatchContractConstraints.profilePromptAnswerPromptId,
-          contractValue: (value) => value,
+          contractValueBuilder: (value) => value,
           body: selectedDefinition.title,
           values: widget.availablePromptIds,
-          itemLabel: (promptId) => profilePromptDefinition(promptId).title,
+          itemLabelBuilder: (promptId) =>
+              profilePromptDefinition(promptId).title,
           selected: {_selectedPromptId},
           onSelectionChanged: (selection) {
             if (selection.isEmpty || questionSaving) return;
@@ -383,7 +386,9 @@ class _ProfileInlinePromptEntryEditorState
               clearSaveError();
             });
           },
-          open: widget.isExpanded,
+          disclosureMode: widget.isExpanded
+              ? CatchFieldMode.controlledExpanded
+              : CatchFieldMode.controlledCollapsed,
           onOpenChanged: (expanded) {
             if (expanded == widget.isExpanded || questionSaving) {
               return;
@@ -392,7 +397,6 @@ class _ProfileInlinePromptEntryEditorState
           },
           onCancel: _cancelQuestion,
           onSubmit: _saveQuestion,
-          isLoading: questionSaving,
           status: questionSaving ? CatchFieldStatus.saving : _questionStatus,
           error: _saveError(question: true),
         ),
@@ -410,7 +414,9 @@ class _ProfileInlinePromptEntryEditorState
           minLines: 1,
           maxLength: maximumProfilePromptAnswerLength,
           inputFormatters: const [_PromptStackedBlankLinesFormatter()],
-          readOnly: questionSaving || answerSaving,
+          inputMode: questionSaving || answerSaving
+              ? CatchTextInputMode.inactiveWithoutSelection
+              : CatchTextInputMode.editable,
           status: answerSaving ? CatchFieldStatus.saving : _answerStatus,
           error: _validationError ?? _saveError(question: false),
           onFocusChanged: _handleAnswerFocusChanged,

@@ -589,7 +589,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
 
   Future<void> _showStepOverview() async {
     if (_requestPending) return;
-    final selected = await showCatchFormStepOverview(
+    final selected = await showCatchFormStepSheet(
       fieldCopy: catchFieldCopy(context.l10n),
       statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
       context: context,
@@ -675,7 +675,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
           ).ignore();
         }
       },
-      child: CatchScreenScaffold.stepFlow(
+      child: CatchScaffold.stepFlow(
         backgroundColor: t.bg,
         body: Column(
           children: [
@@ -704,7 +704,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                 body: IgnorePointer(
                   ignoring: !screenState.requestControlsEnabled,
                   child: _isReviewing
-                      ? CatchFormReviewBody(
+                      ? CatchFormReviewPageBody(
                           fieldCopy: catchFieldCopy(context.l10n),
                           statusLabelBuilder: catchFormStepStatusLabelBuilder(
                             context.l10n,
@@ -807,7 +807,7 @@ class _CreateClubScreenState extends ConsumerState<CreateClubScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (screenState.mutationError != null)
-                            CatchErrorBanner(
+                            CatchBanner.error(
                               message: screenState.mutationError!,
                             ),
                           if (screenState.draftRestore.hasError)

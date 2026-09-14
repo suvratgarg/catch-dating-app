@@ -38,7 +38,7 @@ class SuvbotActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomDock(
+    return CatchDockSurface(
       child: actions.when(
         data: (items) {
           final t = CatchTokens.of(context);
@@ -107,11 +107,13 @@ class SuvbotActionBar extends StatelessWidget {
                       button: true,
                       child: Tooltip(
                         message: helpAction.label,
-                        child: CatchIconButton(
+                        child: CatchIconAction(
                           size: CatchLayout.suvbotCircleActionExtent,
-                          background: t.surface,
-                          disabled: pending,
-                          onTap: pending
+                          backgroundColor: t.surface,
+                          status: (pending)
+                              ? CatchIconActionStatus.disabled
+                              : CatchIconActionStatus.enabled,
+                          onPressed: pending
                               ? null
                               : () => unawaited(onAction(helpAction)),
                           child: Icon(
@@ -137,8 +139,10 @@ class SuvbotActionBar extends StatelessWidget {
                         variant: CatchButtonVariant.secondary,
                         size: CatchButtonSize.sm,
                         fullWidth: true,
-                        isLoading: pending,
-                        icon: Icon(_iconFor(checkAction.icon)),
+                        status: (pending)
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
+                        leading: Icon(_iconFor(checkAction.icon)),
                         foregroundColor: t.accent,
                         backgroundColor: t.accent.withValues(
                           alpha: CatchOpacity.subtleFill,
@@ -158,8 +162,10 @@ class SuvbotActionBar extends StatelessWidget {
                         variant: CatchButtonVariant.danger,
                         size: CatchButtonSize.sm,
                         fullWidth: true,
-                        isLoading: pending,
-                        icon: Icon(_iconFor(refreshAction.icon)),
+                        status: (pending)
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
+                        leading: Icon(_iconFor(refreshAction.icon)),
                         foregroundColor: colors.error,
                         backgroundColor: colors.errorContainer.withValues(
                           alpha: CatchOpacity.suvbotDestructiveFill,
@@ -189,7 +195,7 @@ class SuvbotActionBar extends StatelessWidget {
                           variant: CatchButtonVariant.secondary,
                           size: CatchButtonSize.sm,
                           fullWidth: true,
-                          icon: Icon(_iconFor(action.icon)),
+                          leading: Icon(_iconFor(action.icon)),
                           foregroundColor: t.ink,
                           backgroundColor: t.surface,
                           borderColor: t.line,
@@ -217,8 +223,10 @@ class SuvbotActionBar extends StatelessWidget {
                         variant: CatchButtonVariant.secondary,
                         size: CatchButtonSize.sm,
                         fullWidth: true,
-                        isLoading: pending,
-                        icon: Icon(_iconFor(matchAction.icon)),
+                        status: (pending)
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
+                        leading: Icon(_iconFor(matchAction.icon)),
                         foregroundColor: t.ink,
                         backgroundColor: t.surface,
                         borderColor: t.line,
@@ -241,8 +249,10 @@ class SuvbotActionBar extends StatelessWidget {
                         variant: CatchButtonVariant.danger,
                         size: CatchButtonSize.sm,
                         fullWidth: true,
-                        isLoading: pending,
-                        icon: Icon(CatchIcons.cleaningServicesRounded),
+                        status: (pending)
+                            ? CatchButtonStatus.loading
+                            : CatchButtonStatus.idle,
+                        leading: Icon(CatchIcons.cleaningServicesRounded),
                         foregroundColor: colors.error,
                         backgroundColor: colors.errorContainer.withValues(
                           alpha: CatchOpacity.suvbotDestructiveFill,
@@ -267,7 +277,7 @@ class SuvbotActionBar extends StatelessWidget {
             variant: CatchButtonVariant.secondary,
             size: CatchButtonSize.sm,
             fullWidth: true,
-            icon: Icon(CatchIcons.syncRounded),
+            leading: Icon(CatchIcons.syncRounded),
             foregroundColor: t.ink,
             backgroundColor: t.surface,
             borderColor: t.line,
@@ -288,7 +298,7 @@ Future<void> _showResetSheet(
     context: context,
     builder: (context) => SafeArea(
       child: SingleChildScrollView(
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: context.l10n.chatsSuvbotActionBarTitleResetDemoState,
           subtitle:
               context.l10n.chatsSuvbotActionBarSubtitleTheseActionsOnlyTouch,
@@ -472,7 +482,7 @@ class _MatchTesterSheetState extends State<MatchTesterSheet> {
           const SizedBox(height: CatchSpacing.s3),
           CatchButton(
             onPressed: widget.pending ? null : _submit,
-            icon: Icon(CatchIcons.personAddAlt1Rounded),
+            leading: Icon(CatchIcons.personAddAlt1Rounded),
             label: context.l10n.chatsSuvbotActionBarLabelCreateMatch,
             fullWidth: true,
           ),

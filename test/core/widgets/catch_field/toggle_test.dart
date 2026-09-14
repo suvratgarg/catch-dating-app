@@ -34,10 +34,10 @@ void main() {
                   copy: catchFieldCopy(AppLocalizationsEn()),
                   title: 'Languages',
                   values: const ['English', 'Hindi'],
-                  itemLabel: (value) => value,
+                  itemLabelBuilder: (value) => value,
                   selected: selected,
-                  multi: true,
-                  initiallyOpen: true,
+                  mode: CatchChipMode.multiple,
+                  disclosureMode: CatchFieldMode.localExpanded,
                   onSelectionChanged: (next) => setState(() => selected = next),
                   onCancel: () {},
                   onSubmit: () {},
@@ -48,7 +48,7 @@ void main() {
                   value: height,
                   min: 160,
                   max: 180,
-                  initiallyOpen: true,
+                  disclosureMode: CatchFieldMode.localExpanded,
                   decreaseSemanticLabel: 'Decrease height',
                   increaseSemanticLabel: 'Increase height',
                   onChanged: (next) => setState(() => height = next.toInt()),
@@ -97,14 +97,14 @@ void main() {
             (widget) =>
                 widget is CustomPaint &&
                 widget.painter.runtimeType.toString() ==
-                    '_CatchFieldFocusOutlinePainter',
+                    '_CatchFieldFocusPainter',
           ),
         ),
         findsOneWidget,
       );
       expect(
         tester.getSize(stepperOutline),
-        Size.square(CatchFieldRepeatButton.hitExtent),
+        Size.square(CatchStepperRepeatButton.hitExtent),
       );
       expect(
         tester.getSize(
@@ -152,11 +152,12 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onOpenChanged: openChanges.add,
-          control: const SizedBox(height: 80, child: Text('Height control')),
+
           onCancel: () {},
           onSubmit: () {},
+          child: const SizedBox(height: 80, child: Text('Height control')),
         ),
       ),
     );
@@ -183,9 +184,9 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          open: true,
+          disclosureMode: CatchFieldMode.controlledExpanded,
           onOpenChanged: openChanges.add,
-          control: Focus(
+          child: Focus(
             focusNode: controlFocus,
             child: const SizedBox(height: 44, child: Text('Height control')),
           ),
@@ -334,7 +335,7 @@ void main() {
     );
 
     expect(
-      tester.getCenter(find.byType(CatchFieldToggle)).dx,
+      tester.getCenter(find.byType(CatchToggleInput)).dx,
       lessThan(tester.getCenter(find.text('Show pace')).dx),
     );
   });

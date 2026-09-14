@@ -50,7 +50,7 @@ void main() {
     expect(find.text('Continue to publish'), findsNothing);
     expect(find.text('Form title'), findsNothing);
     final topBar = find.byType(CatchTopBar);
-    expect(tester.widget<CatchTopBar>(topBar).titleWidget, isNull);
+    expect(tester.widget<CatchTopBar>(topBar).body, isNull);
     final titleFinder = find.descendant(
       of: topBar,
       matching: find.text('Form'),
@@ -65,14 +65,14 @@ void main() {
     );
     final topBarButtons = find.descendant(
       of: topBar,
-      matching: find.byType(CatchIconButton),
+      matching: find.byType(CatchIconAction),
     );
     expect(topBarButtons, findsNWidgets(3));
     expect(
       tester
-          .widgetList<CatchIconButton>(topBarButtons)
+          .widgetList<CatchIconAction>(topBarButtons)
           .map((button) => button.variant),
-      everyElement(CatchIconButtonVariant.bordered),
+      everyElement(CatchIconActionVariant.bordered),
     );
     expect(
       find.descendant(
@@ -97,9 +97,15 @@ void main() {
     );
     expect(
       tester
-          .widget<CatchBottomAction>(find.byType(CatchBottomAction))
-          .buttonShape,
-      CatchButtonShape.rounded,
+          .widget<CatchDockSurface>(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is CatchDockSurface &&
+                  widget.variant == CatchDockSurfaceVariant.primary,
+            ),
+          )
+          .buttonMode,
+      CatchButtonMode.rounded,
     );
   });
 
@@ -110,11 +116,18 @@ void main() {
 
       expect(find.text('Outline'), findsOneWidget);
       expect(find.text('SECTION 1'), findsOneWidget);
-      expect(find.byType(CatchBottomAction), findsNothing);
-      final publishAction = find.byType(CatchTopBarPrimaryAction);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.primary,
+        ),
+        findsNothing,
+      );
+      final publishAction = find.byType(CatchTopBarPrimaryButton);
       expect(publishAction, findsOneWidget);
       expect(
-        tester.widget<CatchTopBarPrimaryAction>(publishAction).label,
+        tester.widget<CatchTopBarPrimaryButton>(publishAction).label,
         'Review & publish',
       );
 
@@ -336,7 +349,12 @@ void main() {
         find.byKey(const ValueKey('host-form-builder-tabs')),
         findsOneWidget,
       );
-      expect(find.byType(CatchStatColumn), findsNWidgets(2));
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is CatchMetricTile && widget.item == null,
+        ),
+        findsNWidgets(2),
+      );
       final questions = find.descendant(
         of: find.byKey(const ValueKey('host-form-builder-tabs')),
         matching: find.text('Questions'),
@@ -381,7 +399,9 @@ void main() {
       find.byKey(const ValueKey('host_form_metrics.reflow')),
       findsOneWidget,
     );
-    final metricCells = find.byType(CatchStatColumn);
+    final metricCells = find.byWidgetPredicate(
+      (widget) => widget is CatchMetricTile && widget.item == null,
+    );
     expect(metricCells, findsNWidgets(2));
     expect(
       tester.getCenter(metricCells.at(0)).dy,

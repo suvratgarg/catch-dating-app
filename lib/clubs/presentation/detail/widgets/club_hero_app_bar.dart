@@ -63,7 +63,7 @@ class ClubHeroAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchViewportSliver(
+    return CatchViewport.sliver(
       sliverBuilder: (context, viewport) {
         final t = CatchTokens.of(context);
         final width = viewport.width;
@@ -113,24 +113,24 @@ class ClubHeroAppBar extends StatelessWidget {
           centerTitle: false,
           titleSpacing: 0,
           leadingWidth: CatchSpacing.s16,
-          title: CatchCollapsedSliverTitle(
+          title: CatchCollapsedHeaderTitle(
             title: club.name,
             textKey: ValueKey(
               context.l10n.clubsClubHeroAppBarTitleClubDetailCollapsedTitle,
             ),
             style: CatchTextStyles.clubDisplay(
               context,
-              step: CatchDisplayStep.m,
+              step: CatchTextStylesSize.m,
               height: CatchLayout.clubDetailHeroCollapsedTitleLineHeight,
               color: t.ink,
             ),
           ),
           leading: Padding(
             padding: _clubHeroLeadingPadding,
-            child: CatchIconAction(
+            child: CatchIconAction.toolbar(
               icon: CatchIcons.arrowBackIosNewRounded,
               tooltip: context.l10n.clubsClubHeroAppBarTooltipBack,
-              variant: CatchIconButtonVariant.float,
+              variant: CatchIconActionVariant.float,
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),
@@ -138,12 +138,12 @@ class ClubHeroAppBar extends StatelessWidget {
             Padding(
               padding: _clubHeroActionPadding,
               child: Builder(
-                builder: (buttonContext) => CatchIconAction(
+                builder: (buttonContext) => CatchIconAction.toolbar(
                   icon: CatchIcons.platformShare(
                     platform: Theme.of(context).platform,
                   ),
                   tooltip: context.l10n.clubsClubHeroAppBarTooltipShareClub,
-                  variant: CatchIconButtonVariant.float,
+                  variant: CatchIconActionVariant.float,
                   onPressed: () => unawaited(
                     onShareClub != null
                         ? onShareClub!(buttonContext, club)
@@ -230,7 +230,7 @@ double _heroCaptionExtentFor(
       text: title,
       style: CatchTextStyles.clubDisplay(
         context,
-        step: CatchDisplayStep.l,
+        step: CatchTextStylesSize.l,
         height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
         color: t.ink,
       ),
@@ -352,7 +352,7 @@ class ClubHeroModule extends StatelessWidget {
                   ),
                 ),
                 gapW12,
-                CatchPersonAvatar(
+                CatchAvatar(
                   key: const ValueKey('club-detail-hero-logo-seal'),
                   size: CatchSpacing.s16,
                   name: club.name,
@@ -372,7 +372,7 @@ class ClubHeroModule extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: CatchTextStyles.clubDisplay(
                 context,
-                step: CatchDisplayStep.l,
+                step: CatchTextStylesSize.l,
                 height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
                 color: t.ink,
               ),
@@ -437,7 +437,7 @@ class ClubHeroModule extends StatelessWidget {
                 clipBehavior: Clip.hardEdge,
                 child: SizedBox(
                   height: mediaHeight,
-                  child: CatchDetailHeroBackdrop(
+                  child: CatchHeroImage(
                     imageUrl: club.primaryClubPhotoUrl,
                     semanticLabel: context.l10n
                         .clubsClubHeroAppBarSemanticlabelNameCoverPhoto(
@@ -478,7 +478,7 @@ class ClubHeroModule extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: CatchTextStyles.clubDisplay(
                   context,
-                  step: CatchDisplayStep.l,
+                  step: CatchTextStylesSize.l,
                   height: CatchLayout.clubDetailHeroExpandedTitleLineHeight,
                   color: t.ink,
                 ),

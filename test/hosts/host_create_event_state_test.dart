@@ -316,9 +316,9 @@ void main() {
 
     expect(review.canSubmit, isTrue);
     expect(review.items.map((item) => item.status), [
-      CatchFormStepStatus.complete,
-      CatchFormStepStatus.complete,
-      CatchFormStepStatus.complete,
+      CatchFormStepRowListStatus.complete,
+      CatchFormStepRowListStatus.complete,
+      CatchFormStepRowListStatus.complete,
     ]);
 
     final missingName = CreateEventWizardReviewState.resolve(
@@ -357,7 +357,7 @@ void main() {
     expect(missingName.canSubmit, isFalse);
     expect(
       missingName.items.first.status,
-      CatchFormStepStatus.needsInformation,
+      CatchFormStepRowListStatus.needsInformation,
     );
 
     final incomplete = CreateEventWizardReviewState.resolve(

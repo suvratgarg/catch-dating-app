@@ -84,7 +84,7 @@ class _CompatibilityQuestionnaireSectionState
               ),
               CatchPrivacyBadge(
                 copy: catchPrivacyBadgeCopy(context.l10n),
-                kind: CatchPrivacyBadgeKind.catchPrivate,
+                variant: CatchPrivacyBadgeVariant.catchPrivate,
               ),
               CatchBadge(
                 label: rankingOn
@@ -196,7 +196,9 @@ class _CompatibilityQuestionnaireSectionState
                   : context
                         .l10n
                         .eventSuccessEventSuccessCompanionQuestionnaireLabelUpdateClues,
-              isLoading: saving,
+              status: (saving)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: !hasAnswers || !dirty || saving
                   ? null
                   : () async {

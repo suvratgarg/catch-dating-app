@@ -64,7 +64,7 @@ class DraftDeleteConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchConfirmDialog<bool>(
+    return CatchDialog<bool>.confirmation(
       title: draftDeleteConfirmationDialogTitle(context.l10n),
       message: draftDeleteConfirmationDialogMessage(context.l10n, draft),
       actions: draftDeleteConfirmationDialogActions(context.l10n),
@@ -150,17 +150,17 @@ class _DraftPickerSheetState extends State<DraftPickerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsDraftPickerSheetTitleResumeADraft,
       subtitle: context.l10n.hostsDraftPickerSheetSubtitlePickUpWhereYou,
-      action: widget.onStartFresh == null
+      footer: widget.onStartFresh == null
           ? null
           : CatchButton(
               label: context.l10n.hostsDraftPickerSheetLabelStartAFreshEvent,
               onPressed: _onStartFresh,
               variant: CatchButtonVariant.secondary,
               fullWidth: true,
-              icon: Icon(CatchIcons.addRounded),
+              leading: Icon(CatchIcons.addRounded),
             ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -224,13 +224,13 @@ class DraftCard extends StatelessWidget {
         icon: CatchIcons.descriptionOutlined,
         iconColor: t.ink3,
         onTap: isDeleting ? null : onSelect,
-        action: Tooltip(
+        actions: Tooltip(
           message: context.l10n.hostsDraftPickerSheetMessageDeleteDraft,
-          child: CatchIconButton(
+          child: CatchIconAction(
             key: CreateEventFormKeys.deleteDraft(draft.id),
-            onTap: isDeleting ? null : onDelete,
+            onPressed: isDeleting ? null : onDelete,
             size: 36,
-            background: Colors.transparent,
+            backgroundColor: Colors.transparent,
             child: isDeleting
                 ? const HostInlineSkeletonIcon()
                 : Icon(

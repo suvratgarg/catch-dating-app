@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/event_success.feature.json",
   "generatedFor": "2026-08-11",
   "sourceDigest": "sha256:d5988cbdde4cb4237cef54f756e1b3d685fa80ac2cd7ec4ef96c88388357fc1e",
-  "resolvedDigest": "sha256:17d35a931f8e32b33e8d58f43385266cd39a8b8b88ea7b8050b563e37e26fa44",
+  "resolvedDigest": "sha256:fe7127af9ead40a0bf5dd7933befac7283b360ea2ed47d0aa35ca88421d6a2d5",
   "feature": {
     "id": "feature.event_success",
     "name": "Event Success",
@@ -2261,7 +2261,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -2304,12 +2306,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },
@@ -2336,7 +2339,14 @@
                 "CatchSkeleton.text",
                 "CatchSkeleton.textBlock",
                 "CatchSkeleton.circle",
-                "CatchSkeleton.custom"
+                "CatchSkeleton.custom",
+                "CatchSkeleton.content",
+                "CatchSkeleton.cards",
+                "CatchSkeleton.rows",
+                "CatchSkeleton.boxes",
+                "CatchSkeleton.chips",
+                "CatchSkeleton.mediaRows",
+                "CatchSkeleton.iconRows"
               ]
             }
           },
@@ -2349,8 +2359,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -2358,10 +2367,11 @@
             "id": "catch.toggle",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchToggle",
-              "file": "packages/catch_ui/lib/src/components/catch_toggle.dart",
+              "symbol": "CatchToggleInput",
+              "file": "packages/catch_ui/lib/src/components/catch_toggle_input.dart",
               "constructors": [
-                "CatchToggle"
+                "CatchToggleInput",
+                "CatchToggleInput.field"
               ]
             }
           },
@@ -2372,7 +2382,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

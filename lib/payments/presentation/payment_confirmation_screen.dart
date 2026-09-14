@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -37,14 +37,14 @@ class PaymentConfirmationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final eventAsync = ref.watch(watchEventProvider(data.eventId));
 
-    return CatchAsyncValueView<Event?>(
+    return CatchAsyncBoundary<Event?>(
       value: eventAsync,
       onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
       loadingBuilder: (_) => const PaymentConfirmationLoadingScreen(),
-      errorBuilder: (_, e, _) => CatchLocalizedErrorScaffold(
+      errorBuilder: (_, e, _, onBoundaryRetry) => CatchLocalizedErrorScaffold(
         e,
         context: AppErrorContext.payments,
-        onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, event) {
         if (event == null) {
@@ -55,7 +55,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
             message: context
                 .l10n
                 .paymentsPaymentConfirmationScreenMessageThisEventIsNo,
-            secondaryAction: const CatchErrorBackAction(),
+            actions: const [CatchErrorBackButton()],
           );
         }
         if (data.isPendingExternalCheckout) {
@@ -144,8 +144,8 @@ class PaymentPendingCheckoutBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchScreenScaffold.standalone(
-      safeArea: CatchScreenSafeArea.none,
+    return CatchScaffold.standalone(
+      safeArea: CatchScaffoldPlacement.none,
       backgroundColor: t.bg,
       body: Stack(
         children: [
@@ -303,7 +303,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const CatchBottomSheetGrabber(),
+            const CatchSheetDragIndicator(),
             gapH16,
             Align(
               alignment: Alignment.centerLeft,
@@ -391,7 +391,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
                             providerLabel: providerLabel,
                           ),
                 onPressed: onOpenCheckout,
-                icon: Icon(CatchIcons.openInNewRounded),
+                leading: Icon(CatchIcons.openInNewRounded),
                 fullWidth: true,
               ),
               gapH10,
@@ -402,7 +402,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
                   .paymentsPaymentConfirmationScreenLabelViewPaymentHistory,
               onPressed: onViewPaymentHistory,
               variant: CatchButtonVariant.secondary,
-              icon: Icon(CatchIcons.receiptLongOutlined),
+              leading: Icon(CatchIcons.receiptLongOutlined),
               fullWidth: true,
             ),
             gapH4,
@@ -412,7 +412,7 @@ class PaymentCheckoutSheet extends StatelessWidget {
                   .paymentsPaymentConfirmationScreenLabelBackToEvent,
               onPressed: onBackToEvent,
               variant: CatchButtonVariant.ghost,
-              icon: Icon(CatchIcons.eventOutlined),
+              leading: Icon(CatchIcons.eventOutlined),
               fullWidth: true,
             ),
           ],

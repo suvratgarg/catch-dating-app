@@ -9,6 +9,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_featur
     show EventSuccessMetricPill, LiveStepRow;
 import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart'
     show CountdownBeatRail;
+import 'package:catch_dating_app/event_success/presentation/event_success_progress_status.dart';
 import 'package:catch_dating_app/hosts/presentation/widgets/host_organizer_switcher.dart'
     show HostOrganizerAvatar, HostOrganizerSwitcherSheet;
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -293,9 +294,9 @@ class _BadgeStatusFamily extends StatelessWidget {
               CatchPrivacyBadge(copy: catchPrivacyBadgeCopy(context.l10n)),
               ClubHostRoleBadge(role: ClubHostRole.owner),
               EventSuccessMetricPill(label: 'Pacing', value: .78),
-              CatchInlineStatus(
+              CatchStatusRow(
                 label: 'Unsaved changes',
-                tone: CatchInlineStatusTone.warning,
+                tone: CatchStatusRowTone.warning,
               ),
             ],
           ),
@@ -316,7 +317,7 @@ class _BadgeStatusFamily extends StatelessWidget {
                 count: 124,
                 child: Icon(CatchIcons.notificationsOutlined),
               ),
-              CatchPersonUnreadCountPill(
+              CatchCountBadge.label(
                 semanticsLabel: catchPersonRowCopy(
                   context.l10n,
                 ).unreadCountLabel(12),
@@ -333,9 +334,10 @@ class _BadgeStatusFamily extends StatelessWidget {
             runSpacing: CatchSpacing.s4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              const CatchStatusDot(),
-              CatchStatusDot(color: tokens.warning),
-              CatchPersonNewMatchDot(
+              const CatchStatusIndicator(),
+              CatchStatusIndicator(color: tokens.warning),
+              CatchStatusIndicator(
+                size: CatchSpacing.s2,
                 semanticsLabel: catchPersonRowCopy(context.l10n).newMatchLabel,
               ),
             ],
@@ -392,13 +394,13 @@ class _CompactControlFamily extends StatelessWidget {
             runSpacing: CatchSpacing.s4,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              CatchCountPill.label(
+              CatchButton.floating(
                 icon: CatchIcons.mapOutlined,
                 label: 'Map',
-                semanticLabel: 'Show map',
+                semanticsLabel: 'Show map',
                 onPressed: _noop,
               ),
-              CatchCountPill.label(
+              CatchButton.floating(
                 icon: CatchIcons.tuneRounded,
                 label: 'Filters',
                 count: 3,
@@ -418,7 +420,7 @@ class _CompactControlFamily extends StatelessWidget {
             children: [
               _MeasuredControl(
                 label: '44 label',
-                child: CatchCountPill.label(
+                child: CatchButton.floating(
                   icon: CatchIcons.mapOutlined,
                   label: 'Map',
                   onPressed: _noop,
@@ -426,17 +428,17 @@ class _CompactControlFamily extends StatelessWidget {
               ),
               _MeasuredControl(
                 label: '40',
-                child: CatchIconButton.icon(
+                child: CatchIconAction.icon(
                   icon: CatchIcons.tuneRounded,
-                  size: CatchIconButton.navSize,
-                  onTap: _noop,
+                  size: CatchIconAction.navSize,
+                  onPressed: _noop,
                 ),
               ),
               _MeasuredControl(
                 label: '44',
-                child: CatchIconButton.icon(
+                child: CatchIconAction.icon(
                   icon: CatchIcons.tuneRounded,
-                  onTap: _noop,
+                  onPressed: _noop,
                 ),
               ),
             ],
@@ -449,16 +451,19 @@ class _CompactControlFamily extends StatelessWidget {
             spacing: CatchSpacing.s5,
             runSpacing: CatchSpacing.s4,
             children: [
-              CatchIconButton.icon(icon: CatchIcons.tuneRounded, onTap: _noop),
-              CatchIconButton.icon(
+              CatchIconAction.icon(
                 icon: CatchIcons.tuneRounded,
-                variant: CatchIconButtonVariant.float,
-                onTap: _noop,
+                onPressed: _noop,
               ),
-              CatchIconButton.icon(
+              CatchIconAction.icon(
                 icon: CatchIcons.tuneRounded,
-                variant: CatchIconButtonVariant.plain,
-                onTap: _noop,
+                variant: CatchIconActionVariant.float,
+                onPressed: _noop,
+              ),
+              CatchIconAction.icon(
+                icon: CatchIcons.tuneRounded,
+                variant: CatchIconActionVariant.plain,
+                onPressed: _noop,
               ),
             ],
           ),
@@ -466,12 +471,12 @@ class _CompactControlFamily extends StatelessWidget {
         _PreviewCard(
           title: 'Counted icon action',
           note: 'The canonical icon action owns its typed count badge.',
-          child: CatchIconButton.counted(
+          child: CatchIconAction.counted(
             icon: CatchIcons.tuneRounded,
             count: 3,
-            variant: CatchIconButtonVariant.plain,
+            variant: CatchIconActionVariant.plain,
             tooltip: '3 active filters',
-            onTap: _noop,
+            onPressed: _noop,
           ),
         ),
       ],
@@ -584,7 +589,7 @@ class _ProgressCueFamily extends StatelessWidget {
               for (final entry in steps.indexed)
                 LiveStepRow(
                   step: entry.$2,
-                  state: CatchProgressCueState.fromPosition(
+                  state: EventSuccessProgressStatus.fromPosition(
                     index: entry.$1,
                     currentIndex: 1,
                   ),

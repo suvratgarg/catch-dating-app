@@ -1,9 +1,9 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/patterns/catch_page_body.dart';
+import 'package:catch_ui/src/patterns/catch_page_body_mode.dart';
 import 'package:catch_ui/src/patterns/catch_root_screen_page_owner.dart';
-import 'package:catch_ui/src/patterns/catch_screen_body_layout.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_screen_body.dart';
-import 'package:catch_ui/src/patterns/catch_sliver_terminal_padding.dart';
-import 'package:catch_ui/src/primitives/catch_pager_focus_boundary.dart';
+import 'package:catch_ui/src/patterns/catch_scroll_terminal_gap.dart';
+import 'package:catch_ui/src/primitives/catch_pager_focus_viewport.dart';
 import 'package:flutter/material.dart';
 
 /// Inner scroll owner for one page of `CatchRootScreenScaffold`.
@@ -19,27 +19,27 @@ class CatchRootScreenPageScrollView extends StatefulWidget
   const CatchRootScreenPageScrollView.standard({
     super.key,
     required this.scrollKey,
-    required this.slivers,
+    required this.children,
     this.maxContentExtent = CatchLayout.screenPageMaxExtent,
     this.controller,
     this.scrollStateController,
     this.physics,
     this.onRefresh,
-  }) : bodyLayout = CatchScreenBodyLayout.standard,
+  }) : bodyLayout = CatchPageBodyMode.standard,
        includeTerminalPadding = true,
        constrainToContentWidth = true;
 
-  /// Full-bleed root page whose slivers still use shell-owned terminal
+  /// Full-bleed root page whose sliver children still use shell-owned terminal
   /// clearance.
   const CatchRootScreenPageScrollView.fullBleed({
     super.key,
     required this.scrollKey,
-    required this.slivers,
+    required this.children,
     this.controller,
     this.scrollStateController,
     this.physics,
     this.onRefresh,
-  }) : bodyLayout = CatchScreenBodyLayout.fullBleed,
+  }) : bodyLayout = CatchPageBodyMode.fullBleed,
        includeTerminalPadding = true,
        constrainToContentWidth = false,
        maxContentExtent = null;
@@ -49,19 +49,21 @@ class CatchRootScreenPageScrollView extends StatefulWidget
   const CatchRootScreenPageScrollView.embeddedViewport({
     super.key,
     required this.scrollKey,
-    required this.slivers,
+    required this.children,
     this.controller,
     this.scrollStateController,
     this.physics,
     this.onRefresh,
-  }) : bodyLayout = CatchScreenBodyLayout.fullBleed,
+  }) : bodyLayout = CatchPageBodyMode.fullBleed,
        includeTerminalPadding = false,
        constrainToContentWidth = false,
        maxContentExtent = null;
 
   final PageStorageKey<String> scrollKey;
-  final CatchScreenBodyLayout bodyLayout;
-  final List<Widget> slivers;
+  final CatchPageBodyMode bodyLayout;
+
+  /// Sliver children following this page's shared overlap injector.
+  final List<Widget> children;
   final bool includeTerminalPadding;
 
   /// Centers each supplied sliver around a [CatchLayout.maxContentWidth]
@@ -174,7 +176,7 @@ class _CatchRootScreenPageScrollViewState
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return CatchPagerFocusBoundary(
+    return CatchPagerFocusViewport(
       child: Builder(
         builder: (context) {
           _effectiveController =
@@ -191,15 +193,15 @@ class _CatchRootScreenPageScrollViewState
                   context,
                 ),
               ),
-              CatchSliverScreenBody(
-                layout: widget.bodyLayout,
+              CatchPageBody.slivers(
+                mode: widget.bodyLayout,
                 constrainToContentWidth: widget.constrainToContentWidth,
                 maxContentExtent:
                     widget.maxContentExtent ?? CatchLayout.screenPageMaxExtent,
-                slivers: widget.slivers,
+                children: widget.children,
               ),
               if (widget.includeTerminalPadding)
-                const CatchSliverTerminalPadding(),
+                const CatchScrollTerminalGap.sliver(),
             ],
           );
           final onRefresh = widget.onRefresh;

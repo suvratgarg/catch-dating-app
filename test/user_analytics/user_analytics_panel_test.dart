@@ -51,7 +51,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(CatchSectionStack), findsOneWidget);
+      expect(find.byType(CatchSectionList), findsOneWidget);
       expect(find.byType(CatchSection), findsNWidgets(4));
       expect(
         find.ancestor(
@@ -68,7 +68,6 @@ void main() {
         findsOneWidget,
       );
       expect(find.byType(CatchField), findsNWidgets(3));
-      expect(find.byType(CatchAnalyticsDataQualityList), findsNothing);
     },
   );
 
@@ -116,7 +115,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(CatchSectionStack), findsOneWidget);
+    expect(find.byType(CatchSectionList), findsOneWidget);
     expect(find.byType(CatchSection), findsNWidgets(4));
     expect(find.text('TREND'), findsOneWidget);
     expect(find.text('SUGGESTIONS'), findsOneWidget);

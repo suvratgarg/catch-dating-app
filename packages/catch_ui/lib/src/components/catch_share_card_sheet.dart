@@ -2,8 +2,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_button.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_bottom_sheet_grabber.dart';
 import 'package:catch_ui/src/primitives/catch_gap.dart';
+import 'package:catch_ui/src/primitives/catch_sheet_drag_indicator.dart';
 import 'package:flutter/material.dart';
 
 /// Presentation-only card preview and share action.
@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 class CatchShareCardSheet extends StatelessWidget {
   const CatchShareCardSheet({
     super.key,
-    required this.card,
+    required this.media,
     required this.captureKey,
     required this.buttonLabel,
     required this.footnote,
@@ -25,7 +25,7 @@ class CatchShareCardSheet extends StatelessWidget {
   static const cardPreviewKey = ValueKey('rich_share_card_sheet.card_preview');
   static const shareButtonKey = ValueKey('rich_share_card_sheet.share_button');
 
-  final Widget card;
+  final Widget media;
   final GlobalKey captureKey;
   final String buttonLabel;
   final String footnote;
@@ -48,14 +48,14 @@ class CatchShareCardSheet extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const CatchBottomSheetGrabber(),
+            const CatchSheetDragIndicator(),
             gapH16,
             RepaintBoundary(
               key: captureKey,
               child: ConstrainedBox(
                 key: cardPreviewKey,
                 constraints: BoxConstraints(maxWidth: maxWidth),
-                child: card,
+                child: media,
               ),
             ),
             gapH12,
@@ -70,8 +70,10 @@ class CatchShareCardSheet extends StatelessWidget {
                 key: shareButtonKey,
                 label: buttonLabel,
                 fullWidth: true,
-                isLoading: isSharing,
-                icon: Icon(
+                status: (isSharing)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
+                leading: Icon(
                   CatchIcons.platformShare(
                     platform: Theme.of(context).platform,
                   ),

@@ -68,9 +68,11 @@ void main() {
             home: const Scaffold(
               appBar: CatchTopBar(
                 title: 'Ananya Rao',
-                titleRole: CatchTopBarTitleRole.identity,
-                divider: true,
-                leadingType: CatchTopBarLeading.none,
+                variant: CatchTopBarVariant.identity,
+                emphasis: CatchTopBarEmphasis.divided,
+                navigation: CatchTopBarNavigation(
+                  mode: CatchTopBarNavigationMode.none,
+                ),
               ),
               body: SizedBox.shrink(),
             ),
@@ -99,10 +101,10 @@ void main() {
             ).copyWith(textScaler: const TextScaler.linear(2)),
             child: child!,
           ),
-          home: const CatchScreenScaffold.workspace(
-            appBar: CatchTopBar(
+          home: const CatchScaffold.workspace(
+            title: CatchTopBar(
               title: 'Customers',
-              bottom: CatchTabRail<int>(
+              footer: CatchPageTabBar<int>(
                 selected: 0,
                 options: [
                   CatchOption(value: 0, label: 'Overview'),
@@ -115,10 +117,10 @@ void main() {
         ),
       );
       expect(tester.takeException(), isNull);
-      final rail = find.byType(CatchTabRail<int>);
+      final rail = find.byType(CatchPageTabBar<int>);
       expect(
         tester.getSize(rail).height,
-        CatchTabRail.heightFor(tester.element(rail)),
+        CatchPageTabBar.heightFor(tester.element(rail)),
       );
       expect(
         tester.getRect(rail).bottom,
@@ -155,25 +157,25 @@ void main() {
                                 name: 'Ananya Rao with a longer family name',
                               ),
                               onTap: () => opened = true,
-                              metadata: const Text(
+                              meta: const Text(
                                 '8 events · Last seen 18 June 2026',
                               ),
-                              contextContent: const Text(
+                              body: const Text(
                                 'Returning customer from the weekend event',
                               ),
-                              status: const CatchBadge.status(
+                              trailing: const CatchBadge.status(
                                 label: 'Needs identity review',
                                 tone: CatchBadgeTone.warning,
                               ),
                             ),
                             Align(
                               alignment: AlignmentDirectional.centerStart,
-                              child: CatchOptionGroup<int>(
+                              child: CatchChoiceInput<int>.segmented(
                                 options: const [
                                   CatchOption(value: 1, label: 'Returning 148'),
                                 ],
                                 selected: 1,
-                                variant: CatchOptionGroupVariant.summary,
+                                variant: CatchChoiceInputVariant.summary,
                                 onChanged: (_) => selected = true,
                               ),
                             ),
@@ -217,7 +219,7 @@ void main() {
             greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
           );
           expect(
-            tester.getSize(find.byType(CatchOptionGroupItem<int>)).height,
+            tester.getSize(find.byType(CatchChoiceButton<int>)).height,
             greaterThanOrEqualTo(CatchPlatformTokens.minimumInteractiveExtent),
           );
           await tester.tap(find.text('Ananya Rao with a longer family name'));
@@ -243,13 +245,13 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CatchOptionGroup<int>(
+          body: CatchChoiceInput<int>.segmented(
             options: const [
               CatchOption(value: 1, label: 'All 214'),
               CatchOption(value: 2, label: 'Returning 148'),
             ],
             selected: null,
-            variant: CatchOptionGroupVariant.summary,
+            variant: CatchChoiceInputVariant.summary,
             onChanged: (_) => chosen = true,
           ),
         ),
@@ -257,8 +259,8 @@ void main() {
     );
     expect(
       tester
-          .widgetList<CatchOptionGroupItem<int>>(
-            find.byType(CatchOptionGroupItem<int>),
+          .widgetList<CatchChoiceButton<int>>(
+            find.byType(CatchChoiceButton<int>),
           )
           .every((option) => !option.selected),
       isTrue,

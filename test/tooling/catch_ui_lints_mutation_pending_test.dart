@@ -38,18 +38,38 @@ class SaveButton extends ConsumerWidget {
 class SaveButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final Mutation<void> save = ref.watch(EventController.saveMutation);
-    return Column(
-      children: [
-        CatchMutationErrorListener(mutation: save),
-        Text(save.isPending ? 'Saving' : 'Save'),
-      ],
-    );
+    listenToCatchMutationErrors(context, ref, mutations: [EventController.saveMutation]);
+    return Text(save.isPending ? 'Saving' : 'Save');
   }
 }
 ''');
 
       expect(findings, isEmpty);
     });
+
+    for (final (surface, expected) in [
+      ('listenToCatchMutationErrors(context, ref, mutations: [handle]);', 0),
+      ('listenToCatchMutationErrors(context, ref, mutations: [other]);', 1),
+      ('const CatchLocalizedErrorBanner.mutation(mutation: save);', 0),
+      ('CatchLocalizedErrorBanner.mutation(mutation: save);', 0),
+      ('CatchLocalizedErrorBanner.mutation(mutation: other);', 1),
+      ('const CatchLocalizedErrorBanner.mutation(mutation: other);', 1),
+      ('const CatchLocalizedErrorBanner(error);', 1),
+    ]) {
+      test('matches the actual mutation handle: $surface', () {
+        final findings = _mutationPendingFindings('''
+class SaveButton extends ConsumerWidget {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final handle = EventController.saveMutation('event');
+    final MutationState<void> save = ref.watch(handle);
+    $surface
+    return Text(save.isPending ? 'Saving' : 'Save');
+  }
+}
+''');
+        expect(findings, hasLength(expected));
+      });
+    }
 
     test('flags direct ref watch pending reads', () {
       final findings = _mutationPendingFindings('''

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/data/organizer_event_venue_repository.dart';
@@ -86,7 +86,7 @@ class WhereStep extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        CatchAsyncValueView<List<OrganizerEventVenue>>(
+        CatchAsyncBoundary<List<OrganizerEventVenue>>(
           value: venuesAsync,
           errorContext: AppErrorContext.event,
           onRetry: () =>
@@ -100,16 +100,17 @@ class WhereStep extends ConsumerWidget {
             saveError: saveError,
             onSave: saveCurrentPlace,
           ),
-          errorBuilder: (_, error, _) => HostSavedPlacesSection(
-            venues: const [],
-            loadError: error,
-            selectedVenueId: selectedVenueId,
-            onVenueSelected: onVenueSelected,
-            canSave: currentMeetingLocation != null,
-            saving: saveMutation.isPending,
-            saveError: saveError,
-            onSave: saveCurrentPlace,
-          ),
+          errorBuilder: (_, error, _, onBoundaryRetry) =>
+              HostSavedPlacesSection(
+                venues: const [],
+                loadError: error,
+                selectedVenueId: selectedVenueId,
+                onVenueSelected: onVenueSelected,
+                canSave: currentMeetingLocation != null,
+                saving: saveMutation.isPending,
+                saveError: saveError,
+                onSave: saveCurrentPlace,
+              ),
           builder: (_, venues) => HostSavedPlacesSection(
             venues: venues,
             selectedVenueId: selectedVenueId,
@@ -151,7 +152,9 @@ class WhereStep extends ConsumerWidget {
               contract: CatchContractConstraints
                   .createEventCallablePayloadMeetingPoint,
               controller: meetingPointController,
-              enabled: !saveMutation.isPending,
+              states: <WidgetState>{
+                if (saveMutation.isPending) WidgetState.disabled,
+              },
               inputHint:
                   context.l10n.hostsWhereStepPlaceholderEGBandstandPromenade,
               helperText: startingPoint == null
@@ -161,7 +164,7 @@ class WhereStep extends ConsumerWidget {
               textCapitalization: TextCapitalization.words,
               textInputAction: TextInputAction.next,
               onChanged: onMeetingPointChanged,
-              validator: (value) {
+              onValidate: (value) {
                 if (startingPoint == null) return null;
                 return value == null || value.trim().isEmpty
                     ? context.l10n.hostsWhereStepVisiblecopyAddALocationName
@@ -174,9 +177,11 @@ class WhereStep extends ConsumerWidget {
               title: context.l10n.hostsWhereStepTitleExtraDirections,
               contract: CatchContractConstraints
                   .createEventCallablePayloadLocationDetails,
-              isOptional: true,
+              labelMode: CatchFieldLabelTextMode.optional,
               controller: locationDetailsController,
-              enabled: !saveMutation.isPending,
+              states: <WidgetState>{
+                if (saveMutation.isPending) WidgetState.disabled,
+              },
               inputHint: context.l10n.hostsWhereStepPlaceholderEGMeetOutside,
               helperText:
                   context.l10n.hostsWhereStepHelpertextGateEntranceFloorOr,

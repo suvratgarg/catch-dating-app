@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -131,7 +131,7 @@ class _HostBroadcastComposerSheetState
     return SafeArea(
       top: false,
       child: SingleChildScrollView(
-        child: CatchBottomSheetScaffold(
+        child: CatchSheet(
           title: context.l10n.hostsHostBroadcastComposerSheetTitleNewBroadcast,
           subtitle: widget.event.title,
           keyboardSafe: true,
@@ -153,10 +153,10 @@ class _HostBroadcastComposerSheetState
                 style: CatchTextStyles.fieldRowTitle(context),
               ),
               gapH8,
-              CatchOptionGroup<EventBroadcastAudience>(
+              CatchChoiceInput<EventBroadcastAudience>.segmented(
                 contract: CatchContractConstraints
                     .sendEventBroadcastCallablePayloadAudience,
-                contractValue: (audience) => audience.name,
+                contractValueBuilder: (audience) => audience.name,
                 options: [
                   CatchOption(
                     value: EventBroadcastAudience.booked,
@@ -192,20 +192,19 @@ class _HostBroadcastComposerSheetState
                 style: CatchTextStyles.fieldRowTitle(context),
               ),
               gapH8,
-              for (final template in HostBroadcastTemplate.values) ...[
-                CatchOptionCard(
-                  contract: CatchContractConstraints
-                      .mobileFormStateHostBroadcastTemplate,
-                  contractValue: template.name,
-                  title: template.label(context.l10n),
-                  description: template.description(context.l10n),
-                  selected: _template == template,
-                  onTap: mutation.isPending
-                      ? null
-                      : () => _selectTemplate(template),
-                ),
-                if (template != HostBroadcastTemplate.values.last) gapH8,
-              ],
+              CatchChoiceInput<HostBroadcastTemplate>.described(
+                values: HostBroadcastTemplate.values,
+                itemLabelBuilder: (template) => template.label(context.l10n),
+                itemSubtitleBuilder: (template) =>
+                    template.description(context.l10n),
+                selected: {?_template},
+                contract: CatchContractConstraints
+                    .mobileFormStateHostBroadcastTemplate,
+                contractValueBuilder: (template) => template.name,
+                onChanged: mutation.isPending
+                    ? null
+                    : (selection) => _selectTemplate(selection.single),
+              ),
               gapH20,
               CatchFieldLanes.single(
                 child: CatchField.input(
@@ -220,7 +219,9 @@ class _HostBroadcastComposerSheetState
                       .hostsHostBroadcastComposerSheetPlaceholderWriteAClearUpdate,
                   minLines: 3,
                   maxLines: 5,
-                  enabled: !mutation.isPending,
+                  states: <WidgetState>{
+                    if (mutation.isPending) WidgetState.disabled,
+                  },
                   textCapitalization: TextCapitalization.sentences,
                   onChanged: (_) => _handleContentChanged(),
                 ),
@@ -245,9 +246,9 @@ class _HostBroadcastComposerSheetState
               ],
               if (mutation.hasError) ...[
                 gapH12,
-                CatchMutationErrorBanner(
+                CatchLocalizedErrorBanner.mutation(
                   mutation: mutation,
-                  errorContext: AppErrorContext.event,
+                  context: AppErrorContext.event,
                   onRetry: enabled ? _send : null,
                 ),
               ],
@@ -262,7 +263,9 @@ class _HostBroadcastComposerSheetState
                             recipientCount: recipientCount,
                           ),
                 onPressed: enabled ? _send : null,
-                isLoading: mutation.isPending,
+                status: (mutation.isPending)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
                 fullWidth: true,
               ),
             ],

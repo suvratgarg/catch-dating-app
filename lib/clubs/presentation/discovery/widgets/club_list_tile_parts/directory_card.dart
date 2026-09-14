@@ -26,7 +26,7 @@ class ClubIndexRow extends StatelessWidget {
       child: CatchSurface(
         onTap: onTap,
         borderColor: t.line,
-        elevation: CatchSurfaceElevation.card,
+        emphasis: CatchSurfaceEmphasis.subtle,
         radius: CatchRadius.md,
         padding: CatchInsets.tileContentCompact,
         child: Row(
@@ -154,25 +154,27 @@ class MembershipTrailingController extends ConsumerWidget {
       );
     }
 
-    return CatchMutationErrorListener(
-      mutation: joinMutation,
+    listenToCatchMutationErrors(
+      context,
+      ref,
+      mutations: [joinMutation],
       errorContext: AppErrorContext.club,
-      child: MembershipTrailing(
-        isJoined: false,
-        isPending: joinMutationState.isPending,
-        onJoinPressed: () {
-          if (actionState == ExploreOrganizerMembershipActionState.signInGate) {
-            context.go(
-              Uri(
-                path: Routes.authScreen.path,
-                queryParameters: {'from': '/organizers/$clubId'},
-              ).toString(),
-            );
-            return;
-          }
-          joinClub();
-        },
-      ),
+    );
+    return MembershipTrailing(
+      isJoined: false,
+      isPending: joinMutationState.isPending,
+      onJoinPressed: () {
+        if (actionState == ExploreOrganizerMembershipActionState.signInGate) {
+          context.go(
+            Uri(
+              path: Routes.authScreen.path,
+              queryParameters: {'from': '/organizers/$clubId'},
+            ).toString(),
+          );
+          return;
+        }
+        joinClub();
+      },
     );
   }
 }
@@ -202,7 +204,7 @@ class MembershipTrailing extends StatelessWidget {
     final t = CatchTokens.of(context);
     return CatchButton(
       label: context.l10n.clubsDirectoryCardLabelJoin,
-      icon: Icon(CatchIcons.groupAddOutlined),
+      leading: Icon(CatchIcons.groupAddOutlined),
       onPressed: isPending ? null : onJoinPressed,
       size: CatchButtonSize.sm,
       backgroundColor: t.ink,

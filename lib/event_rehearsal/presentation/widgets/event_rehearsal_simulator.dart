@@ -61,8 +61,8 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
               icon: CatchIcons.scienceOutlined,
               contractExemption:
                   'Synthetic behaviors are callable-owned rehearsal commands.',
-              initiallyOpen: true,
-              control: CatchFieldLanes.divided(
+              disclosureMode: CatchFieldMode.localExpanded,
+              child: CatchFieldLanes.divided(
                 children: [
                   _EventRehearsalActorPicker(
                     actors: widget.rehearsal.actors,
@@ -102,7 +102,7 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
                 icon: CatchIcons.scienceOutlined,
                 contractExemption:
                     'Internal-only fault state is callable-owned and isolated.',
-                control: _EventRehearsalFaultPicker(
+                child: _EventRehearsalFaultPicker(
                   selected: widget.rehearsal.session.fault,
                   enabled: canChooseFault && !widget.isLoading,
                   onSelected: widget.onFault,
@@ -130,7 +130,7 @@ class _EventRehearsalActorPicker extends StatelessWidget {
   final ValueChanged<String> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<String>(
+  Widget build(BuildContext context) => CatchMenu<String>.anchored(
     items: [
       for (final actor in actors)
         CatchMenuItem<String>(
@@ -138,7 +138,7 @@ class _EventRehearsalActorPicker extends StatelessWidget {
           label: actor.displayName,
           sublabel: eventRehearsalActorStatusLabel(context.l10n, actor.status),
           selected: actor.actorId == selectedActorId,
-          role: CatchMenuItemRole.choice,
+          variant: CatchMenuItemVariant.choice,
         ),
     ],
     onSelected: (actorId, _) => onSelected(actorId),
@@ -172,30 +172,31 @@ class _EventRehearsalBehaviorPicker extends StatelessWidget {
   final ValueChanged<EventRehearsalBehavior> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<EventRehearsalBehavior>(
-    items: [
-      for (final behavior in EventRehearsalBehavior.values)
-        CatchMenuItem<EventRehearsalBehavior>(
-          value: behavior,
-          label: eventRehearsalBehaviorLabel(context.l10n, behavior),
-          selected: behavior == selected,
-          role: CatchMenuItemRole.choice,
+  Widget build(BuildContext context) =>
+      CatchMenu<EventRehearsalBehavior>.anchored(
+        items: [
+          for (final behavior in EventRehearsalBehavior.values)
+            CatchMenuItem<EventRehearsalBehavior>(
+              value: behavior,
+              label: eventRehearsalBehaviorLabel(context.l10n, behavior),
+              selected: behavior == selected,
+              variant: CatchMenuItemVariant.choice,
+            ),
+        ],
+        onSelected: (behavior, _) => onSelected(behavior),
+        builder: (context, controller, _) => CatchFieldLanes.single(
+          child: CatchField.nav(
+            copy: catchFieldCopy(context.l10n),
+            title: context.l10n.hostEventRehearsalChooseIssue,
+            valueText: eventRehearsalBehaviorLabel(context.l10n, selected),
+            onTap: !enabled
+                ? null
+                : controller.isOpen
+                ? controller.close
+                : controller.open,
+          ),
         ),
-    ],
-    onSelected: (behavior, _) => onSelected(behavior),
-    builder: (context, controller, _) => CatchFieldLanes.single(
-      child: CatchField.nav(
-        copy: catchFieldCopy(context.l10n),
-        title: context.l10n.hostEventRehearsalChooseIssue,
-        valueText: eventRehearsalBehaviorLabel(context.l10n, selected),
-        onTap: !enabled
-            ? null
-            : controller.isOpen
-            ? controller.close
-            : controller.open,
-      ),
-    ),
-  );
+      );
 }
 
 class _EventRehearsalApplyIssueField extends StatelessWidget {
@@ -230,14 +231,14 @@ class _EventRehearsalFaultPicker extends StatelessWidget {
   final ValueChanged<EventRehearsalFault> onSelected;
 
   @override
-  Widget build(BuildContext context) => CatchMenuAnchor<EventRehearsalFault>(
+  Widget build(BuildContext context) => CatchMenu<EventRehearsalFault>.anchored(
     items: [
       for (final fault in EventRehearsalFault.values)
         CatchMenuItem<EventRehearsalFault>(
           value: fault,
           label: eventRehearsalFaultLabel(context.l10n, fault),
           selected: fault == selected,
-          role: CatchMenuItemRole.choice,
+          variant: CatchMenuItemVariant.choice,
         ),
     ],
     onSelected: (fault, _) => onSelected(fault),
@@ -341,9 +342,11 @@ class EventRehearsalRecapSection extends StatelessWidget {
         icon: CatchIcons.factCheckOutlined,
         contractExemption:
             'Recap and deterministic reproduction are rehearsal projections.',
-        initiallyOpen:
-            rehearsal.session.status == EventRehearsalStatus.complete,
-        control: Column(
+        disclosureMode:
+            rehearsal.session.status == EventRehearsalStatus.complete
+            ? CatchFieldMode.localExpanded
+            : CatchFieldMode.localCollapsed,
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Wrap(

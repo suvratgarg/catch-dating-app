@@ -105,24 +105,29 @@ class _HostAutomationRuleEditorState
           title: widget.initialRule == null
               ? l.hostAutomationNew
               : l.hostAutomationEdit,
-          leadingType: CatchTopBarLeading.back,
-          onBack: _busy ? () {} : widget.onCancel,
-          divider: scrolledUnder,
+          navigation: CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+            onPressed: _busy ? () {} : widget.onCancel,
+          ),
+
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
         ),
-        bottomNavigationBar: CatchBottomAction(
+        footer: CatchDockSurface.primary(
           label: l.hostAutomationSave,
           buttonKey: const ValueKey('automation-save'),
           isLoading: _busy,
           onPressed:
               _busy ||
                   loadingMessage ||
-                  catchAsyncRenderBranchFromAsyncValue(options) !=
-                      CatchAsyncRenderBranch.data
+                  catchAsyncBoundaryStatus(options) !=
+                      CatchAsyncBoundaryStatus.data
               ? null
               : _save,
         ),
         body: CatchRouteBody.standard(
-          child: CatchAsyncValueView<HostSavedAudienceFilterOptions>(
+          child: CatchAsyncBoundary<HostSavedAudienceFilterOptions>(
             value: options,
             errorContext: AppErrorContext.forms,
             onRetry: () => ref.invalidate(optionsProvider),
@@ -173,14 +178,16 @@ class _HostAutomationRuleEditorState
                           contract: CatchContractConstraints
                               .createOrganizerFormAutomationCallablePayloadName,
                           controller: _name,
-                          enabled: !_busy,
+                          states: <WidgetState>{
+                            if (_busy) WidgetState.disabled,
+                          },
                         ),
                         CatchField<HostFormAutomationTrigger>.select(
                           copy: catchFieldCopy(context.l10n),
                           title: l.hostAutomationTrigger,
                           contract: CatchContractConstraints
                               .createOrganizerFormAutomationCallablePayloadTrigger,
-                          contractValue: (v) => v.name,
+                          contractValueBuilder: (v) => v.name,
                           values: HostFormAutomationTrigger.values
                               .where(
                                 (v) =>
@@ -189,9 +196,11 @@ class _HostAutomationRuleEditorState
                                         HostFormAutomationTrigger.eventAttended,
                               )
                               .toList(),
-                          itemLabel: (v) => _triggerLabel(context, v),
+                          itemLabelBuilder: (v) => _triggerLabel(context, v),
                           value: _trigger,
-                          enabled: !_busy,
+                          states: <WidgetState>{
+                            if (_busy) WidgetState.disabled,
+                          },
                           onChanged: (v) {
                             if (v == null) return;
                             setState(() {
@@ -226,7 +235,7 @@ class _HostAutomationRuleEditorState
                                   !source.forms.any((f) => f.id == _formId))
                                 _formId!,
                             ],
-                            itemLabel: (v) => v.isEmpty
+                            itemLabelBuilder: (v) => v.isEmpty
                                 ? l.hostAutomationAnyForm
                                 : source.forms
                                           .where((f) => f.id == v)
@@ -234,7 +243,10 @@ class _HostAutomationRuleEditorState
                                           ?.title ??
                                       l.hostAutomationConfigured,
                             value: _formId ?? (formRequired ? null : ''),
-                            enabled: !_busy && widget.scopeFormId == null,
+                            states: <WidgetState>{
+                              if (!(!_busy && widget.scopeFormId == null))
+                                WidgetState.disabled,
+                            },
                             onChanged: (v) => setState(() {
                               _formId = v == '' ? null : v;
                               _condition = null;
@@ -258,7 +270,7 @@ class _HostAutomationRuleEditorState
                                   !source.events.any((e) => e.id == _eventId))
                                 _eventId!,
                             ],
-                            itemLabel: (v) => v.isEmpty
+                            itemLabelBuilder: (v) => v.isEmpty
                                 ? l.hostAutomationAnyEvent
                                 : source.events
                                           .where((e) => e.id == v)
@@ -266,7 +278,9 @@ class _HostAutomationRuleEditorState
                                           ?.title ??
                                       l.hostAutomationConfigured,
                             value: _eventId ?? '',
-                            enabled: !_busy,
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
                             onChanged: (v) =>
                                 setState(() => _eventId = v == '' ? null : v),
                           ),
@@ -279,8 +293,10 @@ class _HostAutomationRuleEditorState
                           helperText: l.hostAutomationDelayHelp,
                           controller: _delay,
                           keyboardType: TextInputType.number,
-                          enabled: !_busy,
-                          validator: (text) {
+                          states: <WidgetState>{
+                            if (_busy) WidgetState.disabled,
+                          },
+                          onValidate: (text) {
                             final value = int.tryParse(text?.trim() ?? '');
                             return value == null || value < 0 || value > 10080
                                 ? l.hostAutomationDelayInvalid
@@ -300,9 +316,11 @@ class _HostAutomationRuleEditorState
                             contractExemption:
                                 'Question IDs are selected from the current published version; server validation binds the condition to that version.',
                             values: questions,
-                            itemLabel: (q) => q.label,
+                            itemLabelBuilder: (q) => q.label,
                             value: question,
-                            enabled: !_busy,
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
                             onChanged: (q) => setState(
                               () => _condition = q == null
                                   ? null
@@ -319,11 +337,14 @@ class _HostAutomationRuleEditorState
                             contractExemption:
                                 'Typed boolean or choice values come from the selected published question.',
                             values: question?.options ?? [],
-                            itemLabel: (a) => a.label,
+                            itemLabelBuilder: (a) => a.label,
                             value: question?.options
                                 .where((a) => a.value == expected)
                                 .firstOrNull,
-                            enabled: !_busy && question != null,
+                            states: <WidgetState>{
+                              if (!(!_busy && question != null))
+                                WidgetState.disabled,
+                            },
                             onChanged: (a) {
                               if (a != null) {
                                 setState(
@@ -349,11 +370,13 @@ class _HostAutomationRuleEditorState
                             title: l.hostAutomationAction,
                             contract: CatchContractConstraints
                                 .createOrganizerFormAutomationCallablePayloadActionsItemsKind,
-                            contractValue: (v) => v.name,
+                            contractValueBuilder: (v) => v.name,
                             values: _allowedActions(_trigger),
-                            itemLabel: (v) => _actionLabel(context, v),
+                            itemLabelBuilder: (v) => _actionLabel(context, v),
                             value: action.kind,
-                            enabled: !_busy,
+                            states: <WidgetState>{
+                              if (_busy) WidgetState.disabled,
+                            },
                             onChanged: (v) {
                               if (v != null) {
                                 setState(() => action.changeKind(v));
@@ -368,7 +391,7 @@ class _HostAutomationRuleEditorState
                               contract: CatchContractConstraints
                                   .createOrganizerFormAutomationCallablePayloadActionsItemsTagId,
                               values: source.tags.map((t) => t.tagId).toList(),
-                              itemLabel: (v) => source.tags
+                              itemLabelBuilder: (v) => source.tags
                                   .firstWhere((t) => t.tagId == v)
                                   .label,
                               value:
@@ -377,7 +400,9 @@ class _HostAutomationRuleEditorState
                                   )
                                   ? action.tagId
                                   : null,
-                              enabled: !_busy,
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
                               onChanged: (v) =>
                                   setState(() => action.tagId = v),
                             ),
@@ -389,7 +414,7 @@ class _HostAutomationRuleEditorState
                               contract: CatchContractConstraints
                                   .createOrganizerFormAutomationCallablePayloadActionsItemsEventId,
                               values: source.events.map((e) => e.id).toList(),
-                              itemLabel: (v) => source.events
+                              itemLabelBuilder: (v) => source.events
                                   .firstWhere((e) => e.id == v)
                                   .title,
                               value:
@@ -398,7 +423,9 @@ class _HostAutomationRuleEditorState
                                   )
                                   ? action.eventId
                                   : null,
-                              enabled: !_busy,
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
                               onChanged: (v) =>
                                   setState(() => action.eventId = v),
                             ),
@@ -417,8 +444,10 @@ class _HostAutomationRuleEditorState
                                   .createOrganizerFormAutomationCallablePayloadActionsItemsWebhookUrl,
                               controller: action.url,
                               keyboardType: TextInputType.url,
-                              enabled: !_busy,
-                              validator: (text) =>
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
+                              onValidate: (text) =>
                                   isHostAutomationWebhookUrl(text)
                                   ? null
                                   : l.hostAutomationUrlInvalid,
@@ -430,10 +459,12 @@ class _HostAutomationRuleEditorState
                               contractExemption:
                                   'Blank preserves an existing secret only for the same URL; otherwise 32 through 256 characters are required by the callable.',
                               controller: action.secret,
-                              obscureText: true,
-                              enabled: !_busy,
+                              inputVariant: CatchTextInputVariant.obscured,
+                              states: <WidgetState>{
+                                if (_busy) WidgetState.disabled,
+                              },
                               helperText: l.hostAutomationSecretHelp,
-                              validator: (text) {
+                              onValidate: (text) {
                                 final value = text ?? '';
                                 if (value.isEmpty &&
                                     action.keepSecret &&
@@ -454,7 +485,7 @@ class _HostAutomationRuleEditorState
                               title: l.hostAutomationMessage,
                               body: l.hostAutomationDraftHelp,
                             ),
-                            CatchAsyncValueView<HostAutomationMessagesState>(
+                            CatchAsyncBoundary<HostAutomationMessagesState>(
                               value: messages,
                               errorContext: AppErrorContext.forms,
                               onRetry: () => ref.invalidate(messagesProvider),
@@ -465,9 +496,9 @@ class _HostAutomationRuleEditorState
                                     title: l.hostAutomationDraft,
                                     contract: CatchContractConstraints
                                         .createOrganizerFormAutomationCallablePayloadActionsItemsCampaignId,
-                                    contractValue: (m) => m.campaignId,
+                                    contractValueBuilder: (m) => m.campaignId,
                                     values: page.messages,
-                                    itemLabel: (m) =>
+                                    itemLabelBuilder: (m) =>
                                         '${m.name} · ${m.templateName ?? m.name} · ${m.savedAudienceName ?? l.hostSavedAudiencesManage}',
                                     value: page.messages
                                         .where(
@@ -475,7 +506,10 @@ class _HostAutomationRuleEditorState
                                               m.campaignId == action.campaignId,
                                         )
                                         .firstOrNull,
-                                    enabled: !_busy && !action.loadingMessage,
+                                    states: <WidgetState>{
+                                      if (!(!_busy && !action.loadingMessage))
+                                        WidgetState.disabled,
+                                    },
                                     onChanged: (m) {
                                       if (m != null) {
                                         _selectMessage(action, m.campaignId);
@@ -508,7 +542,9 @@ class _HostAutomationRuleEditorState
                                     CatchButton(
                                       label: l.hostAutomationDraftsMore,
                                       variant: CatchButtonVariant.secondary,
-                                      isLoading: page.loadingMore,
+                                      status: (page.loadingMore)
+                                          ? CatchButtonStatus.loading
+                                          : CatchButtonStatus.idle,
                                       onPressed: page.loadingMore
                                           ? null
                                           : () => ref

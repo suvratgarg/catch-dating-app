@@ -1112,7 +1112,7 @@ function buildCandidates() {
       "CatchEventCard",
       "CatchEventThumbnail",
       "CatchGradedImage",
-      "CatchDetailHeroBackdrop",
+      "CatchHeroImage",
       "CatchActivityMapPin",
     ],
     priority: "P0",
@@ -1126,8 +1126,8 @@ function buildCandidates() {
     recommended: "catch.person_row",
     previewNames: [
       "CatchPersonRow",
-      "CatchPersonAvatar",
-      "CatchPersonAvatarStack",
+      "CatchAvatar",
+      "CatchAvatarRow",
     ],
     priority: "P0",
     tags: ["people", "rows", "avatar"],
@@ -1156,9 +1156,9 @@ function buildCandidates() {
     "CatchNotice",
     "CatchSkeleton",
     "CatchPersonRow",
-    "CatchBottomSheetScaffold",
-    "CatchNumberStepper",
-    "CatchKicker",
+    "CatchSheet",
+    "CatchStepper",
+    "CatchKickerText",
     "CatchSearchField",
     "CatchSurface",
     "CatchTopBar",
@@ -1328,7 +1328,7 @@ function buildCandidates() {
       "Claude has SegPill and OptionGroup language. Decide if these are separate controls or one global segmented primitive with variants.",
     recommended: "catch.segmented_control",
     left: findFirst(byName, "CatchSegmentedControl"),
-    right: findFirst(byName, "CatchOptionGroup"),
+    right: findFirst(byName, "CatchChoiceInput"),
     tags: ["selection"],
   });
   add({
@@ -1339,7 +1339,7 @@ function buildCandidates() {
       "Both are selectable option affordances. Decide whether chip/card are variants of one option primitive or remain separate size/form-factor primitives.",
     recommended: "catch.option",
     left: findFirst(byName, "CatchChip"),
-    right: findFirst(byName, "CatchOptionCard"),
+    right: findFirst(byName, "CatchChoiceTile"),
     priority: "P1",
     tags: ["selection"],
   });
@@ -1390,8 +1390,8 @@ function buildCandidates() {
     reason:
       "Both are small mono section/eyebrow labels. Decide whether SectionLabel is an icon/accent variant of Kicker or a distinct section-label primitive.",
     recommended: "catch.kicker",
-    left: findFirst(byName, "CatchKicker"),
-    right: findFirst(byName, "CatchSectionLabel"),
+    left: findFirst(byName, "CatchKickerText"),
+    right: findFirst(byName, "CatchSectionHeaderTitle"),
     priority: "P1",
     tags: ["typography", "sections"],
   });
@@ -1414,8 +1414,8 @@ function buildCandidates() {
     reason:
       "The stack composes person avatars with veiling and overflow rules. Decide whether it belongs under one avatar contract or stays a separate people-list primitive.",
     recommended: "catch.person_avatar",
-    left: findFirst(byName, "CatchPersonAvatar"),
-    right: findFirst(byName, "CatchPersonAvatarStack"),
+    left: findFirst(byName, "CatchAvatar"),
+    right: findFirst(byName, "CatchAvatarRow"),
     priority: "P1",
     tags: ["avatar", "people"],
   });
@@ -1467,7 +1467,6 @@ function buildCandidates() {
       names: [
         "CatchTopBar",
         "ChatEventContextHeader",
-        "CatchStatusBar",
       ],
     },
     {
@@ -1480,8 +1479,8 @@ function buildCandidates() {
       names: [
         "ClubHeroAppBar",
         "EventDetailHeroAppBar",
-        "CatchDetailHeroBackdrop",
-        "CatchTicketHeroViewport",
+        "CatchHeroImage",
+        "CatchHeroViewport",
       ],
     },
     {
@@ -1524,9 +1523,9 @@ function buildCandidates() {
       recommended: "catch.kicker",
       tags: ["typography", "sections"],
       names: [
-        "CatchKicker",
-        "CatchMonoLabel",
-        "CatchSectionLabel",
+        "CatchKickerText",
+        "CatchMetadataText",
+        "CatchSectionHeaderTitle",
         "HostSectionLabel",
         "StageSectionLabel",
         "SetupSectionTitle",
@@ -1541,10 +1540,9 @@ function buildCandidates() {
       recommended: "catch.step_flow",
       tags: ["forms", "wizard"],
       names: [
-        "CatchFormStepBody",
+        "CatchPageBody",
         "CatchStepHeader",
         "CatchStepFlowHeader",
-        "CatchStepProgress",
         "CreateEventStepHeader",
         "ClubBasicsStep",
         "EventDetailsStep",
@@ -1574,12 +1572,11 @@ function buildCandidates() {
       id: "app-skeleton-loading-family",
       title: "Skeleton and loading family",
       reason:
-        "Skeletons currently encode local shapes in many features. Review whether the shapes are variants of CatchSkeleton/List or legitimate feature previews.",
+        "Skeletons currently encode local shapes in many features. Review whether the shapes are variants of CatchSkeleton recipes or legitimate feature previews.",
       recommended: "catch.skeleton",
       tags: ["feedback", "loading"],
       names: [
         "CatchSkeleton",
-        "CatchSkeletonList",
         "ActivitySectionSkeleton",
         "EventAgendaSliverSkeleton",
         "FiltersContentSkeleton",
@@ -1599,12 +1596,12 @@ function buildCandidates() {
       tags: ["feedback", "error"],
       names: [
         "CatchErrorState",
-        "CatchInlineErrorState",
+        "CatchErrorState",
         "CatchSliverErrorState",
-        "CatchFrameworkErrorView",
+        "CatchFrameworkErrorState",
         "CatchErrorScaffold",
-        "CatchErrorBanner",
-        "CatchMutationErrorBanner",
+        "CatchBanner",
+        "CatchLocalizedErrorBanner",
       ],
     },
     {
@@ -1616,7 +1613,7 @@ function buildCandidates() {
       tags: ["feedback", "callout"],
       names: [
         "CatchNotice",
-        "CatchInlineMessageSurface",
+        "CatchBanner",
         "NoticeCard",
         "EditHostedEventScopeNotice",
         "PaymentConfirmationHeadsUp",
@@ -1643,11 +1640,11 @@ function buildCandidates() {
       id: "app-avatar-stack-family",
       title: "Avatar stack and rail family",
       reason:
-        "People stacks and avatar rails should compose CatchPersonAvatar with shared overlap, count, veil, and compact-density rules.",
+        "People stacks and avatar rails should compose CatchAvatar with shared overlap, count, veil, and compact-density rules.",
       recommended: "catch.person_avatar_stack",
       tags: ["avatar", "people"],
       names: [
-        "CatchPersonAvatarStack",
+        "CatchAvatarRow",
         "EventHypeAvatarStack",
         "HostTodayAvatarStack",
         "ClubAvatarRail",
@@ -1657,11 +1654,11 @@ function buildCandidates() {
       id: "app-person-avatar-family",
       title: "Person avatar family",
       reason:
-        "Host/club avatar widgets should use CatchPersonAvatar variants instead of reimplementing initials, photo fallback, ring, and dim states.",
+        "Host/club avatar widgets should use CatchAvatar variants instead of reimplementing initials, photo fallback, ring, and dim states.",
       recommended: "catch.person_avatar",
       tags: ["avatar", "people"],
       names: [
-        "CatchPersonAvatar",
+        "CatchAvatar",
         "ClubHostAvatar",
         "HostTodayAvatarDot",
         "ClubHostIdentityLine",
@@ -1675,7 +1672,7 @@ function buildCandidates() {
       recommended: "catch.metric_grid",
       tags: ["metrics", "analytics"],
       names: [
-        "CatchMetricStrip",
+        "CatchMetricSection",
         "EventStatsGrid",
         "HostAnalyticsMetricGrid",
         "HostOrganizerMetricGrid",
@@ -1690,7 +1687,7 @@ function buildCandidates() {
       recommended: "catch.metric_tile",
       tags: ["metrics", "analytics"],
       names: [
-        "CatchStatColumn",
+        "CatchMetricTile",
         "HostAnalyticsMetricTile",
         "HostOrganizerMetricTile",
         "HostTodayHeroMetric",
@@ -1707,7 +1704,7 @@ function buildCandidates() {
       recommended: "catch.meta_row",
       tags: ["rows", "metadata"],
       names: [
-        "CatchMetaDotRow",
+        "CatchMetaRow",
         "HostMetaRow",
         "HostManageMetaRow",
         "HostEventSummaryRow",
@@ -1775,7 +1772,7 @@ function buildCandidates() {
       recommended: "catch.form_label",
       tags: ["forms", "typography"],
       names: [
-        "CatchFormFieldLabel",
+        "CatchFieldLabelText",
         "ControlLabel",
         "SetupSectionTitle",
       ],
@@ -1789,7 +1786,6 @@ function buildCandidates() {
       tags: ["sections", "layout"],
       names: [
         "CatchSection",
-        "CatchVerticalSection",
         "ActivitySection",
         "HostSettingsSection",
         "HostAnalyticsSection",
@@ -1803,12 +1799,12 @@ function buildCandidates() {
       id: "app-section-list-family",
       title: "Section list family",
       reason:
-        "Stacked section lists and preview sections repeat route-level composition that may be driven by CatchSectionStack/List conventions.",
+        "Stacked section lists and preview sections repeat route-level composition that may be driven by CatchSectionList placement recipes.",
       recommended: "catch.section_list",
       tags: ["sections", "lists"],
       names: [
         "CatchSectionList",
-        "CatchDetailSliverSectionList",
+        "CatchSectionList.sliver",
         "EventDetailOverviewSection",
         "EventDetailSocialSection",
         "ClubReviewsSection",
@@ -1922,10 +1918,11 @@ function buildCandidates() {
       title: "Horizontal rail family",
       reason:
         "Horizontal rails should share scroll padding, item spacing, snap/overflow affordances, and section header behavior.",
-      recommended: "catch.horizontal_rail",
+      recommended: "catch.section",
       tags: ["rail", "layout"],
       names: [
-        "CatchHorizontalRail",
+        "CatchHorizontalScrollView",
+        "CatchSection",
         "DashboardClubsRail",
         "EventFocusRail",
         "ExplorePeekRailContent",
@@ -1943,7 +1940,7 @@ function buildCandidates() {
       recommended: "catch.tab_control",
       tags: ["tabs", "selection"],
       names: [
-        "CatchTopBarTabBar",
+        "CatchPageTabBar",
         "HostSettingsTabRail",
         "HostClubTabRail",
         "EventSuccessTabPicker",
@@ -1962,7 +1959,7 @@ function buildCandidates() {
       recommended: "catch.bottom_chrome",
       tags: ["bottom", "actions"],
       names: [
-        "CatchBottomDock",
+        "CatchDockSurface",
         "EventBookingDock",
         "ClubMembershipDock",
         "StageActionDock",
@@ -1978,8 +1975,7 @@ function buildCandidates() {
       recommended: "catch.bottom_sheet",
       tags: ["sheet", "modal"],
       names: [
-        "CatchBottomSheetScaffold",
-        "CatchDraggableSheetShell",
+        "CatchSheet",
         "DraftPickerSheet",
         "BookingConflictSheet",
         "MatchTesterSheet",
@@ -2011,11 +2007,11 @@ function buildCandidates() {
       id: "app-dialog-family",
       title: "Dialog family",
       reason:
-        "Dialog-style confirmation and form surfaces should be checked against CatchFormDialog before more feature dialogs are added.",
+        "Dialog-style confirmation and form surfaces should be checked against CatchDialog before more feature dialogs are added.",
       recommended: "catch.dialog",
       tags: ["modal", "dialog"],
       names: [
-        "CatchFormDialog",
+        "CatchDialog",
         "MatchCelebrationDialog",
         "HostTeamHostActionDialog",
       ],
@@ -2046,11 +2042,11 @@ function buildCandidates() {
       recommended: "catch.option",
       tags: ["selection", "forms"],
       names: [
-        "CatchOptionCard",
+        "CatchChoiceTile",
         "CatchChip",
         "IncludeMeToggle",
         "RecommendationSwitch",
-        "CatchToggle",
+        "CatchToggleInput",
         "ModuleToggleRow",
         "ManualQaToggleRow",
       ],

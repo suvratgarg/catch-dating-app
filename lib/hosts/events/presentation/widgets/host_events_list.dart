@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
@@ -149,7 +149,7 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
       header: CatchRootScreenHeader.title(
         title: context.l10n.hostsHostEventsListTextEvents,
         actions: [
-          CatchTopBarPrimaryAction(
+          CatchTopBarPrimaryButton(
             key: const ValueKey<String>('host-events-create-event'),
             label: context.l10n.hostsHostEventsListLabelNewEvent,
             icon: CatchIcons.addRounded,
@@ -157,7 +157,7 @@ class _HostEventsClubSectionState extends State<HostEventsClubSection>
           ),
         ],
       ),
-      primaryRail: CatchTabControllerRail<HostEventsView>(
+      actions: CatchPageTabBar<HostEventsView>.controlled(
         controller: _tabs,
         groupKey: const ValueKey('host-events-tabs'),
         options: [
@@ -244,10 +244,10 @@ class HostEventsTimelinePage extends StatelessWidget
         : state.loadingMorePast;
     return CatchRootScreenPageScrollView.standard(
       scrollKey: PageStorageKey('host-events-$organizerId-${view.name}'),
-      slivers: [
+      children: [
         if (state.status == HostEventsWorkspaceStatus.loading ||
             (sections.isEmpty && loadingMore))
-          const SliverToBoxAdapter(child: CatchSkeletonRows(count: 4))
+          const SliverToBoxAdapter(child: CatchSkeleton.rows(count: 4))
         else if (state.status == HostEventsWorkspaceStatus.error)
           CatchLocalizedSliverErrorState(
             state.error!,
@@ -269,12 +269,14 @@ class HostEventsTimelinePage extends StatelessWidget
             message: upcoming
                 ? state.emptyBody(context.l10n)
                 : context.l10n.hostEventsPastEmptyBody,
-            action: upcoming
-                ? CatchButton(
-                    label: context.l10n.hostsHostEventsListLabelNewEvent,
-                    onPressed: onCreateEvent,
-                  )
-                : null,
+            actions: [
+              ?upcoming
+                  ? CatchButton(
+                      label: context.l10n.hostsHostEventsListLabelNewEvent,
+                      onPressed: onCreateEvent,
+                    )
+                  : null,
+            ],
           )
         else
           SliverToBoxAdapter(
@@ -298,10 +300,11 @@ class HostEventsTimelinePage extends StatelessWidget
                     ],
                   ),
                 if (pageError != null)
-                  CatchLocalizedInlineErrorState(
+                  CatchLocalizedErrorState(
                     pageError,
                     context: AppErrorContext.event,
                     onRetry: onRetryPage,
+                    mode: CatchErrorStateMode.inline,
                   )
                 else if (hasMore)
                   Align(
@@ -315,7 +318,9 @@ class HostEventsTimelinePage extends StatelessWidget
                           ? context.l10n.hostEventsTimelineLoadMoreSchedule
                           : context.l10n.hostEventsTimelineLoadMoreHistory,
                       variant: CatchButtonVariant.secondary,
-                      isLoading: loadingMore,
+                      status: (loadingMore)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                       onPressed: loadingMore ? null : onLoadMore,
                     ),
                   ),

@@ -1,0 +1,1 @@
+enum CatchSectionHeaderVariant { standard, kicker }

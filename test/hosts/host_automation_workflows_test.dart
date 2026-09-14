@@ -63,8 +63,8 @@ void main() {
       );
       await tester.ensureVisible(_namedInput('Signing secret'));
       await tester.enterText(_namedInput('Signing secret'), 's' * 32);
-      await tester.ensureVisible(find.byType(CatchToggle));
-      await tester.tap(find.byType(CatchToggle));
+      await tester.ensureVisible(find.byType(CatchToggleInput));
+      await tester.tap(find.byType(CatchToggleInput));
       await tester.tap(find.byKey(const ValueKey('automation-save')));
       await pumpFeatureUi(tester);
       expect(saved, 0);
@@ -251,7 +251,9 @@ Future<void> _choose(WidgetTester tester, String field, String value) async {
   await pumpFeatureUi(tester);
   await tester.tap(
     find.descendant(
-      of: find.byType(CatchMenu<Object?>),
+      of: find.byWidgetPredicate(
+        (widget) => widget is CatchMenu<Object?> && widget.builder == null,
+      ),
       matching: find.text(value),
     ),
   );

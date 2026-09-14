@@ -44,8 +44,8 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/media/uploaded_photo.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_external_share_sheet.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_sheet_share.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/callable_request_dtos.g.dart'
     show UpdateUserProfilePatch;
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
@@ -1554,13 +1554,13 @@ class _FiltersContentCapture extends StatelessWidget {
       backgroundColor: t.bg,
       appBar: CatchTopBar(
         title: 'Filters',
-        leading: CatchIconAction(
+        leading: CatchIconAction.toolbar(
           icon: CatchIcons.closeRounded,
           tooltip: 'Close filters',
           onPressed: _noopFiltersTap,
         ),
         actions: [
-          CatchTopBarTextAction(
+          CatchButton.text(
             key: SwipeKeys.resetFiltersButton,
             label: 'Reset',
             onPressed: saving ? null : _noopFiltersTap,
@@ -5775,7 +5775,7 @@ class _HostChatReportFailureSnackBarCapture extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(CatchSpacing.s3),
               child: CatchSurface(
-                elevation: CatchSurfaceElevation.overlay,
+                emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
                 borderColor: Colors.transparent,
                 backgroundColor: t.ink,
@@ -6311,7 +6311,7 @@ class _MatchChatFeedbackSnackBarCapture extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(CatchSpacing.s3),
               child: CatchSurface(
-                elevation: CatchSurfaceElevation.overlay,
+                emphasis: CatchSurfaceEmphasis.floating,
                 radius: CatchRadius.md,
                 borderColor: Colors.transparent,
                 backgroundColor: t.ink,
@@ -6369,8 +6369,8 @@ class _ChatShareCardCapture extends StatelessWidget {
       body: SafeArea(
         child: Align(
           alignment: Alignment.bottomCenter,
-          child: CatchSheetShare(
-            card: ChatShareCard(
+          child: CatchExternalShareSheet(
+            media: ChatShareCard(
               messages: MatchesChatSurfaceFixtures.conversationMessages,
               currentUid: MatchesChatSurfaceFixtures.viewerUid,
               event: MatchesChatSurfaceFixtures.event,
@@ -10400,7 +10400,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
             count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
               count: 4,
             ),
-            trailing: CatchTextButton(
+            trailing: CatchButton.text(
               label: context.l10n.hostsHostClubEditTabActionManageImages,
               onPressed: () {},
               padding: EdgeInsets.zero,

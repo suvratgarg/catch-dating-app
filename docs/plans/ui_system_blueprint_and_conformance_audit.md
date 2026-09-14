@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.10.0
-updated: 2026-09-08
+version: 1.17.0
+updated: 2026-09-14
 owner: app_architecture
 status: active
 ---
@@ -123,7 +123,7 @@ rules, the composition migration spec's Layer 0–N model) and in practice
 of a given widget is recorded nowhere machine-readable; (b) `core/widgets` is
 a flat 116-file namespace where `CatchLoadingIndicator` sits beside `CatchOrganizerPoster`
 and `CatchFormStepFlow`; (c) the riverpod-consuming adapters
-(`CatchAsyncValueView`, the mutation error family, `CatchNotice`) sit in the
+(`CatchAsyncBoundary`, the mutation error family, `CatchNotice`) sit in the
 same folder as pure primitives, which is exactly why P1's boundary cannot be
 compiled today.
 
@@ -373,15 +373,15 @@ packages/catch_ui/lib/
 ```
 
 Riverpod-consuming adapters stay in the app package under
-`lib/core/riverpod_ui/` (moved from `core/widgets`): `CatchAsyncValueView`,
-`CatchAsyncValueSliver`, `CatchMutationErrorBanner`,
-`CatchMutationErrorListener(s)`, `mutation_error_util`, `CatchNotice`'s
+`lib/core/riverpod_ui/` (moved from `core/widgets`): `CatchAsyncBoundary`,
+`CatchAsyncBoundary.sliver`, `CatchLocalizedErrorBanner.mutation`,
+`listenToCatchMutationErrors`, `mutation_error_util`, `CatchNotice`'s
 provider factory. They are thin translations onto `catch_ui` surfaces
 (`CatchAsyncState`, `CatchErrorState`), which is what they already are.
 
 Domain-flavored core widgets that name product concepts
 (`event_ticket_surface`, `event_activity_visuals`, `event_visual_atoms`,
-`CatchOrganizerPoster`, `CatchPersonPolaroid`, `block_user_dialog`,
+`CatchOrganizerPoster`, `CatchPolaroid`, `block_user_dialog`,
 `confirm_danger_dialog`, `ordered_photo_picker`) are classified during
 extraction: entity-material primitives whose API is expressible in
 presentation-neutral types move to `catch_ui/src/components`; anything
@@ -460,11 +460,33 @@ which is the single biggest "docs fight code" tax removed.
 
 Ratify the grammar in the Appendix, record each shared component's ladder
 level and role noun in the registry, extend `design:lexicon:check` +
-`check_widget_classification` to enforce: `Catch<RoleNoun>` classes only in
+`check_widget_classification` to enforce: `Catch[<UseCase>]<RoleNoun>` classes only in
 `catch_ui` (role nouns from the closed lexicon), `<Feature><RoleNoun>` for
 public feature widgets, file suffix vocabulary, variant enums as
 `<Component><Axis>`. The 7 unprefixed core files are renamed or re-homed
 during Phase 3 extraction (compiler-verified rename).
+
+The 2026-09-08 owner clarification makes the intended collision behavior
+explicit: compare implementations of the same public responsibility and choose
+one canonical contract. Meaningful variations use named constructors, typed
+variants, or a use-case name with a concrete comparison against an existing
+contract. A different registry ID or implementation technique is insufficient.
+The durable Naming Grammar in `docs/app_architecture.md` owns the spelling,
+comparison metadata, and role-selection boundaries. Menu, Surface, Input, Text,
+and Image join the closed vocabulary for their existing responsibilities.
+The same source review identifies six inherited context publishers. Scope is
+reserved for that job: a member of its data-owning concept, with a use-case
+naming the published contract and an executable inheritance/ownership check.
+Geometry, visibility, interaction policy, active-tab clearance and status
+publication retain their independently consumed contracts.
+The delegated source review also consolidates box and sliver asynchronous state
+switching into one `AsyncBoundary` role. Skeleton, ErrorState, Surface and
+Viewport own visual or geometric responsibilities, so none accurately names
+state selection, retention and recovery. The new role is unqualified at its
+canonical entry point; box/sliver output uses named constructors, and the
+existing typed state snapshot remains nonvisual data.
+Public anatomy remains a registered member of its primary concept; this does
+not permit private shared Widgets or multiple unrelated primaries in one file.
 
 ### D6. Handwritten source gets the test-size ratchet treatment
 
@@ -1088,9 +1110,10 @@ request across the package boundary. The nearest field still owns the delay,
 saving guard, and controlled expansion callback. The old control part retains
 only field-state behavior, with both renderer declarations deleted there.
 
-`CatchFieldValueContent` owns the field caption, value, badge and supporting
-lanes. The four former helper call sites supply the same state, copy and trailing
-reservation; status and placeholder behavior use explicit enum axes. Caption
+`CatchFieldContentRow.value` owns the field caption, value, badge and supporting
+lanes alongside its title/description constructor. The four former helper call
+sites supply the same state, copy and trailing reservation; status and placeholder
+behavior use explicit enum axes. Caption
 styling is shared with the text-entry and select shells. The old render helper
 and redundant text-entry body helper are deleted.
 
@@ -1121,8 +1144,8 @@ directly in its owning State's build method. Lifecycle, timers, focus and
 expansion behavior move unchanged into a non-rendering part; the private row
 renderer is deleted and both resulting files stay within D6.
 
-`CatchFieldTextEntry` replaces the final private rendering helper. It consumes
-its facade's immutable configuration plus explicit state handles; controllers,
+`CatchFieldInput` replaces the final private rendering helper. It consumes
+the read-only `CatchFieldInputConfiguration` interface plus explicit state handles; controllers,
 focus, dismissal and save orchestration stay with the field. Native rendering
 uses the existing `CatchTextInput` primitive, extended with editing and obscuring
 enum axes and platform input options. The text-entry member and its facade now live together in `catch_ui`, with
@@ -1159,7 +1182,7 @@ all other moved field and form files remain within 800 lines.
 ### Phase 4 — One registry, binding grammar
 
 Scope: catalog inventory generator + drift check (D4); registry gains
-`level` and `roleNoun` fields with schema validation; lexicon/classification
+`level`, `roleNoun`, and reviewed use-case naming metadata with schema validation; lexicon/classification
 checks extended to the grammar (D5); `design:widgets:*` gates simplified to
 registry+Widgetbook; one-time grammar conformance sweep over `catch_ui`
 public API (renames are compiler-verified; staged `dart fix` data allowed
@@ -1168,7 +1191,10 @@ within the slice).
 DoD: `docs/widget_catalog.md` inventory sections carry a generated-file
 header and the drift check fails on hand edits; grammar check green with a
 seeded known-bad probe; new-widget gate no longer requires markdown table
-edits.
+edits. Naming probes cover a renamed competing primary with a different
+registry ID, an unreviewed qualifier, and legitimate members/complementary
+operations. Source review establishes semantic identity; passing a spelling
+check alone is not evidence that duplicate implementations were consolidated.
 
 ### Phase 5 — Budgets, splits, and estate shrink
 

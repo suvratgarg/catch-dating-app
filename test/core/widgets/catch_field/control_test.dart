@@ -28,9 +28,11 @@ void main() {
             return CatchField.control(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Capacity',
-              open: controlled ? true : null,
+              disclosureMode: controlled
+                  ? CatchFieldMode.controlledExpanded
+                  : CatchFieldMode.localCollapsed,
               onOpenChanged: (_) {},
-              control: const Text('Capacity choices'),
+              child: const Text('Capacity choices'),
             );
           },
         ),
@@ -67,9 +69,11 @@ void main() {
             return CatchField.control(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Age range',
-              open: open,
+              disclosureMode: open
+                  ? CatchFieldMode.controlledExpanded
+                  : CatchFieldMode.controlledCollapsed,
               onOpenChanged: setOpen,
-              control: TextField(focusNode: controlFocus),
+              child: TextField(focusNode: controlFocus),
             );
           },
         ),
@@ -99,9 +103,9 @@ void main() {
           title: 'Distances',
           body: '5K and beyond',
           values: const ['5K', '10K'],
-          itemLabel: (value) => value,
+          itemLabelBuilder: (value) => value,
           selected: const {'5K', '10K'},
-          multi: true,
+          mode: CatchChipMode.multiple,
           onSelectionChanged: (_) {},
         ),
       ),
@@ -122,10 +126,10 @@ void main() {
           title: 'Format',
           helperText: 'Pick the format guests will see.',
           values: const ['Social', 'Competitive'],
-          itemLabel: (value) => value,
-          itemAccent: (value) => value == 'Social' ? accent : null,
+          itemLabelBuilder: (value) => value,
+          itemAccentBuilder: (value) => value == 'Social' ? accent : null,
           selected: const {'Social'},
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
           onSelectionChanged: (_) {},
         ),
       ),
@@ -150,30 +154,28 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Admission format',
               values: const ['open', 'invite'],
-              itemTitle: (value) => value == 'open' ? 'Open' : 'Invite only',
-              itemDescription: (value) => value == 'open'
+              itemTitleBuilder: (value) =>
+                  value == 'open' ? 'Open' : 'Invite only',
+              itemDescriptionBuilder: (value) => value == 'open'
                   ? 'Anyone eligible can book until capacity.'
                   : 'Only people with the invite code can book.',
               selected: selected,
-              initiallyOpen: true,
+              disclosureMode: CatchFieldMode.localExpanded,
               onChanged: (value) => setState(() => selected = value),
             ),
           ),
         ),
       );
 
-      final openCard = tester.widget<CatchOptionCard>(
+      final openCard = tester.widget<CatchChoiceTile>(
         find.byKey(const ValueKey('catch-field-option-card-Open')),
       );
-      final inviteCard = tester.widget<CatchOptionCard>(
+      final inviteCard = tester.widget<CatchChoiceTile>(
         find.byKey(const ValueKey('catch-field-option-card-Invite only')),
       );
-      expect(openCard.description, 'Anyone eligible can book until capacity.');
+      expect(openCard.subtitle, 'Anyone eligible can book until capacity.');
       expect(openCard.selected, isTrue);
-      expect(
-        inviteCard.description,
-        'Only people with the invite code can book.',
-      );
+      expect(inviteCard.subtitle, 'Only people with the invite code can book.');
       expect(inviteCard.selected, isFalse);
 
       await tester.tap(
@@ -183,7 +185,7 @@ void main() {
       expect(selected, 'invite');
       expect(
         tester
-            .widget<CatchOptionCard>(
+            .widget<CatchChoiceTile>(
               find.byKey(
                 const ValueKey('catch-field-option-card-Invite only'),
                 skipOffstage: false,
@@ -210,7 +212,7 @@ void main() {
             max: 169,
             step: 2,
             unit: 'cm',
-            initiallyOpen: true,
+            disclosureMode: CatchFieldMode.localExpanded,
             decreaseSemanticLabel: 'Decrease height',
             increaseSemanticLabel: 'Increase height',
             onChanged: (next) => setState(() => value = next),
@@ -286,7 +288,7 @@ void main() {
     var steps = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchFieldStepper(
+        CatchStepper(
           value: 168,
           min: 100,
           max: 220,
@@ -333,7 +335,7 @@ void main() {
     var steps = 0;
     await tester.pumpWidget(
       _wrap(
-        CatchFieldStepper(
+        CatchStepper(
           value: 168,
           min: 100,
           max: 220,
@@ -375,10 +377,11 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           body: '168 cm',
-          initiallyOpen: true,
-          control: const Text('Height control'),
+          disclosureMode: CatchFieldMode.localExpanded,
+
           onCancel: _noop,
           onSubmit: _noop,
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -402,7 +405,7 @@ void main() {
           (widget) =>
               widget is CustomPaint &&
               widget.painter.runtimeType.toString() ==
-                  '_CatchFieldFocusOutlinePainter',
+                  '_CatchFieldFocusPainter',
         ),
       );
       expect(outline, findsOneWidget);
@@ -421,10 +424,10 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'City',
           values: const ['Indore', 'Mumbai'],
-          itemLabel: (value) => value,
+          itemLabelBuilder: (value) => value,
           selected: const {'Indore'},
           onSelectionChanged: (_) {},
-          initiallyOpen: true,
+          disclosureMode: CatchFieldMode.localExpanded,
         ),
       ),
     );
@@ -450,10 +453,11 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          initiallyOpen: true,
-          control: const Text('Height control'),
+          disclosureMode: CatchFieldMode.localExpanded,
+
           onCancel: () => cancelCount++,
           onSubmit: () {},
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -476,10 +480,11 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          initiallyOpen: true,
-          control: const Text('Height control'),
+          disclosureMode: CatchFieldMode.localExpanded,
+
           onCancel: () {},
           onSubmit: () => submitCount++,
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -503,11 +508,12 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          open: true,
+          disclosureMode: CatchFieldMode.controlledExpanded,
           onOpenChanged: openChanges.add,
-          control: const Text('Height control'),
+
           onCancel: () {},
           onSubmit: () => submitCount++,
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -530,10 +536,11 @@ void main() {
         CatchField.control(
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
-          control: const Text('Height control'),
+
           onOpenChanged: openChanges.add,
           onCancel: () {},
           onSubmit: () {},
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -564,7 +571,7 @@ void main() {
             title: 'Event title',
             placeholder: 'Short and memorable',
             helperText: 'Shows on event cards',
-            validator: (value) =>
+            onValidate: (value) =>
                 value == null || value.isEmpty ? "Title can't be empty" : null,
             onChanged: (value) => latestValue = value,
           ),
@@ -643,7 +650,7 @@ void main() {
     );
 
     expect(find.text(error), findsOneWidget);
-    expect(find.byType(CatchControlShell), findsNothing);
+    expect(find.byType(CatchControlSurface), findsNothing);
 
     final label = tester.widget<Text>(find.text('Invite code'));
     expect(label.style?.color, CatchTokens.editorialLight.danger);
@@ -665,7 +672,7 @@ void main() {
               controller: controller,
               open: true,
               onOpenChanged: (_) {},
-              supporting: const Text('6 / 300'),
+              meta: const Text('6 / 300'),
               onCancel: () {},
               onSubmit: () {},
             ),
@@ -706,9 +713,9 @@ void main() {
                 copy: catchFieldCopy(AppLocalizationsEn()),
                 title: 'Activities',
                 values: const ['Run', 'Walk'],
-                itemLabel: (value) => value,
+                itemLabelBuilder: (value) => value,
                 selected: selected,
-                initiallyOpen: true,
+                disclosureMode: CatchFieldMode.localExpanded,
                 onSelectionChanged: (next) {
                   reports += 1;
                   setState(() => selected = next);
@@ -733,17 +740,20 @@ void main() {
             copy: catchFieldCopy(AppLocalizationsEn()),
             title: 'Locked activities',
             values: const ['Run', 'Walk'],
-            itemLabel: (value) => value,
+            itemLabelBuilder: (value) => value,
             selected: selected,
-            multi: true,
-            enabled: false,
-            initiallyOpen: true,
+            mode: CatchChipMode.multiple,
+            states: const <WidgetState>{
+              WidgetState.disabled,
+              WidgetState.focused,
+            },
+            disclosureMode: CatchFieldMode.localExpanded,
             onSelectionChanged: (_) => reports += 1,
           ),
         ),
       );
-      final lockedChoice = tester.widget<CatchFieldChoiceChip>(
-        find.widgetWithText(CatchFieldChoiceChip, 'Run'),
+      final lockedChoice = tester.widget<CatchChip>(
+        find.widgetWithText(CatchChip, 'Run'),
       );
       expect(lockedChoice.enabled, isFalse);
       expect(reports, 1);
@@ -751,7 +761,7 @@ void main() {
   );
 
   testWidgets(
-    'CatchField.stepper pins formatter, bounds, and semantic labels',
+    'CatchField.stepper pins valueLabelBuilder, bounds, and semantic labels',
     (tester) async {
       var value = 2;
       await tester.pumpWidget(
@@ -763,10 +773,10 @@ void main() {
               value: value,
               min: 1,
               max: 3,
-              formatter: (next) => '${next.toInt()} guests',
+              valueLabelBuilder: (next) => '${next.toInt()} guests',
               decreaseSemanticLabel: 'Decrease guests',
               increaseSemanticLabel: 'Increase guests',
-              initiallyOpen: true,
+              disclosureMode: CatchFieldMode.localExpanded,
               onChanged: (next) => setState(() => value = next.toInt()),
             ),
           ),
@@ -797,7 +807,7 @@ void main() {
             value: value,
             decreaseSemanticLabel: 'Decrease duration',
             increaseSemanticLabel: 'Increase duration',
-            initiallyOpen: true,
+            disclosureMode: CatchFieldMode.localExpanded,
             onChanged: (next) => setState(() => value = next),
           ),
         ),
@@ -808,9 +818,7 @@ void main() {
     await tester.pump();
     expect(value, 45);
 
-    final stepper = tester.widget<CatchFieldStepper>(
-      find.byType(CatchFieldStepper),
-    );
+    final stepper = tester.widget<CatchStepper>(find.byType(CatchStepper));
     expect(stepper.min, 30);
     expect(stepper.max, 240);
     expect(stepper.step, 15);
@@ -856,8 +864,8 @@ void main() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Preferred group size',
               body: 'Four people for a comfortable conversation',
-              initiallyOpen: true,
-              control: CatchFieldStepper(
+              disclosureMode: CatchFieldMode.localExpanded,
+              child: CatchStepper(
                 value: 4,
                 decreaseSemanticLabel: 'Decrease group size',
                 increaseSemanticLabel: 'Increase group size',
@@ -878,7 +886,7 @@ void main() {
       _wrap(
         Directionality(
           textDirection: TextDirection.rtl,
-          child: CatchFieldStepper(
+          child: CatchStepper(
             value: 4,
             decreaseSemanticLabel: 'Decrease group size',
             increaseSemanticLabel: 'Increase group size',

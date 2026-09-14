@@ -1,6 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
-import 'package:catch_ui/src/primitives/catch_code_input_cell.dart';
+import 'package:catch_ui/src/primitives/catch_code_digit_surface.dart';
+import 'package:catch_ui/src/primitives/catch_code_input_status.dart';
 import 'package:flutter/material.dart';
 
 /// Token-styled row of verification-code cells.
@@ -11,7 +12,7 @@ class CatchCodeInputRow extends StatelessWidget {
     this.value = '',
     this.active,
     this.caret = true,
-    this.hasError = false,
+    this.status = CatchCodeInputStatus.ready,
     this.height = CatchLayout.otpDigitHeight,
     this.gap = CatchLayout.otpDigitGap,
     this.cellKeyPrefix = 'code_digit',
@@ -21,7 +22,7 @@ class CatchCodeInputRow extends StatelessWidget {
   final String value;
   final int? active;
   final bool caret;
-  final bool hasError;
+  final CatchCodeInputStatus status;
   final double height;
   final double gap;
   final String cellKeyPrefix;
@@ -39,11 +40,11 @@ class CatchCodeInputRow extends StatelessWidget {
       children: [
         for (var i = 0; i < length; i++) ...[
           Expanded(
-            child: CatchCodeInputCell(
+            child: CatchCodeDigitSurface(
               key: ValueKey('${cellKeyPrefix}_$i'),
               digit: i < code.length ? code[i] : '',
               isActive: !done && i == activeIndex,
-              hasError: hasError,
+              status: status,
               showCaret: caret,
               height: height,
               textStyle: textStyle,

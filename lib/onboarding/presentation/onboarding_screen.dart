@@ -100,10 +100,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               .goToStep(previousStep);
         }
       },
-      child: CatchScreenScaffold.stepFlow(
+      child: CatchScaffold.stepFlow(
         safeArea: flowState.showsWelcome
-            ? CatchScreenSafeArea.none
-            : CatchScreenSafeArea.all,
+            ? CatchScaffoldPlacement.none
+            : CatchScaffoldPlacement.all,
         body: flowState.showsWelcome
             ? currentStep
             : Column(

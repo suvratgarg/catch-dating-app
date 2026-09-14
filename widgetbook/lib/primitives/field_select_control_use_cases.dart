@@ -7,7 +7,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Selection value and validation states',
-  type: CatchFieldSelectControl,
+  type: CatchSelectionField,
   path: '[Core primitives]/Fields',
 )
 Widget fieldSelectControlStates(BuildContext context) {
@@ -26,7 +26,7 @@ Widget fieldSelectControlStates(BuildContext context) {
         title: 'Choose a location',
         contractExemption: 'Catalog-only field selection fixture.',
         values: values,
-        itemLabel: (value) => value,
+        itemLabelBuilder: (value) => value,
         onChanged: (_) {},
       ),
       CatchField<String>.select(
@@ -34,9 +34,9 @@ Widget fieldSelectControlStates(BuildContext context) {
         title: 'Meeting area',
         contractExemption: 'Catalog-only field selection fixture.',
         values: values,
-        itemLabel: (value) => value,
+        itemLabelBuilder: (value) => value,
         value: 'Riverside',
-        prefixIcon: Icon(CatchIcons.pin),
+        leading: Icon(CatchIcons.pin),
         onChanged: (_) {},
       ),
       CatchField<String>.select(
@@ -44,7 +44,7 @@ Widget fieldSelectControlStates(BuildContext context) {
         title: 'Location without a visible label',
         contractExemption: 'Catalog-only field selection fixture.',
         values: values,
-        itemLabel: (value) => value,
+        itemLabelBuilder: (value) => value,
         value: 'City centre',
         showLabel: false,
         size: CatchFieldSize.compact,
@@ -55,9 +55,9 @@ Widget fieldSelectControlStates(BuildContext context) {
         title: 'Unavailable selection',
         contractExemption: 'Catalog-only field selection fixture.',
         values: values,
-        itemLabel: (value) => value,
+        itemLabelBuilder: (value) => value,
         value: 'Outside the city',
-        enabled: false,
+        states: const <WidgetState>{WidgetState.disabled},
       ),
       Form(
         key: formKey,
@@ -66,8 +66,8 @@ Widget fieldSelectControlStates(BuildContext context) {
           title: 'Required location',
           contractExemption: 'Catalog-only field selection fixture.',
           values: values,
-          itemLabel: (value) => value,
-          validator: (value) => value == null ? 'Choose a location.' : null,
+          itemLabelBuilder: (value) => value,
+          onValidate: (value) => value == null ? 'Choose a location.' : null,
           onChanged: (_) {},
         ),
       ),

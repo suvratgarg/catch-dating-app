@@ -91,7 +91,7 @@ void main() {
       );
       _expectFormsAudienceStateOwner(tester, selected: view);
       expect(find.byType(HostRouteLoadingBody), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpFormsRouteState(
         tester,
@@ -131,7 +131,7 @@ void main() {
       );
       _expectFormsAudienceStateOwner(tester, selected: view);
       expect(find.byType(HostRouteLoadingBody), findsOneWidget);
-      expect(find.byType(CatchSliverStateViewport), findsOneWidget);
+      expect(find.byType(CatchStateViewport), findsOneWidget);
 
       await _pumpFormsRouteState(
         tester,
@@ -212,7 +212,7 @@ void main() {
         expect(find.text('Forms'), findsWidgets);
         expect(find.text('Responses'), findsOneWidget);
         expect(find.byKey(const ValueKey('host-forms-create')), findsOneWidget);
-        expect(find.byType(CatchTopBarPrimaryAction), findsOneWidget);
+        expect(find.byType(CatchTopBarPrimaryButton), findsOneWidget);
         expect(find.byType(CatchSearchField), findsOneWidget);
         expect(
           tester
@@ -221,7 +221,7 @@ void main() {
           'Search forms',
         );
         expect(
-          find.byType(CatchOptionGroup<HostFormLifecycleStatus?>),
+          find.byType(CatchChoiceInput<HostFormLifecycleStatus?>),
           findsOneWidget,
         );
 
@@ -402,7 +402,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.byKey(CatchSectionFocusSurface.rowGroupClipKey), findsNothing);
+    expect(find.byKey(CatchSectionSurface.rowGroupClipKey), findsNothing);
     expect(find.byKey(const ValueKey('host-form-published')), findsOneWidget);
     expect(
       tester.getSize(find.byKey(const ValueKey('host-form-published'))).width,
@@ -458,7 +458,7 @@ void _expectFormsAudienceStateOwner(
           find.byType(CatchRootScreenPageScrollView),
         )
         .bodyLayout,
-    CatchScreenBodyLayout.standard,
+    CatchPageBodyMode.standard,
   );
 }
 

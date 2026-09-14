@@ -182,7 +182,7 @@ class _OrderedPhotoPickerState extends State<OrderedPhotoPicker> {
             label: context.l10n.coreOrderedPhotoPickerActionManageAll(
               count: photos.length,
             ),
-            icon: Icon(CatchIcons.photoLibraryOutlined),
+            leading: Icon(CatchIcons.photoLibraryOutlined),
             onPressed: () => _openManager(context, photos),
             variant: CatchButtonVariant.secondary,
             fullWidth: true,
@@ -374,18 +374,22 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
         subtitle: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
           count: _photos.length,
         ),
-        leadingType: CatchTopBarLeading.close,
-        divider: scrolledUnder,
+        navigation: const CatchTopBarNavigation(
+          mode: CatchTopBarNavigationMode.close,
+        ),
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
         actions: widget.showDoneAction
             ? [
-                CatchTextButton(
+                CatchButton.text(
                   label: context.l10n.coreOrderedPhotoPickerActionDone,
                   onPressed: () => Navigator.of(context).pop(),
                 ),
               ]
             : const [],
       ),
-      bottomNavigationBar: widget.footer,
+      footer: widget.footer,
       body: CatchRouteBody.standardViewport(
         child: Column(
           children: [
@@ -406,7 +410,7 @@ class _OrderedPhotoManagerScreenState extends State<OrderedPhotoManagerScreen> {
                     style: CatchTextStyles.sectionTitle(context),
                   ),
                 ),
-                CatchTextButton(
+                CatchButton.text(
                   label: context.l10n.coreOrderedPhotoPickerActionAddPhotos,
                   onPressed:
                       widget.canAdd &&

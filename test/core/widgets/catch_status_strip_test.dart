@@ -70,7 +70,7 @@ void main() {
               expect(rehearsal.top, rail.bottom);
               expect(
                 rail.height,
-                CatchTabRail.heightFor(tester.element(find.byKey(_rail))),
+                CatchPageTabBar.heightFor(tester.element(find.byKey(_rail))),
               );
             }
             expect(tester.takeException(), isNull);
@@ -127,7 +127,7 @@ void main() {
         closeTo(first - offlineHeight, .01),
       );
       final bodyContext = tester.element(find.byKey(_body));
-      expect(CatchStatusStripScope.of(bodyContext), isEmpty);
+      expect(CatchBannerStatusScope.of(bodyContext), isEmpty);
 
       outer.jumpTo(outer.position.maxScrollExtent);
       await tester.pump();
@@ -185,8 +185,8 @@ void main() {
       expect(tester.getTopLeft(find.byKey(_rehearsal)).dy, topBar.bottom);
       expect(tester.takeException(), isNull);
       expect(
-        tester.widget<CatchTopBar>(find.byType(CatchTopBar)).divider,
-        isTrue,
+        tester.widget<CatchTopBar>(find.byType(CatchTopBar)).emphasis,
+        CatchTopBarEmphasis.divided,
       );
     },
   );
@@ -262,10 +262,10 @@ void main() {
         theme: AppTheme.light,
         home: ValueListenableBuilder<bool>(
           valueListenable: offline,
-          builder: (context, value, _) => CatchStatusStripScope(
+          builder: (context, value, _) => CatchBannerStatusScope(
             statuses: [
               if (value)
-                CatchStatusStripData(
+                CatchBannerStatus(
                   id: 'offline',
                   label: 'Offline',
                   message: 'Reconnect to refresh.',
@@ -273,7 +273,7 @@ void main() {
                   color: CatchTokens.of(context).warning,
                 ),
             ],
-            child: const CatchScreenScaffold.standalone(
+            child: const CatchScaffold.standalone(
               body: TextField(autofocus: true),
             ),
           ),
@@ -324,7 +324,7 @@ Widget _app({
         final t = CatchTokens.of(context);
         final global = [
           if (offline)
-            CatchStatusStripData(
+            CatchBannerStatus(
               id: 'offline',
               label: "You're offline",
               message: 'Some content may be out of date.',
@@ -333,18 +333,18 @@ Widget _app({
             ),
         ];
         final local = [
-          CatchStatusStripData(
+          CatchBannerStatus(
             id: 'rehearsal',
             label: 'Rehearsal',
             message: 'Synthetic guests',
             icon: CatchIcons.groupsOutlined,
             color: t.danger,
             actions: [
-              CatchStatusStripAction(
+              CatchBannerAction(
                 label: 'Virtual 5:00 PM',
                 onPressed: onClock ?? () {},
               ),
-              CatchStatusStripAction(
+              CatchBannerAction(
                 label: 'Practice tools',
                 icon: CatchIcons.more,
                 onPressed: onTools ?? () {},
@@ -368,14 +368,16 @@ Widget _app({
               padding: const EdgeInsets.only(top: 59, bottom: 34),
               textScaler: TextScaler.linear(scale),
             ),
-            child: CatchStatusStripScope(
+            child: CatchBannerStatusScope(
               statuses: [if (!pushed) ...local, ...global],
               child: pushed
                   ? CatchRouteScaffold(
                       statuses: local,
                       topBarBuilder: (context, scrolled) => CatchTopBar(
                         title: 'Dress rehearsal',
-                        divider: scrolled,
+                        emphasis: (scrolled)
+                            ? CatchTopBarEmphasis.divided
+                            : CatchTopBarEmphasis.plain,
                       ),
                       body: CatchRouteBody.standardSlivers(
                         slivers: slivers,
@@ -393,7 +395,7 @@ Widget _app({
                               title: 'Organizer',
                             ),
                             controller: controller,
-                            primaryRail: CatchTabControllerRail<int>(
+                            actions: CatchPageTabBar<int>.controlled(
                               key: _rail,
                               controller: tabs,
                               options: const [
@@ -409,7 +411,7 @@ Widget _app({
                                     page:
                                         CatchRootScreenPageScrollView.standard(
                                           scrollKey: PageStorageKey('page-$i'),
-                                          slivers: slivers,
+                                          children: slivers,
                                         ),
                                   ),
                               ],
@@ -419,14 +421,12 @@ Widget _app({
                       ),
                     )
                   : CatchRootScreenScaffold.standard(
-                      header: const CatchScreenHeaderTitle.block(
-                        title: 'Today',
-                      ),
-                      slivers: slivers,
+                      title: const CatchScreenHeader.block(title: 'Today'),
                       controller: controller,
                       topEdge: headerOwned
-                          ? CatchRootScreenTopEdge.headerOwned
-                          : CatchRootScreenTopEdge.safeArea,
+                          ? CatchRootScreenScrollViewPlacement.headerOwned
+                          : CatchRootScreenScrollViewPlacement.safeArea,
+                      children: slivers,
                     ),
             ),
           ),

@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
-  "resolvedDigest": "sha256:0f987ed3e20f4dec57570ff301771809e2631b616d4be550ae0ee163625de745",
+  "resolvedDigest": "sha256:ca20bdda71c1adc62f1b7ac4df21f8f4ce3b36e2a13fc4c879d43c56ddfd34f1",
   "feature": {
     "id": "feature.reviews",
     "name": "Reviews",
@@ -1097,10 +1097,10 @@
             "id": "catch.sheet",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchBottomSheetScaffold",
-              "file": "packages/catch_ui/lib/src/components/catch_bottom_sheet_scaffold.dart",
+              "symbol": "CatchSheet",
+              "file": "packages/catch_ui/lib/src/components/catch_sheet.dart",
               "constructors": [
-                "CatchBottomSheetScaffold"
+                "CatchSheet"
               ]
             }
           },
@@ -1113,7 +1113,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -1172,8 +1174,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -1184,7 +1185,10 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }

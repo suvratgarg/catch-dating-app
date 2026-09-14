@@ -1345,12 +1345,12 @@ Widget exploreAppliedFilterChipsStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Filter option item states',
-  type: CatchOptionGroupItem,
+  type: CatchChoiceButton,
   path: '[Explore]/Controls',
 )
 Widget exploreFilterOptionItemStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchOptionGroupItem',
+    title: 'CatchChoiceButton',
     catalogId: 'control.explore.filter_option_item',
     children: [
       _StateCard(
@@ -1358,7 +1358,7 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CatchOptionGroupItem<ExploreTimeFilter>(
+            CatchChoiceButton<ExploreTimeFilter>(
               option: const CatchOption(
                 value: ExploreTimeFilter.tonight,
                 label: 'Tonight',
@@ -1367,7 +1367,7 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
               onTap: _noop,
             ),
             gapW12,
-            CatchOptionGroupItem<ExploreTimeFilter>(
+            CatchChoiceButton<ExploreTimeFilter>(
               option: const CatchOption(
                 value: ExploreTimeFilter.weekend,
                 label: 'Weekend',
@@ -1380,7 +1380,7 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
       ),
       _StateCard(
         label: 'long copy',
-        child: CatchOptionGroupItem<ExploreTimeFilter>(
+        child: CatchChoiceButton<ExploreTimeFilter>(
           option: const CatchOption(
             value: ExploreTimeFilter.thisWeek,
             label: 'This week',
@@ -1395,35 +1395,35 @@ Widget exploreFilterOptionItemStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Counted filter action',
-  type: CatchIconButton,
+  type: CatchIconAction,
   path: '[Explore]/Controls',
 )
 Widget exploreCountedFilterActionStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchIconButton.counted filter action',
+    title: 'CatchIconAction.counted filter action',
     catalogId: 'catch.icon_button',
     children: [
       _StateCard(
         label: 'inactive',
         child: Center(
-          child: CatchIconButton.counted(
+          child: CatchIconAction.counted(
             icon: CatchIcons.tuneRounded,
             count: 0,
-            variant: CatchIconButtonVariant.plain,
+            variant: CatchIconActionVariant.plain,
             tooltip: 'Filters',
-            onTap: _noop,
+            onPressed: _noop,
           ),
         ),
       ),
       _StateCard(
         label: 'active count',
         child: Center(
-          child: CatchIconButton.counted(
+          child: CatchIconAction.counted(
             icon: CatchIcons.tuneRounded,
             count: 3,
-            variant: CatchIconButtonVariant.plain,
+            variant: CatchIconActionVariant.plain,
             tooltip: 'Filters, 3 active',
-            onTap: _noop,
+            onPressed: _noop,
           ),
         ),
       ),
@@ -1756,7 +1756,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           message:
               'Try another city from the location control, or create the first '
               'club when you are ready to host.',
-          action: _secondaryAction('Try another city'),
+          actions: [_secondaryAction('Try another city')],
         ),
       ),
       _StateCard(
@@ -1765,7 +1765,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           icon: CatchIcons.groupsOutlined,
           title: 'No clubs match this search',
           message: 'Try another club, neighborhood, host, or tag.',
-          action: _secondaryAction('Clear search'),
+          actions: [_secondaryAction('Clear search')],
         ),
       ),
       _StateCard(
@@ -1775,7 +1775,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           title: 'No clubs match these filters',
           message:
               'Clear one or more filters to bring nearby clubs back into view.',
-          action: _secondaryAction('Clear filters'),
+          actions: [_secondaryAction('Clear filters')],
         ),
       ),
       _StateCard(
@@ -1785,7 +1785,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           title: 'No clubs match this search',
           message:
               'Clear the search or filters to bring nearby clubs back into view.',
-          action: _secondaryAction('Clear search and filters'),
+          actions: [_secondaryAction('Clear search and filters')],
         ),
       ),
       _StateCard(
@@ -1795,7 +1795,7 @@ Widget exploreEmptyStateStates(BuildContext context) {
           title: 'Explore is offline',
           message:
               'Check your connection and try again to reload clubs and events.',
-          action: _secondaryAction('Retry'),
+          actions: [_secondaryAction('Retry')],
         ),
       ),
     ],
@@ -2140,21 +2140,21 @@ Widget eventTypeBrowseSkeletonStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Map launcher states',
-  type: CatchCountPill,
+  type: CatchButton,
   path: '[Explore]/Sections',
 )
 Widget exploreMapLauncherStates(BuildContext context) {
   return _CatalogScreen(
-    title: 'CatchCountPill map launcher',
+    title: 'CatchButton map launcher',
     catalogId: 'section.explore.map_launcher',
     children: [
       _StateCard(
         label: 'empty count',
         child: _MapPillFrame(
-          child: CatchCountPill.label(
+          child: CatchButton.floating(
             label: 'Map',
             icon: CatchIcons.map,
-            semanticLabel: 'Map',
+            semanticsLabel: 'Map',
             onPressed: _noop,
           ),
         ),
@@ -2162,11 +2162,11 @@ Widget exploreMapLauncherStates(BuildContext context) {
       _StateCard(
         label: 'with count',
         child: _MapPillFrame(
-          child: CatchCountPill.label(
+          child: CatchButton.floating(
             label: 'Map',
             icon: CatchIcons.map,
             count: 6,
-            semanticLabel: 'Map, 6 events',
+            semanticsLabel: 'Map, 6 events',
             onPressed: _noop,
           ),
         ),
@@ -2174,11 +2174,11 @@ Widget exploreMapLauncherStates(BuildContext context) {
       _StateCard(
         label: 'pressed review target',
         child: _MapPillFrame(
-          child: CatchCountPill.label(
+          child: CatchButton.floating(
             label: 'Map',
             icon: CatchIcons.map,
             count: 12,
-            semanticLabel: 'Map, 12 events',
+            semanticsLabel: 'Map, 12 events',
             onPressed: _noop,
           ),
         ),
@@ -2188,11 +2188,11 @@ Widget exploreMapLauncherStates(BuildContext context) {
         child: _MediaOverride(
           textScaler: const TextScaler.linear(2),
           child: _MapPillFrame(
-            child: CatchCountPill.label(
+            child: CatchButton.floating(
               label: 'Map',
               icon: CatchIcons.map,
               count: 12,
-              semanticLabel: 'Map, 12 events',
+              semanticsLabel: 'Map, 12 events',
               onPressed: _noop,
             ),
           ),

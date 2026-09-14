@@ -1213,7 +1213,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   Future<void> _showStepOverview() async {
     if (_requestPending) return;
-    final selected = await showCatchFormStepOverview(
+    final selected = await showCatchFormStepSheet(
       fieldCopy: catchFieldCopy(context.l10n),
       statusLabelBuilder: catchFormStepStatusLabelBuilder(context.l10n),
       context: context,
@@ -1305,7 +1305,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           ).ignore();
         }
       },
-      child: CatchScreenScaffold.stepFlow(
+      child: CatchScaffold.stepFlow(
         backgroundColor: t.bg,
         body: CreateEventAdaptiveWorkspace(
           header: CreateEventStepHeader(
@@ -1328,7 +1328,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           body: StepperFooter(
             expandSoloPrimary: true,
             body: _isReviewing
-                ? CatchFormReviewBody(
+                ? CatchFormReviewPageBody(
                     fieldCopy: catchFieldCopy(context.l10n),
                     statusLabelBuilder: catchFormStepStatusLabelBuilder(
                       context.l10n,
@@ -1573,7 +1573,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                   ),
             notice: wizardState.mutationError == null
                 ? null
-                : CatchErrorBanner(message: wizardState.mutationError!),
+                : CatchBanner.error(message: wizardState.mutationError!),
             isLastStep: wizardState.isLastStep || _isReviewing,
             isLoading: wizardState.isLoading,
             primaryEnabled: wizardState.primaryEnabled,

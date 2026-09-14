@@ -58,7 +58,7 @@ class CatchOrganizerPoster extends StatelessWidget {
           onTap: onTap,
           borderColor: colors.border,
           radius: radius,
-          elevation: CatchSurfaceElevation.card,
+          emphasis: CatchSurfaceEmphasis.subtle,
           backgroundColor: colors.paper,
           padding: EdgeInsets.zero,
           clipBehavior: Clip.antiAlias,
@@ -201,7 +201,9 @@ class CatchOrganizerPoster extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.clubDisplay(
                     context,
-                    step: compact ? CatchDisplayStep.s : CatchDisplayStep.m,
+                    step: compact
+                        ? CatchTextStylesSize.s
+                        : CatchTextStylesSize.m,
                     height: 0.94,
                     color: colors.ink,
                   ),

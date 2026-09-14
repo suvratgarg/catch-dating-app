@@ -31,7 +31,7 @@ void main() {
     expect(find.byType(CatchTopBar), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Dress rehearsal');
-    expect(topBar.titleWidget, isNull);
+    expect(topBar.body, isNull);
     final titleFinder = find.descendant(
       of: find.byType(CatchTopBar),
       matching: find.text('Dress rehearsal'),
@@ -44,8 +44,16 @@ void main() {
         color: CatchTokens.of(titleContext).ink,
       ),
     );
-    expect(find.byType(CatchScreenHeaderTitle), findsNothing);
-    expect(find.byType(CatchResponsiveSectionPage), findsOneWidget);
+    expect(find.byType(CatchScreenHeader), findsNothing);
+    expect(
+      find.ancestor(
+        of: find.byType(CatchPageBody),
+        matching: find.byType(CatchSectionList),
+      ),
+      findsOneWidget,
+    );
+    expect(find.byType(CatchPageBody), findsOneWidget);
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
     expect(
       find.textContaining('No real guests, messages, payments'),
       findsOneWidget,
@@ -87,7 +95,7 @@ void main() {
     expect(find.text('REHEARSAL'), findsOneWidget);
     final topBar = tester.widget<CatchTopBar>(find.byType(CatchTopBar));
     expect(topBar.title, 'Courtyard practice');
-    expect(topBar.titleWidget, isNull);
+    expect(topBar.body, isNull);
     final titleFinder = find.descendant(
       of: find.byType(CatchTopBar),
       matching: find.text('Courtyard practice'),
@@ -101,13 +109,25 @@ void main() {
       ),
     );
     expect(find.text('Synthetic guests'), findsOneWidget);
-    final strip = tester.widget<CatchStatusStrip>(
-      find.byType(CatchStatusStrip),
+    final strip = tester.widget<CatchBanner>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchBanner &&
+            widget.variant == CatchBannerVariant.statuses,
+      ),
     );
     expect(strip.statuses.single.id, 'rehearsal.session-1');
     expect(strip.statuses.single.actions, hasLength(2));
     expect(
-      tester.getTopLeft(find.byType(CatchStatusStrip)).dy,
+      tester
+          .getTopLeft(
+            find.byWidgetPredicate(
+              (widget) =>
+                  widget is CatchBanner &&
+                  widget.variant == CatchBannerVariant.statuses,
+            ),
+          )
+          .dy,
       tester.getBottomLeft(find.byType(CatchTopBar)).dy,
     );
     expect(find.text('Setup'), findsNothing);

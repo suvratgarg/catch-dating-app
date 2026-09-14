@@ -176,8 +176,10 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
       footer: CatchButton(
         label: state.footerLabel,
         onPressed: state.canSubmit ? callbacks.onContinue : null,
-        isLoading: state.isCompleting,
-        icon: Icon(CatchIcons.checkRounded),
+        status: (state.isCompleting)
+            ? CatchButtonStatus.loading
+            : CatchButtonStatus.idle,
+        leading: Icon(CatchIcons.checkRounded),
         fullWidth: true,
         size: CatchButtonSize.lg,
       ),
@@ -204,8 +206,8 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                     maxPace: state.maxPaceLabel,
                   ),
                   icon: CatchIcons.directionsRunRounded,
-                  initiallyOpen: true,
-                  control: Column(
+                  disclosureMode: CatchFieldMode.localExpanded,
+                  child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -236,7 +238,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                         ],
                       ),
                       gapH12,
-                      CatchRangeSlider(
+                      CatchRangeInput(
                         minimumContract: CatchContractConstraints
                             .updateUserProfilePatchActivityPreferencesRunningPaceMinSecsPerKm,
                         maximumContract: CatchContractConstraints
@@ -280,22 +282,24 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                       .onboardingRunningPrefsPageLabelFavouriteDistances,
                   contract: CatchContractConstraints
                       .updateUserProfilePatchActivityPreferencesRunningPreferredDistances,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   body: _orderedSelectionLabels(
                     PreferredDistance.values,
                     state.distances,
                     (value) => value.label,
                   ),
                   values: PreferredDistance.values,
-                  itemLabel: (value) => value.label,
+                  itemLabelBuilder: (value) => value.label,
                   selected: state.distances,
                   onSelectionChanged: state.requestControlsEnabled
                       ? callbacks.onDistancesChanged
                       : null,
-                  multi: true,
-                  enabled: state.requestControlsEnabled,
-                  initiallyOpen: true,
-                  isOptional: true,
+                  mode: CatchChipMode.multiple,
+                  states: <WidgetState>{
+                    if (!state.requestControlsEnabled) WidgetState.disabled,
+                  },
+                  disclosureMode: CatchFieldMode.localExpanded,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
                 CatchField<RunReason>.choices(
                   copy: catchFieldCopy(context.l10n),
@@ -303,22 +307,24 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   title: state.reasonLabel,
                   contract: CatchContractConstraints
                       .updateUserProfilePatchActivityPreferencesRunningRunningReasons,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   body: _orderedSelectionLabels(
                     RunReason.values,
                     state.reasons,
                     (value) => value.label,
                   ),
                   values: RunReason.values,
-                  itemLabel: (value) => value.label,
+                  itemLabelBuilder: (value) => value.label,
                   selected: state.reasons,
                   onSelectionChanged: state.requestControlsEnabled
                       ? callbacks.onReasonsChanged
                       : null,
-                  multi: true,
-                  enabled: state.requestControlsEnabled,
-                  initiallyOpen: true,
-                  isOptional: true,
+                  mode: CatchChipMode.multiple,
+                  states: <WidgetState>{
+                    if (!state.requestControlsEnabled) WidgetState.disabled,
+                  },
+                  disclosureMode: CatchFieldMode.localExpanded,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
                 CatchField<PreferredRunTime>.choices(
                   copy: catchFieldCopy(context.l10n),
@@ -326,28 +332,30 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   title: state.runTimesLabel,
                   contract: CatchContractConstraints
                       .updateUserProfilePatchActivityPreferencesRunningPreferredRunTimes,
-                  contractValue: (value) => value.name,
+                  contractValueBuilder: (value) => value.name,
                   body: _orderedSelectionLabels(
                     PreferredRunTime.values,
                     state.runTimes,
                     (value) => value.label,
                   ),
                   values: PreferredRunTime.values,
-                  itemLabel: (value) => value.label,
+                  itemLabelBuilder: (value) => value.label,
                   selected: state.runTimes,
                   onSelectionChanged: state.requestControlsEnabled
                       ? callbacks.onRunTimesChanged
                       : null,
-                  multi: true,
-                  enabled: state.requestControlsEnabled,
-                  initiallyOpen: true,
-                  isOptional: true,
+                  mode: CatchChipMode.multiple,
+                  states: <WidgetState>{
+                    if (!state.requestControlsEnabled) WidgetState.disabled,
+                  },
+                  disclosureMode: CatchFieldMode.localExpanded,
+                  labelMode: CatchFieldLabelTextMode.optional,
                 ),
               ],
             ),
             if (state.hasCompleteError)
               CatchSection.plain(
-                child: CatchErrorBanner(message: state.completeErrorMessage!),
+                child: CatchBanner.error(message: state.completeErrorMessage!),
               ),
           ],
         ),

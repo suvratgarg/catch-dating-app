@@ -225,7 +225,7 @@ test("flags thin dynamic kicker shells even inside core widgets", () => {
       "  final String label;",
       "  final Widget child;",
       "  Widget build(context) => Column(children: [",
-      "    CatchKicker(label: label),",
+      "    CatchKickerText(label: label),",
       "    child,",
       "  ]);",
       "}",

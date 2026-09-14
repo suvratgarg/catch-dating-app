@@ -2,6 +2,8 @@ part of 'catch_field.dart';
 
 mixin _CatchFieldProperties {
   Record get _config;
+  Set<WidgetState> get states;
+  bool get enabled => !states.contains(WidgetState.disabled);
   CatchContractFieldConstraints? get contract;
   _RowConfig? get _rowConfig => switch (_config) {
     final _RowConfig config => config,
@@ -62,10 +64,15 @@ mixin _CatchFieldProperties {
   String? get toggleContractExemption => _toggleConfig?.contractExemption;
 
   /// Control revealed by a navigation-mode disclosure field.
-  bool get initiallyOpen => _controlConfig?.initiallyOpen ?? false;
+  bool get initiallyOpen =>
+      _controlConfig?.disclosureMode == CatchFieldMode.localExpanded;
 
   /// Caller-owned disclosure state; null keeps expansion local.
-  bool? get open => _controlConfig?.open ?? _editConfig?.open;
+  bool? get open => switch (_controlConfig?.disclosureMode) {
+    CatchFieldMode.controlledExpanded => true,
+    CatchFieldMode.controlledCollapsed => false,
+    _ => _editConfig?.open,
+  };
   ValueChanged<bool>? get onOpenChanged =>
       _controlConfig?.onOpenChanged ?? _editConfig?.onOpenChanged;
   bool get _explicitSaveInput => _editConfig?.explicitSave ?? false;
@@ -96,9 +103,8 @@ mixin _CatchFieldProperties {
   ValueChanged<String>? get onBlur => _inputConfig?.onBlur;
   ValueChanged<bool>? get onFocusChanged => _inputConfig?.onFocusChanged;
   FocusNode? get focusNode => _inputConfig?.focusNode;
-  bool get retainFocusOnSubmitted =>
-      _inputConfig?.retainFocusOnSubmitted ?? false;
-  FormFieldValidator<String>? get validator => _inputConfig?.validator;
+  VoidCallback? get onEditingComplete => _inputConfig?.onEditingComplete;
+  FormFieldValidator<String>? get onValidate => _inputConfig?.onValidate;
   TextInputType? get keyboardType => _inputConfig?.keyboardType;
   TextInputAction? get textInputAction => _inputConfig?.textInputAction;
   TextCapitalization get textCapitalization =>
@@ -107,25 +113,30 @@ mixin _CatchFieldProperties {
       ? _inputConfig!.inputFormatters
       : CatchContractFieldPolicy.effectiveInputFormatters(contract, null);
   Iterable<String>? get autofillHints => _inputConfig?.autofillHints;
-  bool get obscureText => _inputConfig?.obscureText ?? false;
+  CatchTextInputVariant get inputVariant =>
+      _inputConfig?.inputVariant ?? CatchTextInputVariant.plain;
+  bool get obscureText => inputVariant == CatchTextInputVariant.obscured;
   int? get maxLines => _inputConfig == null ? 1 : _inputConfig!.maxLines;
   int? get minLines => _inputConfig?.minLines;
   int? get maxLength => _inputConfig != null
       ? _inputConfig!.maxLength
       : CatchContractFieldPolicy.effectiveMaxLength(contract, null);
-  bool get readOnly => _inputConfig?.readOnly ?? false;
+  CatchTextInputMode get inputMode =>
+      _inputConfig?.inputMode ?? CatchTextInputMode.editable;
+  bool get readOnly => inputMode.readOnlyText;
   bool get autofocus => _inputConfig?.autofocus ?? false;
-  bool get isOptional => switch (_config) {
-    final _RowConfig config => config.isOptional,
-    final _EditConfig config => config.isOptional,
-    final _ControlConfig config => config.isOptional,
-    _ => false,
+  CatchFieldLabelTextMode get labelMode => switch (_config) {
+    final _RowConfig config => config.labelMode,
+    final _EditConfig config => config.labelMode,
+    final _ControlConfig config => config.labelMode,
+    final _SelectConfig config =>
+      config.showLabel
+          ? CatchFieldLabelTextMode.visible
+          : CatchFieldLabelTextMode.hidden,
+    _ => CatchFieldLabelTextMode.visible,
   };
-  bool get showLabel => switch (_config) {
-    final _EditConfig config => config.showLabel,
-    final _SelectConfig config => config.showLabel,
-    _ => true,
-  };
+  bool get isOptional => labelMode.isOptional;
+  bool get showLabel => labelMode.showsLabel;
   String? get helperText => switch (_config) {
     final _ToggleConfig config => config.helperText,
     final _EditConfig config => config.helperText,
@@ -133,10 +144,10 @@ mixin _CatchFieldProperties {
     final _ControlConfig config => config.helperText,
     _ => null,
   };
-  CatchFieldSupportTone get helperTone => switch (_config) {
+  CatchFieldSupportRowTone get helperTone => switch (_config) {
     final _EditConfig config => config.helperTone,
     final _SelectConfig config => config.helperTone,
-    _ => CatchFieldSupportTone.neutral,
+    _ => CatchFieldSupportRowTone.neutral,
   };
   String? get badgeLabel => _toggleConfig?.badgeLabel;
   CatchBadgeTone? get badgeTone => _toggleConfig?.badgeTone;
@@ -146,16 +157,16 @@ mixin _CatchFieldProperties {
     _ => CatchFieldSize.md,
   };
   TextAlign get textAlign => _inputConfig?.textAlign ?? TextAlign.start;
-  bool get focused => _editConfig?.focused ?? false;
-  bool get mono => _inputConfig?.mono ?? false;
+  bool get focused => states.contains(WidgetState.focused);
+  List<FontFeature>? get fontFeatures => _inputConfig?.fontFeatures;
   String? get prefixText => _inputConfig?.prefixText;
   String? get suffixText => _inputConfig?.suffixText;
   bool get showClearButton => _inputConfig?.showClearButton ?? false;
-  bool get floatingLabel => _inputConfig?.floatingLabel ?? true;
+  bool get floatingLabel => !_explicitSaveInput;
 
   List<Object?>? get _selectValues => _selectConfig?.values;
   String Function(Object? item)? get _selectItemLabel =>
-      _selectConfig?.itemLabel;
+      _selectConfig?.itemLabelBuilder;
   Object? get _selectValue => _selectConfig?.value;
   ValueChanged<Object?>? get _onSelectChanged => _selectConfig?.onSelectChanged;
   FormFieldValidator<Object?>? get _selectValidator =>
@@ -166,6 +177,4 @@ mixin _CatchFieldProperties {
   VoidCallback? get _onSubmit =>
       _controlConfig?.onSubmit ?? _editConfig?.onSubmit;
   bool get _closeLocallyOnSubmit => true;
-  bool get _isLoading =>
-      _controlConfig?.isLoading ?? _editConfig?.isLoading ?? false;
 }

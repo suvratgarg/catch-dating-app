@@ -485,9 +485,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (updateClubMutation.hasError) ...[
-          CatchMutationErrorBanner(
+          CatchLocalizedErrorBanner.mutation(
             mutation: updateClubMutation,
-            errorContext: AppErrorContext.club,
+            context: AppErrorContext.club,
           ),
           gapH12,
         ],
@@ -495,7 +495,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           CatchSection.contained(
             title: context.l10n.hostsHostClubPublicationTitle,
             tone: CatchSurfaceTone.primarySoft,
-            elevation: CatchSurfaceElevation.none,
+            emphasis: CatchSurfaceEmphasis.flat,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -534,7 +534,9 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                             publicationState.targetPublicListingEnabled,
                           ),
                         ),
-                  isLoading: publicationMutation.isPending,
+                  status: (publicationMutation.isPending)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                   variant:
                       publicationState.kind ==
                           HostClubPublicationKind.everywhere
@@ -562,7 +564,7 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           count: context.l10n.coreOrderedPhotoPickerSubtitlePhotoCount(
             count: mediaAssetCount,
           ),
-          trailing: CatchTextButton(
+          trailing: CatchButton.text(
             key: OrderedPhotoPickerKeys.manageAction,
             label: context.l10n.hostsHostClubEditTabActionManageImages,
             onPressed: mediaPending
@@ -596,16 +598,16 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
           title: context.l10n.hostsHostClubProfileTitleIdentity,
           rows: identityRows,
           accordion: _fieldAccordion,
-          savePatch: _savePatch,
-          errorText: _errorText,
+          onSave: _savePatch,
+          errorTextBuilder: _errorText,
         ),
         CatchFormRowList<UpdateClubPatch>(
           fieldCopy: catchFieldCopy(context.l10n),
           title: context.l10n.hostsHostClubProfileTitleContact,
           rows: contactRows,
           accordion: _fieldAccordion,
-          savePatch: _savePatch,
-          errorText: _errorText,
+          onSave: _savePatch,
+          errorTextBuilder: _errorText,
         ),
         CatchSection.fieldRows(
           title: context.l10n.hostsHostClubEditTabTitleClubSettings,
@@ -1162,7 +1164,9 @@ class _HostClubMediaManagerActionsState
                       key: const ValueKey('host-media-save'),
                       label: context.l10n.hostsHostClubEditTabActionSaveMedia,
                       onPressed: _saving ? null : () => unawaited(_save()),
-                      isLoading: _saving,
+                      status: (_saving)
+                          ? CatchButtonStatus.loading
+                          : CatchButtonStatus.idle,
                       fullWidth: true,
                     ),
                   ),

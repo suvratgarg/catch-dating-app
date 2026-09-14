@@ -14,7 +14,7 @@ void main() {
     for (final loading in [false, true]) {
       await tester.pumpWidget(
         _wrap(
-          CatchFieldActionBar(
+          CatchFieldActionRow(
             cancelLabel: 'Annuler',
             doneLabel: 'Terminer',
             savingLabel: 'Enregistrement',
@@ -69,7 +69,7 @@ void main() {
           title: 'Notes',
           body: 'Details',
           isOptional: true,
-          labelCopy: CatchFormFieldLabelCopy(
+          labelCopy: CatchFieldLabelTextCopy(
             optionalLabel: 'Facultatif',
             optionalSuffix: ' (facultatif)',
             optionalSemantics: (label) => '$label, facultatif',
@@ -151,7 +151,7 @@ void main() {
         SizedBox(
           width: 360,
           child: CatchFieldGeometryScope(
-            gutterOwnership: CatchFieldGutterOwnership.container,
+            gutterOwnership: CatchFieldGeometryScopeMode.container,
             child: CatchField.read(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Notifications',
@@ -245,9 +245,9 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Height',
           body: '168 cm',
-          open: true,
-          isLoading: true,
-          control: const Text('Height control'),
+          disclosureMode: CatchFieldMode.controlledExpanded,
+          status: CatchFieldStatus.saving,
+          child: const Text('Height control'),
         ),
       ),
     );
@@ -276,9 +276,9 @@ void main() {
           copy: catchFieldCopy(AppLocalizationsEn()),
           title: 'Languages',
           values: const ['English', 'Hindi', 'Marathi'],
-          itemLabel: (value) => value,
+          itemLabelBuilder: (value) => value,
           selected: const {'Marathi', 'English'},
-          multi: true,
+          mode: CatchChipMode.multiple,
           onSelectionChanged: (_) {},
         ),
       ),
@@ -302,10 +302,10 @@ void main() {
             title: 'Languages',
             body: 'English · Hindi',
             values: const ['English', 'Hindi'],
-            itemLabel: (value) => value,
+            itemLabelBuilder: (value) => value,
             selected: const {'English', 'Hindi'},
-            multi: true,
-            initiallyOpen: true,
+            mode: CatchChipMode.multiple,
+            disclosureMode: CatchFieldMode.localExpanded,
             onSelectionChanged: (_) {},
             onCancel: () {},
             onSubmit: () {},
@@ -345,7 +345,7 @@ void main() {
         SizedBox(
           key: const ValueKey('compact-action-bar'),
           width: 220,
-          child: CatchFieldActionBar(
+          child: CatchFieldActionRow(
             cancelLabel: 'Cancel',
             doneLabel: 'Done',
             savingLabel: 'Saving',
@@ -387,10 +387,10 @@ void main() {
                 icon: CatchIcons.translateRounded,
                 title: 'Languages',
                 values: const ['English', 'Hindi'],
-                itemLabel: (value) => value,
+                itemLabelBuilder: (value) => value,
                 selected: const {'English'},
-                multi: true,
-                initiallyOpen: true,
+                mode: CatchChipMode.multiple,
+                disclosureMode: CatchFieldMode.localExpanded,
                 onSelectionChanged: (_) {},
                 onCancel: () {},
                 onSubmit: () {},
@@ -474,13 +474,13 @@ void main() {
               icon: CatchIcons.cakeOutlined,
               title: 'Locked value',
               initialValue: 'Fixed',
-              readOnly: true,
+              inputMode: CatchTextInputMode.inactiveWithoutSelection,
             ),
             CatchField.action(
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Notification',
               body: 'Starts tomorrow',
-              action: const Text('2H'),
+              actions: const Text('2H'),
               onTap: () {},
             ),
           ],
@@ -515,8 +515,8 @@ void main() {
                   controller: controller,
                   open: expanded,
                   onOpenChanged: setExpanded,
-                  supporting: const Text('19 / 300'),
-                  secondaryAction: const Text('Change prompt'),
+                  meta: const Text('19 / 300'),
+                  actions: const Text('Change prompt'),
                   onCancel: () => setExpanded(false),
                   onSubmit: () {},
                 ),
@@ -636,7 +636,7 @@ void main() {
                 icon: CatchIcons.notificationsNoneRounded,
                 title: 'Event starts tomorrow',
                 body: 'Sundowner 5K meets at Carter Road Jetty.',
-                action: const Text('2H'),
+                actions: const Text('2H'),
                 onTap: () {},
               ),
             ],
@@ -803,7 +803,7 @@ void main() {
             title: 'Search hosts',
             controller: controller,
             showClearButton: true,
-            suffixIcon: Icon(CatchIcons.search),
+            trailing: Icon(CatchIcons.search),
             onChanged: (value) => latest = value,
           ),
         ),
@@ -851,7 +851,7 @@ void main() {
           title: 'Invite code',
           initialValue: 'RUNCLUB',
           helperText: 'Invite code is available.',
-          helperTone: CatchFieldSupportTone.success,
+          helperTone: CatchFieldSupportRowTone.success,
         ),
       ),
     );
@@ -863,58 +863,61 @@ void main() {
     expect(helper.style?.height, CatchFieldTokens.supportLineHeight);
   });
 
-  testWidgets('CatchField supports underline, action suffix, and mono data', (
-    tester,
-  ) async {
-    final controller = TextEditingController(text: '42');
-    addTearDown(controller.dispose);
+  testWidgets(
+    'CatchField supports underline, action suffix, and tabular figures',
+    (tester) async {
+      final controller = TextEditingController(text: '42');
+      addTearDown(controller.dispose);
 
-    await tester.pumpWidget(
-      _wrap(
-        SizedBox(
-          width: 320,
-          child: CatchField.input(
-            copy: catchFieldCopy(AppLocalizationsEn()),
-            title: 'Distance',
-            controller: controller,
-            variant: CatchFieldVariant.underline,
-            textAlign: TextAlign.center,
-            mono: true,
-            focused: true,
-            action: const Text('KM'),
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 320,
+            child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Distance',
+              controller: controller,
+              variant: CatchFieldVariant.underline,
+              textAlign: TextAlign.center,
+              fontFeatures: const [FontFeature.tabularFigures()],
+              states: const <WidgetState>{WidgetState.focused},
+              actions: const Text('KM'),
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    final editableText = tester.widget<EditableText>(find.byType(EditableText));
-    final baseline = tester.widget<DecoratedBox>(
-      find.byKey(const ValueKey('catch-field-underline-baseline')),
-    );
-    final decoration = baseline.decoration as BoxDecoration;
-    final border = decoration.border! as Border;
-    final sweep = tester.widget<TweenAnimationBuilder<double>>(
-      find.byKey(const ValueKey('catch-field-underline-sweep')),
-    );
+      final editableText = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
+      final baseline = tester.widget<DecoratedBox>(
+        find.byKey(const ValueKey('catch-field-underline-baseline')),
+      );
+      final decoration = baseline.decoration as BoxDecoration;
+      final border = decoration.border! as Border;
+      final sweep = tester.widget<TweenAnimationBuilder<double>>(
+        find.byKey(const ValueKey('catch-field-underline-sweep')),
+      );
 
-    expect(find.text('KM'), findsOneWidget);
-    expect(editableText.textAlign, TextAlign.center);
-    expect(
-      editableText.style.fontFeatures,
-      contains(const FontFeature.tabularFigures()),
-    );
-    expect(border.bottom.width, CatchStroke.hairline);
-    expect(sweep.duration, CatchFieldTokens.reveal);
-    await tester.pump(CatchFieldTokens.reveal);
-    expect(
-      tester
-          .getSize(
-            find.byKey(const ValueKey('catch-field-underline-sweep-bar')),
-          )
-          .width,
-      closeTo(tester.getSize(find.byType(TextField)).width, 0.1),
-    );
-  });
+      expect(find.text('KM'), findsOneWidget);
+      expect(editableText.textAlign, TextAlign.center);
+      expect(
+        editableText.style.fontFeatures,
+        contains(const FontFeature.tabularFigures()),
+      );
+      expect(border.bottom.width, CatchStroke.hairline);
+      expect(sweep.duration, CatchFieldTokens.reveal);
+      await tester.pump(CatchFieldTokens.reveal);
+      expect(
+        tester
+            .getSize(
+              find.byKey(const ValueKey('catch-field-underline-sweep-bar')),
+            )
+            .width,
+        closeTo(tester.getSize(find.byType(TextField)).width, 0.1),
+      );
+    },
+  );
 
   testWidgets(
     'CatchFieldLanes preserves section-owned grouped active geometry',
@@ -931,8 +934,8 @@ void main() {
                       copy: catchFieldCopy(AppLocalizationsEn()),
                       title: 'Prompt',
                       body: 'Question',
-                      open: true,
-                      control: const Text('Prompt choices'),
+                      disclosureMode: CatchFieldMode.controlledExpanded,
+                      child: const Text('Prompt choices'),
                     ),
                     CatchField.read(
                       copy: catchFieldCopy(AppLocalizationsEn()),
@@ -952,7 +955,7 @@ void main() {
       );
       final overlay = tester.widget<AnimatedContainer>(overlayFinder);
       final decoration = overlay.decoration! as BoxDecoration;
-      final sectionRect = tester.getRect(find.byType(CatchSectionFocusSurface));
+      final sectionRect = tester.getRect(find.byType(CatchSectionSurface));
       final overlayRect = tester.getRect(overlayFinder);
 
       expect(decoration.border, isNotNull);
@@ -962,7 +965,7 @@ void main() {
       expect(
         find.ancestor(
           of: overlayFinder,
-          matching: find.byKey(CatchSectionFocusSurface.rowGroupClipKey),
+          matching: find.byKey(CatchSectionSurface.rowGroupClipKey),
         ),
         findsOneWidget,
       );
@@ -983,7 +986,7 @@ void main() {
                 title: 'Distance',
                 initialValue: '42',
                 variant: CatchFieldVariant.underline,
-                focused: true,
+                states: const <WidgetState>{WidgetState.focused},
               ),
             ),
           ),

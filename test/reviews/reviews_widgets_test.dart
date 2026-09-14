@@ -92,7 +92,7 @@ void main() {
 
     expect(messageLeft, greaterThan(iconRight));
     expect(emptyState.surface, false);
-    expect(emptyState.layout, CatchEmptyStateLayout.inline);
+    expect(emptyState.variant, CatchEmptyStateVariant.inline);
     expect(emptyState.padding, EdgeInsets.zero);
     expect(find.text('No reviews yet'), findsNothing);
     expect(find.byKey(ReviewKeys.writeReviewButton), findsOneWidget);
@@ -142,9 +142,9 @@ void main() {
 
     expect(emptyStates, hasLength(2));
     expect(emptyStates.first.surface, true);
-    expect(emptyStates.first.layout, CatchEmptyStateLayout.inline);
+    expect(emptyStates.first.variant, CatchEmptyStateVariant.inline);
     expect(emptyStates.last.surface, false);
-    expect(emptyStates.last.layout, CatchEmptyStateLayout.stacked);
+    expect(emptyStates.last.variant, CatchEmptyStateVariant.stacked);
     expect(
       find.text('Reviews appear after members attend an event.'),
       findsOneWidget,

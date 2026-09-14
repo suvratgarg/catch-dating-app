@@ -9,7 +9,7 @@ void _registerCatchPrimitivesButtonTests() {
         CatchButton(
           key: const ValueKey('rounded-button'),
           label: 'Review & publish',
-          shape: CatchButtonShape.rounded,
+          mode: CatchButtonMode.rounded,
           onPressed: () {},
         ),
       ),
@@ -49,8 +49,8 @@ void _registerCatchPrimitivesButtonTests() {
       tester.getSize(find.byKey(const ValueKey('large-text-button'))).height,
       greaterThan(CatchSpacing.s12),
     );
-    final label = tester.widget<CatchButtonLabel>(
-      find.byType(CatchButtonLabel),
+    final label = tester.widget<CatchButtonContentRow>(
+      find.byType(CatchButtonContentRow),
     );
     expect(label.allowMultiline, isTrue);
     expect(tester.takeException(), isNull);
@@ -132,27 +132,34 @@ void _registerCatchPrimitivesButtonTests() {
   });
 
   testWidgets(
-    'CatchBottomAction forwards activity accent to the primary button',
+    'CatchDockSurface forwards activity accent to the primary button',
     (tester) async {
       const accent = Color(0xFF116466);
 
       await tester.pumpWidget(
         _wrap(
-          CatchBottomAction(
+          CatchDockSurface.primary(
             label: 'Join event',
             onPressed: () {},
             buttonAccentColor: accent,
-            buttonShape: CatchButtonShape.rounded,
+            buttonMode: CatchButtonMode.rounded,
           ),
         ),
       );
 
-      expect(find.byType(CatchBottomAction), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchDockSurface &&
+              widget.variant == CatchDockSurfaceVariant.primary,
+        ),
+        findsOneWidget,
+      );
       final button = tester.widget<CatchButton>(
         find.widgetWithText(CatchButton, 'Join event'),
       );
       expect(button.accentColor, accent);
-      expect(button.shape, CatchButtonShape.rounded);
+      expect(button.mode, CatchButtonMode.rounded);
     },
   );
 }

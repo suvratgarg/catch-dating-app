@@ -33,7 +33,7 @@
           {"id": "customer_memory", "language": "dart", "file": "lib/hosts/presentation/customers/host_customer_memory.dart", "symbol": "HostCustomerMemorySection"},
           {"id": "customer_merge_review", "language": "dart", "file": "lib/hosts/presentation/customers/host_contact_merge_review.dart", "symbol": "HostContactMergeReviewSheet"}
         ],
-        "componentContracts": ["catch.button", "catch.chip", "catch.empty_state", "catch.error_state", "catch.field", "catch.notice", "catch.option_group", "catch.person_row", "catch.search_field", "catch.section", "catch.skeleton", "catch.surface", "catch.tab_rail", "catch.top_bar"],
+        "componentContracts": ["catch.button", "catch.chip", "catch.empty_state", "catch.error_state", "catch.field", "catch.notice", "catch.chip.field", "catch.person_row", "catch.search_field", "catch.section", "catch.skeleton", "catch.surface", "catch.tab_rail", "catch.top_bar"],
         "dataContracts": [
           "contracts/callable_responses/create_organizer_contact_response.schema.json",
           "contracts/callable_responses/export_organizer_contacts_response.schema.json",

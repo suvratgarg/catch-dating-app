@@ -70,6 +70,292 @@ similarity on demand under `build/reports/`, keep durable decisions in
 
 ---
 
+## Phase 4 — Header recipes and behavior boundaries
+
+Owner-delegated source and rendered review: `header-canonical-recipes`.
+Section kicker and plain/branded sheet variations use named constructors;
+screen assembly and collapse-triggered title behavior receive distinct roles.
+
+- [x] Preserve four original images at both text scales and three collapse
+  poses. Consecutive comparisons pass with unchanged typography and geometry.
+- [x] Delete two duplicate Widgets and registry members, and migrate every
+  caller without aliases. The proposal fixture only updates its production
+  header API call; proposal content and disposition remain unchanged.
+- [x] Pass 20 focused header/sheet tests, 18 golden/status-strip geometry tests,
+  all 17 family gallery/enumeration tests twice, and 49 navigation-chrome probes
+  with a zero-finding live contract check.
+- [x] Keep all 299 shared surfaces covered; 1,049 registered cases have zero
+  unclassified entries. All 59 reviewed naming entries pass.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
+## Phase 4 — Canonical skeleton recipes
+
+Owner-delegated source and rendered review: `skeleton-canonical-recipes`.
+Five recipe Widgets become named constructors on `CatchSkeleton`. The screen
+and sliver adapters retain their distinct placement protocols with role names.
+
+- [x] Preserve the original row-recipe goldens and canonical loading gallery
+  in consecutive comparisons. Keep every placeholder dimension, the approved
+  Skeletonizer engine, motion timing, reduced-motion and accessibility policy.
+- [x] Keep const-capable recipes and migrate every caller directly; remove the
+  five duplicate Widgets and the row-leading enum without aliases.
+- [x] Pass 15 focused loading/motion/accessibility/geometry tests, ten caller
+  and original-golden tests, and all 18 gallery/enumeration tests twice.
+- [x] Preserve whole-corpus coverage (301/301 surfaces, zero waivers) and
+  classification (1,049 registered cases, zero unclassified). All 53 reviewed
+  naming entries pass; the shared package has 213 public Widgets.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
+## Phase 4 — Canonical empty and error states
+
+Owner-delegated source and rendered review: `empty-error-canonical-states`.
+The primary states now own their renderers; typed mode/variant arguments cover
+inline and compact presentations without forwarding-only public Widgets.
+
+- [x] Delete four duplicate Widgets, migrate callers and remove their registry
+  members and redundant gallery pages. Root, sliver and localization adapters
+  retain their distinct placement and dependency contracts.
+- [x] Standardize recovery slots as `actions`; preserve single-action geometry
+  and retry behavior. Three focused tests exercise multiple actions at scale 2.
+- [x] Pass 140 existing primitive and localized-error tests. Preserve the
+  original gallery images in two comparisons, then pass all 24 affected
+  gallery/enumeration tests twice after canonical page renames.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
+## Phase 4 — Passive badge recipes and numeric contracts
+
+Owner-delegated source and rendered review: `passive-badge-recipe-consolidation`
+in the existing pattern families and decisions. Badge paint is shared through
+named recipes; the row supplies accessible copy directly to count/dot markers.
+
+- [x] Preserve all existing badge recipes, ticket soft/dark paint, optional/error
+  markers, count limits and eight-pixel new-match geometry against four original
+  images at both themes and text scales. Consecutive comparisons pass.
+- [x] Remove four duplicate Widgets and registry members. Fold their gallery
+  states into the canonical pages and migrate production callers directly.
+- [x] Rename quiet status to `CatchStatusRow`, uncapped animated totals to
+  `CatchCountText`, and the privacy adapter's enum axis to `Variant`.
+  Header totals settle immediately under reduced motion.
+- [x] Preserve caller-resolved spoken labels with no duplicate numeric speech;
+  focused accessibility tests pass. The affected primitive, person, event,
+  Explore and copy-boundary tests also pass. All 42 reviewed naming entries pass.
+- [x] Golden coverage is 310/310 surfaces, zero waivers; 1,051 registered cases
+  have zero unclassified entries. The shared package now has 221 public Widgets.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
+## Phase 4 — Reveal animation ownership
+
+Owner-delegated source and rendered review: `reveal-animation-canonical-viewport`
+in the existing pattern families and decisions. `CatchRevealViewport` owns
+content, stationary-media and flight curves; `CatchHeroViewport.ticket` absorbs
+the configuration-only ticket wrapper.
+
+- [x] Capture original forward/reverse poses with motion explicitly enabled;
+  four images remain unchanged in two consecutive comparisons.
+- [x] Reproduce growing status-listener counts on rebuild in both former route
+  wrappers, then verify one listener through rebuild, input replacement and
+  disposal. Five lifecycle, accessibility and golden tests pass twice.
+- [x] Respect reduced motion across all reveal recipes. Content and flight now
+  expose resting content, matching the existing stationary-media behavior.
+- [x] Eleven gallery/enumeration tests pass twice across five motion pages;
+  the existing map regression also passes. All 37 reviewed naming entries pass.
+  Whole-corpus coverage is 314/314 surfaces with zero waivers and zero
+  unclassified cases. Full derived gates remain pending for the phase.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4.
+
+## Phase 4 — Inherited context roles
+
+Source review of all six shared inherited publishers distinguishes geometry,
+visibility, interaction-plane extents, responsive divided-field policy,
+status-strip publication and active-tab/bottom-clearance context.
+
+- [x] Register their existing source identities as Scope members of their
+  data-owning concepts, with explicit use-case and parent comparisons.
+- [x] Add Scope to the closed schema and durable naming owner; bump architecture
+  to 1.34.0 and the delivery spec to 1.12.0 in the same source change.
+- [x] Enforce the distinction in both directions: inherited publishers use Scope;
+  Scope requires inherited context and an owning parent. Seeded probes reject
+  visual Widgets posing as scopes, inherited publishers posing as surfaces and
+  ownerless/unqualified scopes. Thirty-six focused Node tests pass.
+- [x] All 35 reviewed naming entries pass. Production rendering is unchanged.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved registry/enforcement checkpoint, not completion of Phase 4.
+
+## Phase 4 — Media readability overlay
+
+Owner-delegated source and rendered review: `media-readability-canonical-overlay`
+in the existing pattern families and decisions. `CatchMediaOverlay` owns the
+shared gradient renderer with retained hero and thumbnail named recipes.
+
+- [x] Capture all five production gradient recipes before edits; both original
+  images remain unchanged through consecutive comparisons.
+- [x] Remove the thumbnail-specific Widget and registry member; event data and
+  image/fallback selection remain with the existing app component.
+- [x] Reproduce the direct-mount `none` variant crash against source identical to
+  origin/main (`colors.length >= 2`), then repair it with transparent stops.
+  The regression verifies successful painting and pointer transparency.
+- [x] Four focused root tests pass; five gallery/enumeration tests pass twice,
+  including the unchanged production thumbnail page. All 29 reviewed naming
+  entries pass the deterministic validator.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
+## Phase 4 — Primitive roles and typed control status
+
+Owner-delegated source and rendered review: `primitive-role-boundaries` in the
+existing pattern families and decisions. Seven APIs now spell their Indicator,
+Surface or Viewport role explicitly. Control size/tone/variant enums carry the
+canonical component prefix, and control validation/focus is one typed status.
+
+- [x] Preserve every enabled/error/focus combination, disabled fill, focus shadow
+  and stable geometry against four pre-change production images; consecutive
+  comparisons pass. Six pure renames are byte-identical after symbol substitution.
+- [x] Migrate all direct callers, source paths, exports, tests and registry refs.
+  The layout, control-target and golden batch passes 136 tests; the event/badge
+  integration files pass 33 tests. The chat focus test asserts the new typed status.
+- [x] Regenerate Widgetbook and compare its renamed pages at both text scales:
+  19 gallery/enumeration tests pass twice. All 28 reviewed naming entries validate.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+  Analyzer/plugin execution remains CI-only on this machine.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
+## Phase 4 — Canonical icon presentation
+
+Owner-delegated source and rendered review: `icon-presentation-canonical-tile`
+in the existing pattern families and decisions. Empty and error icons now use
+`CatchIconTile.empty` and `.error` with one shared decorative renderer.
+
+- [x] Pin the three old icon recipes and their production empty/error layouts
+  in four original images. Both consecutive comparisons preserve those images.
+- [x] Delete the two duplicate Widgets and their registry members; migrate the
+  Host Today caller and empty/error compositions. Preserve glyph/container sizes,
+  quiet/accent/error colors, border absence and error centering.
+- [x] Replace the empty-specific style enum with `CatchIconTileVariant`.
+  The normal tile constructor retains required non-null glyph/color inputs.
+- [x] Eight focused root tests pass. Thirteen affected gallery/enumeration tests
+  pass twice, with every absorbed state on the canonical icon contract page.
+- [x] Register the decorative icon Tile and metric Tile distinction from source;
+  all 19 reviewed naming entries pass the deterministic identity validator.
+- [ ] Complete the remaining API sweep and full derived Phase 4 CI gates.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
+## Phase 4 — Typography and reviewed role boundaries
+
+Owner-delegated source review: `typography-role-boundaries` in the existing
+pattern families and decisions. `CatchKickerText`, `CatchMetadataText`, and
+`CatchSectionHeaderTitle` preserve distinct typography and heading semantics.
+
+- [x] Pin four production images before edits; both consecutive comparisons
+  pass without changing those images. Twenty-seven heading/layout tests pass.
+- [x] Replace style `size` with `CatchKickerTextVariant` where the choice also
+  owns font weight/tracking; migrate every production and gallery caller.
+- [x] Consolidate the duplicate physical section-heading registry entries into
+  the existing cross-stack `catch.ui_label` contract, governed by `catch.section`.
+  A regression test rejects duplicate source identity; 33 focused Node tests pass.
+- [x] Regenerate the gallery and preserve its multiline heading state. Eleven
+  gallery/enumeration tests pass twice, including unchanged section anatomy.
+- [x] Record source-reviewed Menu and Image distinctions: command vs selected
+  value menus share rendering; network loading and image treatment compose.
+  All 17 reviewed shared declarations pass naming validation. The remaining
+  shared API sweep is still open.
+- [ ] Complete full derived Phase 4 gates in CI; analyzer/plugin execution
+  remains CI-only on this machine.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
+## Phase 4 — Canonical toggle input
+
+Owner-delegated source and rendered review: `toggle-canonical-input` in
+`pattern_families.json` and `decisions.json`. Both existing geometry recipes
+use `CatchToggleInput`; fields mount its `.field` constructor directly.
+
+- [x] Remove the `CatchFieldToggle` forwarding wrapper and rename the shared
+  implementation, callers, finders, and canonical control references.
+- [x] Verify that the implementation is byte-identical after symbol renames.
+  The two pre-refactor production images remain unchanged across consecutive
+  comparisons. Seventeen field toggle/save tests, ten platform-target tests,
+  two affected Host flow tests, and four form-scanner tests pass.
+- [x] Fold the redundant field preview into the canonical contract; both
+  text-scale gallery comparisons and the enumeration test pass twice.
+- [x] Refresh contracts, generated Widgetbook and design context. Corpus
+  coverage is 319/319 surfaces through 334 IDs. All 1,057 registered cases are
+  classified: 351 component-mount, 338 body-mount, 365 screen-scope, 3 prototype.
+- [ ] Verify the lint rule's canonical-control name change and the full derived
+  Phase 4 gates in CI. No local analyzer/plugin process was run.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
+## Phase 4 — Persistent inline feedback
+
+Owner-delegated source and rendered review: `inline-feedback-canonical-banner`
+in `pattern_families.json` and `decisions.json`. `CatchBanner` owns one shared
+renderer for semantic messages and the named error/retry recipes. `CatchNotice`
+retains its distinct transient delivery, dismissal, opening, and person contract.
+
+- [x] Capture all five message tones and both error recipes before edits at
+  light/dark and text scales 1.0/2.0. Both subsequent comparisons pass against
+  the four unchanged baseline images.
+- [x] Remove `CatchErrorBanner`, `CatchInlineMessageSurface`, and
+  `CatchSurface.message`; migrate all production callers and error-copy adapters
+  without aliases. Keep surface paint at L2 and message composition at L3.
+- [x] Preserve localized retry copy, retry eligibility, action behavior, and
+  error geometry. Forward message duration to the reduced-motion-aware surface.
+- [x] Rename the registry identity to `catch.banner`; refresh feature contracts,
+  Widgetbook, source scanners, and generated design context.
+- [x] Four behavior tests, two focused primitive/mutation tests, and seven
+  authentication tests pass. Four Widgetbook cases at both scales pass twice
+  consecutively after their reviewed gallery updates. Fifty-one Node tests pass.
+- [x] Whole-corpus triage remains 1,058 registered cases with zero unclassified;
+  golden coverage is 320/320 surfaces through 335 IDs, with no live waivers.
+- [ ] Complete the workspace analyzer and full derived CI gates with Phase 4.
+  Analyzer/plugin execution remains CI-only on this machine.
+
+This is a preserved family checkpoint, not completion of Phase 4 or the program.
+
+## Phase 4 — Code-entry canonicalization
+
+Owner-delegated source review: `code-entry-canonical-input` in
+`pattern_families.json` and `decisions.json`. The editable input replaces the
+preview-only forwarding implementation under `CatchCodeInput`; visual-only
+callers mount `CatchCodeInputRow` directly.
+
+- [x] Remove `CatchOtpCodeField` and migrate both authentication call sites.
+- [x] Name digit and caret anatomy by Surface and Indicator roles; replace
+  validation booleans with `CatchCodeInputStatus`.
+- [x] Keep programmatic controller changes and controller replacement in sync
+  without a parent rebuild; preserve paste, autofill, submission, and semantics.
+- [x] Update registry, form scanner, generated Widgetbook, and gallery identities.
+- [x] Compare the four pre-refactor production images at both text scales and
+  themes twice consecutively; no image changed. Five behavior tests, two
+  primitive tests, seven authentication tests, and ten Widgetbook golden tests
+  passed; the Widgetbook comparisons also passed twice consecutively.
+- [ ] Complete the workspace analyzer and full derived CI gates with Phase 4.
+  Analyzer/lint-plugin execution remains CI-only on this machine.
+
+Focused commands: `flutter test test/core/forms/otp_code_copy_test.dart`;
+`flutter test test/core/catch_primitives_test.dart --name CatchCode`;
+`flutter test test/auth/presentation/auth_screen_test.dart --name 'OTP|Host reveals'`;
+`flutter test test/goldens/code_input_family_test.dart`; and, in Widgetbook,
+`flutter test test/primitive_goldens_test.dart --name /CatchCode`. Flutter runs
+are serialized. This is one family within Phase 4, not completion of the
+shared API naming sweep or the UI-system program.
+
+---
+
 ## WO-001 — Slice-1 cleanup (branch `claude/widget-consolidation-slice-1`)
 
 Slice 1 (stats→CatchStatColumn, headers→CatchSectionHeader+subtitle, icon

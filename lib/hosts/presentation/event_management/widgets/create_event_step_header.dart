@@ -33,7 +33,7 @@ class CreateEventStepHeader extends StatelessWidget {
       step: isReviewing ? null : currentStep + 1,
       total: isReviewing ? null : totalSteps,
       onBack: onClose,
-      leadingType: CatchTopBarLeading.close,
+      leadingType: CatchTopBarNavigationMode.close,
       onStepOverview: isReviewing ? null : onStepOverview,
       stepOverviewSemanticsLabel: isReviewing
           ? null

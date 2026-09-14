@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/clipboard.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -47,7 +47,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
         onOpenChanged: (open) {
           if (open && !_loaded) unawaited(_load());
         },
-        control: Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Wrap(
@@ -56,7 +56,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
               children: [
                 CatchButton(
                   label: context.l10n.hostsEventStaffAdd,
-                  icon: Icon(CatchIcons.personAddAlt1Outlined),
+                  leading: Icon(CatchIcons.personAddAlt1Outlined),
                   variant: CatchButtonVariant.secondary,
                   onPressed: _mutationPending
                       ? null
@@ -64,7 +64,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
                 ),
                 CatchButton(
                   label: context.l10n.hostsEventStaffCopyLink,
-                  icon: Icon(CatchIcons.linkRounded),
+                  leading: Icon(CatchIcons.linkRounded),
                   variant: CatchButtonVariant.ghost,
                   onPressed: () => unawaited(_copyLink()),
                 ),
@@ -76,14 +76,14 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
               gapH12,
             ],
             if (_loaded)
-              CatchAsyncValueView<HostEventStaffList>(
+              CatchAsyncBoundary<HostEventStaffList>(
                 value: _staff,
                 errorContext: AppErrorContext.event,
                 onRetry: _load,
                 builder: (context, list) {
                   if (list.members.isEmpty) {
                     return CatchEmptyState(
-                      layout: CatchEmptyStateLayout.inline,
+                      variant: CatchEmptyStateVariant.inline,
                       icon: CatchIcons.groupsOutlined,
                       title: context.l10n.hostsEventStaffEmptyTitle,
                       message: context.l10n.hostsEventStaffEmptyMessage,
@@ -255,11 +255,11 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.hostsEventStaffGrantTitle,
       subtitle: context.l10n.hostsEventStaffGrantSubtitle,
       keyboardSafe: true,
-      action: CatchButton(
+      footer: CatchButton(
         label: context.l10n.hostsEventStaffGrantAction,
         fullWidth: true,
         onPressed: _submit,
@@ -277,14 +277,14 @@ class _HostEventStaffGrantSheetState extends State<_HostEventStaffGrantSheet> {
                 ? context.l10n.hostsEventStaffPhoneRequired
                 : null,
           ),
-          CatchMenuAnchor<HostEventStaffGrantWindow>(
+          CatchMenu<HostEventStaffGrantWindow>.anchored(
             items: [
               for (final window in HostEventStaffGrantWindow.values)
                 CatchMenuItem<HostEventStaffGrantWindow>(
                   value: window,
                   label: _windowLabel(context, window),
                   selected: window == _window,
-                  role: CatchMenuItemRole.choice,
+                  variant: CatchMenuItemVariant.choice,
                 ),
             ],
             onSelected: (window, _) => setState(() => _window = window),

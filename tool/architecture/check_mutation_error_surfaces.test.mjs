@@ -104,10 +104,8 @@ test("scanFile allows a listener for the matching pending mutation", () => {
       "    final Mutation<void> save = ref.watch(EventDetailController.saveMutation);",
       "    final Mutation<void> delete = ref.watch(EventDetailController.deleteMutation);",
       "    if (save.hasError) return const Text('Failed');",
-      "    return CatchMutationErrorListener(",
-      "      mutation: EventDetailController.deleteMutation,",
-      "      child: Text(delete.isPending ? 'Deleting' : 'Ready'),",
-      "    );",
+      "    listenToCatchMutationErrors(context, ref, mutations: [EventDetailController.deleteMutation]);",
+      "    return Text(delete.isPending ? 'Deleting' : 'Ready');",
       "  }",
       "}",
     ].join("\n"),
@@ -161,10 +159,8 @@ test("scanFile normalizes multiline watch expressions with trailing commas", () 
       "    final Mutation<void> save = ref.watch(",
       "      EventDetailController.saveMutation,",
       "    );",
-      "    return CatchMutationErrorListener(",
-      "      mutation: EventDetailController.saveMutation,",
-      "      child: Text(save.isPending ? 'Saving' : 'Ready'),",
-      "    );",
+      "    listenToCatchMutationErrors(context, ref, mutations: [EventDetailController.saveMutation]);",
+      "    return Text(save.isPending ? 'Saving' : 'Ready');",
       "  }",
       "}",
     ].join("\n"),
@@ -248,3 +244,67 @@ function writeFile(root, relativePath, source) {
   fs.mkdirSync(path.dirname(file), {recursive: true});
   fs.writeFileSync(file, source);
 }
+
+for (const [surface, expected] of [
+  ["CatchLocalizedErrorBanner.mutation(mutation: save)", 0],
+  ["CatchLocalizedErrorBanner.mutation(mutation: other)", 1],
+  ["CatchLocalizedErrorBanner(error)", 1],
+  ["CatchLocalizedErrorBanner.mutation(mutation: EventController.saveMutation)", 0],
+]) {
+  test(`named mutation recipe covers only its matching input: ${surface}`, () => {
+    const findings = scanFile({
+      relativePath: "lib/events/presentation/event_editor.dart",
+      source: `import 'package:flutter_riverpod/experimental/mutation.dart';
+      class EventEditor extends ConsumerWidget {
+        Widget build(BuildContext context, WidgetRef ref) {
+          final save = ref.watch(EventController.saveMutation);
+          return Column(children: [
+            Text(save.isPending ? 'Saving' : 'Ready'),
+            ${surface},
+          ]);
+        }
+      }`,
+    });
+    assert.equal(findings.length, expected);
+  });
+}
+
+for (const [handles, expected] of [
+  ["handle", 0],
+  ["other", 1],
+  ["other, handle", 0],
+  ["EventController.saveMutation('other')", 1],
+]) {
+  test(`subscription covers only its matching handle: ${handles}`, () => {
+    const findings = scanFile({
+      relativePath: "lib/events/presentation/event_editor.dart",
+      source: `import 'package:flutter_riverpod/experimental/mutation.dart';
+      class EventEditor extends ConsumerWidget {
+        Widget build(BuildContext context, WidgetRef ref) {
+          final handle = EventController.saveMutation('event');
+          final MutationState<void> save = ref.watch(handle);
+          listenToCatchMutationErrors(context, ref, mutations: [${handles}]);
+          return Text(save.isPending ? 'Saving' : 'Ready');
+        }
+      }`,
+    });
+    assert.equal(findings.length, expected);
+  });
+}
+
+test("subscription named argument order does not change matching", () => {
+  const findings = scanFile({
+    relativePath: "lib/events/presentation/event_editor.dart",
+    source: `import 'package:flutter_riverpod/experimental/mutation.dart';
+    class EventEditor extends ConsumerWidget {
+      Widget build(BuildContext context, WidgetRef ref) {
+        final save = ref.watch(EventController.saveMutation);
+        listenToCatchMutationErrors(context, ref,
+          errorContext: AppErrorContext.event,
+          mutations: [EventController.saveMutation]);
+        return Text(save.isPending ? 'Saving' : 'Ready');
+      }
+    }`,
+  });
+  assert.deepEqual(findings, []);
+});

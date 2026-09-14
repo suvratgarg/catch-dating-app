@@ -3,8 +3,8 @@
   "version": 2,
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-08-05",
-  "sourceDigest": "sha256:a76d3f1e8b9fa531b3ed2145d8fd657abeacb3dcccca213967049a1b646e8f88",
-  "resolvedDigest": "sha256:e775a09257f2474ee18e6a9c72c743c7cd4d5bfcb7ba62619d0b874d554a2484",
+  "sourceDigest": "sha256:b3476b11552825ae4fe0bd224a40a241d4eff4f7c92d6a37578107137af88d32",
+  "resolvedDigest": "sha256:4278b8fa96ced65edf6568834a58bd17d93385f1d992a2c4dcde3b51ace69ff6",
   "feature": {
     "id": "feature.explore",
     "name": "Explore",
@@ -65,7 +65,6 @@
         "componentContracts": [
           "catch.button",
           "catch.chip",
-          "catch.count_pill",
           "catch.cover_story",
           "catch.event_card",
           "catch.field",
@@ -689,7 +688,7 @@
               "ExploreScreen/Screen states",
               "ExploreEventsSection/Feed states",
               "ExploreEventTypeBrowseGrid/Activity states",
-              "CatchCountPill/Map launcher states"
+              "CatchButton/Map launcher states"
             ],
             "tests": [
               "test/explore/explore_widgets_test.dart"
@@ -1623,7 +1622,7 @@
             ],
             "previewIds": [
               "ExploreScreen/Screen states",
-              "CatchCountPill/Map launcher states"
+              "CatchButton/Map launcher states"
             ],
             "tests": []
           },
@@ -1738,7 +1737,9 @@
               "constructors": [
                 "CatchButton",
                 "CatchButton.command",
-                "CatchButton.selection"
+                "CatchButton.selection",
+                "CatchButton.floating",
+                "CatchButton.text"
               ]
             }
           },
@@ -1751,19 +1752,9 @@
               "constructors": [
                 "CatchChip.tag",
                 "CatchChip.selectable",
+                "CatchChip.choice",
                 "CatchChip.activity",
                 "CatchChip.removable"
-              ]
-            }
-          },
-          {
-            "id": "catch.count_pill",
-            "kind": "primitive",
-            "dart": {
-              "symbol": "CatchCountPill",
-              "file": "packages/catch_ui/lib/src/components/catch_count_pill.dart",
-              "constructors": [
-                "CatchCountPill.label"
               ]
             }
           },
@@ -1817,12 +1808,13 @@
             "id": "catch.icon_button",
             "kind": "primitive",
             "dart": {
-              "symbol": "CatchIconButton",
-              "file": "packages/catch_ui/lib/src/components/catch_icon_button.dart",
+              "symbol": "CatchIconAction",
+              "file": "packages/catch_ui/lib/src/components/catch_icon_action.dart",
               "constructors": [
-                "CatchIconButton",
-                "CatchIconButton.icon",
-                "CatchIconButton.counted"
+                "CatchIconAction",
+                "CatchIconAction.icon",
+                "CatchIconAction.counted",
+                "CatchIconAction.toolbar"
               ]
             }
           },
@@ -1830,10 +1822,10 @@
             "id": "catch.person_polaroid",
             "kind": "composite",
             "dart": {
-              "symbol": "CatchPersonPolaroid",
-              "file": "packages/catch_ui/lib/src/components/catch_person_polaroid.dart",
+              "symbol": "CatchPolaroid",
+              "file": "packages/catch_ui/lib/src/components/catch_polaroid.dart",
               "constructors": [
-                "CatchPersonPolaroid"
+                "CatchPolaroid"
               ]
             }
           },
@@ -1846,8 +1838,7 @@
               "constructors": [
                 "CatchSurface",
                 "CatchSurface.card",
-                "CatchSurface.tinted",
-                "CatchSurface.message"
+                "CatchSurface.tinted"
               ]
             }
           },
@@ -1858,13 +1849,16 @@
               "symbol": "CatchTopBar",
               "file": "packages/catch_ui/lib/src/components/catch_top_bar.dart",
               "constructors": [
-                "CatchTopBar"
+                "CatchTopBar",
+                "CatchTopBar.identity",
+                "CatchTopBar.screen",
+                "CatchTopBar.primaryRail"
               ]
             }
           }
         ],
         "previews": [
-          "CatchCountPill/Map launcher states",
+          "CatchButton/Map launcher states",
           "CatchEmptyState/Empty states",
           "CrossPathsExploreCard/Cross Paths person card",
           "CrossPathsProfilePreviewSheet/Cross Paths profile preview",

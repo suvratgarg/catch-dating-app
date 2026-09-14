@@ -49,11 +49,11 @@ class ExploreFilterRail extends StatelessWidget
   final bool showJoinedOnly;
 
   @override
-  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+  Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
 
   @override
   Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchTabRail.heightFor(context));
+      Size.fromHeight(CatchPageTabBar.heightFor(context));
 
   static List<CatchOption<ExploreTimeFilter>> _timeOptions(
     ExploreDateStripState state,
@@ -70,19 +70,19 @@ class ExploreFilterRail extends StatelessWidget
     final effectiveDateStripState =
         dateStripState ??
         ExploreDateStripState.from(viewModel: null, l10n: context.l10n);
-    return CatchTabRail<ExploreTimeFilter>(
+    return CatchPageTabBar<ExploreTimeFilter>(
       selected: filters.timeFilter,
       onChanged: onTimeFilterSelected,
       options: _timeOptions(effectiveDateStripState),
       scrollable: true,
       backgroundColor: backgroundColor ?? t.bg,
-      trailing: CatchIconButton.counted(
+      trailing: CatchIconAction.counted(
         key: const ValueKey('explore-filter-button'),
         icon: CatchIcons.tuneRounded,
         count: railState.activeCount,
-        variant: CatchIconButtonVariant.plain,
+        variant: CatchIconActionVariant.plain,
         tooltip: railState.filterButtonSemanticLabel,
-        onTap: onOpenFilters ?? () => _showExploreFilterSheet(context),
+        onPressed: onOpenFilters ?? () => _showExploreFilterSheet(context),
       ),
     );
   }
@@ -239,10 +239,10 @@ class ExploreFilterSheet extends StatelessWidget {
           l10n: context.l10n,
         );
 
-    return CatchBottomSheetScaffold(
+    return CatchSheet(
       title: context.l10n.exploreExploreFilterRailTitleExploreFilters,
       subtitle: context.l10n.exploreExploreFilterRailSubtitleNarrowTheMapAnd,
-      action: Row(
+      footer: Row(
         children: [
           if (sheetState.activeCount > 0) ...[
             Expanded(
@@ -257,7 +257,9 @@ class ExploreFilterSheet extends StatelessWidget {
           Expanded(
             child: CatchButton(
               label: sheetState.actionLabel,
-              isLoading: sheetState.actionLoading,
+              status: (sheetState.actionLoading)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               onPressed: () => Navigator.of(context).pop(),
             ),
           ),

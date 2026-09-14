@@ -50,12 +50,15 @@ void main() {
       MaterialApp(
         theme: CatchTheme.light,
         home: const Scaffold(
-          body: CatchPersonNewMatchDot(semanticsLabel: 'Nouvelle rencontre'),
+          body: CatchStatusIndicator(
+            size: CatchSpacing.s2,
+            semanticsLabel: 'Nouvelle rencontre',
+          ),
         ),
       ),
     );
     expect(find.bySemanticsLabel('Nouvelle rencontre'), findsOneWidget);
-    expect(find.byType(CatchStatusDot), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
   });
 
   testWidgets('app copy follows inherited locale and retains count semantics', (

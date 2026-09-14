@@ -2,8 +2,8 @@ import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -142,17 +142,16 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
     CatchAsyncState<HostSavedAudiencePage> savedAudiences,
   ) => CatchSection.divided(
     title: context.l10n.hostsHostAudienceCampaign,
-    child: CatchAsyncValueView<HostMessagingSetup>(
+    child: CatchAsyncBoundary<HostMessagingSetup>(
       value: messaging,
       onRetry: () => ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
       initialLoadTimeout: null,
-      loadingBuilder: (_) => const CatchSkeletonRows(),
-      errorBuilder: (_, error, _) => CatchLocalizedErrorState(
+      loadingBuilder: (_) => const CatchSkeleton.rows(),
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchLocalizedErrorState(
         error,
         context: AppErrorContext.club,
         mode: CatchErrorStateMode.compact,
-        onRetry: () =>
-            ref.invalidate(hostMessagingSetupProvider(widget.club.id)),
+        onRetry: onBoundaryRetry,
       ),
       builder: (context, setup) {
         final connection = setup.connection;
@@ -192,7 +191,7 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
           );
         }
         if (savedAudiences.status == CatchAsyncStatus.loading) {
-          return const CatchSkeletonRows();
+          return const CatchSkeleton.rows();
         }
         final audiences = savedAudiences.value?.audiences ?? const [];
         if (audiences.isEmpty) {
@@ -222,7 +221,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                     .upsertOrganizerCampaignCallablePayloadName,
                 controller: _campaignNameController,
                 placeholder: context.l10n.hostsHostAudienceCampaignNameExample,
-                enabled: _campaign == null,
+                states: <WidgetState>{
+                  if (!(_campaign == null)) WidgetState.disabled,
+                },
               ),
               gapH12,
               CatchField<_HostCampaignMessageClass>.select(
@@ -230,11 +231,13 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 title: context.l10n.hostsHostAudienceMessageType,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadMessageClass,
-                contractValue: (value) => value.wireValue,
+                contractValueBuilder: (value) => value.wireValue,
                 values: _HostCampaignMessageClass.values,
-                itemLabel: (value) => _messageClassLabel(context, value),
+                itemLabelBuilder: (value) => _messageClassLabel(context, value),
                 value: _messageClass,
-                enabled: _campaign == null,
+                states: <WidgetState>{
+                  if (!(_campaign == null)) WidgetState.disabled,
+                },
                 onChanged: (value) {
                   if (value != null) setState(() => _messageClass = value);
                 },
@@ -302,11 +305,14 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 title: context.l10n.hostSavedAudienceFieldLabel,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadSavedAudienceId,
-                contractValue: (audience) => audience.audienceId,
+                contractValueBuilder: (audience) => audience.audienceId,
                 values: audiences,
-                itemLabel: (audience) => _savedAudienceLabel(context, audience),
+                itemLabelBuilder: (audience) =>
+                    _savedAudienceLabel(context, audience),
                 value: selectedAudience,
-                enabled: _campaign == null,
+                states: <WidgetState>{
+                  if (!(_campaign == null)) WidgetState.disabled,
+                },
                 onChanged: (value) => setState(() => _selectedAudience = value),
               ),
               gapH12,
@@ -315,11 +321,14 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                 title: context.l10n.hostsHostAudienceTemplate,
                 contract: CatchContractConstraints
                     .upsertOrganizerCampaignCallablePayloadTemplateId,
-                contractValue: (value) => value.templateId,
+                contractValueBuilder: (value) => value.templateId,
                 values: approved,
-                itemLabel: (value) => '${value.name} · ${value.language}',
+                itemLabelBuilder: (value) =>
+                    '${value.name} · ${value.language}',
                 value: template,
-                enabled: _campaign == null,
+                states: <WidgetState>{
+                  if (!(_campaign == null)) WidgetState.disabled,
+                },
                 onChanged: (value) {
                   if (value == null) return;
                   setState(() {
@@ -335,14 +344,16 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                   title: context.l10n.hostsHostAudienceLinkedEvent,
                   contract: CatchContractConstraints
                       .upsertOrganizerCampaignCallablePayloadEventId,
-                  contractValue: (event) => event.id,
+                  contractValueBuilder: (event) => event.id,
                   values: events,
-                  itemLabel: (event) =>
+                  itemLabelBuilder: (event) =>
                       '${event.title} · ${AppTimeFormatters.shortDate(event.startTime)}',
                   value: _eventIn(events, _selectedEvent),
                   hintText: context.l10n.hostsHostAudienceChooseEvent,
                   helperText: context.l10n.hostsHostAudienceLinkedEventHelp,
-                  enabled: _campaign == null,
+                  states: <WidgetState>{
+                    if (!(_campaign == null)) WidgetState.disabled,
+                  },
                   onChanged: (value) => setState(() {
                     _selectedEvent = value;
                     _inviteDestination = value == null
@@ -357,9 +368,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                     title: context.l10n.hostsHostAudienceInviteDestination,
                     contract: CatchContractConstraints
                         .upsertOrganizerCampaignCallablePayloadInviteDestinationKind,
-                    contractValue: (value) => value.wireValue,
+                    contractValueBuilder: (value) => value.wireValue,
                     values: _destinationsFor(event),
-                    itemLabel: (value) =>
+                    itemLabelBuilder: (value) =>
                         _inviteDestinationLabel(context, value),
                     value: _inviteDestination ?? _destinationsFor(event).first,
                     helperText: event.isExternalCompanion
@@ -369,7 +380,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                         : context
                               .l10n
                               .hostsHostAudienceCatchAttributionExplanation,
-                    enabled: _campaign == null,
+                    states: <WidgetState>{
+                      if (!(_campaign == null)) WidgetState.disabled,
+                    },
                     onChanged: (value) =>
                         setState(() => _inviteDestination = value),
                   ),
@@ -385,7 +398,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                         'Template-variable keys are provider-defined; the generated contract constrains the map, not each dynamic value field.',
                     controller: _controllerForVariable(variable),
                     maxLength: 240,
-                    enabled: _campaign == null,
+                    states: <WidgetState>{
+                      if (!(_campaign == null)) WidgetState.disabled,
+                    },
                   ),
                 ],
               gapH16,
@@ -399,7 +414,9 @@ class _HostCampaignComposerState extends ConsumerState<HostCampaignComposer> {
                           template,
                           selectedAudience,
                         ),
-                  isLoading: _busy,
+                  status: (_busy)
+                      ? CatchButtonStatus.loading
+                      : CatchButtonStatus.idle,
                 )
               else
                 HostCampaignReport(
@@ -684,13 +701,17 @@ class HostCampaignReport extends StatelessWidget {
               CatchButton(
                 label: context.l10n.hostsHostAudienceApprove,
                 onPressed: busy ? null : onApprove,
-                isLoading: busy,
+                status: (busy)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
               ),
             if (onSend != null)
               CatchButton(
                 label: context.l10n.hostsHostAudienceSendNow,
                 onPressed: busy ? null : onSend,
-                isLoading: busy,
+                status: (busy)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
               ),
             CatchButton(
               label: context.l10n.hostsHostAudienceRefresh,

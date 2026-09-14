@@ -148,7 +148,7 @@ class ProfileSurfaceSkeleton extends StatelessWidget {
                 ],
               ),
             ),
-            if (includeTerminalPadding) const CatchSliverTerminalPadding(),
+            if (includeTerminalPadding) const CatchScrollTerminalGap.sliver(),
           ],
         ),
       ),
@@ -167,7 +167,7 @@ class ProfileSurfaceHeroSkeleton extends StatelessWidget {
       child: CatchSurface(
         borderColor: t.line,
         radius: CatchLayout.personPolaroidRadius,
-        elevation: CatchSurfaceElevation.card,
+        emphasis: CatchSurfaceEmphasis.subtle,
         backgroundColor: t.surface,
         padding: CatchInsets.contentDense,
         child: Column(

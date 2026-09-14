@@ -53,7 +53,7 @@ void _registerExploreErrorsAndCreationTests() {
       container.read(exploreFiltersProvider).distanceFilter,
       ExploreDistanceFilter.any,
     );
-    expect(find.byType(CatchDistanceRing), findsNothing);
+    expect(find.byType(CatchDistanceOverlay), findsNothing);
     expect(find.byType(EventPinsMapPlaceholder), findsOneWidget);
     expect(find.bySemanticsLabel('Select Carter Road'), findsOneWidget);
   });
@@ -402,16 +402,19 @@ void _registerExploreErrorsAndCreationTests() {
     final rootScaffold = tester.widget<CatchRootScreenScaffold>(
       find.byType(CatchRootScreenScaffold),
     );
-    expect(rootScaffold.primaryRail, isNotNull);
+    expect(rootScaffold.actions, isNotNull);
     expect(
       tester
           .widget<CatchRootScreenPageScrollView>(
             find.byType(CatchRootScreenPageScrollView),
           )
           .bodyLayout,
-      CatchScreenBodyLayout.fullBleed,
+      CatchPageBodyMode.fullBleed,
     );
-    expect(rootScaffold.topEdge, CatchRootScreenTopEdge.headerOwned);
+    expect(
+      rootScaffold.topEdge,
+      CatchRootScreenScrollViewPlacement.headerOwned,
+    );
     expect(find.text('Explore unavailable'), findsOneWidget);
     expect(
       find.text(
@@ -771,7 +774,7 @@ void _registerExploreErrorsAndCreationTests() {
         tester
             .widget<CatchStepHeader>(find.byType(CatchStepHeader))
             .leadingType,
-        CatchTopBarLeading.close,
+        CatchTopBarNavigationMode.close,
       );
       expect(
         tester

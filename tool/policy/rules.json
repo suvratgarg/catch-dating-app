@@ -562,8 +562,8 @@
         "lib/core/widgets/catch_chip*.dart",
         "packages/catch_ui/lib/src/components/catch_chip*.dart",
         "packages/catch_ui/lib/src/components/catch_option_*.dart",
-        "packages/catch_ui/lib/src/components/catch_range_slider.dart",
-        "packages/catch_ui/lib/src/components/catch_toggle.dart",
+        "packages/catch_ui/lib/src/components/catch_range_input.dart",
+        "packages/catch_ui/lib/src/components/catch_toggle_input.dart",
         "lib/**/presentation/**",
         "test/core/forms/contract_alignment_test.dart",
         "tool/contracts/generate_flutter_form_contract_inventory.test.mjs",
@@ -815,9 +815,11 @@
       },
       "applies_to": [
         "lib/**/presentation/**",
-        "lib/core/widgets/**"
+        "lib/core/widgets/**",
+        "packages/catch_ui/lib/**",
+        "lib/core/riverpod_ui/**"
       ],
-      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check docs/widget_catalog.md and the existing Catch* primitives under lib/core/widgets for an owner. Do not duplicate an existing primitive shell; extend the primitive or propose a variant through catalog review. Section titles have one owner: top-level groups route through CatchSection, contained card titles route through CatchSection.contained or a documented content primitive, and nested shared widgets must expose a content-only mode instead of repeating the parent section title. Underline tab/scope rails route through CatchTabRail or CatchOptionGroup; production code must not compose CatchOptionGroupItem directly because that forks divider, indicator, ink, and trailing-action alignment behavior.",
+      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check docs/widget_catalog.md and the existing Catch* primitives under packages/catch_ui/lib/src for an owner. Do not duplicate an existing primitive shell; extend the primitive or propose a variant through catalog review. Section titles have one owner: top-level groups route through CatchSection, contained card titles route through CatchSection.contained or a documented content primitive, and nested shared widgets must expose a content-only mode instead of repeating the parent section title. Underline tab/scope rails route through CatchPageTabBar or CatchChoiceInput.segmented; production code must not compose CatchChoiceButton directly because that forks divider, indicator, ink, and trailing-action alignment behavior.",
       "sunset_when": [
         "Widget catalog shows no repeated local shells outside intentional feature-specific UI"
       ],
@@ -830,7 +832,7 @@
         {
           "tool": "design:host-event-field-contracts",
           "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+          "docAnchor": "docs/widget_catalog.md#canonical-usage-decisions"
         },
         {
           "tool": "design:section-dividers",
@@ -840,7 +842,7 @@
         {
           "tool": "design:rail-contracts",
           "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+          "docAnchor": "docs/widget_catalog.md#canonical-usage-decisions"
         },
         {
           "tool": "design:section-headers",
@@ -917,7 +919,7 @@
         "lib/core/widgets/**",
         "test/**"
       ],
-      "instruction": "Presentation widgets should route AsyncValue, Future, and Stream loading/error branches through CatchAsyncValueView, CatchAsyncValueSliver, or a feature-owned typed display-state adapter. View-models may call AsyncValue.when when they return non-widget display state. Empty states stay in successful data callbacks. Data-load errors must use Catch error primitives with retry unless retry is impossible or unsafe.",
+      "instruction": "Presentation widgets should route AsyncValue, Future, and Stream loading/error branches through CatchAsyncBoundary (box or sliver), or a feature-owned typed display-state adapter. View-models may call AsyncValue.when when they return non-widget display state. Empty states stay in successful data callbacks. Data-load errors must use Catch error primitives with retry unless retry is impossible or unsafe.",
       "sunset_when": [
         "Analyzer or scanner coverage enforces raw async UI branches and retryable data-load errors"
       ],
@@ -975,7 +977,7 @@
         "lib/core/widgets/**",
         "test/**"
       ],
-      "instruction": "When credible initial or fallback data is available (route extra, cached value, optimistic snapshot), render it ahead of blocking loading skeletons. Loading states should use skeletons that resemble the eventual UI shape when that shape is known; use compact spinners or loading copy only for tiny inline metadata, unknown one-off work, or platform/plugin actions. Initial provider loads must reach an actionable error state after the shared presentation deadline, and CatchAsyncValueView/CatchAsyncValueSliver call sites must supply onRetry that restarts the failing provider boundary.",
+      "instruction": "When credible initial or fallback data is available (route extra, cached value, optimistic snapshot), render it ahead of blocking loading skeletons. Loading states should use skeletons that resemble the eventual UI shape when that shape is known; use compact spinners or loading copy only for tiny inline metadata, unknown one-off work, or platform/plugin actions. Initial provider loads must reach an actionable error state after the shared presentation deadline, and CatchAsyncBoundary and its sliver constructor call sites must supply onRetry that restarts the failing provider boundary.",
       "sunset_when": [
         "Widgetbook and captures include content-shaped loading states for every contracted screen"
       ],
@@ -1021,9 +1023,11 @@
         "widgetbook/test/support/golden_coverage_waivers.json",
         "widgetbook/test/support/screen_scope_dispositions.json",
         "widgetbook/test/support/triage_inventory.dart",
-        "test/goldens/**"
+        "test/goldens/**",
+        "packages/catch_ui/lib/**",
+        "lib/core/riverpod_ui/**"
       ],
-      "instruction": "Keep docs/widget_catalog.md as current inventory only. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook and catalog coverage; a widget moved into or added under lib/core/widgets must also use the canonical Catch* namespace and have a component contract. Before catch_ui extraction, every public Catch* class under lib/core/widgets must map to a registered core Widgetbook golden id or a current owner-and-expiry waiver, with no more than 20 live waivers. Every registered Widgetbook case must classify as component-mount, body-mount, screen-scope, or explicitly marked prototype; every screen-scope case must match one authored capture-migration or named-keep disposition. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Update affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
+      "instruction": "Generate the inventory in docs/widget_catalog.md from production Widget declarations and design/components/catch.components.json; authored content is limited to Canonical Usage Decisions. Every new or moved public widget in shared, Consumer, or Host production source needs exact-name Widgetbook coverage. Shared Widgets require a canonical Catch* name and an exact source identity, reviewed ladder level and role in the registry; new or moved feature UI requires its feature-prefixed role name and canonical file suffix. The complete shared API must satisfy the naming grammar. Existing feature naming candidates remain source-derived review flags, not approved exceptions or a conformance claim. Every production Widgetbook component/body mount requires golden coverage; proposals carry an explicit marker and remain outside production coverage. Every registered Widgetbook case must classify as component-mount, body-mount, screen-scope, or explicitly marked prototype; every screen-scope case must match one authored capture-migration or named-keep disposition. New or moved private widget classes and Widget-returning functions/getters are prohibited. Exact duplicate public widget class names and normalized public-name collisions fail unless every colliding symbol is an explicitly governed concept/member family. Regenerate affected inventory in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not append release notes or per-change changelog headings.",
       "sunset_when": [
         "A generated widget inventory or CI check makes catalog drift visible automatically"
       ],
@@ -1036,17 +1040,17 @@
         {
           "tool": "design:new-widget-inventory",
           "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+          "docAnchor": "docs/widget_catalog.md#canonical-usage-decisions"
         },
         {
           "tool": "design:widget-classification-check",
           "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+          "docAnchor": "docs/widget_catalog.md#canonical-usage-decisions"
         },
         {
           "tool": "docs:metadata",
           "stage": "scanner-gate",
-          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+          "docAnchor": "docs/widget_catalog.md#canonical-usage-decisions"
         },
         {
           "tool": "design:widgetbook-use-case-triage",
@@ -1060,7 +1064,7 @@
         },
         {
           "stage": "manual",
-          "docAnchor": "docs/widget_catalog.md#maintenance-contract"
+          "docAnchor": "docs/widget_catalog.md#canonical-usage-decisions"
         }
       ]
     },
@@ -1227,7 +1231,7 @@
         "docs/design_parity/**",
         "tool/design/check_screen_gutters.mjs"
       ],
-      "instruction": "Screen, page, and body horizontal gutters should be owned by CatchInsets roles, CatchScreenBody, CatchSectionStack, CatchSection, CatchDetailSliverSectionList, or another documented layout primitive. Raw EdgeInsets rebuilt from CatchSpacing.screenPx/s5 in presentation code is a review candidate unless it is clearly component-local geometry.",
+      "instruction": "Screen, page, and body horizontal gutters should be owned by CatchInsets roles, CatchPageBody.screen, CatchSectionList.inset, CatchSection, CatchSectionList.sliver, or another documented layout primitive. Raw EdgeInsets rebuilt from CatchSpacing.screenPx/s5 in presentation code is a review candidate unless it is clearly component-local geometry.",
       "sunset_when": [
         "High-confidence screen-gutter candidates reach zero or are cataloged as accepted local geometry",
         "Deterministic cases graduate into analyzer diagnostics or a failing ratchet"
@@ -1267,7 +1271,7 @@
         "tool/design/check_screen_top_bar_contracts.mjs",
         "tool/design/screen_top_bar_contracts.json"
       ],
-      "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchScreenTopBar, compact detail/edit/utility navigation uses CatchTopBar, and identity navigation uses CatchTopBar.identity. Pushed routes that require an exit declare leading back and must configure an explicit back affordance. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract.",
+      "instruction": "Every handwritten Scaffold appBar must have an exact reviewed role in the screen-top-bar manifest: root or root-like screen voice uses CatchTopBar.screen, compact detail/edit/utility navigation uses CatchTopBar, and identity navigation uses CatchTopBar.identity. Pushed routes that require an exit declare leading back and must configure an explicit back affordance. Raw Material or Cupertino navigation bars require an exact durable media-hero exception. Feature-owned Header and TopBar classes must be classified by symbol and owner, and full-screen editors that cover shell chrome must present through the root navigator. Broad file allowlists and unrelated canonical calls elsewhere in a file do not satisfy the contract.",
       "sunset_when": [
         "Every remaining legacy manual-header entry has migrated to its canonical screen, step-flow, workspace, or content owner",
         "The analyzer can enforce exact app-bar role and route-presentation ownership without a manifest"
@@ -1691,7 +1695,7 @@
         "lib/core/widgets/**",
         "test/**/*.dart"
       ],
-      "instruction": "Do not add new raw Center(Text(...)) full-screen errors or reintroduce CatchErrorText-style compatibility wrappers. Route app-facing data-load failures through CatchErrorState, CatchErrorScaffold, CatchSliverErrorState, or CatchInlineErrorState with appErrorMessage/appErrorTitle mapped copy. Every full-screen or sliver error must expose onRetry or a truthful secondary action such as CatchErrorBackAction; inline errors may inherit recovery from their surrounding section. Keep CatchFrameworkErrorView for Flutter framework crashes only, ErrorBanner for inline mutation/form failures, and showCatchErrorSnackBar for transient action failures.",
+      "instruction": "Do not add new raw Center(Text(...)) full-screen errors or reintroduce CatchErrorText-style compatibility wrappers. Route app-facing data-load failures through CatchErrorState (including inline/compact modes), CatchErrorScaffold, or CatchSliverErrorState with appErrorMessage/appErrorTitle mapped copy. Every full-screen or sliver error must expose onRetry or a truthful secondary action such as CatchErrorBackButton; inline errors may inherit recovery from their surrounding section. Keep CatchFrameworkErrorState for Flutter framework crashes only, ErrorBanner for inline mutation/form failures, and showCatchErrorSnackBar for transient action failures.",
       "sunset_when": [
         "A canonical app error primitive covers full-screen, sliver, and inline contexts",
         "Existing AsyncValue error branches have migrated away from raw centered text except where explicitly justified"
@@ -1955,7 +1959,7 @@
         "lib/core/presentation/**",
         "packages/catch_ui/lib/src/components/catch_section.dart"
       ],
-      "instruction": "Every direct consumer and host StatefulShellBranch must be registered in tool/design/root_screen_composition_contracts.json. Exact route-to-layout ownership belongs in design/screens/catch.screens.json and is enforced by the analyzer-backed UI composition gate. Ordinary roots select CatchRootScreenScaffold.standard or .fullBleed, or the matching CatchRootScreenScrollView constructor. Roots with pinned peer navigation use .withPrimaryRail plus one of CatchRootScreenPageScrollView.standard, .fullBleed, or .embeddedViewport. These semantic constructors centralize SafeArea(bottom: false), title-to-body rhythm, gutters, responsive content width, field obstruction, refresh, and terminal clearance. Box-layout terminal empty/error branches use CatchStateViewport; presentation slivers use CatchSliverStateViewport, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center.",
+      "instruction": "Every direct consumer and host StatefulShellBranch must be registered in tool/design/root_screen_composition_contracts.json. Exact route-to-layout ownership belongs in design/screens/catch.screens.json and is enforced by the analyzer-backed UI composition gate. Ordinary roots select CatchRootScreenScaffold.standard or .fullBleed, or the matching CatchRootScreenScrollView constructor. Roots with pinned peer navigation use .withPrimaryRail plus one of CatchRootScreenPageScrollView.standard, .fullBleed, or .embeddedViewport. These semantic constructors centralize SafeArea(bottom: false), title-to-body rhythm, gutters, responsive content width, field obstruction, refresh, and terminal clearance. Box-layout terminal empty/error branches use CatchStateViewport; presentation slivers use CatchStateViewport.sliver, CatchSliverEmptyState, or CatchSliverErrorState rather than composing SliverFillRemaining directly, so the same shell obstruction controls their optical center.",
       "sunset_when": [
         "All registered roots use a canonical composition owner and no feature-local root layout remains"
       ],
@@ -1989,7 +1993,7 @@
         "lib/**/presentation/**",
         "lib/core/widgets/**"
       ],
-      "instruction": "AsyncValue/stream error branches must render CatchLocalizedErrorState/CatchLocalizedSliverErrorState/CatchLocalizedInlineErrorState with mapped copy. Provider failures use onRetry that invalidates the failing provider; terminal full-screen and sliver route errors use a truthful secondary action such as CatchErrorBackAction. Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object.",
+      "instruction": "AsyncValue/stream error branches must render CatchLocalizedErrorState (including inline/compact modes) or CatchLocalizedSliverErrorState with mapped copy. Provider failures use onRetry that invalidates the failing provider; terminal full-screen and sliver route errors use a truthful secondary action such as CatchErrorBackButton. Reserve CatchEmptyState for genuinely-empty success states; never route an error into an empty-state or a hand-rolled card that discards the error object.",
       "sunset_when": [
         "A catch_ui_lints diagnostic flags CatchEmptyState/bespoke cards inside error branches",
         "No feature error branch renders raw/empty surfaces for three passes"

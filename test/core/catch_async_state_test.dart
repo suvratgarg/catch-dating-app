@@ -1,6 +1,7 @@
 // ignore_for_file: invalid_use_of_internal_member
 
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -20,8 +21,8 @@ void main() {
     expect(state.status, CatchAsyncStatus.loading);
     expect(state.phase, CatchAsyncPhase.retrying);
     expect(
-      catchAsyncRenderBranchFromAsyncValue(refreshingError),
-      CatchAsyncRenderBranch.loading,
+      catchAsyncBoundaryStatus(refreshingError),
+      CatchAsyncBoundaryStatus.loading,
     );
   });
 
@@ -56,8 +57,8 @@ void main() {
     expect(state.phase, CatchAsyncPhase.retrying);
     expect(state.error, same(failure));
     expect(
-      catchAsyncRenderBranchFromAsyncValue(retrying),
-      CatchAsyncRenderBranch.loading,
+      catchAsyncBoundaryStatus(retrying),
+      CatchAsyncBoundaryStatus.loading,
     );
     expect(
       catchAsyncStateFromAsyncValue(const AsyncData<int>(7)).phase,
@@ -74,10 +75,7 @@ void main() {
     expect(state.status, CatchAsyncStatus.error);
     expect(state.phase, CatchAsyncPhase.terminalError);
     expect(state.isTerminalError, isTrue);
-    expect(
-      catchAsyncRenderBranchFromAsyncValue(terminal),
-      CatchAsyncRenderBranch.error,
-    );
+    expect(catchAsyncBoundaryStatus(terminal), CatchAsyncBoundaryStatus.error);
   });
 
   test('retry with credible data never replays its previous error', () {
@@ -96,15 +94,12 @@ void main() {
     expect(state.phase, CatchAsyncPhase.staleDataWithError);
     expect(state.retrying, isTrue);
     expect(
-      catchAsyncRenderBranchFromAsyncValue(retryingWithData),
-      CatchAsyncRenderBranch.data,
+      catchAsyncBoundaryStatus(retryingWithData),
+      CatchAsyncBoundaryStatus.data,
     );
     expect(
-      catchAsyncRenderBranchFromAsyncValue(
-        retryingWithData,
-        skipLoadingOnRefresh: false,
-      ),
-      CatchAsyncRenderBranch.loading,
+      catchAsyncBoundaryStatus(retryingWithData, retainDataOn: const {}),
+      CatchAsyncBoundaryStatus.loading,
     );
   });
 
@@ -121,13 +116,16 @@ void main() {
     expect(state.phase, CatchAsyncPhase.staleDataWithError);
     expect(state.value, 7);
     expect(state.error, same(failure));
+    expect(catchAsyncBoundaryStatus(stale), CatchAsyncBoundaryStatus.error);
     expect(
-      catchAsyncRenderBranchFromAsyncValue(stale),
-      CatchAsyncRenderBranch.error,
-    );
-    expect(
-      catchAsyncRenderBranchFromAsyncValue(stale, skipError: true),
-      CatchAsyncRenderBranch.data,
+      catchAsyncBoundaryStatus(
+        stale,
+        retainDataOn: const {
+          CatchAsyncBoundaryMode.refresh,
+          CatchAsyncBoundaryMode.error,
+        },
+      ),
+      CatchAsyncBoundaryStatus.data,
     );
   });
 }

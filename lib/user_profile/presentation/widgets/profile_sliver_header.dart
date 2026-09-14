@@ -13,15 +13,15 @@ class ProfileTabBar extends StatelessWidget
   final TabController controller;
 
   @override
-  Size get preferredSize => Size.fromHeight(CatchTabRail.minimumHeight);
+  Size get preferredSize => Size.fromHeight(CatchPageTabBar.minimumHeight);
 
   @override
   Size preferredSizeFor(BuildContext context) =>
-      Size.fromHeight(CatchTabRail.heightFor(context));
+      Size.fromHeight(CatchPageTabBar.heightFor(context));
 
   @override
   Widget build(BuildContext context) {
-    return CatchTabControllerRail<SelfProfileTab>(
+    return CatchPageTabBar<SelfProfileTab>.controlled(
       controller: controller,
       options: [
         CatchOption(
@@ -46,7 +46,7 @@ class ProfileSettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchIconAction(
+    return CatchIconAction.toolbar(
       icon: CatchIcons.settingsOutlined,
       tooltip: context.l10n.userProfileProfileSliverHeaderTooltipSettings,
       onPressed: () => context.pushNamed(Routes.settingsScreen.name),

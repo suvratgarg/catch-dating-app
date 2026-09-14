@@ -19,14 +19,14 @@ import 'support/triage_inventory.dart';
 // These ids select generated use cases; they do not redeclare component states.
 const _referenceCases = <String, String>{
   'Core catalog/Menus/CatchMenuRow/Catalog states': 'menu_row',
-  'Core catalog/Typography/CatchMonoLabel/Catalog states': 'mono_label',
-  'Core catalog/Typography/CatchSectionLabel/Catalog states': 'section_label',
-  'Core catalog/Inputs/CatchControlShell/Catalog states': 'control_shell',
-  'Core catalog/Navigation/CatchStepProgress/Catalog states': 'step_progress',
-  'Core catalog/Navigation/CatchPageDots/Catalog states': 'page_dots',
-  'Core catalog/Data display/CatchStatColumn/Catalog states': 'stat_column',
-  'Core catalog/Data display/CatchMetaDotRow/Catalog states': 'meta_dot_row',
-  'Core catalog/Sheets and footers/CatchBottomSheetGrabber/Catalog states':
+  'Core catalog/Typography/CatchMetadataText/Catalog states': 'mono_label',
+  'Core catalog/Typography/CatchSectionHeaderTitle/Catalog states':
+      'section_label',
+  'Core catalog/Inputs/CatchControlSurface/Catalog states': 'control_shell',
+  'Core catalog/Navigation/CatchPageIndicator/Catalog states': 'page_dots',
+  'Core catalog/Data display/CatchMetricTile/Catalog states': 'stat_column',
+  'Core catalog/Data display/CatchMetaRow/Group states': 'meta_dot_row',
+  'Core catalog/Sheets and footers/CatchSheetDragIndicator/Catalog states':
       'bottom_sheet_grabber',
   'Core catalog/Icon atoms/CatchIconTile/Catalog states': 'icon_tile',
 };
@@ -101,7 +101,7 @@ void main() {
     expect(registered, greaterThan(0));
     expect(renderer.visited.length, registered);
     expect(renderer.visited.toSet().length, registered);
-    expect(coreGoldenIds, hasLength(335));
+    expect(coreGoldenIds, hasLength(297));
     expect(renderer.selected, unorderedEquals(coreGoldenIds));
     expect(
       coreGoldenIds.map(_corpusStem).toSet(),
@@ -244,6 +244,10 @@ class _CatchGoldenRenderer implements WidgetbookGoldenRenderer {
             'widgetbook/$stem${scale == 1 ? '' : '@2.0'}',
             size: Size(440, preservesReference ? 1000 : 1400),
             textScale: scale,
+            precache:
+                id == 'Core primitives/Media/CatchHeroImage/Contract states'
+                ? const [AssetImage('assets/fixtures/club_hero_portrait.jpg')]
+                : const [],
             fitContentKey: preservesReference
                 ? null
                 : widgetbookCatalogContentKey,

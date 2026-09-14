@@ -6,7 +6,7 @@ import 'package:widgetbook_workspace/support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
   name: 'Fraction and absolute cap',
-  type: CatchFractionalMaxWidth,
+  type: CatchFractionalViewport,
   path: '[Core primitives]/Layout',
 )
 Widget fractionalWidthStates(BuildContext context) => WidgetbookCatalogFrame(
@@ -14,7 +14,7 @@ Widget fractionalWidthStates(BuildContext context) => WidgetbookCatalogFrame(
   catalogId: 'catch.screen_body.fractional_max_width',
   children: [
     for (final fraction in [0.5, 1.0])
-      CatchFractionalMaxWidth(
+      CatchFractionalViewport(
         fraction: fraction,
         maxWidth: 280,
         child: CatchSurface.card(
@@ -29,14 +29,14 @@ Widget fractionalWidthStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Editable pager content',
-  type: CatchPagerFocusBoundary,
+  type: CatchPagerFocusViewport,
   path: '[Core primitives]/Layout',
 )
 Widget pagerFocusStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Pager focus boundary',
   catalogId: 'catch.screen_body.pager_focus_boundary',
   children: const [
-    CatchPagerFocusBoundary(
+    CatchPagerFocusViewport(
       child: CatchSurface.card(
         child: TextField(
           decoration: InputDecoration(labelText: 'Pager message'),
@@ -48,10 +48,10 @@ Widget pagerFocusStates(BuildContext context) => WidgetbookCatalogFrame(
 
 @widgetbook.UseCase(
   name: 'Resting and transition poses',
-  type: CatchFadeScaleViewport,
+  type: CatchRevealViewport,
   path: '[Core primitives]/Motion',
 )
-Widget fadeScaleStates(BuildContext context) => WidgetbookCatalogFrame(
+Widget revealViewportStates(BuildContext context) => WidgetbookCatalogFrame(
   title: 'Fade and scale viewport',
   catalogId: 'catch.motion_viewport.fade_scale',
   children: [
@@ -59,17 +59,20 @@ Widget fadeScaleStates(BuildContext context) => WidgetbookCatalogFrame(
       Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          CatchMonoLabel(
+          CatchMetadataText(
             'Progress $value',
             color: CatchTokens.of(context).ink2,
           ),
           gapH8,
-          CatchFadeScaleViewport(
-            animation: AlwaysStoppedAnimation<double>(value),
-            child: CatchSurface.card(
-              child: Text(
-                'Route content',
-                style: CatchTextStyles.bodyM(context),
+          MediaQuery(
+            data: MediaQuery.of(context).copyWith(disableAnimations: false),
+            child: CatchRevealViewport(
+              animation: AlwaysStoppedAnimation<double>(value),
+              child: CatchSurface.card(
+                child: Text(
+                  'Route content',
+                  style: CatchTextStyles.bodyM(context),
+                ),
               ),
             ),
           ),
@@ -113,7 +116,7 @@ Widget tabViewportContractStates(BuildContext context) =>
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CatchMonoLabel(
+              CatchMetadataText(
                 placement.name,
                 color: CatchTokens.of(context).ink2,
               ),

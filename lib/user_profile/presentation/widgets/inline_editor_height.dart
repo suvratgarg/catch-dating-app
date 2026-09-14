@@ -127,18 +127,20 @@ class _ProfileInlineHeightEditorState
         tone: widget.isAddAffordance
             ? CatchFieldTone.primary
             : CatchFieldTone.normal,
-        open: widget.isExpanded,
+        disclosureMode: widget.isExpanded
+            ? CatchFieldMode.controlledExpanded
+            : CatchFieldMode.controlledCollapsed,
         onOpenChanged: (expanded) {
           if (isSaving || expanded == widget.isExpanded) return;
           widget.onTap();
         },
-        isLoading: isSaving,
+
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
         value: _heightCm,
         min: minimumHeightCm,
         max: maximumHeightCm,
-        formatter: (value) =>
+        valueLabelBuilder: (value) =>
             context.l10n.userProfileInlineEditorHeightBodyHeightcmCm(
               heightCm: value.toInt(),
             ),

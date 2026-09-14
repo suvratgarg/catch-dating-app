@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_mutation_error_banner.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
 import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/image_uploads/domain/image_upload_job.dart';
@@ -224,7 +224,9 @@ class _ProfilePhotoEditorScreenState
         title: widget.photo == null
             ? context.l10n.imageUploadsProfilePhotoEditorScreenTitleAddPhoto
             : context.l10n.imageUploadsProfilePhotoEditorScreenTitleEditPhoto,
-        divider: scrolledUnder,
+        emphasis: scrolledUnder
+            ? CatchTopBarEmphasis.divided
+            : CatchTopBarEmphasis.plain,
       ),
       body: CatchRouteBody.standardConstrained(
         child: Column(
@@ -252,9 +254,9 @@ class _ProfilePhotoEditorScreenState
                   .l10n
                   .imageUploadsProfilePhotoEditorScreenTitlePhotoPrompt,
               contract: CatchContractConstraints.photoPromptAnswerPromptId,
-              contractValue: (choice) => choice.id ?? '',
+              contractValueBuilder: (choice) => choice.id ?? '',
               values: promptChoices,
-              itemLabel: (choice) => choice.label,
+              itemLabelBuilder: (choice) => choice.label,
               selected: {selectedPromptChoice},
               onSelectionChanged: _saving || _deleting
                   ? null
@@ -262,7 +264,9 @@ class _ProfilePhotoEditorScreenState
                       if (selection.isEmpty) return;
                       setState(() => _draftPromptId = selection.single.id);
                     },
-              open: _promptOpen,
+              disclosureMode: _promptOpen
+                  ? CatchFieldMode.controlledExpanded
+                  : CatchFieldMode.controlledCollapsed,
               onOpenChanged: _saving || _deleting
                   ? null
                   : (open) {
@@ -283,12 +287,14 @@ class _ProfilePhotoEditorScreenState
                   _promptOpen = false;
                 });
               },
-              enabled: !_saving && !_deleting,
+              states: <WidgetState>{
+                if (!(!_saving && !_deleting)) WidgetState.disabled,
+              },
               icon: CatchIcons.autoAwesomeOutlined,
             ),
             gapH20,
             if (uploadMutation.hasError) ...[
-              CatchMutationErrorBanner(mutation: uploadMutation),
+              CatchLocalizedErrorBanner.mutation(mutation: uploadMutation),
               gapH12,
             ],
             CatchButton(
@@ -303,7 +309,9 @@ class _ProfilePhotoEditorScreenState
                         .l10n
                         .imageUploadsProfilePhotoEditorScreenLabelSaveChanges,
               onPressed: canSave ? _save : null,
-              isLoading: _saving,
+              status: (_saving)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
               fullWidth: true,
             ),
             gapH12,
@@ -316,7 +324,7 @@ class _ProfilePhotoEditorScreenState
                         .l10n
                         .imageUploadsProfilePhotoEditorScreenLabelChangePhoto,
               onPressed: _saving || _deleting ? null : _replaceImage,
-              icon: Icon(CatchIcons.photoLibraryOutlined),
+              leading: Icon(CatchIcons.photoLibraryOutlined),
               variant: CatchButtonVariant.secondary,
               fullWidth: true,
             ),
@@ -331,8 +339,10 @@ class _ProfilePhotoEditorScreenState
                           .l10n
                           .imageUploadsProfilePhotoEditorScreenLabelDeletePhoto,
                 onPressed: canDelete ? _deletePhoto : null,
-                isLoading: _deleting,
-                icon: Icon(CatchIcons.deleteOutlineRounded),
+                status: (_deleting)
+                    ? CatchButtonStatus.loading
+                    : CatchButtonStatus.idle,
+                leading: Icon(CatchIcons.deleteOutlineRounded),
                 variant: CatchButtonVariant.danger,
                 fullWidth: true,
                 semanticsLabel: canDelete

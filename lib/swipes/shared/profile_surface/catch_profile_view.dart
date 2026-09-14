@@ -86,7 +86,7 @@ class CatchProfileView extends StatelessWidget {
               ),
               sliver: SliverList.list(children: _body(context, activity)),
             ),
-            if (includeTerminalPadding) const CatchSliverTerminalPadding(),
+            if (includeTerminalPadding) const CatchScrollTerminalGap.sliver(),
           ],
         ),
       ),
@@ -139,7 +139,7 @@ class ProfileHeroWidget extends StatelessWidget {
 
     return Padding(
       padding: CatchInsets.pageHorizontal.copyWith(top: CatchSpacing.s3),
-      child: CatchPersonPolaroid(
+      child: CatchPolaroid(
         media: ProfilePhoto(
           image: data.heroPhoto,
           activity: data.kickerActivity,
@@ -388,13 +388,13 @@ class ProfileRunning extends StatelessWidget {
           color: activity?.accent,
         ),
         gapH10,
-        CatchMetricStrip(
+        CatchMetricSection(
           items: [
-            CatchMetricStripItem(
+            CatchMetricValue(
               value: section.pace,
               label: context.l10n.swipesCatchProfileViewLabelPace,
             ),
-            CatchMetricStripItem(
+            CatchMetricValue(
               value: section.distance,
               label: context.l10n.swipesCatchProfileViewLabelDistance,
             ),

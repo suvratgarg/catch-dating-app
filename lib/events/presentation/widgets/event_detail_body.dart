@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -136,10 +136,11 @@ class EventDetailBody extends StatelessWidget {
             notchBackgroundColor: style.pageBackground,
           ),
         ),
-        CatchDetailSliverSectionList(
+        CatchSectionList.sliver(
+          emptyStateOmitted: true,
           topPadding: CatchSpacing.screenPt,
           bottomPadding: CatchSpacing.screenPb,
-          sections: [
+          children: [
             EventDetailOverviewSection(
               event: event,
               informationState: informationState,
@@ -258,7 +259,7 @@ class EventDetailCalloutCard extends StatelessWidget {
                   builder: (buttonContext) => CatchButton(
                     label: actionLabel,
                     variant: CatchButtonVariant.secondary,
-                    icon: Icon(actionIcon),
+                    leading: Icon(actionIcon),
                     onPressed: () => onAction(buttonContext),
                     fullWidth: true,
                   ),
@@ -293,10 +294,10 @@ class EventCompanionEntry extends StatelessWidget {
       EventDetailCompanionStatus.loading => EventDetailCompanionSkeleton(
         surfaceStyle: surfaceStyle,
       ),
-      EventDetailCompanionStatus.error => CatchLocalizedInlineErrorState(
+      EventDetailCompanionStatus.error => CatchLocalizedErrorState(
         state.error!,
         onRetry: onRetry,
-        compact: true,
+        mode: CatchErrorStateMode.compact,
       ),
       EventDetailCompanionStatus.available => EventDetailCalloutCard(
         leadingIcon: CatchIcons.autoAwesomeOutlined,
@@ -324,7 +325,7 @@ class GuestBookCta extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return CatchBottomAction(
+    return CatchDockSurface.primary(
       label: context.l10n.eventsEventDetailBodyLabelSignInToBook,
       onPressed: onPressed,
       backgroundColor: darkSurface ? t.ink : t.surface,
@@ -359,10 +360,10 @@ class EventDetailHostsSection extends StatelessWidget {
       case EventDetailHostStatus.loading:
         return EventDetailHostsSkeleton(surfaceStyle: surfaceStyle);
       case EventDetailHostStatus.error:
-        return CatchLocalizedInlineErrorState(
+        return CatchLocalizedErrorState(
           state.error!,
           onRetry: onRetry,
-          compact: true,
+          mode: CatchErrorStateMode.compact,
         );
       case EventDetailHostStatus.content:
         final style = surfaceStyle;
@@ -374,14 +375,16 @@ class EventDetailHostsSection extends StatelessWidget {
           title: context.l10n.eventsEventDetailBodyTitleHostedBy,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
-          child: CatchHostRow(
+          child: CatchPersonRow.contact(
+            data: CatchPersonRowData(
+              name: state.hostName!,
+              imageUrl: state.photoUrl,
+              metaLine: state.meta,
+            ),
             colors: ActivityPalette.resolve(
               context,
               event.activityKind,
             ).avatarColors,
-            name: state.hostName!,
-            imageUrl: state.photoUrl,
-            meta: state.meta,
             verified: state.verified,
             nameColor: style?.headingColor,
             metaColor: style?.bodyColor,

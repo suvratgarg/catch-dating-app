@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_view.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/hosts/data/host_event_staff_repository.dart';
@@ -18,31 +18,38 @@ class HostEventOperatorScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accessAsync = ref.watch(hostEventOperatorAccessProvider(eventId));
-    return CatchAsyncValueView<HostEventOperatorAccess>(
+    return CatchAsyncBoundary<HostEventOperatorAccess>(
       value: accessAsync,
       onRetry: () => ref.invalidate(hostEventOperatorAccessProvider(eventId)),
       loadingBuilder: (_) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEventOperatorTitle,
-          divider: scrolledUnder,
-          leadingType: CatchTopBarLeading.back,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
         ),
         body: const CatchRouteBody.standardViewport(
           child: HostRouteLoadingBody(padding: EdgeInsets.zero),
         ),
       ),
-      errorBuilder: (_, error, _) => CatchRouteScaffold(
+      errorBuilder: (_, error, _, onBoundaryRetry) => CatchRouteScaffold(
         topBarBuilder: (context, scrolledUnder) => CatchTopBar(
           title: context.l10n.hostsEventOperatorTitle,
-          divider: scrolledUnder,
-          leadingType: CatchTopBarLeading.back,
+          emphasis: scrolledUnder
+              ? CatchTopBarEmphasis.divided
+              : CatchTopBarEmphasis.plain,
+          navigation: const CatchTopBarNavigation(
+            mode: CatchTopBarNavigationMode.back,
+          ),
         ),
         body: CatchRouteBody.standardViewport(
           child: CatchLocalizedErrorState(
             error,
             context: AppErrorContext.event,
-            onRetry: () =>
-                ref.invalidate(hostEventOperatorAccessProvider(eventId)),
+            onRetry: onBoundaryRetry,
           ),
         ),
       ),
@@ -52,15 +59,19 @@ class HostEventOperatorScreen extends ConsumerWidget {
             topBarBuilder: (context, scrolledUnder) => CatchTopBar(
               title: access.title,
               subtitle: context.l10n.hostsEventOperatorTitle,
-              divider: scrolledUnder,
-              leadingType: CatchTopBarLeading.back,
+              emphasis: scrolledUnder
+                  ? CatchTopBarEmphasis.divided
+                  : CatchTopBarEmphasis.plain,
+              navigation: const CatchTopBarNavigation(
+                mode: CatchTopBarNavigationMode.back,
+              ),
             ),
             body: CatchRouteBody.standardViewport(
-              child: CatchErrorBody(
+              child: CatchErrorState(
                 title: context.l10n.hostsEventOperatorCancelledTitle,
                 message: context.l10n.hostsEventOperatorCancelledMessage,
                 icon: CatchIcons.eventBusyOutlined,
-                secondaryAction: const CatchErrorBackAction(),
+                actions: const [CatchErrorBackButton()],
               ),
             ),
           );
@@ -69,12 +80,16 @@ class HostEventOperatorScreen extends ConsumerWidget {
           topBarBuilder: (context, scrolledUnder) => CatchTopBar(
             title: access.title,
             subtitle: context.l10n.hostsEventOperatorTitle,
-            divider: scrolledUnder,
-            leadingType: CatchTopBarLeading.back,
+            emphasis: scrolledUnder
+                ? CatchTopBarEmphasis.divided
+                : CatchTopBarEmphasis.plain,
+            navigation: const CatchTopBarNavigation(
+              mode: CatchTopBarNavigationMode.back,
+            ),
           ),
           body: CatchRouteBody.standardSections(
             sections: [
-              CatchResponsiveSectionItem(
+              CatchSectionListItem(
                 child: CatchSection.contained(
                   title: context.l10n.hostsEventOperatorAccessTitle,
                   subtitle: context.l10n.hostsEventOperatorAccessSubtitle,
@@ -103,7 +118,7 @@ class HostEventOperatorScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              CatchResponsiveSectionItem(
+              CatchSectionListItem(
                 child: HostOperationalRosterPanel(
                   eventId: eventId,
                   organizerId: access.organizerId,

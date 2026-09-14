@@ -132,13 +132,17 @@ class _ChatComposer extends StatelessWidget {
               radius: CatchRadius.pill,
               boxShadow: CatchElevation.raised,
               padding: EdgeInsets.zero,
-              child: CatchControlShell(
+              child: CatchControlSurface(
+                status: !hardDisabled && focusNode.hasFocus
+                    ? CatchControlSurfaceStatus.focused
+                    : CatchControlSurfaceStatus.resting,
+
                 key: ChatInputBar.pillKey,
-                size: CatchControlSize.floating,
-                shape: CatchControlShape.pill,
+                size: CatchControlSurfaceSize.floating,
+                variant: CatchControlSurfaceVariant.pill,
                 enabled: !hardDisabled,
-                focused: !hardDisabled && focusNode.hasFocus,
-                // CatchControlShell reserves the emphasis-stroke footprint.
+
+                // CatchControlSurface reserves the emphasis-stroke footprint.
                 // Subtract that reserve so the visible outer inset stays s2.
                 padding: const EdgeInsets.all(
                   CatchLayout.chatInputInnerPadding,
@@ -147,12 +151,14 @@ class _ChatComposer extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     if (showImageButton)
-                      CatchIconButton(
+                      CatchIconAction(
                         key: ChatInputBar.imageButtonKey,
-                        background: t.surface,
+                        backgroundColor: t.surface,
                         borderColor: t.line2,
-                        disabled: !sendingImage && !imageActionEnabled,
-                        onTap: imageActionEnabled ? onSendImage : null,
+                        status: (!sendingImage && !imageActionEnabled)
+                            ? CatchIconActionStatus.disabled
+                            : CatchIconActionStatus.enabled,
+                        onPressed: imageActionEnabled ? onSendImage : null,
                         tooltip: sendingImage
                             ? context.l10n.chatsChatInputBarLabelUploadingImage
                             : context.l10n.chatsChatInputBarMessageSendAnImage,
@@ -180,10 +186,11 @@ class _ChatComposer extends StatelessWidget {
                             title: context.l10n.chatsChatInputBarTitleMessage,
                             contract: CatchContractConstraints
                                 .createChatMessageClientWriteDataText,
-                            showLabel: false,
+                            labelMode: CatchFieldLabelTextMode.hidden,
                             controller: controller,
                             focusNode: focusNode,
-                            retainFocusOnSubmitted: true,
+                            // Sending keeps the native editor focused.
+                            onEditingComplete: () {},
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.send,
                             minLines: 1,
@@ -195,7 +202,9 @@ class _ChatComposer extends StatelessWidget {
                                     .chatsChatInputBarPlaceholderMessage,
                             size: CatchFieldSize.floating,
                             variant: CatchFieldVariant.bare,
-                            enabled: !hardDisabled,
+                            states: <WidgetState>{
+                              if (hardDisabled) WidgetState.disabled,
+                            },
                             autofocus: autofocus,
                             onSubmitted: (_) {
                               if (sendActionEnabled) onSend?.call();
@@ -205,12 +214,14 @@ class _ChatComposer extends StatelessWidget {
                       ),
                     ),
                     gapW8,
-                    CatchIconButton(
+                    CatchIconAction(
                       key: ChatInputBar.sendButtonKey,
-                      variant: CatchIconButtonVariant.plain,
-                      background: t.ink,
-                      disabled: !sending && !sendActionEnabled,
-                      onTap: sendActionEnabled ? onSend : null,
+                      variant: CatchIconActionVariant.plain,
+                      backgroundColor: t.ink,
+                      status: (!sending && !sendActionEnabled)
+                          ? CatchIconActionStatus.disabled
+                          : CatchIconActionStatus.enabled,
+                      onPressed: sendActionEnabled ? onSend : null,
                       tooltip: sending
                           ? context.l10n.chatsChatInputBarLabelSendingMessage
                           : context.l10n.chatsChatInputBarMessageSendMessage,

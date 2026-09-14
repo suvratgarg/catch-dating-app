@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
-import 'package:catch_dating_app/core/riverpod_ui/catch_localized_inline_error_state.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/theme/activity_palette.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_formatters.dart';
@@ -55,7 +55,7 @@ class HostTodayOverview extends StatelessWidget {
       onOpenAttention: onOpenAttention,
     );
 
-    return CatchViewportBreakpoint(
+    return CatchViewport.atWidth(
       breakpoint: CatchLayout.hostTodayTwoPaneBreakpoint,
       compactBuilder: (_) => Column(
         key: const ValueKey<String>('host-today-compact-layout'),
@@ -79,7 +79,7 @@ class HostTodayOverview extends StatelessWidget {
           ),
         ],
       ),
-      expandedBuilder: (_) => CatchViewportBreakpoint(
+      expandedBuilder: (_) => CatchViewport.atWidth(
         breakpoint: CatchLayout.hostTodayExpandedAttentionPaneBreakpoint,
         compactBuilder: (_) => _HostTodayWideLayout(
           primary: primary,
@@ -242,7 +242,7 @@ class _HostTodayHorizonAndActions extends StatelessWidget {
             CatchButton(
               key: const ValueKey<String>('host-today-start-dress-rehearsal'),
               label: context.l10n.hostEventRehearsalEntryTitle,
-              icon: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
+              leading: Icon(CatchIcons.scienceOutlined, size: CatchIcon.sm),
               variant: CatchButtonVariant.ghost,
               size: CatchButtonSize.sm,
               onPressed: onStartRehearsal,
@@ -272,10 +272,11 @@ class HostTodayAttentionSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         for (final issue in state.attentionIssues) ...[
-          CatchLocalizedInlineErrorState(
+          CatchLocalizedErrorState(
             issue.error,
             context: AppErrorContext.event,
             onRetry: onRetry,
+            mode: CatchErrorStateMode.inline,
           ),
           gapH12,
         ],
@@ -377,7 +378,7 @@ class HostTodayEventSpotlight extends StatelessWidget {
               ? context.l10n.hostsHostTodayLabelOpenRunOfShow
               : context.l10n.hostsHostTodayLabelSetUpRun,
           fullWidth: true,
-          shape: CatchButtonShape.rounded,
+          mode: CatchButtonMode.rounded,
           backgroundColor: activity.deep,
           foregroundColor: CatchTokens.editorialWhite,
           borderColor: Colors.transparent,

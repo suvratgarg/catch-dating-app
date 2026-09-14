@@ -23,7 +23,7 @@ void main() {
     expect(find.text('Ready soon'), findsOneWidget);
     expect(find.text('READY SOON'), findsOneWidget);
     expect(find.text('LIVE NOW'), findsOneWidget);
-    expect(find.byType(CatchStatusDot), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
   });
 
   testWidgets('live badge owns its fill and dot recipe', (tester) async {
@@ -38,7 +38,7 @@ void main() {
         );
 
     expect(badgeDecoration.color, CatchTokens.light.primary);
-    expect(find.byType(CatchStatusDot), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
     expect(find.text('LIVE NOW'), findsOneWidget);
   });
 
@@ -137,16 +137,16 @@ void main() {
       _wrap(
         const SizedBox(
           width: 120,
-          child: CatchInlineStatus(
+          child: CatchStatusRow(
             label: 'Unsaved changes with long localized copy',
-            tone: CatchInlineStatusTone.warning,
+            tone: CatchStatusRowTone.warning,
           ),
         ),
         textScale: 2,
       ),
     );
 
-    expect(find.byType(CatchStatusDot), findsOneWidget);
+    expect(find.byType(CatchStatusIndicator), findsOneWidget);
     expect(find.byType(DecoratedBox), findsOneWidget);
     final text = tester.widget<Text>(
       find.text('Unsaved changes with long localized copy'),
@@ -154,25 +154,79 @@ void main() {
     expect(text.maxLines, isNull);
     expect(text.overflow, isNull);
     expect(
-      tester.getSize(find.byType(CatchStatusDot)),
+      tester.getSize(find.byType(CatchStatusIndicator)),
       const Size.square(CatchIcon.unsavedDot),
     );
-    expect(
-      tester.getSize(find.byType(CatchInlineStatus)).height,
-      greaterThan(60),
-    );
+    expect(tester.getSize(find.byType(CatchStatusRow)).height, greaterThan(60));
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('status dot preserves the reviewed seven-pixel default', (
     tester,
   ) async {
-    await tester.pumpWidget(_wrap(const CatchStatusDot()));
+    await tester.pumpWidget(_wrap(const CatchStatusIndicator()));
 
     expect(
-      tester.getSize(find.byType(CatchStatusDot)),
+      tester.getSize(find.byType(CatchStatusIndicator)),
       const Size.square(CatchLayout.badgeMdDotExtent),
     );
+  });
+  testWidgets(
+    'count and status markers speak caller copy without duplicate labels',
+    (tester) async {
+      final semantics = tester.ensureSemantics();
+      try {
+        await tester.pumpWidget(
+          _wrap(
+            const Column(
+              children: [
+                CatchCountBadge.label(
+                  count: 120,
+                  semanticsLabel: '120 unread messages',
+                ),
+                CatchCountBadge.label(
+                  count: 0,
+                  semanticsLabel: 'No unread messages',
+                ),
+                CatchStatusIndicator(
+                  size: CatchSpacing.s2,
+                  semanticsLabel: 'New match',
+                ),
+              ],
+            ),
+          ),
+        );
+        expect(find.text('99+'), findsOneWidget);
+        expect(find.text('0'), findsNothing);
+        expect(find.bySemanticsLabel('120 unread messages'), findsOneWidget);
+        expect(find.bySemanticsLabel('No unread messages'), findsOneWidget);
+        expect(find.bySemanticsLabel('New match'), findsOneWidget);
+        expect(find.bySemanticsLabel('99+'), findsNothing);
+        expect(
+          tester.getSize(find.byType(CatchStatusIndicator)),
+          const Size.square(CatchSpacing.s2),
+        );
+      } finally {
+        semantics.dispose();
+      }
+    },
+  );
+
+  testWidgets('uncapped count text settles immediately with reduced motion', (
+    tester,
+  ) async {
+    Widget frame(int count) => _wrap(
+      MediaQuery(
+        data: const MediaQueryData(disableAnimations: true),
+        child: CatchCountText(count: count),
+      ),
+    );
+    await tester.pumpWidget(frame(8));
+    await tester.pumpWidget(frame(124));
+    await tester.pump();
+    expect(find.text('8'), findsNothing);
+    expect(find.text('124'), findsOneWidget);
+    expect(tester.binding.hasScheduledFrame, isFalse);
   });
 }
 

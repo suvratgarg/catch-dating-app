@@ -24,7 +24,7 @@ class MapOverlayControls extends StatelessWidget {
           children: [
             Row(
               children: [
-                CatchIconAction(
+                CatchIconAction.toolbar(
                   icon: CatchIcons.arrowBackIosNewRounded,
                   tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                   backgroundColor: CatchTokens.of(context).surface.withValues(

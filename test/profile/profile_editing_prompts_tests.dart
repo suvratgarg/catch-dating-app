@@ -117,7 +117,7 @@ void _registerProfileEditingPromptsTests() {
       matching: find.byWidgetPredicate(
         (widget) =>
             widget is CatchDivider &&
-            widget.role == CatchDividerRole.fieldSection,
+            widget.variant == CatchDividerVariant.fieldSection,
       ),
     );
     expect(dividers, findsWidgets);
@@ -417,9 +417,7 @@ void _registerProfileEditingPromptsTests() {
     await tester.tap(_catchChip(Language.hindi.label));
     await _pumpProfileSheet(tester);
     expect(
-      tester
-          .widget<CatchFieldChoiceChip>(_catchChip(Language.hindi.label))
-          .selected,
+      tester.widget<CatchChip>(_catchChip(Language.hindi.label)).selected,
       isTrue,
     );
 
@@ -427,9 +425,7 @@ void _registerProfileEditingPromptsTests() {
     await _pumpProfileSheet(tester);
 
     expect(
-      tester
-          .widget<CatchFieldChoiceChip>(_catchChip(Language.hindi.label))
-          .selected,
+      tester.widget<CatchChip>(_catchChip(Language.hindi.label)).selected,
       isTrue,
     );
   });
@@ -468,11 +464,11 @@ void _registerProfileEditingPromptsTests() {
     await _pumpProfileSheet(tester);
 
     // Inline editor is open with the shared range slider and Done button.
-    expect(find.byType(CatchRangeSlider), findsOneWidget);
+    expect(find.byType(CatchRangeInput), findsOneWidget);
     expect(find.byType(RangeSlider), findsOneWidget);
     expect(find.text('5:00/km - 7:00/km'), findsOneWidget);
-    final catchRangeSlider = tester.widget<CatchRangeSlider>(
-      find.byType(CatchRangeSlider),
+    final catchRangeSlider = tester.widget<CatchRangeInput>(
+      find.byType(CatchRangeInput),
     );
     expect(catchRangeSlider.minLabel, isNull);
     expect(catchRangeSlider.maxLabel, isNull);
@@ -590,10 +586,7 @@ void _registerProfileEditingPromptsTests() {
     }
 
     Rect promptSurfaceRect() => tester.getRect(
-      find.descendant(
-        of: card,
-        matching: find.byType(CatchSectionFocusSurface),
-      ),
+      find.descendant(of: card, matching: find.byType(CatchSectionSurface)),
     );
 
     void expectPromptEdgesShareGeometry() {
