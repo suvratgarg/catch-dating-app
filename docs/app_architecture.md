@@ -1,6 +1,6 @@
 ---
 doc_id: app_architecture
-version: 1.65.1
+version: 1.65.2
 updated: 2026-09-15
 owner: app_architecture
 status: active
@@ -3558,7 +3558,7 @@ Reference files:
 - `lib/clubs/presentation/detail/widgets/club_hero_app_bar.dart`
 - `lib/swipes/shared/profile_surface/catch_profile_view.dart`
 - `design/components/catch.components.json`
-- `widgetbook/lib/clubs/club_detail_use_cases.dart`
+- `widgetbook/lib/clubs/catalog/poster.dart`
 - `widgetbook/lib/catches/catalog/profile_media.dart`
 
 Entity material is a presentation contract, not feature-local decoration:
