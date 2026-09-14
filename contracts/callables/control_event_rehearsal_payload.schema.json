@@ -48,6 +48,9 @@
     },
     "practiceOperatorId": {
       "$ref": "../shared/event_rehearsal_staff.schema.json#/definitions/OperatorId"
+    },
+    "settings": {
+      "$ref": "../shared/event_rehearsal_settings.schema.json#/definitions/Command"
     }
   },
   "allOf": [
@@ -79,6 +82,11 @@
             {
               "required": [
                 "minutes"
+              ]
+            },
+            {
+              "required": [
+                "settings"
               ]
             }
           ]
@@ -121,6 +129,11 @@
               "required": [
                 "minutes"
               ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
             }
           ]
         }
@@ -162,6 +175,11 @@
               "required": [
                 "minutes"
               ]
+            },
+            {
+              "required": [
+                "settings"
+              ]
             }
           ]
         }
@@ -182,7 +200,8 @@
               "enum": [
                 "assistance",
                 "movement",
-                "staff"
+                "staff",
+                "settings"
               ]
             }
           }
@@ -229,6 +248,57 @@
             }
           }
         ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "action": {
+            "const": "settings"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "settings",
+          "expectedSetupRevision"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "assistance"
+              ]
+            },
+            {
+              "required": [
+                "movement"
+              ]
+            },
+            {
+              "required": [
+                "staff"
+              ]
+            },
+            {
+              "required": [
+                "minutes"
+              ]
+            },
+            {
+              "required": [
+                "practiceOperatorId"
+              ]
+            }
+          ]
+        }
+      },
+      "else": {
+        "not": {
+          "required": [
+            "settings"
+          ]
+        }
       }
     }
   ]

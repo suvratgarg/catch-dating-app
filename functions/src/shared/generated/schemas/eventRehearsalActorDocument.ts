@@ -1655,7 +1655,8 @@ export const eventRehearsalActorDocumentSchema: Record<string, unknown> = {
                             "recipientNeedsReview",
                             "providerOwnsFallback",
                             "conflictingDeliveryEvidence",
-                            "historyUnavailable"
+                            "historyUnavailable",
+                            "configurationUnavailable"
                           ]
                         }
                       }
@@ -1668,6 +1669,10 @@ export const eventRehearsalActorDocumentSchema: Record<string, unknown> = {
               "type": "null"
             }
           ]
+        },
+        "origin": {
+          "const": "eventSettings",
+          "description": "Server-owned event configuration enrollment. Absence preserves the explicitly configured per-guest recipe."
         }
       },
       "x-catch-ownership": "callable-owned"

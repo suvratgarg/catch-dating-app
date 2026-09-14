@@ -1,3 +1,4 @@
+import {managedPracticeRecipe} from "./assistanceSettingsPlan";
 import {PracticeDepartures, resolvePracticeGuidance, practiceRecipeKey,
   practiceGuidanceMaterial} from "./movementGuidance";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -66,20 +67,61 @@ export function evaluatePracticeAutomation(session: Session, actor: Actor,
   history: readonly PracticeMessage[],
   departures: PracticeDepartures = new Map()): PracticeAutomationResult {
   let automation = actor.assistanceAutomation;
-  if (!automation || automation.status === "paused") {
+  if (automation?.status === "paused") {
     return {actor, messages: [...history]};
   }
   const now = session.virtualNow.toMillis();
   let messages = [...history];
   let nextActor = actor;
+  const current = messages.find((m) => m.record.messageId ===
+    practiceState(actor).latestMessageId);
+  // Individual takeover survives every event/group configuration change.
+  const managed = current?.handoff ? {kind: "manual" as const} :
+    managedPracticeRecipe(session, actor, departures);
+  if (managed.kind === "unavailable" &&
+      automation?.origin === "eventSettings") {
+    if (current) {
+      messages = replace(messages,
+        closeMessage(session, actor, current, "superseded"));
+    }
+    return {actor: {...actor, assistanceAutomation: {...automation,
+      evaluation: {at: now, policy: null, delivery: {kind: "hostDecision",
+        reason: "configurationUnavailable"}}}}, messages};
+  }
+  if (managed.kind === "disabled" && automation?.origin === "eventSettings") {
+    automation = {...automation, plan: {...automation.plan,
+      setting: {kind: "disabled", reason: "hostChoice"}}};
+  }
+  if (managed.kind === "ready") {
+    if (current && (practiceRecipeKey(current.plan) !==
+        practiceRecipeKey(managed.plan) ||
+        practiceGuidanceMaterial(current.plan) !==
+          practiceGuidanceMaterial(managed.plan))) {
+      messages = replace(messages,
+        closeMessage(session, actor, current, "superseded"));
+      nextActor = {...actor, assistance: {...practiceState(actor),
+        latestMessageId: null}};
+    }
+    automation = {clockId: practiceContext(session, actor).clockId,
+      origin: "eventSettings", status: "enabled", plan: managed.plan,
+      outcomes: managed.outcomes,
+      nextOutcomeIndex: automation?.nextOutcomeIndex ?? 0, evaluation: null};
+  }
+  if (!automation) return {actor, messages};
+  nextActor = {...nextActor, assistanceAutomation: automation};
   if (automation.clockId !== practiceContext(session, actor).clockId ||
       automation.nextOutcomeIndex > automation.outcomes.length) {
     return unavailablePracticeAutomation(session, actor, messages);
   }
+  if (managed.kind === "ready" && managed.paused) {
+    return {actor: {...nextActor, assistanceAutomation: {...automation,
+      evaluation: {at: now, policy: null, delivery: {kind: "paused"}}}},
+    messages};
+  }
   try {
     let message = messages.find((m) => m.record.messageId ===
-      practiceState(actor).latestMessageId);
-    if (message &&
+      practiceState(nextActor).latestMessageId);
+    if (message && managed.kind !== "disabled" &&
       practiceRecipeKey(message.plan) !== practiceRecipeKey(automation.plan)) {
       // An independently published instruction owns the page until reviewed.
       return {actor: pausePracticeAutomation(session, actor), messages};

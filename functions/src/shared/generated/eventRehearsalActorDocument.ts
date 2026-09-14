@@ -403,9 +403,14 @@ export interface EventRehearsalActorDocument {
               | "recipientNeedsReview"
               | "providerOwnsFallback"
               | "conflictingDeliveryEvidence"
-              | "historyUnavailable";
+              | "historyUnavailable"
+              | "configurationUnavailable";
           };
     } | null;
+    /**
+     * Server-owned event configuration enrollment. Absence preserves the explicitly configured per-guest recipe.
+     */
+    origin?: "eventSettings";
   };
   /**
    * Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.

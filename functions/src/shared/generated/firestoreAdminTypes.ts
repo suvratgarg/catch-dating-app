@@ -8358,6 +8358,149 @@ export interface EventRehearsalDocument {
       }[];
     }[];
   };
+  assistanceSettings?: {
+    clockId: string;
+    runtime: {
+      status: "enabled" | "paused";
+      configuration: {
+        /**
+         * @minItems 1
+         * @maxItems 3
+         */
+        routes: (
+          | "catchEventSms"
+          | "catchEventRcs"
+          | "organizerEventWhatsapp"
+        )[];
+        deliveryPolicy: {
+          maxAttempts: number;
+          maxAttemptsPerRoute: number;
+          minimumRetrySeconds: number;
+        };
+        responseDeadline: number | null;
+        /**
+         * @maxItems 17
+         */
+        laterChoices?: {
+          label: string;
+          target:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+        }[];
+        /**
+         * @minItems 1
+         * @maxItems 6
+         */
+        outcomes: (
+          | {
+              kind: "accepted" | "delivered" | "read" | "revoked";
+            }
+          | {
+              kind: "failed";
+              classification:
+                | "technical"
+                | "policy"
+                | "suppressed"
+                | "invalidRecipient";
+            }
+          | {
+              kind: "unknown";
+              reason: "timeout" | "connectionLost" | "workerInterrupted";
+            }
+        )[];
+      };
+    } | null;
+    /**
+     * @maxItems 41
+     */
+    preferences: {
+      groupId: string;
+      preference:
+        | {
+            kind: "inherit";
+          }
+        | {
+            kind: "disabled";
+          }
+        | {
+            kind: "configured";
+            template: {
+              kind: "lateJoin";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                destination:
+                  | {
+                      kind: "confirmedGroupProgress";
+                    }
+                  | (
+                      | {
+                          kind: "fixedPlace";
+                          placeId: string;
+                          lateEntry: "allowed" | "hostDecision" | "closed";
+                        }
+                      | {
+                          kind: "itineraryStop";
+                          itineraryId: string;
+                          /**
+                           * @minItems 1
+                           * @maxItems 1000
+                           */
+                          permittedStopIds: string[];
+                        }
+                      | {
+                          kind: "groupCheckpoint";
+                          routeId: string;
+                          groupId: string;
+                          /**
+                           * @minItems 1
+                           * @maxItems 1000
+                           */
+                          permittedCheckpointIds: string[];
+                        }
+                    );
+                cutoff:
+                  | {
+                      kind: "eventEnd";
+                    }
+                  | {
+                      kind: "time";
+                      /**
+                       * UTC milliseconds.
+                       */
+                      at: number;
+                    };
+                maxMessagesPerEpisode: number;
+                minimumMinutesBetweenMessages: number;
+                updateOn: "materialGuidanceChange";
+                unanswered: "keepUnknownUntilCutoff" | "hostReviewAtDeadline";
+              };
+            };
+          };
+    }[];
+  };
 }
 
 /**
@@ -8904,9 +9047,14 @@ export interface EventRehearsalActorDocument {
               | "recipientNeedsReview"
               | "providerOwnsFallback"
               | "conflictingDeliveryEvidence"
-              | "historyUnavailable";
+              | "historyUnavailable"
+              | "configurationUnavailable";
           };
     } | null;
+    /**
+     * Server-owned event configuration enrollment. Absence preserves the explicitly configured per-guest recipe.
+     */
+    origin?: "eventSettings";
   };
   /**
    * Preserves a pre-existing help flag without fabricating a typed request. New actors initialize false.

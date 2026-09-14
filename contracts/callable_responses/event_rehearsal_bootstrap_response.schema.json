@@ -55,6 +55,9 @@
     },
     "staffReview": {
       "$ref": "../shared/event_rehearsal_staff.schema.json#/definitions/Review"
+    },
+    "settingsReview": {
+      "$ref": "../shared/event_rehearsal_settings.schema.json#/definitions/Review"
     }
   },
   "definitions": {

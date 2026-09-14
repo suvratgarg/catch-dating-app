@@ -55,7 +55,9 @@ void main() {
         ['one', 'two'],
       );
       expect(
-        options.every((d) => d.label.isNotEmpty && d.location.name.isNotEmpty),
+        options.every(
+          (d) => d.label.isNotEmpty && d.location?.name.isNotEmpty == true,
+        ),
         isTrue,
       );
       expect(() => options.clear(), throwsUnsupportedError);

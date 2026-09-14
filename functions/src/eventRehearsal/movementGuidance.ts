@@ -20,8 +20,10 @@ export function practicePlanGroup(plan: Plan): string {
 /** Read only the latest saved departure in each requested synthetic group. */
 export async function readPracticeDepartures(db: Firestore, tx: Transaction,
   sessionId: string, session: Session, plans: readonly Plan[],
-  pending?: Movement | null): Promise<PracticeDepartures> {
-  const groups = [...new Set(plans.map(practicePlanGroup))];
+  pending?: Movement | null,
+  additionalGroups: readonly string[] = []): Promise<PracticeDepartures> {
+  const groups = [...new Set([...plans.map(practicePlanGroup),
+    ...additionalGroups])];
   if (groups.length > 41) {
     throw new HttpsError("resource-exhausted", "Too many practice groups.");
   }

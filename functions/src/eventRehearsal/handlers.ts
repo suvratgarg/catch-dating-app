@@ -1,3 +1,5 @@
+import {preparePracticeSettings, practiceSettingsProjection} from
+  "./assistanceSettings";
 import {practiceRoleAuthority, practiceStaffProjection,
   preparePracticeStaffChange} from "./groupStaff";
 import {readPracticeDepartures, PracticeDepartures} from "./movementGuidance";
@@ -282,6 +284,7 @@ export async function updateEventRehearsalSetupHandler(
       actorCount: data.actorCount,
       setupRevision: session.setupRevision + 1,
       staff: admin.firestore.FieldValue.delete(),
+      assistanceSettings: admin.firestore.FieldValue.delete(),
       updatedAt: now,
     });
     for (const actorSnap of actorSnaps.docs) {
@@ -333,7 +336,7 @@ export async function controlEventRehearsalHandler(
   requireAssistanceGeneration(authorized, data);
   if (previous.exists) {
     requireAssistanceReceipt(previous, requestHash,
-      ["assistance", "movement", "staff"].includes(data.action));
+      ["assistance", "movement", "staff", "settings"].includes(data.action));
     return hostProjection(db, data.sessionId,
       await requireHostSession(db, data.sessionId, uid), request,
       data.movement ? practiceMovementScope(data.movement) : undefined,
@@ -351,7 +354,7 @@ export async function controlEventRehearsalHandler(
     const organizer = await requireCurrentHostAuthority(db, tx, session, uid);
     if (actionSnap.exists) {
       requireAssistanceReceipt(actionSnap, requestHash,
-        ["assistance", "movement", "staff"].includes(data.action));
+        ["assistance", "movement", "staff", "settings"].includes(data.action));
       return;
     }
     assertActionCapacity(session);
@@ -382,6 +385,39 @@ export async function controlEventRehearsalHandler(
     }
     const roleAuthority = practiceRoleAuthority(data.sessionId, session,
       {organizer, actorUid: uid}, data.practiceOperatorId);
+    if (data.action === "settings") {
+      const actorValues = actorSnaps.docs.map((doc) =>
+        requireDoc<EventRehearsalActorDocument>(doc,
+          "EventRehearsalActorDocument"));
+      if (actorValues.length !== session.actorCount ||
+          new Set(actorValues.map((a) => a.actorId)).size !==
+            actorValues.length ||
+          actorValues.some((actor) => actor.sessionId !== data.sessionId)) {
+        throw new HttpsError("failed-precondition", "Practice roster changed.");
+      }
+      const assistanceSettings = preparePracticeSettings(data.sessionId,
+        session, actorValues, data.settings!, roleAuthority);
+      const nextActors = await applyPracticeAutomations(db, tx,
+        {...session, assistanceSettings,
+          runtimeRevision: session.runtimeRevision + 1}, actorValues);
+      const now = admin.firestore.Timestamp.now();
+      if (session.expiresAt.toMillis() <= now.toMillis()) {
+        throw new HttpsError("not-found", "This dress rehearsal has expired.");
+      }
+      for (const actor of nextActors) {
+        tx.set(db.collection(actors).doc(actorDocumentId(data.sessionId,
+          actor.actorId)), {...actor, updatedAt: now});
+      }
+      tx.update(sessionRef, {assistanceSettings,
+        runtimeRevision: session.runtimeRevision + 1,
+        actionCount: session.actionCount + 1, updatedAt: now});
+      tx.create(actionRef, actionDocument({sessionId: data.sessionId,
+        clientActionId: data.clientActionId, actorUid: uid, actorId: null,
+        kind: "control", name: "settings:" + data.settings!.kind, requestHash,
+        runtimeRevision: session.runtimeRevision + 1,
+        virtualNow: session.virtualNow, createdAt: now}));
+      return;
+    }
     if (data.action === "movement") {
       const command = data.movement!;
       const commit = await preparePracticeMovementCommand(db, tx,
@@ -754,6 +790,7 @@ export async function resetEventRehearsalHandler(
     setupRevision: session.setupRevision + 1,
     runtimeRevision: 0,
     staff: admin.firestore.FieldValue.delete(),
+    assistanceSettings: admin.firestore.FieldValue.delete(),
     actionCount: 0,
     activeStepIndex: 0,
     virtualNow: now,
@@ -1396,6 +1433,8 @@ async function hostProjection(
   return {
     ...(movementReview ? {movementReview} : {}),
     staffReview: practiceStaffProjection(sessionId, session, roleAuthority),
+    settingsReview: practiceSettingsProjection(sessionId, session,
+      roleAuthority),
     helpRequests,
     deliveryReviews,
     accountabilityReviews: practiceAccountabilityProjection(sessionId,
@@ -1830,7 +1869,7 @@ function actionDocument(
 /** A reset reuses runtime revisions but always advances setup revision. */
 function requireAssistanceGeneration(session: EventRehearsalDocument,
   data: ControlEventRehearsalCallablePayload): void {
-  if (["assistance", "movement", "staff"].includes(data.action) &&
+  if (["assistance", "movement", "staff", "settings"].includes(data.action) &&
       data.expectedSetupRevision !== session.setupRevision) {
     throw new HttpsError("aborted",
       "This rehearsal was reset. Review the current run before continuing.");

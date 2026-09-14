@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.114.0
+version: 1.115.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -120,6 +120,25 @@ consume the simulated delivery script. Clients with the older closed plan parser
 must be updated before explicit modes are written; this extension needs a
 coordinated API/app rollout. Guest bootstrap and real sender authority do not
 change.
+
+`event_rehearsal_settings.schema.json` adds optional callable-owned session
+`assistanceSettings` and Host-only `settingsReview`. The bounded state contains a
+clock ID, optional simulated runtime and up to 41 group preferences. A closed
+`settings` control command configures delivery, pauses it, or saves a late-join
+rule. It excludes actor commands, clock minutes and synthetic operator identity,
+and requires both setup and runtime review fences plus a source hash. The same
+transaction owns its parent receipt and synthetic actor/message changes.
+
+Event-enrolled actor automation has optional `origin: eventSettings`; absence
+continues to mean an explicit per-guest recipe. Configuration cannot rewrite any
+consumed outcome prefix. `configurationUnavailable` is a closed delivery-review
+reason. Native readers preserve these additions, parse the rehearsal-only
+context and complete group coverage, retain absent versus empty later choices,
+and independently check each typed settings receipt. Shared presentation keeps
+real location data when supplied and represents named practice targets without
+coordinates. Update the API and native readers together before returning the
+new actor origin/reason. No guest bootstrap, live permission or provider schema
+is changed. The native controls and state-owner composition remain pending.
 
 Native joining configuration consumes a current, account-bound movement review.
 It reuses the reviewed destination IDs and copy. Defaults permit the whole

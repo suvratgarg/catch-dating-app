@@ -157,6 +157,10 @@
     "staff": {
       "$ref": "../shared/event_rehearsal_staff.schema.json#/definitions/State",
       "x-catch-ownership": "callable-owned"
+    },
+    "assistanceSettings": {
+      "$ref": "../shared/event_rehearsal_settings.schema.json#/definitions/State",
+      "x-catch-ownership": "callable-owned"
     }
   }
 }

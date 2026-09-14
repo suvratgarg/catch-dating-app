@@ -29,6 +29,7 @@ enum RehearsalDeliveryReviewReason {
   providerOwnsFallback,
   conflictingDeliveryEvidence,
   historyUnavailable,
+  configurationUnavailable,
 }
 
 /// Saved Host configuration and its last server evaluation, not send authority.
@@ -40,7 +41,9 @@ final class RehearsalAssistanceAutomation {
     required this.outcomes,
     required this.nextOutcomeIndex,
     required this.evaluation,
+    required this.inheritsEventSettings,
   });
+  final bool inheritsEventSettings;
   final String clockId;
   final RehearsalAutomationStatus status;
   final RehearsalAssistancePlan plan;
@@ -50,7 +53,9 @@ final class RehearsalAssistanceAutomation {
   int get remainingOutcomes => outcomes.length - nextOutcomeIndex;
 
   factory RehearsalAssistanceAutomation.fromJson(Object? value) {
-    final map = assistanceObject(value, {
+    final raw = assistanceObject(value);
+    final map = assistanceObject(raw, {
+      if (raw.containsKey('origin')) 'origin',
       'clockId',
       'status',
       'plan',
@@ -58,6 +63,9 @@ final class RehearsalAssistanceAutomation {
       'nextOutcomeIndex',
       'evaluation',
     });
+    if (raw.containsKey('origin') && map['origin'] != 'eventSettings') {
+      throw const FormatException('Unknown practice recipe origin.');
+    }
     final clockId = assistanceId(map['clockId']);
     final outcomes = rehearsalDeliveryScript(map['outcomes']);
     final cursor = assistanceInteger(map['nextOutcomeIndex']);
@@ -69,6 +77,7 @@ final class RehearsalAssistanceAutomation {
     }
     return RehearsalAssistanceAutomation._(
       clockId: clockId,
+      inheritsEventSettings: map['origin'] == 'eventSettings',
       status: assistanceEnum(RehearsalAutomationStatus.values, map['status']),
       plan: RehearsalAssistancePlan.fromJson(map['plan']),
       outcomes: outcomes,

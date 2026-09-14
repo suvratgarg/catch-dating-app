@@ -573,9 +573,14 @@ export interface EventRehearsalBootstrapCallableResponse {
                 | "recipientNeedsReview"
                 | "providerOwnsFallback"
                 | "conflictingDeliveryEvidence"
-                | "historyUnavailable";
+                | "historyUnavailable"
+                | "configurationUnavailable";
             };
       } | null;
+      /**
+       * Server-owned event configuration enrollment. Absence preserves the explicitly configured per-guest recipe.
+       */
+      origin?: "eventSettings";
     };
   }[];
   /**
@@ -1693,6 +1698,320 @@ export interface EventRehearsalBootstrapCallableResponse {
        * @maxItems 3
        */
       availableDuties: ("lead" | "pacer" | "sweep")[];
+    }[];
+  };
+  settingsReview?: {
+    context: (
+      | {
+          mode: "live";
+          eventId: string;
+          organizerId: string;
+        }
+      | {
+          mode: "rehearsal";
+          rehearsalId: string;
+          virtualEventId: string;
+          clockId: string;
+        }
+    ) & {
+      mode?: "rehearsal";
+      [k: string]: unknown;
+    };
+    setupRevision: number;
+    runtimeRevision: number;
+    sourceHash: string;
+    serverTime: number;
+    canConfigure: boolean;
+    runtime: {
+      status: "enabled" | "paused";
+      configuration: {
+        /**
+         * @minItems 1
+         * @maxItems 3
+         */
+        routes: (
+          | "catchEventSms"
+          | "catchEventRcs"
+          | "organizerEventWhatsapp"
+        )[];
+        deliveryPolicy: {
+          maxAttempts: number;
+          maxAttemptsPerRoute: number;
+          minimumRetrySeconds: number;
+        };
+        responseDeadline: number | null;
+        /**
+         * @maxItems 17
+         */
+        laterChoices?: {
+          label: string;
+          target:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+        }[];
+        /**
+         * @minItems 1
+         * @maxItems 6
+         */
+        outcomes: (
+          | {
+              kind: "accepted" | "delivered" | "read" | "revoked";
+            }
+          | {
+              kind: "failed";
+              classification:
+                | "technical"
+                | "policy"
+                | "suppressed"
+                | "invalidRecipient";
+            }
+          | {
+              kind: "unknown";
+              reason: "timeout" | "connectionLost" | "workerInterrupted";
+            }
+        )[];
+      };
+    } | null;
+    suggested: {
+      kind: "lateJoin";
+      version: 1;
+      setting:
+        | {
+            kind: "enabled";
+            authority: "observe" | "prepare" | "executeWithinPolicy";
+          }
+        | {
+            kind: "disabled";
+            reason: "hostChoice" | "organizerDefault";
+          };
+      config: {
+        destination:
+          | {
+              kind: "confirmedGroupProgress";
+            }
+          | (
+              | {
+                  kind: "fixedPlace";
+                  placeId: string;
+                  lateEntry: "allowed" | "hostDecision" | "closed";
+                }
+              | {
+                  kind: "itineraryStop";
+                  itineraryId: string;
+                  /**
+                   * @minItems 1
+                   * @maxItems 1000
+                   */
+                  permittedStopIds: string[];
+                }
+              | {
+                  kind: "groupCheckpoint";
+                  routeId: string;
+                  groupId: string;
+                  /**
+                   * @minItems 1
+                   * @maxItems 1000
+                   */
+                  permittedCheckpointIds: string[];
+                }
+            );
+        cutoff:
+          | {
+              kind: "eventEnd";
+            }
+          | {
+              kind: "time";
+              /**
+               * UTC milliseconds.
+               */
+              at: number;
+            };
+        maxMessagesPerEpisode: number;
+        minimumMinutesBetweenMessages: number;
+        updateOn: "materialGuidanceChange";
+        unanswered: "keepUnknownUntilCutoff" | "hostReviewAtDeadline";
+      };
+    };
+    /**
+     * @minItems 1
+     * @maxItems 41
+     */
+    groups: {
+      groupId: string;
+      label: string;
+      preference:
+        | {
+            kind: "inherit";
+          }
+        | {
+            kind: "disabled";
+          }
+        | {
+            kind: "configured";
+            template: {
+              kind: "lateJoin";
+              version: 1;
+              setting:
+                | {
+                    kind: "enabled";
+                    authority: "observe" | "prepare" | "executeWithinPolicy";
+                  }
+                | {
+                    kind: "disabled";
+                    reason: "hostChoice" | "organizerDefault";
+                  };
+              config: {
+                destination:
+                  | {
+                      kind: "confirmedGroupProgress";
+                    }
+                  | (
+                      | {
+                          kind: "fixedPlace";
+                          placeId: string;
+                          lateEntry: "allowed" | "hostDecision" | "closed";
+                        }
+                      | {
+                          kind: "itineraryStop";
+                          itineraryId: string;
+                          /**
+                           * @minItems 1
+                           * @maxItems 1000
+                           */
+                          permittedStopIds: string[];
+                        }
+                      | {
+                          kind: "groupCheckpoint";
+                          routeId: string;
+                          groupId: string;
+                          /**
+                           * @minItems 1
+                           * @maxItems 1000
+                           */
+                          permittedCheckpointIds: string[];
+                        }
+                    );
+                cutoff:
+                  | {
+                      kind: "eventEnd";
+                    }
+                  | {
+                      kind: "time";
+                      /**
+                       * UTC milliseconds.
+                       */
+                      at: number;
+                    };
+                maxMessagesPerEpisode: number;
+                minimumMinutesBetweenMessages: number;
+                updateOn: "materialGuidanceChange";
+                unanswered: "keepUnknownUntilCutoff" | "hostReviewAtDeadline";
+              };
+            };
+          };
+      effective: {
+        kind: "lateJoin";
+        version: 1;
+        setting:
+          | {
+              kind: "enabled";
+              authority: "observe" | "prepare" | "executeWithinPolicy";
+            }
+          | {
+              kind: "disabled";
+              reason: "hostChoice" | "organizerDefault";
+            };
+        config: {
+          destination:
+            | {
+                kind: "confirmedGroupProgress";
+              }
+            | (
+                | {
+                    kind: "fixedPlace";
+                    placeId: string;
+                    lateEntry: "allowed" | "hostDecision" | "closed";
+                  }
+                | {
+                    kind: "itineraryStop";
+                    itineraryId: string;
+                    /**
+                     * @minItems 1
+                     * @maxItems 1000
+                     */
+                    permittedStopIds: string[];
+                  }
+                | {
+                    kind: "groupCheckpoint";
+                    routeId: string;
+                    groupId: string;
+                    /**
+                     * @minItems 1
+                     * @maxItems 1000
+                     */
+                    permittedCheckpointIds: string[];
+                  }
+              );
+          cutoff:
+            | {
+                kind: "eventEnd";
+              }
+            | {
+                kind: "time";
+                /**
+                 * UTC milliseconds.
+                 */
+                at: number;
+              };
+          maxMessagesPerEpisode: number;
+          minimumMinutesBetweenMessages: number;
+          updateOn: "materialGuidanceChange";
+          unanswered: "keepUnknownUntilCutoff" | "hostReviewAtDeadline";
+        };
+      } | null;
+      status: "unconfigured" | "disabled" | "sourceChanged" | "configured";
+      origin: "none" | "event" | "group";
+      setup: {
+        eventEnd: number;
+        /**
+         * @maxItems 41
+         */
+        destinations: {
+          target:
+            | {
+                kind: "fixedPlace";
+                placeId: string;
+                lateEntry: "allowed" | "hostDecision" | "closed";
+              }
+            | {
+                kind: "itineraryStop";
+                itineraryId: string;
+                stopId: string;
+              }
+            | {
+                kind: "groupCheckpoint";
+                routeId: string;
+                groupId: string;
+                checkpointId: string;
+              };
+          label: string;
+          text: string;
+        }[];
+      };
     }[];
   };
 }

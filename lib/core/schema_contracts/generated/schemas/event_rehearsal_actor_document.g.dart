@@ -1658,6 +1658,7 @@ const schemaEventRehearsalActorDocumentSchema = <String, Object?>{
                             'providerOwnsFallback',
                             'conflictingDeliveryEvidence',
                             'historyUnavailable',
+                            'configurationUnavailable',
                           ],
                         },
                       },
@@ -1670,6 +1671,10 @@ const schemaEventRehearsalActorDocumentSchema = <String, Object?>{
               'type': 'null',
             },
           ],
+        },
+        'origin': <String, Object?>{
+          'const': 'eventSettings',
+          'description': 'Server-owned event configuration enrollment. Absence preserves the explicitly configured per-guest recipe.',
         },
       },
       'x-catch-ownership': 'callable-owned',

@@ -1,3 +1,4 @@
+import {practiceMovementSource} from "./movementSource";
 import {practiceIsManager} from "./groupStaff";
 import {readPracticeDepartures, practiceRecipeKey} from "./movementGuidance";
 import type {Movement} from "./movementSource";
@@ -83,10 +84,14 @@ export async function applyPracticeAutomations(db: Firestore, tx: Transaction,
   pending?: Movement | null): Promise<Actor[]> {
   const plans = actors.flatMap((a) => a.assistanceAutomation ?
     [a.assistanceAutomation.plan] : []);
+  const groups = actors.length && session.assistanceSettings?.runtime ?
+    practiceMovementSource(actors[0].sessionId, session, "event:whole")
+      .groups.map((g) => g.groupId) : [];
   const departures = actors.length ? await readPracticeDepartures(db, tx,
-    actors[0].sessionId, session, plans, pending) : new Map();
+    actors[0].sessionId, session, plans, pending, groups) : new Map();
   const changes = await Promise.all(actors.map(async (actor) => {
-    if (actor.assistanceAutomation?.status !== "enabled") {
+    if (actor.assistanceAutomation?.status === "paused" ||
+        !actor.assistanceAutomation && !session.assistanceSettings?.runtime) {
       return {before: [], result: {actor, messages: []}};
     }
     try {
@@ -159,7 +164,10 @@ export async function applyPracticeHostCommand(db: Firestore, tx: Transaction,
     session, [...history.map((m) => m.plan),
       ...("plan" in command ? [command.plan] : []),
       ...(
-        actor.assistanceAutomation ? [actor.assistanceAutomation.plan] : [])]);
+        actor.assistanceAutomation ? [actor.assistanceAutomation.plan] : [])],
+    undefined, session.assistanceSettings?.runtime ?
+      practiceMovementSource(actor.sessionId, session, "event:whole")
+        .groups.map((g) => g.groupId) : []);
   let next: PracticeAutomationResult;
   if (command.kind === "repairDelivery") {
     if (!authority?.operationId) {
@@ -239,7 +247,10 @@ export async function applyPracticeGuestReply(db: Firestore, tx: Transaction,
   const departures = await readPracticeDepartures(db, tx, actor.sessionId,
     session, [message.plan,
       ...(
-        actor.assistanceAutomation ? [actor.assistanceAutomation.plan] : [])]);
+        actor.assistanceAutomation ? [actor.assistanceAutomation.plan] : [])],
+    undefined, session.assistanceSettings?.runtime ?
+      practiceMovementSource(actor.sessionId, session, "event:whole")
+        .groups.map((g) => g.groupId) : []);
   if (!practiceGuidanceIsCurrent(session, actor, message.plan, message,
     departures)) {
     throw new HttpsError("failed-precondition",

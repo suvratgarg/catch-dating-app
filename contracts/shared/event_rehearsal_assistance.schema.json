@@ -744,7 +744,8 @@
                 "recipientNeedsReview",
                 "providerOwnsFallback",
                 "conflictingDeliveryEvidence",
-                "historyUnavailable"
+                "historyUnavailable",
+                "configurationUnavailable"
               ]
             }
           }
@@ -828,6 +829,10 @@
               "type": "null"
             }
           ]
+        },
+        "origin": {
+          "const": "eventSettings",
+          "description": "Server-owned event configuration enrollment. Absence preserves the explicitly configured per-guest recipe."
         }
       }
     },

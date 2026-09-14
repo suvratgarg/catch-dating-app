@@ -6886,7 +6886,7 @@ abstract final class CatchContractConstraints {
     path: 'controlEventRehearsalCallablePayload.action',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff'],
+    enumValues: <String>['markReady', 'start', 'pause', 'resume', 'advance', 'previous', 'advanceClock', 'complete', 'assistance', 'movement', 'staff', 'settings'],
   );
 
   static const controlEventRehearsalCallablePayloadAssistance = CatchContractFieldConstraints(
@@ -6940,6 +6940,11 @@ abstract final class CatchContractConstraints {
     minLength: 1,
     required: true,
     valueTypes: <String>['string'],
+  );
+
+  static const controlEventRehearsalCallablePayloadSettings = CatchContractFieldConstraints(
+    path: 'controlEventRehearsalCallablePayload.settings',
+    valueTypes: <String>['object'],
   );
 
   static const controlEventRehearsalCallablePayloadStaffDecisionDuty = CatchContractFieldConstraints(
@@ -30496,7 +30501,7 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalActorDocument.assistanceAutomation.evaluation.delivery.reason',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['noEligibleRoute', 'attemptLimit', 'policyRejected', 'recipientNeedsReview', 'providerOwnsFallback', 'conflictingDeliveryEvidence', 'historyUnavailable'],
+    enumValues: <String>['noEligibleRoute', 'attemptLimit', 'policyRejected', 'recipientNeedsReview', 'providerOwnsFallback', 'conflictingDeliveryEvidence', 'historyUnavailable', 'configurationUnavailable'],
   );
 
   static const eventRehearsalActorDocumentAssistanceAutomationNextOutcomeIndex = CatchContractFieldConstraints(
@@ -31495,7 +31500,7 @@ abstract final class CatchContractConstraints {
     path: 'eventRehearsalBootstrapCallableResponse.actors.items.assistanceAutomation.evaluation.delivery.reason',
     required: true,
     valueTypes: <String>['string'],
-    enumValues: <String>['noEligibleRoute', 'attemptLimit', 'policyRejected', 'recipientNeedsReview', 'providerOwnsFallback', 'conflictingDeliveryEvidence', 'historyUnavailable'],
+    enumValues: <String>['noEligibleRoute', 'attemptLimit', 'policyRejected', 'recipientNeedsReview', 'providerOwnsFallback', 'conflictingDeliveryEvidence', 'historyUnavailable', 'configurationUnavailable'],
   );
 
   static const eventRehearsalBootstrapCallableResponseActorsItemsAssistanceAutomationNextOutcomeIndex = CatchContractFieldConstraints(
@@ -35357,6 +35362,580 @@ abstract final class CatchContractConstraints {
     maximum: 9007199254740991,
   );
 
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewCanConfigure = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.canConfigure',
+    required: true,
+    valueTypes: <String>['boolean'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewContext = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.context',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroups = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 41,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigCutoffAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.cutoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigCutoffKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.cutoff.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.destination.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigMaxMessagesPerEpisode = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.maxMessagesPerEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigMinimumMinutesBetweenMessages = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.minimumMinutesBetweenMessages',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigUnanswered = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.unanswered',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepUnknownUntilCutoff', 'hostReviewAtDeadline'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigUpdateOn = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.updateOn',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveSettingKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveSettingReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.version',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.label',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsOrigin = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.origin',
+    required: true,
+    enumValues: <String>['none', 'event', 'group'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigCutoffAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.cutoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigCutoffKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.cutoff.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.destination.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigMaxMessagesPerEpisode = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.maxMessagesPerEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigMinimumMinutesBetweenMessages = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.minimumMinutesBetweenMessages',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigUnanswered = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.unanswered',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepUnknownUntilCutoff', 'hostReviewAtDeadline'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigUpdateOn = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.updateOn',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateSettingKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateSettingReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.version',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinations = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 41,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.label',
+    maxLength: 500,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsText = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.text',
+    maxLength: 4000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupEventEnd = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.eventEnd',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.status',
+    required: true,
+    enumValues: <String>['unconfigured', 'disabled', 'sourceChanged', 'configured'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3600,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoices = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 17,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationOutcomes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.outcomes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 6,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationOutcomesItemsClassification = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.outcomes.items.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationOutcomesItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.outcomes.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationOutcomesItemsReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.outcomes.items.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['timeout', 'connectionLost', 'workerInterrupted'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationRoutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationRoutesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.routes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.status',
+    required: true,
+    enumValues: <String>['enabled', 'paused'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.runtimeRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewServerTime = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSetupRevision = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.setupRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSourceHash = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.sourceHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigCutoffAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.cutoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigCutoffKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.cutoff.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.destination.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigMaxMessagesPerEpisode = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.maxMessagesPerEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigMinimumMinutesBetweenMessages = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.minimumMinutesBetweenMessages',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigUnanswered = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.unanswered',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepUnknownUntilCutoff', 'hostReviewAtDeadline'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigUpdateOn = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.updateOn',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.kind',
+    required: true,
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedSettingKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedSettingReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.version',
+    required: true,
+  );
+
   static const eventRehearsalBootstrapCallableResponseStaffReviewActorUid = CatchContractFieldConstraints(
     path: 'eventRehearsalBootstrapCallableResponse.staffReview.actorUid',
     maxLength: 180,
@@ -35708,6 +36287,273 @@ abstract final class CatchContractConstraints {
     valueTypes: <String>['integer'],
     minimum: 2,
     maximum: 50,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsClockId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.clockId',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^clock:[a-f0-9]{64}\$',
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferences = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 41,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.groupId',
+    maxLength: 180,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.kind',
+    required: true,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigCutoffAt = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.cutoff.at',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigCutoffKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.cutoff.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigDestinationKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.destination.kind',
+    required: true,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigMaxMessagesPerEpisode = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.maxMessagesPerEpisode',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 100,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigMinimumMinutesBetweenMessages = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.minimumMinutesBetweenMessages',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1440,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigUnanswered = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.unanswered',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['keepUnknownUntilCutoff', 'hostReviewAtDeadline'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigUpdateOn = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.updateOn',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.kind',
+    required: true,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateSettingAuthority = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.setting.authority',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['observe', 'prepare', 'executeWithinPolicy'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateSettingKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.setting.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateSettingReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.setting.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['hostChoice', 'organizerDefault'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateVersion = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.version',
+    required: true,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationDeliveryPolicyMaxAttempts = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.deliveryPolicy.maxAttempts',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 6,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationDeliveryPolicyMaxAttemptsPerRoute = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.deliveryPolicy.maxAttemptsPerRoute',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationDeliveryPolicyMinimumRetrySeconds = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.deliveryPolicy.minimumRetrySeconds',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 3600,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoices = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices',
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 17,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsLabel = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.label',
+    maxLength: 80,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetCheckpointId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.checkpointId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetGroupId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetItineraryId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.itineraryId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.kind',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetLateEntry = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.lateEntry',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['allowed', 'hostDecision', 'closed'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetPlaceId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.placeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetRouteId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.routeId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetStopId = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.stopId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationOutcomes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.outcomes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    minItems: 1,
+    maxItems: 6,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationOutcomesItemsClassification = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.outcomes.items.classification',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['technical', 'policy', 'suppressed', 'invalidRecipient'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationOutcomesItemsKind = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.outcomes.items.kind',
+    required: true,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationOutcomesItemsReason = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.outcomes.items.reason',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['timeout', 'connectionLost', 'workerInterrupted'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationResponseDeadline = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.responseDeadline',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationRoutes = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.routes',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['string'],
+    itemEnumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+    minItems: 1,
+    maxItems: 3,
+    uniqueItems: true,
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationRoutesItems = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.configuration.routes.items',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['catchEventSms', 'catchEventRcs', 'organizerEventWhatsapp'],
+  );
+
+  static const eventRehearsalDocumentAssistanceSettingsRuntimeStatus = CatchContractFieldConstraints(
+    path: 'eventRehearsalDocument.assistanceSettings.runtime.status',
+    required: true,
+    enumValues: <String>['enabled', 'paused'],
   );
 
   static const eventRehearsalDocumentClubId = CatchContractFieldConstraints(
@@ -92659,6 +93505,7 @@ abstract final class CatchContractConstraints {
     'controlEventRehearsalCallablePayload.movement': controlEventRehearsalCallablePayloadMovement,
     'controlEventRehearsalCallablePayload.practiceOperatorId': controlEventRehearsalCallablePayloadPracticeOperatorId,
     'controlEventRehearsalCallablePayload.sessionId': controlEventRehearsalCallablePayloadSessionId,
+    'controlEventRehearsalCallablePayload.settings': controlEventRehearsalCallablePayloadSettings,
     'controlEventRehearsalCallablePayload.staff.decision.duty': controlEventRehearsalCallablePayloadStaffDecisionDuty,
     'controlEventRehearsalCallablePayload.staff.decision.expiresAtMillis': controlEventRehearsalCallablePayloadStaffDecisionExpiresAtMillis,
     'controlEventRehearsalCallablePayload.staff.decision.kind': controlEventRehearsalCallablePayloadStaffDecisionKind,
@@ -96472,6 +97319,87 @@ abstract final class CatchContractConstraints {
     'eventRehearsalBootstrapCallableResponse.session.status': eventRehearsalBootstrapCallableResponseSessionStatus,
     'eventRehearsalBootstrapCallableResponse.session.virtualNowMillis': eventRehearsalBootstrapCallableResponseSessionVirtualNowMillis,
     'eventRehearsalBootstrapCallableResponse.session.virtualStartedAtMillis': eventRehearsalBootstrapCallableResponseSessionVirtualStartedAtMillis,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.canConfigure': eventRehearsalBootstrapCallableResponseSettingsReviewCanConfigure,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.context': eventRehearsalBootstrapCallableResponseSettingsReviewContext,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups': eventRehearsalBootstrapCallableResponseSettingsReviewGroups,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.cutoff.at': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigCutoffAt,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.cutoff.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigCutoffKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.destination.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigDestinationKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.maxMessagesPerEpisode': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigMaxMessagesPerEpisode,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.minimumMinutesBetweenMessages': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigMinimumMinutesBetweenMessages,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.unanswered': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigUnanswered,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.config.updateOn': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveConfigUpdateOn,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.setting.authority': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveSettingAuthority,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.setting.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveSettingKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.setting.reason': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveSettingReason,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.effective.version': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsEffectiveVersion,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.groupId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsGroupId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.label': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.origin': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsOrigin,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.cutoff.at': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigCutoffAt,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.cutoff.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigCutoffKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.destination.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigDestinationKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.maxMessagesPerEpisode': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigMaxMessagesPerEpisode,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.minimumMinutesBetweenMessages': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigMinimumMinutesBetweenMessages,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.unanswered': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigUnanswered,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.config.updateOn': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateConfigUpdateOn,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.setting.authority': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateSettingAuthority,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.setting.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateSettingKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.setting.reason': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateSettingReason,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.preference.template.version': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsPreferenceTemplateVersion,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinations,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.label': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.checkpointId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetCheckpointId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.groupId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetGroupId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.itineraryId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetItineraryId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.kind': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.lateEntry': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetLateEntry,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.placeId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetPlaceId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.routeId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetRouteId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.target.stopId': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsTargetStopId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.destinations.items.text': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupDestinationsItemsText,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.setup.eventEnd': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsSetupEventEnd,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.groups.items.status': eventRehearsalBootstrapCallableResponseSettingsReviewGroupsItemsStatus,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.deliveryPolicy.maxAttempts': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationDeliveryPolicyMaxAttempts,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.deliveryPolicy.maxAttemptsPerRoute': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationDeliveryPolicyMaxAttemptsPerRoute,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.deliveryPolicy.minimumRetrySeconds': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationDeliveryPolicyMinimumRetrySeconds,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoices,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.label': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsLabel,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.checkpointId': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetCheckpointId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.groupId': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetGroupId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.itineraryId': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetItineraryId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.kind': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.lateEntry': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetLateEntry,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.placeId': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetPlaceId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.routeId': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetRouteId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.laterChoices.items.target.stopId': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationLaterChoicesItemsTargetStopId,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.outcomes': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationOutcomes,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.outcomes.items.classification': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationOutcomesItemsClassification,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.outcomes.items.kind': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationOutcomesItemsKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.outcomes.items.reason': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationOutcomesItemsReason,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.responseDeadline': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationResponseDeadline,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.routes': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationRoutes,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.configuration.routes.items': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeConfigurationRoutesItems,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtime.status': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeStatus,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.runtimeRevision': eventRehearsalBootstrapCallableResponseSettingsReviewRuntimeRevision,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.serverTime': eventRehearsalBootstrapCallableResponseSettingsReviewServerTime,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.setupRevision': eventRehearsalBootstrapCallableResponseSettingsReviewSetupRevision,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.sourceHash': eventRehearsalBootstrapCallableResponseSettingsReviewSourceHash,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.cutoff.at': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigCutoffAt,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.cutoff.kind': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigCutoffKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.destination.kind': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigDestinationKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.maxMessagesPerEpisode': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigMaxMessagesPerEpisode,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.minimumMinutesBetweenMessages': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigMinimumMinutesBetweenMessages,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.unanswered': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigUnanswered,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.config.updateOn': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedConfigUpdateOn,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.kind': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.setting.authority': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedSettingAuthority,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.setting.kind': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedSettingKind,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.setting.reason': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedSettingReason,
+    'eventRehearsalBootstrapCallableResponse.settingsReview.suggested.version': eventRehearsalBootstrapCallableResponseSettingsReviewSuggestedVersion,
     'eventRehearsalBootstrapCallableResponse.staffReview.actorUid': eventRehearsalBootstrapCallableResponseStaffReviewActorUid,
     'eventRehearsalBootstrapCallableResponse.staffReview.canAssign': eventRehearsalBootstrapCallableResponseStaffReviewCanAssign,
     'eventRehearsalBootstrapCallableResponse.staffReview.clockId': eventRehearsalBootstrapCallableResponseStaffReviewClockId,
@@ -96519,6 +97447,43 @@ abstract final class CatchContractConstraints {
     'eventRehearsalDocument.actionCount': eventRehearsalDocumentActionCount,
     'eventRehearsalDocument.activeStepIndex': eventRehearsalDocumentActiveStepIndex,
     'eventRehearsalDocument.actorCount': eventRehearsalDocumentActorCount,
+    'eventRehearsalDocument.assistanceSettings.clockId': eventRehearsalDocumentAssistanceSettingsClockId,
+    'eventRehearsalDocument.assistanceSettings.preferences': eventRehearsalDocumentAssistanceSettingsPreferences,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.groupId': eventRehearsalDocumentAssistanceSettingsPreferencesItemsGroupId,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.kind': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceKind,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.cutoff.at': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigCutoffAt,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.cutoff.kind': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigCutoffKind,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.destination.kind': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigDestinationKind,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.maxMessagesPerEpisode': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigMaxMessagesPerEpisode,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.minimumMinutesBetweenMessages': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigMinimumMinutesBetweenMessages,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.unanswered': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigUnanswered,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.config.updateOn': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateConfigUpdateOn,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.kind': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateKind,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.setting.authority': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateSettingAuthority,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.setting.kind': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateSettingKind,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.setting.reason': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateSettingReason,
+    'eventRehearsalDocument.assistanceSettings.preferences.items.preference.template.version': eventRehearsalDocumentAssistanceSettingsPreferencesItemsPreferenceTemplateVersion,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.deliveryPolicy.maxAttempts': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationDeliveryPolicyMaxAttempts,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.deliveryPolicy.maxAttemptsPerRoute': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationDeliveryPolicyMaxAttemptsPerRoute,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.deliveryPolicy.minimumRetrySeconds': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationDeliveryPolicyMinimumRetrySeconds,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoices,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.label': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsLabel,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.checkpointId': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetCheckpointId,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.groupId': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetGroupId,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.itineraryId': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetItineraryId,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.kind': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetKind,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.lateEntry': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetLateEntry,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.placeId': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetPlaceId,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.routeId': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetRouteId,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.laterChoices.items.target.stopId': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationLaterChoicesItemsTargetStopId,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.outcomes': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationOutcomes,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.outcomes.items.classification': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationOutcomesItemsClassification,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.outcomes.items.kind': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationOutcomesItemsKind,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.outcomes.items.reason': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationOutcomesItemsReason,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.responseDeadline': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationResponseDeadline,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.routes': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationRoutes,
+    'eventRehearsalDocument.assistanceSettings.runtime.configuration.routes.items': eventRehearsalDocumentAssistanceSettingsRuntimeConfigurationRoutesItems,
+    'eventRehearsalDocument.assistanceSettings.runtime.status': eventRehearsalDocumentAssistanceSettingsRuntimeStatus,
     'eventRehearsalDocument.clubId': eventRehearsalDocumentClubId,
     'eventRehearsalDocument.completedAt._nanoseconds': eventRehearsalDocumentCompletedAtNanoseconds,
     'eventRehearsalDocument.completedAt._seconds': eventRehearsalDocumentCompletedAtSeconds,

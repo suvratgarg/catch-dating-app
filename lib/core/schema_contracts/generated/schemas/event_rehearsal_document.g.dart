@@ -830,5 +830,602 @@ const schemaEventRehearsalDocumentSchema = <String, Object?>{
       },
       'x-catch-ownership': 'callable-owned',
     },
+    'assistanceSettings': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'clockId',
+        'runtime',
+        'preferences',
+      ],
+      'properties': <String, Object?>{
+        'clockId': <String, Object?>{
+          'type': 'string',
+          'pattern': '^clock:[a-f0-9]{64}\$',
+        },
+        'runtime': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'status',
+                'configuration',
+              ],
+              'properties': <String, Object?>{
+                'status': <String, Object?>{
+                  'enum': <Object?>[
+                    'enabled',
+                    'paused',
+                  ],
+                },
+                'configuration': <String, Object?>{
+                  'type': 'object',
+                  'additionalProperties': false,
+                  'required': <Object?>[
+                    'routes',
+                    'deliveryPolicy',
+                    'responseDeadline',
+                    'outcomes',
+                  ],
+                  'properties': <String, Object?>{
+                    'routes': <String, Object?>{
+                      'type': 'array',
+                      'minItems': 1,
+                      'maxItems': 3,
+                      'uniqueItems': true,
+                      'items': <String, Object?>{
+                        'type': 'string',
+                        'enum': <Object?>[
+                          'catchEventSms',
+                          'catchEventRcs',
+                          'organizerEventWhatsapp',
+                        ],
+                      },
+                    },
+                    'deliveryPolicy': <String, Object?>{
+                      'type': 'object',
+                      'additionalProperties': false,
+                      'required': <Object?>[
+                        'maxAttempts',
+                        'maxAttemptsPerRoute',
+                        'minimumRetrySeconds',
+                      ],
+                      'properties': <String, Object?>{
+                        'maxAttempts': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 6,
+                        },
+                        'maxAttemptsPerRoute': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 3,
+                        },
+                        'minimumRetrySeconds': <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 1,
+                          'maximum': 3600,
+                        },
+                      },
+                    },
+                    'responseDeadline': <String, Object?>{
+                      'anyOf': <Object?>[
+                        <String, Object?>{
+                          'type': 'integer',
+                          'minimum': 0,
+                          'maximum': 9007199254740991,
+                        },
+                        <String, Object?>{
+                          'type': 'null',
+                        },
+                      ],
+                    },
+                    'laterChoices': <String, Object?>{
+                      'type': 'array',
+                      'maxItems': 17,
+                      'items': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'label',
+                          'target',
+                        ],
+                        'properties': <String, Object?>{
+                          'label': <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 80,
+                          },
+                          'target': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'object',
+                                'additionalProperties': false,
+                                'required': <Object?>[
+                                  'kind',
+                                  'placeId',
+                                  'lateEntry',
+                                ],
+                                'properties': <String, Object?>{
+                                  'kind': <String, Object?>{
+                                    'type': 'string',
+                                    'const': 'fixedPlace',
+                                  },
+                                  'placeId': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 160,
+                                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                                  },
+                                  'lateEntry': <String, Object?>{
+                                    'type': 'string',
+                                    'enum': <Object?>[
+                                      'allowed',
+                                      'hostDecision',
+                                      'closed',
+                                    ],
+                                  },
+                                },
+                              },
+                              <String, Object?>{
+                                'type': 'object',
+                                'additionalProperties': false,
+                                'required': <Object?>[
+                                  'kind',
+                                  'itineraryId',
+                                  'stopId',
+                                ],
+                                'properties': <String, Object?>{
+                                  'kind': <String, Object?>{
+                                    'type': 'string',
+                                    'const': 'itineraryStop',
+                                  },
+                                  'itineraryId': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 2000,
+                                  },
+                                  'stopId': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 2000,
+                                  },
+                                },
+                              },
+                              <String, Object?>{
+                                'type': 'object',
+                                'additionalProperties': false,
+                                'required': <Object?>[
+                                  'kind',
+                                  'routeId',
+                                  'groupId',
+                                  'checkpointId',
+                                ],
+                                'properties': <String, Object?>{
+                                  'kind': <String, Object?>{
+                                    'type': 'string',
+                                    'const': 'groupCheckpoint',
+                                  },
+                                  'routeId': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 2000,
+                                  },
+                                  'groupId': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 160,
+                                    'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                                  },
+                                  'checkpointId': <String, Object?>{
+                                    'type': 'string',
+                                    'minLength': 1,
+                                    'maxLength': 2000,
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                        },
+                      },
+                    },
+                    'outcomes': <String, Object?>{
+                      'type': 'array',
+                      'minItems': 1,
+                      'maxItems': 6,
+                      'items': <String, Object?>{
+                        'oneOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'type': 'string',
+                                'enum': <Object?>[
+                                  'accepted',
+                                  'delivered',
+                                  'read',
+                                  'revoked',
+                                ],
+                              },
+                            },
+                          },
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'classification',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'const': 'failed',
+                              },
+                              'classification': <String, Object?>{
+                                'type': 'string',
+                                'enum': <Object?>[
+                                  'technical',
+                                  'policy',
+                                  'suppressed',
+                                  'invalidRecipient',
+                                ],
+                              },
+                            },
+                          },
+                          <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'kind',
+                              'reason',
+                            ],
+                            'properties': <String, Object?>{
+                              'kind': <String, Object?>{
+                                'const': 'unknown',
+                              },
+                              'reason': <String, Object?>{
+                                'type': 'string',
+                                'enum': <Object?>[
+                                  'timeout',
+                                  'connectionLost',
+                                  'workerInterrupted',
+                                ],
+                              },
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            <String, Object?>{
+              'type': 'null',
+            },
+          ],
+        },
+        'preferences': <String, Object?>{
+          'type': 'array',
+          'maxItems': 41,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'groupId',
+              'preference',
+            ],
+            'properties': <String, Object?>{
+              'groupId': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 180,
+              },
+              'preference': <String, Object?>{
+                'oneOf': <Object?>[
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'const': 'inherit',
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'const': 'disabled',
+                      },
+                    },
+                  },
+                  <String, Object?>{
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'kind',
+                      'template',
+                    ],
+                    'properties': <String, Object?>{
+                      'kind': <String, Object?>{
+                        'const': 'configured',
+                      },
+                      'template': <String, Object?>{
+                        'type': 'object',
+                        'additionalProperties': false,
+                        'required': <Object?>[
+                          'kind',
+                          'version',
+                          'setting',
+                          'config',
+                        ],
+                        'properties': <String, Object?>{
+                          'kind': <String, Object?>{
+                            'const': 'lateJoin',
+                          },
+                          'version': <String, Object?>{
+                            'const': 1,
+                          },
+                          'setting': <String, Object?>{
+                            'anyOf': <Object?>[
+                              <String, Object?>{
+                                'type': 'object',
+                                'additionalProperties': false,
+                                'required': <Object?>[
+                                  'kind',
+                                  'authority',
+                                ],
+                                'properties': <String, Object?>{
+                                  'kind': <String, Object?>{
+                                    'type': 'string',
+                                    'const': 'enabled',
+                                  },
+                                  'authority': <String, Object?>{
+                                    'type': 'string',
+                                    'enum': <Object?>[
+                                      'observe',
+                                      'prepare',
+                                      'executeWithinPolicy',
+                                    ],
+                                  },
+                                },
+                              },
+                              <String, Object?>{
+                                'type': 'object',
+                                'additionalProperties': false,
+                                'required': <Object?>[
+                                  'kind',
+                                  'reason',
+                                ],
+                                'properties': <String, Object?>{
+                                  'kind': <String, Object?>{
+                                    'type': 'string',
+                                    'const': 'disabled',
+                                  },
+                                  'reason': <String, Object?>{
+                                    'type': 'string',
+                                    'enum': <Object?>[
+                                      'hostChoice',
+                                      'organizerDefault',
+                                    ],
+                                  },
+                                },
+                              },
+                            ],
+                          },
+                          'config': <String, Object?>{
+                            'type': 'object',
+                            'additionalProperties': false,
+                            'required': <Object?>[
+                              'destination',
+                              'cutoff',
+                              'maxMessagesPerEpisode',
+                              'minimumMinutesBetweenMessages',
+                              'updateOn',
+                              'unanswered',
+                            ],
+                            'properties': <String, Object?>{
+                              'destination': <String, Object?>{
+                                'anyOf': <Object?>[
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'kind',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'kind': <String, Object?>{
+                                        'const': 'confirmedGroupProgress',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'anyOf': <Object?>[
+                                      <String, Object?>{
+                                        'type': 'object',
+                                        'additionalProperties': false,
+                                        'required': <Object?>[
+                                          'kind',
+                                          'placeId',
+                                          'lateEntry',
+                                        ],
+                                        'properties': <String, Object?>{
+                                          'kind': <String, Object?>{
+                                            'type': 'string',
+                                            'const': 'fixedPlace',
+                                          },
+                                          'placeId': <String, Object?>{
+                                            'type': 'string',
+                                            'minLength': 1,
+                                            'maxLength': 160,
+                                            'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                                          },
+                                          'lateEntry': <String, Object?>{
+                                            'type': 'string',
+                                            'enum': <Object?>[
+                                              'allowed',
+                                              'hostDecision',
+                                              'closed',
+                                            ],
+                                          },
+                                        },
+                                      },
+                                      <String, Object?>{
+                                        'type': 'object',
+                                        'additionalProperties': false,
+                                        'required': <Object?>[
+                                          'kind',
+                                          'itineraryId',
+                                          'permittedStopIds',
+                                        ],
+                                        'properties': <String, Object?>{
+                                          'kind': <String, Object?>{
+                                            'type': 'string',
+                                            'const': 'itineraryStop',
+                                          },
+                                          'itineraryId': <String, Object?>{
+                                            'type': 'string',
+                                            'minLength': 1,
+                                            'maxLength': 2000,
+                                          },
+                                          'permittedStopIds': <String, Object?>{
+                                            'type': 'array',
+                                            'minItems': 1,
+                                            'maxItems': 1000,
+                                            'items': <String, Object?>{
+                                              'type': 'string',
+                                              'minLength': 1,
+                                              'maxLength': 2000,
+                                            },
+                                            'uniqueItems': true,
+                                          },
+                                        },
+                                      },
+                                      <String, Object?>{
+                                        'type': 'object',
+                                        'additionalProperties': false,
+                                        'required': <Object?>[
+                                          'kind',
+                                          'routeId',
+                                          'groupId',
+                                          'permittedCheckpointIds',
+                                        ],
+                                        'properties': <String, Object?>{
+                                          'kind': <String, Object?>{
+                                            'type': 'string',
+                                            'const': 'groupCheckpoint',
+                                          },
+                                          'routeId': <String, Object?>{
+                                            'type': 'string',
+                                            'minLength': 1,
+                                            'maxLength': 2000,
+                                          },
+                                          'groupId': <String, Object?>{
+                                            'type': 'string',
+                                            'minLength': 1,
+                                            'maxLength': 160,
+                                            'pattern': '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+                                          },
+                                          'permittedCheckpointIds': <String, Object?>{
+                                            'type': 'array',
+                                            'minItems': 1,
+                                            'maxItems': 1000,
+                                            'items': <String, Object?>{
+                                              'type': 'string',
+                                              'minLength': 1,
+                                              'maxLength': 2000,
+                                            },
+                                            'uniqueItems': true,
+                                          },
+                                        },
+                                      },
+                                    ],
+                                  },
+                                ],
+                              },
+                              'cutoff': <String, Object?>{
+                                'anyOf': <Object?>[
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'kind',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'kind': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'eventEnd',
+                                      },
+                                    },
+                                  },
+                                  <String, Object?>{
+                                    'type': 'object',
+                                    'additionalProperties': false,
+                                    'required': <Object?>[
+                                      'kind',
+                                      'at',
+                                    ],
+                                    'properties': <String, Object?>{
+                                      'kind': <String, Object?>{
+                                        'type': 'string',
+                                        'const': 'time',
+                                      },
+                                      'at': <String, Object?>{
+                                        'type': 'integer',
+                                        'minimum': 0,
+                                        'maximum': 9007199254740991,
+                                        'description': 'UTC milliseconds.',
+                                      },
+                                    },
+                                  },
+                                ],
+                              },
+                              'maxMessagesPerEpisode': <String, Object?>{
+                                'type': 'integer',
+                                'minimum': 0,
+                                'maximum': 100,
+                              },
+                              'minimumMinutesBetweenMessages': <String, Object?>{
+                                'type': 'integer',
+                                'minimum': 0,
+                                'maximum': 1440,
+                              },
+                              'updateOn': <String, Object?>{
+                                'type': 'string',
+                                'const': 'materialGuidanceChange',
+                              },
+                              'unanswered': <String, Object?>{
+                                'type': 'string',
+                                'enum': <Object?>[
+                                  'keepUnknownUntilCutoff',
+                                  'hostReviewAtDeadline',
+                                ],
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+      'x-catch-ownership': 'callable-owned',
+    },
   },
 };

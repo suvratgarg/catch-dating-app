@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.128.0
+version: 1.129.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -252,8 +252,33 @@ an executable recipe to a restricted mode supersedes its old instruction and
 preserves uncertain delivery evidence. Older recipes without a setting keep
 their earlier behavior and exact wire identity. Native source-derived recipe
 assembly retains the mode and rejects publication from a preview-only recipe.
-This is engine/contract parity; the event-wide configuration adapter and shared
-settings controls in rehearsal remain pending.
+The event-wide adapter now saves one isolated rule per event/group and one
+explicit simulated delivery configuration. Rules reuse live template modes,
+destinations, cutoffs and limits; groups can inherit, override or switch off.
+The suggested prepare mode is not saved authority. The runtime separately saves
+ordered synthetic channels, response deadline, retry limits, optional later
+joining choices and one-to-six outcomes. No sender account or permission is
+copied from the source event.
+
+The existing control callable commits each settings command, bounded actor
+reevaluation and receipt together. It requires current Host authority, reviewed
+setup/runtime revisions and the current configuration source. Synthetic staff
+can inspect settings but cannot change them. Reset, fork and setup replacement
+do not inherit settings. Native readers, typed decisions and repository bindings
+retain this review and reject mismatched confirmations; the visible shared
+settings controls and their state owner remain the next integration step.
+
+New event-enrolled recipes follow current accepted group membership and saved
+departure. Unassigned pace-group guests receive no inferred route. Explicit
+per-guest recipes remain separately owned; an individual pause or delivery
+handoff survives event edits. A global pause holds inherited execution without
+turning each guest's own pause on. Disabling a rule retires its instruction even
+while the runtime is paused. Rebinding preserves the consumed script prefix,
+episode limits and uncertain attempts; configuration cannot rewrite prior
+outcomes or authorize fallback from uncertainty. Missing configuration/source
+produces a distinct held evaluation. Shared setting controls accept named
+practice destinations without inventing coordinates; live location validation
+and retained coordinates remain intact.
 
 Uncertain delivery holds fallback until confirmed evidence arrives. Backoff,
 outreach caps, deadlines and exhausted scripts remain explicit evaluation

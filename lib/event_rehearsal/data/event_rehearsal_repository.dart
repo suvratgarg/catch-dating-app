@@ -7,6 +7,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement_command.dart';
+import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings_change.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff_change.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -83,6 +84,19 @@ class EventRehearsalRepository {
           return result;
         },
       );
+
+  Future<EventRehearsalBootstrap> applySettings(
+    RehearsalSettingsChange change,
+  ) => _call(
+    name: 'controlEventRehearsal',
+    payload: change.toJson(),
+    action: 'configure practice updates',
+    parse: (data) {
+      final result = EventRehearsalBootstrap.fromCallableData(data);
+      change.requireResult(result);
+      return result;
+    },
+  );
 
   Stream<EventRehearsalBootstrap> watch(String sessionId) async* {
     while (true) {

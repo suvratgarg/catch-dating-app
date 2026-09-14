@@ -78,7 +78,8 @@
         "complete",
         "assistance",
         "movement",
-        "staff"
+        "staff",
+        "settings"
       ]
     },
     "behavior": {

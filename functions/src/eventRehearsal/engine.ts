@@ -167,6 +167,7 @@ export function resolveRehearsalControl(
 ): RehearsalControlResult {
   const currentMillis = session.virtualNow.toMillis();
   switch (action) {
+  case "settings":
   case "staff":
   case "movement":
   case "assistance":
