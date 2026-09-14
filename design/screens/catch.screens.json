@@ -1,7 +1,7 @@
 {
   "$schema": "./catch.screens.schema.json",
   "version": 1,
-  "updated": "2026-09-04",
+  "updated": "2026-09-14",
   "sourceOfTruth": {
     "purpose": "Screen contracts connect route state, controller ownership, section composition, captures, and design references.",
     "tokens": "Foundation values remain in design/tokens/catch.tokens.json.",
@@ -10855,7 +10855,7 @@
               "CatchPageTabBar"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
               "symbol": "CatchPageTabBar"
             },
             "currentOwner": "HostClubsScaffold",
@@ -11213,7 +11213,7 @@
               "HostTeamTopBar"
             ],
             "flutter": {
-              "file": "packages/catch_ui/lib/src/components/catch_tab_rail.dart",
+              "file": "packages/catch_ui/lib/src/components/catch_page_tab_bar.dart",
               "symbol": "CatchPageTabBar"
             },
             "currentOwner": "HostClubTeamScreen + CatchPageTabBar",
