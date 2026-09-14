@@ -441,8 +441,36 @@ import 'package:widgetbook_workspace/primitives/ticket_atom_use_cases.dart'
     as _widgetbook_workspace_primitives_ticket_atom_use_cases;
 import 'package:widgetbook_workspace/primitives/viewport_layout_use_cases.dart'
     as _widgetbook_workspace_primitives_viewport_layout_use_cases;
-import 'package:widgetbook_workspace/profiles/profile_use_cases.dart'
-    as _widgetbook_workspace_profiles_profile_use_cases;
+import 'package:widgetbook_workspace/profiles/catalog/choices.dart'
+    as _widgetbook_workspace_profiles_catalog_choices;
+import 'package:widgetbook_workspace/profiles/catalog/fields.dart'
+    as _widgetbook_workspace_profiles_catalog_fields;
+import 'package:widgetbook_workspace/profiles/catalog/forms.dart'
+    as _widgetbook_workspace_profiles_catalog_forms;
+import 'package:widgetbook_workspace/profiles/catalog/header.dart'
+    as _widgetbook_workspace_profiles_catalog_header;
+import 'package:widgetbook_workspace/profiles/catalog/height.dart'
+    as _widgetbook_workspace_profiles_catalog_height;
+import 'package:widgetbook_workspace/profiles/catalog/loading.dart'
+    as _widgetbook_workspace_profiles_catalog_loading;
+import 'package:widgetbook_workspace/profiles/catalog/photos.dart'
+    as _widgetbook_workspace_profiles_catalog_photos;
+import 'package:widgetbook_workspace/profiles/catalog/public_body.dart'
+    as _widgetbook_workspace_profiles_catalog_public_body;
+import 'package:widgetbook_workspace/profiles/catalog/public_route.dart'
+    as _widgetbook_workspace_profiles_catalog_public_route;
+import 'package:widgetbook_workspace/profiles/catalog/range.dart'
+    as _widgetbook_workspace_profiles_catalog_range;
+import 'package:widgetbook_workspace/profiles/catalog/safety.dart'
+    as _widgetbook_workspace_profiles_catalog_safety;
+import 'package:widgetbook_workspace/profiles/catalog/self_body.dart'
+    as _widgetbook_workspace_profiles_catalog_self_body;
+import 'package:widgetbook_workspace/profiles/catalog/self_route.dart'
+    as _widgetbook_workspace_profiles_catalog_self_route;
+import 'package:widgetbook_workspace/profiles/catalog/tabs.dart'
+    as _widgetbook_workspace_profiles_catalog_tabs;
+import 'package:widgetbook_workspace/profiles/catalog/text_editors.dart'
+    as _widgetbook_workspace_profiles_catalog_text_editors;
 import 'package:widgetbook_workspace/shell/app_shell_use_cases.dart'
     as _widgetbook_workspace_shell_app_shell_use_cases;
 import 'package:widgetbook_workspace/user_analytics/user_analytics_use_cases.dart'
@@ -10205,7 +10233,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical single-choice chip states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_choices
                         .profileSingleChipValueStates,
                   ),
                 ],
@@ -10215,12 +10243,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical choice option states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_choices
                         .profileChipOptionsStates,
                   ),
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical wrapping choice control states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_choices
                         .profileMultiChipValueStates,
                   ),
                 ],
@@ -10230,7 +10258,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical collapsed choice states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_choices
                         .profileChipPlaceholderStates,
                   ),
                 ],
@@ -10240,7 +10268,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Typed descriptor prototype',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_forms
                         .catchFormChoiceFieldStates,
                   ),
                 ],
@@ -10250,7 +10278,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Typed descriptor prototype',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_forms
                         .catchFormRangeFieldStates,
                   ),
                 ],
@@ -10260,7 +10288,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Typed descriptor prototype',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_forms
                         .catchFormRowListStates,
                   ),
                 ],
@@ -10270,7 +10298,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Typed descriptor prototype',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_forms
                         .catchFormTextFieldStates,
                   ),
                 ],
@@ -10280,12 +10308,12 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical height stepper bounds',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_height
                         .profileHeightStepButtonStates,
                   ),
                   _widgetbook.WidgetbookUseCase(
                     name: 'Canonical height stepper states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_height
                         .profileHeightStepperControlsStates,
                   ),
                 ],
@@ -10295,7 +10323,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Direct text entry states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_text_editors
                         .profileDirectTextEntryFieldStates,
                   ),
                 ],
@@ -10305,7 +10333,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Inline height editor states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_height
                         .profileInlineHeightEditorStates,
                   ),
                 ],
@@ -10315,7 +10343,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Inline multi choice editor states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_choices
                         .profileInlineMultiChoiceEntryEditorStates,
                   ),
                 ],
@@ -10325,7 +10353,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Inline prompt editor states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_text_editors
                         .profileInlinePromptEntryEditorStates,
                   ),
                 ],
@@ -10335,7 +10363,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Inline range editor states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_range
                         .profileInlineRangeEditorStates,
                   ),
                 ],
@@ -10345,7 +10373,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Inline single choice editor states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_choices
                         .profileInlineSingleChoiceEntryEditorStates,
                   ),
                 ],
@@ -10357,12 +10385,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Self route states',
-                builder: _widgetbook_workspace_profiles_profile_use_cases
+                builder: _widgetbook_workspace_profiles_catalog_self_route
                     .profileScreenSelfRouteStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Self section states',
-                builder: _widgetbook_workspace_profiles_profile_use_cases
+                builder: _widgetbook_workspace_profiles_catalog_self_body
                     .profileScreenSelfSectionStates,
               ),
             ],
@@ -10372,7 +10400,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Body states',
-                builder: _widgetbook_workspace_profiles_profile_use_cases
+                builder: _widgetbook_workspace_profiles_catalog_public_body
                     .publicProfileBodyStates,
               ),
             ],
@@ -10382,7 +10410,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Report reason row',
-                builder: _widgetbook_workspace_profiles_profile_use_cases
+                builder: _widgetbook_workspace_profiles_catalog_safety
                     .publicProfileReportReasonTileStates,
               ),
             ],
@@ -10392,7 +10420,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Report sheet',
-                builder: _widgetbook_workspace_profiles_profile_use_cases
+                builder: _widgetbook_workspace_profiles_catalog_safety
                     .publicProfileReportSheetStates,
               ),
             ],
@@ -10402,12 +10430,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route states',
-                builder: _widgetbook_workspace_profiles_profile_use_cases
+                builder: _widgetbook_workspace_profiles_catalog_public_route
                     .publicProfileRouteStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'Safety action states',
-                builder: _widgetbook_workspace_profiles_profile_use_cases
+                builder: _widgetbook_workspace_profiles_catalog_safety
                     .publicProfileSafetyActionStates,
               ),
             ],
@@ -10420,7 +10448,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile title',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_header
                         .profileTitleStates,
                   ),
                 ],
@@ -10430,7 +10458,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Field row section states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_fields
                         .profileFieldRowSectionStates,
                   ),
                 ],
@@ -10440,7 +10468,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Preview tab states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_tabs
                         .previewTabStates,
                   ),
                 ],
@@ -10450,7 +10478,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Field row states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_fields
                         .profileFieldRowStates,
                   ),
                 ],
@@ -10460,7 +10488,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Info skeleton section states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_loading
                         .profileInfoSkeletonSectionStates,
                   ),
                 ],
@@ -10470,7 +10498,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Info skeleton tile states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_loading
                         .profileInfoSkeletonTileStates,
                   ),
                 ],
@@ -10480,7 +10508,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Insights sliver body states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_self_body
                         .profileInsightsTabSliverBodyStates,
                   ),
                 ],
@@ -10490,7 +10518,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Multi enum entry adapter states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_fields
                         .profileMultiEnumEntryStates,
                   ),
                 ],
@@ -10500,7 +10528,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Photo section states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_photos
                         .profilePhotosSectionStates,
                   ),
                 ],
@@ -10510,7 +10538,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Photo skeleton section states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_loading
                         .profilePhotosSkeletonSectionStates,
                   ),
                 ],
@@ -10520,7 +10548,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Prompt entry adapter states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_fields
                         .profilePromptEntryStates,
                   ),
                 ],
@@ -10530,7 +10558,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Self tab body states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_self_body
                         .profileScreenSelfTabBodyStates,
                   ),
                 ],
@@ -10540,7 +10568,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile settings button',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_header
                         .profileSettingsButtonStates,
                   ),
                 ],
@@ -10550,7 +10578,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Single enum entry adapter states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_fields
                         .profileSingleEnumEntryStates,
                   ),
                 ],
@@ -10560,7 +10588,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Edit tab states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_tabs
                         .profileTabStates,
                   ),
                 ],
@@ -10570,7 +10598,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile tab bar',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_header
                         .profileTabBarStates,
                   ),
                 ],
@@ -10580,7 +10608,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Edit tab content states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_tabs
                         .profileTabContentStates,
                   ),
                 ],
@@ -10590,7 +10618,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Edit tab skeleton states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_loading
                         .profileTabSkeletonSliverBodyStates,
                   ),
                 ],
@@ -10600,7 +10628,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Edit tab sliver body states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_tabs
                         .profileTabSliverBodyStates,
                   ),
                 ],
@@ -10610,7 +10638,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Route body states',
-                    builder: _widgetbook_workspace_profiles_profile_use_cases
+                    builder: _widgetbook_workspace_profiles_catalog_public_body
                         .publicProfileScreenBodyStates,
                   ),
                 ],

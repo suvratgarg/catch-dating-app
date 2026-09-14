@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/profile_public.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:712743d9c1ca230cfdb52a2366c0bccb239167eee7224eb1d1cc9f394fd79e89",
+  "sourceDigest": "sha256:7862fb390b4220f5963c12b5a4846a7b824f750126613ffa75ffbf61fcf46b2b",
   "resolvedDigest": "sha256:f1f88c56375345edfa6a76c886278be0f6156365f16ce67737f35ec748c0c5c8",
   "feature": {
     "id": "feature.profile_public",
@@ -39,7 +39,8 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/profiles/profile_use_cases.dart"
+          "widgetbook/lib/profiles/catalog/public_route.dart",
+          "widgetbook/lib/profiles/catalog/safety.dart"
         ],
         "actionOwners": [
           {

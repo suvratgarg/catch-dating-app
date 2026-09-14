@@ -23,7 +23,8 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/profiles/profile_use_cases.dart"
+          "widgetbook/lib/profiles/catalog/self_body.dart",
+          "widgetbook/lib/profiles/catalog/self_route.dart"
         ],
         "actionOwners": [
           {
