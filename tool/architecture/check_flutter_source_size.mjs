@@ -21,7 +21,9 @@ export function isHandwrittenSource(file, source) {
   // gen_l10n emits no generated-file header. This is its configured output home.
   if (/^lib\/l10n\/generated\/app_localizations(?:_[a-zA-Z_]+)?\.dart$/u.test(file)) return false;
   // The vendored icon generator uses this exact header instead of a suffix.
-  if (/^packages\/phosphor_flutter\/lib\/src\/phosphor_icons_(?:bold|duotone|fill|light|regular|thin)\.dart$/u.test(file) &&
+  const phosphorOutput = /^packages\/phosphor_flutter\/lib\/src\/phosphor_icons(?:_(?:base|bold|duotone|fill|light|regular|thin))?\.dart$/u.test(file) ||
+    file === "packages/phosphor_flutter/example/lib/constants/all_icons.dart";
+  if (phosphorOutput &&
       source.startsWith("// Auto generated File\n// DON'T EDIT BY HAND\n")) return false;
   return true;
 }
