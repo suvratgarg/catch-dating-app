@@ -2652,7 +2652,7 @@
               "groupId": "easy",
               "checkpointId": "one"
             },
-            "confirmedBy": "practice-staff:pacer",
+            "confirmedBy": "host-1",
             "confirmedAt": 1000,
             "operationId": "practice_departure",
             "roster": {
@@ -2728,7 +2728,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -2760,7 +2760,7 @@
       "checkpoint": {
         "progressRevision": 1,
         "checkpointId": "one",
-        "sourceHash": "20c0a34088d993afd069a504008728d508807bbeac6fbb07551612d397ed8c2f",
+        "sourceHash": "b90e4c004dfdb79c48a19eabde9a3776ca7fd7ffa6f4b35cd4dad4c04b921bf4",
         "revision": 0,
         "report": null,
         "availability": {
@@ -2799,7 +2799,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -2829,7 +2829,7 @@
         "assignment": {
           "revision": 0,
           "change": null,
-          "sourceHash": "07fdbd1d71834ca2e9944c810db0646331598d3e3c81f1aad1ce0c074e2489e6"
+          "sourceHash": "497501c1c793200d05ba46b6f952390c79e6dd937cb880043eaff5ee82fcc7ca"
         },
         "closeout": {
           "revision": 0,
@@ -2842,7 +2842,7 @@
             "reason": "reportMissing",
             "attendeeIds": []
           },
-          "sourceHash": "e5082b0d9daa30339ba184c7afb5571d23b3f0dce02f3f2a2314eef590840693"
+          "sourceHash": "72b20f0601aeff65a4572ffae05096e5d4d0cfaabdf6c84251ddcc92494de399"
         },
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
@@ -3513,7 +3513,7 @@
               "groupId": "easy",
               "checkpointId": "one"
             },
-            "confirmedBy": "practice-staff:pacer",
+            "confirmedBy": "host-1",
             "confirmedAt": 1000,
             "operationId": "practice_departure",
             "roster": {
@@ -3542,7 +3542,7 @@
           },
           "report": {
             "revision": 1,
-            "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+            "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
             "accountedFor": [
               "actor-01"
             ],
@@ -3598,7 +3598,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -3627,7 +3627,7 @@
         },
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -3639,11 +3639,11 @@
       "checkpoint": {
         "progressRevision": 1,
         "checkpointId": "one",
-        "sourceHash": "55754ee3b3208e927eccb804d460db09832c9023f207a3924f38c4ed898e05cc",
+        "sourceHash": "329b43d8f27c9e7e074ec18050f5fed76a53d3071497033033d2a57b4dff1ed1",
         "revision": 1,
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -3687,7 +3687,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -3717,7 +3717,7 @@
         "assignment": {
           "revision": 0,
           "change": null,
-          "sourceHash": "ec4242632d316883859c7d271faebda5bcce418de8fe2fa9a525f852d9340317"
+          "sourceHash": "a9b7d2a2b89a06c8d5ad00bd315631d999432fe60d3e03e4bb3988ad5c60d16f"
         },
         "closeout": {
           "revision": 0,
@@ -3732,7 +3732,7 @@
               "actor-02"
             ]
           },
-          "sourceHash": "a012b495ed49bb824ec4ae38f3ff8f634fb169bdc40b9cc00f3b7bf19dc2112b"
+          "sourceHash": "a09464147e44b739c27d787a832d008dc97b461aff31396398c7923e4b29b274"
         },
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
@@ -4409,7 +4409,7 @@
               "groupId": "easy",
               "checkpointId": "one"
             },
-            "confirmedBy": "practice-staff:pacer",
+            "confirmedBy": "host-1",
             "confirmedAt": 1000,
             "operationId": "practice_departure",
             "roster": {
@@ -4438,7 +4438,7 @@
           },
           "report": {
             "revision": 1,
-            "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+            "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
             "accountedFor": [
               "actor-01"
             ],
@@ -4494,7 +4494,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -4523,7 +4523,7 @@
         },
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -4535,11 +4535,11 @@
       "checkpoint": {
         "progressRevision": 1,
         "checkpointId": "one",
-        "sourceHash": "55754ee3b3208e927eccb804d460db09832c9023f207a3924f38c4ed898e05cc",
+        "sourceHash": "329b43d8f27c9e7e074ec18050f5fed76a53d3071497033033d2a57b4dff1ed1",
         "revision": 1,
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -4575,7 +4575,7 @@
                 "revision": 1,
                 "resolvedAt": 1000,
                 "resolvedBy": "practice-staff:sweep",
-                "sourceHash": "c5b84273a44892db17ef279ea54aa87bc1f6ea52383ffecf0060ee464f722c44"
+                "sourceHash": "13d6579e85c6f893fbc71496fabd5c49b762d09eb2ecc685aa2af9bdfa6f8ffa"
               }
             }
           ]
@@ -4588,7 +4588,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -4618,7 +4618,7 @@
         "assignment": {
           "revision": 0,
           "change": null,
-          "sourceHash": "ec4242632d316883859c7d271faebda5bcce418de8fe2fa9a525f852d9340317"
+          "sourceHash": "a9b7d2a2b89a06c8d5ad00bd315631d999432fe60d3e03e4bb3988ad5c60d16f"
         },
         "closeout": {
           "revision": 0,
@@ -4629,7 +4629,7 @@
           "eligibility": {
             "kind": "ready"
           },
-          "sourceHash": "ea7021fb2c304afae71ed43048e63bdccd70a8ed9f8536c58799f401f2d7a167"
+          "sourceHash": "60afa8e7ffb35154ceb4e334fd401b216b207c36c764cfad645b98bcb67ddb1f"
         },
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
@@ -5316,7 +5316,7 @@
               "groupId": "easy",
               "checkpointId": "one"
             },
-            "confirmedBy": "practice-staff:pacer",
+            "confirmedBy": "host-1",
             "confirmedAt": 1000,
             "operationId": "practice_departure",
             "roster": {
@@ -5345,7 +5345,7 @@
           },
           "report": {
             "revision": 1,
-            "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+            "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
             "accountedFor": [
               "actor-01"
             ],
@@ -5401,7 +5401,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -5430,7 +5430,7 @@
         },
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -5442,11 +5442,11 @@
       "checkpoint": {
         "progressRevision": 1,
         "checkpointId": "one",
-        "sourceHash": "55754ee3b3208e927eccb804d460db09832c9023f207a3924f38c4ed898e05cc",
+        "sourceHash": "329b43d8f27c9e7e074ec18050f5fed76a53d3071497033033d2a57b4dff1ed1",
         "revision": 1,
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -5482,7 +5482,7 @@
                 "revision": 1,
                 "resolvedAt": 1000,
                 "resolvedBy": "practice-staff:sweep",
-                "sourceHash": "c5b84273a44892db17ef279ea54aa87bc1f6ea52383ffecf0060ee464f722c44"
+                "sourceHash": "13d6579e85c6f893fbc71496fabd5c49b762d09eb2ecc685aa2af9bdfa6f8ffa"
               }
             }
           ]
@@ -5495,7 +5495,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -5525,7 +5525,7 @@
         "assignment": {
           "revision": 0,
           "change": null,
-          "sourceHash": "ec4242632d316883859c7d271faebda5bcce418de8fe2fa9a525f852d9340317"
+          "sourceHash": "a9b7d2a2b89a06c8d5ad00bd315631d999432fe60d3e03e4bb3988ad5c60d16f"
         },
         "closeout": {
           "revision": 0,
@@ -5536,7 +5536,7 @@
           "eligibility": {
             "kind": "ready"
           },
-          "sourceHash": "ea7021fb2c304afae71ed43048e63bdccd70a8ed9f8536c58799f401f2d7a167"
+          "sourceHash": "60afa8e7ffb35154ceb4e334fd401b216b207c36c764cfad645b98bcb67ddb1f"
         },
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
@@ -6935,7 +6935,7 @@
               "groupId": "easy",
               "checkpointId": "one"
             },
-            "confirmedBy": "practice-staff:pacer",
+            "confirmedBy": "host-1",
             "confirmedAt": 1000,
             "operationId": "practice_departure",
             "roster": {
@@ -6964,7 +6964,7 @@
           },
           "report": {
             "revision": 1,
-            "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+            "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
             "accountedFor": [
               "actor-01"
             ],
@@ -7020,7 +7020,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -7049,7 +7049,7 @@
         },
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -7061,11 +7061,11 @@
       "checkpoint": {
         "progressRevision": 1,
         "checkpointId": "one",
-        "sourceHash": "55754ee3b3208e927eccb804d460db09832c9023f207a3924f38c4ed898e05cc",
+        "sourceHash": "329b43d8f27c9e7e074ec18050f5fed76a53d3071497033033d2a57b4dff1ed1",
         "revision": 1,
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -7101,7 +7101,7 @@
                 "revision": 1,
                 "resolvedAt": 1000,
                 "resolvedBy": "practice-staff:sweep",
-                "sourceHash": "c5b84273a44892db17ef279ea54aa87bc1f6ea52383ffecf0060ee464f722c44"
+                "sourceHash": "13d6579e85c6f893fbc71496fabd5c49b762d09eb2ecc685aa2af9bdfa6f8ffa"
               }
             }
           ]
@@ -7114,7 +7114,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -7144,7 +7144,7 @@
         "assignment": {
           "revision": 0,
           "change": null,
-          "sourceHash": "ec4242632d316883859c7d271faebda5bcce418de8fe2fa9a525f852d9340317"
+          "sourceHash": "a9b7d2a2b89a06c8d5ad00bd315631d999432fe60d3e03e4bb3988ad5c60d16f"
         },
         "closeout": {
           "revision": 0,
@@ -7155,7 +7155,7 @@
           "eligibility": {
             "kind": "ready"
           },
-          "sourceHash": "ea7021fb2c304afae71ed43048e63bdccd70a8ed9f8536c58799f401f2d7a167"
+          "sourceHash": "60afa8e7ffb35154ceb4e334fd401b216b207c36c764cfad645b98bcb67ddb1f"
         },
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",
@@ -8555,7 +8555,7 @@
               "groupId": "easy",
               "checkpointId": "one"
             },
-            "confirmedBy": "practice-staff:pacer",
+            "confirmedBy": "host-1",
             "confirmedAt": 1000,
             "operationId": "practice_departure",
             "roster": {
@@ -8584,7 +8584,7 @@
           },
           "report": {
             "revision": 1,
-            "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+            "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
             "accountedFor": [
               "actor-01"
             ],
@@ -8638,7 +8638,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -8667,7 +8667,7 @@
         },
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -8679,11 +8679,11 @@
       "checkpoint": {
         "progressRevision": 1,
         "checkpointId": "one",
-        "sourceHash": "55754ee3b3208e927eccb804d460db09832c9023f207a3924f38c4ed898e05cc",
+        "sourceHash": "329b43d8f27c9e7e074ec18050f5fed76a53d3071497033033d2a57b4dff1ed1",
         "revision": 1,
         "report": {
           "revision": 1,
-          "rosterHash": "03ca7db62382625104eb8c4bc79e04c8b4e64984ed73d3b24b679b35c0d45d88",
+          "rosterHash": "72dcca68d8a46e9a3e22dd8b8c66affe15da46d15c343d8dbc26c07e96cfa988",
           "accountedFor": [
             "actor-01"
           ],
@@ -8719,7 +8719,7 @@
                 "revision": 1,
                 "resolvedAt": 1000,
                 "resolvedBy": "practice-staff:sweep",
-                "sourceHash": "c5b84273a44892db17ef279ea54aa87bc1f6ea52383ffecf0060ee464f722c44"
+                "sourceHash": "13d6579e85c6f893fbc71496fabd5c49b762d09eb2ecc685aa2af9bdfa6f8ffa"
               }
             }
           ]
@@ -8732,7 +8732,7 @@
             "groupId": "easy",
             "checkpointId": "one"
           },
-          "confirmedBy": "practice-staff:pacer",
+          "confirmedBy": "host-1",
           "confirmedAt": 1000,
           "operationId": "practice_departure",
           "roster": {
@@ -8762,7 +8762,7 @@
         "assignment": {
           "revision": 0,
           "change": null,
-          "sourceHash": "ec4242632d316883859c7d271faebda5bcce418de8fe2fa9a525f852d9340317"
+          "sourceHash": "a9b7d2a2b89a06c8d5ad00bd315631d999432fe60d3e03e4bb3988ad5c60d16f"
         },
         "closeout": {
           "revision": 0,
@@ -8773,7 +8773,7 @@
           "eligibility": {
             "kind": "ready"
           },
-          "sourceHash": "ea7021fb2c304afae71ed43048e63bdccd70a8ed9f8536c58799f401f2d7a167"
+          "sourceHash": "60afa8e7ffb35154ceb4e334fd401b216b207c36c764cfad645b98bcb67ddb1f"
         },
         "request": {
           "responsibleOperatorId": "practice-staff:sweep",

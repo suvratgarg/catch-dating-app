@@ -46,7 +46,9 @@ test("a sweep can report and resolve guests but cannot depart or " +
   const first = departure(view, h.actors.map((a) => a.actorId), true);
   if (first.kind !== "confirmDeparture") throw new Error("Expected departure");
   first.payload.checkpointRequest!.responsibleOperatorId = sweep;
-  await roleMove(h, first, lead);
+  await assert.rejects(roleMove(h, first, lead),
+    {code: "permission-denied"});
+  await roleMove(h, first, h.authority);
   view = await roleRead(h, tail);
   await roleMove(h, report(view, [h.actors[0].actorId]), tail);
   assert.equal((await roleRead(h, tail)).checkpoint!.report!.reportedBy, sweep);
@@ -120,9 +122,10 @@ test("checkpoint responsibility requires duty beyond the original " +
   const first = departure(initial, h.actors.map((a) => a.actorId), true);
   if (first.kind !== "confirmDeparture") throw new Error("Expected departure");
   first.payload.checkpointRequest!.responsibleOperatorId = sweep;
-  await assert.rejects(roleMove(h, first), {code: "failed-precondition"});
+  await assert.rejects(roleMove(h, first, h.authority),
+    {code: "failed-precondition"});
   assign(h, sweep, "easy", "sweep");
-  await roleMove(h, first);
+  await roleMove(h, first, h.authority);
   const view = await roleRead(h);
   await assert.rejects(roleMove(h, reassign(view, receiver), h.authority),
     {code: "permission-denied"});

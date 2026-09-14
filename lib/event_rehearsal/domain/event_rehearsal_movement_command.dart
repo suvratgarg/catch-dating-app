@@ -54,6 +54,13 @@ final class RehearsalConfirmDeparture extends RehearsalMovementCommand {
       );
     }
     if (checkpoint != null &&
+        snapshot.staffReview?.isManager == false &&
+        checkpoint!.responsibleOperatorId != snapshot.actorUid) {
+      throw const FormatException(
+        'Only the rehearsal Host can name another reporter.',
+      );
+    }
+    if (checkpoint != null &&
         snapshot.staffReview != null &&
         checkpoint!.responsibleOperatorId.startsWith('practice-staff:')) {
       final until = snapshot.staffReview!.operatorPermissionUntil(

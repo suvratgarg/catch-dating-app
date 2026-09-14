@@ -14,14 +14,21 @@ export async function authorizeCheckpointRequest(db: Firestore,
   tx: Transaction, context: ProgressContext, groupId: string,
   actorUid: string, actorRole: "eventLead" | "groupLead",
   request: CheckpointRequest, clock: () => number) {
-  if (actorRole !== "eventLead" &&
+  assertCheckpointReporterSelection(actorUid, actorRole === "eventLead",
+    request);
+  const owner = await requireGroupPermission(db, tx, context, groupId,
+    request.responsibleOperatorId, "recordCheckpoint", clock);
+  return owner.validUntil;
+}
+
+/** A practiced group role has the same delegation limits as a live role. */
+export function assertCheckpointReporterSelection(actorUid: string,
+  isManager: boolean, request: CheckpointRequest) {
+  if (!isManager &&
       request.responsibleOperatorId !== actorUid) {
     throw new HttpsError("permission-denied",
       "Only organizer managers can name another checkpoint reporter.");
   }
-  const owner = await requireGroupPermission(db, tx, context, groupId,
-    request.responsibleOperatorId, "recordCheckpoint", clock);
-  return owner.validUntil;
 }
 
 export function assertCheckpointRequestDeadline(request: CheckpointRequest,

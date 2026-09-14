@@ -45,7 +45,7 @@ test("native staff fixtures bind real Host, practice role, and group actions",
       throw new Error("Expected departure");
     }
     first.payload.checkpointRequest!.responsibleOperatorId = sweep;
-    await roleMove(h, first, role(h), "practice_departure");
+    await roleMove(h, first, h.authority, "practice_departure");
     await sample("sweepDeparted", role(h, sweep), "easy");
     await roleMove(h, report(await roleRead(h), [h.actors[0].actorId]),
       role(h, sweep), "practice_report");

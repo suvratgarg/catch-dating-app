@@ -17,7 +17,6 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_group_sta
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_membership.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_membership_change.dart';
-import 'package:catch_dating_app/event_success/domain/event_assistance_observation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
@@ -198,7 +197,7 @@ void main() {
     expect(membershipSchema.validate(raw['membershipReviews']).isValid, isTrue);
   });
   test('a reporter needs duty strictly beyond the departure deadline', () {
-    final r = snapshot('pacer').movementReview!;
+    final r = snapshot('manager').movementReview!;
     RehearsalConfirmDeparture confirm(int dueAt) => RehearsalConfirmDeparture(
       snapshot: r,
       destination: r.destinations.first.target,
@@ -223,6 +222,36 @@ void main() {
       isTrue,
     );
   });
+  test(
+    'a practiced pacer may take reporting responsibility but cannot delegate',
+    () {
+      final r = snapshot('pacer').movementReview!;
+      RehearsalConfirmDeparture confirm(String reporter) =>
+          RehearsalConfirmDeparture(
+            snapshot: r,
+            destination: r.destinations.first.target,
+            roster: EventAssistanceDepartureRosterSelection(
+              r.candidates.map((m) => m.attendeeId),
+            ),
+            checkpoint: AssistanceDepartureCheckpointRequest(
+              responsibleOperatorId: reporter,
+              dueAt: 61000,
+            ),
+          );
+      expect(() => confirm(sweep), throwsFormatException);
+      expect(
+        schema
+            .validate(
+              RehearsalMovementChange(
+                command: confirm(pacer),
+                clientActionId: 'practice_departure',
+              ).toJson(),
+            )
+            .isValid,
+        isTrue,
+      );
+    },
+  );
   test('staff identity, expiry and permissions cannot drift independently', () {
     for (final damage in <void Function(Map<String, Object?>)>[
       (m) => m['actorUid'] = 'host-1',

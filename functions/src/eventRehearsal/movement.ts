@@ -9,10 +9,10 @@ import type {ControlEventRehearsalCallablePayload as Control} from
   "../shared/generated/controlEventRehearsalCallablePayload";
 import {operationContentHash as hash} from "../operations/durableActions";
 import {requirePracticeGroupPermission, practiceGroupPermission,
-  practiceStaffProjection} from "./groupStaff";
+  practiceStaffProjection, practiceIsManager} from "./groupStaff";
 import {prepareDepartureDecision, prepareCheckpointObservation,
   departureConflict} from "../eventSuccess/operations/movementDecisions";
-import {assertCheckpointRequestDeadline} from
+import {assertCheckpointRequestDeadline, assertCheckpointReporterSelection} from
   "../eventSuccess/operations/checkpointRequest";
 import {practiceMovementSource, practiceDepartureRoster,
   MovementSource, Review} from
@@ -109,6 +109,8 @@ export async function preparePracticeMovementCommand(db: Firestore,
       return member;
     }) : null;
     if (checkpointRequest) {
+      assertCheckpointReporterSelection(authority.actorUid,
+        practiceIsManager(authority), checkpointRequest);
       const until = practiceGroupPermission(sessionId, session, authority,
         source.groupId, "recordCheckpoint",
         checkpointRequest.responsibleOperatorId);

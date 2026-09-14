@@ -221,7 +221,9 @@ retains lifecycle, clock, messaging and staff-configuration control.
 
 Live and practice share the duty permission map and assignment window.
 Leads/pacers can confirm departures and transfer guests; sweeps can read, report
-checkpoints and resolve accountability. Only the named, currently authorized
+checkpoints and resolve accountability. Group staff can take reporting
+responsibility themselves; only the Host may name another reporter. Live and
+practice enforce this through the same selection rule. Only the named, currently authorized
 receiver accepts a handoff. Accepted membership determines subgroup visit scope;
 proposals do not transfer authority. A reporter needs duty coverage beyond the
 original deadline; removal, virtual expiry and changed group sources withhold
