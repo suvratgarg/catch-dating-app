@@ -30558,6 +30558,312 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{minutes, plural, =0{No minimum gap} =1{At least 1 minute between updates} other{At least {minutes} minutes between updates}}'**
   String eventAssistanceLateJoinGapSummary({required int minutes});
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic guest updates'**
+  String get eventAssistanceRuntimeTitle;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose messaging channels, fallback order and when updates stop.'**
+  String get eventAssistanceRuntimeEntryBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Use these channels for late-arrival help. Each guest still needs permission for that channel, and delivery depends on sender setup and available budget.'**
+  String get eventAssistanceRuntimeBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Not configured'**
+  String get eventAssistanceRuntimeUnconfigured;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get eventAssistanceRuntimePaused;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Event changed — review settings'**
+  String get eventAssistanceRuntimeChanged;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Update window ended'**
+  String get eventAssistanceRuntimeExpired;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Event closed'**
+  String get eventAssistanceRuntimeClosed;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Configured for this event'**
+  String get eventAssistanceRuntimeConfigured;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved. This does not confirm enrollment or message delivery. Check guest help and delivery status during the event.'**
+  String get eventAssistanceRuntimeSaved;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Automation paused. Messages already accepted by a messaging provider may still arrive.'**
+  String get eventAssistanceRuntimePauseSaved;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your previous update'**
+  String get eventAssistanceRuntimePending;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'We did not receive a confirmed result. Retry the same update before making another change.'**
+  String get eventAssistanceRuntimeRetryBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload the current event and sender setup before changing these settings.'**
+  String get eventAssistanceRuntimeReloadBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging order'**
+  String get eventAssistanceRuntimeChannels;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Try the first eligible channel. Fallback uses a later channel only when the delivery rules permit another attempt.'**
+  String get eventAssistanceRuntimeChannelBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'First choice'**
+  String get eventAssistanceRuntimeFirst;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'First fallback'**
+  String get eventAssistanceRuntimeSecond;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Second fallback'**
+  String get eventAssistanceRuntimeThird;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No channel'**
+  String get eventAssistanceRuntimeNone;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS'**
+  String get eventAssistanceRuntimeSms;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'RCS'**
+  String get eventAssistanceRuntimeRcs;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp'**
+  String get eventAssistanceRuntimeWhatsapp;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'The saved sender is unavailable. Choose a reviewed sender to save a new configuration.'**
+  String get eventAssistanceRuntimeSenderMissing;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No eligible sender is available in these choices. Load more if available, or finish sender setup before configuring updates.'**
+  String get eventAssistanceRuntimeNoSenders;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender setup required'**
+  String get eventAssistanceRuntimeNeedsSetup;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender approval expired'**
+  String get eventAssistanceRuntimeApprovalExpired;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Joining message approval required'**
+  String get eventAssistanceRuntimeTemplateMissing;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'More SMS senders'**
+  String get eventAssistanceRuntimeMoreSms;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'More RCS senders'**
+  String get eventAssistanceRuntimeMoreRcs;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'More WhatsApp senders'**
+  String get eventAssistanceRuntimeMoreWhatsapp;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize timing and retries'**
+  String get eventAssistanceRuntimeCustomize;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide timing and retries'**
+  String get eventAssistanceRuntimeHide;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop updates at'**
+  String get eventAssistanceRuntimeUntil;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Use event end'**
+  String get eventAssistanceRuntimeUseEventEnd;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Review unanswered guests at'**
+  String get eventAssistanceRuntimeDeadline;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'No response deadline'**
+  String get eventAssistanceRuntimeNoDeadline;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a response deadline'**
+  String get eventAssistanceRuntimeSetDeadline;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'A deadline can surface unanswered guests for host review when your late-arrival rules call for it. It never marks them absent.'**
+  String get eventAssistanceRuntimeDeadlineBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Attempts per update'**
+  String get eventAssistanceRuntimeAttempts;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum attempts across all selected channels for one guest update.'**
+  String get eventAssistanceRuntimeAttemptsBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Attempts per channel'**
+  String get eventAssistanceRuntimePerChannel;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Seconds between retries'**
+  String get eventAssistanceRuntimeGap;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait this long before another permitted delivery attempt.'**
+  String get eventAssistanceRuntimeGapBody;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause automatic updates'**
+  String get eventAssistanceRuntimePause;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Save update settings'**
+  String get eventAssistanceRuntimeSave;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose at least one messaging channel.'**
+  String get eventAssistanceRuntimeIssueChannels;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a future stop time within this event.'**
+  String get eventAssistanceRuntimeIssueExpiry;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a future response deadline at or before the stop time.'**
+  String get eventAssistanceRuntimeIssueDeadline;
+
+  /// Host event automation configuration and recovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Existing later-joining choices are preserved when you change these settings.'**
+  String get eventAssistanceRuntimeRetainedChoices;
+
+  /// Pending event automation save status.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving settings'**
+  String get eventAssistanceRuntimeSaving;
 }
 
 class _AppLocalizationsDelegate

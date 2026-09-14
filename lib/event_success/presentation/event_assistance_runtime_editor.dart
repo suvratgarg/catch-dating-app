@@ -7,6 +7,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_r
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_setting.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_provider.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_senders.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -172,7 +173,10 @@ class EventAssistanceRuntimeEditor extends _$EventAssistanceRuntimeEditor {
     state = const AssistanceRuntimeIdle();
   }
 
-  void select(AssistanceRuntimeCommand? decision) {
+  void select(
+    AssistanceRuntimeCommand? decision, {
+    AssistanceRuntimeSenderDirectory? senders,
+  }) {
     if (!ref.mounted) return;
     final form = state;
     if (form is! AssistanceRuntimeForm || !form.canSelect || _pending != null) {
@@ -190,6 +194,9 @@ class EventAssistanceRuntimeEditor extends _$EventAssistanceRuntimeEditor {
           : form.review.view.prepareChange(
               requestId: 'runtime:$id',
               command: decision,
+              reviewedSenders: decision is AssistanceRuntimeConfigure
+                  ? senders?.requireReview(form.review)
+                  : null,
             );
       state = AssistanceRuntimeForm._(form.review, change: change);
     } catch (error) {
@@ -209,7 +216,7 @@ class EventAssistanceRuntimeEditor extends _$EventAssistanceRuntimeEditor {
     if (!form.canSubmit || _pending != null) {
       return Future.error(
         const ValidationException(
-          'Review a automation decision before continuing.',
+          'Review an automation decision before continuing.',
         ),
       );
     }

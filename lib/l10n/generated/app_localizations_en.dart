@@ -19243,4 +19243,174 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get eventAssistanceRuntimeTitle => 'Automatic guest updates';
+
+  @override
+  String get eventAssistanceRuntimeEntryBody =>
+      'Choose messaging channels, fallback order and when updates stop.';
+
+  @override
+  String get eventAssistanceRuntimeBody =>
+      'Use these channels for late-arrival help. Each guest still needs permission for that channel, and delivery depends on sender setup and available budget.';
+
+  @override
+  String get eventAssistanceRuntimeUnconfigured => 'Not configured';
+
+  @override
+  String get eventAssistanceRuntimePaused => 'Paused';
+
+  @override
+  String get eventAssistanceRuntimeChanged => 'Event changed — review settings';
+
+  @override
+  String get eventAssistanceRuntimeExpired => 'Update window ended';
+
+  @override
+  String get eventAssistanceRuntimeClosed => 'Event closed';
+
+  @override
+  String get eventAssistanceRuntimeConfigured => 'Configured for this event';
+
+  @override
+  String get eventAssistanceRuntimeSaved =>
+      'Settings saved. This does not confirm enrollment or message delivery. Check guest help and delivery status during the event.';
+
+  @override
+  String get eventAssistanceRuntimePauseSaved =>
+      'Automation paused. Messages already accepted by a messaging provider may still arrive.';
+
+  @override
+  String get eventAssistanceRuntimePending => 'Confirm your previous update';
+
+  @override
+  String get eventAssistanceRuntimeRetryBody =>
+      'We did not receive a confirmed result. Retry the same update before making another change.';
+
+  @override
+  String get eventAssistanceRuntimeReloadBody =>
+      'Reload the current event and sender setup before changing these settings.';
+
+  @override
+  String get eventAssistanceRuntimeChannels => 'Messaging order';
+
+  @override
+  String get eventAssistanceRuntimeChannelBody =>
+      'Try the first eligible channel. Fallback uses a later channel only when the delivery rules permit another attempt.';
+
+  @override
+  String get eventAssistanceRuntimeFirst => 'First choice';
+
+  @override
+  String get eventAssistanceRuntimeSecond => 'First fallback';
+
+  @override
+  String get eventAssistanceRuntimeThird => 'Second fallback';
+
+  @override
+  String get eventAssistanceRuntimeNone => 'No channel';
+
+  @override
+  String get eventAssistanceRuntimeSms => 'SMS';
+
+  @override
+  String get eventAssistanceRuntimeRcs => 'RCS';
+
+  @override
+  String get eventAssistanceRuntimeWhatsapp => 'WhatsApp';
+
+  @override
+  String get eventAssistanceRuntimeSenderMissing =>
+      'The saved sender is unavailable. Choose a reviewed sender to save a new configuration.';
+
+  @override
+  String get eventAssistanceRuntimeNoSenders =>
+      'No eligible sender is available in these choices. Load more if available, or finish sender setup before configuring updates.';
+
+  @override
+  String get eventAssistanceRuntimeNeedsSetup => 'Sender setup required';
+
+  @override
+  String get eventAssistanceRuntimeApprovalExpired => 'Sender approval expired';
+
+  @override
+  String get eventAssistanceRuntimeTemplateMissing =>
+      'Joining message approval required';
+
+  @override
+  String get eventAssistanceRuntimeMoreSms => 'More SMS senders';
+
+  @override
+  String get eventAssistanceRuntimeMoreRcs => 'More RCS senders';
+
+  @override
+  String get eventAssistanceRuntimeMoreWhatsapp => 'More WhatsApp senders';
+
+  @override
+  String get eventAssistanceRuntimeCustomize => 'Customize timing and retries';
+
+  @override
+  String get eventAssistanceRuntimeHide => 'Hide timing and retries';
+
+  @override
+  String get eventAssistanceRuntimeUntil => 'Stop updates at';
+
+  @override
+  String get eventAssistanceRuntimeUseEventEnd => 'Use event end';
+
+  @override
+  String get eventAssistanceRuntimeDeadline => 'Review unanswered guests at';
+
+  @override
+  String get eventAssistanceRuntimeNoDeadline => 'No response deadline';
+
+  @override
+  String get eventAssistanceRuntimeSetDeadline => 'Set a response deadline';
+
+  @override
+  String get eventAssistanceRuntimeDeadlineBody =>
+      'A deadline can surface unanswered guests for host review when your late-arrival rules call for it. It never marks them absent.';
+
+  @override
+  String get eventAssistanceRuntimeAttempts => 'Attempts per update';
+
+  @override
+  String get eventAssistanceRuntimeAttemptsBody =>
+      'Maximum attempts across all selected channels for one guest update.';
+
+  @override
+  String get eventAssistanceRuntimePerChannel => 'Attempts per channel';
+
+  @override
+  String get eventAssistanceRuntimeGap => 'Seconds between retries';
+
+  @override
+  String get eventAssistanceRuntimeGapBody =>
+      'Wait this long before another permitted delivery attempt.';
+
+  @override
+  String get eventAssistanceRuntimePause => 'Pause automatic updates';
+
+  @override
+  String get eventAssistanceRuntimeSave => 'Save update settings';
+
+  @override
+  String get eventAssistanceRuntimeIssueChannels =>
+      'Choose at least one messaging channel.';
+
+  @override
+  String get eventAssistanceRuntimeIssueExpiry =>
+      'Choose a future stop time within this event.';
+
+  @override
+  String get eventAssistanceRuntimeIssueDeadline =>
+      'Choose a future response deadline at or before the stop time.';
+
+  @override
+  String get eventAssistanceRuntimeRetainedChoices =>
+      'Existing later-joining choices are preserved when you change these settings.';
+
+  @override
+  String get eventAssistanceRuntimeSaving => 'Saving settings';
 }

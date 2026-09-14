@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.126.0
+version: 1.127.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -1031,8 +1031,8 @@ an authentication error. The state owner validates the returned scope, original
 operation revision, actor and applied configuration independently of the repository.
 A replay shows current saved state, including a newer pause. Conflicts require a
 fresh review. Focused tests cover detached recovery, account changes, rejected
-foreign receipts and reentrant retry callbacks. Screen composition and rehearsal
-integration remain separate work.
+foreign receipts and reentrant retry callbacks. Rehearsal integration remains
+separate work.
 
 The runtime read now includes optional `senderSetup`: up to 20 scanned records
 per SMS, organizer WhatsApp and RCS channel, plus any saved selections outside
@@ -1055,8 +1055,36 @@ checks, but have no displayed-identity comparison. Pause and exact receipt repla
 do not depend on current sender eligibility. Reads and command review neither
 load secrets nor contact providers. Cross-stack fixtures are generated from real
 server reads and a reviewed configure, with focused coverage of paging, ownership,
-source changes, template withdrawal, expiry and immutable native payloads. The
-visible sender picker and runtime control adapter remain the next UI work.
+source changes, template withdrawal, expiry and immutable native payloads.
+
+The live Event Success settings section now opens `EventAssistanceRuntimeSheet`.
+Its compact form presents named sender choices in explicit first/fallback order;
+opening a new configuration selects no channel. Event end, no response deadline,
+three total attempts, one attempt per channel, a thirty-second retry gap and a
+bounded internal evaluation ceiling are proposed defaults, never writes. Saved
+configuration wins over defaults, including absent versus empty later-joining
+choices and existing evaluation limits. Timing, optional host-review deadline
+and retry limits expand on request. The current UI preserves later-joining
+choices; editing those named choices remains separate work.
+
+`EventAssistanceRuntimeSenders` binds paged choices to one event review and
+authentication epoch. It merges only the requested channel, retains filtered
+page continuations, rejects backwards clocks/cursors, and requires a full reload
+when event revision, source, availability or an already-reviewed sender changes.
+Retired directories cannot supply new configuration decisions. A page loading
+or losing access cannot expose choices from another account or continue an old
+callback. Each selected sender contributes the displayed hash to the frozen
+command; the server still rechecks every source at submission.
+
+Pause is a separate action that remains available without eligible senders.
+Unconfirmed configure/pause decisions disable edits, survive sheet dismissal,
+and expose a recovery entry in event settings until exact retry resolves them
+or authentication retires them. The sheet distinguishes configuration from
+enrollment and delivery, and explains that an accepted provider message may
+still arrive after pausing. Normal and large-text widget tests exercise sender
+selection, progressive limits, lost replies, dismissal/reopening, pause and
+sign-out. Four local Widgetbook previews cover the form, sheet, channel choices
+and limits; shared-index registration remains pending its existing file claim.
 
 Runtime options cover the whole event. After verifying the complete saved
 configuration, publication includes only later joining choices allowed by that

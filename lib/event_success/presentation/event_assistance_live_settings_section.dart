@@ -1,8 +1,12 @@
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_setting_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_late_join_sheet.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_pending_settings.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_editor.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_provider.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_sheet.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/route_event_plan.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
@@ -17,6 +21,19 @@ class EventAssistanceLiveSettingsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
+    final runtimeScope = EventAssistanceRuntimeScope(
+      organizerId: event.clubId,
+      eventId: event.id,
+    );
+    final runtimeState = ref.watch(
+      eventAssistanceRuntimeEditorProvider(runtimeScope),
+    );
+    final runtimePending =
+        runtimeState is AssistanceRuntimeForm &&
+        {
+          AssistanceRuntimeEditorPhase.submitting,
+          AssistanceRuntimeEditorPhase.retryRequired,
+        }.contains(runtimeState.phase);
     final route = event.eventFormat.routePlan;
     final groups = route?.groupStrategy == RouteGroupStrategy.paceGroups
         ? route!.paceGroups
@@ -48,6 +65,22 @@ class EventAssistanceLiveSettingsSection extends ConsumerWidget {
     return CatchSection.fieldRows(
       title: l10n.eventAssistanceLateJoinSettings,
       children: [
+        CatchField.nav(
+          copy: catchFieldCopy(l10n),
+          key: const ValueKey('runtime.open'),
+          title: runtimePending
+              ? l10n.eventAssistanceRuntimePending
+              : l10n.eventAssistanceRuntimeTitle,
+          body: l10n.eventAssistanceRuntimeEntryBody,
+          onTap: () {
+            final query = eventAssistanceRuntimeProvider(runtimeScope);
+            if (ref.exists(query)) ref.read(query.notifier).reload();
+            showCatchBottomSheet<void>(
+              context: context,
+              builder: (_) => EventAssistanceRuntimeSheet(scope: runtimeScope),
+            );
+          },
+        ),
         for (final scope in pending)
           CatchField.nav(
             copy: catchFieldCopy(l10n),
