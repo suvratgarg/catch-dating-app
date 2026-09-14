@@ -6,6 +6,7 @@ import 'package:catch_dating_app/event_success/data/event_assistance_deliveries_
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_scope.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_deliveries_provider.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_pending_deliveries.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -57,7 +58,8 @@ final class AssistanceDeliveryForm extends AssistanceDeliveryEditorState {
   final EventAssistanceDeliveryChange? change;
   final EventAssistanceDeliveryResult? result;
   final Object? error;
-  bool get canTakeOver => phase == AssistanceDeliveryPhase.ready;
+  bool get canTakeOver =>
+      phase == AssistanceDeliveryPhase.ready && review.isCurrent;
   bool get canRetry => phase == AssistanceDeliveryPhase.retryRequired;
   bool get canReload =>
       phase == AssistanceDeliveryPhase.ready ||
@@ -96,11 +98,11 @@ class EventAssistanceDeliveryController
     final auth = ref.watch(authenticatedSessionProvider);
     _epoch++;
     _account = null;
-    _clearPending();
+    _clearPending(updateIndex: false);
     _inFlight = null;
     ref.onDispose(() {
       _epoch++;
-      _clearPending();
+      _clearPending(updateIndex: false);
     });
     if (auth.isLoading || auth.hasError || auth.asData == null) {
       return AssistanceDeliveryUnavailable(
@@ -131,6 +133,7 @@ class EventAssistanceDeliveryController
     );
     if (page.isLoading ||
         page.hasError ||
+        !review.isCurrent ||
         !identical(page.asData?.value, review.session)) {
       throw const ValidationException('Reload the current delivery review.');
     }
@@ -180,6 +183,17 @@ class EventAssistanceDeliveryController
     }
   }
 
+  void reload() {
+    final form = state;
+    if (form is AssistanceDeliveryForm && !form.canReload) {
+      throw const ValidationException('Confirm the pending handoff first.');
+    }
+    if (_pending != null || _inFlight != null) {
+      throw const ValidationException('Confirm the pending handoff first.');
+    }
+    state = const AssistanceDeliveryIdle();
+  }
+
   Future<EventAssistanceDeliveryResult> retry() {
     final form = state;
     if (form is! AssistanceDeliveryForm ||
@@ -224,13 +238,19 @@ class EventAssistanceDeliveryController
   void _retainPending(AuthenticatedSession account) {
     if (_releasePending != null) return;
     final lease = ref.keepAlive();
+    ref
+        .read(eventAssistancePendingDeliveriesProvider.notifier)
+        .retain(scope, account);
     // A kept-alive sheet can have paused provider dependencies. This temporary
     // strong subscription detects unseen sign-out/account changes while pending.
     final auth = ref.container.listen(authenticatedSessionProvider, (_, next) {
       if (next.isLoading ||
           next.hasError ||
           !identical(next.asData?.value, account)) {
-        _clearPending();
+        _epoch++;
+        _account = null;
+        _inFlight = null;
+        _clearPending(updateIndex: false);
         if (ref.mounted) ref.invalidateSelf();
       }
     });
@@ -240,7 +260,12 @@ class EventAssistanceDeliveryController
     };
   }
 
-  void _clearPending() {
+  void _clearPending({bool updateIndex = true}) {
+    if (updateIndex && _pending != null && ref.mounted) {
+      ref
+          .read(eventAssistancePendingDeliveriesProvider.notifier)
+          .release(scope, _account);
+    }
     _pending = null;
     final release = _releasePending;
     _releasePending = null;
@@ -265,6 +290,7 @@ class EventAssistanceDeliveryController
       if (!_current(form.review.account, epoch)) {
         throw deliveryReviewSessionChanged;
       }
+      result.requireChange(change);
       _clearPending();
       ref.invalidate(eventAssistanceDeliveriesForAccountProvider);
       _publish(

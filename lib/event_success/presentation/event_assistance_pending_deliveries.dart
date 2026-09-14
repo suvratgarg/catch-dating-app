@@ -1,0 +1,36 @@
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_scope.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'event_assistance_pending_deliveries.g.dart';
+
+/// Discovery references only. Each delivery controller owns its command and retry.
+/// A server page may omit a message whose handoff succeeded without confirmation.
+// keepalive: Pending delivery discovery survives closed sheets until confirmation or account reset.
+@Riverpod(keepAlive: true)
+class EventAssistancePendingDeliveries
+    extends _$EventAssistancePendingDeliveries {
+  AuthenticatedSession? _account;
+  @override
+  Set<EventAssistanceDeliveryScope> build() {
+    final auth = ref.watch(authenticatedSessionProvider);
+    _account = auth.isLoading || auth.hasError ? null : auth.asData?.value;
+    return const {};
+  }
+
+  void retain(
+    EventAssistanceDeliveryScope scope,
+    AuthenticatedSession account,
+  ) {
+    if (!identical(_account, account)) return;
+    state = Set.unmodifiable({...state, scope});
+  }
+
+  void release(
+    EventAssistanceDeliveryScope scope,
+    AuthenticatedSession? account,
+  ) {
+    if (!identical(_account, account) || !state.contains(scope)) return;
+    state = Set.unmodifiable({...state}..remove(scope));
+  }
+}

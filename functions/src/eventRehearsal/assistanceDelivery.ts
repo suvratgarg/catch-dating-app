@@ -37,7 +37,7 @@ export function practiceDeliveryReview(session: Session, actor: Actor,
     practiceState(actor).intention.kind !== "notComing";
   return {messageId: record.messageId, revision: record.revision,
     reviewHash: hash([message, {actorId: actor.actorId, status: actor.status,
-      state: practiceState(actor),
+      state: practiceState(actor), displayName: actor.displayName,
       automation: actor.assistanceAutomation ?? null,
       createdAt: [actor.createdAt.seconds, actor.createdAt.nanoseconds],
       updatedAt: [actor.updatedAt.seconds, actor.updatedAt.nanoseconds]},
@@ -57,6 +57,7 @@ export function practiceDeliveryReview(session: Session, actor: Actor,
       {kind: "manual", actorUid: handoff.actorUid, at: handoff.at,
         authority: ownerCurrent ? "current" : "revoked"} : {kind: "automatic"},
     availability: "current", attendeeId: actor.actorId,
+    displayName: actor.displayName,
     actions: manualDeliveryActions(record, relevant, ownerCurrent)};
 }
 

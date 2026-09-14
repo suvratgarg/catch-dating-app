@@ -24,6 +24,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_delivery_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_groups_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_help_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_live_movement_section.dart';
@@ -449,6 +450,10 @@ class _EventSuccessHostSectionState
               attendees: accountabilityAttendeesAsync,
             )
           : null,
+      deliverySection: EventAssistanceLiveDeliverySection(
+        organizerId: event.clubId,
+        eventId: event.id,
+      ),
       helpSection: EventAssistanceLiveHelpSection(
         organizerId: event.clubId,
         eventId: event.id,
@@ -1222,6 +1227,7 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.accountabilitySection,
     this.membershipSection,
     this.helpSection,
+    this.deliverySection,
     this.movementSection,
     this.accountabilityMode,
     this.accountabilityError,
@@ -1301,6 +1307,7 @@ class EventSuccessHostPanel extends StatefulWidget {
   final Widget? accountabilitySection;
   final Widget? membershipSection;
   final Widget? helpSection;
+  final Widget? deliverySection;
   final Widget? movementSection;
   final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
@@ -1431,6 +1438,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         accountabilitySection: widget.accountabilitySection,
         membershipSection: widget.membershipSection,
         helpSection: widget.helpSection,
+        deliverySection: widget.deliverySection,
         movementSection: widget.movementSection,
         accountabilityMode: widget.accountabilityMode,
         accountabilityError: widget.accountabilityError,
@@ -1496,6 +1504,7 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
       ),
       EventSuccessHostTab.report => ReportTab(
         helpSection: widget.helpSection,
+        deliverySection: widget.deliverySection,
         event: widget.event,
         plan: widget.plan,
         planIsPersisted: widget.planIsPersisted,

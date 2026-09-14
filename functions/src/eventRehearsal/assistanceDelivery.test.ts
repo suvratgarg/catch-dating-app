@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {readFileSync} from "node:fs";
+import {readFileSync, writeFileSync} from "node:fs";
 import {randomUUID, createHash} from "node:crypto";
 import * as admin from "firebase-admin";
 import {Firestore, Timestamp} from "firebase-admin/firestore";
@@ -20,7 +20,8 @@ import {applyPracticeHostCommand, applyPracticeGuestReply,
   applyPracticeAutomations, PracticeCommand} from "./assistanceTransactions";
 import {practiceDeliveryReview, practiceDeliveryReviews} from
   "./assistanceDelivery";
-import {practiceMessageDocumentId, practiceMessageView, readPracticeMessage,
+import {practiceMessageDocumentId, practiceMessageView, practiceDeliveryView,
+  readPracticeMessage,
   rehearsalMessages, PracticeMessage} from "./assistanceRuntime";
 
 function organizer(): OrganizerDocument {
@@ -34,10 +35,10 @@ function organizer(): OrganizerDocument {
     unknown as OrganizerDocument;
 }
 type WithoutActor<T> = T extends {actorId: string} ? Omit<T, "actorId"> : never;
-function harness() {
+function harness(now?: number) {
   const fake = new FakeFirestore();
   const db = fake as unknown as Firestore;
-  const session = practiceSession();
+  const session = practiceSession(now);
   const org = organizer();
   let actor = buildRehearsalActors("practice-delivery", 2, 1,
     session.virtualNow)[0];
@@ -416,3 +417,48 @@ test("Firestore fences practice handoffs, retries, replies and reset", {
   await expire(db, Timestamp.fromMillis(0));
   await db.collection("organizers").doc(session.organizerId).delete();
 });
+
+
+test("native practice delivery fixture comes from message evidence",
+  async () => {
+    const h = harness(1000);
+    await h.configure();
+    const samples: Record<string, unknown> = {};
+    const sample = (name: string) => {
+      const actors = [h.actor(), buildRehearsalActors("practice-delivery",
+        2, 1, h.session.virtualStartedAt)[1]];
+      const deliveries = practiceDeliveryReviews(h.actor().sessionId,
+        h.session, actors, h.allMessages(), h.org, "host-1");
+      samples[name] = JSON.parse(JSON.stringify({session: {
+        id: h.actor().sessionId, ...h.session,
+        virtualStartedAtMillis: h.session.virtualStartedAt.toMillis(),
+        virtualNowMillis: h.session.virtualNow.toMillis(),
+        expiresAtMillis: h.session.expiresAt.toMillis()},
+      actors: actors.map((a) => ({...a, layoutUnitId: null,
+        confirmedLayoutUnitId: null, ...(a.assistance ? {
+          assistanceDelivery: practiceDeliveryView(h.message()),
+          assistanceMessage: practiceMessageView(h.session, a,
+            h.message(), h.departures())} : {})})),
+      actions: [], canUseInternalFaults: false,
+      guestUrl: "https://catchdates.com/rehearse/practicepublic1234567890",
+      deliveryReviews: deliveries}));
+    };
+    sample("uncertain");
+    const command = h.repair();
+    const actor = h.actor();
+    h.setActor({...actor, displayName: "Changed name"});
+    await assert.rejects(h.host(command), {code: "aborted"});
+    h.setActor(actor);
+    await h.host(h.repair());
+    sample("handedOff");
+    h.advance();
+    await h.host({kind: "receipt", messageId: h.message().record.messageId,
+      attemptId: h.message().record.attempts[0].attemptId,
+      outcome: {kind: "delivered"}});
+    sample("delivered");
+    const path = "../test/event_rehearsal/fixtures/delivery_queue.json";
+    if (process.env.UPDATE_DELIVERY_QUEUE_FIXTURE === "1") {
+      writeFileSync(path, JSON.stringify(samples, null, 2) + "\n");
+    }
+    assert.deepEqual(JSON.parse(readFileSync(path, "utf8")), samples);
+  });

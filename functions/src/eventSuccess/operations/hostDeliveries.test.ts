@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import {readFileSync, writeFileSync} from "node:fs";
 import {randomUUID} from "node:crypto";
 import {deleteApp, initializeApp} from "firebase-admin/app";
 import {Firestore, getFirestore, Timestamp} from "firebase-admin/firestore";
@@ -23,8 +24,9 @@ import {setupRuntimePublication} from "./runtimeConfigTestHarness";
 import type {VerifiedDeliveryReceipt} from "./deliveryReceipts";
 
 const manager = "host-1";
-async function harness(db?: Firestore) {
-  const h = await setupRuntimePublication(db);
+async function harness(db?: Firestore,
+  fixtureId?: ReturnType<typeof randomUUID>) {
+  const h = await setupRuntimePublication(db, fixtureId);
   const published = await h.publishReady();
   const delivery = await h.delivery(published);
   const store = new EventAssistanceDeliveriesStore(h.db, () => h.clock.now);
@@ -433,3 +435,40 @@ test("a slow source read cannot extend the manual action window", async () => {
     {code: "failed-precondition"});
   assert.equal((await h.record()).handoff, undefined);
 });
+
+
+test("native delivery fixture preserves named guests and uncertain evidence",
+  async () => {
+    const h = await harness(undefined,
+      "00000000-0000-0000-0000-000000000456");
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      displayName: "Alex Morgan"});
+    const initial = await h.list();
+    const original = await h.command();
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      displayName: "New name"});
+    await assert.rejects(h.reviewStore.repair(manager, original),
+      {code: "aborted"});
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      displayName: "Alex Morgan"});
+    await h.delivery.claim();
+    const uncertain = await h.list();
+    const command = {...await h.command(), command: {
+      ...original.command, operationId: "native-handoff"}};
+    const handedOff = await h.reviewStore.repair(manager, command);
+    h.clock.now += 1000;
+    await h.receipt({kind: "delivered", at: h.clock.now,
+      providerMessageId: "wamid.native"});
+    const delivered = await h.list();
+    await h.write(h.attendeePath, {...await h.read(h.attendeePath),
+      createdAt: Timestamp.fromMillis(h.clock.now)});
+    const replaced = await h.list();
+    assert.ok(replaced.deliveries.every((r) => r.displayName === null));
+    const samples = {initial, uncertain, command, handedOff, delivered,
+      replaced};
+    const path = "../test/event_success/fixtures/delivery_queue.json";
+    if (process.env.UPDATE_DELIVERY_QUEUE_FIXTURE === "1") {
+      writeFileSync(path, JSON.stringify(samples, null, 2) + "\n");
+    }
+    assert.deepEqual(JSON.parse(readFileSync(path, "utf8")), samples);
+  });

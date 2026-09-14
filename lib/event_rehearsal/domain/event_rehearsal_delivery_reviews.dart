@@ -91,6 +91,8 @@ final class RehearsalDeliveryReviews {
       final message = actor?.assistanceMessage;
       final delivery = actor?.assistanceDelivery;
       if (actor == null ||
+          evidence.displayName != null &&
+              evidence.displayName != actor.displayName ||
           message == null ||
           delivery == null ||
           actor.assistance?.latestMessageId != evidence.messageId ||

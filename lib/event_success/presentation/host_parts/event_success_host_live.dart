@@ -32,6 +32,7 @@ class LiveTab extends StatelessWidget {
     this.accountabilitySection,
     this.membershipSection,
     this.helpSection,
+    this.deliverySection,
     this.movementSection,
     this.accountabilityMode,
     this.accountabilityError,
@@ -97,6 +98,7 @@ class LiveTab extends StatelessWidget {
   final Widget? accountabilitySection;
   final Widget? membershipSection;
   final Widget? helpSection;
+  final Widget? deliverySection;
   final Widget? movementSection;
   final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
@@ -526,6 +528,7 @@ class LiveTab extends StatelessWidget {
             ?movementSection,
             ?membershipSection,
             ?helpSection,
+            ?deliverySection,
             ?presenceCard(),
             ?spatialMapCard(),
           ]
@@ -534,6 +537,7 @@ class LiveTab extends StatelessWidget {
             ?movementSection,
             ?membershipSection,
             ?helpSection,
+            ?deliverySection,
             ?presenceCard(),
             if (runtime.wingmanRequestsEnabled &&
                 activeStepHas(EventSuccessModuleCatalog.wingmanRequests.id))

@@ -10,6 +10,7 @@ part of 'event_assistance_pending_cases.dart';
 // ignore_for_file: type=lint, type=warning
 /// Discovery references only. Each case editor owns its command and retry.
 /// A server page may omit a case whose save succeeded without confirmation.
+// keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
 
 @ProviderFor(EventAssistancePendingCases)
 final eventAssistancePendingCasesProvider =
@@ -17,6 +18,7 @@ final eventAssistancePendingCasesProvider =
 
 /// Discovery references only. Each case editor owns its command and retry.
 /// A server page may omit a case whose save succeeded without confirmation.
+// keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
 final class EventAssistancePendingCasesProvider
     extends
         $NotifierProvider<
@@ -25,6 +27,7 @@ final class EventAssistancePendingCasesProvider
         > {
   /// Discovery references only. Each case editor owns its command and retry.
   /// A server page may omit a case whose save succeeded without confirmation.
+  // keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
   EventAssistancePendingCasesProvider._()
     : super(
         from: null,
@@ -59,6 +62,7 @@ String _$eventAssistancePendingCasesHash() =>
 
 /// Discovery references only. Each case editor owns its command and retry.
 /// A server page may omit a case whose save succeeded without confirmation.
+// keepalive: Pending case discovery survives closed sheets until confirmation or account reset.
 
 abstract class _$EventAssistancePendingCases
     extends $Notifier<Set<EventAssistanceCaseScope>> {

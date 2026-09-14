@@ -20,8 +20,9 @@ export async function configureRuntime(h: Awaited<ReturnType<typeof setup>>,
   return {store, input, configuration, binding, saved};
 }
 
-export async function setupRuntimePublication(db?: Firestore) {
-  const h = await setup(db);
+export async function setupRuntimePublication(db?: Firestore,
+  fixtureId?: ReturnType<typeof randomUUID>) {
+  const h = await setup(db, fixtureId);
   const runtime = await configureRuntime(h);
   const options = {...h.options, runtimeBinding: runtime.binding};
   const publish = () => h.publisher.publish(h.scope, options);

@@ -1,0 +1,325 @@
+{
+  "initial": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000456",
+      "eventId": "e-00000000-0000-0000-0000-000000000456"
+    },
+    "serverTime": 1788782400000,
+    "coverage": "page",
+    "deliveries": [
+      {
+        "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+        "revision": 0,
+        "reviewHash": "df5c721bb9d92cb63057ff36b9e85dce4a8f76c1020bf29c6994497e70577e28",
+        "displayName": "Alex Morgan",
+        "createdAt": 1788782400000,
+        "expiresAt": 1788784200000,
+        "lifecycle": "active",
+        "deliveryStatus": "notSubmitted",
+        "purpose": "joiningUpdate",
+        "attempts": [],
+        "coordination": {
+          "kind": "untracked"
+        },
+        "handling": {
+          "kind": "automatic"
+        },
+        "availability": "current",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+        "actions": [
+          "manualHandoff"
+        ]
+      },
+      {
+        "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+        "revision": 0,
+        "reviewHash": "4068b470ab88ab679dd8211e1bfef6af282813efc688c510fb7d722152f4c682",
+        "displayName": "Alex Morgan",
+        "createdAt": 1788782400000,
+        "expiresAt": 1788786000000,
+        "lifecycle": "active",
+        "deliveryStatus": "notSubmitted",
+        "purpose": "joiningUpdate",
+        "attempts": [],
+        "coordination": {
+          "kind": "tracked",
+          "phase": "queued",
+          "reason": null,
+          "dueAt": 1788782400000
+        },
+        "handling": {
+          "kind": "automatic"
+        },
+        "availability": "current",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+        "actions": [
+          "manualHandoff"
+        ]
+      }
+    ],
+    "nextCursor": null
+  },
+  "uncertain": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000456",
+      "eventId": "e-00000000-0000-0000-0000-000000000456"
+    },
+    "serverTime": 1788782400000,
+    "coverage": "page",
+    "deliveries": [
+      {
+        "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+        "revision": 0,
+        "reviewHash": "df5c721bb9d92cb63057ff36b9e85dce4a8f76c1020bf29c6994497e70577e28",
+        "displayName": "Alex Morgan",
+        "createdAt": 1788782400000,
+        "expiresAt": 1788784200000,
+        "lifecycle": "active",
+        "deliveryStatus": "notSubmitted",
+        "purpose": "joiningUpdate",
+        "attempts": [],
+        "coordination": {
+          "kind": "untracked"
+        },
+        "handling": {
+          "kind": "automatic"
+        },
+        "availability": "current",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+        "actions": [
+          "manualHandoff"
+        ]
+      },
+      {
+        "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+        "revision": 2,
+        "reviewHash": "3e31bf9b382cf7225fee8cc4c5c52e96beacbadb3979e5e67172fcc4dca58e53",
+        "displayName": "Alex Morgan",
+        "createdAt": 1788782400000,
+        "expiresAt": 1788786000000,
+        "lifecycle": "active",
+        "deliveryStatus": "unknown",
+        "purpose": "joiningUpdate",
+        "attempts": [
+          {
+            "channel": "whatsapp",
+            "state": "unknown",
+            "at": 1788782400000
+          }
+        ],
+        "coordination": {
+          "kind": "tracked",
+          "phase": "queued",
+          "reason": null,
+          "dueAt": 1788782400000
+        },
+        "handling": {
+          "kind": "automatic"
+        },
+        "availability": "current",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+        "actions": [
+          "manualHandoff"
+        ]
+      }
+    ],
+    "nextCursor": null
+  },
+  "command": {
+    "expectedMessageRevision": 2,
+    "expectedReviewHash": "3e31bf9b382cf7225fee8cc4c5c52e96beacbadb3979e5e67172fcc4dca58e53",
+    "command": {
+      "kind": "repairDelivery",
+      "context": {
+        "mode": "live",
+        "organizerId": "o-00000000-0000-0000-0000-000000000456",
+        "eventId": "e-00000000-0000-0000-0000-000000000456"
+      },
+      "eventId": "e-00000000-0000-0000-0000-000000000456",
+      "operationId": "native-handoff",
+      "payload": {
+        "deliveryId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+        "action": "manualHandoff"
+      }
+    }
+  },
+  "handedOff": {
+    "outcome": "applied",
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000456",
+      "eventId": "e-00000000-0000-0000-0000-000000000456"
+    },
+    "serverTime": 1788782400000,
+    "operationRevision": 3,
+    "view": {
+      "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+      "revision": 3,
+      "reviewHash": "7f9f647017d51b3c7d0945e6f7678fdb34d601ef3355eaf860e08f7b8730c122",
+      "displayName": "Alex Morgan",
+      "createdAt": 1788782400000,
+      "expiresAt": 1788786000000,
+      "lifecycle": "active",
+      "deliveryStatus": "unknown",
+      "purpose": "joiningUpdate",
+      "attempts": [
+        {
+          "channel": "whatsapp",
+          "state": "unknown",
+          "at": 1788782400000
+        }
+      ],
+      "coordination": {
+        "kind": "tracked",
+        "phase": "queued",
+        "reason": null,
+        "dueAt": 1788782400000
+      },
+      "handling": {
+        "kind": "manual",
+        "actorUid": "host-1",
+        "at": 1788782400000,
+        "authority": "current"
+      },
+      "availability": "current",
+      "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+      "actions": []
+    }
+  },
+  "delivered": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000456",
+      "eventId": "e-00000000-0000-0000-0000-000000000456"
+    },
+    "serverTime": 1788782401000,
+    "coverage": "page",
+    "deliveries": [
+      {
+        "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+        "revision": 0,
+        "reviewHash": "df5c721bb9d92cb63057ff36b9e85dce4a8f76c1020bf29c6994497e70577e28",
+        "displayName": "Alex Morgan",
+        "createdAt": 1788782400000,
+        "expiresAt": 1788784200000,
+        "lifecycle": "active",
+        "deliveryStatus": "notSubmitted",
+        "purpose": "joiningUpdate",
+        "attempts": [],
+        "coordination": {
+          "kind": "untracked"
+        },
+        "handling": {
+          "kind": "automatic"
+        },
+        "availability": "current",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+        "actions": [
+          "manualHandoff"
+        ]
+      },
+      {
+        "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+        "revision": 4,
+        "reviewHash": "ad98d703bb37a7fd1921a018e2aebb116d373cf33ca2eeda16e268498cf2d16a",
+        "displayName": "Alex Morgan",
+        "createdAt": 1788782400000,
+        "expiresAt": 1788786000000,
+        "lifecycle": "active",
+        "deliveryStatus": "delivered",
+        "purpose": "joiningUpdate",
+        "attempts": [
+          {
+            "channel": "whatsapp",
+            "state": "delivered",
+            "at": 1788782401000
+          }
+        ],
+        "coordination": {
+          "kind": "tracked",
+          "phase": "queued",
+          "reason": null,
+          "dueAt": 1788782400000
+        },
+        "handling": {
+          "kind": "manual",
+          "actorUid": "host-1",
+          "at": 1788782400000,
+          "authority": "current"
+        },
+        "availability": "current",
+        "attendeeId": "a-00000000-0000-0000-0000-000000000456",
+        "actions": []
+      }
+    ],
+    "nextCursor": null
+  },
+  "replaced": {
+    "context": {
+      "mode": "live",
+      "organizerId": "o-00000000-0000-0000-0000-000000000456",
+      "eventId": "e-00000000-0000-0000-0000-000000000456"
+    },
+    "serverTime": 1788782401000,
+    "coverage": "page",
+    "deliveries": [
+      {
+        "messageId": "outbox:0fcb64b455d05b8850d12bf32ce3b997d53bbc8f786bdb02d0edbfa0e8d545fe",
+        "revision": 0,
+        "reviewHash": "95db4ec250a45d1585915ac1361da2a07befa4f7875325565a10dce18fef2f00",
+        "displayName": null,
+        "createdAt": 1788782400000,
+        "expiresAt": 1788784200000,
+        "lifecycle": "active",
+        "deliveryStatus": "notSubmitted",
+        "purpose": "joiningUpdate",
+        "attempts": [],
+        "coordination": {
+          "kind": "untracked"
+        },
+        "handling": {
+          "kind": "automatic"
+        },
+        "availability": "sourceChanged",
+        "attendeeId": null,
+        "actions": []
+      },
+      {
+        "messageId": "outbox:9c2cade16152613260531122653621487221b7107d23fcca92a8f23b560ccae3",
+        "revision": 4,
+        "reviewHash": "8173d2a53cb84939b883a21073fc77bf8234aa81b77d542d8ec1ea923e0a3161",
+        "displayName": null,
+        "createdAt": 1788782400000,
+        "expiresAt": 1788786000000,
+        "lifecycle": "active",
+        "deliveryStatus": "delivered",
+        "purpose": "joiningUpdate",
+        "attempts": [
+          {
+            "channel": "whatsapp",
+            "state": "delivered",
+            "at": 1788782401000
+          }
+        ],
+        "coordination": {
+          "kind": "tracked",
+          "phase": "queued",
+          "reason": null,
+          "dueAt": 1788782400000
+        },
+        "handling": {
+          "kind": "manual",
+          "actorUid": "host-1",
+          "at": 1788782400000,
+          "authority": "current"
+        },
+        "availability": "sourceChanged",
+        "attendeeId": null,
+        "actions": []
+      }
+    ],
+    "nextCursor": null
+  }
+}

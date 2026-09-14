@@ -70,9 +70,19 @@ final class EventAssistanceDeliveryResult {
       scope: scope,
       serverTime: serverTime,
     );
-    if (serverTime < before.observedAt ||
-        revision != before.revision + 1 ||
-        view.revision < revision ||
+    final result = EventAssistanceDeliveryResult._(outcome, revision, view);
+    result.requireChange(expectedChange);
+    return result;
+  }
+
+  /// Verify the exact review again at the state owner, including injected repositories.
+  void requireChange(EventAssistanceDeliveryChange expectedChange) {
+    final before = expectedChange.snapshot;
+    final serverTime = view.observedAt;
+    if (view.scope != before.scope ||
+        serverTime < before.observedAt ||
+        operationRevision != before.revision + 1 ||
+        view.revision < operationRevision ||
         view.createdAt != before.createdAt ||
         view.expiresAt != before.expiresAt ||
         view.purpose != before.purpose ||
@@ -98,7 +108,7 @@ final class EventAssistanceDeliveryResult {
     if (outcome == AssistanceDeliveryChangeOutcome.applied) {
       final owner = view.handling;
       if (view is! AssistanceObservedDelivery ||
-          view.revision != revision ||
+          view.revision != operationRevision ||
           owner is! AssistanceManualDeliveryHandling ||
           owner.actorUid != expectedChange.actorUid ||
           owner.at != serverTime ||
@@ -117,6 +127,5 @@ final class EventAssistanceDeliveryResult {
     }
     // A replay preserves current receipts, responses, source changes or a later
     // handoff. Its original operation revision is not the current revision.
-    return EventAssistanceDeliveryResult._(outcome, revision, view);
   }
 }

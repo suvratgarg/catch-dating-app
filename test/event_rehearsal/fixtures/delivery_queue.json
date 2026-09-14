@@ -1,0 +1,995 @@
+{
+  "uncertain": {
+    "session": {
+      "id": "practice-delivery",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 0,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": null,
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "first",
+              "title": "first",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "location": {
+                "name": "first",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "second",
+              "title": "second",
+              "kind": "stop",
+              "offsetMinutes": 15,
+              "location": {
+                "name": "second",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "bar",
+              "title": "bar",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "location": {
+                "name": "bar",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "water",
+              "title": "water",
+              "kind": "stop",
+              "offsetMinutes": 45,
+              "location": {
+                "name": "water",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 2,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86401,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 1000,
+      "virtualNowMillis": 1000,
+      "expiresAtMillis": 86401000
+    },
+    "actors": [
+      {
+        "sessionId": "practice-delivery",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": null,
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "assistanceAutomation": {
+          "clockId": "clock:e09205cdcd6129e00000c62c831f6ec877bcaf7798ce8ab6ccd6d31a2dae028a",
+          "status": "enabled",
+          "plan": {
+            "policy": {
+              "destination": {
+                "kind": "fixedPlace",
+                "placeId": "meeting",
+                "lateEntry": "allowed"
+              },
+              "cutoff": {
+                "kind": "eventEnd"
+              },
+              "maxMessagesPerEpisode": 4,
+              "minimumMinutesBetweenMessages": 5,
+              "updateOn": "materialGuidanceChange",
+              "unanswered": "keepUnknownUntilCutoff"
+            },
+            "guidance": {
+              "revision": 1,
+              "destination": {
+                "kind": "fixedPlace",
+                "placeId": "meeting",
+                "lateEntry": "allowed"
+              },
+              "materialKey": "c89b6437e6e3c50c04694c089b7e289348b62959138c3776246913eae6c6336a",
+              "text": "Join us at Practice venue.",
+              "validUntil": 7201000
+            },
+            "departureConfirmed": true,
+            "responseDeadline": null,
+            "routes": [
+              "organizerEventWhatsapp",
+              "catchEventSms"
+            ],
+            "deliveryPolicy": {
+              "maxAttempts": 3,
+              "maxAttemptsPerRoute": 2,
+              "minimumRetrySeconds": 1
+            }
+          },
+          "outcomes": [
+            {
+              "kind": "unknown",
+              "reason": "timeout"
+            },
+            {
+              "kind": "delivered"
+            }
+          ],
+          "nextOutcomeIndex": 1,
+          "evaluation": {
+            "at": 1000,
+            "policy": {
+              "kind": "update",
+              "guidance": {
+                "revision": 1,
+                "destination": {
+                  "kind": "fixedPlace",
+                  "placeId": "meeting",
+                  "lateEntry": "allowed"
+                },
+                "materialKey": "c89b6437e6e3c50c04694c089b7e289348b62959138c3776246913eae6c6336a",
+                "text": "Join us at Practice venue.",
+                "validUntil": 7201000
+              },
+              "messageKey": "[[\"rehearsal\",\"practice-delivery\",\"practice:96a0cd259158a1e8da3efcbff59eb24a733f02150692a3dc1eb82ff70fbc906d\",\"clock:e09205cdcd6129e00000c62c831f6ec877bcaf7798ce8ab6ccd6d31a2dae028a\"],\"practice:96a0cd259158a1e8da3efcbff59eb24a733f02150692a3dc1eb82ff70fbc906d\",\"lateJoin\",\"actor-01\",\"episode:6f4522a951ef89c1cb4cf2cba822eb9a471a49c4125cf98ce19a84b1cb25dcf6\",\"c89b6437e6e3c50c04694c089b7e289348b62959138c3776246913eae6c6336a\"]",
+              "shouldSend": true,
+              "nextEvaluationAt": null
+            },
+            "delivery": {
+              "kind": "reconcile",
+              "attemptIds": [
+                "attempt:b245fae723e0a08cc2f7d514aef7bafbd288b6ae8fad2e782a789864c75248a3"
+              ],
+              "notBefore": 121000
+            }
+          }
+        },
+        "assistance": {
+          "intention": {
+            "kind": "unknown"
+          },
+          "latestMessageId": "outbox:0d4b7ce5c95a989148bdbe415b85f4a2ab2c92566225a4cd17abe26c90924f52"
+        },
+        "assistanceDelivery": {
+          "conflictingEvidence": false,
+          "attempts": [
+            {
+              "attemptId": "attempt:b245fae723e0a08cc2f7d514aef7bafbd288b6ae8fad2e782a789864c75248a3",
+              "routeId": "organizerEventWhatsapp",
+              "status": "unknown"
+            }
+          ]
+        },
+        "assistanceMessage": {
+          "messageId": "outbox:0d4b7ce5c95a989148bdbe415b85f4a2ab2c92566225a4cd17abe26c90924f52",
+          "intentId": "message:533bab9340cf00744afae805842d07c09a16e35fea3e552216889d6be19d07ee",
+          "intentRevision": 1,
+          "text": "Join us at Practice venue.",
+          "choices": [
+            {
+              "choiceId": "on-my-way",
+              "label": "I'm on my way"
+            },
+            {
+              "choiceId": "not-coming",
+              "label": "I can't make it"
+            },
+            {
+              "choiceId": "need-help",
+              "label": "I need help"
+            }
+          ],
+          "lifecycle": "active",
+          "expiresAt": 7201000,
+          "canRespond": true,
+          "responseChoiceId": null
+        }
+      },
+      {
+        "sessionId": "practice-delivery",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": null,
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ],
+    "actions": [],
+    "canUseInternalFaults": false,
+    "guestUrl": "https://catchdates.com/rehearse/practicepublic1234567890",
+    "deliveryReviews": {
+      "context": {
+        "mode": "rehearsal",
+        "rehearsalId": "practice-delivery",
+        "virtualEventId": "practice:96a0cd259158a1e8da3efcbff59eb24a733f02150692a3dc1eb82ff70fbc906d",
+        "clockId": "clock:e09205cdcd6129e00000c62c831f6ec877bcaf7798ce8ab6ccd6d31a2dae028a"
+      },
+      "coverage": "currentActorMessages",
+      "deliveries": [
+        {
+          "messageId": "outbox:0d4b7ce5c95a989148bdbe415b85f4a2ab2c92566225a4cd17abe26c90924f52",
+          "revision": 1,
+          "reviewHash": "e30822d7592d3e27b3ef562b2e55aff96b9c40e776d3cbf5d9644e096eb0989e",
+          "createdAt": 1000,
+          "expiresAt": 7201000,
+          "lifecycle": "active",
+          "purpose": "joiningUpdate",
+          "deliveryStatus": "unknown",
+          "attempts": [
+            {
+              "channel": "whatsapp",
+              "state": "unknown",
+              "at": 1000
+            }
+          ],
+          "coordination": {
+            "kind": "untracked"
+          },
+          "handling": {
+            "kind": "automatic"
+          },
+          "availability": "current",
+          "attendeeId": "actor-01",
+          "displayName": "Diya",
+          "actions": [
+            "manualHandoff"
+          ]
+        }
+      ]
+    }
+  },
+  "handedOff": {
+    "session": {
+      "id": "practice-delivery",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 0,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": null,
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "first",
+              "title": "first",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "location": {
+                "name": "first",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "second",
+              "title": "second",
+              "kind": "stop",
+              "offsetMinutes": 15,
+              "location": {
+                "name": "second",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "bar",
+              "title": "bar",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "location": {
+                "name": "bar",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "water",
+              "title": "water",
+              "kind": "stop",
+              "offsetMinutes": 45,
+              "location": {
+                "name": "water",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 3,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86401,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 1000,
+      "virtualNowMillis": 1000,
+      "expiresAtMillis": 86401000
+    },
+    "actors": [
+      {
+        "sessionId": "practice-delivery",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": null,
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "assistanceAutomation": {
+          "clockId": "clock:e09205cdcd6129e00000c62c831f6ec877bcaf7798ce8ab6ccd6d31a2dae028a",
+          "status": "enabled",
+          "plan": {
+            "policy": {
+              "destination": {
+                "kind": "fixedPlace",
+                "placeId": "meeting",
+                "lateEntry": "allowed"
+              },
+              "cutoff": {
+                "kind": "eventEnd"
+              },
+              "maxMessagesPerEpisode": 4,
+              "minimumMinutesBetweenMessages": 5,
+              "updateOn": "materialGuidanceChange",
+              "unanswered": "keepUnknownUntilCutoff"
+            },
+            "guidance": {
+              "revision": 1,
+              "destination": {
+                "kind": "fixedPlace",
+                "placeId": "meeting",
+                "lateEntry": "allowed"
+              },
+              "materialKey": "c89b6437e6e3c50c04694c089b7e289348b62959138c3776246913eae6c6336a",
+              "text": "Join us at Practice venue.",
+              "validUntil": 7201000
+            },
+            "departureConfirmed": true,
+            "responseDeadline": null,
+            "routes": [
+              "organizerEventWhatsapp",
+              "catchEventSms"
+            ],
+            "deliveryPolicy": {
+              "maxAttempts": 3,
+              "maxAttemptsPerRoute": 2,
+              "minimumRetrySeconds": 1
+            }
+          },
+          "outcomes": [
+            {
+              "kind": "unknown",
+              "reason": "timeout"
+            },
+            {
+              "kind": "delivered"
+            }
+          ],
+          "nextOutcomeIndex": 1,
+          "evaluation": {
+            "at": 1000,
+            "policy": null,
+            "delivery": {
+              "kind": "stop",
+              "reason": "hostStopped"
+            }
+          }
+        },
+        "assistance": {
+          "intention": {
+            "kind": "unknown"
+          },
+          "latestMessageId": "outbox:0d4b7ce5c95a989148bdbe415b85f4a2ab2c92566225a4cd17abe26c90924f52"
+        },
+        "assistanceDelivery": {
+          "conflictingEvidence": false,
+          "attempts": [
+            {
+              "attemptId": "attempt:b245fae723e0a08cc2f7d514aef7bafbd288b6ae8fad2e782a789864c75248a3",
+              "routeId": "organizerEventWhatsapp",
+              "status": "unknown"
+            }
+          ]
+        },
+        "assistanceMessage": {
+          "messageId": "outbox:0d4b7ce5c95a989148bdbe415b85f4a2ab2c92566225a4cd17abe26c90924f52",
+          "intentId": "message:533bab9340cf00744afae805842d07c09a16e35fea3e552216889d6be19d07ee",
+          "intentRevision": 1,
+          "text": "Join us at Practice venue.",
+          "choices": [
+            {
+              "choiceId": "on-my-way",
+              "label": "I'm on my way"
+            },
+            {
+              "choiceId": "not-coming",
+              "label": "I can't make it"
+            },
+            {
+              "choiceId": "need-help",
+              "label": "I need help"
+            }
+          ],
+          "lifecycle": "active",
+          "expiresAt": 7201000,
+          "canRespond": true,
+          "responseChoiceId": null
+        }
+      },
+      {
+        "sessionId": "practice-delivery",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": null,
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ],
+    "actions": [],
+    "canUseInternalFaults": false,
+    "guestUrl": "https://catchdates.com/rehearse/practicepublic1234567890",
+    "deliveryReviews": {
+      "context": {
+        "mode": "rehearsal",
+        "rehearsalId": "practice-delivery",
+        "virtualEventId": "practice:96a0cd259158a1e8da3efcbff59eb24a733f02150692a3dc1eb82ff70fbc906d",
+        "clockId": "clock:e09205cdcd6129e00000c62c831f6ec877bcaf7798ce8ab6ccd6d31a2dae028a"
+      },
+      "coverage": "currentActorMessages",
+      "deliveries": [
+        {
+          "messageId": "outbox:0d4b7ce5c95a989148bdbe415b85f4a2ab2c92566225a4cd17abe26c90924f52",
+          "revision": 2,
+          "reviewHash": "d5a13528c617f8358a20b1f1a04b33e1555e3a85ee0c2c85880e20c93c9d3494",
+          "createdAt": 1000,
+          "expiresAt": 7201000,
+          "lifecycle": "active",
+          "purpose": "joiningUpdate",
+          "deliveryStatus": "unknown",
+          "attempts": [
+            {
+              "channel": "whatsapp",
+              "state": "unknown",
+              "at": 1000
+            }
+          ],
+          "coordination": {
+            "kind": "untracked"
+          },
+          "handling": {
+            "kind": "manual",
+            "actorUid": "host-1",
+            "at": 1000,
+            "authority": "current"
+          },
+          "availability": "current",
+          "attendeeId": "actor-01",
+          "displayName": "Diya",
+          "actions": []
+        }
+      ]
+    }
+  },
+  "delivered": {
+    "session": {
+      "id": "practice-delivery",
+      "organizerId": "organizer-1",
+      "clubId": "organizer-1",
+      "ownerUid": "host-1",
+      "sourceEventId": null,
+      "sourceEventRevision": null,
+      "publicRehearsalId": "practicepublic1234567890",
+      "viewerTokenHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "scenarioId": "lateAndNoShow",
+      "seed": 1,
+      "actorCount": 2,
+      "actionCount": 0,
+      "status": "running",
+      "setup": {
+        "title": "Practice",
+        "locationName": "Practice venue",
+        "durationMinutes": 120,
+        "hostGoal": "Learn",
+        "attendeePrompt": "Say hello",
+        "moduleIds": [
+          "arrival"
+        ],
+        "movementSimulation": {
+          "routePlan": null,
+          "livePositions": [],
+          "lateArrivalGuidance": null,
+          "itinerary": [
+            {
+              "id": "first",
+              "title": "first",
+              "kind": "stop",
+              "offsetMinutes": 0,
+              "location": {
+                "name": "first",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "second",
+              "title": "second",
+              "kind": "stop",
+              "offsetMinutes": 15,
+              "location": {
+                "name": "second",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "bar",
+              "title": "bar",
+              "kind": "stop",
+              "offsetMinutes": 30,
+              "location": {
+                "name": "bar",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            },
+            {
+              "id": "water",
+              "title": "water",
+              "kind": "stop",
+              "offsetMinutes": 45,
+              "location": {
+                "name": "water",
+                "latitude": 22.7,
+                "longitude": 75.8
+              }
+            }
+          ]
+        }
+      },
+      "setupRevision": 0,
+      "runtimeRevision": 4,
+      "activeStepIndex": 1,
+      "virtualStartedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "virtualNow": {
+        "_seconds": 61,
+        "_nanoseconds": 0
+      },
+      "faultId": "none",
+      "faultConsumed": false,
+      "createdAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "updatedAt": {
+        "_seconds": 1,
+        "_nanoseconds": 0
+      },
+      "expiresAt": {
+        "_seconds": 86401,
+        "_nanoseconds": 0
+      },
+      "completedAt": null,
+      "virtualStartedAtMillis": 1000,
+      "virtualNowMillis": 61000,
+      "expiresAtMillis": 86401000
+    },
+    "actors": [
+      {
+        "sessionId": "practice-delivery",
+        "actorId": "actor-01",
+        "displayName": "Diya",
+        "persona": "regular",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": null,
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "assistanceAutomation": {
+          "clockId": "clock:e09205cdcd6129e00000c62c831f6ec877bcaf7798ce8ab6ccd6d31a2dae028a",
+          "status": "enabled",
+          "plan": {
+            "policy": {
+              "destination": {
+                "kind": "fixedPlace",
+                "placeId": "meeting",
+                "lateEntry": "allowed"
+              },
+              "cutoff": {
+                "kind": "eventEnd"
+              },
+              "maxMessagesPerEpisode": 4,
+              "minimumMinutesBetweenMessages": 5,
+              "updateOn": "materialGuidanceChange",
+              "unanswered": "keepUnknownUntilCutoff"
+            },
+            "guidance": {
+              "revision": 1,
+              "destination": {
+                "kind": "fixedPlace",
+                "placeId": "meeting",
+                "lateEntry": "allowed"
+              },
+              "materialKey": "c89b6437e6e3c50c04694c089b7e289348b62959138c3776246913eae6c6336a",
+              "text": "Join us at Practice venue.",
+              "validUntil": 7201000
+            },
+            "departureConfirmed": true,
+            "responseDeadline": null,
+            "routes": [
+              "organizerEventWhatsapp",
+              "catchEventSms"
+            ],
+            "deliveryPolicy": {
+              "maxAttempts": 3,
+              "maxAttemptsPerRoute": 2,
+              "minimumRetrySeconds": 1
+            }
+          },
+          "outcomes": [
+            {
+              "kind": "unknown",
+              "reason": "timeout"
+            },
+            {
+              "kind": "delivered"
+            }
+          ],
+          "nextOutcomeIndex": 1,
+          "evaluation": {
+            "at": 61000,
+            "policy": null,
+            "delivery": {
+              "kind": "stop",
+              "reason": "hostStopped"
+            }
+          }
+        },
+        "assistance": {
+          "intention": {
+            "kind": "unknown"
+          },
+          "latestMessageId": "outbox:0d4b7ce5c95a989148bdbe415b85f4a2ab2c92566225a4cd17abe26c90924f52"
+        },
+        "assistanceDelivery": {
+          "conflictingEvidence": false,
+          "attempts": [
+            {
+              "attemptId": "attempt:b245fae723e0a08cc2f7d514aef7bafbd288b6ae8fad2e782a789864c75248a3",
+              "routeId": "organizerEventWhatsapp",
+              "status": "delivered"
+            }
+          ]
+        },
+        "assistanceMessage": {
+          "messageId": "outbox:0d4b7ce5c95a989148bdbe415b85f4a2ab2c92566225a4cd17abe26c90924f52",
+          "intentId": "message:533bab9340cf00744afae805842d07c09a16e35fea3e552216889d6be19d07ee",
+          "intentRevision": 1,
+          "text": "Join us at Practice venue.",
+          "choices": [
+            {
+              "choiceId": "on-my-way",
+              "label": "I'm on my way"
+            },
+            {
+              "choiceId": "not-coming",
+              "label": "I can't make it"
+            },
+            {
+              "choiceId": "need-help",
+              "label": "I need help"
+            }
+          ],
+          "lifecycle": "active",
+          "expiresAt": 7201000,
+          "canRespond": true,
+          "responseChoiceId": null
+        }
+      },
+      {
+        "sessionId": "practice-delivery",
+        "actorId": "actor-02",
+        "displayName": "Kabir",
+        "persona": "quiet",
+        "status": "expected",
+        "visit": {
+          "attendanceRevision": 0,
+          "checkedInAtMillis": null,
+          "accountabilityRevision": 0,
+          "resolution": null
+        },
+        "participation": {
+          "revision": 0,
+          "episodeRevision": 0,
+          "state": "active"
+        },
+        "connectionState": "connected",
+        "guestMoment": "welcome",
+        "optedOut": false,
+        "keepApartActorIds": [],
+        "helpRequested": false,
+        "untrackedHelpRequested": false,
+        "promptCompleted": false,
+        "layoutUnitId": null,
+        "confirmedLayoutUnitId": null,
+        "lastActionAt": null,
+        "createdAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        },
+        "updatedAt": {
+          "_seconds": 1,
+          "_nanoseconds": 0
+        }
+      }
+    ],
+    "actions": [],
+    "canUseInternalFaults": false,
+    "guestUrl": "https://catchdates.com/rehearse/practicepublic1234567890",
+    "deliveryReviews": {
+      "context": {
+        "mode": "rehearsal",
+        "rehearsalId": "practice-delivery",
+        "virtualEventId": "practice:96a0cd259158a1e8da3efcbff59eb24a733f02150692a3dc1eb82ff70fbc906d",
+        "clockId": "clock:e09205cdcd6129e00000c62c831f6ec877bcaf7798ce8ab6ccd6d31a2dae028a"
+      },
+      "coverage": "currentActorMessages",
+      "deliveries": [
+        {
+          "messageId": "outbox:0d4b7ce5c95a989148bdbe415b85f4a2ab2c92566225a4cd17abe26c90924f52",
+          "revision": 3,
+          "reviewHash": "1c2d52cdd31df812b085d1c26eab9d1beaff5e8aa9b668c9d988d8faca1838f2",
+          "createdAt": 1000,
+          "expiresAt": 7201000,
+          "lifecycle": "active",
+          "purpose": "joiningUpdate",
+          "deliveryStatus": "delivered",
+          "attempts": [
+            {
+              "channel": "whatsapp",
+              "state": "delivered",
+              "at": 61000
+            }
+          ],
+          "coordination": {
+            "kind": "untracked"
+          },
+          "handling": {
+            "kind": "manual",
+            "actorUid": "host-1",
+            "at": 1000,
+            "authority": "current"
+          },
+          "availability": "current",
+          "attendeeId": "actor-01",
+          "displayName": "Diya",
+          "actions": []
+        }
+      ]
+    }
+  }
+}

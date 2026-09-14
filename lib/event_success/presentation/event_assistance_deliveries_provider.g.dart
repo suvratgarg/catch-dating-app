@@ -196,7 +196,7 @@ final class EventAssistanceDeliveriesForAccountProvider
 }
 
 String _$eventAssistanceDeliveriesForAccountHash() =>
-    r'35e3b69cca9b3169117e6055812ba4af2c08a50e';
+    r'2b425aea3b56990c96b26afdf31347e14e3c5936';
 
 final class EventAssistanceDeliveriesForAccountFamily extends $Family
     with

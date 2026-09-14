@@ -6,6 +6,7 @@ import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_change.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_deliveries_provider.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_delivery_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_pending_deliveries.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -86,6 +87,8 @@ void main() {
       container.read(queue.notifier).reload();
       await container.pump();
       await repository.waitForReads(2);
+      expect(review.isCurrent, isFalse);
+      expect(form().canTakeOver, isFalse);
       expect(
         () => controller().open(review),
         throwsA(isA<ValidationException>()),
@@ -180,6 +183,10 @@ void main() {
       );
       await failure;
       final original = form().change;
+      expect(container.read(eventAssistancePendingDeliveriesProvider), {
+        review.delivery.scope,
+      });
+      expect(() => controller().reload(), throwsA(isA<ValidationException>()));
       container.read(queue.notifier).reload();
       await container.pump();
       await repository.waitForReads(2);
@@ -412,6 +419,35 @@ void main() {
         deliveryResult(repository.writes.last.change, outcome: 'replayed'),
       );
       await retry;
+    },
+  );
+  test(
+    'a result for another message cannot clear the pending handoff',
+    () async {
+      controller().open(review);
+      final future = controller().takeOver();
+      final failure = expectLater(future, throwsA(isA<FormatException>()));
+      final other = EventAssistanceDeliveryChange(
+        snapshot:
+            deliveryPage(
+                  rows: [deliveryRow(messageId: deliveryId(2))],
+                ).deliveries.single
+                as AssistanceActionableDelivery,
+        actorUid: 'host-1',
+        operationId: 'other-handoff',
+      );
+      repository.writes.single.result.complete(deliveryResult(other));
+      await failure;
+      expect(form().canRetry, isTrue);
+      expect(container.read(eventAssistancePendingDeliveriesProvider), {
+        review.delivery.scope,
+      });
+      final retry = controller().retry();
+      repository.writes.last.result.complete(
+        deliveryResult(repository.writes.last.change, outcome: 'replayed'),
+      );
+      await retry;
+      expect(container.read(eventAssistancePendingDeliveriesProvider), isEmpty);
     },
   );
 }

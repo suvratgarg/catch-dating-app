@@ -9,12 +9,14 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'event_assistance_deliveries_provider.g.dart';
 
 final class EventAssistanceDeliveriesSession {
-  const EventAssistanceDeliveriesSession._(this.account, this.page);
+  EventAssistanceDeliveriesSession._(this.account, this.page);
+  bool _current = true;
+  bool get isCurrent => _current;
   final EventAssistanceAccount account;
   final EventAssistanceDeliveriesPage page;
 
   EventAssistanceDeliveryReview review(AssistanceActionableDelivery request) {
-    if (!page.deliveries.any((row) => identical(row, request))) {
+    if (!isCurrent || !page.deliveries.any((row) => identical(row, request))) {
       throw ArgumentError('Review a request from this page snapshot.');
     }
     return EventAssistanceDeliveryReview._(this, request);
@@ -25,6 +27,7 @@ final class EventAssistanceDeliveryReview {
   const EventAssistanceDeliveryReview._(this.session, this.delivery);
   final EventAssistanceDeliveriesSession session;
   EventAssistanceAccount get account => session.account;
+  bool get isCurrent => session.isCurrent;
   final AssistanceActionableDelivery delivery;
 }
 
@@ -96,7 +99,9 @@ Future<EventAssistanceDeliveriesSession> eventAssistanceDeliveriesForAccount(
       .watch(eventAssistanceDeliveriesRepositoryProvider)
       .fetch(query);
   requireDeliveryReviewAccount(ref, account);
-  return EventAssistanceDeliveriesSession._(account, page);
+  final session = EventAssistanceDeliveriesSession._(account, page);
+  ref.onDispose(() => session._current = false);
+  return session;
 }
 
 Duration? _noDeliveryReadRetry(int retryCount, Object error) => null;

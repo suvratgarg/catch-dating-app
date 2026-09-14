@@ -3082,6 +3082,18 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
                           'followUp',
                         ],
                       },
+                      'displayName': <String, Object?>{
+                        'anyOf': <Object?>[
+                          <String, Object?>{
+                            'type': 'string',
+                            'minLength': 1,
+                            'maxLength': 120,
+                          },
+                          <String, Object?>{
+                            'type': 'null',
+                          },
+                        ],
+                      },
                     },
                   },
                   <String, Object?>{
@@ -3325,6 +3337,9 @@ const schemaEventRehearsalBootstrapCallableResponseSchema = <String, Object?>{
                           'eventFinished',
                           'followUp',
                         ],
+                      },
+                      'displayName': <String, Object?>{
+                        'type': 'null',
                       },
                     },
                   },

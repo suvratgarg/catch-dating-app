@@ -8,6 +8,7 @@ class ReportTab extends StatelessWidget {
     required this.planIsPersisted,
     this.scorecard,
     this.helpSection,
+    this.deliverySection,
     this.assignments,
     this.rotationAssignments,
     this.preferences,
@@ -22,6 +23,7 @@ class ReportTab extends StatelessWidget {
   final bool planIsPersisted;
   final EventSuccessScorecard? scorecard;
   final Widget? helpSection;
+  final Widget? deliverySection;
   final List<EventSuccessAssignment>? assignments;
   final List<EventSuccessAssignment>? rotationAssignments;
   final List<EventSuccessPreference>? preferences;
@@ -37,6 +39,7 @@ class ReportTab extends StatelessWidget {
         embedded: embedded,
         children: [
           ?helpSection,
+          ?deliverySection,
           _EventSuccessReportEmptyState(
             icon: CatchIcons.insightsOutlined,
             title: context
@@ -60,6 +63,7 @@ class ReportTab extends StatelessWidget {
         embedded: embedded,
         children: [
           ?helpSection,
+          ?deliverySection,
           _EventSuccessReportEmptyState(
             icon: CatchIcons.insightsOutlined,
             title: context
@@ -100,6 +104,7 @@ class ReportTab extends StatelessWidget {
         embedded: embedded,
         children: [
           ?helpSection,
+          ?deliverySection,
           ...errorStates.expand((error) => [error, gapH16]),
           if (!reportFailures.any(
             (failure) =>
@@ -132,6 +137,7 @@ class ReportTab extends StatelessWidget {
       embedded: embedded,
       children: [
         ?helpSection,
+        ?deliverySection,
         ...errorStates.expand((error) => [error, gapH16]),
         CatchBanner(
           icon: CatchIcons.assignmentTurnedInOutlined,

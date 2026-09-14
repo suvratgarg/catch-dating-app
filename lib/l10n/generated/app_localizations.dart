@@ -29628,6 +29628,516 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Assign to {name}'**
   String eventAssistanceHelpTransferValue({required String name});
+
+  /// Host delivery review: StatusNotSubmitted
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet sent'**
+  String get eventAssistanceDeliveryStatusNotSubmitted;
+
+  /// Host delivery review: StatusReserved
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing to send'**
+  String get eventAssistanceDeliveryStatusReserved;
+
+  /// Host delivery review: StatusUnknown
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery unconfirmed'**
+  String get eventAssistanceDeliveryStatusUnknown;
+
+  /// Host delivery review: StatusAccepted
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted by provider'**
+  String get eventAssistanceDeliveryStatusAccepted;
+
+  /// Host delivery review: StatusDelivered
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get eventAssistanceDeliveryStatusDelivered;
+
+  /// Host delivery review: StatusRead
+  ///
+  /// In en, this message translates to:
+  /// **'Read'**
+  String get eventAssistanceDeliveryStatusRead;
+
+  /// Host delivery review: StatusFailed
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery failed'**
+  String get eventAssistanceDeliveryStatusFailed;
+
+  /// Host delivery review: StatusNotDispatched
+  ///
+  /// In en, this message translates to:
+  /// **'Not sent'**
+  String get eventAssistanceDeliveryStatusNotDispatched;
+
+  /// Host delivery review: StatusRevoked
+  ///
+  /// In en, this message translates to:
+  /// **'Message revoked'**
+  String get eventAssistanceDeliveryStatusRevoked;
+
+  /// Host delivery review: StatusConflictingEvidence
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery reports disagree'**
+  String get eventAssistanceDeliveryStatusConflictingEvidence;
+
+  /// Host delivery review: PurposeJoiningUpdate
+  ///
+  /// In en, this message translates to:
+  /// **'Joining update'**
+  String get eventAssistanceDeliveryPurposeJoiningUpdate;
+
+  /// Host delivery review: PurposeJoiningInstructions
+  ///
+  /// In en, this message translates to:
+  /// **'Joining instructions'**
+  String get eventAssistanceDeliveryPurposeJoiningInstructions;
+
+  /// Host delivery review: PurposePlanChanged
+  ///
+  /// In en, this message translates to:
+  /// **'Plan changed'**
+  String get eventAssistanceDeliveryPurposePlanChanged;
+
+  /// Host delivery review: PurposeGuestRequirement
+  ///
+  /// In en, this message translates to:
+  /// **'Guest requirement'**
+  String get eventAssistanceDeliveryPurposeGuestRequirement;
+
+  /// Host delivery review: PurposeAssignmentChanged
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment changed'**
+  String get eventAssistanceDeliveryPurposeAssignmentChanged;
+
+  /// Host delivery review: PurposeParticipationCheck
+  ///
+  /// In en, this message translates to:
+  /// **'Participation check'**
+  String get eventAssistanceDeliveryPurposeParticipationCheck;
+
+  /// Host delivery review: PurposeEventCancelled
+  ///
+  /// In en, this message translates to:
+  /// **'Event cancelled'**
+  String get eventAssistanceDeliveryPurposeEventCancelled;
+
+  /// Host delivery review: PurposeEventFinished
+  ///
+  /// In en, this message translates to:
+  /// **'Event finished'**
+  String get eventAssistanceDeliveryPurposeEventFinished;
+
+  /// Host delivery review: PurposeFollowUp
+  ///
+  /// In en, this message translates to:
+  /// **'Follow-up'**
+  String get eventAssistanceDeliveryPurposeFollowUp;
+
+  /// Host delivery review: ReviewReasonNoEligibleRoute
+  ///
+  /// In en, this message translates to:
+  /// **'No messaging channel is available for this guest.'**
+  String get eventAssistanceDeliveryReviewReasonNoEligibleRoute;
+
+  /// Host delivery review: ReviewReasonAttemptLimit
+  ///
+  /// In en, this message translates to:
+  /// **'The automatic attempt limit was reached.'**
+  String get eventAssistanceDeliveryReviewReasonAttemptLimit;
+
+  /// Host delivery review: ReviewReasonPolicyRejected
+  ///
+  /// In en, this message translates to:
+  /// **'The messaging policy needs review.'**
+  String get eventAssistanceDeliveryReviewReasonPolicyRejected;
+
+  /// Host delivery review: ReviewReasonRecipientNeedsReview
+  ///
+  /// In en, this message translates to:
+  /// **'The recipient details need review.'**
+  String get eventAssistanceDeliveryReviewReasonRecipientNeedsReview;
+
+  /// Host delivery review: ReviewReasonProviderOwnsFallback
+  ///
+  /// In en, this message translates to:
+  /// **'The provider is managing fallback. Delivery is still unconfirmed.'**
+  String get eventAssistanceDeliveryReviewReasonProviderOwnsFallback;
+
+  /// Host delivery review: ReviewReasonConflictingDeliveryEvidence
+  ///
+  /// In en, this message translates to:
+  /// **'The provider reports disagree. Check with the guest before following up.'**
+  String get eventAssistanceDeliveryReviewReasonConflictingDeliveryEvidence;
+
+  /// Host delivery review: ReviewReasonProviderPending
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for the provider to confirm delivery.'**
+  String get eventAssistanceDeliveryReviewReasonProviderPending;
+
+  /// Host delivery review: ReviewReasonWorkerUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'The sending service is unavailable.'**
+  String get eventAssistanceDeliveryReviewReasonWorkerUnavailable;
+
+  /// Host delivery review: ReviewReasonRecoveryLimit
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic recovery reached its limit.'**
+  String get eventAssistanceDeliveryReviewReasonRecoveryLimit;
+
+  /// Host delivery review: ReviewReasonEventFactsStale
+  ///
+  /// In en, this message translates to:
+  /// **'The event details need a fresh review.'**
+  String get eventAssistanceDeliveryReviewReasonEventFactsStale;
+
+  /// Host delivery review: ReviewReasonRouteFactsStale
+  ///
+  /// In en, this message translates to:
+  /// **'The messaging channel needs a fresh review.'**
+  String get eventAssistanceDeliveryReviewReasonRouteFactsStale;
+
+  /// Host delivery review: RetryReasonRetryBackoff
+  ///
+  /// In en, this message translates to:
+  /// **'Another automatic attempt is scheduled.'**
+  String get eventAssistanceDeliveryRetryReasonRetryBackoff;
+
+  /// Host delivery review: RetryReasonEventFactsStale
+  ///
+  /// In en, this message translates to:
+  /// **'The event details need a fresh review.'**
+  String get eventAssistanceDeliveryRetryReasonEventFactsStale;
+
+  /// Host delivery review: RetryReasonRouteFactsStale
+  ///
+  /// In en, this message translates to:
+  /// **'The messaging channel needs a fresh review.'**
+  String get eventAssistanceDeliveryRetryReasonRouteFactsStale;
+
+  /// Host delivery review: RetryReasonWorkerUnavailable
+  ///
+  /// In en, this message translates to:
+  /// **'The sending service is unavailable.'**
+  String get eventAssistanceDeliveryRetryReasonWorkerUnavailable;
+
+  /// Host delivery review: StopReasonDelivered
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery confirmed.'**
+  String get eventAssistanceDeliveryStopReasonDelivered;
+
+  /// Host delivery review: StopReasonResponded
+  ///
+  /// In en, this message translates to:
+  /// **'The guest responded.'**
+  String get eventAssistanceDeliveryStopReasonResponded;
+
+  /// Host delivery review: StopReasonCancelled
+  ///
+  /// In en, this message translates to:
+  /// **'This message was cancelled.'**
+  String get eventAssistanceDeliveryStopReasonCancelled;
+
+  /// Host delivery review: StopReasonSuperseded
+  ///
+  /// In en, this message translates to:
+  /// **'A newer message replaced this one.'**
+  String get eventAssistanceDeliveryStopReasonSuperseded;
+
+  /// Host delivery review: StopReasonExpired
+  ///
+  /// In en, this message translates to:
+  /// **'The response window ended.'**
+  String get eventAssistanceDeliveryStopReasonExpired;
+
+  /// Host delivery review: StopReasonEventClosed
+  ///
+  /// In en, this message translates to:
+  /// **'The event is closed.'**
+  String get eventAssistanceDeliveryStopReasonEventClosed;
+
+  /// Host delivery review: StopReasonPermissionRevoked
+  ///
+  /// In en, this message translates to:
+  /// **'Messaging permission was withdrawn.'**
+  String get eventAssistanceDeliveryStopReasonPermissionRevoked;
+
+  /// Host delivery review: StopReasonGuestPresent
+  ///
+  /// In en, this message translates to:
+  /// **'The guest has checked in.'**
+  String get eventAssistanceDeliveryStopReasonGuestPresent;
+
+  /// Host delivery review: StopReasonGuestDeclined
+  ///
+  /// In en, this message translates to:
+  /// **'The guest is not coming.'**
+  String get eventAssistanceDeliveryStopReasonGuestDeclined;
+
+  /// Host delivery review: StopReasonNotAdmitted
+  ///
+  /// In en, this message translates to:
+  /// **'The guest is not admitted to this event.'**
+  String get eventAssistanceDeliveryStopReasonNotAdmitted;
+
+  /// Host delivery review: StopReasonHostStopped
+  ///
+  /// In en, this message translates to:
+  /// **'A host stopped automatic follow-up.'**
+  String get eventAssistanceDeliveryStopReasonHostStopped;
+
+  /// Host delivery review: StopReasonParticipationInactive
+  ///
+  /// In en, this message translates to:
+  /// **'The guest is no longer participating.'**
+  String get eventAssistanceDeliveryStopReasonParticipationInactive;
+
+  /// Host delivery review: Title
+  ///
+  /// In en, this message translates to:
+  /// **'Message delivery'**
+  String get eventAssistanceDeliveryTitle;
+
+  /// Host delivery review: Body
+  ///
+  /// In en, this message translates to:
+  /// **'Review recorded messages and take over follow-up when a guest needs a host.'**
+  String get eventAssistanceDeliveryBody;
+
+  /// Host delivery review: Review
+  ///
+  /// In en, this message translates to:
+  /// **'Review messages'**
+  String get eventAssistanceDeliveryReview;
+
+  /// Host delivery review: Pending
+  ///
+  /// In en, this message translates to:
+  /// **'Handoff needs confirmation'**
+  String get eventAssistanceDeliveryPending;
+
+  /// Host delivery review: PendingBody
+  ///
+  /// In en, this message translates to:
+  /// **'A handoff may have been saved. Confirm it before making another decision.'**
+  String get eventAssistanceDeliveryPendingBody;
+
+  /// Host delivery review: UnknownGuest
+  ///
+  /// In en, this message translates to:
+  /// **'Guest details unavailable'**
+  String get eventAssistanceDeliveryUnknownGuest;
+
+  /// Host delivery review: PageBody
+  ///
+  /// In en, this message translates to:
+  /// **'These are the messages on this page. Other pages may contain more.'**
+  String get eventAssistanceDeliveryPageBody;
+
+  /// Host delivery review: PracticeBody
+  ///
+  /// In en, this message translates to:
+  /// **'Current messages for practice guests. Earlier messages may have been replaced.'**
+  String get eventAssistanceDeliveryPracticeBody;
+
+  /// Host delivery review: Empty
+  ///
+  /// In en, this message translates to:
+  /// **'No messages on this page.'**
+  String get eventAssistanceDeliveryEmpty;
+
+  /// Host delivery review: Missing
+  ///
+  /// In en, this message translates to:
+  /// **'This message is not on the current page. Reload the list to review its latest details.'**
+  String get eventAssistanceDeliveryMissing;
+
+  /// Host delivery review: Reload
+  ///
+  /// In en, this message translates to:
+  /// **'Reload messages'**
+  String get eventAssistanceDeliveryReload;
+
+  /// Host delivery review: Previous
+  ///
+  /// In en, this message translates to:
+  /// **'Previous page'**
+  String get eventAssistanceDeliveryPrevious;
+
+  /// Host delivery review: Next
+  ///
+  /// In en, this message translates to:
+  /// **'Next page'**
+  String get eventAssistanceDeliveryNext;
+
+  /// Host delivery review: TakeOver
+  ///
+  /// In en, this message translates to:
+  /// **'I’ll handle follow-up'**
+  String get eventAssistanceDeliveryTakeOver;
+
+  /// Host delivery review: TakeOverBody
+  ///
+  /// In en, this message translates to:
+  /// **'You’ll take responsibility for following up with this guest. Future automatic attempts for this message will stop. A send already in progress may still arrive.'**
+  String get eventAssistanceDeliveryTakeOverBody;
+
+  /// Host delivery review: Retry
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm this handoff'**
+  String get eventAssistanceDeliveryRetry;
+
+  /// Host delivery review: RetryBody
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation was interrupted. Checking the same handoff will not send another message.'**
+  String get eventAssistanceDeliveryRetryBody;
+
+  /// Host delivery review: Saved
+  ///
+  /// In en, this message translates to:
+  /// **'Handoff confirmed'**
+  String get eventAssistanceDeliverySaved;
+
+  /// Host delivery review: SavedBody
+  ///
+  /// In en, this message translates to:
+  /// **'Your handoff was recorded. Delivery reports, guest replies and host responsibility can still change.'**
+  String get eventAssistanceDeliverySavedBody;
+
+  /// Host delivery review: Refresh
+  ///
+  /// In en, this message translates to:
+  /// **'Review the latest message before taking over.'**
+  String get eventAssistanceDeliveryRefresh;
+
+  /// Host delivery review: SourceChanged
+  ///
+  /// In en, this message translates to:
+  /// **'The original guest record changed. Guest details and actions are unavailable.'**
+  String get eventAssistanceDeliverySourceChanged;
+
+  /// Host delivery review: Automatic
+  ///
+  /// In en, this message translates to:
+  /// **'No host has taken over'**
+  String get eventAssistanceDeliveryAutomatic;
+
+  /// Host delivery review: Mine
+  ///
+  /// In en, this message translates to:
+  /// **'You’re handling follow-up'**
+  String get eventAssistanceDeliveryMine;
+
+  /// Host delivery review: AnotherHost
+  ///
+  /// In en, this message translates to:
+  /// **'Another host is handling follow-up'**
+  String get eventAssistanceDeliveryAnotherHost;
+
+  /// Host delivery review: RevokedOwner
+  ///
+  /// In en, this message translates to:
+  /// **'The previous host no longer has access'**
+  String get eventAssistanceDeliveryRevokedOwner;
+
+  /// Host delivery review: Evidence
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery status'**
+  String get eventAssistanceDeliveryEvidence;
+
+  /// Host delivery review: Coordination
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic follow-up'**
+  String get eventAssistanceDeliveryCoordination;
+
+  /// Host delivery review: Handling
+  ///
+  /// In en, this message translates to:
+  /// **'Host responsibility'**
+  String get eventAssistanceDeliveryHandling;
+
+  /// Host delivery review: Attempts
+  ///
+  /// In en, this message translates to:
+  /// **'Channel history'**
+  String get eventAssistanceDeliveryAttempts;
+
+  /// Host delivery review: Untracked
+  ///
+  /// In en, this message translates to:
+  /// **'No automatic follow-up schedule is recorded.'**
+  String get eventAssistanceDeliveryUntracked;
+
+  /// Host delivery review: Queued
+  ///
+  /// In en, this message translates to:
+  /// **'A follow-up check is queued.'**
+  String get eventAssistanceDeliveryQueued;
+
+  /// Host delivery review: AwaitingReceipt
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for delivery confirmation.'**
+  String get eventAssistanceDeliveryAwaitingReceipt;
+
+  /// Host delivery review: AcceptedBody
+  ///
+  /// In en, this message translates to:
+  /// **'The provider accepted this message. Delivery has not been confirmed.'**
+  String get eventAssistanceDeliveryAcceptedBody;
+
+  /// Host delivery review: UnknownBody
+  ///
+  /// In en, this message translates to:
+  /// **'The message may have arrived. Delivery has not been confirmed.'**
+  String get eventAssistanceDeliveryUnknownBody;
+
+  /// Host delivery review: RevokedBody
+  ///
+  /// In en, this message translates to:
+  /// **'The provider revoked this message. That does not prove the guest never received it.'**
+  String get eventAssistanceDeliveryRevokedBody;
+
+  /// Host delivery review: Done
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get eventAssistanceDeliveryDone;
+
+  /// Host delivery review: PracticeHost
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Host to take responsibility for follow-up.'**
+  String get eventAssistanceDeliveryPracticeHost;
+
+  /// Host delivery review: eventAssistanceDeliveryManualStopped
+  ///
+  /// In en, this message translates to:
+  /// **'Automatic attempts are stopped for this message.'**
+  String get eventAssistanceDeliveryManualStopped;
+
+  /// Host delivery review: eventAssistanceDeliveryPracticeSending
+  ///
+  /// In en, this message translates to:
+  /// **'Message sending is simulated in this rehearsal.'**
+  String get eventAssistanceDeliveryPracticeSending;
 }
 
 class _AppLocalizationsDelegate

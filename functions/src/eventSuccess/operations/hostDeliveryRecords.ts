@@ -68,9 +68,11 @@ export function projectHostDelivery(message: MessageRecord,
     {kind: "tracked", phase: c.phase, reason: c.reason, dueAt: c.dueAt} :
     {kind: "untracked"};
   const deliveryStatus = hostDeliveryStatus(message);
+  const displayName = current && typeof row?.displayName === "string" ?
+    row.displayName : null;
   const common = {messageId: message.messageId, revision: message.revision,
     reviewHash: operationContentHash([message, source, guest, work,
-      ownerCurrent]), createdAt: message.createdAt,
+      ownerCurrent, displayName]), displayName, createdAt: message.createdAt,
     expiresAt: intent.expiresAt, lifecycle: message.lifecycle, deliveryStatus,
     purpose: intent.kind === "joiningUpdate" ?
       "joiningUpdate" as const : intent.noticeKind,
@@ -81,7 +83,7 @@ export function projectHostDelivery(message: MessageRecord,
     }), coordination, handling};
   if (!current) {
     return {...common, availability: "sourceChanged",
-      attendeeId: null, actions: []};
+      attendeeId: null, displayName: null, actions: []};
   }
   const relevant = message.lifecycle === "active" &&
     now < intent.expiresAt && messageWindowOpen(intent, source, now) &&

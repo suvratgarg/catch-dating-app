@@ -774,6 +774,7 @@ export interface EventRehearsalBootstrapCallableResponse {
             | "eventCancelled"
             | "eventFinished"
             | "followUp";
+          displayName?: string | null;
         }
       | {
           messageId: string;
@@ -845,6 +846,7 @@ export interface EventRehearsalBootstrapCallableResponse {
             | "eventCancelled"
             | "eventFinished"
             | "followUp";
+          displayName?: null;
         }
     ) & {
       availability?: "current";

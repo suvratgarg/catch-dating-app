@@ -18682,4 +18682,311 @@ class AppLocalizationsEn extends AppLocalizations {
   String eventAssistanceHelpTransferValue({required String name}) {
     return 'Assign to $name';
   }
+
+  @override
+  String get eventAssistanceDeliveryStatusNotSubmitted => 'Not yet sent';
+
+  @override
+  String get eventAssistanceDeliveryStatusReserved => 'Preparing to send';
+
+  @override
+  String get eventAssistanceDeliveryStatusUnknown => 'Delivery unconfirmed';
+
+  @override
+  String get eventAssistanceDeliveryStatusAccepted => 'Accepted by provider';
+
+  @override
+  String get eventAssistanceDeliveryStatusDelivered => 'Delivered';
+
+  @override
+  String get eventAssistanceDeliveryStatusRead => 'Read';
+
+  @override
+  String get eventAssistanceDeliveryStatusFailed => 'Delivery failed';
+
+  @override
+  String get eventAssistanceDeliveryStatusNotDispatched => 'Not sent';
+
+  @override
+  String get eventAssistanceDeliveryStatusRevoked => 'Message revoked';
+
+  @override
+  String get eventAssistanceDeliveryStatusConflictingEvidence =>
+      'Delivery reports disagree';
+
+  @override
+  String get eventAssistanceDeliveryPurposeJoiningUpdate => 'Joining update';
+
+  @override
+  String get eventAssistanceDeliveryPurposeJoiningInstructions =>
+      'Joining instructions';
+
+  @override
+  String get eventAssistanceDeliveryPurposePlanChanged => 'Plan changed';
+
+  @override
+  String get eventAssistanceDeliveryPurposeGuestRequirement =>
+      'Guest requirement';
+
+  @override
+  String get eventAssistanceDeliveryPurposeAssignmentChanged =>
+      'Assignment changed';
+
+  @override
+  String get eventAssistanceDeliveryPurposeParticipationCheck =>
+      'Participation check';
+
+  @override
+  String get eventAssistanceDeliveryPurposeEventCancelled => 'Event cancelled';
+
+  @override
+  String get eventAssistanceDeliveryPurposeEventFinished => 'Event finished';
+
+  @override
+  String get eventAssistanceDeliveryPurposeFollowUp => 'Follow-up';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonNoEligibleRoute =>
+      'No messaging channel is available for this guest.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonAttemptLimit =>
+      'The automatic attempt limit was reached.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonPolicyRejected =>
+      'The messaging policy needs review.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonRecipientNeedsReview =>
+      'The recipient details need review.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonProviderOwnsFallback =>
+      'The provider is managing fallback. Delivery is still unconfirmed.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonConflictingDeliveryEvidence =>
+      'The provider reports disagree. Check with the guest before following up.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonProviderPending =>
+      'Waiting for the provider to confirm delivery.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonWorkerUnavailable =>
+      'The sending service is unavailable.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonRecoveryLimit =>
+      'Automatic recovery reached its limit.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonEventFactsStale =>
+      'The event details need a fresh review.';
+
+  @override
+  String get eventAssistanceDeliveryReviewReasonRouteFactsStale =>
+      'The messaging channel needs a fresh review.';
+
+  @override
+  String get eventAssistanceDeliveryRetryReasonRetryBackoff =>
+      'Another automatic attempt is scheduled.';
+
+  @override
+  String get eventAssistanceDeliveryRetryReasonEventFactsStale =>
+      'The event details need a fresh review.';
+
+  @override
+  String get eventAssistanceDeliveryRetryReasonRouteFactsStale =>
+      'The messaging channel needs a fresh review.';
+
+  @override
+  String get eventAssistanceDeliveryRetryReasonWorkerUnavailable =>
+      'The sending service is unavailable.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonDelivered =>
+      'Delivery confirmed.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonResponded =>
+      'The guest responded.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonCancelled =>
+      'This message was cancelled.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonSuperseded =>
+      'A newer message replaced this one.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonExpired =>
+      'The response window ended.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonEventClosed =>
+      'The event is closed.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonPermissionRevoked =>
+      'Messaging permission was withdrawn.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonGuestPresent =>
+      'The guest has checked in.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonGuestDeclined =>
+      'The guest is not coming.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonNotAdmitted =>
+      'The guest is not admitted to this event.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonHostStopped =>
+      'A host stopped automatic follow-up.';
+
+  @override
+  String get eventAssistanceDeliveryStopReasonParticipationInactive =>
+      'The guest is no longer participating.';
+
+  @override
+  String get eventAssistanceDeliveryTitle => 'Message delivery';
+
+  @override
+  String get eventAssistanceDeliveryBody =>
+      'Review recorded messages and take over follow-up when a guest needs a host.';
+
+  @override
+  String get eventAssistanceDeliveryReview => 'Review messages';
+
+  @override
+  String get eventAssistanceDeliveryPending => 'Handoff needs confirmation';
+
+  @override
+  String get eventAssistanceDeliveryPendingBody =>
+      'A handoff may have been saved. Confirm it before making another decision.';
+
+  @override
+  String get eventAssistanceDeliveryUnknownGuest => 'Guest details unavailable';
+
+  @override
+  String get eventAssistanceDeliveryPageBody =>
+      'These are the messages on this page. Other pages may contain more.';
+
+  @override
+  String get eventAssistanceDeliveryPracticeBody =>
+      'Current messages for practice guests. Earlier messages may have been replaced.';
+
+  @override
+  String get eventAssistanceDeliveryEmpty => 'No messages on this page.';
+
+  @override
+  String get eventAssistanceDeliveryMissing =>
+      'This message is not on the current page. Reload the list to review its latest details.';
+
+  @override
+  String get eventAssistanceDeliveryReload => 'Reload messages';
+
+  @override
+  String get eventAssistanceDeliveryPrevious => 'Previous page';
+
+  @override
+  String get eventAssistanceDeliveryNext => 'Next page';
+
+  @override
+  String get eventAssistanceDeliveryTakeOver => 'I’ll handle follow-up';
+
+  @override
+  String get eventAssistanceDeliveryTakeOverBody =>
+      'You’ll take responsibility for following up with this guest. Future automatic attempts for this message will stop. A send already in progress may still arrive.';
+
+  @override
+  String get eventAssistanceDeliveryRetry => 'Confirm this handoff';
+
+  @override
+  String get eventAssistanceDeliveryRetryBody =>
+      'Confirmation was interrupted. Checking the same handoff will not send another message.';
+
+  @override
+  String get eventAssistanceDeliverySaved => 'Handoff confirmed';
+
+  @override
+  String get eventAssistanceDeliverySavedBody =>
+      'Your handoff was recorded. Delivery reports, guest replies and host responsibility can still change.';
+
+  @override
+  String get eventAssistanceDeliveryRefresh =>
+      'Review the latest message before taking over.';
+
+  @override
+  String get eventAssistanceDeliverySourceChanged =>
+      'The original guest record changed. Guest details and actions are unavailable.';
+
+  @override
+  String get eventAssistanceDeliveryAutomatic => 'No host has taken over';
+
+  @override
+  String get eventAssistanceDeliveryMine => 'You’re handling follow-up';
+
+  @override
+  String get eventAssistanceDeliveryAnotherHost =>
+      'Another host is handling follow-up';
+
+  @override
+  String get eventAssistanceDeliveryRevokedOwner =>
+      'The previous host no longer has access';
+
+  @override
+  String get eventAssistanceDeliveryEvidence => 'Delivery status';
+
+  @override
+  String get eventAssistanceDeliveryCoordination => 'Automatic follow-up';
+
+  @override
+  String get eventAssistanceDeliveryHandling => 'Host responsibility';
+
+  @override
+  String get eventAssistanceDeliveryAttempts => 'Channel history';
+
+  @override
+  String get eventAssistanceDeliveryUntracked =>
+      'No automatic follow-up schedule is recorded.';
+
+  @override
+  String get eventAssistanceDeliveryQueued => 'A follow-up check is queued.';
+
+  @override
+  String get eventAssistanceDeliveryAwaitingReceipt =>
+      'Waiting for delivery confirmation.';
+
+  @override
+  String get eventAssistanceDeliveryAcceptedBody =>
+      'The provider accepted this message. Delivery has not been confirmed.';
+
+  @override
+  String get eventAssistanceDeliveryUnknownBody =>
+      'The message may have arrived. Delivery has not been confirmed.';
+
+  @override
+  String get eventAssistanceDeliveryRevokedBody =>
+      'The provider revoked this message. That does not prove the guest never received it.';
+
+  @override
+  String get eventAssistanceDeliveryDone => 'Done';
+
+  @override
+  String get eventAssistanceDeliveryPracticeHost =>
+      'Switch to Host to take responsibility for follow-up.';
+
+  @override
+  String get eventAssistanceDeliveryManualStopped =>
+      'Automatic attempts are stopped for this message.';
+
+  @override
+  String get eventAssistanceDeliveryPracticeSending =>
+      'Message sending is simulated in this rehearsal.';
 }

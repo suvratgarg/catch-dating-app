@@ -3885,6 +3885,18 @@ export const eventAssistanceDeliveriesCallableResponseSchema = {
                   "eventFinished",
                   "followUp"
                 ]
+              },
+              "displayName": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             }
           },
@@ -4129,6 +4141,9 @@ export const eventAssistanceDeliveriesCallableResponseSchema = {
                   "eventFinished",
                   "followUp"
                 ]
+              },
+              "displayName": {
+                "type": "null"
               }
             }
           }
@@ -4450,6 +4465,18 @@ export const eventAssistanceDeliveryCallableResponseSchema = {
                 "eventFinished",
                 "followUp"
               ]
+            },
+            "displayName": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           }
         },
@@ -4694,6 +4721,9 @@ export const eventAssistanceDeliveryCallableResponseSchema = {
                 "eventFinished",
                 "followUp"
               ]
+            },
+            "displayName": {
+              "type": "null"
             }
           }
         }
@@ -155700,6 +155730,18 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                           "eventFinished",
                           "followUp"
                         ]
+                      },
+                      "displayName": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       }
                     }
                   },
@@ -155944,6 +155986,9 @@ export const eventRehearsalBootstrapCallableResponseSchema = {
                           "eventFinished",
                           "followUp"
                         ]
+                      },
+                      "displayName": {
+                        "type": "null"
                       }
                     }
                   }

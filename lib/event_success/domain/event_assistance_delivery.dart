@@ -169,6 +169,7 @@ sealed class AssistanceHostDelivery {
   const AssistanceHostDelivery._(this._fields, this.scope);
   final AssistanceDeliveryEvidence _fields;
   final EventAssistanceDeliveryScope scope;
+  AssistanceDeliveryEvidence get evidence => _fields;
   int get revision => _fields.revision;
   String get reviewHash => _fields.reviewHash;
   int get createdAt => _fields.createdAt;
@@ -231,6 +232,7 @@ final class AssistanceDeliveryEvidence {
   const AssistanceDeliveryEvidence._({
     required this.messageId,
     required this.attendeeId,
+    required this.displayName,
     required this.offersManualHandoff,
     required this.revision,
     required this.reviewHash,
@@ -246,6 +248,7 @@ final class AssistanceDeliveryEvidence {
   });
   final String messageId;
   final String? attendeeId;
+  final String? displayName;
   final bool offersManualHandoff;
   final int revision, createdAt, expiresAt, observedAt;
   final String reviewHash;
@@ -275,6 +278,7 @@ final class AssistanceDeliveryEvidence {
       'handling',
       'availability',
       'attendeeId',
+      if (assistanceObject(value).containsKey('displayName')) 'displayName',
       'actions',
     });
     final messageId = assistanceMessageIdentity(map['messageId']);
@@ -356,7 +360,9 @@ final class AssistanceDeliveryEvidence {
     final String? attendeeId;
     switch (map['availability']) {
       case 'sourceChanged':
-        if (map['attendeeId'] != null || actions.isNotEmpty) {
+        if (map['attendeeId'] != null ||
+            map['displayName'] != null ||
+            actions.isNotEmpty) {
           throw const FormatException(
             'Stale delivery exposed guest authority.',
           );
@@ -383,6 +389,9 @@ final class AssistanceDeliveryEvidence {
     return AssistanceDeliveryEvidence._(
       messageId: messageId,
       attendeeId: attendeeId,
+      displayName: map['displayName'] == null
+          ? null
+          : assistanceText(map['displayName'], 120),
       offersManualHandoff: actions.isNotEmpty,
       revision: revision,
       reviewHash: assistanceHash(map['reviewHash']),

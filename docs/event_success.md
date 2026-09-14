@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.119.0
+version: 1.120.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -701,9 +701,33 @@ Definitive rejection requires a fresh review, and confirmed completion refreshes
 the rehearsal runtime and review. The generic rehearsal editor rejects delivery
 takeover so it cannot replace that message-scoped retry owner.
 
-Visible live/rehearsal delivery review, provider lookup/verified retry and
-deployment remain subsequent integration work. These native bindings are not yet
-mounted in the Host screens.
+The shared runtime now mounts message-delivery entry points in live and rehearsal
+modes, including all report availability states. A bounded message list leads to
+one per-message sheet showing provider evidence, automatic follow-up and manual
+responsibility separately. Taking responsibility is explicit. Accepted, unknown,
+revoked and conflicting reports never appear as confirmed delivery; manual
+handling shows that automatic attempts are stopped even while a coordinator
+checkpoint awaits its next update. Late reports and guest replies remain visible.
+Rehearsal reuses these components and labels its synthetic sending and Host role.
+Delegated practice roles can review but cannot take responsibility.
+
+Current guest names come from verified attendee/actor records, are included in
+the review hash and disappear after source replacement. Older omitted names
+remain unknown. Fresh source-change or access-denied responses take precedence
+over a frozen private review. Live page sessions retire when invalidated; a
+retired form cannot authorize a new takeover. The state owner independently
+validates the returned handoff against the original command. Account-scoped
+pending-message indexes contain discovery references only, so an interrupted
+handoff can be reopened and confirmed after sheet closure or when the message
+leaves the current page. They never duplicate a command or infer delivery.
+
+Backend-generated live and rehearsal fixtures cover uncertain, handed-off and
+later delivered messages. Native tests exercise those projections, exact-command
+recovery, page navigation, account changes, redaction and report entry points;
+real-adapter widget tests cover both modes at normal and doubled text size.
+Isolated Widgetbook previews use these fixtures. Shared index registration remains
+pending while its owning worktree holds that generated file. Provider lookup,
+verified retry and deployment remain subsequent integration work.
 
 ### Rehearsal visit accountability
 
@@ -1937,8 +1961,8 @@ or accept a real provider receipt. The selected worker connects the outbox to
 Gupshup SMS or Meta WhatsApp outside the transaction. An unknown or accepted
 submission holds all fallback even if its channel later becomes unavailable.
 The dormant delivery coordinator below now resumes the published automatic
-late-join messages. Host delivery review now has a typed backend boundary; its native
-bindings and rehearsal runtime remain separate integration steps. Terminal cleanup must be added before
+late-join messages. Host delivery review has a typed backend boundary and shared
+live/rehearsal runtime controls described above. Terminal cleanup must be added before
 activation and retain deduplication state throughout the provider reconciliation
 window.
 

@@ -23,6 +23,10 @@ export 'presentation/event_assistance_checkpoint_request_section.dart'; // publi
 export 'presentation/event_assistance_checkpoint_section.dart'; // public-api: shared live and rehearsal checkpoint observations and request copy
 export 'presentation/event_assistance_deliveries_provider.dart'; // public-api: account-scoped Host delivery pages and reviewed actions
 export 'presentation/event_assistance_delivery_controller.dart'; // public-api: per-message reviewed handoff and exact retry state
+export 'presentation/event_assistance_delivery_decision_section.dart'; // public-api: shared delivery review
+// Public API: shared delivery review composition for rehearsal and live events.
+export 'presentation/event_assistance_delivery_entry.dart'; // public-api: shared delivery review
+export 'presentation/event_assistance_delivery_queue_section.dart'; // public-api: shared delivery review
 export 'presentation/event_assistance_departure_history_section.dart'; // public-api: shared live and rehearsal historical roster navigation
 export 'presentation/event_assistance_departure_section.dart'; // public-api: shared live and rehearsal departure controls
 export 'presentation/event_assistance_group_roster_section.dart'; // public-api: shared live and rehearsal group guest selection

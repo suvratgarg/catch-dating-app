@@ -3079,6 +3079,18 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
                           "eventFinished",
                           "followUp"
                         ]
+                      },
+                      "displayName": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
                       }
                     }
                   },
@@ -3323,6 +3335,9 @@ export const eventRehearsalBootstrapCallableResponseSchema: Record<string, unkno
                           "eventFinished",
                           "followUp"
                         ]
+                      },
+                      "displayName": {
+                        "type": "null"
                       }
                     }
                   }

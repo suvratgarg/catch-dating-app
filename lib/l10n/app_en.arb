@@ -25183,5 +25183,600 @@
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_assistance_help"
+  },
+  "eventAssistanceDeliveryStatusNotSubmitted": "Not yet sent",
+  "@eventAssistanceDeliveryStatusNotSubmitted": {
+    "description": "Host delivery review: StatusNotSubmitted",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStatusReserved": "Preparing to send",
+  "@eventAssistanceDeliveryStatusReserved": {
+    "description": "Host delivery review: StatusReserved",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStatusUnknown": "Delivery unconfirmed",
+  "@eventAssistanceDeliveryStatusUnknown": {
+    "description": "Host delivery review: StatusUnknown",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStatusAccepted": "Accepted by provider",
+  "@eventAssistanceDeliveryStatusAccepted": {
+    "description": "Host delivery review: StatusAccepted",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStatusDelivered": "Delivered",
+  "@eventAssistanceDeliveryStatusDelivered": {
+    "description": "Host delivery review: StatusDelivered",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStatusRead": "Read",
+  "@eventAssistanceDeliveryStatusRead": {
+    "description": "Host delivery review: StatusRead",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStatusFailed": "Delivery failed",
+  "@eventAssistanceDeliveryStatusFailed": {
+    "description": "Host delivery review: StatusFailed",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStatusNotDispatched": "Not sent",
+  "@eventAssistanceDeliveryStatusNotDispatched": {
+    "description": "Host delivery review: StatusNotDispatched",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStatusRevoked": "Message revoked",
+  "@eventAssistanceDeliveryStatusRevoked": {
+    "description": "Host delivery review: StatusRevoked",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStatusConflictingEvidence": "Delivery reports disagree",
+  "@eventAssistanceDeliveryStatusConflictingEvidence": {
+    "description": "Host delivery review: StatusConflictingEvidence",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPurposeJoiningUpdate": "Joining update",
+  "@eventAssistanceDeliveryPurposeJoiningUpdate": {
+    "description": "Host delivery review: PurposeJoiningUpdate",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPurposeJoiningInstructions": "Joining instructions",
+  "@eventAssistanceDeliveryPurposeJoiningInstructions": {
+    "description": "Host delivery review: PurposeJoiningInstructions",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPurposePlanChanged": "Plan changed",
+  "@eventAssistanceDeliveryPurposePlanChanged": {
+    "description": "Host delivery review: PurposePlanChanged",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPurposeGuestRequirement": "Guest requirement",
+  "@eventAssistanceDeliveryPurposeGuestRequirement": {
+    "description": "Host delivery review: PurposeGuestRequirement",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPurposeAssignmentChanged": "Assignment changed",
+  "@eventAssistanceDeliveryPurposeAssignmentChanged": {
+    "description": "Host delivery review: PurposeAssignmentChanged",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPurposeParticipationCheck": "Participation check",
+  "@eventAssistanceDeliveryPurposeParticipationCheck": {
+    "description": "Host delivery review: PurposeParticipationCheck",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPurposeEventCancelled": "Event cancelled",
+  "@eventAssistanceDeliveryPurposeEventCancelled": {
+    "description": "Host delivery review: PurposeEventCancelled",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPurposeEventFinished": "Event finished",
+  "@eventAssistanceDeliveryPurposeEventFinished": {
+    "description": "Host delivery review: PurposeEventFinished",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPurposeFollowUp": "Follow-up",
+  "@eventAssistanceDeliveryPurposeFollowUp": {
+    "description": "Host delivery review: PurposeFollowUp",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonNoEligibleRoute": "No messaging channel is available for this guest.",
+  "@eventAssistanceDeliveryReviewReasonNoEligibleRoute": {
+    "description": "Host delivery review: ReviewReasonNoEligibleRoute",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonAttemptLimit": "The automatic attempt limit was reached.",
+  "@eventAssistanceDeliveryReviewReasonAttemptLimit": {
+    "description": "Host delivery review: ReviewReasonAttemptLimit",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonPolicyRejected": "The messaging policy needs review.",
+  "@eventAssistanceDeliveryReviewReasonPolicyRejected": {
+    "description": "Host delivery review: ReviewReasonPolicyRejected",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonRecipientNeedsReview": "The recipient details need review.",
+  "@eventAssistanceDeliveryReviewReasonRecipientNeedsReview": {
+    "description": "Host delivery review: ReviewReasonRecipientNeedsReview",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonProviderOwnsFallback": "The provider is managing fallback. Delivery is still unconfirmed.",
+  "@eventAssistanceDeliveryReviewReasonProviderOwnsFallback": {
+    "description": "Host delivery review: ReviewReasonProviderOwnsFallback",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonConflictingDeliveryEvidence": "The provider reports disagree. Check with the guest before following up.",
+  "@eventAssistanceDeliveryReviewReasonConflictingDeliveryEvidence": {
+    "description": "Host delivery review: ReviewReasonConflictingDeliveryEvidence",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonProviderPending": "Waiting for the provider to confirm delivery.",
+  "@eventAssistanceDeliveryReviewReasonProviderPending": {
+    "description": "Host delivery review: ReviewReasonProviderPending",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonWorkerUnavailable": "The sending service is unavailable.",
+  "@eventAssistanceDeliveryReviewReasonWorkerUnavailable": {
+    "description": "Host delivery review: ReviewReasonWorkerUnavailable",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonRecoveryLimit": "Automatic recovery reached its limit.",
+  "@eventAssistanceDeliveryReviewReasonRecoveryLimit": {
+    "description": "Host delivery review: ReviewReasonRecoveryLimit",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonEventFactsStale": "The event details need a fresh review.",
+  "@eventAssistanceDeliveryReviewReasonEventFactsStale": {
+    "description": "Host delivery review: ReviewReasonEventFactsStale",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReviewReasonRouteFactsStale": "The messaging channel needs a fresh review.",
+  "@eventAssistanceDeliveryReviewReasonRouteFactsStale": {
+    "description": "Host delivery review: ReviewReasonRouteFactsStale",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryRetryReasonRetryBackoff": "Another automatic attempt is scheduled.",
+  "@eventAssistanceDeliveryRetryReasonRetryBackoff": {
+    "description": "Host delivery review: RetryReasonRetryBackoff",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryRetryReasonEventFactsStale": "The event details need a fresh review.",
+  "@eventAssistanceDeliveryRetryReasonEventFactsStale": {
+    "description": "Host delivery review: RetryReasonEventFactsStale",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryRetryReasonRouteFactsStale": "The messaging channel needs a fresh review.",
+  "@eventAssistanceDeliveryRetryReasonRouteFactsStale": {
+    "description": "Host delivery review: RetryReasonRouteFactsStale",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryRetryReasonWorkerUnavailable": "The sending service is unavailable.",
+  "@eventAssistanceDeliveryRetryReasonWorkerUnavailable": {
+    "description": "Host delivery review: RetryReasonWorkerUnavailable",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonDelivered": "Delivery confirmed.",
+  "@eventAssistanceDeliveryStopReasonDelivered": {
+    "description": "Host delivery review: StopReasonDelivered",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonResponded": "The guest responded.",
+  "@eventAssistanceDeliveryStopReasonResponded": {
+    "description": "Host delivery review: StopReasonResponded",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonCancelled": "This message was cancelled.",
+  "@eventAssistanceDeliveryStopReasonCancelled": {
+    "description": "Host delivery review: StopReasonCancelled",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonSuperseded": "A newer message replaced this one.",
+  "@eventAssistanceDeliveryStopReasonSuperseded": {
+    "description": "Host delivery review: StopReasonSuperseded",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonExpired": "The response window ended.",
+  "@eventAssistanceDeliveryStopReasonExpired": {
+    "description": "Host delivery review: StopReasonExpired",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonEventClosed": "The event is closed.",
+  "@eventAssistanceDeliveryStopReasonEventClosed": {
+    "description": "Host delivery review: StopReasonEventClosed",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonPermissionRevoked": "Messaging permission was withdrawn.",
+  "@eventAssistanceDeliveryStopReasonPermissionRevoked": {
+    "description": "Host delivery review: StopReasonPermissionRevoked",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonGuestPresent": "The guest has checked in.",
+  "@eventAssistanceDeliveryStopReasonGuestPresent": {
+    "description": "Host delivery review: StopReasonGuestPresent",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonGuestDeclined": "The guest is not coming.",
+  "@eventAssistanceDeliveryStopReasonGuestDeclined": {
+    "description": "Host delivery review: StopReasonGuestDeclined",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonNotAdmitted": "The guest is not admitted to this event.",
+  "@eventAssistanceDeliveryStopReasonNotAdmitted": {
+    "description": "Host delivery review: StopReasonNotAdmitted",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonHostStopped": "A host stopped automatic follow-up.",
+  "@eventAssistanceDeliveryStopReasonHostStopped": {
+    "description": "Host delivery review: StopReasonHostStopped",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryStopReasonParticipationInactive": "The guest is no longer participating.",
+  "@eventAssistanceDeliveryStopReasonParticipationInactive": {
+    "description": "Host delivery review: StopReasonParticipationInactive",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryTitle": "Message delivery",
+  "@eventAssistanceDeliveryTitle": {
+    "description": "Host delivery review: Title",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryBody": "Review recorded messages and take over follow-up when a guest needs a host.",
+  "@eventAssistanceDeliveryBody": {
+    "description": "Host delivery review: Body",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReview": "Review messages",
+  "@eventAssistanceDeliveryReview": {
+    "description": "Host delivery review: Review",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPending": "Handoff needs confirmation",
+  "@eventAssistanceDeliveryPending": {
+    "description": "Host delivery review: Pending",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPendingBody": "A handoff may have been saved. Confirm it before making another decision.",
+  "@eventAssistanceDeliveryPendingBody": {
+    "description": "Host delivery review: PendingBody",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryUnknownGuest": "Guest details unavailable",
+  "@eventAssistanceDeliveryUnknownGuest": {
+    "description": "Host delivery review: UnknownGuest",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPageBody": "These are the messages on this page. Other pages may contain more.",
+  "@eventAssistanceDeliveryPageBody": {
+    "description": "Host delivery review: PageBody",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPracticeBody": "Current messages for practice guests. Earlier messages may have been replaced.",
+  "@eventAssistanceDeliveryPracticeBody": {
+    "description": "Host delivery review: PracticeBody",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryEmpty": "No messages on this page.",
+  "@eventAssistanceDeliveryEmpty": {
+    "description": "Host delivery review: Empty",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryMissing": "This message is not on the current page. Reload the list to review its latest details.",
+  "@eventAssistanceDeliveryMissing": {
+    "description": "Host delivery review: Missing",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryReload": "Reload messages",
+  "@eventAssistanceDeliveryReload": {
+    "description": "Host delivery review: Reload",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPrevious": "Previous page",
+  "@eventAssistanceDeliveryPrevious": {
+    "description": "Host delivery review: Previous",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryNext": "Next page",
+  "@eventAssistanceDeliveryNext": {
+    "description": "Host delivery review: Next",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryTakeOver": "I’ll handle follow-up",
+  "@eventAssistanceDeliveryTakeOver": {
+    "description": "Host delivery review: TakeOver",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryTakeOverBody": "You’ll take responsibility for following up with this guest. Future automatic attempts for this message will stop. A send already in progress may still arrive.",
+  "@eventAssistanceDeliveryTakeOverBody": {
+    "description": "Host delivery review: TakeOverBody",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryRetry": "Confirm this handoff",
+  "@eventAssistanceDeliveryRetry": {
+    "description": "Host delivery review: Retry",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryRetryBody": "Confirmation was interrupted. Checking the same handoff will not send another message.",
+  "@eventAssistanceDeliveryRetryBody": {
+    "description": "Host delivery review: RetryBody",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliverySaved": "Handoff confirmed",
+  "@eventAssistanceDeliverySaved": {
+    "description": "Host delivery review: Saved",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliverySavedBody": "Your handoff was recorded. Delivery reports, guest replies and host responsibility can still change.",
+  "@eventAssistanceDeliverySavedBody": {
+    "description": "Host delivery review: SavedBody",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryRefresh": "Review the latest message before taking over.",
+  "@eventAssistanceDeliveryRefresh": {
+    "description": "Host delivery review: Refresh",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliverySourceChanged": "The original guest record changed. Guest details and actions are unavailable.",
+  "@eventAssistanceDeliverySourceChanged": {
+    "description": "Host delivery review: SourceChanged",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryAutomatic": "No host has taken over",
+  "@eventAssistanceDeliveryAutomatic": {
+    "description": "Host delivery review: Automatic",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryMine": "You’re handling follow-up",
+  "@eventAssistanceDeliveryMine": {
+    "description": "Host delivery review: Mine",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryAnotherHost": "Another host is handling follow-up",
+  "@eventAssistanceDeliveryAnotherHost": {
+    "description": "Host delivery review: AnotherHost",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryRevokedOwner": "The previous host no longer has access",
+  "@eventAssistanceDeliveryRevokedOwner": {
+    "description": "Host delivery review: RevokedOwner",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryEvidence": "Delivery status",
+  "@eventAssistanceDeliveryEvidence": {
+    "description": "Host delivery review: Evidence",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryCoordination": "Automatic follow-up",
+  "@eventAssistanceDeliveryCoordination": {
+    "description": "Host delivery review: Coordination",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryHandling": "Host responsibility",
+  "@eventAssistanceDeliveryHandling": {
+    "description": "Host delivery review: Handling",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryAttempts": "Channel history",
+  "@eventAssistanceDeliveryAttempts": {
+    "description": "Host delivery review: Attempts",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryUntracked": "No automatic follow-up schedule is recorded.",
+  "@eventAssistanceDeliveryUntracked": {
+    "description": "Host delivery review: Untracked",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryQueued": "A follow-up check is queued.",
+  "@eventAssistanceDeliveryQueued": {
+    "description": "Host delivery review: Queued",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryAwaitingReceipt": "Waiting for delivery confirmation.",
+  "@eventAssistanceDeliveryAwaitingReceipt": {
+    "description": "Host delivery review: AwaitingReceipt",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryAcceptedBody": "The provider accepted this message. Delivery has not been confirmed.",
+  "@eventAssistanceDeliveryAcceptedBody": {
+    "description": "Host delivery review: AcceptedBody",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryUnknownBody": "The message may have arrived. Delivery has not been confirmed.",
+  "@eventAssistanceDeliveryUnknownBody": {
+    "description": "Host delivery review: UnknownBody",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryRevokedBody": "The provider revoked this message. That does not prove the guest never received it.",
+  "@eventAssistanceDeliveryRevokedBody": {
+    "description": "Host delivery review: RevokedBody",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryDone": "Done",
+  "@eventAssistanceDeliveryDone": {
+    "description": "Host delivery review: Done",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPracticeHost": "Switch to Host to take responsibility for follow-up.",
+  "@eventAssistanceDeliveryPracticeHost": {
+    "description": "Host delivery review: PracticeHost",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryManualStopped": "Automatic attempts are stopped for this message.",
+  "@eventAssistanceDeliveryManualStopped": {
+    "description": "Host delivery review: eventAssistanceDeliveryManualStopped",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
+  },
+  "eventAssistanceDeliveryPracticeSending": "Message sending is simulated in this rehearsal.",
+  "@eventAssistanceDeliveryPracticeSending": {
+    "description": "Host delivery review: eventAssistanceDeliveryPracticeSending",
+    "x-audience": "host",
+    "x-owner": "product",
+    "x-surface": "event_success.presentation.event_assistance_delivery"
   }
 }

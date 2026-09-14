@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.110.0
+version: 1.111.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -134,6 +134,13 @@ old untracked help flags remain explicit. Guest projections omit these records.
 Native readers reject foreign clocks/actors and inconsistent resolution state;
 only a reviewed open rehearsal case can form its typed handling command.
 Rehearsal reset and expiry remove these cases, independently of live cases.
+
+Delivery review rows optionally include the current guest's display name (1–120
+characters). The live projection verifies the attendee generation before exposing
+it; source-changed rows require null. Rehearsal binds it to the synthetic actor.
+The review hash includes the displayed name, so renaming requires a fresh review
+for a new takeover while immutable receipt replay remains available. Native
+readers preserve older omission as unknown and reject a named stale source.
 
 Rehearsal Host bootstrap optionally adds `deliveryReviews`, with a rehearsal-only
 context, explicit current-actor-message coverage, at most 50 rows and untracked

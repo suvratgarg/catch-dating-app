@@ -84,6 +84,7 @@ export interface EventAssistanceDeliveriesCallableResponse {
           | "eventCancelled"
           | "eventFinished"
           | "followUp";
+        displayName?: string | null;
       }
     | {
         messageId: string;
@@ -155,6 +156,7 @@ export interface EventAssistanceDeliveriesCallableResponse {
           | "eventCancelled"
           | "eventFinished"
           | "followUp";
+        displayName?: null;
       }
   )[];
   nextCursor: string | null;

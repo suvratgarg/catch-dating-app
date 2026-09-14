@@ -7,6 +7,7 @@ import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_assistance_command.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_pending_deliveries.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -66,7 +67,8 @@ final class RehearsalDeliveryForm extends RehearsalDeliveryEditorState {
   final RehearsalAssistanceChange? change;
   final EventRehearsalBootstrap? result;
   final Object? error;
-  bool get canTakeOver => phase == RehearsalDeliveryPhase.ready;
+  bool get canTakeOver =>
+      phase == RehearsalDeliveryPhase.ready && review.isCurrent;
   bool get canRetry => phase == RehearsalDeliveryPhase.retryRequired;
   bool get canReload =>
       phase == RehearsalDeliveryPhase.ready ||
@@ -106,11 +108,11 @@ class EventRehearsalDeliveryController
     final auth = ref.watch(authenticatedSessionProvider);
     _epoch++;
     _account = null;
-    _clearPending();
+    _clearPending(updateIndex: false);
     _inFlight = null;
     ref.onDispose(() {
       _epoch++;
-      _clearPending();
+      _clearPending(updateIndex: false);
     });
     if (auth.isLoading || auth.hasError || auth.asData == null) {
       return RehearsalDeliveryUnavailable(
@@ -200,6 +202,17 @@ class EventRehearsalDeliveryController
     }
   }
 
+  void reload() {
+    final form = state;
+    if (form is RehearsalDeliveryForm && !form.canReload) {
+      throw const ValidationException('Confirm the pending handoff first.');
+    }
+    if (_pending != null || _inFlight != null) {
+      throw const ValidationException('Confirm the pending handoff first.');
+    }
+    state = const RehearsalDeliveryIdle();
+  }
+
   Future<EventRehearsalBootstrap> retry() {
     final form = state;
     if (form is! RehearsalDeliveryForm ||
@@ -244,6 +257,9 @@ class EventRehearsalDeliveryController
   void _retainPending(AuthenticatedSession account) {
     if (_releasePending != null) return;
     final lease = ref.keepAlive();
+    ref
+        .read(eventRehearsalPendingDeliveriesProvider.notifier)
+        .retain(scope, account);
     // A kept-alive sheet can have paused provider dependencies. This temporary
     // strong subscription detects unseen sign-out/account changes while pending.
     final auth = ref.container.listen(authenticatedSessionProvider, (_, next) {
@@ -253,7 +269,7 @@ class EventRehearsalDeliveryController
         _epoch++;
         _account = null;
         _inFlight = null;
-        _clearPending();
+        _clearPending(updateIndex: false);
         if (ref.mounted) ref.invalidateSelf();
       }
     });
@@ -263,7 +279,12 @@ class EventRehearsalDeliveryController
     };
   }
 
-  void _clearPending() {
+  void _clearPending({bool updateIndex = true}) {
+    if (updateIndex && _pending != null && ref.mounted) {
+      ref
+          .read(eventRehearsalPendingDeliveriesProvider.notifier)
+          .release(scope, _account);
+    }
     _pending = null;
     final release = _releasePending;
     _releasePending = null;
