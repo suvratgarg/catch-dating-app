@@ -207,6 +207,8 @@ function splitFindings(findings, baseline, allowlist) {
 function baselineFromFindings(findings, allowlist) {
   const allowlistKeys = new Set((allowlist.entries ?? []).map(entryKey));
   return {
+    owner: "marketing_website_architecture",
+    targetPhase: "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
     version: 1,
     updated: currentRepoDate(),
     description:

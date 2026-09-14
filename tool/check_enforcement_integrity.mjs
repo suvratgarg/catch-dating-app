@@ -141,6 +141,10 @@ export function checkEnforcementIntegrity({
     }
   }
 
+  for (const file of snapshot.listFiles().filter(file => file.endsWith("_baseline.json"))) {
+    validateBaselineOwnership({snapshot, file, errors});
+  }
+
   return {
     activeRules: rules.filter((rule) => activeRuleStatuses.has(rule.status))
       .length,
@@ -415,19 +419,46 @@ function validateDocAnchor({snapshot, docAnchor, owner, errors}) {
     const match = /^(#{1,6})\s+(.+)$/u.exec(line);
     if (!match) continue;
     anchors.add(slugifyHeading(match[2]));
+    // GitHub preserves the two spaces surrounding a removed em dash.
+    anchors.add(slugifyHeading(match[2], {preserveSpaces: true}));
   }
   if (!anchors.has(fragment)) {
     errors.push(`${owner}: docAnchor heading not found: ${docAnchor}.`);
   }
 }
 
-function slugifyHeading(heading) {
+function slugifyHeading(heading, {preserveSpaces = false} = {}) {
   return heading
     .trim()
     .toLowerCase()
     .replace(/`([^`]+)`/gu, "$1")
     .replace(/[^\p{Letter}\p{Number}\s-]/gu, "")
-    .replace(/\s+/gu, "-");
+    .replace(preserveSpaces ? /\s/gu : /\s+/gu, "-");
+}
+
+function validateBaselineOwnership({snapshot, file, errors}) {
+  let baseline;
+  try {
+    baseline = snapshot.readJson(file, {required: true});
+  } catch (error) {
+    errors.push(`${file}: baseline must be readable JSON: ${error.message}`);
+    return;
+  }
+  if (baseline == null || typeof baseline !== "object" || Array.isArray(baseline)) {
+    errors.push(`${file}: baseline must be an object with owner and targetPhase.`);
+    return;
+  }
+  if (typeof baseline.owner !== "string" ||
+      !/^[a-z][a-z0-9]*(?:[_-][a-z0-9]+)*$/u.test(baseline.owner) ||
+      /^(?:todo|tbd|unknown|unassigned)$/u.test(baseline.owner)) {
+    errors.push(`${file}: baseline must name its owning source document.`);
+  }
+  if (typeof baseline.targetPhase !== "string" ||
+      !/^[a-zA-Z0-9_/-]+\.md#[a-z0-9-]*phase-[a-z0-9-]+$/u.test(baseline.targetPhase)) {
+    errors.push(`${file}: baseline must name a target-zero phase as a Markdown heading reference.`);
+    return;
+  }
+  validateDocAnchor({snapshot, docAnchor: baseline.targetPhase, owner: file, errors});
 }
 
 function validateRepoFile({snapshot, filePath, owner, errors}) {

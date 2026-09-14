@@ -3107,8 +3107,17 @@ The enforcement registry is checked by
 `node tool/check_enforcement_integrity.mjs`. When a rule gains, loses, or
 changes enforcement, update `tool/policy/rules.json`,
 `tool/tools_manifest.json`, the owner-doc anchor, and the known-bad proof or
-baseline receipt together. Manual enforcement is explicit with `stage: manual`;
+baseline reduction together. Manual enforcement is explicit with `stage: manual`;
 absence of an enforcement entry is drift.
+
+Every `*_baseline.json`, including checked-in test fixtures, declares `owner`
+(the owning source document's `doc_id`) and `targetPhase` (a repository Markdown
+heading reference to its target-zero phase). Enforcement integrity discovers
+these files directly, including unregistered baselines, and rejects missing
+metadata or broken phase references. Refresh commands retain this metadata.
+The source-budget split targets Phase 5; remaining domain-owned debt targets
+Phase 6's continuous conformance lanes. A target is an outstanding obligation,
+not evidence that a baseline is already empty.
 
 ### Screen chrome contracts
 

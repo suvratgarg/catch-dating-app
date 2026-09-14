@@ -108,6 +108,8 @@ function splitFindingsByBaseline(findings, baseline) {
 
 function baselineFromFindings(findings) {
   return {
+    owner: "web_surface_architecture",
+    targetPhase: "docs/plans/ui_system_blueprint_and_conformance_audit.md#phase-6--continuous-conformance-folds-into-existing-lanes",
     version: 1,
     updated: new Date().toISOString().slice(0, 10),
     description:
