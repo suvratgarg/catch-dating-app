@@ -183,8 +183,24 @@ import 'package:widgetbook_workspace/hosts/operations/wizard_chrome.dart'
     as _widgetbook_workspace_hosts_operations_wizard_chrome;
 import 'package:widgetbook_workspace/matches/matches_chat_use_cases.dart'
     as _widgetbook_workspace_matches_matches_chat_use_cases;
-import 'package:widgetbook_workspace/onboarding/onboarding_use_cases.dart'
-    as _widgetbook_workspace_onboarding_onboarding_use_cases;
+import 'package:widgetbook_workspace/onboarding/catalog/boot.dart'
+    as _widgetbook_workspace_onboarding_catalog_boot;
+import 'package:widgetbook_workspace/onboarding/catalog/identity.dart'
+    as _widgetbook_workspace_onboarding_catalog_identity;
+import 'package:widgetbook_workspace/onboarding/catalog/navigation.dart'
+    as _widgetbook_workspace_onboarding_catalog_navigation;
+import 'package:widgetbook_workspace/onboarding/catalog/photos.dart'
+    as _widgetbook_workspace_onboarding_catalog_photos;
+import 'package:widgetbook_workspace/onboarding/catalog/preferences.dart'
+    as _widgetbook_workspace_onboarding_catalog_preferences;
+import 'package:widgetbook_workspace/onboarding/catalog/prompts.dart'
+    as _widgetbook_workspace_onboarding_catalog_prompts;
+import 'package:widgetbook_workspace/onboarding/catalog/reel.dart'
+    as _widgetbook_workspace_onboarding_catalog_reel;
+import 'package:widgetbook_workspace/onboarding/catalog/screen.dart'
+    as _widgetbook_workspace_onboarding_catalog_screen;
+import 'package:widgetbook_workspace/onboarding/catalog/welcome.dart'
+    as _widgetbook_workspace_onboarding_catalog_welcome;
 import 'package:widgetbook_workspace/primitives/analytics_kit_use_cases.dart'
     as _widgetbook_workspace_primitives_analytics_kit_use_cases;
 import 'package:widgetbook_workspace/primitives/avatar_use_cases.dart'
@@ -9943,7 +9959,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route states',
-                builder: _widgetbook_workspace_onboarding_onboarding_use_cases
+                builder: _widgetbook_workspace_onboarding_catalog_screen
                     .onboardingScreenRouteStates,
               ),
             ],
@@ -9953,7 +9969,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Step layout states',
-                builder: _widgetbook_workspace_onboarding_onboarding_use_cases
+                builder: _widgetbook_workspace_onboarding_catalog_navigation
                     .onboardingStepLayoutStates,
               ),
             ],
@@ -9963,7 +9979,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Top bar',
-                builder: _widgetbook_workspace_onboarding_onboarding_use_cases
+                builder: _widgetbook_workspace_onboarding_catalog_navigation
                     .onboardingTopBarState,
               ),
             ],
@@ -9976,9 +9992,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Consumer cold-start states',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .consumerColdStartStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_boot
+                        .consumerColdStartStates,
                   ),
                 ],
               ),
@@ -9987,9 +10002,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Consumer bootstrap lifecycle',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .consumerBootstrapLifecycle,
+                    builder: _widgetbook_workspace_onboarding_catalog_boot
+                        .consumerBootstrapLifecycle,
                   ),
                 ],
               ),
@@ -9998,9 +10012,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Gender and interest form',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .genderInterestPageStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_identity
+                        .genderInterestPageStates,
                   ),
                 ],
               ),
@@ -10009,9 +10022,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Instagram form',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .instagramPageStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_identity
+                        .instagramPageStates,
                   ),
                 ],
               ),
@@ -10020,9 +10032,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Identity form',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .nameDobPageStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_identity
+                        .nameDobPageStates,
                   ),
                 ],
               ),
@@ -10031,9 +10042,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Photo grid states',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .photosPageStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_photos
+                        .photosPageStates,
                   ),
                 ],
               ),
@@ -10042,9 +10052,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Prompt form',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .profilePromptsPageStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_prompts
+                        .profilePromptsPageStates,
                   ),
                 ],
               ),
@@ -10053,9 +10062,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Prompt field states',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .promptFieldStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_prompts
+                        .promptFieldStates,
                   ),
                 ],
               ),
@@ -10064,9 +10072,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Welcome reel band states',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .welcomeReelBandStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_reel
+                        .welcomeReelBandStates,
                   ),
                 ],
               ),
@@ -10075,9 +10082,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Welcome reel row states',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .welcomeReelRowStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_reel
+                        .welcomeReelRowStates,
                   ),
                 ],
               ),
@@ -10086,9 +10092,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Welcome reveal states',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .welcomeRevealEntranceStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_reel
+                        .welcomeRevealEntranceStates,
                   ),
                 ],
               ),
@@ -10098,7 +10103,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                   _widgetbook.WidgetbookUseCase(
                     name: 'Run preferences form',
                     builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
+                        _widgetbook_workspace_onboarding_catalog_preferences
                             .runningPrefsPageStates,
                   ),
                 ],
@@ -10108,9 +10113,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Route surface',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .startWelcomeRouteScreen,
+                    builder: _widgetbook_workspace_onboarding_catalog_welcome
+                        .startWelcomeRouteScreen,
                   ),
                 ],
               ),
@@ -10119,9 +10123,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Welcome focus lockup states',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .welcomeFocusLockupStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_reel
+                        .welcomeFocusLockupStates,
                   ),
                 ],
               ),
@@ -10130,9 +10133,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Splash states',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .welcomePageStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_welcome
+                        .welcomePageStates,
                   ),
                 ],
               ),
@@ -10141,9 +10143,8 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Welcome scene states',
-                    builder:
-                        _widgetbook_workspace_onboarding_onboarding_use_cases
-                            .welcomeSceneStates,
+                    builder: _widgetbook_workspace_onboarding_catalog_reel
+                        .welcomeSceneStates,
                   ),
                 ],
               ),

@@ -214,10 +214,6 @@
       "maxLines": 2660
     },
     {
-      "path": "widgetbook/lib/onboarding/onboarding_use_cases.dart",
-      "maxLines": 1340
-    },
-    {
       "path": "widgetbook/lib/profiles/profile_use_cases.dart",
       "maxLines": 2634
     }
