@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.112.0
+version: 1.113.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -1213,6 +1213,18 @@ roster selection and rehearsal departure adapter are mounted as described above.
 No live automation or provider boundary is activated by this change.
 
 ### Checkpoint observations
+
+The typed `listEventAssistanceDepartureRosters` read and account-scoped native
+history query preserve access to each original recorded departure after later
+movement. The ten-row page returns only counts, historical report status and
+original request deadline, with an exclusive revision cursor. It distinguishes
+omitted rosters, explicitly empty rosters, fixed destinations and legacy records.
+Current source labels are withheld after setup changes. The scoped checkpoint
+detail read still owns current guest eligibility, reporter and closeout evidence;
+history never claims that a former observation establishes present location.
+Pagination, revoked/expired duties, changed source, corrupt overflow witnesses
+and native account transitions are covered. History navigation and the shared
+checkpoint observation form remain the next UI integration slice.
 
 `getEventAssistanceCheckpoint` and `recordEventAssistanceCheckpoint` operate on
 one checkpoint and one explicitly recorded departure revision. Each new departure

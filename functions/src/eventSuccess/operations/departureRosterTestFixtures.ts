@@ -11,10 +11,11 @@ import {EventGroupStaffStore} from "./groupStaffStore";
 
 const manager = progressFixtureManager;
 const start = 1_000_000;
-export async function departureRosterHarness(real?: Firestore) {
+export async function departureRosterHarness(real?: Firestore,
+  fixtureId: string = randomUUID()) {
   const fake = new ProgressFirestore();
   const db = real ?? fake as unknown as Firestore;
-  const id = randomUUID();
+  const id = fixtureId;
   const context = {mode: "live" as const, eventId: "e-" + id,
     organizerId: "o-" + id};
   const scope = {context, groupId: "event:whole"};

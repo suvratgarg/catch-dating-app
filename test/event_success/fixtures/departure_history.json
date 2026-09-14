@@ -1,0 +1,54 @@
+{
+  "context": {
+    "mode": "live",
+    "eventId": "e-departure-history-native",
+    "organizerId": "o-departure-history-native"
+  },
+  "groupId": "event:whole",
+  "actorUid": "host-1",
+  "validUntil": 9007199254740991,
+  "serverTime": 1000001,
+  "progressRevision": 3,
+  "coverage": "page",
+  "rosters": [
+    {
+      "progressRevision": 3,
+      "confirmedAt": 1000001,
+      "destination": {
+        "kind": "itineraryStop",
+        "itineraryId": "e-departure-history-native:itinerary",
+        "stopId": "one"
+      },
+      "label": "Stop one",
+      "sourceState": "current",
+      "rosterSize": 0,
+      "checkpoint": {
+        "checkpointId": "one",
+        "reportStatus": "unreported",
+        "reportRevision": 0,
+        "accountedForCount": 0,
+        "originalRequestedDueAt": null
+      }
+    },
+    {
+      "progressRevision": 2,
+      "confirmedAt": 1000000,
+      "destination": {
+        "kind": "itineraryStop",
+        "itineraryId": "e-departure-history-native:itinerary",
+        "stopId": "one"
+      },
+      "label": "Stop one",
+      "sourceState": "current",
+      "rosterSize": 1,
+      "checkpoint": {
+        "checkpointId": "one",
+        "reportStatus": "unreported",
+        "reportRevision": 0,
+        "accountedForCount": 0,
+        "originalRequestedDueAt": 1030000
+      }
+    }
+  ],
+  "nextBeforeRevision": null
+}

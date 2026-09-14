@@ -12,6 +12,8 @@ Do not edit it by hand.
 
 | Generated Type | Source Schema | Output |
 |---|---|---|
+| ListEventAssistanceDepartureRostersCallablePayload | `callables/list_event_assistance_departure_rosters_payload.schema.json` | `functions/src/shared/generated/listEventAssistanceDepartureRostersCallablePayload.ts` |
+| EventAssistanceDepartureRostersCallableResponse | `callable_responses/event_assistance_departure_rosters_response.schema.json` | `functions/src/shared/generated/eventAssistanceDepartureRostersCallableResponse.ts` |
 | ListEventWhatsappPreferencesCallablePayload | `callables/list_event_whatsapp_preferences_payload.schema.json` | `functions/src/shared/generated/listEventWhatsappPreferencesInput.ts` |
 | ListEventWhatsappPreferencesCallableResponse | `callable_responses/list_event_whatsapp_preferences_response.schema.json` | `functions/src/shared/generated/listEventWhatsappPreferencesOutput.ts` |
 | ListEventRcsPreferencesCallablePayload | `callables/list_event_rcs_preferences_payload.schema.json` | `functions/src/shared/generated/listEventRcsPreferencesInput.ts` |
@@ -681,6 +683,8 @@ Do not edit it by hand.
 
 | Dart Constant | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| `schemaListEventAssistanceDepartureRostersCallablePayloadSchema` | ListEventAssistanceDepartureRostersCallablePayload | `callables/list_event_assistance_departure_rosters_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_assistance_departure_rosters_callable_payload.g.dart` |
+| `schemaEventAssistanceDepartureRostersCallableResponseSchema` | EventAssistanceDepartureRostersCallableResponse | `callable_responses/event_assistance_departure_rosters_response.schema.json` | `lib/core/schema_contracts/generated/schemas/event_assistance_departure_rosters_callable_response.g.dart` |
 | `schemaListEventWhatsappPreferencesCallablePayloadSchema` | ListEventWhatsappPreferencesCallablePayload | `callables/list_event_whatsapp_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_whatsapp_preferences_callable_payload.g.dart` |
 | `schemaListEventWhatsappPreferencesCallableResponseSchema` | ListEventWhatsappPreferencesCallableResponse | `callable_responses/list_event_whatsapp_preferences_response.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_whatsapp_preferences_callable_response.g.dart` |
 | `schemaListEventRcsPreferencesCallablePayloadSchema` | ListEventRcsPreferencesCallablePayload | `callables/list_event_rcs_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/schemas/list_event_rcs_preferences_callable_payload.g.dart` |
@@ -1350,6 +1354,7 @@ Do not edit it by hand.
 
 | Generated Class | Schema Name | Source Schema | Output |
 |---|---|---|---|
+| ListEventAssistanceDepartureRostersCallableRequest | ListEventAssistanceDepartureRostersCallablePayload | `callables/list_event_assistance_departure_rosters_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_assistance_departure_rosters_callable_request.g.dart` |
 | ListEventWhatsappPreferencesCallableRequest | ListEventWhatsappPreferencesCallablePayload | `callables/list_event_whatsapp_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_whatsapp_preferences_callable_request.g.dart` |
 | ListEventRcsPreferencesCallableRequest | ListEventRcsPreferencesCallablePayload | `callables/list_event_rcs_preferences_payload.schema.json` | `lib/core/schema_contracts/generated/callables/list_event_rcs_preferences_callable_request.g.dart` |
 | GetEventRcsWithdrawalCallableRequest | GetEventRcsWithdrawalCallablePayload | `callables/get_event_rcs_withdrawal_payload.schema.json` | `lib/core/schema_contracts/generated/callables/get_event_rcs_withdrawal_callable_request.g.dart` |

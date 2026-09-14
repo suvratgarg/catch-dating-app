@@ -1,6 +1,6 @@
 ---
 doc_id: data_contracts
-version: 1.105.0
+version: 1.106.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -809,6 +809,20 @@ to 1,000 unique IDs with batched transactional reads; the `members` field is
 exempted from indexing. No client can read or write the roster collection.
 It has no TTL: checkpoint reconciliation and the retention policy must preserve
 the original departure evidence before any terminal cleanup is introduced.
+
+`listEventAssistanceDepartureRosters` discovers recorded rosters for one current
+group under scoped read authority. Its read-only transaction queries the canonical
+progress identity in descending departure revision, with a fixed ten-row page and
+one validated overflow witness. The exclusive `beforeRevision` cursor cannot hide
+a later departure or duplicate a row across older pages. Each row exposes original
+departure time, roster size, source availability and saved checkpoint report counts.
+It exposes no guest identities, contact fields or inferred current obligations; the
+original requested deadline is historical, and report detail must reload current
+owner, closeout and visit evidence. Source changes retain history while withholding
+a current destination label. Access is checked before the query and expiry is
+rechecked after report reads. Invalid roster/report identity, hashes, ordering or
+revision bounds fail the page. Removed groups remain unavailable under the current
+group-duty boundary; this read does not widen staff authority.
 
 `eventAssistanceCheckpoints/{reportId}` records the current checkpoint report for
 an execution context, group, departure revision and checkpoint ID. The typed

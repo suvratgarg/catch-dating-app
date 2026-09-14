@@ -15752,6 +15752,165 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-f0-9]{64}\$',
   );
 
+  static const eventAssistanceDepartureRostersCallableResponseActorUid = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.actorUid',
+    maxLength: 128,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseCoverage = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.coverage',
+    required: true,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseGroupId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseNextBeforeRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.nextBeforeRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRosters = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters',
+    required: true,
+    valueTypes: <String>['array'],
+    itemValueTypes: <String>['object'],
+    maxItems: 10,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointAccountedForCount = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.accountedForCount',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointCheckpointId = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.checkpointId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointOriginalRequestedDueAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.originalRequestedDueAt',
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointReportRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.reportRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointReportStatus = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.reportStatus',
+    required: true,
+    enumValues: <String>['unreported', 'partial', 'complete'],
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsConfirmedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.confirmedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsLabel = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.label',
+    maxLength: 240,
+    minLength: 1,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsProgressRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.progressRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsRosterSize = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.rosterSize',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 1000,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseRostersItemsSourceState = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.rosters.items.sourceState',
+    required: true,
+    enumValues: <String>['current', 'setupChanged', 'destinationNotRecorded'],
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseServerTime = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.serverTime',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceDepartureRostersCallableResponseValidUntil = CatchContractFieldConstraints(
+    path: 'eventAssistanceDepartureRostersCallableResponse.validUntil',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
   static const eventAssistanceGroupProgressCallableResponseActorUid = CatchContractFieldConstraints(
     path: 'eventAssistanceGroupProgressCallableResponse.actorUid',
     maxLength: 128,
@@ -55551,6 +55710,45 @@ abstract final class CatchContractConstraints {
     pattern: '^outbox:[a-f0-9]{64}\$',
   );
 
+  static const listEventAssistanceDepartureRostersCallablePayloadBeforeRevision = CatchContractFieldConstraints(
+    path: 'listEventAssistanceDepartureRostersCallablePayload.beforeRevision',
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const listEventAssistanceDepartureRostersCallablePayloadContextEventId = CatchContractFieldConstraints(
+    path: 'listEventAssistanceDepartureRostersCallablePayload.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const listEventAssistanceDepartureRostersCallablePayloadContextMode = CatchContractFieldConstraints(
+    path: 'listEventAssistanceDepartureRostersCallablePayload.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventAssistanceDepartureRostersCallablePayloadContextOrganizerId = CatchContractFieldConstraints(
+    path: 'listEventAssistanceDepartureRostersCallablePayload.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const listEventAssistanceDepartureRostersCallablePayloadGroupId = CatchContractFieldConstraints(
+    path: 'listEventAssistanceDepartureRostersCallablePayload.groupId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
   static const listEventRcsPreferencesCallablePayloadAttendeeId = CatchContractFieldConstraints(
     path: 'listEventRcsPreferencesCallablePayload.attendeeId',
     required: true,
@@ -92960,6 +93158,27 @@ abstract final class CatchContractConstraints {
     'eventAssistanceDepartureRosterDocument.rosterId': eventAssistanceDepartureRosterDocumentRosterId,
     'eventAssistanceDepartureRosterDocument.schemaVersion': eventAssistanceDepartureRosterDocumentSchemaVersion,
     'eventAssistanceDepartureRosterDocument.sourceHash': eventAssistanceDepartureRosterDocumentSourceHash,
+    'eventAssistanceDepartureRostersCallableResponse.actorUid': eventAssistanceDepartureRostersCallableResponseActorUid,
+    'eventAssistanceDepartureRostersCallableResponse.context.eventId': eventAssistanceDepartureRostersCallableResponseContextEventId,
+    'eventAssistanceDepartureRostersCallableResponse.context.mode': eventAssistanceDepartureRostersCallableResponseContextMode,
+    'eventAssistanceDepartureRostersCallableResponse.context.organizerId': eventAssistanceDepartureRostersCallableResponseContextOrganizerId,
+    'eventAssistanceDepartureRostersCallableResponse.coverage': eventAssistanceDepartureRostersCallableResponseCoverage,
+    'eventAssistanceDepartureRostersCallableResponse.groupId': eventAssistanceDepartureRostersCallableResponseGroupId,
+    'eventAssistanceDepartureRostersCallableResponse.nextBeforeRevision': eventAssistanceDepartureRostersCallableResponseNextBeforeRevision,
+    'eventAssistanceDepartureRostersCallableResponse.progressRevision': eventAssistanceDepartureRostersCallableResponseProgressRevision,
+    'eventAssistanceDepartureRostersCallableResponse.rosters': eventAssistanceDepartureRostersCallableResponseRosters,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.accountedForCount': eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointAccountedForCount,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.checkpointId': eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointCheckpointId,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.originalRequestedDueAt': eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointOriginalRequestedDueAt,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.reportRevision': eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointReportRevision,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.checkpoint.reportStatus': eventAssistanceDepartureRostersCallableResponseRostersItemsCheckpointReportStatus,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.confirmedAt': eventAssistanceDepartureRostersCallableResponseRostersItemsConfirmedAt,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.label': eventAssistanceDepartureRostersCallableResponseRostersItemsLabel,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.progressRevision': eventAssistanceDepartureRostersCallableResponseRostersItemsProgressRevision,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.rosterSize': eventAssistanceDepartureRostersCallableResponseRostersItemsRosterSize,
+    'eventAssistanceDepartureRostersCallableResponse.rosters.items.sourceState': eventAssistanceDepartureRostersCallableResponseRostersItemsSourceState,
+    'eventAssistanceDepartureRostersCallableResponse.serverTime': eventAssistanceDepartureRostersCallableResponseServerTime,
+    'eventAssistanceDepartureRostersCallableResponse.validUntil': eventAssistanceDepartureRostersCallableResponseValidUntil,
     'eventAssistanceGroupProgressCallableResponse.actorUid': eventAssistanceGroupProgressCallableResponseActorUid,
     'eventAssistanceGroupProgressCallableResponse.departureAuthority.checkpointReporter': eventAssistanceGroupProgressCallableResponseDepartureAuthorityCheckpointReporter,
     'eventAssistanceGroupProgressCallableResponse.departureAuthority.kind': eventAssistanceGroupProgressCallableResponseDepartureAuthorityKind,
@@ -98293,6 +98512,11 @@ abstract final class CatchContractConstraints {
     'listEventAssistanceDeliveriesCallablePayload.context.mode': listEventAssistanceDeliveriesCallablePayloadContextMode,
     'listEventAssistanceDeliveriesCallablePayload.context.organizerId': listEventAssistanceDeliveriesCallablePayloadContextOrganizerId,
     'listEventAssistanceDeliveriesCallablePayload.cursor': listEventAssistanceDeliveriesCallablePayloadCursor,
+    'listEventAssistanceDepartureRostersCallablePayload.beforeRevision': listEventAssistanceDepartureRostersCallablePayloadBeforeRevision,
+    'listEventAssistanceDepartureRostersCallablePayload.context.eventId': listEventAssistanceDepartureRostersCallablePayloadContextEventId,
+    'listEventAssistanceDepartureRostersCallablePayload.context.mode': listEventAssistanceDepartureRostersCallablePayloadContextMode,
+    'listEventAssistanceDepartureRostersCallablePayload.context.organizerId': listEventAssistanceDepartureRostersCallablePayloadContextOrganizerId,
+    'listEventAssistanceDepartureRostersCallablePayload.groupId': listEventAssistanceDepartureRostersCallablePayloadGroupId,
     'listEventRcsPreferencesCallablePayload.attendeeId': listEventRcsPreferencesCallablePayloadAttendeeId,
     'listEventRcsPreferencesCallablePayload.cursor': listEventRcsPreferencesCallablePayloadCursor,
     'listEventRcsPreferencesCallablePayload.eventId': listEventRcsPreferencesCallablePayloadEventId,

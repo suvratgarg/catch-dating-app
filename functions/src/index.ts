@@ -90,6 +90,8 @@ export {getEventAssistanceSetting, setEventAssistanceSetting} from
   "./eventSuccess/operations/policySettingsHandlers";
 export {getEventAssistanceGroupProgress, confirmEventAssistanceDeparture} from
   "./eventSuccess/operations/groupProgressHandlers";
+export {listEventAssistanceDepartureRosters} from
+  "./eventSuccess/operations/departureHistoryHandlers";
 export {onEventAssistanceRcsCallbackCreated} from
   "./eventSuccess/operations/rcsWebhookProcessing";
 export {eventAssistanceRcsWebhook} from

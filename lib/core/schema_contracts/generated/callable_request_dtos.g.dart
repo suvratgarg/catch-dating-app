@@ -147,6 +147,7 @@ export 'callables/import_organizer_applications_callable_request.g.dart';
 export 'callables/inject_event_rehearsal_behavior_callable_request.g.dart';
 export 'callables/list_event_assistance_cases_callable_request.g.dart';
 export 'callables/list_event_assistance_deliveries_callable_request.g.dart';
+export 'callables/list_event_assistance_departure_rosters_callable_request.g.dart';
 export 'callables/list_event_rcs_preferences_callable_request.g.dart';
 export 'callables/list_event_whatsapp_preferences_callable_request.g.dart';
 export 'callables/list_organizer_applications_callable_request.g.dart';

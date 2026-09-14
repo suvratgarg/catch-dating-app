@@ -17,6 +17,16 @@ class SchemaContractDefinition {
 
 const schemaContractDefinitions = <SchemaContractDefinition>[
   SchemaContractDefinition(
+    name: 'ListEventAssistanceDepartureRostersCallablePayload',
+    source: 'callables/list_event_assistance_departure_rosters_payload.schema.json',
+    schema: schemaListEventAssistanceDepartureRostersCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'EventAssistanceDepartureRostersCallableResponse',
+    source: 'callable_responses/event_assistance_departure_rosters_response.schema.json',
+    schema: schemaEventAssistanceDepartureRostersCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'ListEventWhatsappPreferencesCallablePayload',
     source: 'callables/list_event_whatsapp_preferences_payload.schema.json',
     schema: schemaListEventWhatsappPreferencesCallablePayloadSchema,
@@ -3339,6 +3349,8 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
 ];
 
 const schemaContractsByName = <String, Map<String, Object?>>{
+  'ListEventAssistanceDepartureRostersCallablePayload': schemaListEventAssistanceDepartureRostersCallablePayloadSchema,
+  'EventAssistanceDepartureRostersCallableResponse': schemaEventAssistanceDepartureRostersCallableResponseSchema,
   'ListEventWhatsappPreferencesCallablePayload': schemaListEventWhatsappPreferencesCallablePayloadSchema,
   'ListEventWhatsappPreferencesCallableResponse': schemaListEventWhatsappPreferencesCallableResponseSchema,
   'ListEventRcsPreferencesCallablePayload': schemaListEventRcsPreferencesCallablePayloadSchema,
@@ -4006,6 +4018,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
 };
 
 const schemaContractsBySource = <String, Map<String, Object?>>{
+  'callables/list_event_assistance_departure_rosters_payload.schema.json': schemaListEventAssistanceDepartureRostersCallablePayloadSchema,
+  'callable_responses/event_assistance_departure_rosters_response.schema.json': schemaEventAssistanceDepartureRostersCallableResponseSchema,
   'callables/list_event_whatsapp_preferences_payload.schema.json': schemaListEventWhatsappPreferencesCallablePayloadSchema,
   'callable_responses/list_event_whatsapp_preferences_response.schema.json': schemaListEventWhatsappPreferencesCallableResponseSchema,
   'callables/list_event_rcs_preferences_payload.schema.json': schemaListEventRcsPreferencesCallablePayloadSchema,

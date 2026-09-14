@@ -2020,7 +2020,8 @@
       "write": "server only",
       "exportedFunctions": [
         "getEventAssistanceGroupProgress",
-        "confirmEventAssistanceDeparture"
+        "confirmEventAssistanceDeparture",
+        "listEventAssistanceDepartureRosters"
       ]
     },
     {
@@ -2663,6 +2664,36 @@
       ],
       "migrationNotes": [
         "At most 500 synthetic departures per session; one per counted Host action. Reset and expiry delete all movement records. Reads page at 25 departures and verify the complete bounded actor set."
+      ]
+    },
+    {
+      "id": "eventAssistanceDepartureRosters",
+      "path": "eventAssistanceDepartureRosters/{rosterId}",
+      "rulesMatch": "/eventAssistanceDepartureRosters/{rosterId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance immutable departure roster",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceDepartureRoster",
+        "confirmEventAssistanceDeparture",
+        "listEventAssistanceDepartureRosters",
+        "getEventAssistanceCheckpoint",
+        "recordEventAssistanceCheckpoint"
+      ]
+    },
+    {
+      "id": "eventAssistanceCheckpoints",
+      "path": "eventAssistanceCheckpoints/{reportId}",
+      "rulesMatch": "/eventAssistanceCheckpoints/{reportId}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "event-assistance checkpoint observation",
+      "read": "server only",
+      "write": "server only",
+      "exportedFunctions": [
+        "getEventAssistanceCheckpoint",
+        "recordEventAssistanceCheckpoint",
+        "listEventAssistanceDepartureRosters"
       ]
     }
   ]

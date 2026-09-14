@@ -240,6 +240,215 @@
           "maximum": 9007199254740991
         }
       }
+    },
+    "HistoryInput": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "groupId"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "beforeRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "HistoryCheckpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "checkpointId",
+        "reportStatus",
+        "reportRevision",
+        "accountedForCount",
+        "originalRequestedDueAt"
+      ],
+      "properties": {
+        "checkpointId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "reportStatus": {
+          "enum": [
+            "unreported",
+            "partial",
+            "complete"
+          ]
+        },
+        "reportRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "accountedForCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "originalRequestedDueAt": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "HistoryRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "progressRevision",
+        "confirmedAt",
+        "destination",
+        "label",
+        "sourceState",
+        "rosterSize",
+        "checkpoint"
+      ],
+      "properties": {
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "confirmedAt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "destination": {
+          "anyOf": [
+            {
+              "$ref": "event_assistance_common.schema.json#/definitions/JoiningTarget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "label": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 240
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sourceState": {
+          "enum": [
+            "current",
+            "setupChanged",
+            "destinationNotRecorded"
+          ]
+        },
+        "rosterSize": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "checkpoint": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/HistoryCheckpoint"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
+    },
+    "HistoryResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context",
+        "groupId",
+        "actorUid",
+        "validUntil",
+        "serverTime",
+        "progressRevision",
+        "coverage",
+        "rosters",
+        "nextBeforeRevision"
+      ],
+      "properties": {
+        "context": {
+          "$ref": "event_assistance_guest.schema.json#/definitions/liveContext"
+        },
+        "groupId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+        },
+        "actorUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "validUntil": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "serverTime": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "progressRevision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "coverage": {
+          "const": "page"
+        },
+        "rosters": {
+          "type": "array",
+          "maxItems": 10,
+          "items": {
+            "$ref": "#/definitions/HistoryRow"
+          }
+        },
+        "nextBeforeRevision": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      }
     }
   }
 }
