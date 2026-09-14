@@ -71,7 +71,7 @@ class CatchChoiceInput<T> extends StatefulWidget {
     bool isOptional = false,
     CatchContractFieldConstraints? contract,
     String Function(T value)? contractValueBuilder,
-    FormFieldValidator<Set<T>>? validator,
+    FormFieldValidator<Set<T>>? onValidate,
     this.itemAccentBuilder,
     this.itemKeyBuilder,
   }) : _segmented = null,
@@ -84,7 +84,7 @@ class CatchChoiceInput<T> extends StatefulWidget {
          isOptional: isOptional,
          contract: contract,
          contractValueBuilder: contractValueBuilder,
-         validator: validator,
+         onValidate: onValidate,
        );
 
   final String Function(T value)? _itemSubtitleBuilder;
@@ -112,7 +112,7 @@ class CatchChoiceInput<T> extends StatefulWidget {
     bool isOptional,
     CatchContractFieldConstraints? contract,
     String Function(T value)? contractValueBuilder,
-    FormFieldValidator<Set<T>>? validator,
+    FormFieldValidator<Set<T>>? onValidate,
   })?
   _form;
 
@@ -562,7 +562,7 @@ class _CatchChoiceInputState<T> extends State<CatchChoiceInput<T>> {
       );
       return FormField<Set<T>>(
         initialValue: supportedSelection,
-        validator: form.validator,
+        validator: form.onValidate,
         builder: (field) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

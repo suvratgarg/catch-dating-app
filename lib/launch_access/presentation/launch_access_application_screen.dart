@@ -315,7 +315,7 @@ class _LaunchAccessApplicationFormState
                   CatchContractConstraints.accessApplicationDocumentEventTypes,
               values: LaunchAccessEventType.values,
               selected: draft.eventTypes,
-              validator: (_) => draft.eventTypes.isEmpty
+              onValidate: (_) => draft.eventTypes.isEmpty
                   ? context.l10n.launchAccessValidationChooseEventType
                   : null,
               onChanged: (next) {
@@ -338,7 +338,7 @@ class _LaunchAccessApplicationFormState
                   .accessApplicationDocumentAvailabilityWindows,
               values: LaunchAccessAvailabilityWindow.values,
               selected: draft.availabilityWindows,
-              validator: (_) => draft.availabilityWindows.isEmpty
+              onValidate: (_) => draft.availabilityWindows.isEmpty
                   ? context.l10n.launchAccessValidationChooseTime
                   : null,
               onChanged: (next) {

@@ -4012,7 +4012,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical information-grouping primitive for divided and outlined field groups, generic contained modules, and plain content groups. Field sections own header placement, sibling rules, clipping, perimeter, responsive interaction geometry, and section rhythm; named constructors keep those responsibilities structural instead of caller-styled. Callers resolve optional lead accents; supplied titles and counts need no app catalog dependency.",
+      "summary": "Canonical information-grouping primitive for divided and outlined field groups, generic contained modules, and plain content groups. Field sections own header placement, sibling rules, clipping, perimeter, responsive interaction geometry, and section rhythm; named constructors keep those responsibilities structural instead of caller-styled. Callers resolve optional title colors; supplied titles and counts need no app catalog dependency.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4035,8 +4035,6 @@
             "title",
             "count",
             "trailing",
-            "leadAccent",
-            "lead",
             "first",
             "dividerColor",
             "dividerIndent",
@@ -4052,8 +4050,7 @@
             "title",
             "count",
             "trailing",
-            "leadAccent",
-            "lead",
+            "titleColor",
             "first",
             "footer",
             "interaction",
@@ -4065,8 +4062,7 @@
             "count",
             "trailing",
             "footer",
-            "focused",
-            "hasError",
+            "states",
             "headerPlacement",
             "children",
             "child"
@@ -4074,8 +4070,7 @@
           "CatchSection.containedFieldGroups": [
             "groups",
             "footer",
-            "focused",
-            "hasError"
+            "states"
           ],
           "CatchSection.contained": [
             "title",
@@ -4088,11 +4083,10 @@
             "backgroundColor",
             "borderColor",
             "tone",
-            "elevation",
+            "emphasis",
             "boxShadow",
             "showInternalDividers",
-            "focused",
-            "hasError",
+            "states",
             "children",
             "child"
           ],
@@ -4140,34 +4134,6 @@
             "required": false,
             "default": false,
             "dartType": "bool"
-          },
-          {
-            "name": "lead",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "focused",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "hasError",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool"
-          },
-          {
-            "name": "leadAccent",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?",
-            "notes": "Caller-resolved activity accent. Applied only when lead is true; an explicit titleColor takes precedence."
           },
           {
             "name": "interaction",
@@ -4233,7 +4199,8 @@
             "name": "titleColor",
             "type": "color",
             "required": false,
-            "dartType": "Color?"
+            "dartType": "Color?",
+            "notes": "Caller-resolved title color, including activity accents. Omission uses ink for divided content and ink2 for field-row headings."
           },
           {
             "name": "bodyGap",
@@ -4390,6 +4357,13 @@
             "required": false,
             "dartType": "EdgeInsetsGeometry?",
             "notes": "Horizontal only; normally inherited from embedded/fullBleed ownership."
+          },
+          {
+            "name": "states",
+            "type": "object",
+            "required": false,
+            "dartType": "Set<WidgetState>",
+            "notes": "Explicit focus/error states for contained recipes, passed to the one SectionSurface owner. Error wins over focus; omission preserves descendant focus tracking."
           }
         ],
         "states": [
@@ -7626,7 +7600,7 @@
       "name": "CatchChoiceInput",
       "status": "active",
       "kind": "primitive",
-      "summary": "One typed choice input: compact checked, described, segmented and Flutter Form recipes share cardinality and callbacks while preserving their rendering and semantics.",
+      "summary": "One typed choice input: compact checked, described, segmented and Flutter Form recipes share cardinality and callbacks while preserving their rendering and semantics. The form recipe exposes caller-owned validation through onValidate.",
       "dart": {
         "symbol": "CatchChoiceInput",
         "file": "packages/catch_ui/lib/src/components/catch_choice_input.dart",

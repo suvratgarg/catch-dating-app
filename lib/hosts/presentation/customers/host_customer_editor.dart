@@ -349,7 +349,7 @@ class HostCustomerIdentityInputSection extends StatelessWidget {
     }
     return CatchSection.containedFieldRows(
       title: title,
-      focused: focused,
+      states: {if (focused) WidgetState.focused},
       footer: footer,
       children: fields,
     );

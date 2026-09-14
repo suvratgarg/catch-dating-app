@@ -1,12 +1,10 @@
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 Widget _app(Widget child) => MaterialApp(
   theme: CatchTheme.light,
   home: Scaffold(body: child),
 );
-
 CatchFieldLabelTextCopy _copy(String optional) => CatchFieldLabelTextCopy(
   optionalLabel: optional,
   optionalSuffix: ' ($optional)',
@@ -33,7 +31,7 @@ void main() {
                 isOptional: true,
                 itemKeyBuilder: (value) => ValueKey(value),
                 onChanged: (next) => setState(() => selected = next),
-                validator: (value) {
+                onValidate: (value) {
                   validated = value;
                   return null;
                 },

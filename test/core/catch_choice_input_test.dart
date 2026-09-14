@@ -8,12 +8,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
-
 Widget _app(Widget child) => MaterialApp(
   theme: CatchTheme.light,
   home: Scaffold(body: child),
 );
-
 CatchFieldLabelTextCopy get _copy => CatchFieldLabelTextCopy(
   optionalLabel: 'Optional',
   optionalSuffix: ' · Optional',
@@ -48,7 +46,7 @@ void main() {
                             mode: mode,
                             allowEmptySelection: allowEmpty,
                             onChanged: change,
-                            validator: (value) {
+                            onValidate: (value) {
                               validated = value;
                               return null;
                             },
@@ -218,7 +216,7 @@ void main() {
                 itemKeyBuilder: (value) => ValueKey(value),
                 mode: CatchChipMode.single,
                 isOptional: true,
-                validator: (value) =>
+                onValidate: (value) =>
                     value == null || value.isEmpty ? 'Choose a place' : null,
                 onChanged: (value) => setState(() => selected = value),
               );

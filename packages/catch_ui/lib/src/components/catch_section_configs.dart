@@ -16,8 +16,6 @@ typedef _SectionCommonConfig = ({
 
 typedef _DividedSectionConfig = ({
   _SectionCommonConfig common,
-  Color? leadAccent,
-  bool lead,
   bool first,
   Color? dividerColor,
   double dividerIndent,
@@ -28,8 +26,6 @@ typedef _DividedSectionConfig = ({
 
 typedef _DividedFieldRowsSectionConfig = ({
   _SectionCommonConfig common,
-  Color? leadAccent,
-  bool lead,
   bool first,
   CatchDividedFieldInteractionScopeMode? interaction,
 });
@@ -37,8 +33,7 @@ typedef _DividedFieldRowsSectionConfig = ({
 typedef _ContainedFieldRowsSectionConfig = ({
   _SectionCommonConfig common,
   List<CatchSectionFieldGroup>? groups,
-  bool focused,
-  bool hasError,
+  Set<WidgetState> states,
   CatchSectionHeaderPlacement headerPlacement,
 });
 
@@ -51,8 +46,7 @@ typedef _ContainedSectionConfig = ({
   CatchSurfaceEmphasis emphasis,
   List<BoxShadow>? boxShadow,
   bool showInternalDividers,
-  bool focused,
-  bool hasError,
+  Set<WidgetState> states,
 });
 
 typedef _PlainSectionConfig = ({

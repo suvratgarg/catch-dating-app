@@ -445,14 +445,12 @@ void main() {
               children: [
                 CatchSection.divided(
                   title: 'The plan',
-                  leadAccent: activityAccent,
-                  lead: true,
+                  titleColor: activityAccent,
                   first: true,
                   child: const Text('Lead body'),
                 ),
                 CatchSection.divided(
                   title: 'Details',
-                  leadAccent: activityAccent,
                   child: const Text('Neutral body'),
                 ),
               ],
@@ -934,7 +932,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         const CatchSection.containedFieldRows(
-          focused: true,
+          states: {WidgetState.focused},
           child: Text('Section body'),
         ),
       ),
@@ -960,8 +958,7 @@ void main() {
     await tester.pumpWidget(
       _wrap(
         const CatchSection.containedFieldRows(
-          focused: true,
-          hasError: true,
+          states: {WidgetState.focused, WidgetState.error},
           child: Text('Section body'),
         ),
       ),
@@ -1169,7 +1166,6 @@ void main() {
 }
 
 void _noop() {}
-
 Widget _wrap(Widget child, {ThemeData? theme, double textScale = 1}) {
   return MaterialApp(
     theme: theme ?? AppTheme.light,

@@ -359,7 +359,9 @@ class _ProfileInlinePromptEntryEditorState
     final answerSaving = _answerStatus == CatchFieldStatus.saving;
     return CatchSection.containedFieldRows(
       key: ValueKey('profile-prompt-card-${widget.promptIndex}'),
-      hasError: _validationError != null || saveError != null,
+      states: {
+        if (_validationError != null || saveError != null) WidgetState.error,
+      },
       children: [
         CatchField<String>.choices(
           copy: catchFieldCopy(context.l10n),

@@ -23,16 +23,15 @@ enum _CatchSectionVariant { divided, contained, plain }
 
 /// Design-system `Section`: the canonical primitive for grouping information.
 ///
-/// Screens that adopt the handoff composition should place these inside
-/// `CatchSectionList` or `CatchSectionList` with no ad-hoc gaps.
+/// Compose these inside `CatchSectionList` with no ad-hoc gaps. Optional
+/// title colors are caller-resolved. Contained recipes pass explicit focus/error
+/// states to `CatchSectionSurface`, which owns their precedence and rendering.
 class CatchSection extends StatelessWidget {
   const CatchSection.divided({
     super.key,
     String? title,
     Object? count,
     this.trailing,
-    Color? leadAccent,
-    bool lead = false,
     bool first = false,
     Color? dividerColor,
     double dividerIndent = 0,
@@ -54,8 +53,6 @@ class CatchSection extends StatelessWidget {
            titleColor: titleColor,
            bodyGap: bodyGap,
          ),
-         leadAccent: leadAccent,
-         lead: lead,
          first: first,
          dividerColor: dividerColor,
          dividerIndent: dividerIndent,
@@ -74,8 +71,7 @@ class CatchSection extends StatelessWidget {
     String? title,
     Object? count,
     this.trailing,
-    Color? leadAccent,
-    bool lead = false,
+    Color? titleColor,
     bool first = false,
     this.footer,
     CatchDividedFieldInteractionScopeMode? interaction,
@@ -89,11 +85,9 @@ class CatchSection extends StatelessWidget {
            title: title,
            subtitle: null,
            count: count,
-           titleColor: null,
+           titleColor: titleColor,
            bodyGap: CatchFieldTokens.sectionRuleGap,
          ),
-         leadAccent: leadAccent,
-         lead: lead,
          first: first,
          interaction: interaction,
        ),
@@ -116,8 +110,7 @@ class CatchSection extends StatelessWidget {
     Object? count,
     this.trailing,
     this.footer,
-    bool focused = false,
-    bool hasError = false,
+    Set<WidgetState> states = const {},
     CatchSectionHeaderPlacement headerPlacement =
         CatchSectionHeaderPlacement.outside,
     this.children,
@@ -136,8 +129,7 @@ class CatchSection extends StatelessWidget {
          ),
          groups: null,
 
-         focused: focused,
-         hasError: hasError,
+         states: states,
          headerPlacement: headerPlacement,
        ),
        _containedConfig = null,
@@ -154,8 +146,7 @@ class CatchSection extends StatelessWidget {
     super.key,
     required List<CatchSectionFieldGroup> groups,
     this.footer,
-    bool focused = false,
-    bool hasError = false,
+    Set<WidgetState> states = const {},
   }) : trailing = null,
        children = null,
        child = null,
@@ -171,8 +162,7 @@ class CatchSection extends StatelessWidget {
          ),
          groups: groups,
 
-         focused: focused,
-         hasError: hasError,
+         states: states,
          headerPlacement: CatchSectionHeaderPlacement.inside,
        ),
        _containedConfig = null,
@@ -194,8 +184,7 @@ class CatchSection extends StatelessWidget {
     CatchSurfaceEmphasis emphasis = CatchSurfaceEmphasis.subtle,
     List<BoxShadow>? boxShadow,
     bool showInternalDividers = true,
-    bool focused = false,
-    bool hasError = false,
+    Set<WidgetState> states = const {},
     this.children,
     this.child,
   }) : footer = null,
@@ -219,8 +208,7 @@ class CatchSection extends StatelessWidget {
          emphasis: emphasis,
          boxShadow: boxShadow,
          showInternalDividers: showInternalDividers,
-         focused: focused,
-         hasError: hasError,
+         states: states,
        ),
        _plainConfig = null,
        _horizontalConfig = null;
@@ -326,11 +314,6 @@ class CatchSection extends StatelessWidget {
   final List<Widget>? children;
   final Widget? child;
 
-  /// Caller-resolved accent used only for a lead divided section.
-  /// An explicit [titleColor] takes precedence.
-  Color? get leadAccent =>
-      _dividedConfig?.leadAccent ?? _fieldRowsConfig?.leadAccent;
-  bool get lead => _dividedConfig?.lead ?? _fieldRowsConfig?.lead ?? false;
   bool get first => _dividedConfig?.first ?? _fieldRowsConfig?.first ?? false;
   _CatchSectionVariant get _variant =>
       _containedConfig != null || _containedFieldRowsConfig != null
@@ -368,12 +351,10 @@ class CatchSection extends StatelessWidget {
       _plainConfig?.showInternalDividers ??
       true;
   final Widget? footer;
-  bool get focused =>
-      _containedFieldRowsConfig?.focused ?? _containedConfig?.focused ?? false;
-  bool get hasError =>
-      _containedFieldRowsConfig?.hasError ??
-      _containedConfig?.hasError ??
-      false;
+
+  /// Explicit section interaction/error states; error wins over focus.
+  Set<WidgetState> get states =>
+      _containedFieldRowsConfig?.states ?? _containedConfig?.states ?? const {};
   bool get _fieldRows =>
       _fieldRowsConfig != null || _containedFieldRowsConfig != null;
   CatchSectionHeaderPlacement get fieldHeaderPlacement =>
@@ -445,14 +426,7 @@ class CatchSection extends StatelessWidget {
     );
     Widget section;
     if (variant == _CatchSectionVariant.divided) {
-      final accent = leadAccent;
-      final effectiveTitleColor =
-          titleColor ??
-          (lead && accent != null
-              ? accent
-              : fieldRows
-              ? t.ink2
-              : t.ink);
+      final effectiveTitleColor = titleColor ?? (fieldRows ? t.ink2 : t.ink);
       final content = Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -688,10 +662,7 @@ class CatchSection extends StatelessWidget {
                   padding: padding ?? const EdgeInsets.all(CatchSpacing.s4),
                   backgroundColor: backgroundColor,
                   borderColor: borderColor,
-                  states: {
-                    if (focused) WidgetState.focused,
-                    if (hasError) WidgetState.error,
-                  },
+                  states: states,
                   child: content,
                 )
               : CatchSectionSurface(
@@ -701,10 +672,7 @@ class CatchSection extends StatelessWidget {
                   tone: tone,
                   emphasis: emphasis,
                   boxShadow: boxShadow,
-                  states: {
-                    if (focused) WidgetState.focused,
-                    if (hasError) WidgetState.error,
-                  },
+                  states: states,
                   child: content,
                 ),
         );

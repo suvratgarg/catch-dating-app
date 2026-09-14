@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generatedBy": "tool/design/build_context_pack.mjs",
-  "sourceDigest": "62a72b61d3dde1dd3b5933899f5b7e547e4cdac6d7c4a39cb127ddf06147222d",
+  "sourceDigest": "e64a0099db72208779f7d95f9d926a84f23645233b5294da4b0a8ba9161c2dfa",
   "contextFiles": {
     "components": "design_system/components.json",
     "tokens": "design_system/tokens.json",

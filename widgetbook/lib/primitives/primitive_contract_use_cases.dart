@@ -2231,7 +2231,6 @@ Widget catchRecordRowContractStates(BuildContext context) => _ContractScreen(
 )
 Widget catchRowPressSurfaceContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
-
   Widget previewRow({
     required Widget leading,
     required String title,
@@ -3305,7 +3304,7 @@ Widget catchChoiceInputContractStates(BuildContext context) {
             itemLabelBuilder: (value) => value,
             selected: const {},
             mode: CatchChipMode.multiple,
-            validator: (value) => value == null || value.isEmpty
+            onValidate: (value) => value == null || value.isEmpty
                 ? 'Choose at least one language'
                 : null,
             onChanged: (_) {},
@@ -3791,7 +3790,7 @@ Widget catchSectionContractStates(BuildContext context) {
         label: 'contained-focused',
         child: _FieldWidth(
           child: CatchSection.contained(
-            focused: true,
+            states: {WidgetState.focused},
             children: [
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
@@ -3808,7 +3807,7 @@ Widget catchSectionContractStates(BuildContext context) {
         label: 'contained-error',
         child: _FieldWidth(
           child: CatchSection.contained(
-            hasError: true,
+            states: {WidgetState.error},
             children: [
               CatchField.input(
                 copy: catchFieldCopy(context.l10n),
@@ -4138,7 +4137,7 @@ Widget catchSectionContractStates(BuildContext context) {
         label: 'contained-field-rows-explicit-focused',
         child: _FieldWidth(
           child: CatchSection.containedFieldRows(
-            focused: true,
+            states: {WidgetState.focused},
             children: [
               CatchField.read(
                 copy: catchFieldCopy(context.l10n),
@@ -4209,11 +4208,10 @@ Widget catchSectionContractStates(BuildContext context) {
         label: 'lead-accent',
         child: CatchSection.divided(
           title: 'The plan',
-          leadAccent: ActivityPalette.resolve(
+          titleColor: ActivityPalette.resolve(
             context,
             ActivityKind.socialRun,
           ).accent,
-          lead: true,
           first: true,
           child: const Text('Lead sections may carry the activity accent.'),
         ),
@@ -4581,7 +4579,6 @@ Widget catchIconTileContractStates(BuildContext context) {
 )
 Widget catchControlShellContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
-
   Widget shell({
     required String label,
     CatchControlSurfaceSize size = CatchControlSurfaceSize.md,
@@ -6320,7 +6317,7 @@ Widget catchSectionInsetStates(BuildContext context) {
           children: [
             CatchSection.divided(
               first: true,
-              lead: true,
+
               title: 'Room',
               count: 2,
               child: _BodySpec(label: 'Lead section keeps no top rule.'),
@@ -6476,7 +6473,7 @@ Widget catchSectionListContractStates(BuildContext context) {
           children: [
             CatchSection.divided(
               first: true,
-              lead: true,
+
               title: 'Room',
               count: 2,
               child: _BodySpec(label: 'Lead section keeps no top rule.'),
@@ -6545,7 +6542,7 @@ Widget catchSectionListContractStates(BuildContext context) {
                 children: [
                   CatchSection.divided(
                     first: true,
-                    lead: true,
+
                     title: 'Overview',
                     child: _BodySpec(label: 'Detail body starts inset.'),
                   ),
@@ -6683,7 +6680,7 @@ Widget catchSectionSliverStates(BuildContext context) {
                 children: [
                   CatchSection.divided(
                     first: true,
-                    lead: true,
+
                     title: 'Overview',
                     child: _BodySpec(label: 'Detail body starts inset.'),
                   ),
@@ -8524,7 +8521,6 @@ Widget catchDialogContractStates(BuildContext context) {
     ],
   );
 }
-
 Widget catchAdaptivePickerBehaviorStates(BuildContext context) {
   return const CatchAdaptivePickerHarness();
 }
@@ -9229,7 +9225,6 @@ Widget eventActivityStampContractStates(BuildContext context) {
 Widget catchGradedImageContractStates(BuildContext context) {
   final t = CatchTokens.of(context);
   final dinner = ActivityPalette.of(context).forKind(ActivityKind.dinner);
-
   Widget swatch(Color color) => SizedBox(
     width: WidgetbookPreviewLayout.surfaceCardWidth,
     height: WidgetbookPreviewLayout.compactPanelHeight,
