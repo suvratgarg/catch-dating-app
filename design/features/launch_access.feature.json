@@ -20,7 +20,9 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/utility/p3_utility_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/utility/launch_access.dart"
+        ],
         "actionOwners": [
           {
             "id": "application_screen",

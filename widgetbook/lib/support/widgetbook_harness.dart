@@ -87,6 +87,14 @@ class WidgetbookViewportFrame extends StatelessWidget {
   }) : _sheet = true,
        _constrainWidth = false;
 
+  /// Bottom-aligns a sheet while allowing the preview to use its natural width.
+  const WidgetbookViewportFrame.constrainedSheet({
+    super.key,
+    required this.size,
+    required this.child,
+  }) : _sheet = true,
+       _constrainWidth = true;
+
   final Size size;
   final Widget child;
   final bool _sheet;

@@ -10,6 +10,7 @@ import 'package:catch_dating_app/hosts/presentation/event_management/widgets/eve
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
 
@@ -19,15 +20,15 @@ import 'preview.dart';
   path: '[P1 product surfaces]/Host create event',
 )
 Widget eventPolicyStepCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'EventPolicyStep',
     contractId: 'component.host.event.policy_step',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'open capacity',
         child: WidgetbookHostDeviceFrame(child: _EventPolicyStepFrame()),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'invite only',
         child: WidgetbookHostDeviceFrame(
           child: _EventPolicyStepFrame(inviteOnly: true),
@@ -43,21 +44,21 @@ Widget eventPolicyStepCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget eventAgeRangeFieldCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'EventAgeRangeField',
     contractId: 'component.host.event.age_range_field',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'bounded editable range',
         child: WidgetbookHostDeviceFrame(child: _EventAgeRangeFieldFrame()),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'unrestricted sentinels',
         child: WidgetbookHostDeviceFrame(
           child: _EventAgeRangeFieldFrame(minAge: 0, maxAge: 99),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'disabled',
         child: WidgetbookHostDeviceFrame(
           child: _EventAgeRangeFieldFrame(enabled: false),
@@ -73,11 +74,11 @@ Widget eventAgeRangeFieldCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget eventSuccessStepCatalogStates(BuildContext context) {
-  return const WidgetbookHostCatalog(
+  return const WidgetbookPageCatalogFrame(
     title: 'EventSuccessStep',
     contractId: 'component.host.event.success_step',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'run guide defaults',
         child: WidgetbookHostDeviceFrame(child: _EventSuccessStepFrame()),
       ),

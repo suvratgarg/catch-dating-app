@@ -21,7 +21,9 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/utility/p3_utility_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/utility/auth.dart"
+        ],
         "actionOwners": [
           {
             "id": "country_selector",

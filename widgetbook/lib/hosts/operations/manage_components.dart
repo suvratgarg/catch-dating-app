@@ -19,16 +19,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'manage_fixture.dart';
 import 'preview.dart';
 
 Widget _hostEventManageExactCatalog(BuildContext context, String focus) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: focus,
     contractId:
         'component.host.event_manage.${widgetbookHostComponentSlug(focus)}',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'exact component',
         child: _HostManageComponentFrame(
           child: _hostEventManagePreviewFor(context, focus),

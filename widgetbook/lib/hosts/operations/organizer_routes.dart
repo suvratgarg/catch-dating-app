@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
 
@@ -16,17 +17,17 @@ import 'shell_fixture.dart';
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostClubsRouteStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostClubsScreen',
     contractId: 'screen.host.clubs',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'auth required',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(uid: null, child: HostClubsScreen()),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'clubs loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -38,7 +39,7 @@ Widget hostClubsRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'clubs error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -49,7 +50,7 @@ Widget hostClubsRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty organizer account',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -59,13 +60,13 @@ Widget hostClubsRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'consolidated edit workspace',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(child: HostClubsScreen()),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'payout account loading',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -74,7 +75,7 @@ Widget hostClubsRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'co-host read-only team workspace',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -86,7 +87,7 @@ Widget hostClubsRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'insights report',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -97,7 +98,7 @@ Widget hostClubsRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'consumer club preview',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -105,7 +106,7 @@ Widget hostClubsRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'dark theme',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(
@@ -114,7 +115,7 @@ Widget hostClubsRouteStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'co-host read-only team workspace / dark',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(

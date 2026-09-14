@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../../preview_layout_contracts.dart';
+import '../../support/page_preview.dart';
 import '../../support/widgetbook_harness.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
@@ -75,11 +76,11 @@ Widget hostSavedAudiencesStates(BuildContext context) {
           ),
         ),
       );
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostSavedAudiencesWorkspace',
     contractId: 'screen.host.customers',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'populated divided directory',
         child: frame(
           AsyncData(
@@ -87,7 +88,7 @@ Widget hostSavedAudiencesStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty',
         child: frame(
           const AsyncData(
@@ -95,7 +96,7 @@ Widget hostSavedAudiencesStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'error',
         child: frame(
           AsyncError(
@@ -148,11 +149,11 @@ Widget hostCustomerMessagingStates(BuildContext context) {
       ),
     ],
   );
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'Host Messaging',
     contractId: 'screen.host.inbox',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'campaign and sender workspace',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostShellScope(

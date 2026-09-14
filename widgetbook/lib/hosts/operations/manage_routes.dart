@@ -26,6 +26,7 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'manage_fixture.dart';
 import 'preview.dart';
@@ -68,11 +69,11 @@ final _hostManageLongLabelInviteLinks = <EventInviteLink>[
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostEventManageRouteAndSectionStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostEventManageRouteScreen',
     contractId: 'screen.host.event.manage',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -80,7 +81,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -91,7 +92,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'route offline',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -102,7 +103,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'event not found',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -110,7 +111,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'unauthorized host',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -118,13 +119,13 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'setup workspace',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'guests workspace',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -132,7 +133,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'live workspace',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -140,7 +141,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'report workspace',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -148,7 +149,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'invite links loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -156,7 +157,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'invite links error',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -167,7 +168,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'invite links offline',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -178,7 +179,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'disabled invite link',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -188,7 +189,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'long invite labels',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -198,7 +199,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'guest roster loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -207,7 +208,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'attendee profiles loading',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -217,7 +218,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'private access unavailable',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookHostManageRouteScope(
@@ -225,7 +226,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'attendance mutation pending',
         child: WidgetbookHostDeviceFrame(
           child: _HostManageAttendanceMutationRoutePreview(
@@ -233,7 +234,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'attendance mutation error',
         child: WidgetbookHostDeviceFrame(
           child: _HostManageAttendanceMutationRoutePreview(
@@ -241,13 +242,13 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'live Event Success operations',
         child: WidgetbookHostDeviceFrame(
           child: _HostManageLiveOperationsRoutePreview(),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -256,7 +257,7 @@ Widget hostEventManageRouteAndSectionStates(BuildContext context) {
           ),
         ),
       ),
-      const WidgetbookHostStateCard(
+      const WidgetbookPageStateCard(
         label: 'reduced motion',
         child: WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(

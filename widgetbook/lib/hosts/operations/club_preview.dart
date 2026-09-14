@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import '../../support/widgetbook_harness.dart';
 import 'fixtures.dart';
 import 'preview.dart';
@@ -23,21 +24,21 @@ import 'role_theme.dart';
   path: '[P1 product surfaces]/Host operations',
 )
 Widget hostClubDetailPublicPreviewStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostClubDetailScreen',
     contractId: 'screen.host.club.detail',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'host public preview',
         child: const WidgetbookHostDeviceFrame(child: _HostClubDetailScope()),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'initial club loading fallback',
         child: const WidgetbookHostDeviceFrame(
           child: _HostClubDetailScope(viewModel: AsyncLoading()),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'load error',
         child: WidgetbookHostDeviceFrame(
           child: _HostClubDetailScope(
@@ -48,7 +49,7 @@ Widget hostClubDetailPublicPreviewStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'offline',
         child: WidgetbookHostDeviceFrame(
           child: _HostClubDetailScope(
@@ -59,7 +60,7 @@ Widget hostClubDetailPublicPreviewStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'not found',
         child: const WidgetbookHostDeviceFrame(
           child: _HostClubDetailScope(
@@ -68,7 +69,7 @@ Widget hostClubDetailPublicPreviewStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'signed out preview',
         child: WidgetbookHostDeviceFrame(
           child: _HostClubDetailScope(
@@ -79,7 +80,7 @@ Widget hostClubDetailPublicPreviewStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'signed-in non-host preview',
         child: WidgetbookHostDeviceFrame(
           child: _HostClubDetailScope(
@@ -90,7 +91,7 @@ Widget hostClubDetailPublicPreviewStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty schedule',
         child: WidgetbookHostDeviceFrame(
           child: _HostClubDetailScope(
@@ -100,7 +101,7 @@ Widget hostClubDetailPublicPreviewStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'text scale 2.0',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -109,7 +110,7 @@ Widget hostClubDetailPublicPreviewStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'reduced motion',
         child: const WidgetbookHostDeviceFrame(
           child: WidgetbookMediaOverride(
@@ -118,7 +119,7 @@ Widget hostClubDetailPublicPreviewStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'dark theme',
         child: const WidgetbookHostDeviceFrame(
           child: _HostClubDetailScope(themeMode: ThemeMode.dark),

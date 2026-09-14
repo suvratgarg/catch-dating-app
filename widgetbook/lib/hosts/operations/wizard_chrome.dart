@@ -10,6 +10,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
 
@@ -19,11 +20,11 @@ import 'preview.dart';
   path: '[P1 product surfaces]/Host create event',
 )
 Widget createEventStepHeaderCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CreateEventStepHeader',
     contractId: 'component.host.event.step_header',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'step 1',
         child: WidgetbookHostDeviceFrame(
           child: CreateEventStepHeader(
@@ -74,11 +75,11 @@ Widget stepperFooterCatalogStates(BuildContext context) {
     ],
   );
 
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'StepperFooter',
     contractId: 'component.host.stepper_footer',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'previous and next',
         child: WidgetbookHostDeviceFrame(
           child: StepperFooter(
@@ -90,7 +91,7 @@ Widget stepperFooterCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'review needs information',
         child: WidgetbookHostDeviceFrame(
           child: StepperFooter(
@@ -127,7 +128,7 @@ Widget stepperFooterCatalogStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'last step loading',
         child: WidgetbookHostDeviceFrame(
           child: StepperFooter(
@@ -150,11 +151,11 @@ Widget stepperFooterCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget createEventUnsavedChangesDialogCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'CreateEventUnsavedChangesDialog',
     contractId: 'component.host.event.unsaved_changes_dialog',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'keep, discard, or save and exit',
         child: const WidgetbookHostDeviceFrame(
           child: Center(child: CreateEventUnsavedChangesDialog()),
@@ -170,11 +171,11 @@ Widget createEventUnsavedChangesDialogCatalogStates(BuildContext context) {
   path: '[P1 product surfaces]/Host create event',
 )
 Widget draftDeleteConfirmationDialogCatalogStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'DraftDeleteConfirmationDialog',
     contractId: 'component.host.event.draft_delete_dialog',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'saved draft',
         child: WidgetbookHostDeviceFrame(
           child: Center(

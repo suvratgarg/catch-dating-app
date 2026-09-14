@@ -176,6 +176,38 @@ void main() {
     expect(tester.getSize(find.byKey(contentKey)), const Size(390, 300));
   });
 
+  testWidgets('shared sheet preserves width limits and bottom alignment', (
+    tester,
+  ) async {
+    const contentKey = ValueKey('sheet-contract-content');
+    for (final (available, expected) in [(600.0, 390.0), (200.0, 200.0)]) {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Center(
+            child: SizedBox(
+              width: available,
+              height: 600,
+              child: const WidgetbookViewportFrame.constrainedSheet(
+                size: Size(390, 560),
+                child: SizedBox(key: contentKey, width: 120, height: 80),
+              ),
+            ),
+          ),
+        ),
+      );
+      final frame = find.descendant(
+        of: find.byType(WidgetbookViewportFrame),
+        matching: find.byType(ClipRRect),
+      );
+      expect(tester.getSize(frame), Size(expected, 560));
+      final content = tester.getRect(find.byKey(contentKey));
+      expect(content.size, const Size(120, 80));
+      expect(content.bottom, tester.getRect(frame).bottom);
+      expect(content.center.dx, tester.getRect(frame).center.dx);
+    }
+  });
+
   testWidgets('shared scope preserves theme, scale and knob defaults', (
     tester,
   ) async {

@@ -22,7 +22,7 @@
       "bindings": {
         "previewSources": [
           "widgetbook/lib/dashboard/dashboard_use_cases.dart",
-          "widgetbook/lib/utility/p3_utility_use_cases.dart"
+          "widgetbook/lib/utility/notifications.dart"
         ],
         "actionOwners": [
           {

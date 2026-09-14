@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/reviews.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:a3ed108b94d849a64f4c957977a6f83add91e27d461d405a309e77af7231dbb3",
+  "sourceDigest": "sha256:0b0882433f2f4708dc327a21ccb82930a2b33ad54d3303d935854fa71f19a25b",
   "resolvedDigest": "sha256:ca20bdda71c1adc62f1b7ac4df21f8f4ce3b36e2a13fc4c879d43c56ddfd34f1",
   "feature": {
     "id": "feature.reviews",
@@ -41,7 +41,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/utility/p3_utility_use_cases.dart"
+          "widgetbook/lib/utility/reviews.dart"
         ],
         "actionOwners": [
           {

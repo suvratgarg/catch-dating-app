@@ -13,6 +13,7 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
+import '../../support/page_preview.dart';
 import 'fixtures.dart';
 import 'preview.dart';
 import 'shell_fixture.dart';
@@ -38,11 +39,11 @@ import 'shell_fixture.dart';
   path: '[P1 product surfaces]/Host operations/Sections',
 )
 Widget hostHomeEventSectionStates(BuildContext context) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: 'HostEventsClubCard',
     contractId: 'section.host.home_events',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'owned club with upcoming rows',
         child: WidgetbookHostHomeSectionFrame(
           child: HostEventsClubCard(
@@ -54,7 +55,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'past events grouped into divided month fields',
         child: WidgetbookHostHomeSectionFrame(
           clubEventStreams: {
@@ -82,7 +83,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'events loading',
         child: WidgetbookHostHomeSectionFrame(
           clubEventStreams: {
@@ -98,7 +99,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'events error',
         child: WidgetbookHostHomeSectionFrame(
           clubEventStreams: {
@@ -115,7 +116,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'events offline',
         child: WidgetbookHostHomeSectionFrame(
           clubEventStreams: {
@@ -133,7 +134,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'empty events',
         child: WidgetbookHostHomeSectionFrame(
           clubEventStreams: {
@@ -148,7 +149,7 @@ Widget hostHomeEventSectionStates(BuildContext context) {
           ),
         ),
       ),
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'cancelled events hidden',
         child: WidgetbookHostHomeSectionFrame(
           clubEventStreams: {
@@ -170,11 +171,11 @@ Widget hostHomeEventSectionStates(BuildContext context) {
 }
 
 Widget _hostHomeExactCatalog(BuildContext context, String focus) {
-  return WidgetbookHostCatalog(
+  return WidgetbookPageCatalogFrame(
     title: focus,
     contractId: 'component.host.home.${widgetbookHostComponentSlug(focus)}',
     children: [
-      WidgetbookHostStateCard(
+      WidgetbookPageStateCard(
         label: 'exact component',
         child: WidgetbookHostHomeSectionFrame(
           child: _hostHomePreviewFor(context, focus),
