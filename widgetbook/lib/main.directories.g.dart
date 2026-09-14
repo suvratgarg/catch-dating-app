@@ -55,8 +55,32 @@ import 'package:widgetbook_workspace/events/catalog/sharing.dart'
     as _widgetbook_workspace_events_catalog_sharing;
 import 'package:widgetbook_workspace/events/catalog/social.dart'
     as _widgetbook_workspace_events_catalog_social;
-import 'package:widgetbook_workspace/explore/explore_use_cases.dart'
-    as _widgetbook_workspace_explore_explore_use_cases;
+import 'package:widgetbook_workspace/explore/catalog/activity.dart'
+    as _widgetbook_workspace_explore_catalog_activity;
+import 'package:widgetbook_workspace/explore/catalog/body.dart'
+    as _widgetbook_workspace_explore_catalog_body;
+import 'package:widgetbook_workspace/explore/catalog/city.dart'
+    as _widgetbook_workspace_explore_catalog_city;
+import 'package:widgetbook_workspace/explore/catalog/cover.dart'
+    as _widgetbook_workspace_explore_catalog_cover;
+import 'package:widgetbook_workspace/explore/catalog/cross_paths.dart'
+    as _widgetbook_workspace_explore_catalog_cross_paths;
+import 'package:widgetbook_workspace/explore/catalog/empty.dart'
+    as _widgetbook_workspace_explore_catalog_empty;
+import 'package:widgetbook_workspace/explore/catalog/feed.dart'
+    as _widgetbook_workspace_explore_catalog_feed;
+import 'package:widgetbook_workspace/explore/catalog/filters.dart'
+    as _widgetbook_workspace_explore_catalog_filters;
+import 'package:widgetbook_workspace/explore/catalog/invitation.dart'
+    as _widgetbook_workspace_explore_catalog_invitation;
+import 'package:widgetbook_workspace/explore/catalog/loading.dart'
+    as _widgetbook_workspace_explore_catalog_loading;
+import 'package:widgetbook_workspace/explore/catalog/map.dart'
+    as _widgetbook_workspace_explore_catalog_map;
+import 'package:widgetbook_workspace/explore/catalog/organizers.dart'
+    as _widgetbook_workspace_explore_catalog_organizers;
+import 'package:widgetbook_workspace/explore/catalog/screen.dart'
+    as _widgetbook_workspace_explore_catalog_screen;
 import 'package:widgetbook_workspace/foundation/foundation_token_use_cases.dart'
     as _widgetbook_workspace_foundation_foundation_token_use_cases;
 import 'package:widgetbook_workspace/geometry/component_geometry_use_cases.dart'
@@ -4773,7 +4797,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Club cover states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_organizers
                     .exploreClubCoverStates,
               ),
             ],
@@ -4783,7 +4807,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Club tags states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_organizers
                     .exploreClubTagsStates,
               ),
             ],
@@ -4793,7 +4817,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Organizer poster states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_organizers
                     .exploreOrganizerPosterCardStates,
               ),
             ],
@@ -4808,7 +4832,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Filter option item states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_filters
                     .exploreFilterOptionItemStates,
               ),
             ],
@@ -4818,7 +4842,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Counted filter action',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_filters
                     .exploreCountedFilterActionStates,
               ),
             ],
@@ -4828,7 +4852,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'City option tile states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_city
                     .cityOptionTileStates,
               ),
             ],
@@ -4838,7 +4862,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Trigger states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_city
                     .exploreCityTriggerStates,
               ),
             ],
@@ -4848,7 +4872,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'City picker states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_city
                     .exploreCityPickerStates,
               ),
             ],
@@ -4858,7 +4882,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'City picker sheet states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_city
                     .exploreCityPickerSheetStates,
               ),
             ],
@@ -4868,7 +4892,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Clear action states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_empty
                     .exploreClearActionStates,
               ),
             ],
@@ -4878,7 +4902,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Filter sheet states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_filters
                     .exploreFilterSheetStates,
               ),
             ],
@@ -4893,7 +4917,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Activity row states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_activity
                     .activityTypeRowStates,
               ),
             ],
@@ -4903,7 +4927,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'External event row states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_feed
                     .exploreExternalEventRowStates,
               ),
             ],
@@ -4913,7 +4937,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Club row states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_organizers
                     .exploreFeedClubRowStates,
               ),
             ],
@@ -4923,7 +4947,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Event row states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_feed
                     .exploreFeedEventRowStates,
               ),
             ],
@@ -4933,7 +4957,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'More row states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_activity
                     .moreActivityTypesRowStates,
               ),
             ],
@@ -4948,7 +4972,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Screen states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_screen
                     .exploreScreenStates,
               ),
             ],
@@ -4963,7 +4987,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Cross Paths invitation states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_invitation
                     .crossPathsInvitationStates,
               ),
             ],
@@ -4978,7 +5002,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Activity slot states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_activity
                     .activitySlotViewStates,
               ),
             ],
@@ -4988,7 +5012,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Activity rows states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_activity
                     .activityTypeRowsStates,
               ),
             ],
@@ -4998,7 +5022,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Map launcher states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_map
                     .exploreMapLauncherStates,
               ),
             ],
@@ -5008,7 +5032,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Empty states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_empty
                     .exploreEmptyStateStates,
               ),
             ],
@@ -5018,7 +5042,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Directory skeleton card',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_loading
                     .clubDirectorySkeletonCardStates,
               ),
             ],
@@ -5028,7 +5052,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Directory skeleton list',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_loading
                     .clubDirectorySkeletonListStates,
               ),
             ],
@@ -5038,7 +5062,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Cover chrome states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_cover
                     .exploreCoverStoryChromeStates,
               ),
             ],
@@ -5048,7 +5072,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Cover content states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_cover
                     .exploreCoverStoryContentStates,
               ),
             ],
@@ -5058,7 +5082,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Cross Paths event context',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_cross_paths
                     .crossPathsEventContextStates,
               ),
             ],
@@ -5068,7 +5092,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Cross Paths person card',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_cross_paths
                     .crossPathsExploreCardStates,
               ),
             ],
@@ -5078,7 +5102,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Cross Paths profile preview',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_cross_paths
                     .crossPathsProfilePreviewStates,
               ),
             ],
@@ -5088,7 +5112,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Activity content states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_activity
                     .eventTypeBrowseContentStates,
               ),
             ],
@@ -5098,7 +5122,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Activity skeleton states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_activity
                     .eventTypeBrowseSkeletonStates,
               ),
             ],
@@ -5108,7 +5132,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Applied filter states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_filters
                     .exploreAppliedFilterChipsStates,
               ),
             ],
@@ -5118,7 +5142,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Chrome states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_cover
                     .exploreBrowseHeaderContentStates,
               ),
             ],
@@ -5128,7 +5152,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Cover header states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_cover
                     .exploreDiscoveryCoverHeaderStates,
               ),
             ],
@@ -5138,7 +5162,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Activity states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_activity
                     .exploreEventTypeBrowseGridStates,
               ),
             ],
@@ -5148,7 +5172,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Feed empty sliver states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_empty
                     .exploreEventsEmptySliverStates,
               ),
             ],
@@ -5158,7 +5182,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Loading sliver states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_loading
                     .exploreEventsLoadingSliverStates,
               ),
             ],
@@ -5168,7 +5192,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Feed states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_feed
                     .exploreEventsSectionStates,
               ),
             ],
@@ -5178,7 +5202,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Filter states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_filters
                     .exploreFilterRailStates,
               ),
             ],
@@ -5188,12 +5212,12 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Body sliver states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_body
                     .exploreBodyStates,
               ),
               _widgetbook.WidgetbookUseCase(
                 name: 'List sliver states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_body
                     .exploreListStates,
               ),
             ],
@@ -5203,7 +5227,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'List empty state',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_body
                     .exploreListEmptyStateStates,
               ),
             ],
@@ -5213,7 +5237,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Map route states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_map
                     .exploreMapRouteStates,
               ),
             ],
@@ -5223,7 +5247,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Route empty states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_empty
                     .exploreScreenEmptyStateStates,
               ),
             ],
@@ -5233,7 +5257,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Skeleton list states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_loading
                     .exploreSkeletonListStates,
               ),
             ],
@@ -5243,7 +5267,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'This week states',
-                builder: _widgetbook_workspace_explore_explore_use_cases
+                builder: _widgetbook_workspace_explore_catalog_feed
                     .thisWeekRecommendationsSectionStates,
               ),
             ],

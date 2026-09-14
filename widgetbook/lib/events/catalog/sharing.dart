@@ -7,7 +7,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
 import '../../support/page_preview.dart';
 import 'fixtures.dart';
-import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Share card states',
@@ -15,7 +14,7 @@ import 'preview.dart';
   path: '[Event Detail]/Cards',
 )
 Widget eventShareCardStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventShareCard',
     catalogId: 'card.event.share',
     children: [

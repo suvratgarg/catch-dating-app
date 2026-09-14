@@ -27,13 +27,13 @@ import 'preview.dart';
 )
 Widget eventDetailBookingDockStates(BuildContext context) {
   final t = CatchTokens.of(context);
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventBookingDock',
     catalogId: 'section.event.booking_dock',
     children: [
       WidgetbookPageStateCard(
         label: 'guest',
-        child: const WidgetbookEventDockFrame(
+        child: const WidgetbookContentFrame(
           child: EventBookingDock(
             label: 'Sign in to book this event',
             onPressed: widgetbookNoop,
@@ -42,7 +42,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'bookable with price',
-        child: WidgetbookEventDockFrame(
+        child: WidgetbookContentFrame(
           child: EventBookingDock(
             label: 'Book event',
             onPressed: widgetbookNoop,
@@ -59,7 +59,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'pending',
-        child: WidgetbookEventDockFrame(
+        child: WidgetbookContentFrame(
           child: EventBookingDock(
             label: 'Join event - 3 spots left',
             onPressed: null,
@@ -70,7 +70,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'failed mutation',
-        child: WidgetbookEventDockFrame(
+        child: WidgetbookContentFrame(
           child: EventBookingDock(
             label: 'Join event - 3 spots left',
             onPressed: widgetbookNoop,
@@ -81,7 +81,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'booked',
-        child: WidgetbookEventDockFrame(
+        child: WidgetbookContentFrame(
           child: EventBookingDock(
             label: 'Cancel booking',
             onPressed: widgetbookNoop,
@@ -94,7 +94,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'waitlist',
-        child: const WidgetbookEventDockFrame(
+        child: const WidgetbookContentFrame(
           child: EventBookingDock(
             label: 'Join waitlist',
             onPressed: widgetbookNoop,
@@ -103,7 +103,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
       ),
       WidgetbookPageStateCard(
         label: 'waitlist offer',
-        child: WidgetbookEventDockFrame(
+        child: WidgetbookContentFrame(
           child: EventBookingDock(
             label: 'Accept spot',
             onPressed: widgetbookNoop,
@@ -119,21 +119,21 @@ Widget eventDetailBookingDockStates(BuildContext context) {
         label: 'full / cancelled / past / attended',
         child: Column(
           children: [
-            const WidgetbookEventDockFrame(
+            const WidgetbookContentFrame(
               child: EventBookingDock(
                 label: 'Spots for your gender are full',
                 onPressed: null,
               ),
             ),
             gapH12,
-            const WidgetbookEventDockFrame(
+            const WidgetbookContentFrame(
               child: EventBookingDock(
                 label: 'This event has ended',
                 onPressed: null,
               ),
             ),
             gapH12,
-            WidgetbookEventDockFrame(
+            WidgetbookContentFrame(
               child: EventBookingDock(
                 label: 'You attended this event',
                 onPressed: null,
@@ -162,7 +162,7 @@ Widget eventDetailBookingDockStates(BuildContext context) {
   path: '[Event Detail]/Sheets',
 )
 Widget eventDetailBookingConflictSheetStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'BookingConflictSheet',
     catalogId: 'sheet.event.booking_conflict',
     children: [
@@ -259,7 +259,7 @@ Widget eventDetailBookingConflictSheetStates(BuildContext context) {
 Widget eventDetailBookingConflictEventRowStates(BuildContext context) {
   final t = CatchTokens.of(context);
 
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'BookingConflictEventRow',
     catalogId: 'row.event.booking_conflict',
     children: [
@@ -296,7 +296,7 @@ Widget eventDetailBookingConflictEventRowStates(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailPromptBodyStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailBody prompts',
     catalogId: 'section.event.companion_invite',
     children: [

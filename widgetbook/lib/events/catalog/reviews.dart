@@ -22,7 +22,7 @@ import 'preview.dart';
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailReviewsSectionStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventReviewsSection',
     catalogId: 'section.event.reviews',
     children: [
@@ -77,7 +77,7 @@ Widget eventDetailReviewsSectionStates(BuildContext context) {
   path: '[Event Detail]/Screens',
 )
 Widget reviewsHistoryScreenStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'ReviewsHistoryScreen',
     catalogId: 'screen.reviews.history',
     children: [

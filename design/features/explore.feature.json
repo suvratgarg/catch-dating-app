@@ -23,7 +23,14 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/explore/explore_use_cases.dart",
+          "widgetbook/lib/explore/catalog/activity.dart",
+          "widgetbook/lib/explore/catalog/cover.dart",
+          "widgetbook/lib/explore/catalog/cross_paths.dart",
+          "widgetbook/lib/explore/catalog/empty.dart",
+          "widgetbook/lib/explore/catalog/feed.dart",
+          "widgetbook/lib/explore/catalog/filters.dart",
+          "widgetbook/lib/explore/catalog/map.dart",
+          "widgetbook/lib/explore/catalog/screen.dart",
           "widgetbook/lib/primitives/catalog/celebration.dart",
           "widgetbook/lib/primitives/catalog/chrome.dart",
           "widgetbook/lib/primitives/catalog/docks.dart",

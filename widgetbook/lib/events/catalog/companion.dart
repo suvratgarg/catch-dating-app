@@ -17,7 +17,7 @@ import 'preview.dart';
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailCompanionEntryStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventCompanionEntry',
     catalogId: 'section.event.companion_entry',
     children: [
@@ -85,7 +85,7 @@ Widget eventDetailCompanionEntryStates(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailCalloutCardStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailCalloutCard',
     catalogId: 'section.event.callout_card',
     children: [
@@ -186,19 +186,19 @@ Widget eventDetailCalloutCardStates(BuildContext context) {
   path: '[Event Detail]/Sections',
 )
 Widget eventDetailGuestBookCtaStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'GuestBookCta',
     catalogId: 'section.event.guest_book_cta',
     children: [
       WidgetbookPageStateCard(
         label: 'light dock',
-        child: const WidgetbookEventDockFrame(
+        child: const WidgetbookContentFrame(
           child: GuestBookCta(onPressed: widgetbookNoop),
         ),
       ),
       WidgetbookPageStateCard(
         label: 'dark dock',
-        child: const WidgetbookEventDockFrame(
+        child: const WidgetbookContentFrame(
           child: GuestBookCta(onPressed: widgetbookNoop, darkSurface: true),
         ),
       ),

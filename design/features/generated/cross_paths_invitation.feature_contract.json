@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/cross_paths_invitation.feature.json",
   "generatedFor": "2026-08-06",
-  "sourceDigest": "sha256:f7c1c48c708574510f02cee90e840b42d11b6765f6f3514e7217935cbef51fff",
+  "sourceDigest": "sha256:106f553d8883dd4f6bd406cdb0480cca09fe23b6f89a43b14bce7cb26a814e2d",
   "resolvedDigest": "sha256:07345dcd542bca7c0c2dc4fe17d1f22c8bd189e0f53eee23145627af30ba95f6",
   "feature": {
     "id": "feature.cross_paths_invitation",
@@ -39,7 +39,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/explore/explore_use_cases.dart"
+          "widgetbook/lib/explore/catalog/invitation.dart"
         ],
         "actionOwners": [
           {

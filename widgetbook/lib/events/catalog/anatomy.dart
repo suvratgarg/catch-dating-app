@@ -13,7 +13,6 @@ import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 import '../../preview_layout_contracts.dart';
 import '../../support/page_preview.dart';
 import 'fixtures.dart';
-import 'preview.dart';
 
 @widgetbook.UseCase(
   name: 'Photo strip tile states',
@@ -30,7 +29,7 @@ Widget eventDetailPhotoStripTileStates(BuildContext context) {
     now: widgetbookEventsNow,
   );
 
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailPhotoStripTile',
     catalogId: 'event_detail.design.photo_strip_tile',
     children: [
@@ -70,7 +69,7 @@ Widget eventDetailPhotoStripTileStates(BuildContext context) {
   path: '[Event Detail]/Design Primitives',
 )
 Widget eventDetailTicketStubCellStates(BuildContext context) {
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'TicketStubCell',
     catalogId: 'event_detail.design.ticket_stub_cell',
     children: [
@@ -129,7 +128,7 @@ Widget eventDetailHairlineListStates(BuildContext context) {
     'Free cancellation until 24 hours before start time.',
   ];
 
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'HairlineList',
     catalogId: 'event_detail.design.hairline_list',
     children: [
@@ -161,7 +160,7 @@ Widget eventDetailFactListStates(BuildContext context) {
     l10n: context.l10n,
   );
 
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailFactList',
     catalogId: 'event_detail.design.fact_list',
     children: [
@@ -194,7 +193,7 @@ Widget eventDetailGoodToKnowListStates(BuildContext context) {
     l10n: context.l10n,
   );
 
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'EventDetailGoodToKnowList',
     catalogId: 'event_detail.design.good_to_know_list',
     children: [
@@ -235,7 +234,7 @@ Widget eventDetailItineraryRowStates(BuildContext context) {
     ),
   ];
 
-  return WidgetbookEventCatalogFrame(
+  return WidgetbookScrollCatalogFrame(
     title: 'ItineraryRow',
     catalogId: 'event_detail.design.itinerary_row',
     children: [

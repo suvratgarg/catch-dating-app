@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/explore.feature.json",
   "generatedFor": "2026-09-14",
-  "sourceDigest": "sha256:044a6c5714d3a86075574a9fb278af1b469186aadfdabe2cb6c4489c7de89cf3",
+  "sourceDigest": "sha256:9486af42475eb47fdac3b04d8d3184a0fb7c5d18f54deb686130f90447573077",
   "resolvedDigest": "sha256:4278b8fa96ced65edf6568834a58bd17d93385f1d992a2c4dcde3b51ace69ff6",
   "feature": {
     "id": "feature.explore",
@@ -39,7 +39,14 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/explore/explore_use_cases.dart",
+          "widgetbook/lib/explore/catalog/activity.dart",
+          "widgetbook/lib/explore/catalog/cover.dart",
+          "widgetbook/lib/explore/catalog/cross_paths.dart",
+          "widgetbook/lib/explore/catalog/empty.dart",
+          "widgetbook/lib/explore/catalog/feed.dart",
+          "widgetbook/lib/explore/catalog/filters.dart",
+          "widgetbook/lib/explore/catalog/map.dart",
+          "widgetbook/lib/explore/catalog/screen.dart",
           "widgetbook/lib/primitives/catalog/celebration.dart",
           "widgetbook/lib/primitives/catalog/chrome.dart",
           "widgetbook/lib/primitives/catalog/docks.dart",
