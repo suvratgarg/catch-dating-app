@@ -157,6 +157,7 @@ void _registerCatchPrimitivesSearchMenuTests() {
                 copy: catchSearchFieldCopy(AppLocalizationsEn()),
                 key: searchFieldKey,
                 progress: 1,
+                status: CatchSearchFieldStatus.collapsed,
                 maxWidth: 280,
                 value: query,
                 placeholder: 'Search clubs',

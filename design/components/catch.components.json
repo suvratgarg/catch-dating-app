@@ -11462,12 +11462,16 @@
             "dartType": "bool"
           },
           {
-            "name": "expanded",
-            "type": "bool",
+            "name": "status",
+            "type": "enum",
             "required": false,
-            "default": true,
-            "dartType": "bool",
-            "notes": "Only .expanding accepts this state. Fixed field and .expanded modes are always visible and expose no empty close action."
+            "default": "expanded",
+            "dartType": "CatchSearchFieldStatus",
+            "notes": "Only .expanding accepts the requested visibility state; explicit progress retains precedence during transitions. Fixed field and .expanded modes remain visible and cannot expose an empty close action.",
+            "values": [
+              "collapsed",
+              "expanded"
+            ]
           },
           {
             "name": "onOpenSearch",
@@ -11514,6 +11518,7 @@
         "dartRoles": [
           "CatchControlSurface",
           "CatchSearchFieldMode",
+          "CatchSearchFieldStatus",
           "CatchSearchFieldCopy",
           "CatchTextStyles.bodyM",
           "CatchLayout.searchFieldClearSize",
@@ -11555,11 +11560,21 @@
         "allowedDependencyLevel": "tokens-and-primitives",
         "reviewPolicy": "contract-page-canonical",
         "conceptRole": "concept",
-        "conceptId": "catch.search_field"
+        "conceptId": "catch.search_field",
+        "decisionRef": "pattern-family:search-field-query-owner"
       },
       "surfaces": {
         "flutter": "CatchSearchField",
         "admin": "SearchField"
+      },
+      "level": "L3",
+      "roleNoun": "Field",
+      "naming": {
+        "useCase": "Search",
+        "comparedWith": [
+          "catch.field.select_control"
+        ],
+        "reason": "Owns a controlled browse query, local text controller and focus, clear-before-close behavior, and the fixed or transient header search lifecycle. CatchField owns labelled form values, validation and commit orchestration; SelectionField owns a discrete nullable choice. Search recipes reuse one CatchTextInput configuration while retaining their established field and animated header surfaces."
       }
     },
     {

@@ -396,7 +396,7 @@ Widget searchCopyDefaultAndOverriddenStates(BuildContext context) {
       CatchSearchField.expanding(copy: copy, onCloseSearch: () {}),
       CatchSearchField.expanding(
         copy: copy,
-        expanded: false,
+        status: CatchSearchFieldStatus.collapsed,
         onOpenSearch: () {},
       ),
     ],

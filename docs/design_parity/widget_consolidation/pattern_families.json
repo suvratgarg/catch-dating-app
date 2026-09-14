@@ -3920,6 +3920,27 @@
           "rationale": "Replace the positional-only name with its bounded row role; all constructors and rendering behavior remain shared."
         }
       ]
+    },
+    {
+      "id": "search-field-query-owner",
+      "title": "Search field owns the query lifecycle",
+      "intent": "Keep query editing distinct from validated form fields, and unify the identical native input configuration across its existing recipes.",
+      "priority": "P1",
+      "status": "approved",
+      "targetContract": "catch.search_field",
+      "qualityReference": "CatchSearchField",
+      "decisionSource": "owner-delegated:2026-09-14 source and rendered review",
+      "acceptedVisualDelta": [
+        "No visual change. Visibility uses the typed collapsed/expanded status while explicit transition progress keeps precedence."
+      ],
+      "members": [
+        {
+          "symbol": "CatchSearchField",
+          "disposition": "canonical",
+          "preview": "required",
+          "rationale": "Owns a controlled browse query, local text controller and focus, clear-before-close behavior, and the fixed or transient header search lifecycle. CatchField owns labelled form values, validation and commit orchestration; SelectionField owns a discrete nullable choice. Search recipes reuse one CatchTextInput configuration while retaining their established field and animated header surfaces."
+        }
+      ]
     }
   ]
 }

@@ -3,6 +3,7 @@ import 'package:catch_ui/src/components/catch_avatar.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_screen_header.dart';
 import 'package:catch_ui/src/components/catch_search_field.dart';
+import 'package:catch_ui/src/components/catch_search_field_status.dart';
 import 'package:catch_ui/src/components/catch_top_bar_action_row.dart';
 import 'package:catch_ui/src/components/catch_top_bar_emphasis.dart';
 import 'package:catch_ui/src/components/catch_top_bar_mode.dart';
@@ -613,7 +614,9 @@ class _CatchTopBarState extends State<CatchTopBar> {
                           : CatchSearchField.expanding(
                               copy: search.copy,
                               key: search.fieldKey,
-                              expanded: _searchOpenEffective,
+                              status: _searchOpenEffective
+                                  ? CatchSearchFieldStatus.expanded
+                                  : CatchSearchFieldStatus.collapsed,
                               maxWidth: laneConstraints.maxWidth,
                               value: search.value,
                               contract: search.contract,

@@ -7643,7 +7643,7 @@ Widget catchSearchFieldContractStates(BuildContext context) {
         child: _FieldWidth(
           child: CatchSearchField.expanding(
             copy: catchSearchFieldCopy(context.l10n),
-            expanded: false,
+            status: CatchSearchFieldStatus.collapsed,
             maxWidth: 420,
             onOpenSearch: _noop,
           ),

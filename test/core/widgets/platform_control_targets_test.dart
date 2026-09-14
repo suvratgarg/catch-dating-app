@@ -315,7 +315,7 @@ void main() {
             copy: catchSearchFieldCopy(AppLocalizationsEn()),
             key: _controlKey,
             tooltip: 'Search',
-            expanded: false,
+            status: CatchSearchFieldStatus.collapsed,
             collapsedExtent: 20,
             onOpenSearch: () => opened = true,
           ),
@@ -611,7 +611,7 @@ void main() {
             ),
             CatchSearchField.expanding(
               copy: catchSearchFieldCopy(AppLocalizationsEn()),
-              expanded: false,
+              status: CatchSearchFieldStatus.collapsed,
               onOpenSearch: () {},
             ),
           ],

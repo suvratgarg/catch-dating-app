@@ -8246,6 +8246,22 @@
       "decidedBy": "owner-delegated -> codex",
       "date": "2026-09-09",
       "status": "implemented"
+    },
+    {
+      "clusterId": "pattern-family:search-field-query-owner",
+      "patternFamilyId": "search-field-query-owner",
+      "decision": "keep-distinct",
+      "canonicalSymbol": "CatchSearchField",
+      "members": [
+        {
+          "name": "CatchSearchField",
+          "action": "keep"
+        }
+      ],
+      "rationale": "Owns a controlled browse query, local text controller and focus, clear-before-close behavior, and the fixed or transient header search lifecycle. CatchField owns labelled form values, validation and commit orchestration; SelectionField owns a discrete nullable choice. Search recipes reuse one CatchTextInput configuration while retaining their established field and animated header surfaces. Remove the repeated native input construction and replace the expansion boolean with CatchSearchFieldStatus, keeping autofocus and enabled as the two independent booleans.",
+      "decidedBy": "owner-delegated -> codex",
+      "date": "2026-09-14",
+      "status": "implemented"
     }
   ]
 }

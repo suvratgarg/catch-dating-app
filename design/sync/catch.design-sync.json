@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "updated": "2026-09-09",
+  "updated": "2026-09-14",
   "sourceOfTruth": {
     "behavior": "Flutter sources named by design/components/catch.components.json",
     "componentContracts": "design/components/catch.components.json",
@@ -13,7 +13,7 @@
     "liveCapabilities": "design/sync/live_capabilities.json",
     "generator": "tool/design/build_design_sync_manifest.mjs"
   },
-  "sourceDigest": "8e845234b56d5e2823f820b4885ba0d01fb91c481e41dd77086c44622f3cabf4",
+  "sourceDigest": "a57cc862c3d8530a1d539d888f39a5feaf45f81d840355242327a892df91b44b",
   "operationalStatus": {
     "structural": "current",
     "live": "incomplete-external",
@@ -41,12 +41,12 @@
   },
   "claudeContext": {
     "status": "current",
-    "digest": "8e845234b56d5e2823f820b4885ba0d01fb91c481e41dd77086c44622f3cabf4",
-    "contractDigest": "8e845234b56d5e2823f820b4885ba0d01fb91c481e41dd77086c44622f3cabf4"
+    "digest": "a57cc862c3d8530a1d539d888f39a5feaf45f81d840355242327a892df91b44b",
+    "contractDigest": "a57cc862c3d8530a1d539d888f39a5feaf45f81d840355242327a892df91b44b"
   },
   "claudeDesign": {
     "handoffRequestStatus": "current",
-    "handoffRequestDigest": "9dea7a1d4d2a48429a4df06be61a2b1c6878e9bb336cc3eb526039edcb787cd8",
+    "handoffRequestDigest": "9ae49502105f2ad0e97eb673cdd50eb92f379f70c0974c92b5546a4b38a72c6e",
     "receiptStatus": "missing",
     "receiptCapturedAt": null,
     "receiptProposalRef": null,
@@ -1798,7 +1798,7 @@
       "figmaVariableBindingDigest": null,
       "figmaReviewSnapshot": null,
       "figmaExpectedPropertyCount": 7,
-      "figmaExpectedPropertyDigest": "c458f0afa3ff85a7b0c61755f0001d511458b26f7d79db8bce29edbe7989fb98",
+      "figmaExpectedPropertyDigest": "24d4fcaee7bb9f5669f51d3735a3669c15bf02f1bb46806489822c8c1e6c7fc7",
       "figmaActualPropertyCount": 0,
       "figmaActualPropertyDigest": null,
       "figmaDrift": [],
@@ -1806,7 +1806,7 @@
       "codeConnectTemplate": null,
       "claudeHandoffName": "SearchField",
       "claudeAllowed": true,
-      "contractDigest": "293bc4e15df8662610d8af8f138e2049dbd2099e1b03358601677267a0088fe8"
+      "contractDigest": "82d3827dc51876fa122b83f1dc0be90754441ac1fee662eaae0800ef3115f6e0"
     },
     {
       "contractId": "catch.range_slider",

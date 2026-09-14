@@ -4,6 +4,7 @@ import 'package:catch_ui/src/components/catch_contract_field_policy.dart';
 import 'package:catch_ui/src/components/catch_icon_action.dart';
 import 'package:catch_ui/src/components/catch_search_field_copy.dart';
 import 'package:catch_ui/src/components/catch_search_field_mode.dart';
+import 'package:catch_ui/src/components/catch_search_field_status.dart';
 import 'package:catch_ui/src/foundations/catch_icons.dart';
 import 'package:catch_ui/src/foundations/catch_text_styles.dart';
 import 'package:catch_ui/src/primitives/catch_control_surface.dart';
@@ -47,7 +48,7 @@ class CatchSearchField extends StatefulWidget {
     this.foregroundColor,
     this.mutedForegroundColor,
   }) : mode = CatchSearchFieldMode.field,
-       expanded = true,
+       status = CatchSearchFieldStatus.expanded,
        progress = null,
        maxWidth = null,
        onOpenSearch = null,
@@ -78,7 +79,7 @@ class CatchSearchField extends StatefulWidget {
     this.foregroundColor,
     this.mutedForegroundColor,
   }) : mode = CatchSearchFieldMode.expanded,
-       expanded = true,
+       status = CatchSearchFieldStatus.expanded,
        progress = null,
        maxWidth = null,
        onOpenSearch = null,
@@ -104,7 +105,7 @@ class CatchSearchField extends StatefulWidget {
     this.onSubmitted,
     this.onFocusChanged,
     this.semanticLabel,
-    this.expanded = true,
+    this.status = CatchSearchFieldStatus.expanded,
     this.progress,
     this.maxWidth,
     this.onOpenSearch,
@@ -130,7 +131,7 @@ class CatchSearchField extends StatefulWidget {
   final ValueChanged<bool>? onFocusChanged;
   final String? semanticLabel;
   final CatchSearchFieldMode mode;
-  final bool expanded;
+  final CatchSearchFieldStatus status;
   final double? progress;
   final double? maxWidth;
   final VoidCallback? onOpenSearch;
@@ -198,10 +199,47 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final placeholder = widget.placeholder ?? widget.copy.searchLabel;
+    final foreground = widget.foregroundColor ?? t.ink;
+    final mutedForeground = widget.mutedForegroundColor ?? t.ink3;
+    final textInput = CatchTextInput(
+      controller: _controller,
+      focusNode: _focusNode,
+      autofocus: widget.autofocus,
+      enabled: widget.enabled,
+      textInputAction: widget.textInputAction,
+      inputFormatters: CatchContractFieldPolicy.effectiveInputFormatters(
+        widget.contract,
+        null,
+      ),
+      onChanged: widget.onChanged,
+      onSubmitted: _handleSubmitted,
+      onTapOutside: (_) => _focusNode.unfocus(),
+      style: CatchTextStyles.bodyM(
+        context,
+        color: widget.enabled ? foreground : mutedForeground,
+      ),
+      cursorColor: t.primary,
+      decoration: InputDecoration(
+        isDense: true,
+        filled: false,
+        fillColor: Colors.transparent,
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        contentPadding: EdgeInsets.zero,
+        hintText: placeholder,
+        hintStyle: CatchTextStyles.bodyM(context, color: mutedForeground),
+      ),
+    );
+
     if (widget.mode != CatchSearchFieldMode.field) {
       final targetProgress = widget.mode == CatchSearchFieldMode.expanded
           ? 1.0
-          : (widget.progress ?? (widget.expanded ? 1.0 : 0.0));
+          : (widget.progress ??
+                (widget.status == CatchSearchFieldStatus.expanded ? 1.0 : 0.0));
       return TweenAnimationBuilder<double>(
         tween: Tween<double>(end: targetProgress),
         duration: MediaQuery.disableAnimationsOf(context)
@@ -215,11 +253,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                 (constraints.hasBoundedWidth
                     ? constraints.maxWidth
                     : CatchIconAction.targetExtentFor(widget.collapsedExtent));
-            final t = CatchTokens.of(context);
-            final placeholder = widget.placeholder ?? widget.copy.searchLabel;
             final tooltip = widget.tooltip ?? widget.copy.searchLabel;
-            final foreground = widget.foregroundColor ?? t.ink;
-            final mutedForeground = widget.mutedForegroundColor ?? t.ink3;
             final clampedProgress = progress.clamp(0.0, 1.0);
             final collapsedExtent = CatchIconAction.targetExtentFor(
               widget.collapsedExtent,
@@ -296,46 +330,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
                                     const SizedBox(
                                       width: CatchLayout.searchFieldIconGap,
                                     ),
-                                    Expanded(
-                                      child: CatchTextInput(
-                                        controller: _controller,
-                                        focusNode: _focusNode,
-                                        autofocus: widget.autofocus,
-                                        enabled: widget.enabled,
-                                        textInputAction: widget.textInputAction,
-                                        inputFormatters:
-                                            CatchContractFieldPolicy.effectiveInputFormatters(
-                                              widget.contract,
-                                              null,
-                                            ),
-                                        onChanged: widget.onChanged,
-                                        onSubmitted: _handleSubmitted,
-                                        onTapOutside: (_) =>
-                                            _focusNode.unfocus(),
-                                        style: CatchTextStyles.bodyM(
-                                          context,
-                                          color: widget.enabled
-                                              ? foreground
-                                              : mutedForeground,
-                                        ),
-                                        cursorColor: t.primary,
-                                        decoration: InputDecoration(
-                                          isDense: true,
-                                          filled: false,
-                                          fillColor: Colors.transparent,
-                                          border: InputBorder.none,
-                                          enabledBorder: InputBorder.none,
-                                          focusedBorder: InputBorder.none,
-                                          disabledBorder: InputBorder.none,
-                                          contentPadding: EdgeInsets.zero,
-                                          hintText: placeholder,
-                                          hintStyle: CatchTextStyles.bodyM(
-                                            context,
-                                            color: mutedForeground,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
+                                    Expanded(child: textInput),
                                     ValueListenableBuilder<TextEditingValue>(
                                       valueListenable: _controller,
                                       builder: (context, value, _) {
@@ -424,11 +419,6 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
       );
     }
 
-    final t = CatchTokens.of(context);
-    final placeholder = widget.placeholder ?? widget.copy.searchLabel;
-    final foreground = widget.foregroundColor ?? t.ink;
-    final mutedForeground = widget.mutedForegroundColor ?? t.ink3;
-
     return Semantics(
       label: widget.semanticLabel ?? placeholder,
       textField: true,
@@ -454,43 +444,7 @@ class _CatchSearchFieldState extends State<CatchSearchField> {
               color: mutedForeground,
             ),
             const SizedBox(width: CatchLayout.searchFieldIconGap),
-            Expanded(
-              child: CatchTextInput(
-                controller: _controller,
-                focusNode: _focusNode,
-                autofocus: widget.autofocus,
-                enabled: widget.enabled,
-                textInputAction: widget.textInputAction,
-                inputFormatters:
-                    CatchContractFieldPolicy.effectiveInputFormatters(
-                      widget.contract,
-                      null,
-                    ),
-                onChanged: widget.onChanged,
-                onSubmitted: _handleSubmitted,
-                onTapOutside: (_) => _focusNode.unfocus(),
-                style: CatchTextStyles.bodyM(
-                  context,
-                  color: widget.enabled ? foreground : mutedForeground,
-                ),
-                cursorColor: t.primary,
-                decoration: InputDecoration(
-                  isDense: true,
-                  filled: false,
-                  fillColor: Colors.transparent,
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  disabledBorder: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
-                  hintText: placeholder,
-                  hintStyle: CatchTextStyles.bodyM(
-                    context,
-                    color: mutedForeground,
-                  ),
-                ),
-              ),
-            ),
+            Expanded(child: textInput),
             ValueListenableBuilder<TextEditingValue>(
               valueListenable: _controller,
               builder: (context, value, _) {

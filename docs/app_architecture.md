@@ -1,7 +1,7 @@
 ---
 doc_id: app_architecture
-version: 1.61.0
-updated: 2026-09-09
+version: 1.62.0
+updated: 2026-09-14
 owner: app_architecture
 status: active
 ---
@@ -2359,6 +2359,10 @@ or implementation technique cannot justify a second shared implementation.
   the status indicator and toggle input while `CatchFieldRow` owns the full
   leading/body/trailing layout. Its native input suffix recipe retains clear
   action precedence, fallback content and native target spacing.
+  `CatchSearchField` owns browse-query editing and clear/close behavior,
+  separately from form validation and commit orchestration. Fixed and transient
+  recipes share their native input; `CatchSearchFieldStatus` requests collapsed
+  or expanded visibility while explicit animation progress retains precedence.
   Header owns a heading assembly with optional supporting copy, count or
   actions; HeaderTitle owns the title itself. Section and sheet presentation
   recipes use `CatchSectionHeader.kicker` and `CatchSheetHeader.branded`.
