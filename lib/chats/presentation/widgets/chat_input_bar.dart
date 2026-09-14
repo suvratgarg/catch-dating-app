@@ -189,7 +189,8 @@ class _ChatComposer extends StatelessWidget {
                             showLabel: false,
                             controller: controller,
                             focusNode: focusNode,
-                            retainFocusOnSubmitted: true,
+                            // Sending keeps the native editor focused.
+                            onEditingComplete: () {},
                             textCapitalization: TextCapitalization.sentences,
                             textInputAction: TextInputAction.send,
                             minLines: 1,

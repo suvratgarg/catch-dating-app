@@ -3,7 +3,6 @@ part of 'catch_field.dart';
 extension _CatchFieldEdit on _CatchFieldState {
   void _handleSubmitted(String value) {
     widget.onSubmitted?.call(value);
-    if (!widget.retainFocusOnSubmitted) _focusNode.unfocus();
   }
 
   EdgeInsets get _rowPadding {

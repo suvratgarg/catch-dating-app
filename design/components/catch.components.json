@@ -2803,6 +2803,20 @@
             "dartType": "ValueChanged<bool>?"
           },
           {
+            "name": "onEditingComplete",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback?",
+            "notes": "Optional native completion override for direct inputs, invoked before onSubmitted. Omit to retain Flutter keyboard-action focus handling; chat supplies a callback that keeps the editor focused after Send."
+          },
+          {
+            "name": "fontFeatures",
+            "type": "object",
+            "required": false,
+            "dartType": "List<FontFeature>?",
+            "notes": "Native text font features appended to the existing theme style for standalone entry and unit text, including tabularFigures for aligned numeric data."
+          },
+          {
             "name": "onBlur",
             "type": "callback",
             "required": false,

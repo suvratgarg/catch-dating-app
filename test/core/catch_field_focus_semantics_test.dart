@@ -50,28 +50,28 @@ void main() {
     expect(focusNode.hasFocus, isFalse);
   });
 
-  testWidgets('retainFocusOnSubmitted preserves native editing focus', (
+  testWidgets('onEditingComplete retains focus before submission', (
     tester,
   ) async {
     final controller = TextEditingController(text: 'Value');
     final focusNode = FocusNode();
     addTearDown(controller.dispose);
     addTearDown(focusNode.dispose);
-    var submissions = 0;
+    final events = <String>[];
 
     await _pumpField(
       tester,
       controller: controller,
       focusNode: focusNode,
-      retainFocusOnSubmitted: true,
-      onSubmitted: (_) => submissions++,
+      onEditingComplete: () => events.add('complete'),
+      onSubmitted: (_) => events.add('submit'),
     );
     await tester.tap(find.byType(TextField));
     await tester.pump();
     await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
 
-    expect(submissions, 1);
+    expect(events, ['complete', 'submit']);
     expect(focusNode.hasFocus, isTrue);
   });
 
@@ -696,7 +696,7 @@ Future<void> _pumpField(
   WidgetTester tester, {
   required TextEditingController controller,
   required FocusNode focusNode,
-  bool retainFocusOnSubmitted = false,
+  VoidCallback? onEditingComplete,
   ValueChanged<String>? onSubmitted,
   ValueChanged<String>? onBlur,
 }) {
@@ -712,7 +712,7 @@ Future<void> _pumpField(
             inputHint: 'Message…',
             controller: controller,
             focusNode: focusNode,
-            retainFocusOnSubmitted: retainFocusOnSubmitted,
+            onEditingComplete: onEditingComplete,
             textInputAction: TextInputAction.done,
             variant: CatchFieldVariant.bare,
             onSubmitted: onSubmitted,

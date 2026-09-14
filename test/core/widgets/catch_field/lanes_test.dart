@@ -863,58 +863,61 @@ void main() {
     expect(helper.style?.height, CatchFieldTokens.supportLineHeight);
   });
 
-  testWidgets('CatchField supports underline, action suffix, and mono data', (
-    tester,
-  ) async {
-    final controller = TextEditingController(text: '42');
-    addTearDown(controller.dispose);
+  testWidgets(
+    'CatchField supports underline, action suffix, and tabular figures',
+    (tester) async {
+      final controller = TextEditingController(text: '42');
+      addTearDown(controller.dispose);
 
-    await tester.pumpWidget(
-      _wrap(
-        SizedBox(
-          width: 320,
-          child: CatchField.input(
-            copy: catchFieldCopy(AppLocalizationsEn()),
-            title: 'Distance',
-            controller: controller,
-            variant: CatchFieldVariant.underline,
-            textAlign: TextAlign.center,
-            mono: true,
-            states: const <WidgetState>{WidgetState.focused},
-            actions: const Text('KM'),
+      await tester.pumpWidget(
+        _wrap(
+          SizedBox(
+            width: 320,
+            child: CatchField.input(
+              copy: catchFieldCopy(AppLocalizationsEn()),
+              title: 'Distance',
+              controller: controller,
+              variant: CatchFieldVariant.underline,
+              textAlign: TextAlign.center,
+              fontFeatures: const [FontFeature.tabularFigures()],
+              states: const <WidgetState>{WidgetState.focused},
+              actions: const Text('KM'),
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    final editableText = tester.widget<EditableText>(find.byType(EditableText));
-    final baseline = tester.widget<DecoratedBox>(
-      find.byKey(const ValueKey('catch-field-underline-baseline')),
-    );
-    final decoration = baseline.decoration as BoxDecoration;
-    final border = decoration.border! as Border;
-    final sweep = tester.widget<TweenAnimationBuilder<double>>(
-      find.byKey(const ValueKey('catch-field-underline-sweep')),
-    );
+      final editableText = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
+      final baseline = tester.widget<DecoratedBox>(
+        find.byKey(const ValueKey('catch-field-underline-baseline')),
+      );
+      final decoration = baseline.decoration as BoxDecoration;
+      final border = decoration.border! as Border;
+      final sweep = tester.widget<TweenAnimationBuilder<double>>(
+        find.byKey(const ValueKey('catch-field-underline-sweep')),
+      );
 
-    expect(find.text('KM'), findsOneWidget);
-    expect(editableText.textAlign, TextAlign.center);
-    expect(
-      editableText.style.fontFeatures,
-      contains(const FontFeature.tabularFigures()),
-    );
-    expect(border.bottom.width, CatchStroke.hairline);
-    expect(sweep.duration, CatchFieldTokens.reveal);
-    await tester.pump(CatchFieldTokens.reveal);
-    expect(
-      tester
-          .getSize(
-            find.byKey(const ValueKey('catch-field-underline-sweep-bar')),
-          )
-          .width,
-      closeTo(tester.getSize(find.byType(TextField)).width, 0.1),
-    );
-  });
+      expect(find.text('KM'), findsOneWidget);
+      expect(editableText.textAlign, TextAlign.center);
+      expect(
+        editableText.style.fontFeatures,
+        contains(const FontFeature.tabularFigures()),
+      );
+      expect(border.bottom.width, CatchStroke.hairline);
+      expect(sweep.duration, CatchFieldTokens.reveal);
+      await tester.pump(CatchFieldTokens.reveal);
+      expect(
+        tester
+            .getSize(
+              find.byKey(const ValueKey('catch-field-underline-sweep-bar')),
+            )
+            .width,
+        closeTo(tester.getSize(find.byType(TextField)).width, 0.1),
+      );
+    },
+  );
 
   testWidgets(
     'CatchFieldLanes preserves section-owned grouped active geometry',

@@ -100,7 +100,7 @@ class _InputData implements CatchFieldInputConfiguration {
   @override
   final int? minLines = null;
   @override
-  final bool mono = false;
+  final List<FontFeature>? fontFeatures = null;
   @override
   final ValueChanged<String>? onChanged;
   @override
@@ -112,7 +112,7 @@ class _InputData implements CatchFieldInputConfiguration {
   @override
   final bool readOnly = false;
   @override
-  final bool retainFocusOnSubmitted = false;
+  final VoidCallback? onEditingComplete = null;
   @override
   final bool showClearButton = false;
   @override

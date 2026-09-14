@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 4.2.0
+version: 4.3.0
 updated: 2026-09-14
 owner: recursive_audit_loop
 status: active
@@ -17,6 +17,11 @@ accessibility feedback. Direct text-input edit permissions remain caller-owned.
 Disclosure controls use `CatchFieldMode` to distinguish local expansion from
 caller-controlled expansion. Switching back to local ownership preserves the
 last expansion. `inputActions` remains a caller-owned explicit-save editor.
+
+Direct input completion uses Flutter's keyboard-action behavior. Callers that
+need to retain focus, such as message composers, supply `onEditingComplete`;
+`onSubmitted` receives the value afterward. Numeric typography uses native
+`fontFeatures` instead of a separate typography flag.
 
 L0 token definitions live in `packages/catch_tokens` and are consumed through
 `package:catch_tokens/catch_tokens.dart`. Widgetbook foundation specimens in

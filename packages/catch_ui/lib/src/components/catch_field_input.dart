@@ -29,13 +29,13 @@ abstract interface class CatchFieldInputConfiguration {
   int? get maxLength;
   int? get maxLines;
   int? get minLines;
-  bool get mono;
+  List<FontFeature>? get fontFeatures;
   ValueChanged<String>? get onChanged;
   VoidCallback? get onTap;
   FormFieldValidator<String>? get onValidate;
   String? get prefixText;
   bool get readOnly;
-  bool get retainFocusOnSubmitted;
+  VoidCallback? get onEditingComplete;
   bool get showClearButton;
   bool get showLabel;
   CatchFieldSize get size;
@@ -268,9 +268,7 @@ class CatchFieldInput extends StatelessWidget {
             state.didChange(value);
             configuration.onChanged?.call(value);
           },
-          onEditingComplete: configuration.retainFocusOnSubmitted
-              ? () {}
-              : null,
+          onEditingComplete: configuration.onEditingComplete,
           onSubmitted: onSubmitted,
           style: inputStyle,
           cursorColor: t.primary,
@@ -600,13 +598,10 @@ class CatchFieldInput extends StatelessWidget {
         ? CatchTextStyles.bodyLead(context, color: color)
         : CatchTextStyles.bodyL(context, color: color);
 
-    if (!configuration.mono) return style;
+    if (configuration.fontFeatures == null) return style;
 
     return style.copyWith(
-      fontFeatures: [
-        ...?style.fontFeatures,
-        const FontFeature.tabularFigures(),
-      ],
+      fontFeatures: [...?style.fontFeatures, ...configuration.fontFeatures!],
     );
   }
 

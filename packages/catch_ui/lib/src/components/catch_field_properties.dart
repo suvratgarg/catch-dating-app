@@ -103,8 +103,7 @@ mixin _CatchFieldProperties {
   ValueChanged<String>? get onBlur => _inputConfig?.onBlur;
   ValueChanged<bool>? get onFocusChanged => _inputConfig?.onFocusChanged;
   FocusNode? get focusNode => _inputConfig?.focusNode;
-  bool get retainFocusOnSubmitted =>
-      _inputConfig?.retainFocusOnSubmitted ?? false;
+  VoidCallback? get onEditingComplete => _inputConfig?.onEditingComplete;
   FormFieldValidator<String>? get onValidate => _inputConfig?.onValidate;
   TextInputType? get keyboardType => _inputConfig?.keyboardType;
   TextInputAction? get textInputAction => _inputConfig?.textInputAction;
@@ -156,7 +155,7 @@ mixin _CatchFieldProperties {
   };
   TextAlign get textAlign => _inputConfig?.textAlign ?? TextAlign.start;
   bool get focused => states.contains(WidgetState.focused);
-  bool get mono => _inputConfig?.mono ?? false;
+  List<FontFeature>? get fontFeatures => _inputConfig?.fontFeatures;
   String? get prefixText => _inputConfig?.prefixText;
   String? get suffixText => _inputConfig?.suffixText;
   bool get showClearButton => _inputConfig?.showClearButton ?? false;
