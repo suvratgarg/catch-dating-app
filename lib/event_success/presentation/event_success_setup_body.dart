@@ -132,7 +132,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               title: context.l10n.eventSuccessEventSuccessSetupBodyTitleFormat,
               body: draft.playbook.summary,
               valueText: profile.formatLabel,
-              action: formatActions.isEmpty
+              actions: formatActions.isEmpty
                   ? null
                   : Wrap(spacing: CatchSpacing.s2, children: formatActions),
             ),
@@ -179,7 +179,7 @@ class _EventSuccessSetupBodyState extends State<EventSuccessSetupBody> {
               inputHint: context
                   .l10n
                   .eventSuccessEventSuccessSetupBodyPlaceholderSomethingAttendeesSeeBeforeTheEventKicksOff,
-              supporting: Text(
+              meta: Text(
                 context.l10n
                     .eventSuccessEventSuccessSetupBodyTextAttendeesWillSeeText(
                       text: _attendeePromptPreview(

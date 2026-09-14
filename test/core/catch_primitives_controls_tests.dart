@@ -18,7 +18,7 @@ void _registerCatchPrimitivesControlsTests() {
               copy: catchFieldCopy(AppLocalizationsEn()),
               title: 'Full name',
               metadata: 'Short text · Required',
-              reorderHandle: const SizedBox(
+              leading: const SizedBox(
                 key: ValueKey('sortable-handle'),
                 child: Icon(Icons.drag_indicator_rounded),
               ),

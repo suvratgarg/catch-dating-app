@@ -453,9 +453,9 @@ class PlaceSearchPanel extends StatelessWidget {
                 .eventsLocationPickerScreenPlaceholderSearchForAMeeting,
             errorText: errorText,
             size: CatchFieldSize.floating,
-            prefixIcon: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
+            leading: Icon(CatchIcons.searchRounded, size: CatchIcon.md),
             suffixText: stateText,
-            suffixIcon: isPending
+            trailing: isPending
                 ? const Center(
                     child: SizedBox.square(
                       dimension: CatchIcon.md,

@@ -708,7 +708,7 @@ class HostParticipationLifecycleBoard extends StatelessWidget {
                       'submitted or persisted.',
                   body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
                   icon: CatchIcons.qrCode2Rounded,
-                  control: HostEventCheckInQrPanel(event: viewModel.event),
+                  child: HostEventCheckInQrPanel(event: viewModel.event),
                 ),
               ],
             ),

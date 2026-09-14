@@ -36,7 +36,7 @@ Widget fieldSelectControlStates(BuildContext context) {
         values: values,
         itemLabelBuilder: (value) => value,
         value: 'Riverside',
-        prefixIcon: Icon(CatchIcons.pin),
+        leading: Icon(CatchIcons.pin),
         onChanged: (_) {},
       ),
       CatchField<String>.select(

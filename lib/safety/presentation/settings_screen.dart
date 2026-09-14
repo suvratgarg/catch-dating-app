@@ -306,7 +306,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         .l10n
                         .safetySettingsScreenBodyManageEventsAndClubs,
                     icon: CatchIcons.workOutlineRounded,
-                    action:
+                    actions:
                         _pendingExternalLink ==
                             _SettingsExternalLinkAction.hostApp
                         ? const SizedBox.square(
@@ -514,7 +514,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       title:
                           context.l10n.safetySettingsScreenTitlePrivacyPolicy,
                       icon: CatchIcons.lockOutline,
-                      action:
+                      actions:
                           _pendingExternalLink ==
                               _SettingsExternalLinkAction.privacyPolicy
                           ? const SizedBox.square(
@@ -537,7 +537,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         .safetySettingsScreenTitleDeleteAccount658588,
                     icon: CatchIcons.deleteOutline,
                     tone: CatchFieldTone.danger,
-                    action: state.mutations.deletingAccount
+                    actions: state.mutations.deletingAccount
                         ? const SizedBox.square(
                             dimension: CatchIcon.control,
                             child: CatchLoadingIndicator(),
@@ -557,7 +557,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       title: context.l10n.safetySettingsScreenTitleHelpSupport,
                       valueText: context.l10n.safetySettingsScreenBodyContactUs,
                       icon: CatchIcons.helpOutline,
-                      action:
+                      actions:
                           _pendingExternalLink ==
                               _SettingsExternalLinkAction.helpSupport
                           ? const SizedBox.square(
@@ -579,7 +579,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       title: context.l10n.safetySettingsScreenTitleTerms,
                       valueText: context.l10n.safetySettingsScreenBodyLegal,
                       icon: CatchIcons.descriptionOutlined,
-                      action:
+                      actions:
                           _pendingExternalLink ==
                               _SettingsExternalLinkAction.terms
                           ? const SizedBox.square(
@@ -610,7 +610,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     title: context.l10n.safetySettingsScreenTitleLogOut,
                     icon: CatchIcons.logoutRounded,
                     tone: CatchFieldTone.danger,
-                    action: state.mutations.signingOut
+                    actions: state.mutations.signingOut
                         ? const SizedBox.square(
                             dimension: CatchIcon.control,
                             child: CatchLoadingIndicator(),

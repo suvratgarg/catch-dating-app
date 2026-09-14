@@ -156,7 +156,7 @@ class _ProfileInlineRangeEditorState
         isLoading: isSaving,
         status: isSaving ? CatchFieldStatus.saving : _status,
         error: _errorMessage(),
-        control: CatchRangeInput(
+        child: CatchRangeInput(
           minimumContract: widget.minimumContract,
           maximumContract: widget.maximumContract,
           min: widget.sliderMin,

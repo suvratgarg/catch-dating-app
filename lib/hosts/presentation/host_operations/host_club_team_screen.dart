@@ -503,7 +503,7 @@ class HostTeamProfileSection extends StatelessWidget {
                       .l10n
                       .hostsHostClubTeamScreenVisiblecopyCreateHostProfile,
             icon: CatchIcons.businessOutlined,
-            action: creatingProfile
+            actions: creatingProfile
                 ? const SizedBox.square(
                     dimension: CatchIcon.md,
                     child: CatchLoadingIndicator(

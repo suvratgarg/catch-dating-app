@@ -227,7 +227,7 @@ class HostCustomerDetailOverview extends StatelessWidget {
             title: context.l10n.hostCustomersDetailAttendance,
             contractExemption:
                 'Read-only disclosure of derived attendance metrics; no scalar value is persisted.',
-            control: HostCustomerAttendanceCard(customer: customer),
+            child: HostCustomerAttendanceCard(customer: customer),
           ),
           CatchButton.command(
             key: const ValueKey('host-customer-revenue-breakdown'),

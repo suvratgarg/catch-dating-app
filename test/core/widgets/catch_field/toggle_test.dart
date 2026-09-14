@@ -154,7 +154,7 @@ void main() {
           title: 'Height',
           initiallyOpen: true,
           onOpenChanged: openChanges.add,
-          control: const SizedBox(height: 80, child: Text('Height control')),
+          child: const SizedBox(height: 80, child: Text('Height control')),
           onCancel: () {},
           onSubmit: () {},
         ),
@@ -185,7 +185,7 @@ void main() {
           title: 'Height',
           open: true,
           onOpenChanged: openChanges.add,
-          control: Focus(
+          child: Focus(
             focusNode: controlFocus,
             child: const SizedBox(height: 44, child: Text('Height control')),
           ),

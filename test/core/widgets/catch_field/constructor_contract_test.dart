@@ -79,7 +79,7 @@ void main() {
         copy: copy,
         title: 'Sortable',
         metadata: 'Metadata',
-        reorderHandle: slot,
+        leading: slot,
         onTap: tap,
       );
       expect(field.leading, same(slot));

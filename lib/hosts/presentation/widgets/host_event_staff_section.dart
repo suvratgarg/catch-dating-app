@@ -47,7 +47,7 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
         onOpenChanged: (open) {
           if (open && !_loaded) unawaited(_load());
         },
-        control: Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Wrap(

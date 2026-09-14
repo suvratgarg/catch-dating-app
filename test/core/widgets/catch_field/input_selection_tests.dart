@@ -18,7 +18,7 @@ void _registerInputSelectionTests() {
             values: defaultCityOptions,
             itemLabelBuilder: (city) => city.label,
             value: selected,
-            prefixIcon: Icon(CatchIcons.locationOnOutlined),
+            leading: Icon(CatchIcons.locationOnOutlined),
             onValidate: (value) =>
                 value == null ? 'Please select a city' : null,
             onChanged: (value) => selected = value,
@@ -291,7 +291,7 @@ void _registerInputSelectionTests() {
             values: defaultCityOptions,
             value: selected,
             itemLabelBuilder: (city) => city.label,
-            prefixIcon: Icon(CatchIcons.locationOnOutlined),
+            leading: Icon(CatchIcons.locationOnOutlined),
             showLabel: false,
             onChanged: (value) => selected = value,
           ),

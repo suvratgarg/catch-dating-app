@@ -214,7 +214,7 @@ class OnboardingNameDobStep extends StatelessWidget {
                 autofillHints: const [AutofillHints.telephoneNumberNational],
                 icon: CatchIcons.phoneOutlined,
                 prefixText: state.phonePrefix,
-                suffixIcon: Icon(CatchIcons.verifiedRounded),
+                trailing: Icon(CatchIcons.verifiedRounded),
                 helperText:
                     context.l10n.onboardingNameDobPageHelpertextVerifiedViaOtp,
                 helperTone: CatchFieldSupportRowTone.success,

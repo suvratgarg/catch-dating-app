@@ -131,7 +131,7 @@ void main() {
                     title: 'Catch bookings',
                     open: true,
                     onOpenChanged: (_) {},
-                    control: const Text('Choice controls'),
+                    child: const Text('Choice controls'),
                   ),
                 ],
               ),

@@ -121,7 +121,7 @@ class _HostFormResponseDetailScreenState
                   title: context.l10n.hostAudienceSubmissionDetails,
                   contractExemption:
                       'Read-only disclosure of server-owned response metadata; no scalar value is persisted.',
-                  control: _ResponseTechnicalDetails(detail: value),
+                  child: _ResponseTechnicalDetails(detail: value),
                 ),
               ),
               if (value.response.status == HostFormResponseStatus.submitted ||

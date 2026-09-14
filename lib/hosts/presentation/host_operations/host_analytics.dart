@@ -400,7 +400,7 @@ class _HostAnalyticsReportViewState extends State<HostAnalyticsReportView> {
                 onOpenChanged: (open) {
                   setState(() => _moreMetricsOpen = open);
                 },
-                control: CatchMetricSection.dataQuality(
+                child: CatchMetricSection.dataQuality(
                   key: const ValueKey('host-analytics-secondary-grid'),
                   metrics: [
                     for (final metric in secondaryMetrics)
@@ -798,7 +798,7 @@ class HostAnalyticsEventTile extends StatelessWidget {
           event.grossRevenueMinor,
           currencyCode: event.currency,
         ),
-        action: hasPaymentIssues
+        actions: hasPaymentIssues
             ? CatchBadge(
                 label: context.l10n.hostsHostAnalyticsLabelPaymentIssues,
                 tone: CatchBadgeTone.warning,

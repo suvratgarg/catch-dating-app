@@ -2442,7 +2442,7 @@ Widget catchFieldContractStates(BuildContext context) {
           copy: copy,
           title: 'Why do you want to join?',
           metadata: 'Long text · Required',
-          reorderHandle: SizedBox.square(
+          leading: SizedBox.square(
             dimension: CatchSpacing.s11,
             child: Icon(CatchIcons.dragIndicatorRounded),
           ),
@@ -2756,7 +2756,7 @@ Widget catchFieldContractStates(BuildContext context) {
           title: 'Search',
           initialValue: 'social run',
           focused: true,
-          prefixIcon: Icon(CatchIcons.search),
+          leading: Icon(CatchIcons.search),
         ),
       ),
       fieldState(
@@ -2818,7 +2818,7 @@ Widget catchFieldContractStates(BuildContext context) {
           title: 'Search hosts',
           initialValue: 'Run',
           showClearButton: true,
-          suffixIcon: Icon(CatchIcons.search),
+          trailing: Icon(CatchIcons.search),
         ),
       ),
       fieldState(
@@ -2861,7 +2861,7 @@ Widget catchFieldContractStates(BuildContext context) {
           values: const ['Run', 'Dinner', 'Pickleball'],
           value: 'Run',
           itemLabelBuilder: (value) => value,
-          prefixIcon: Icon(CatchIcons.eventOutlined),
+          leading: Icon(CatchIcons.eventOutlined),
           onChanged: (_) {},
         ),
       ),
@@ -2873,7 +2873,7 @@ Widget catchFieldContractStates(BuildContext context) {
           values: const ['Run', 'Dinner', 'Pickleball'],
           value: 'Run',
           itemLabelBuilder: (value) => value,
-          prefixIcon: Icon(CatchIcons.eventOutlined),
+          leading: Icon(CatchIcons.eventOutlined),
           enabled: false,
           onChanged: (_) {},
         ),
@@ -11106,8 +11106,8 @@ class _ExplicitSaveFieldDemoState extends State<_ExplicitSaveFieldDemo> {
       icon: CatchIcons.formatQuoteRounded,
       open: _expanded,
       onOpenChanged: (expanded) => setState(() => _expanded = expanded),
-      supporting: const Text('19 / 300'),
-      secondaryAction: CatchButton.text(
+      meta: const Text('19 / 300'),
+      actions: CatchButton.text(
         label: 'Change prompt',
         onPressed: _noop,
         padding: EdgeInsets.zero,
@@ -11150,7 +11150,7 @@ class _SelectErrorFieldDemoState extends State<_SelectErrorFieldDemo> {
         title: 'Activity',
         values: const ['Run', 'Dinner', 'Pickleball'],
         itemLabelBuilder: (value) => value,
-        prefixIcon: Icon(CatchIcons.eventOutlined),
+        leading: Icon(CatchIcons.eventOutlined),
         onValidate: (value) => value == null ? 'Choose an activity.' : null,
         onChanged: (_) {},
       ),

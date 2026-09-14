@@ -261,24 +261,24 @@ class CatchFieldTextEntry extends StatelessWidget {
             suffixText: field.suffixText,
             suffixStyle: CatchTextStyles.bodyLead(context, color: t.ink2),
             prefixIconConstraints: _iconConstraints,
-            prefixIcon: _usesRowPrefixIcon || field.prefixIcon == null
+            prefixIcon: _usesRowPrefixIcon || !field._hasInputLeading
                 ? null
                 : IconTheme(
                     data: IconThemeData(color: t.ink3, size: CatchIcon.md),
-                    child: field.prefixIcon!,
+                    child: field.leading!,
                   ),
             suffixIconConstraints: _suffixIconConstraints,
             suffixIcon:
                 _usesRowTextEntryTrailing ||
                     (!field.showClearButton &&
-                        field.action == null &&
-                        field.suffixIcon == null)
+                        !field._hasRowActions &&
+                        field.trailing == null)
                 ? null
                 : CatchFieldTrailingRow.inputSuffix(
                     controller: controller,
                     clearTooltip: field.copy.clearTooltip(_title),
-                    actions: field.action,
-                    trailing: field.suffixIcon,
+                    actions: field.actions,
+                    trailing: field.trailing,
                     showClearButton: field.showClearButton,
                     onChanged: field.onChanged,
                   ),
@@ -499,13 +499,11 @@ class CatchFieldTextEntry extends StatelessWidget {
       field.variant != CatchFieldVariant.underline &&
       !_compactTextEntry &&
       field.showLabel &&
-      field.prefixIcon != null;
+      field._hasInputLeading;
   bool get _usesRowTextEntryTrailing =>
       field.variant != CatchFieldVariant.underline &&
       !_compactTextEntry &&
-      (field.showClearButton ||
-          field.suffixIcon != null ||
-          field.action != null);
+      (field.showClearButton || field.trailing != null || field._hasRowActions);
   Color _fieldLabelColor(CatchTokens t, {required bool hasError}) => hasError
       ? t.danger
       : _active
@@ -557,7 +555,7 @@ class CatchFieldTextEntry extends StatelessWidget {
   }
 
   BoxConstraints? get _suffixIconConstraints {
-    if (field.action == null) return _iconConstraints;
+    if (!field._hasRowActions) return _iconConstraints;
     return const BoxConstraints();
   }
 

@@ -96,7 +96,7 @@ class _EventRehearsalSetupSectionState
               : null,
           onCancel: _cancel,
           onSubmit: _valid ? _save : null,
-          control: CatchFieldLanes.divided(
+          child: CatchFieldLanes.divided(
             children: [
               _EventRehearsalSetupInput(
                 title: context.l10n.hostEventRehearsalFieldTitle,

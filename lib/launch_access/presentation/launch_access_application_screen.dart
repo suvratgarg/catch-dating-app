@@ -276,7 +276,7 @@ class _LaunchAccessApplicationFormState
               hintText: context
                   .l10n
                   .launchAccessLaunchAccessApplicationScreenHinttextSelectCity,
-              prefixIcon: Icon(CatchIcons.locationCityOutlined),
+              leading: Icon(CatchIcons.locationCityOutlined),
               onValidate: (_) => draft.city.trim().isEmpty
                   ? context.l10n.launchAccessValidationChooseCity
                   : null,
@@ -381,7 +381,7 @@ class _LaunchAccessApplicationFormState
               isOptional: true,
               controller: _inviteCodeController,
               textCapitalization: TextCapitalization.characters,
-              prefixIcon: Icon(CatchIcons.confirmationNumberOutlined),
+              leading: Icon(CatchIcons.confirmationNumberOutlined),
               onChanged: (value) {
                 LaunchAccessController.submitMutation.reset(ref);
                 ref

@@ -35,7 +35,7 @@ class EventRehearsalGuestLinkSection extends StatelessWidget {
         contractExemption:
             'The callable returns this opaque practice-only guest URL.',
         initiallyOpen: true,
-        control: Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ColoredBox(
@@ -124,7 +124,7 @@ class EventRehearsalRunSection extends StatelessWidget {
           contractExemption:
               'Virtual rehearsal clock controls are callable-owned commands.',
           initiallyOpen: true,
-          control: Wrap(
+          child: Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [

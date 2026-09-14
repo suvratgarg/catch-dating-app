@@ -106,7 +106,7 @@ class _CatchFieldState extends State<CatchField>
           showLabel: widget.showLabel,
           size: widget.size,
           placeholder: widget.placeholder,
-          leading: widget.prefixIcon,
+          leading: widget.leading,
           error: _displayError,
           helperText: widget.helperText,
           helperTone: widget.helperTone,
@@ -213,7 +213,7 @@ class _CatchFieldState extends State<CatchField>
           } else if (!_isSaving && widget.valid && !_hasError) {
             rawTrailingSlot = CatchFieldTrailingRow.valid(topPadding: 0);
           } else if (_usesRowTextEntryTrailing) {
-            final fallbackContent = widget.action ?? widget.suffixIcon;
+            final fallbackContent = widget.actions ?? widget.trailing;
             final fallback = fallbackContent == null
                 ? null
                 : CatchFieldTrailingRow.custom(
@@ -263,12 +263,12 @@ class _CatchFieldState extends State<CatchField>
               );
             }
 
-            final custom = widget.action == null
+            final custom = !widget._hasRowActions
                 ? null
                 : CatchFieldTrailingRow.custom(
                     topPadding: 0,
                     color: t.ink3,
-                    child: widget.action!,
+                    child: widget.actions!,
                   );
             if (custom != null) children.add(custom);
 
@@ -325,7 +325,7 @@ class _CatchFieldState extends State<CatchField>
                   ),
                 );
           final Widget? leadingSlot;
-          if (widget.leading != null) {
+          if (widget._hasRowLeading) {
             final extent = widget.leadingExtent;
             leadingSlot = extent == null
                 ? widget.leading
@@ -354,7 +354,7 @@ class _CatchFieldState extends State<CatchField>
                     : t.ink2,
                 size: CatchFieldRow.leadingSlotIconSize,
               ),
-              child: widget.prefixIcon!,
+              child: widget.leading!,
             );
           } else {
             leadingSlot = null;
@@ -651,13 +651,9 @@ class _CatchFieldState extends State<CatchField>
                     open: _isOpen,
                     offstage: _disclosureOffstage,
                     revealTargetKey: _disclosureRevealTargetKey,
-                    body: widget._explicitSaveInput
-                        ? widget._feedback
-                        : widget.control,
-                    meta: widget._explicitSaveInput ? widget._supporting : null,
-                    actions: widget._explicitSaveInput
-                        ? widget._secondaryAction
-                        : null,
+                    body: widget.child,
+                    meta: widget._explicitSaveInput ? widget.meta : null,
+                    actions: widget._explicitSaveInput ? widget.actions : null,
                     footer: actionBar,
                     startPadding: disclosureStartPadding,
                     endPadding: rowPadding.right,

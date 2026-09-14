@@ -207,7 +207,7 @@ class OnboardingRunningPrefsStep extends StatelessWidget {
                   ),
                   icon: CatchIcons.directionsRunRounded,
                   initiallyOpen: true,
-                  control: Column(
+                  child: Column(
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

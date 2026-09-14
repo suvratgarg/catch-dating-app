@@ -156,7 +156,7 @@ void main() {
                   title: 'Second',
                   body: 'B',
                   initiallyOpen: true,
-                  control: const Text('Second control'),
+                  child: const Text('Second control'),
                 ),
                 CatchField.read(
                   copy: catchFieldCopy(AppLocalizationsEn()),
@@ -999,7 +999,7 @@ void main() {
                       body: 'Value $index',
                       open: index == activeIndex,
                       onOpenChanged: (_) {},
-                      control: Text('Control $index'),
+                      child: Text('Control $index'),
                     ),
                 ],
               ),

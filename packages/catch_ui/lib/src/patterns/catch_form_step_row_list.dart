@@ -53,7 +53,7 @@ class CatchFormStepRowList extends StatelessWidget {
             copy: fieldCopy,
             key: ValueKey('catch-form-step-overview-${item.index}'),
             title: item.title,
-            action: CatchBadge.functional(
+            actions: CatchBadge.functional(
               label: statusLabelBuilder(item.status),
               tone: _statusTone(item.status),
             ),

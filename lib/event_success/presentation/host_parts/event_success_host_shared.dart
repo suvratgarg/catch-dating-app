@@ -132,7 +132,7 @@ class PlanSummary extends StatelessWidget {
         body: context.l10n.eventSuccessEventSuccessHostSharedLabelLengthTools(
           length: draft.selectedModules.length,
         ),
-        action: CatchBadge(
+        actions: CatchBadge(
           label: planIsPersisted
               ? draft.status.label
               : context.l10n.eventSuccessEventSuccessHostSharedLabelNotSaved,
@@ -165,7 +165,7 @@ class HostActivitySummary extends StatelessWidget {
         body: profile.summary,
         valueText: profile.interactionModel.label,
         icon: CatchIcons.autoAwesomeOutlined,
-        action: CatchBadge(
+        actions: CatchBadge(
           label: context.l10n
               .eventSuccessEventSuccessHostSharedLabelLengthSelected(
                 length: draft.selectedModules.length,
@@ -201,7 +201,7 @@ class CompatibilitySignalHostCard extends StatelessWidget {
                     .eventSuccessEventSuccessHostSharedTextAnswersCanStillShape,
           valueText: pack.title,
           icon: CatchIcons.psychologyAltOutlined,
-          action: CatchBadge(
+          actions: CatchBadge(
             label: rankingOn
                 ? context
                       .l10n

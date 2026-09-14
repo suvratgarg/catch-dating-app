@@ -93,7 +93,7 @@ class _HostAddCustomerScreenState extends ConsumerState<HostAddCustomerScreen> {
                     contractExemption:
                         'Disclosure for the nested initial-note input, which uses the generated create-contact binding.',
                     isOptional: true,
-                    control: Column(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(

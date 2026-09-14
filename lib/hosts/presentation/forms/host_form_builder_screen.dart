@@ -1152,7 +1152,7 @@ class _CompactQuestionRows extends StatelessWidget {
                   copy: catchFieldCopy(context.l10n),
                   title: question.label,
                   metadata: _questionSummary(context, question),
-                  reorderHandle: section.questions.length > 1
+                  leading: section.questions.length > 1
                       ? ReorderableDragStartListener(
                           index: questionIndex,
                           child: Tooltip(
@@ -1733,7 +1733,7 @@ class _FormSettings extends StatelessWidget {
             CatchField.action(
               copy: catchFieldCopy(context.l10n),
               title: _logicRuleSummary(context, definition, ruleEntry.$2),
-              action: IconButton(
+              actions: IconButton(
                 tooltip: context.l10n.hostFormRemoveRule,
                 icon: Icon(CatchIcons.deleteOutlineRounded),
                 onPressed: () => notifier.removeLogicRule(ruleEntry.$1),
@@ -2045,7 +2045,7 @@ class _QuestionEditFields extends StatelessWidget {
             body: context.l10n.hostFormAdvancedQuestionSettingsHelp,
             contractExemption:
                 'Disclosure groups advanced fields from the form definition.',
-            control: CatchFieldLanes.divided(children: advancedFields),
+            child: CatchFieldLanes.divided(children: advancedFields),
           )
         else
           ...advancedFields,
@@ -2536,7 +2536,7 @@ class _DateFormSchemaField extends StatelessWidget {
           : MaterialLocalizations.of(
               context,
             ).formatMediumDate(value!.toLocal()),
-      action: value == null
+      actions: value == null
           ? null
           : IconButton(
               tooltip: context.l10n.hostFormClearDate,

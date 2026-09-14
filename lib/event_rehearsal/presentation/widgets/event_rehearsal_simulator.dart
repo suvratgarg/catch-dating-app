@@ -62,7 +62,7 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
               contractExemption:
                   'Synthetic behaviors are callable-owned rehearsal commands.',
               initiallyOpen: true,
-              control: CatchFieldLanes.divided(
+              child: CatchFieldLanes.divided(
                 children: [
                   _EventRehearsalActorPicker(
                     actors: widget.rehearsal.actors,
@@ -102,7 +102,7 @@ class _EventRehearsalSimulatorState extends State<EventRehearsalSimulator> {
                 icon: CatchIcons.scienceOutlined,
                 contractExemption:
                     'Internal-only fault state is callable-owned and isolated.',
-                control: _EventRehearsalFaultPicker(
+                child: _EventRehearsalFaultPicker(
                   selected: widget.rehearsal.session.fault,
                   enabled: canChooseFault && !widget.isLoading,
                   onSelected: widget.onFault,
@@ -344,7 +344,7 @@ class EventRehearsalRecapSection extends StatelessWidget {
             'Recap and deterministic reproduction are rehearsal projections.',
         initiallyOpen:
             rehearsal.session.status == EventRehearsalStatus.complete,
-        control: Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Wrap(

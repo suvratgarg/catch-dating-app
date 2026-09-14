@@ -52,7 +52,7 @@ void main() {
                           title: 'Event One',
                           body: '12 Jun · Completed\n20 booked · 16 attended',
                           valueText: '₹1,200',
-                          action: action,
+                          actions: action,
                           showChevron: kind == 'action with chevron',
                           onTap: () {},
                         ),

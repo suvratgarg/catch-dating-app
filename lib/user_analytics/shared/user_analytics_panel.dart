@@ -47,7 +47,7 @@ class _UserAnalyticsPanelState extends ConsumerState<UserAnalyticsPanel> {
             value: _rangePreset,
             itemLabelBuilder: (preset) =>
                 UserAnalyticsCopy.rangeLabel(context.l10n, preset),
-            prefixIcon: Icon(CatchIcons.calendarMonthOutlined),
+            leading: Icon(CatchIcons.calendarMonthOutlined),
             onChanged: (preset) {
               if (preset == null) return;
               setState(() => _rangePreset = preset);

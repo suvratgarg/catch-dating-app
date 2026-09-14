@@ -46,7 +46,7 @@ void main() {
                 title: 'Custom',
                 open: scope.isExpanded,
                 onOpenChanged: (_) => scope.toggle(),
-                control: const Text('Custom control'),
+                child: const Text('Custom control'),
               ),
             ),
           ],

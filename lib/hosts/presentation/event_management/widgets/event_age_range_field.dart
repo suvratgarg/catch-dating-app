@@ -165,7 +165,7 @@ class _EventAgeRangeFieldState extends State<EventAgeRangeField> {
         initiallyOpen: widget.initiallyOpen,
         enabled: widget.enabled,
         icon: CatchIcons.cakeOutlined,
-        control: CatchRangeInput(
+        child: CatchRangeInput(
           key: const ValueKey('event-age-range-slider'),
           minimumContract: widget.minimumContract,
           maximumContract: widget.maximumContract,

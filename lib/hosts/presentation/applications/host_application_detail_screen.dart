@@ -269,7 +269,7 @@ class _HostApplicationDetailScreenState
                               HostApplicationReviewStatus.submitted ||
                           application.reviewStatus ==
                               HostApplicationReviewStatus.inReview,
-                      control: Column(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           CatchField.input(

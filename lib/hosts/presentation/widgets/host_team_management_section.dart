@@ -302,7 +302,7 @@ class HostTeamOwnerHostRow extends StatelessWidget {
           size: 42,
         ),
         leadingExtent: 42,
-        action: canManage
+        actions: canManage
             ? CatchActionMenu<String>(
                 key: ValueKey('host-team-actions-${host.uid}'),
                 tooltip: context
@@ -450,7 +450,7 @@ class _HostTeamAddHostSheetState extends State<HostTeamAddHostSheet> {
               contract: CatchContractConstraints
                   .addClubHostCallablePayloadPhoneNumber,
               controller: _controller,
-              prefixIcon: Icon(CatchIcons.phoneOutlined),
+              leading: Icon(CatchIcons.phoneOutlined),
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => unawaited(_submit()),

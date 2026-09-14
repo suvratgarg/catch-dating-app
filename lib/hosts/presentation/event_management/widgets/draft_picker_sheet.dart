@@ -224,7 +224,7 @@ class DraftCard extends StatelessWidget {
         icon: CatchIcons.descriptionOutlined,
         iconColor: t.ink3,
         onTap: isDeleting ? null : onSelect,
-        action: Tooltip(
+        actions: Tooltip(
           message: context.l10n.hostsDraftPickerSheetMessageDeleteDraft,
           child: CatchIconAction(
             key: CreateEventFormKeys.deleteDraft(draft.id),

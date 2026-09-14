@@ -101,7 +101,7 @@ void main() {
                   copy: _copy('Custom'),
                   title: 'Choice',
                   body: 'One',
-                  control: const Text('Choices'),
+                  child: const Text('Choices'),
                   open: true,
                   onCancel: () {},
                   onSubmit: () {},

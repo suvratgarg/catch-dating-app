@@ -5,7 +5,7 @@ extension _CatchFieldBehavior on _CatchFieldState {
     _expandedContentRevealController = AnimationController(vsync: this)
       ..addListener(_handleExpandedContentRevealTick)
       ..addStatusListener(_handleExpandedContentRevealStatus);
-    _open = widget.open ?? (widget.initiallyOpen && widget.control != null);
+    _open = widget.open ?? (widget.initiallyOpen && widget.child != null);
     _disclosureOffstage = !_isOpen;
     _attachFocusNode(widget.focusNode);
     _internalController = TextEditingController(
@@ -37,8 +37,8 @@ extension _CatchFieldBehavior on _CatchFieldState {
       _attachFocusNode(widget.focusNode);
     }
     final wasOpen = oldWidget.open ?? _open;
-    if (oldWidget.control != widget.control &&
-        widget.control == null &&
+    if (oldWidget.child != widget.child &&
+        widget.child == null &&
         !widget._explicitSaveInput) {
       _open = false;
     } else if (widget.open != null) {
@@ -46,7 +46,7 @@ extension _CatchFieldBehavior on _CatchFieldState {
     } else if (oldWidget.open != null) {
       _open = oldWidget.open!;
     } else if (oldWidget.initiallyOpen != widget.initiallyOpen) {
-      _open = widget.initiallyOpen && widget.control != null;
+      _open = widget.initiallyOpen && widget.child != null;
     }
     final isOpen = _isOpen;
     if (!wasOpen && isOpen) {
@@ -474,7 +474,7 @@ extension _CatchFieldBehavior on _CatchFieldState {
   }
 
   bool get _inlineControlAddAtRest => widget.addable && !_hasValue && !_isOpen;
-  bool get _hasControl => widget.control != null || widget._explicitSaveInput;
+  bool get _hasControl => widget.child != null || widget._explicitSaveInput;
   Object get _textFieldTapRegionGroup =>
       widget._explicitSaveInput ? _tapRegionGroup : EditableText;
   bool get _hasFieldValidationError => _textEntryHasValidationError;
@@ -510,14 +510,14 @@ extension _CatchFieldBehavior on _CatchFieldState {
       !_usesUnderlineChrome &&
       !_compactTextEntry &&
       widget.showLabel &&
-      widget.prefixIcon != null;
+      widget._hasInputLeading;
   bool get _usesRowTextEntryTrailing =>
       _isEdit &&
       !_usesUnderlineChrome &&
       !_compactTextEntry &&
       (widget.showClearButton ||
-          widget.suffixIcon != null ||
-          widget.action != null);
+          widget.trailing != null ||
+          widget._hasRowActions);
   bool get _usesPositionedClearTrailing =>
       _usesRowTextEntryTrailing &&
       widget.showClearButton &&
@@ -528,8 +528,8 @@ extension _CatchFieldBehavior on _CatchFieldState {
       widget.status == CatchFieldStatus.idle &&
       !(widget.valid && !_hasError);
   bool get _hasLeadingSlot =>
-      widget.leading != null || widget.icon != null || _usesRowPrefixIcon;
-  double get _leadingTextLaneInset => widget.leading != null
+      widget._hasRowLeading || widget.icon != null || _usesRowPrefixIcon;
+  double get _leadingTextLaneInset => widget._hasRowLeading
       ? (widget.leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
             CatchFieldTokens.leadingGap
       : CatchFieldRow.textLaneInset;

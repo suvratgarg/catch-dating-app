@@ -298,7 +298,7 @@ class NotificationRow extends StatelessWidget {
           body: body,
           emphasis: CatchFieldEmphasis.title,
           showChevron: false,
-          action: timeLabel.isEmpty
+          actions: timeLabel.isEmpty
               ? null
               : Text(
                   timeLabel,

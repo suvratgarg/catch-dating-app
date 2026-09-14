@@ -109,7 +109,7 @@ class _RouteEventPlanEditorState extends State<RouteEventPlanEditor> {
                 'Disclosure for nested routePlan fields with generated bindings.',
             icon: CatchIcons.routeOutlined,
             iconColor: accent,
-            control: CatchSection.containedFieldRows(
+            child: CatchSection.containedFieldRows(
               children: [
                 CatchField<RouteMovementMode>.choices(
                   copy: catchFieldCopy(context.l10n),

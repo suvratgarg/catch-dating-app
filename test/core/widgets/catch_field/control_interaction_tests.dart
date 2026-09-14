@@ -17,7 +17,7 @@ void _registerControlInteractionTests() {
                 title: 'Height',
                 open: open,
                 onOpenChanged: (value) => setState(() => open = value),
-                control: const Text('Height control'),
+                child: const Text('Height control'),
                 onCancel: () {
                   cancelCount++;
                   setState(() => open = false);
@@ -63,7 +63,7 @@ void _registerControlInteractionTests() {
                 title: 'Height',
                 open: open,
                 onOpenChanged: (value) => setState(() => open = value),
-                control: const Text('Height control'),
+                child: const Text('Height control'),
                 onCancel: () {
                   cancelCount++;
                   setState(() => open = false);
@@ -165,7 +165,7 @@ void _registerControlInteractionTests() {
                       body: 'Jain',
                       open: open,
                       onOpenChanged: setOpen,
-                      control: const SizedBox(height: 180),
+                      child: const SizedBox(height: 180),
                       onCancel: () => setOpen(false),
                       onSubmit: _noop,
                     ),
@@ -221,7 +221,7 @@ void _registerControlInteractionTests() {
                     body: 'Jain',
                     open: open,
                     onOpenChanged: (value) => setState(() => open = value),
-                    control: const SizedBox(height: 180),
+                    child: const SizedBox(height: 180),
                     onCancel: _noop,
                     onSubmit: _noop,
                   ),
@@ -285,7 +285,7 @@ void _registerControlInteractionTests() {
                       body: 'Jain',
                       open: open,
                       onOpenChanged: (value) => setState(() => open = value),
-                      control: const SizedBox(height: 180),
+                      child: const SizedBox(height: 180),
                       onCancel: _noop,
                       onSubmit: _noop,
                     ),

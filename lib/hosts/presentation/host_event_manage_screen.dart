@@ -380,7 +380,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
               contractExemption:
                   'Read and management disclosure for an existing event; it '
                   'does not submit a scalar field value.',
-              control: Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   HostEventSummaryCard(club: club, event: event),
@@ -415,7 +415,7 @@ class _HostEventManageScreenState extends ConsumerState<HostEventManageScreen> {
                   'value is submitted or persisted.',
               body: context.l10n.hostsHostEventAttendancePanelBodyCheckInQr,
               icon: CatchIcons.qrCode2Rounded,
-              control: HostEventCheckInQrPanel(event: event),
+              child: HostEventCheckInQrPanel(event: event),
             ),
           ],
         ),
@@ -1657,7 +1657,7 @@ class HostPublicRegistrationCard extends StatelessWidget {
         contractExemption:
             'Disclosure and mutation surface for server-owned public event '
             'registration; the field itself does not persist a scalar value.',
-        control: Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Align(

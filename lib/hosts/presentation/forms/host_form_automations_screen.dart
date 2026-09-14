@@ -167,7 +167,7 @@ class _HostFormAutomationsScreenState
                     title: context.l10n.hostAudienceAutomationShortcuts,
                     contractExemption:
                         'Action group that creates server-validated automation presets; no scalar field value is persisted.',
-                    control: Wrap(
+                    child: Wrap(
                       spacing: CatchSpacing.s3,
                       runSpacing: CatchSpacing.s3,
                       children: [
@@ -225,7 +225,7 @@ class _HostFormAutomationsScreenState
                             'Read-only disclosure of a server-owned automation run outcome; no scalar value is persisted.',
                         body:
                             '${_runStatusLabel(context, run.status)} · ${AppTimeFormatters.compactRelativeTime(run.createdAt)}',
-                        control: Text(
+                        child: Text(
                           _runBody(context, run),
                           style: CatchTextStyles.recordBody(context),
                         ),

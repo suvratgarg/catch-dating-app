@@ -2537,7 +2537,7 @@
                 "type": "BOOLEAN",
                 "defaultValue": false,
                 "sourceProps": [
-                  "supporting",
+                  "meta",
                   "helperText",
                   "error",
                   "errorText"
@@ -2611,13 +2611,6 @@
             "notes": "CatchField.sortable metadata rendered inline after the strong title, with two-line reflow at large text sizes."
           },
           {
-            "name": "reorderHandle",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?",
-            "notes": "Caller-owned drag behavior placed in the sortable field's canonical leading target lane."
-          },
-          {
             "name": "titleMaxLines",
             "type": "number",
             "required": false,
@@ -2646,10 +2639,18 @@
             "dartType": "bool?"
           },
           {
-            "name": "action",
+            "name": "actions",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "notes": "End-aligned row or input actions. In explicit-save editors these follow metadata and child content and precede Cancel/Done."
+          },
+          {
+            "name": "trailing",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Native input trailing content; explicit actions take precedence."
           },
           {
             "name": "emphasis",
@@ -2710,25 +2711,21 @@
             "type": "widget",
             "required": false,
             "dartType": "Widget?",
-            "notes": "Caller-owned semantic leading content for read, content, navigation, and action rows. Mutually exclusive with icon."
+            "notes": "Caller-owned leading content: semantic content for rows, the drag target for sortable rows, or a native input prefix. Row icon and custom leading content are mutually exclusive."
           },
           {
-            "name": "control",
+            "name": "child",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "notes": "Revealed disclosure content or explicit-save feedback. The field preserves its mounted identity through close and reopen."
           },
           {
-            "name": "supporting",
+            "name": "meta",
             "type": "widget",
             "required": false,
-            "dartType": "Widget?"
-          },
-          {
-            "name": "secondaryAction",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
+            "dartType": "Widget?",
+            "notes": "Explicit-save supporting content before child content and actions."
           },
           {
             "name": "open",
@@ -2855,21 +2852,21 @@
             ]
           },
           {
-            "name": "itemAccent",
+            "name": "itemAccentBuilder",
             "type": "callback",
             "required": false,
             "dartType": "Color? Function(T item)?",
             "notes": "CatchField.choices forwards a resolved item accent through CatchChoiceInput to CatchChip.choice."
           },
           {
-            "name": "itemTitle",
+            "name": "itemTitleBuilder",
             "type": "callback",
             "required": false,
             "dartType": "String Function(T value)?",
             "notes": "CatchField.optionCards title resolver for mutually exclusive explanatory choices."
           },
           {
-            "name": "itemDescription",
+            "name": "itemDescriptionBuilder",
             "type": "callback",
             "required": false,
             "dartType": "String Function(T value)?",
@@ -2984,34 +2981,27 @@
           {
             "name": "leading",
             "kind": "optional-leading-widget",
-            "notes": "Use for semantic data blocks that cannot be expressed by a single icon."
+            "notes": "Caller-owned leading content: semantic content for rows, the drag target for sortable rows, or a native input prefix. Row icon and custom leading content are mutually exclusive."
           },
           {
-            "name": "control",
+            "name": "trailing",
+            "kind": "optional-suffix-widget",
+            "notes": "Native input trailing content; explicit actions take precedence."
+          },
+          {
+            "name": "child",
             "kind": "optional-expanded-widget",
-            "notes": "Use for option groups, chips, steppers, or other controlled primitives."
+            "notes": "Revealed disclosure content or explicit-save feedback. The field preserves its mounted identity through close and reopen."
           },
           {
-            "name": "supporting",
+            "name": "meta",
             "kind": "optional-supporting-widget",
-            "notes": "In explicit-save editors this follows the value lane and precedes secondary and commit actions."
+            "notes": "Explicit-save supporting content before child content and actions."
           },
           {
-            "name": "secondaryAction",
-            "kind": "optional-secondary-action-widget",
-            "notes": "In explicit-save editors this follows supporting metadata and feedback and precedes Cancel/Done."
-          },
-          {
-            "name": "prefixIcon",
-            "kind": "optional-leading-widget"
-          },
-          {
-            "name": "suffixIcon",
-            "kind": "optional-suffix-widget"
-          },
-          {
-            "name": "action",
-            "kind": "optional-action-widget"
+            "name": "actions",
+            "kind": "optional-action-widget",
+            "notes": "End-aligned row or input actions. In explicit-save editors these follow metadata and child content and precede Cancel/Done."
           }
         ],
         "tokens": [

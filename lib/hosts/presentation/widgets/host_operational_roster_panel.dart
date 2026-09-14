@@ -106,7 +106,7 @@ class HostGuestIntakeDisclosure extends StatelessWidget {
             'guest list; the field itself does not persist a scalar value.',
         icon: CatchIcons.groupsOutlined,
         onOpenChanged: onOpenChanged,
-        control: Column(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Wrap(
@@ -1579,7 +1579,7 @@ class _HostRosterHandoffSheet extends StatelessWidget {
                     emailAlias ??
                     context.l10n.hostsOperationalRosterForwardNotAvailable,
                 icon: CatchIcons.emailOutlined,
-                action: emailAlias == null
+                actions: emailAlias == null
                     ? null
                     : CatchButton(
                         label: context.l10n.hostsOperationalRosterForwardCopy,
@@ -1598,7 +1598,7 @@ class _HostRosterHandoffSheet extends StatelessWidget {
                         whatsappMessage: whatsappMessage,
                       ),
                 icon: CatchIcons.sendRounded,
-                action: whatsappNumber == null || whatsappMessage == null
+                actions: whatsappNumber == null || whatsappMessage == null
                     ? null
                     : CatchButton(
                         label: context.l10n.hostsOperationalRosterForwardCopy,
