@@ -11,8 +11,9 @@ void _registerHostOperationsSavedAudienceFailureTests() {
       tester,
       const HostSavedAudienceEditorScreen(organizerId: organizerId),
       overrides: [
-        hostCrmRepositoryProvider.overrideWithValue(
-          HostCrmRepository(functions),
+        firebaseFunctionsProvider.overrideWithValue(functions),
+        hostSavedAudienceRepositoryProvider.overrideWithValue(
+          HostSavedAudienceRepository(functions),
         ),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(
@@ -60,8 +61,9 @@ void _registerHostOperationsSavedAudienceFailureTests() {
       tester,
       const HostSavedAudienceEditorScreen(organizerId: organizerId),
       overrides: [
-        hostCrmRepositoryProvider.overrideWithValue(
-          HostCrmRepository(functions),
+        firebaseFunctionsProvider.overrideWithValue(functions),
+        hostSavedAudienceRepositoryProvider.overrideWithValue(
+          HostSavedAudienceRepository(functions),
         ),
         hostCustomersDirectoryControllerProvider.overrideWith2(
           (_) => _FixedHostCustomersDirectoryController(

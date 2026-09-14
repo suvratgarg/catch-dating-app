@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
@@ -25,7 +27,11 @@ void main() {
     () async {
       final repository = _AudienceRepository();
       final container = ProviderContainer(
-        overrides: [hostCrmRepositoryProvider.overrideWithValue(repository)],
+        overrides: [
+          firebaseFunctionsProvider.overrideWithValue(_UnusedFunctions()),
+          hostSavedAudienceRepositoryProvider.overrideWithValue(repository),
+          hostContactsRepositoryProvider.overrideWithValue(repository.contacts),
+        ],
       );
       addTearDown(container.dispose);
       final provider = hostSavedAudienceMembersControllerProvider(
@@ -245,11 +251,11 @@ void main() {
       await tester.testTextInput.receiveAction(TextInputAction.search);
       await pumpFeatureUi(tester);
       expect(
-        repository.peopleQueries.map((query) => query.cursor),
+        repository.contacts.peopleQueries.map((query) => query.cursor),
         contains('people-2'),
       );
-      expect(repository.peopleQueries.last.search, 'Grace');
-      expect(repository.peopleQueries.last.cursor, isNull);
+      expect(repository.contacts.peopleQueries.last.search, 'Grace');
+      expect(repository.contacts.peopleQueries.last.cursor, isNull);
       await tester.tap(find.byKey(const ValueKey('host-saved-audience-save')));
       await pumpFeatureUi(tester);
       expect(repository.saved!.selectedContactIds, ['grace']);
@@ -311,7 +317,11 @@ Future<void> _pump(WidgetTester tester, _AudienceRepository repository) async {
   await tester.pumpWidget(
     ProviderScope(
       retry: (_, _) => null,
-      overrides: [hostCrmRepositoryProvider.overrideWithValue(repository)],
+      overrides: [
+        firebaseFunctionsProvider.overrideWithValue(_UnusedFunctions()),
+        hostSavedAudienceRepositoryProvider.overrideWithValue(repository),
+        hostContactsRepositoryProvider.overrideWithValue(repository.contacts),
+      ],
       child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     ),
   );
@@ -320,7 +330,7 @@ Future<void> _pump(WidgetTester tester, _AudienceRepository repository) async {
 
 class _UnusedFunctions extends Fake implements FirebaseFunctions {}
 
-class _AudienceRepository extends HostCrmRepository {
+class _AudienceRepository extends HostSavedAudienceRepository {
   _AudienceRepository({this.failFirstOptions = false, this.retryOptions})
     : super(_UnusedFunctions());
   final bool failFirstOptions;
@@ -338,7 +348,7 @@ class _AudienceRepository extends HostCrmRepository {
         ),
   );
 
-  final peopleQueries = <HostAudienceQuery>[];
+  final contacts = _ContactsRepository();
 
   @override
   Future<List<HostStaticAudienceMember>> resolveAudienceMembers(
@@ -353,25 +363,6 @@ class _AudienceRepository extends HostCrmRepository {
         available: id != 'deleted',
       ),
   ];
-
-  @override
-  Future<HostAudiencePage> listContacts(
-    String organizerId, {
-    HostAudienceQuery query = const HostAudienceQuery(),
-    int limit = 25,
-  }) async {
-    peopleQueries.add(query);
-    final second = query.cursor != null || query.search != null;
-    return HostAudiencePage(
-      organizerId: organizerId,
-      contacts: [_person(second ? 'grace' : 'ada', second ? 'Grace' : 'Ada')],
-      nextCursor: second ? null : 'people-2',
-      matchCount: 2,
-      matchCountCoverage: HostAudienceMatchCountCoverage.exact,
-      sourceCoverage: HostAudienceSourceCoverage.exact,
-      projectionVersion: 1,
-    );
-  }
 
   @override
   Future<HostSavedAudienceFilterOptions> savedAudienceFilterOptions(
@@ -489,3 +480,26 @@ HostAudienceContact _person(String id, String name) => HostAudienceContact(
   sourceCoverage: HostAudienceSourceCoverage.exact,
   revision: 1,
 );
+
+class _ContactsRepository extends HostContactsRepository {
+  _ContactsRepository() : super(_UnusedFunctions());
+  final peopleQueries = <HostAudienceQuery>[];
+  @override
+  Future<HostAudiencePage> listContacts(
+    String organizerId, {
+    HostAudienceQuery query = const HostAudienceQuery(),
+    int limit = 25,
+  }) async {
+    peopleQueries.add(query);
+    final second = query.cursor != null || query.search != null;
+    return HostAudiencePage(
+      organizerId: organizerId,
+      contacts: [_person(second ? 'grace' : 'ada', second ? 'Grace' : 'Ada')],
+      nextCursor: second ? null : 'people-2',
+      matchCount: 2,
+      matchCountCoverage: HostAudienceMatchCountCoverage.exact,
+      sourceCoverage: HostAudienceSourceCoverage.exact,
+      projectionVersion: 1,
+    );
+  }
+}

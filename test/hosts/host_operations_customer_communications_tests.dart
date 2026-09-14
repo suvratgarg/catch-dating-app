@@ -241,8 +241,9 @@ void _registerHostOperationsCustomerCommunicationsTests() {
         ).overrideWithValue(
           AsyncData(_individualCommunicationPlan(catchChatAvailable: false)),
         ),
-        hostCrmRepositoryProvider.overrideWithValue(
-          HostCrmRepository(functions),
+        firebaseFunctionsProvider.overrideWithValue(functions),
+        hostCommunicationRepositoryProvider.overrideWithValue(
+          HostCommunicationRepository(functions),
         ),
         externalUrlLauncherProvider.overrideWithValue((
           uri, {
