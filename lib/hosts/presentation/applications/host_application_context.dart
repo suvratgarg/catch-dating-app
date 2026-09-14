@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/widgets.dart';
 

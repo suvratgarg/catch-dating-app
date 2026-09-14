@@ -1098,7 +1098,7 @@ final class HostStaticAudienceMembersProvider
 }
 
 String _$hostStaticAudienceMembersHash() =>
-    r'569604def0c06c0ac215e61fcdfaeef7dbaf50e9';
+    r'b8af5d7b8553de45fceb14659a2ec5f1ad0d8ca6';
 
 final class HostStaticAudienceMembersFamily extends $Family
     with

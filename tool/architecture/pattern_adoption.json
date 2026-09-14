@@ -2183,6 +2183,7 @@
         "functions/src/organizers/organizerCommunicationPlans.ts",
         "functions/src/organizers/organizerCommunicationPlans.test.ts",
         "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/domain/crm/host_communication_plan.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
         "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
         "test/hosts/host_crm_repository_test.dart",
@@ -2200,7 +2201,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/data/host_crm_repository.dart",
+          "path": "lib/hosts/domain/crm/host_communication_plan.dart",
           "role": "typed callable parser that rejects contradictory, duplicate, incomplete, or unavailable recommended routes",
           "status": "aligned"
         },
@@ -2257,6 +2258,7 @@
         "functions/src/organizers/organizerSavedAudiences.test.ts",
         "functions/src/organizers/organizerCampaigns.ts",
         "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/domain/crm/host_saved_audience.dart",
         "lib/hosts/presentation/customers/host_customers_screen.dart",
         "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
         "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
@@ -2423,6 +2425,7 @@
         "functions/src/organizers/organizerManualSendTasks.ts",
         "functions/src/organizers/organizerManualSendTasks.test.ts",
         "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/domain/crm/host_manual_send_task.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
         "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
         "test/hosts/host_crm_repository_test.dart",
@@ -2440,8 +2443,13 @@
           "status": "aligned"
         },
         {
+          "path": "lib/hosts/domain/crm/host_manual_send_task.dart",
+          "role": "typed task and re-plan parser that rejects a managed-delivery task representation",
+          "status": "aligned"
+        },
+        {
           "path": "lib/hosts/data/host_crm_repository.dart",
-          "role": "typed task and re-plan parser plus generated callable payload boundaries that reject a managed-delivery task representation",
+          "role": "generated callable payload boundaries for revision-bound manual tasks and route re-planning",
           "status": "aligned"
         },
         {
