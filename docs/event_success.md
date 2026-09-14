@@ -1442,8 +1442,8 @@ sweep; current staff authority is still required.
 
 Without a checkpoint scope, the read distinguishes an available sweep from a
 non-sweep format or a guest who is not currently checked in. Both callables
-require Auth/App Check and rate limits. Host controls and rehearsal adapters
-remain separate integration work.
+require Auth/App Check and rate limits. Host sweep controls and synthetic visit adapters now use the shared atomic visit
+sheet described below. Checkpoint entry points remain integration work.
 
 An explicit optional `checkpoint` scope names a recorded departure revision
 and its actual checkpoint destination. It permits the same observed `returned`,
@@ -1490,9 +1490,20 @@ retire reviews and pending decisions; old completions cannot restore them. Appli
 results must confirm the original scope, episode, next revision and disposition;
 replays preserve any later correction. The server remains responsible for verifying
 the exact physical check-in and source generations. Successful writes invalidate
-accountability and Host guest reviews. Native screen mounting and rehearsal
-integration remain separate work; checkpoint arrival reporting has its own
-controller and observation semantics above.
+accountability and Host guest reviews. Rate-limited retries preserve the original
+unconfirmed request; throttling does not prove an earlier save failed.
+
+The live runtime now uses `EventAssistanceLiveSweepSection` to open one guest's
+`EventAssistanceVisitSheet`. Rehearsal mounts the same `EventAssistanceSweepSection`
+and `EventAssistanceVisitSection` through synthetic adapters. Both show the current
+recorded result, explicit returned/departed/unmarked actions, saving, unconfirmed
+retry, changed-review and saved states. Dismissal preserves the pending owner;
+account changes remove the private review. Checkpoint-scoped reads include a clear
+boundary between event-visit disposition and checkpoint arrival. The rehearsal
+runtime projects recorded check-in timestamps and visit results into the existing
+completion warning, without changing check-in, seating or arrival reports.
+Checkpoint arrival reporting has its own controller and observation semantics above;
+its runtime entry points remain integration work.
 
 ### Guest group membership and handovers
 
@@ -1544,8 +1555,12 @@ The role-selection controller is scoped to the authenticated Host and clock
 generation. Deliberate assistance reads include the chosen synthetic operator in
 query identity and independently verify returned Host and role. Membership and
 accountability controllers use that exact role review while retaining the original
-role on an unresolved command. Role selection and operational action mounting in
-the shared Event Success runtime remain open.
+role on an unresolved command. Practice tools now offer an optional assistance-role
+selector, and the persistent strip identifies a selected synthetic operator. Host
+controls still run the rehearsal. The visit sheet names the original role on an
+unresolved command, even after the selector changes. Expired or unassigned roles
+remain read-only according to their current server review. Group membership,
+departure, checkpoint and messaging action surfaces remain integration work.
 
 Group-checkpoint practice messages now bind the accepted assignment, group source
 and participation episode. The server derives this proof when publishing; Host

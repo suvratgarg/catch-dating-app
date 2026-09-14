@@ -87,6 +87,26 @@ void main() {
     await check;
   }
 
+  test('rate limiting preserves an earlier uncertain request', () async {
+    final actions = editor(await review())
+      ..select(AssistanceVisitDisposition.returned);
+    await fail(0, actions.submit());
+    final original = form().change;
+    await fail(
+      1,
+      actions.retry(),
+      error: const NetworkException('resource-exhausted', 'Try again later'),
+    );
+    expect(form().phase, AccountabilityPhase.retryRequired);
+    expect(form().canReload, isFalse);
+    expect(form().change, same(original));
+    final retry = actions.retry();
+    expect(repository.writes[2].change, same(original));
+    confirm(2);
+    await retry;
+    expect(form().phase, AccountabilityPhase.saved);
+  });
+
   test(
     'no implicit disposition; clearing the choice and stale reviews prevent submission',
     () async {

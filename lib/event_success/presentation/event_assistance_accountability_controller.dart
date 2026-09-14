@@ -151,6 +151,19 @@ class EventAssistanceAccountabilityController
     state = AccountabilityForm._(review);
   }
 
+  /// A new review is allowed only when no earlier decision is unresolved.
+  void reload() {
+    final form = state;
+    if (form is! AccountabilityForm ||
+        !form.canReload ||
+        _pending != null ||
+        _inFlight != null) {
+      return;
+    }
+    _refresh();
+    state = const AccountabilityIdle();
+  }
+
   void select(AssistanceVisitDisposition? disposition) {
     final form = state;
     if (form is! AccountabilityForm || !form.canSelect || _pending != null) {
@@ -309,7 +322,6 @@ class EventAssistanceAccountabilityController
               'not-found',
               'invalid-argument',
               'callable-unavailable',
-              'resource-exhausted',
             }.contains(error.code);
         if (definitive) {
           _clearPending();

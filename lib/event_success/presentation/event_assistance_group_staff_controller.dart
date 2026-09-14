@@ -300,7 +300,6 @@ class EventAssistanceGroupStaffController
               'not-found',
               'invalid-argument',
               'callable-unavailable',
-              'resource-exhausted',
             }.contains(error.code);
         if (definitive) {
           _clearPending();

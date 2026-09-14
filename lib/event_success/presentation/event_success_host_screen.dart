@@ -24,6 +24,7 @@ import 'package:catch_dating_app/event_success/domain/event_success_runtime.dart
 import 'package:catch_dating_app/event_success/domain/event_success_standings.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_live_sweep_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
@@ -430,6 +431,10 @@ class _EventSuccessHostSectionState
           : null,
       accountabilityAttendees:
           accountabilityAttendeesAsync.asData?.value ?? const [],
+      accountabilitySection: EventAssistanceLiveSweepSection(
+        event: event,
+        attendees: accountabilityAttendeesAsync,
+      ),
       accountabilityError: accountabilityAttendeesAsync.hasError
           ? accountabilityAttendeesAsync.error
           : accountabilityResolutionMutation.hasError
@@ -1192,6 +1197,8 @@ class EventSuccessHostPanel extends StatefulWidget {
     this.presenceSummary,
     this.presenceError,
     this.accountabilityAttendees = const [],
+    this.accountabilitySection,
+    this.accountabilityMode,
     this.accountabilityError,
     this.loadingAccountability = false,
     this.resolvingAccountability = false,
@@ -1266,6 +1273,8 @@ class EventSuccessHostPanel extends StatefulWidget {
   final EventSuccessPresenceSummary? presenceSummary;
   final Object? presenceError;
   final List<EventAttendee> accountabilityAttendees;
+  final Widget? accountabilitySection;
+  final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
   final bool loadingAccountability;
   final bool resolvingAccountability;
@@ -1391,6 +1400,8 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
         presenceSummary: widget.presenceSummary,
         presenceError: widget.presenceError,
         accountabilityAttendees: widget.accountabilityAttendees,
+        accountabilitySection: widget.accountabilitySection,
+        accountabilityMode: widget.accountabilityMode,
         accountabilityError: widget.accountabilityError,
         loadingAccountability: widget.loadingAccountability,
         resolvingAccountability: widget.resolvingAccountability,

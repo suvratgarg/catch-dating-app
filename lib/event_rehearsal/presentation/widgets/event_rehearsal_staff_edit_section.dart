@@ -14,8 +14,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 /// Inline explicit-save duty editor; the controller retains uncertain saves.
-class EventRehearsalStaffEditor extends ConsumerWidget {
-  const EventRehearsalStaffEditor({
+class EventRehearsalStaffEditSection extends ConsumerWidget {
+  const EventRehearsalStaffEditSection({
     super.key,
     required this.sessionId,
     required this.form,
@@ -178,7 +178,7 @@ class EventRehearsalStaffEditor extends ConsumerWidget {
                   copy: catchFieldCopy(l10n),
                   title: change.displayName,
                   body:
-                      '${l10n.hostEventRehearsalStaffRemove} · ${staff.groups[change.groupId]?.label ?? l10n.hostEventRehearsalStaffEditorerGroup}',
+                      '${l10n.hostEventRehearsalStaffRemove} · ${staff.groups[change.groupId]?.label ?? l10n.hostEventRehearsalStaffFormerGroup}',
                 ),
               ),
             if (form.error case final error?) ...[

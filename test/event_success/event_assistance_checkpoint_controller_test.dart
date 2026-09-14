@@ -86,6 +86,25 @@ void main() {
     await check;
   }
 
+  test('rate limiting preserves an earlier uncertain request', () async {
+    final actions = editor(await review())..select(observedA);
+    await fail(0, actions.submit());
+    final original = form().change;
+    await fail(
+      1,
+      actions.retry(),
+      error: const NetworkException('resource-exhausted', 'Try again later'),
+    );
+    expect(form().phase, CheckpointPhase.retryRequired);
+    expect(form().canReload, isFalse);
+    expect(form().change, same(original));
+    final retry = actions.retry();
+    expect(repository.writes[2].change, same(original));
+    confirm(2);
+    await retry;
+    expect(form().phase, CheckpointPhase.saved);
+  });
+
   test(
     'no implicit choice; invalid and obsolete selections cannot be submitted',
     () async {

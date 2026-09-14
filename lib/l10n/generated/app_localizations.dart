@@ -28217,6 +28217,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Record checkpoints and account for guests in this group.'**
   String get eventAssistanceDutySweepBody;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Has this guest returned or left the event? Leave them unmarked if you haven’t confirmed.'**
+  String get eventAssistanceVisitBody;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded status'**
+  String get eventAssistanceVisitCurrent;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark returned'**
+  String get eventAssistanceVisitMarkReturned;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark left the event'**
+  String get eventAssistanceVisitMarkDeparted;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave unmarked'**
+  String get eventAssistanceVisitMarkUnresolved;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving this observation…'**
+  String get eventAssistanceVisitSaving;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The save is not confirmed. Retry the same observation before making another change.'**
+  String get eventAssistanceVisitUnconfirmed;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The visit or your access has changed. Reload and review the current status.'**
+  String get eventAssistanceVisitReviewAgain;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Save confirmed. The current recorded status is shown above.'**
+  String get eventAssistanceVisitSaved;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current role cannot update this guest’s visit.'**
+  String get eventAssistanceVisitReadOnly;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting confirmation: {status}'**
+  String eventAssistanceVisitPendingChoice({required String status});
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry this observation'**
+  String get eventAssistanceVisitRetry;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload visit'**
+  String get eventAssistanceVisitReload;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get eventAssistanceVisitDone;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Review visit'**
+  String get eventAssistanceVisitReview;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This event does not use a return sweep.'**
+  String get eventAssistanceVisitNotApplicable;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This guest is not currently checked in.'**
+  String get eventAssistanceVisitNotCheckedIn;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'Record the group’s departure before reviewing this checkpoint.'**
+  String get eventAssistanceVisitNoDeparture;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This guest was not in the recorded departure group.'**
+  String get eventAssistanceVisitNotOnDeparture;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This visit has changed. Close this review and open the guest again.'**
+  String get eventAssistanceVisitChanged;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The event setup has changed since this departure.'**
+  String get eventAssistanceVisitSetupChanged;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This review is for a different checkpoint.'**
+  String get eventAssistanceVisitDifferentCheckpoint;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This departure has no recorded destination.'**
+  String get eventAssistanceVisitNoDestination;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'The recorded destination is not a checkpoint.'**
+  String get eventAssistanceVisitNotCheckpoint;
+
+  /// Shared live and rehearsal visit accountability controls.
+  ///
+  /// In en, this message translates to:
+  /// **'This practice guest has no recorded visit yet.'**
+  String get eventAssistanceVisitNoVisit;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistance role'**
+  String get hostEventRehearsalAssistanceRole;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise guest and group help with this person’s permissions. You still control the rehearsal as Host.'**
+  String get hostEventRehearsalAssistanceRoleBody;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Host'**
+  String get hostEventRehearsalHostRole;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable staff role'**
+  String get hostEventRehearsalUnavailableRole;
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Synthetic guests · Assistance as {name}'**
+  String hostEventRehearsalAssistanceAs({required String name});
+
+  /// Rehearsal role and scoped visit review copy.
+  ///
+  /// In en, this message translates to:
+  /// **'This records the event visit. Use the checkpoint report to confirm arrival there.'**
+  String get eventAssistanceVisitCheckpointContext;
 }
 
 class _AppLocalizationsDelegate

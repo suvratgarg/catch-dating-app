@@ -6,11 +6,14 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.da
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_controller.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_practice_role_controller.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_runtime_adapter.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_link_and_run.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_practice_role_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_setup_section.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_simulator.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_section.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_sweep_section.dart';
 import 'package:catch_dating_app/event_success/event_success.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
@@ -55,6 +58,15 @@ class _HostEventRehearsalScreenState
   @override
   Widget build(BuildContext context) {
     final rehearsalAsync = ref.watch(eventRehearsalProvider(widget.sessionId));
+    final staff = rehearsalAsync.asData?.value.staffReview;
+    final selectedRole = staff == null
+        ? null
+        : ref.watch(
+            eventRehearsalPracticeRoleControllerProvider((
+              sessionId: widget.sessionId,
+              clockId: staff.clockId,
+            )),
+          );
     final setupMutation = ref.watch(EventRehearsalController.setupMutation);
     final controlMutation = ref.watch(EventRehearsalController.controlMutation);
     final behaviorMutation = ref.watch(
@@ -103,7 +115,13 @@ class _HostEventRehearsalScreenState
           CatchBannerStatus(
             id: 'rehearsal.${rehearsal.session.id}',
             label: context.l10n.hostEventRehearsalBadge,
-            message: context.l10n.hostEventRehearsalSyntheticGuests,
+            message: selectedRole == null
+                ? context.l10n.hostEventRehearsalSyntheticGuests
+                : context.l10n.hostEventRehearsalAssistanceAs(
+                    name:
+                        staff?.operators[selectedRole]?.displayName ??
+                        context.l10n.hostEventRehearsalUnavailableRole,
+                  ),
             icon: CatchIcons.groupsOutlined,
             color: CatchTokens.of(context).danger,
             actions: [
@@ -196,6 +214,17 @@ class _HostEventRehearsalScreenState
                       assignments: runtime.assignments,
                       assignmentParticipantProfiles: runtime.profiles,
                       presenceSummary: runtime.presence,
+                      accountabilityAttendees: runtime.accountabilityAttendees,
+                      accountabilityMode:
+                          rehearsal.session.setup.modules.contains(
+                            EventRehearsalModule.accountability,
+                          )
+                          ? EventSuccessAccountability.sweep
+                          : EventSuccessAccountability.none,
+                      accountabilitySection: EventRehearsalSweepSection(
+                        rehearsal: rehearsal,
+                        practiceOperatorId: selectedRole,
+                      ),
                       initialTab: switch (rehearsal.session.status) {
                         EventRehearsalStatus.draft ||
                         EventRehearsalStatus.ready => EventSuccessHostTab.setup,
@@ -330,6 +359,13 @@ class _HostEventRehearsalScreenState
             ),
             gapH20,
             if (rehearsal.staffReview != null) ...[
+              EventRehearsalPracticeRoleSection(
+                scope: (
+                  sessionId: rehearsal.session.id,
+                  clockId: rehearsal.staffReview!.clockId,
+                ),
+              ),
+              gapH20,
               EventRehearsalStaffSection(sessionId: rehearsal.session.id),
               gapH20,
             ],

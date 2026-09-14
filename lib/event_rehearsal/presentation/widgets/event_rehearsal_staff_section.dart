@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_assistance_view_model.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_staff_controller.dart';
-import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_editor.dart';
+import 'package:catch_dating_app/event_rehearsal/presentation/widgets/event_rehearsal_staff_edit_section.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff_change.dart';
 import 'package:catch_dating_app/event_success/event_success.dart'
     show assistanceGroupDutyLabel;
@@ -29,7 +29,7 @@ class EventRehearsalStaffSection extends ConsumerWidget {
     final l10n = context.l10n;
     // Retain the exact editor through a query refresh, including an unresolved save.
     if (state case final RehearsalStaffForm form) {
-      return EventRehearsalStaffEditor(
+      return EventRehearsalStaffEditSection(
         key: ValueKey(form.review),
         sessionId: sessionId,
         form: form,
@@ -100,7 +100,7 @@ class EventRehearsalStaffSection extends ConsumerWidget {
                         bodyMaxLines: 8,
                         body: groupId == null
                             ? l10n.hostEventRehearsalStaffNoDuty
-                            : '${staff.groups[groupId]?.label ?? l10n.hostEventRehearsalStaffEditorerGroup} · ${assistanceGroupDutyLabel(l10n, operator.duties[groupId]!.duty)}\n${operator.duties[groupId]!.expiresAt <= staff.serverTime || operator.duties[groupId]!.sourceHash != staff.groups[groupId]?.sourceHash ? l10n.hostEventRehearsalStaffExpired : l10n.hostEventRehearsalStaffUntil(time: DateFormat.jm(Localizations.localeOf(context).toLanguageTag()).format(DateTime.fromMillisecondsSinceEpoch(operator.duties[groupId]!.expiresAt)))}',
+                            : '${staff.groups[groupId]?.label ?? l10n.hostEventRehearsalStaffFormerGroup} · ${assistanceGroupDutyLabel(l10n, operator.duties[groupId]!.duty)}\n${operator.duties[groupId]!.expiresAt <= staff.serverTime || operator.duties[groupId]!.sourceHash != staff.groups[groupId]?.sourceHash ? l10n.hostEventRehearsalStaffExpired : l10n.hostEventRehearsalStaffUntil(time: DateFormat.jm(Localizations.localeOf(context).toLanguageTag()).format(DateTime.fromMillisecondsSinceEpoch(operator.duties[groupId]!.expiresAt)))}',
                         actions: Wrap(
                           children: [
                             if (staff.canAssign)

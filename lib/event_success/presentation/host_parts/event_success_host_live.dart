@@ -29,6 +29,8 @@ class LiveTab extends StatelessWidget {
     this.presenceSummary,
     this.presenceError,
     this.accountabilityAttendees = const [],
+    this.accountabilitySection,
+    this.accountabilityMode,
     this.accountabilityError,
     this.loadingAccountability = false,
     this.resolvingAccountability = false,
@@ -89,6 +91,8 @@ class LiveTab extends StatelessWidget {
   final EventSuccessPresenceSummary? presenceSummary;
   final Object? presenceError;
   final List<EventAttendee> accountabilityAttendees;
+  final Widget? accountabilitySection;
+  final EventSuccessAccountability? accountabilityMode;
   final Object? accountabilityError;
   final bool loadingAccountability;
   final bool resolvingAccountability;
@@ -187,7 +191,8 @@ class LiveTab extends StatelessWidget {
     final eventSuccessProfile = EventSuccessActivityProfile.forFormat(
       event.eventFormat,
     );
-    final accountability = eventSuccessProfile.accountability;
+    final accountability =
+        accountabilityMode ?? eventSuccessProfile.accountability;
     final checkedInAccountabilityAttendees = accountabilityAttendees
         .where((attendee) => attendee.isCheckedIn)
         .toList(growable: false);
@@ -313,13 +318,14 @@ class LiveTab extends StatelessWidget {
     Widget? accountabilityCard() =>
         accountability != EventSuccessAccountability.sweep
         ? null
-        : EventSuccessAccountabilityCard(
-            attendees: checkedInAccountabilityAttendees,
-            isLoading: loadingAccountability,
-            isResolving: resolvingAccountability,
-            error: accountabilityError,
-            onResolve: onResolveAccountability,
-          );
+        : accountabilitySection ??
+              EventSuccessAccountabilityCard(
+                attendees: checkedInAccountabilityAttendees,
+                isLoading: loadingAccountability,
+                isResolving: resolvingAccountability,
+                error: accountabilityError,
+                onResolve: onResolveAccountability,
+              );
 
     Future<void> completeGuide() async {
       final complete = onCompleteGuide;

@@ -177,6 +177,19 @@ class EventRehearsalAccountabilityController
     state = RehearsalAccountabilityForm._(selected);
   }
 
+  /// Refresh never replaces an unconfirmed visit decision.
+  void reload() {
+    final form = state;
+    if (form is! RehearsalAccountabilityForm ||
+        !form.canReload ||
+        _pending != null ||
+        _inFlight != null) {
+      return;
+    }
+    _refresh(form.review.account);
+    state = const RehearsalAccountabilityIdle();
+  }
+
   Future<EventRehearsalBootstrap> resolve(
     AssistanceVisitDisposition disposition,
   ) {

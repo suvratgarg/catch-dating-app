@@ -17815,4 +17815,118 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get eventAssistanceDutySweepBody =>
       'Record checkpoints and account for guests in this group.';
+
+  @override
+  String get eventAssistanceVisitBody =>
+      'Has this guest returned or left the event? Leave them unmarked if you haven’t confirmed.';
+
+  @override
+  String get eventAssistanceVisitCurrent => 'Recorded status';
+
+  @override
+  String get eventAssistanceVisitMarkReturned => 'Mark returned';
+
+  @override
+  String get eventAssistanceVisitMarkDeparted => 'Mark left the event';
+
+  @override
+  String get eventAssistanceVisitMarkUnresolved => 'Leave unmarked';
+
+  @override
+  String get eventAssistanceVisitSaving => 'Saving this observation…';
+
+  @override
+  String get eventAssistanceVisitUnconfirmed =>
+      'The save is not confirmed. Retry the same observation before making another change.';
+
+  @override
+  String get eventAssistanceVisitReviewAgain =>
+      'The visit or your access has changed. Reload and review the current status.';
+
+  @override
+  String get eventAssistanceVisitSaved =>
+      'Save confirmed. The current recorded status is shown above.';
+
+  @override
+  String get eventAssistanceVisitReadOnly =>
+      'Your current role cannot update this guest’s visit.';
+
+  @override
+  String eventAssistanceVisitPendingChoice({required String status}) {
+    return 'Awaiting confirmation: $status';
+  }
+
+  @override
+  String get eventAssistanceVisitRetry => 'Retry this observation';
+
+  @override
+  String get eventAssistanceVisitReload => 'Reload visit';
+
+  @override
+  String get eventAssistanceVisitDone => 'Done';
+
+  @override
+  String get eventAssistanceVisitReview => 'Review visit';
+
+  @override
+  String get eventAssistanceVisitNotApplicable =>
+      'This event does not use a return sweep.';
+
+  @override
+  String get eventAssistanceVisitNotCheckedIn =>
+      'This guest is not currently checked in.';
+
+  @override
+  String get eventAssistanceVisitNoDeparture =>
+      'Record the group’s departure before reviewing this checkpoint.';
+
+  @override
+  String get eventAssistanceVisitNotOnDeparture =>
+      'This guest was not in the recorded departure group.';
+
+  @override
+  String get eventAssistanceVisitChanged =>
+      'This visit has changed. Close this review and open the guest again.';
+
+  @override
+  String get eventAssistanceVisitSetupChanged =>
+      'The event setup has changed since this departure.';
+
+  @override
+  String get eventAssistanceVisitDifferentCheckpoint =>
+      'This review is for a different checkpoint.';
+
+  @override
+  String get eventAssistanceVisitNoDestination =>
+      'This departure has no recorded destination.';
+
+  @override
+  String get eventAssistanceVisitNotCheckpoint =>
+      'The recorded destination is not a checkpoint.';
+
+  @override
+  String get eventAssistanceVisitNoVisit =>
+      'This practice guest has no recorded visit yet.';
+
+  @override
+  String get hostEventRehearsalAssistanceRole => 'Assistance role';
+
+  @override
+  String get hostEventRehearsalAssistanceRoleBody =>
+      'Practise guest and group help with this person’s permissions. You still control the rehearsal as Host.';
+
+  @override
+  String get hostEventRehearsalHostRole => 'Host';
+
+  @override
+  String get hostEventRehearsalUnavailableRole => 'Unavailable staff role';
+
+  @override
+  String hostEventRehearsalAssistanceAs({required String name}) {
+    return 'Synthetic guests · Assistance as $name';
+  }
+
+  @override
+  String get eventAssistanceVisitCheckpointContext =>
+      'This records the event visit. Use the checkpoint report to confirm arrival there.';
 }

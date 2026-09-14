@@ -102,6 +102,25 @@ void main() {
     );
   }
 
+  test('rate limiting preserves an earlier uncertain request', () async {
+    final actions = editor(await review())..select(reassignReporter);
+    await fail(0, actions.submit());
+    final original = form().change;
+    await fail(
+      1,
+      actions.retry(),
+      error: const NetworkException('resource-exhausted', 'Try again later'),
+    );
+    expect(form().phase, CheckpointRequestPhase.retryRequired);
+    expect(form().canReload, isFalse);
+    expect(form().change, same(original));
+    final retry = actions.retry();
+    expect(repository.writes[2].change, same(original));
+    confirm(2);
+    await retry;
+    expect(form().phase, CheckpointRequestPhase.saved);
+  });
+
   test(
     'no implicit action and refreshed permission invalidates an unsubmitted choice',
     () async {
