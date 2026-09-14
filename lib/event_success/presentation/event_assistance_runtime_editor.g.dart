@@ -8,26 +8,23 @@ part of 'event_assistance_runtime_editor.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// One explicit configure or pause decision. Uncertain saves retain the exact
-/// request; saving permission does not report enrollment or provider delivery.
+/// One event owns one pending automation decision across page refresh and sheet closure.
 
 @ProviderFor(EventAssistanceRuntimeEditor)
 final eventAssistanceRuntimeEditorProvider =
     EventAssistanceRuntimeEditorFamily._();
 
-/// One explicit configure or pause decision. Uncertain saves retain the exact
-/// request; saving permission does not report enrollment or provider delivery.
+/// One event owns one pending automation decision across page refresh and sheet closure.
 final class EventAssistanceRuntimeEditorProvider
     extends
         $NotifierProvider<
           EventAssistanceRuntimeEditor,
           AssistanceRuntimeEditorState
         > {
-  /// One explicit configure or pause decision. Uncertain saves retain the exact
-  /// request; saving permission does not report enrollment or provider delivery.
+  /// One event owns one pending automation decision across page refresh and sheet closure.
   EventAssistanceRuntimeEditorProvider._({
     required EventAssistanceRuntimeEditorFamily super.from,
-    required AssistanceRuntimeSession super.argument,
+    required EventAssistanceRuntimeScope super.argument,
   }) : super(
          retry: null,
          name: r'eventAssistanceRuntimeEditorProvider',
@@ -71,10 +68,9 @@ final class EventAssistanceRuntimeEditorProvider
 }
 
 String _$eventAssistanceRuntimeEditorHash() =>
-    r'4d9aeb119797c6db1d5711598ccd37814bc8848a';
+    r'08d2ce339199bbe650ad0ca0d8982cd068211db6';
 
-/// One explicit configure or pause decision. Uncertain saves retain the exact
-/// request; saving permission does not report enrollment or provider delivery.
+/// One event owns one pending automation decision across page refresh and sheet closure.
 
 final class EventAssistanceRuntimeEditorFamily extends $Family
     with
@@ -83,7 +79,7 @@ final class EventAssistanceRuntimeEditorFamily extends $Family
           AssistanceRuntimeEditorState,
           AssistanceRuntimeEditorState,
           AssistanceRuntimeEditorState,
-          AssistanceRuntimeSession
+          EventAssistanceRuntimeScope
         > {
   EventAssistanceRuntimeEditorFamily._()
     : super(
@@ -94,25 +90,24 @@ final class EventAssistanceRuntimeEditorFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// One explicit configure or pause decision. Uncertain saves retain the exact
-  /// request; saving permission does not report enrollment or provider delivery.
+  /// One event owns one pending automation decision across page refresh and sheet closure.
 
-  EventAssistanceRuntimeEditorProvider call(AssistanceRuntimeSession review) =>
-      EventAssistanceRuntimeEditorProvider._(argument: review, from: this);
+  EventAssistanceRuntimeEditorProvider call(
+    EventAssistanceRuntimeScope scope,
+  ) => EventAssistanceRuntimeEditorProvider._(argument: scope, from: this);
 
   @override
   String toString() => r'eventAssistanceRuntimeEditorProvider';
 }
 
-/// One explicit configure or pause decision. Uncertain saves retain the exact
-/// request; saving permission does not report enrollment or provider delivery.
+/// One event owns one pending automation decision across page refresh and sheet closure.
 
 abstract class _$EventAssistanceRuntimeEditor
     extends $Notifier<AssistanceRuntimeEditorState> {
-  late final _$args = ref.$arg as AssistanceRuntimeSession;
-  AssistanceRuntimeSession get review => _$args;
+  late final _$args = ref.$arg as EventAssistanceRuntimeScope;
+  EventAssistanceRuntimeScope get scope => _$args;
 
-  AssistanceRuntimeEditorState build(AssistanceRuntimeSession review);
+  AssistanceRuntimeEditorState build(EventAssistanceRuntimeScope scope);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {

@@ -34,39 +34,52 @@ final class AssistanceRuntimeResult {
       map['view'],
       expectedScope: expectedScope,
     );
+    final result = AssistanceRuntimeResult._(outcome, revision, view);
     if (expectedChange == null) {
       if (outcome != AssistanceRuntimeOutcome.read || revision != null) {
         _invalid();
       }
     } else {
-      if (expectedScope != expectedChange.snapshot.scope ||
-          outcome == AssistanceRuntimeOutcome.read ||
-          revision != expectedChange.snapshot.revision + 1 ||
-          revision! > view.revision ||
-          view.serverTime < expectedChange.snapshot.serverTime) {
-        _invalid();
-      }
-      if (outcome == AssistanceRuntimeOutcome.applied) {
-        if (view.revision != revision ||
-            view.sourceHash != expectedChange.snapshot.sourceHash ||
-            view.runtime?.sourceHash != view.sourceHash) {
-          _invalid();
-        }
-        final command = expectedChange.command;
-        final expectedStatus = command is AssistanceRuntimeConfigure
-            ? AssistanceRuntimeRecordStatus.enabled
-            : AssistanceRuntimeRecordStatus.paused;
-        final configuration = command is AssistanceRuntimeConfigure
-            ? command.configuration
-            : expectedChange.snapshot.runtime?.configuration;
-        if (view.runtime?.status != expectedStatus ||
-            jsonEncode(view.runtime?.configuration?.toJson()) !=
-                jsonEncode(configuration?.toJson())) {
-          _invalid();
-        }
-      }
+      result.requireChange(expectedChange);
     }
-    return AssistanceRuntimeResult._(outcome, revision, view);
+    return result;
+  }
+
+  /// The state owner repeats validation before accepting injected repository results.
+  void requireChange(AssistanceRuntimeChange change, {String? actorUid}) {
+    final before = change.snapshot;
+    if (view.scope != before.scope ||
+        outcome == AssistanceRuntimeOutcome.read ||
+        operationRevision != before.revision + 1 ||
+        operationRevision == null ||
+        operationRevision! > view.revision ||
+        view.serverTime < before.serverTime) {
+      _invalid();
+    }
+    if (outcome != AssistanceRuntimeOutcome.applied) return;
+    final runtime = view.runtime;
+    if (view.revision != operationRevision ||
+        view.sourceHash != before.sourceHash ||
+        runtime == null ||
+        runtime.sourceHash != view.sourceHash ||
+        runtime.updatedAt != view.serverTime ||
+        before.runtime != null &&
+            runtime.createdAt != before.runtime!.createdAt ||
+        actorUid != null && runtime.updatedBy != actorUid) {
+      _invalid();
+    }
+    final command = change.command;
+    final expectedStatus = command is AssistanceRuntimeConfigure
+        ? AssistanceRuntimeRecordStatus.enabled
+        : AssistanceRuntimeRecordStatus.paused;
+    final configuration = command is AssistanceRuntimeConfigure
+        ? command.configuration
+        : before.runtime?.configuration;
+    if (runtime.status != expectedStatus ||
+        jsonEncode(runtime.configuration?.toJson()) !=
+            jsonEncode(configuration?.toJson())) {
+      _invalid();
+    }
   }
 }
 

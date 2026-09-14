@@ -8,7 +8,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'event_assistance_runtime_provider.g.dart';
 
 final class AssistanceRuntimeSession {
-  const AssistanceRuntimeSession._(this.account, this.view);
+  AssistanceRuntimeSession._(this.account, this.view);
+  bool _current = true;
+  bool get isCurrent => _current;
   final EventAssistanceAccount account;
   final AssistanceRuntimeView view;
 }
@@ -81,7 +83,12 @@ Future<AssistanceRuntimeSession> eventAssistanceRuntimeForAccount(
       .watch(eventAssistanceRuntimeRepositoryProvider)
       .fetch(query);
   requireRuntimeReviewAccount(ref, account);
-  return AssistanceRuntimeSession._(account, page);
+  if (page.scope != query) {
+    throw const FormatException('Automation settings belong to another event.');
+  }
+  final session = AssistanceRuntimeSession._(account, page);
+  ref.onDispose(() => session._current = false);
+  return session;
 }
 
 Duration? _noRuntimeReadRetry(int retryCount, Object error) => null;

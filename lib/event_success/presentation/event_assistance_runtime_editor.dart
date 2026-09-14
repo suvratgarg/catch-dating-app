@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_runtime_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_result.dart';
+import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_setting.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_account.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_runtime_provider.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -19,52 +21,60 @@ enum AssistanceRuntimeEditorPhase {
   saved,
 }
 
+typedef AssistanceRuntimeMutationKey = ({
+  EventAssistanceRuntimeScope scope,
+  AuthenticatedSession account,
+});
+
 sealed class AssistanceRuntimeEditorState {
   const AssistanceRuntimeEditorState();
   bool get canDismiss => switch (this) {
     AssistanceRuntimeForm(:final phase) =>
       phase != AssistanceRuntimeEditorPhase.submitting,
-    AssistanceRuntimeFormUnavailable() => true,
+    AssistanceRuntimeIdle() || AssistanceRuntimeFormUnavailable() => true,
   };
+}
+
+final class AssistanceRuntimeIdle extends AssistanceRuntimeEditorState {
+  const AssistanceRuntimeIdle();
 }
 
 final class AssistanceRuntimeFormUnavailable
     extends AssistanceRuntimeEditorState {
-  const AssistanceRuntimeFormUnavailable._(this.error);
+  const AssistanceRuntimeFormUnavailable(this.error);
   final Object error;
 }
 
 final class AssistanceRuntimeForm extends AssistanceRuntimeEditorState {
-  const AssistanceRuntimeForm._({
-    required this.review,
-    this.decision,
+  const AssistanceRuntimeForm._(
+    this._review, {
     this.phase = AssistanceRuntimeEditorPhase.choosing,
     this.change,
     this.result,
     this.error,
   });
-  final AssistanceRuntimeSession review;
-  final AssistanceRuntimeCommand? decision;
+  final AssistanceRuntimeSession _review;
+  AssistanceRuntimeSession get review => _review;
   final AssistanceRuntimeEditorPhase phase;
+  AssistanceRuntimeCommand? get decision => change?.command;
   final AssistanceRuntimeChange? change;
   final AssistanceRuntimeResult? result;
   final Object? error;
-
-  bool get canEdit => phase == AssistanceRuntimeEditorPhase.choosing;
-  bool get canSubmit =>
-      (canEdit && decision != null) ||
-      phase == AssistanceRuntimeEditorPhase.retryRequired;
+  bool get canSelect =>
+      phase == AssistanceRuntimeEditorPhase.choosing && review.isCurrent;
+  bool get canSubmit => canSelect && change != null;
+  bool get canEdit => canSelect;
+  bool get canRetry => phase == AssistanceRuntimeEditorPhase.retryRequired;
   bool get canReload =>
-      canDismiss && phase != AssistanceRuntimeEditorPhase.saved;
-
+      phase == AssistanceRuntimeEditorPhase.choosing ||
+      phase == AssistanceRuntimeEditorPhase.refreshRequired;
   AssistanceRuntimeForm _after(
     AssistanceRuntimeEditorPhase phase, {
     required AssistanceRuntimeChange change,
     AssistanceRuntimeResult? result,
     Object? error,
   }) => AssistanceRuntimeForm._(
-    review: review,
-    decision: decision,
+    _review,
     phase: phase,
     change: change,
     result: result,
@@ -72,134 +82,282 @@ final class AssistanceRuntimeForm extends AssistanceRuntimeEditorState {
   );
 }
 
-/// One explicit configure or pause decision. Uncertain saves retain the exact
-/// request; saving permission does not report enrollment or provider delivery.
+/// One event owns one pending automation decision across page refresh and sheet closure.
 @riverpod
 class EventAssistanceRuntimeEditor extends _$EventAssistanceRuntimeEditor {
   static final changeMutation = Mutation<AssistanceRuntimeResult>();
+  static AssistanceRuntimeMutationKey mutationKey(
+    AssistanceRuntimeSession review,
+  ) => (scope: review.view.scope, account: review.account);
+
+  int _epoch = 0;
+  AuthenticatedSession? _account;
   Future<AssistanceRuntimeResult>? _inFlight;
-  bool _revoked = false;
+  AssistanceRuntimeChange? _pending;
+  void Function()? _releasePending;
 
   @override
-  AssistanceRuntimeEditorState build(AssistanceRuntimeSession review) {
-    ref.listen(eventAssistanceAccountProvider, (_, next) {
-      if (!identical(next.asData?.value, review.account) ||
-          next.isLoading ||
-          next.hasError) {
-        _revoked = true;
-        state = const AssistanceRuntimeFormUnavailable._(
-          runtimeReviewSessionChanged,
-        );
-      }
+  AssistanceRuntimeEditorState build(EventAssistanceRuntimeScope scope) {
+    final auth = ref.watch(authenticatedSessionProvider);
+    _epoch++;
+    _account = null;
+    _clearPending();
+    _inFlight = null;
+    ref.onDispose(() {
+      _epoch++;
+      _clearPending();
     });
-    final current = ref.read(eventAssistanceAccountProvider);
-    if (_revoked ||
-        current.isLoading ||
-        current.hasError ||
-        !identical(current.asData?.value, review.account)) {
-      _revoked = true;
-      return const AssistanceRuntimeFormUnavailable._(
-        runtimeReviewSessionChanged,
+    if (auth.isLoading || auth.hasError || auth.asData == null) {
+      return AssistanceRuntimeFormUnavailable(
+        auth.error ?? runtimeReviewSessionChanged,
       );
     }
-    return AssistanceRuntimeForm._(review: review);
+    _account = auth.requireValue;
+    return const AssistanceRuntimeIdle();
   }
 
-  AssistanceRuntimeForm? get _form => switch (state) {
-    final AssistanceRuntimeForm form when !_revoked => form,
-    AssistanceRuntimeForm() || AssistanceRuntimeFormUnavailable() => null,
-  };
+  bool _current(AuthenticatedSession account, int epoch) {
+    if (!ref.mounted || epoch != _epoch || !identical(_account, account)) {
+      return false;
+    }
+    final auth = ref.read(authenticatedSessionProvider);
+    return !auth.isLoading &&
+        !auth.hasError &&
+        identical(auth.asData?.value, account);
+  }
 
-  void select(AssistanceRuntimeCommand decision) {
-    final form = _form;
-    if (form == null || !form.canEdit) return;
-    requireRuntimeReviewAccount(ref, review.account);
-    state = AssistanceRuntimeForm._(review: review, decision: decision);
+  void _requireReview(AssistanceRuntimeSession review) {
+    if (!_current(review.account, _epoch)) {
+      throw runtimeReviewSessionChanged;
+    }
+    final page = ref.read(eventAssistanceRuntimeProvider(review.view.scope));
+    if (review.view.scope != scope ||
+        page.isLoading ||
+        page.hasError ||
+        !review.isCurrent ||
+        !identical(page.asData?.value, review)) {
+      throw const ValidationException(
+        'Reload the current automation settings.',
+      );
+    }
+  }
+
+  /// A refreshed page cannot replace this event’s unresolved decision.
+  void open(AssistanceRuntimeSession review) {
+    if (!_current(review.account, _epoch)) {
+      throw runtimeReviewSessionChanged;
+    }
+    if (review.view.scope != scope) {
+      throw const ValidationException(
+        'Choose the reviewed automation settings.',
+      );
+    }
+    if (_pending != null || _inFlight != null) return;
+    _requireReview(review);
+    state = AssistanceRuntimeForm._(review);
+  }
+
+  void reload() {
+    if (!ref.mounted) return;
+    final form = state;
+    if (form is! AssistanceRuntimeForm ||
+        !form.canReload ||
+        _pending != null ||
+        _inFlight != null) {
+      return;
+    }
+    ref
+        .read(eventAssistanceRuntimeProvider(form.review.view.scope).notifier)
+        .reload();
+    state = const AssistanceRuntimeIdle();
+  }
+
+  void select(AssistanceRuntimeCommand? decision) {
+    if (!ref.mounted) return;
+    final form = state;
+    if (form is! AssistanceRuntimeForm || !form.canSelect || _pending != null) {
+      return;
+    }
+    try {
+      _requireReview(form.review);
+      final random = Random.secure();
+      final id = List.generate(
+        16,
+        (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
+      ).join();
+      final change = decision == null
+          ? null
+          : form.review.view.prepareChange(
+              requestId: 'runtime:$id',
+              command: decision,
+            );
+      state = AssistanceRuntimeForm._(form.review, change: change);
+    } catch (error) {
+      state = AssistanceRuntimeForm._(form.review, error: error);
+    }
   }
 
   Future<AssistanceRuntimeResult> submit() {
-    final form = _form;
-    if (form == null) return Future.error(runtimeReviewSessionChanged);
+    if (!ref.mounted) return Future.error(runtimeReviewSessionChanged);
+    final form = state;
+    if (form is! AssistanceRuntimeForm ||
+        !_current(form.review.account, _epoch)) {
+      return Future.error(runtimeReviewSessionChanged);
+    }
     if (_inFlight case final pending?) return pending;
     if (form.result case final result?) return Future.value(result);
-    if (!form.canSubmit) {
+    if (!form.canSubmit || _pending != null) {
       return Future.error(
         const ValidationException(
-          'Choose whether to configure or pause event automation.',
+          'Review a automation decision before continuing.',
         ),
       );
     }
     try {
-      requireRuntimeReviewAccount(ref, review.account);
-      final change =
-          form.change ??
-          review.view.prepareChange(
-            requestId: _newOperationId(),
-            command: form.decision!,
-          );
-      final submitted = form._after(
-        AssistanceRuntimeEditorPhase.submitting,
-        change: change,
-      );
-      state = submitted;
-      final keepAlive = ref.keepAlive();
-      late final Future<AssistanceRuntimeResult> tracked;
-      tracked = _submit(submitted, change).whenComplete(() {
-        if (identical(_inFlight, tracked)) _inFlight = null;
-        keepAlive.close();
-      });
-      _inFlight = tracked;
-      return tracked;
+      _requireReview(form.review);
+      return _submit(form, form.change!);
     } catch (error, stackTrace) {
       return Future.error(error, stackTrace);
     }
   }
 
+  Future<AssistanceRuntimeResult> retry() {
+    if (!ref.mounted) return Future.error(runtimeReviewSessionChanged);
+    final form = state;
+    if (form is! AssistanceRuntimeForm ||
+        !_current(form.review.account, _epoch)) {
+      return Future.error(runtimeReviewSessionChanged);
+    }
+    if (_inFlight case final pending?) return pending;
+    if (!form.canRetry || _pending == null) {
+      return Future.error(
+        const ValidationException('There is no automation decision to retry.'),
+      );
+    }
+    return _submit(form, _pending!);
+  }
+
   Future<AssistanceRuntimeResult> _submit(
-    AssistanceRuntimeForm submitted,
+    AssistanceRuntimeForm form,
     AssistanceRuntimeChange change,
+  ) {
+    final epoch = _epoch;
+    final completion = Completer<AssistanceRuntimeResult>();
+    final tracked = completion.future;
+    _inFlight = tracked;
+    _pending = change;
+    _retainPending(form.review.account);
+    state = form._after(
+      AssistanceRuntimeEditorPhase.submitting,
+      change: change,
+    );
+    unawaited(
+      _apply(form, change, epoch)
+          .then(
+            completion.complete,
+            onError: (Object error, StackTrace stackTrace) {
+              completion.completeError(error, stackTrace);
+            },
+          )
+          .whenComplete(() {
+            if (identical(_inFlight, tracked)) _inFlight = null;
+          }),
+    );
+    return tracked;
+  }
+
+  void _retainPending(AuthenticatedSession account) {
+    if (_releasePending != null) return;
+    final lease = ref.keepAlive();
+    // A kept-alive sheet can have paused provider dependencies. This temporary
+    // strong subscription detects unseen sign-out/account changes while pending.
+    final auth = ref.container.listen(authenticatedSessionProvider, (_, next) {
+      if (next.isLoading ||
+          next.hasError ||
+          !identical(next.asData?.value, account)) {
+        _epoch++;
+        _account = null;
+        _inFlight = null;
+        _clearPending();
+        if (ref.mounted) ref.invalidateSelf();
+      }
+    });
+    _releasePending = () {
+      auth.close();
+      lease.close();
+    };
+  }
+
+  void _clearPending() {
+    _pending = null;
+    final release = _releasePending;
+    _releasePending = null;
+    release?.call();
+  }
+
+  void _refresh() {
+    ref.invalidate(eventAssistanceRuntimeForAccountProvider);
+  }
+
+  void _publish(AssistanceRuntimeForm form) {
+    // Error/ready callbacks can act before the previous async stack unwinds.
+    _inFlight = null;
+    state = form;
+  }
+
+  Future<AssistanceRuntimeResult> _apply(
+    AssistanceRuntimeForm form,
+    AssistanceRuntimeChange change,
+    int epoch,
   ) async {
     try {
       final result = await ref
           .read(eventAssistanceRuntimeRepositoryProvider)
           .apply(change);
-      requireRuntimeReviewAccount(ref, review.account);
-      if (_revoked) throw runtimeReviewSessionChanged;
-      state = submitted._after(
-        AssistanceRuntimeEditorPhase.saved,
-        change: change,
-        result: result,
+      if (!_current(form.review.account, epoch)) {
+        throw runtimeReviewSessionChanged;
+      }
+      result.requireChange(change, actorUid: form.review.account.uid);
+      _clearPending();
+      _refresh();
+      _publish(
+        form._after(
+          AssistanceRuntimeEditorPhase.saved,
+          change: change,
+          result: result,
+        ),
       );
-      ref.invalidate(eventAssistanceRuntimeForAccountProvider);
       return result;
     } catch (error) {
-      if (ref.mounted && !_revoked) {
-        state = submitted._after(
-          _needsFreshReview(error)
-              ? AssistanceRuntimeEditorPhase.refreshRequired
-              : AssistanceRuntimeEditorPhase.retryRequired,
-          change: change,
-          error: error,
+      if (_current(form.review.account, epoch)) {
+        final definitive =
+            error is AppException &&
+            {
+              'aborted',
+              'permission-denied',
+              'unauthenticated',
+              'sign-in-required',
+              'session-changed',
+              'failed-precondition',
+              'not-found',
+              'invalid-argument',
+              'callable-unavailable',
+            }.contains(error.code);
+        if (definitive) {
+          _clearPending();
+          _refresh();
+        }
+        _publish(
+          form._after(
+            definitive
+                ? AssistanceRuntimeEditorPhase.refreshRequired
+                : AssistanceRuntimeEditorPhase.retryRequired,
+            change: change,
+            error: error,
+          ),
         );
       }
       rethrow;
     }
   }
 }
-
-String _newOperationId() {
-  final random = Random.secure();
-  return 'runtime:${List.generate(16, (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0')).join()}';
-}
-
-bool _needsFreshReview(Object error) =>
-    error is AppException &&
-    {
-      'aborted',
-      'permission-denied',
-      'sign-in-required',
-      'session-changed',
-      'failed-precondition',
-      'not-found',
-      'invalid-argument',
-    }.contains(error.code);

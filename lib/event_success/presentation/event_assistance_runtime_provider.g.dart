@@ -189,7 +189,7 @@ final class EventAssistanceRuntimeForAccountProvider
 }
 
 String _$eventAssistanceRuntimeForAccountHash() =>
-    r'c6a581791395e72ec025b578a7c26a66aa396628';
+    r'6071754a3a0aa0cf713d5bf0496645696c3d0189';
 
 final class EventAssistanceRuntimeForAccountFamily extends $Family
     with

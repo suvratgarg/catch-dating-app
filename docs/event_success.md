@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.120.0
+version: 1.121.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -984,10 +984,18 @@ The Host client now has typed runtime configuration, callable reads/writes,
 account-scoped review state and a configure/pause editor. It preserves sender
 order, nullable response deadlines and optional choices for fixed places,
 itinerary stops and group checkpoints. Configure and pause remain explicit
-decisions; the editor freezes an in-flight request, reuses it after uncertain
-results and requires fresh review after conflicts or account changes. A replay
-shows the current saved state, including a newer pause. Screen composition and
-rehearsal integration remain separate work.
+decisions. One stable editor per event and uninterrupted sign-in owns the frozen
+command; a refreshed page cannot replace an uncertain configure or pause. Opening
+a review, selecting a command, first submission and exact retry are separate
+operations. Retired pages cannot authorize a new choice, and reload cannot discard
+an uncertain save. The command survives closed sheets, with a temporary strong
+authentication subscription that discards it after sign-out, same-UID re-entry or
+an authentication error. The state owner validates the returned scope, original
+operation revision, actor and applied configuration independently of the repository.
+A replay shows current saved state, including a newer pause. Conflicts require a
+fresh review. Focused tests cover detached recovery, account changes, rejected
+foreign receipts and reentrant retry callbacks. Screen composition and rehearsal
+integration remain separate work.
 
 Runtime options cover the whole event. After verifying the complete saved
 configuration, publication includes only later joining choices allowed by that
