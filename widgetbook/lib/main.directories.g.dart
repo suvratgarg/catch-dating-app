@@ -11,8 +11,30 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
-import 'package:widgetbook_workspace/catches/catches_use_cases.dart'
-    as _widgetbook_workspace_catches_catches_use_cases;
+import 'package:widgetbook_workspace/catches/catalog/deck.dart'
+    as _widgetbook_workspace_catches_catalog_deck;
+import 'package:widgetbook_workspace/catches/catalog/deck_route.dart'
+    as _widgetbook_workspace_catches_catalog_deck_route;
+import 'package:widgetbook_workspace/catches/catalog/empty.dart'
+    as _widgetbook_workspace_catches_catalog_empty;
+import 'package:widgetbook_workspace/catches/catalog/filters.dart'
+    as _widgetbook_workspace_catches_catalog_filters;
+import 'package:widgetbook_workspace/catches/catalog/hub.dart'
+    as _widgetbook_workspace_catches_catalog_hub;
+import 'package:widgetbook_workspace/catches/catalog/hub_route.dart'
+    as _widgetbook_workspace_catches_catalog_hub_route;
+import 'package:widgetbook_workspace/catches/catalog/profile_media.dart'
+    as _widgetbook_workspace_catches_catalog_profile_media;
+import 'package:widgetbook_workspace/catches/catalog/profile_sections.dart'
+    as _widgetbook_workspace_catches_catalog_profile_sections;
+import 'package:widgetbook_workspace/catches/catalog/reactions.dart'
+    as _widgetbook_workspace_catches_catalog_reactions;
+import 'package:widgetbook_workspace/catches/catalog/recap.dart'
+    as _widgetbook_workspace_catches_catalog_recap;
+import 'package:widgetbook_workspace/catches/catalog/recap_route.dart'
+    as _widgetbook_workspace_catches_catalog_recap_route;
+import 'package:widgetbook_workspace/catches/catalog/skeletons.dart'
+    as _widgetbook_workspace_catches_catalog_skeletons;
 import 'package:widgetbook_workspace/clubs/club_detail_use_cases.dart'
     as _widgetbook_workspace_clubs_club_detail_use_cases;
 import 'package:widgetbook_workspace/consumer/p2_consumer_use_cases.dart'
@@ -5515,7 +5537,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Event recap route states',
-                builder: _widgetbook_workspace_catches_catches_use_cases
+                builder: _widgetbook_workspace_catches_catalog_recap_route
                     .eventRecapScreenRouteStates,
               ),
             ],
@@ -5528,7 +5550,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Tile states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_hub
                         .attendedEventTileStates,
                   ),
                 ],
@@ -5538,8 +5560,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Running stat states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .runningStatStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .runningStatStates,
                   ),
                 ],
               ),
@@ -5548,7 +5571,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Person polaroid states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_profile_media
                         .catchPersonPolaroidStates,
                   ),
                 ],
@@ -5558,7 +5581,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Raw profile view states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_profile_media
                         .catchProfileViewStates,
                   ),
                 ],
@@ -5568,7 +5591,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Bottom scrim states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_deck
                         .catchesBottomScrimStates,
                   ),
                 ],
@@ -5578,7 +5601,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Hub composition',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_hub
                         .catchesHubContentStates,
                   ),
                 ],
@@ -5588,7 +5611,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Empty states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_hub
                         .catchesHubEmptyStateStates,
                   ),
                 ],
@@ -5598,7 +5621,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Intro card states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_hub
                         .catchesIntroCardStates,
                   ),
                 ],
@@ -5608,7 +5631,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Pass button states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_deck
                         .catchesPassButtonStates,
                   ),
                 ],
@@ -5618,7 +5641,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Deck composition',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_deck
                         .catchesProfileReviewStates,
                   ),
                 ],
@@ -5628,7 +5651,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Review skeleton states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_skeletons
                         .catchesProfileReviewSkeletonStates,
                   ),
                 ],
@@ -5638,7 +5661,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Top overlay states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_deck
                         .catchesTopOverlayStates,
                   ),
                 ],
@@ -5648,7 +5671,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Loading composition',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_recap
                         .eventRecapLoadingBodyStates,
                   ),
                 ],
@@ -5658,7 +5681,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Ready body states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_recap
                         .eventRecapReadyBodyStates,
                   ),
                 ],
@@ -5668,7 +5691,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Filters loading composition',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_filters
                         .filtersContentSkeletonStates,
                   ),
                 ],
@@ -5678,7 +5701,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Filter section states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_filters
                         .filtersSectionStates,
                   ),
                 ],
@@ -5688,7 +5711,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Filter value states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_filters
                         .filtersValueStates,
                   ),
                 ],
@@ -5698,7 +5721,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Photo caption states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_profile_media
                         .photoCaptionStates,
                   ),
                 ],
@@ -5708,8 +5731,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Compatibility states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileCompatibilityStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .profileCompatibilityStates,
                   ),
                 ],
               ),
@@ -5718,8 +5742,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Facts states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileFactsStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .profileFactsStates,
                   ),
                 ],
               ),
@@ -5728,7 +5753,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Hero states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_profile_media
                         .profileHeroWidgetStates,
                   ),
                 ],
@@ -5738,8 +5763,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile info chip states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileInfoChipStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .profileInfoChipStates,
                   ),
                 ],
               ),
@@ -5748,7 +5774,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Photo states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_profile_media
                         .profilePhotoStates,
                   ),
                 ],
@@ -5758,7 +5784,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Photo block states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_profile_media
                         .profilePhotoBlockStates,
                   ),
                 ],
@@ -5768,8 +5794,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Prompt states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profilePromptStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .profilePromptStates,
                   ),
                 ],
               ),
@@ -5778,7 +5805,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Reaction comment sheet states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_reactions
                         .profileReactionCommentSheetStates,
                   ),
                 ],
@@ -5788,7 +5815,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Reaction control states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_reactions
                         .catchesReactionControlStates,
                   ),
                 ],
@@ -5798,8 +5825,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Rule states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileRuleStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .profileRuleStates,
                   ),
                 ],
               ),
@@ -5808,8 +5836,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Running states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileRunningStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .profileRunningStates,
                   ),
                 ],
               ),
@@ -5818,8 +5847,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Section kicker states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileSectionKickerStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .profileSectionKickerStates,
                   ),
                 ],
               ),
@@ -5828,8 +5858,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Section dispatch states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileSectionViewStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .profileSectionViewStates,
                   ),
                 ],
               ),
@@ -5838,7 +5869,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Catches profile states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_deck
                         .catchesProfileSurfaceStates,
                   ),
                 ],
@@ -5848,7 +5879,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile facts skeleton states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_skeletons
                         .profileSurfaceFactsSkeletonStates,
                   ),
                 ],
@@ -5858,7 +5889,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile hero skeleton states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_skeletons
                         .profileSurfaceHeroSkeletonStates,
                   ),
                 ],
@@ -5868,7 +5899,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile photo skeleton states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_skeletons
                         .profileSurfacePhotoSkeletonStates,
                   ),
                 ],
@@ -5878,8 +5909,9 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile surface rule states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
-                        .profileSurfaceRuleStates,
+                    builder:
+                        _widgetbook_workspace_catches_catalog_profile_sections
+                            .profileSurfaceRuleStates,
                   ),
                 ],
               ),
@@ -5888,7 +5920,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile running skeleton states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_skeletons
                         .profileSurfaceRunningSkeletonStates,
                   ),
                 ],
@@ -5898,7 +5930,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile section skeleton states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_skeletons
                         .profileSurfaceSectionSkeletonStates,
                   ),
                 ],
@@ -5908,7 +5940,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Profile skeleton states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_skeletons
                         .profileSurfaceSkeletonStates,
                   ),
                 ],
@@ -5918,7 +5950,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Reaction button states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_reactions
                         .reactionControlButtonStates,
                   ),
                 ],
@@ -5928,7 +5960,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Deck empty states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_empty
                         .swipeEmptyStateStates,
                   ),
                 ],
@@ -5938,7 +5970,7 @@ final directories = <_widgetbook.WidgetbookNode>[
                 useCases: [
                   _widgetbook.WidgetbookUseCase(
                     name: 'Vibe grid states',
-                    builder: _widgetbook_workspace_catches_catches_use_cases
+                    builder: _widgetbook_workspace_catches_catalog_recap
                         .eventRecapVibeGridStates,
                   ),
                 ],
@@ -5950,7 +5982,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Hub route states',
-                builder: _widgetbook_workspace_catches_catches_use_cases
+                builder: _widgetbook_workspace_catches_catalog_hub_route
                     .catchesHubRouteStates,
               ),
             ],
@@ -5960,7 +5992,7 @@ final directories = <_widgetbook.WidgetbookNode>[
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Event deck route states',
-                builder: _widgetbook_workspace_catches_catches_use_cases
+                builder: _widgetbook_workspace_catches_catalog_deck_route
                     .catchesEventDeckRouteStates,
               ),
             ],

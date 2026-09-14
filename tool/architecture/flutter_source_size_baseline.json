@@ -194,10 +194,6 @@
       "maxLines": 1100
     },
     {
-      "path": "widgetbook/lib/catches/catches_use_cases.dart",
-      "maxLines": 2281
-    },
-    {
       "path": "widgetbook/lib/clubs/club_detail_use_cases.dart",
       "maxLines": 2147
     },

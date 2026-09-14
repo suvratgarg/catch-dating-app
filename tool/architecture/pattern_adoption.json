@@ -2110,7 +2110,7 @@
         "test/clubs/club_hero_app_bar_test.dart",
         "test/swipes/profile_surface_contract_test.dart",
         "widgetbook/lib/clubs/club_detail_use_cases.dart",
-        "widgetbook/lib/catches/catches_use_cases.dart"
+        "widgetbook/lib/catches/catalog/profile_media.dart"
       ],
       "adopters": [
         {
