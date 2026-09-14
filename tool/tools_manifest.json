@@ -5276,16 +5276,23 @@
       "impactPaths": [
         "tool/design/generate_widget_catalog.test.mjs",
         "tool/design/lib/component_naming.mjs",
-        "design/components/catch.components.schema.json"
+        "design/components/catch.components.schema.json",
+        "docs/widget_catalog.md",
+        "design/components/catch.components.json",
+        "lib/**",
+        "apps/consumer/lib/**",
+        "apps/host/lib/**",
+        "packages/catch_ui/lib/**"
       ],
       "command": "node tool/design/generate_widget_catalog.mjs --write",
       "safety": "local-writes-generated",
       "status": "active",
       "role": "generator",
-      "description": "Generates the widget catalog inventory from production declarations and reviewed registry metadata; verifies discovery, documentation attachment, and drift detection with temporary source fixtures.",
+      "description": "Generates and checks the widget catalog inventory from production declarations and reviewed shared-component identities. Source, registry and catalog changes select its drift check; temporary fixtures prove membership retention, documentation attachment and hand-edit rejection.",
       "checks": [
         "node --check tool/design/generate_widget_catalog.mjs",
-        "node --test tool/design/generate_widget_catalog.test.mjs"
+        "node --test tool/design/generate_widget_catalog.test.mjs",
+        "node tool/design/generate_widget_catalog.mjs --check"
       ]
     },
     {

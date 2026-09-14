@@ -35,7 +35,9 @@ export function buildCatalogRows({declarations, components}) {
       if (homeLevel && !record) {
         throw new Error(`${identity}: shared Widget has no component-registry identity`);
       }
-      if (record && (!levels.includes(record.level) || !roleNouns.includes(record.roleNoun))) {
+      const hasReviewedMetadata = record?.level != null || record?.roleNoun != null;
+      if ((homeLevel || hasReviewedMetadata) &&
+          (!levels.includes(record?.level) || !roleNouns.includes(record?.roleNoun))) {
         throw new Error(`${identity}: registry level and roleNoun are required`);
       }
       if (homeLevel && record.level !== homeLevel) {
@@ -98,7 +100,7 @@ export function renderCatalogInventory(rows) {
     "",
     "Purpose comes from the first class documentation paragraph, then the registry summary. " +
       `${missing} declarations have neither and remain visible as undocumented. ` +
-      "Unregistered feature Widgets use the existing screen-name boundary for L5/L6; " +
+      "Unreviewed feature Widgets use the existing screen-name boundary for L5/L6; " +
       "that source classification is not a semantic conformance verdict.",
   ];
   for (const level of levels) {

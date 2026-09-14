@@ -4013,6 +4013,16 @@
         "website": "TextField",
         "admin": "TextField",
         "webui": "TextInputControl"
+      },
+      "level": "L3",
+      "roleNoun": "Field",
+      "naming": {
+        "useCase": "",
+        "comparedWith": [
+          "catch.search_field",
+          "catch.field.text_input"
+        ],
+        "reason": "Canonical labelled field contract: named constructors cover reading, navigation, native editing, selection and controlled disclosure while retaining one focus, validation, accessibility and save lifecycle. TextInput owns native editing alone, and SearchField owns label-less query entry and transient search chrome. Field members render its anatomy and do not create competing primary field implementations."
       }
     },
     {

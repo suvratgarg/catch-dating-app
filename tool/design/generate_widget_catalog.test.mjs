@@ -40,6 +40,22 @@ test("source discovery retains undocumented and unregistered feature Widgets", (
   assert.match(renderCatalogInventory(rows), /FeatureRow/u);
 });
 
+test("registered feature without ladder review retains source membership and registry purpose", () => {
+  const feature = {name: "ChatInputBar", file: "lib/chats/chat_input_bar.dart",
+    line: 1, source: "class ChatInputBar extends StatefulWidget {}"};
+  const rows = buildCatalogRows({declarations: [declaration(feature)], components: [
+    component({id: "catch.chat_composer", dart: {symbol: feature.name, file: feature.file},
+      level: undefined, roleNoun: undefined, summary: "Conversation draft and attachment actions."}),
+  ]});
+  assert.equal(rows.length, 1);
+  assert.equal(rows[0].name, "ChatInputBar");
+  assert.equal(rows[0].level, "L5");
+  assert.equal(rows[0].roleNoun, null);
+  assert.equal(rows[0].purposeSource, "registry");
+  assert.equal(rows[0].purpose, "Conversation draft and attachment actions.");
+  assert.match(renderCatalogInventory(rows), /not a semantic conformance verdict/u);
+});
+
 test("shared identity cannot be omitted to shrink the generated inventory", () => {
   assert.throws(() => buildCatalogRows({declarations: [declaration()], components: []}), /no component-registry identity/u);
 });
