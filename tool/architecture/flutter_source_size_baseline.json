@@ -27,7 +27,7 @@
     },
     {
       "path": "lib/event_success/presentation/event_success_companion_screen.dart",
-      "maxLines": 833
+      "maxLines": 830
     },
     {
       "path": "lib/event_success/presentation/event_success_feature_blocks.dart",
@@ -35,7 +35,7 @@
     },
     {
       "path": "lib/event_success/presentation/event_success_host_screen.dart",
-      "maxLines": 1726
+      "maxLines": 1686
     },
     {
       "path": "lib/event_success/presentation/event_success_room_map.dart",
@@ -48,10 +48,6 @@
     {
       "path": "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
       "maxLines": 1546
-    },
-    {
-      "path": "lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart",
-      "maxLines": 1668
     },
     {
       "path": "lib/events/data/event_repository.dart",

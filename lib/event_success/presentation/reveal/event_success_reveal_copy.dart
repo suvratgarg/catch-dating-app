@@ -1,6 +1,12 @@
-part of '../event_success_live_reveal_card.dart';
+import 'dart:math' as math;
 
-String _hostHeadline({
+import 'package:catch_dating_app/event_success/domain/event_success_assignment.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+
+String eventSuccessRevealHostHeadline({
   required EventSuccessRevealAssignmentKind kind,
   required bool isCountingDown,
   required bool allRevealed,
@@ -16,7 +22,7 @@ String _hostHeadline({
   return 'Create the next room-wide beat';
 }
 
-String _hostBody({
+String eventSuccessRevealHostBody({
   required EventSuccessRevealAssignmentKind kind,
   required List<EventSuccessAssignment> assignments,
   required int roundIndex,
@@ -55,18 +61,20 @@ String _hostBody({
   return '$roundPairCount $pairingWord $verb queued for round ${roundIndex + 1}. $mutualCount $clueVerb a stronger shared clue.';
 }
 
-int _remainingSeconds(EventSuccessPlan plan, DateTime now) =>
+int eventSuccessRevealRemainingSeconds(EventSuccessPlan plan, DateTime now) =>
     (plan.revealRemaining(now).inMilliseconds / 1000)
         .ceil()
         .clamp(0, 60)
         .toInt();
 
-int _safeRoundIndex(int value, int roundCount) {
+int eventSuccessRevealSafeRoundIndex(int value, int roundCount) {
   if (roundCount <= 0) return 0;
   return value.clamp(0, roundCount - 1).toInt();
 }
 
-int _maxRotationRoundCount(List<EventSuccessAssignment> assignments) {
+int eventSuccessRevealMaxRotationRoundCount(
+  List<EventSuccessAssignment> assignments,
+) {
   var maxRounds = 0;
   for (final assignment in assignments) {
     maxRounds = math.max(maxRounds, assignment.rotationSlots.length);
@@ -108,7 +116,7 @@ int _strongCompatibilityPairCount(
   for (final assignment in assignments) {
     for (final slot in assignment.rotationSlots) {
       if (slot.roundIndex != roundIndex ||
-          !_isStrongCompatibilitySignal(slot.compatibility)) {
+          !eventSuccessRevealIsStrongCompatibilitySignal(slot.compatibility)) {
         continue;
       }
       final uids = [assignment.uid, slot.peerUid]..sort();
@@ -121,7 +129,9 @@ int _strongCompatibilityPairCount(
 /// Mono "config" line for the rotation run-of-show list (design-system
 /// `RotationCard` config): unit kind · round cadence · repeat strategy · reveal
 /// countdown. Rendered uppercase by the mono-label style.
-String _rotationConfigLine(EventSuccessStructureConfig config) {
+String eventSuccessRevealRotationConfigLine(
+  EventSuccessStructureConfig config,
+) {
   final parts = <String>[config.unitKind.label];
   final interval = config.rotationIntervalMinutes;
   if (interval != null && interval > 0) {
@@ -136,7 +146,7 @@ String _rotationConfigLine(EventSuccessStructureConfig config) {
 /// Returns null when the round has no pairings; group rotations fall back to a
 /// group count. Callers must only pass revealed rounds — hidden rounds stay
 /// masked.
-String? _revealRoundPairsLabel(
+String? eventSuccessRevealRevealRoundPairsLabel(
   List<EventSuccessAssignment> assignments,
   int roundIndex,
   Map<String, PublicProfile> profilesByUid,
@@ -176,7 +186,7 @@ int _uniqueGroupRotationCountForRound(
   return groups.length;
 }
 
-EventSuccessRotationSlot? _slotForRound(
+EventSuccessRotationSlot? eventSuccessRevealSlotForRound(
   EventSuccessAssignment assignment,
   int roundIndex,
 ) {
@@ -186,7 +196,7 @@ EventSuccessRotationSlot? _slotForRound(
   return null;
 }
 
-EventSuccessGroupRotationSlot? _groupSlotForRound(
+EventSuccessGroupRotationSlot? eventSuccessRevealGroupSlotForRound(
   EventSuccessAssignment assignment,
   int roundIndex,
 ) {
@@ -196,7 +206,7 @@ EventSuccessGroupRotationSlot? _groupSlotForRound(
   return null;
 }
 
-String _compatibilityLabel(String value) => switch (value) {
+String eventSuccessRevealCompatibilityLabel(String value) => switch (value) {
   'mutual_interest' => 'Mutual interest',
   'questionnaire_match' => 'Shared clue',
   'balanced' => 'Balanced',
@@ -205,30 +215,31 @@ String _compatibilityLabel(String value) => switch (value) {
   _ => 'Host fit',
 };
 
-String _compatibilityExplanation(String value) => switch (value) {
-  'mutual_interest' => 'You both showed stronger interest for this round.',
-  'questionnaire_match' =>
-    'You share an event answer that can make this round easier to start.',
-  'balanced' => 'Balanced by the host for variety and comfort.',
-  'social' => 'A lightweight social pairing for this format.',
-  'mixed' => 'A group fit balanced across romantic and social signals.',
-  _ => 'Adjusted by the host for the live room.',
-};
+String eventSuccessRevealCompatibilityExplanation(String value) =>
+    switch (value) {
+      'mutual_interest' => 'You both showed stronger interest for this round.',
+      'questionnaire_match' =>
+        'You share an event answer that can make this round easier to start.',
+      'balanced' => 'Balanced by the host for variety and comfort.',
+      'social' => 'A lightweight social pairing for this format.',
+      'mixed' => 'A group fit balanced across romantic and social signals.',
+      _ => 'Adjusted by the host for the live room.',
+    };
 
-bool _isStrongCompatibilitySignal(String value) =>
+bool eventSuccessRevealIsStrongCompatibilitySignal(String value) =>
     value == 'mutual_interest' || value == 'questionnaire_match';
 
-String _skipLabel(EventSuccessRevealAssignmentKind kind) =>
+String eventSuccessRevealSkipLabel(EventSuccessRevealAssignmentKind kind) =>
     kind == EventSuccessRevealAssignmentKind.rotations
     ? 'Skip rotations'
     : 'Skip micro-pods';
 
-String _joinLabel(EventSuccessRevealAssignmentKind kind) =>
+String eventSuccessRevealJoinLabel(EventSuccessRevealAssignmentKind kind) =>
     kind == EventSuccessRevealAssignmentKind.rotations
     ? 'Join rotations'
     : 'Join micro-pods';
 
-extension on String {
+extension EventSuccessRevealCapitalization on String {
   String get capitalized {
     if (isEmpty) return this;
     return '${this[0].toUpperCase()}${substring(1)}';

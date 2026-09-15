@@ -392,7 +392,7 @@ class _EventSuccessCompanionScreenState
       final isRotations =
           screenState.revealKind == EventSuccessRevealAssignmentKind.rotations;
       addMomentContent(
-        EventSuccessLiveRevealAttendeeCard(
+        EventSuccessAttendeeRevealSurface(
           event: event,
           plan: plan,
           kind: screenState.revealKind!,

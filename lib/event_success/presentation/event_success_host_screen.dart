@@ -27,13 +27,15 @@ import 'package:catch_dating_app/event_success/domain/event_success_wingman_requ
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_setup_section.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_setup_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_skeletons.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -48,6 +50,7 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 export 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
+export 'package:catch_dating_app/event_success/presentation/event_success_host_fixture_actions.dart';
 
 part 'host_parts/event_success_host_live.dart';
 part 'host_parts/event_success_host_overrides.dart';
@@ -62,10 +65,6 @@ abstract final class EventSuccessHostKeys {
 const EdgeInsets _hostLaunchIssueGap = EdgeInsets.only(bottom: CatchSpacing.s1);
 final EdgeInsets _hostWingmanRequestNotePadding = CatchInsets.pageHorizontal
     .copyWith(bottom: CatchSpacing.s2);
-
-CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return catchAsyncStateFromAsyncValue(value);
-}
 
 Object? _mutationError(MutationState<dynamic> state) {
   return state.hasError ? (state as MutationError).error : null;
@@ -348,21 +347,23 @@ class _EventSuccessHostSectionState
     final state = EventSuccessHostSectionState.resolve(
       event: event,
       now: referenceNow,
-      planState: _catchAsyncState(planAsync),
-      rosterState: _catchAsyncState(rosterAsync),
-      scorecardState: _catchAsyncState(scorecardAsync),
-      assignmentsState: _catchAsyncState(assignmentsAsync),
-      assignmentParticipantProfilesState: _catchAsyncState(
+      planState: catchAsyncStateFromAsyncValue(planAsync),
+      rosterState: catchAsyncStateFromAsyncValue(rosterAsync),
+      scorecardState: catchAsyncStateFromAsyncValue(scorecardAsync),
+      assignmentsState: catchAsyncStateFromAsyncValue(assignmentsAsync),
+      assignmentParticipantProfilesState: catchAsyncStateFromAsyncValue(
         assignmentParticipantProfilesAsync,
       ),
-      rotationAssignmentsState: _catchAsyncState(rotationAssignmentsAsync),
-      rotationDraftsState: _catchAsyncState(rotationDraftsAsync),
-      rotationParticipantProfilesState: _catchAsyncState(
+      rotationAssignmentsState: catchAsyncStateFromAsyncValue(
+        rotationAssignmentsAsync,
+      ),
+      rotationDraftsState: catchAsyncStateFromAsyncValue(rotationDraftsAsync),
+      rotationParticipantProfilesState: catchAsyncStateFromAsyncValue(
         rotationParticipantProfilesAsync,
       ),
-      preferencesState: _catchAsyncState(preferencesAsync),
-      wingmanRequestsState: _catchAsyncState(wingmanRequestsAsync),
-      wingmanProfilesState: _catchAsyncState(wingmanProfilesAsync),
+      preferencesState: catchAsyncStateFromAsyncValue(preferencesAsync),
+      wingmanRequestsState: catchAsyncStateFromAsyncValue(wingmanRequestsAsync),
+      wingmanProfilesState: catchAsyncStateFromAsyncValue(wingmanProfilesAsync),
     );
 
     Widget frameCompactLiveState(Widget child) => compactLiveControls
@@ -404,7 +405,9 @@ class _EventSuccessHostSectionState
       planIsPersisted: state.planIsPersisted,
       spatialLayout: spatialLayoutAsync.asData?.value,
       spatialLayoutState: spatialLayoutState,
-      organizerLayoutsState: _catchAsyncState(organizerLayoutsAsync),
+      organizerLayoutsState: catchAsyncStateFromAsyncValue(
+        organizerLayoutsAsync,
+      ),
       layoutSavePending: upsertLayoutMutation.isPending,
       layoutSaveError: upsertLayoutMutation.hasError
           ? _mutationError(upsertLayoutMutation)
@@ -1680,47 +1683,4 @@ class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
       await productionAction?.call();
     };
   }
-}
-
-class EventSuccessHostFixtureActions {
-  const EventSuccessHostFixtureActions({
-    this.onSaveSetup,
-    this.onPreviousStep,
-    this.onNextStep,
-    this.onCompletePlan,
-    this.onGenerateMicroPods,
-    this.onOverrideGroupAssignments,
-    this.onGenerateGuidedRotations,
-    this.onOverrideGuidedRotations,
-    this.onStartRevealCountdown,
-    this.onRevealRound,
-    this.onResetReveal,
-    this.onPreviewSpatial,
-    this.onReassignSpatial,
-    this.onConfirmSpatial,
-    this.onReleaseSpatial,
-    this.initialSpatialSelectionUid,
-  });
-
-  final VoidCallback? onSaveSetup;
-  final VoidCallback? onPreviousStep;
-  final VoidCallback? onNextStep;
-  final VoidCallback? onCompletePlan;
-  final VoidCallback? onGenerateMicroPods;
-  final ValueChanged<List<EventSuccessGroupOverrideRound>>?
-  onOverrideGroupAssignments;
-  final VoidCallback? onGenerateGuidedRotations;
-  final ValueChanged<List<EventSuccessRotationOverrideRound>>?
-  onOverrideGuidedRotations;
-  final void Function(int roundIndex, int countdownSeconds)?
-  onStartRevealCountdown;
-  final ValueChanged<int>? onRevealRound;
-  final VoidCallback? onResetReveal;
-  final EventSuccessSpatialPreview? onPreviewSpatial;
-  final EventSuccessSpatialReassign? onReassignSpatial;
-  final Future<void> Function(EventSuccessAssignment assignment)?
-  onConfirmSpatial;
-  final Future<void> Function(EventSuccessAssignment assignment)?
-  onReleaseSpatial;
-  final String? initialSpatialSelectionUid;
 }

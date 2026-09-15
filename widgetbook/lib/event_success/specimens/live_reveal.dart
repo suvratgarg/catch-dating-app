@@ -1,329 +1,457 @@
-import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
+import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_assignment_surface.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_indicator.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_surface.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_text.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_group_rotation_row_list.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_host_reveal_surface.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_pod_assignment_section.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_action_row.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_header.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_progress_indicator.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_round_row_list.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_round_stepper.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_waiting_notice.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_rotation_row_list.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
 
-import 'preview.dart';
+import '../../support/widgetbook_harness.dart';
 
 @widgetbook.UseCase(
-  name: "AssignmentUnlockedShell",
-  type: AssignmentUnlockedShell,
+  name: 'EventSuccessAssignmentSurface',
+  type: EventSuccessAssignmentSurface,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictAssignmentUnlockedShell(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "AssignmentUnlockedShell",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "AttendeeCountdown",
-  type: AttendeeCountdown,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
-)
-Widget eventSuccessStrictAttendeeCountdown(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "AttendeeCountdown",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "CountdownBeatRail",
-  type: CountdownBeatRail,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
-)
-Widget eventSuccessStrictCountdownBeatRail(BuildContext context) {
-  const items = [
-    (label: "Hold", icon: Icons.pan_tool_alt_outlined),
-    (label: "Watch", icon: Icons.visibility_outlined),
-    (label: "Move", icon: Icons.bolt_rounded),
-  ];
-  return StrictCoverageScaffold(
-    componentName: "CountdownBeatRail",
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+Widget eventSuccessStrictAssignmentUnlockedShell(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessAssignmentSurface',
+      catalogId: 'Event Success reveal',
       children: [
-        CountdownBeatRail(items: items, currentIndex: 0),
-        gapH16,
-        CountdownBeatRail(items: items, currentIndex: 1),
-        gapH16,
-        CountdownBeatRail(items: items, currentIndex: 2),
+        EventSuccessAssignmentSurface(
+          title: 'Unlocked together',
+          child: const Text('Your assignment is ready.'),
+        ),
       ],
-    ),
-  );
-}
+    );
 
 @widgetbook.UseCase(
-  name: "CountdownCuePill",
-  type: CountdownCuePill,
+  name: 'EventSuccessCountdownSurface',
+  type: EventSuccessCountdownSurface,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictCountdownCuePill(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "CountdownCuePill",
-  );
-}
+Widget eventSuccessStrictAttendeeCountdown(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessCountdownSurface',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessCountdownSurface(
+          plan: EventSuccessCompanionFixtures.revealCountingDownPlan,
+          now: EventSuccessCompanionFixtures.racketStart.subtract(
+            const Duration(seconds: 1),
+          ),
+          kind: EventSuccessRevealAssignmentKind.rotations,
+          clue: 'A shared clue is ready.',
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "CountdownCueStack",
-  type: CountdownCueStack,
+  name: 'EventSuccessCountdownStepper',
+  type: EventSuccessCountdownStepper,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictCountdownCueStack(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "CountdownCueStack",
-  );
-}
+Widget eventSuccessStrictCountdownBeatRail(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessCountdownStepper',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessCountdownStepper(
+          items: [
+            (label: 'Hold', icon: CatchIcons.panToolAltOutlined),
+            (label: 'Watch', icon: CatchIcons.visibilityOutlined),
+            (label: 'Move', icon: CatchIcons.boltRounded),
+          ],
+          currentIndex: 1,
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "CountdownNumber",
-  type: CountdownNumber,
+  name: 'EventSuccessCountdownNotice',
+  type: EventSuccessCountdownNotice,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictCountdownNumber(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "CountdownNumber",
-  );
-}
+Widget eventSuccessStrictCountdownCuePill(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessCountdownNotice',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessCountdownNotice(
+          icon: CatchIcons.visibilityOffOutlined,
+          title: 'No names shown yet',
+          body: 'Partner details stay locked.',
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "CountdownStageDial",
-  type: CountdownStageDial,
+  name: 'EventSuccessCountdownNoticeRowList',
+  type: EventSuccessCountdownNoticeRowList,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictCountdownStageDial(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "CountdownStageDial",
-  );
-}
+Widget eventSuccessStrictCountdownCueStack(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessCountdownNoticeRowList',
+      catalogId: 'Event Success reveal',
+      children: [
+        const EventSuccessCountdownNoticeRowList(
+          clue: 'A shared clue is ready.',
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "EventSuccessLiveRevealAttendeeCard",
-  type: EventSuccessLiveRevealAttendeeCard,
+  name: 'EventSuccessCountdownText',
+  type: EventSuccessCountdownText,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
+)
+Widget eventSuccessStrictCountdownNumber(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessCountdownText',
+      catalogId: 'Event Success reveal',
+      children: [
+        const EventSuccessCountdownText(value: '9', caption: 'SECONDS'),
+      ],
+    );
+
+@widgetbook.UseCase(
+  name: 'EventSuccessCountdownIndicator',
+  type: EventSuccessCountdownIndicator,
+  path:
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
+)
+Widget eventSuccessStrictCountdownStageDial(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessCountdownIndicator',
+      catalogId: 'Event Success reveal',
+      children: [
+        const EventSuccessCountdownIndicator(
+          seconds: 9,
+          progress: 0.4,
+          intensity: 0.38,
+        ),
+      ],
+    );
+
+@widgetbook.UseCase(
+  name: 'EventSuccessAttendeeRevealSurface',
+  type: EventSuccessAttendeeRevealSurface,
+  path:
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
 Widget eventSuccessStrictEventSuccessLiveRevealAttendeeCard(
   BuildContext context,
-) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "EventSuccessLiveRevealAttendeeCard",
-  );
-}
+) => WidgetbookCatalogFrame(
+  title: 'EventSuccessAttendeeRevealSurface',
+  catalogId: 'Event Success reveal',
+  children: [
+    EventSuccessAttendeeRevealSurface(
+      event: EventSuccessCompanionFixtures.racketEvent,
+      plan: EventSuccessCompanionFixtures.revealUnlockedPlan,
+      kind: EventSuccessRevealAssignmentKind.rotations,
+      assignment: EventSuccessCompanionFixtures.rotationAssignment,
+      peerProfiles: EventSuccessCompanionFixtures.peers,
+      peersLoading: false,
+      optedOut: false,
+      onIncludeChanged: (_) {},
+      now: EventSuccessCompanionFixtures.racketStart,
+    ),
+  ],
+);
 
 @widgetbook.UseCase(
-  name: "EventSuccessLiveRevealHostCard",
-  type: EventSuccessLiveRevealHostCard,
+  name: 'EventSuccessHostRevealSurface',
+  type: EventSuccessHostRevealSurface,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictEventSuccessLiveRevealHostCard(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "EventSuccessLiveRevealHostCard",
-  );
-}
+Widget eventSuccessStrictEventSuccessLiveRevealHostCard(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessHostRevealSurface',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessHostRevealSurface(
+          event: EventSuccessCompanionFixtures.racketEvent,
+          plan: EventSuccessCompanionFixtures.revealCountingDownPlan,
+          podAssignments: const [],
+          rotationAssignments: [
+            EventSuccessCompanionFixtures.rotationAssignment,
+          ],
+          preferences: const [],
+          participantProfiles: EventSuccessCompanionFixtures.peers,
+          now: EventSuccessCompanionFixtures.racketStart.subtract(
+            const Duration(seconds: 1),
+          ),
+          onStartCountdown: (_, _) async {},
+          onRevealRound: (_) async {},
+          onResetReveal: () async {},
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "HostRevealActions",
-  type: HostRevealActions,
+  name: 'EventSuccessRevealActionRow',
+  type: EventSuccessRevealActionRow,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictHostRevealActions(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "HostRevealActions",
-  );
-}
+Widget eventSuccessStrictHostRevealActions(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessRevealActionRow',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessRevealActionRow(
+          roundCount: 3,
+          nextRound: 1,
+          activeRound: 0,
+          countdownSeconds: 10,
+          isCountingDown: false,
+          allRevealed: false,
+          isLoading: false,
+          onStartCountdown: (_, _) async {},
+          onRevealRound: (_) async {},
+          onResetReveal: () async {},
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "RevealGroupSlotRow",
-  type: RevealGroupSlotRow,
+  name: 'EventSuccessGroupRotationRow',
+  type: EventSuccessGroupRotationRow,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictRevealGroupSlotRow(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "RevealGroupSlotRow",
-  );
-}
+Widget eventSuccessStrictRevealGroupSlotRow(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessGroupRotationRow',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessGroupRotationRow(
+          slot: EventSuccessCompanionFixtures
+              .tableAssignment
+              .groupRotationSlots
+              .first,
+          profilesByUid: {
+            for (final p in EventSuccessCompanionFixtures.peers) p.uid: p,
+          },
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "RevealHostCopy",
-  type: RevealHostCopy,
+  name: 'EventSuccessRevealHeader',
+  type: EventSuccessRevealHeader,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictRevealHostCopy(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "RevealHostCopy",
-  );
-}
+Widget eventSuccessStrictRevealHostCopy(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessRevealHeader',
+      catalogId: 'Event Success reveal',
+      children: [
+        const EventSuccessRevealHeader(
+          headline: 'Create the next room-wide beat',
+          body: 'Partner details unlock together.',
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "RevealProgressBar",
-  type: RevealProgressBar,
+  name: 'EventSuccessRevealProgressIndicator',
+  type: EventSuccessRevealProgressIndicator,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictRevealProgressBar(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "RevealProgressBar",
-  );
-}
+Widget eventSuccessStrictRevealProgressBar(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessRevealProgressIndicator',
+      catalogId: 'Event Success reveal',
+      children: [const EventSuccessRevealProgressIndicator(progress: 0.4)],
+    );
 
 @widgetbook.UseCase(
-  name: "RevealRoundList",
-  type: RevealRoundList,
+  name: 'EventSuccessRevealRoundRowList',
+  type: EventSuccessRevealRoundRowList,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictRevealRoundList(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "RevealRoundList",
-  );
-}
+Widget eventSuccessStrictRevealRoundList(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessRevealRoundRowList',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessRevealRoundRowList(
+          config: 'Pairs · 15 min rounds · 10s reveal',
+          roundCount: 3,
+          revealedThrough: 1,
+          assignments: [EventSuccessCompanionFixtures.rotationAssignment],
+          profilesByUid: {
+            for (final p in EventSuccessCompanionFixtures.peers) p.uid: p,
+          },
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "RevealRoundRail",
-  type: RevealRoundRail,
+  name: 'EventSuccessRevealRoundStepper',
+  type: EventSuccessRevealRoundStepper,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictRevealRoundRail(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "RevealRoundRail",
-  );
-}
+Widget eventSuccessStrictRevealRoundRail(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessRevealRoundStepper',
+      catalogId: 'Event Success reveal',
+      children: [
+        const EventSuccessRevealRoundStepper(
+          roundCount: 3,
+          activeRoundIndex: 1,
+          revealedThrough: 0,
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "RevealRoundRow",
-  type: RevealRoundRow,
+  name: 'EventSuccessRotationRow',
+  type: EventSuccessRotationRow,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictRevealRoundRow(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "RevealRoundRow",
-  );
-}
+Widget eventSuccessStrictRevealSlotRow(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessRotationRow',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessRotationRow(
+          slot: EventSuccessCompanionFixtures
+              .rotationAssignment
+              .rotationSlots
+              .first,
+          peerName: EventSuccessCompanionFixtures.peer.name,
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "RevealSlotRow",
-  type: RevealSlotRow,
+  name: 'EventSuccessGroupRotationRowList',
+  type: EventSuccessGroupRotationRowList,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictRevealSlotRow(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "RevealSlotRow",
-  );
-}
+Widget eventSuccessStrictVisibleGroupRotationSlots(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessGroupRotationRowList',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessGroupRotationRowList(
+          slots:
+              EventSuccessCompanionFixtures.tableAssignment.groupRotationSlots,
+          profilesByUid: {
+            for (final p in EventSuccessCompanionFixtures.peers) p.uid: p,
+          },
+          peersLoading: false,
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "RevealTicker",
-  type: RevealTicker,
+  name: 'EventSuccessPodAssignmentSection',
+  type: EventSuccessPodAssignmentSection,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictRevealTicker(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "RevealTicker",
-  );
-}
+Widget eventSuccessStrictVisiblePodAssignment(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessPodAssignmentSection',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessPodAssignmentSection(
+          assignment: EventSuccessCompanionFixtures.microPodAssignment,
+          peerProfiles: EventSuccessCompanionFixtures.peers,
+          peersLoading: false,
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "VisibleGroupRotationSlots",
-  type: VisibleGroupRotationSlots,
+  name: 'EventSuccessRotationRowList',
+  type: EventSuccessRotationRowList,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictVisibleGroupRotationSlots(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "VisibleGroupRotationSlots",
-  );
-}
+Widget eventSuccessStrictVisibleRotationSlots(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessRotationRowList',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessRotationRowList(
+          slots: EventSuccessCompanionFixtures.rotationAssignment.rotationSlots,
+          profilesByUid: {
+            for (final p in EventSuccessCompanionFixtures.peers) p.uid: p,
+          },
+          peersLoading: false,
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "VisiblePodAssignment",
-  type: VisiblePodAssignment,
+  name: 'EventSuccessRevealWaitingNotice',
+  type: EventSuccessRevealWaitingNotice,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictVisiblePodAssignment(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "VisiblePodAssignment",
-  );
-}
+Widget eventSuccessStrictWaitingRevealCue(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessRevealWaitingNotice',
+      catalogId: 'Event Success reveal',
+      children: [
+        const EventSuccessRevealWaitingNotice(
+          kind: EventSuccessRevealAssignmentKind.rotations,
+        ),
+      ],
+    );
 
 @widgetbook.UseCase(
-  name: "VisibleRotationSlots",
-  type: VisibleRotationSlots,
+  name: 'EventSuccessRevealRoundRow',
+  type: EventSuccessRevealRoundRow,
   path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
+      '[P1 product surfaces]/Event Success strict coverage/Live reveal components',
 )
-Widget eventSuccessStrictVisibleRotationSlots(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "VisibleRotationSlots",
-  );
-}
-
-@widgetbook.UseCase(
-  name: "WaitingRevealCue",
-  type: WaitingRevealCue,
-  path:
-      "[P1 product surfaces]/Event Success strict coverage/Live reveal folded states",
-)
-Widget eventSuccessStrictWaitingRevealCue(BuildContext context) {
-  return eventSuccessStrictPreview(
-    context,
-    surface: EventSuccessStrictSurface.liveReveal,
-    componentName: "WaitingRevealCue",
-  );
-}
+Widget eventSuccessStrictRevealRoundRow(BuildContext context) =>
+    WidgetbookCatalogFrame(
+      title: 'EventSuccessRevealRoundRow',
+      catalogId: 'Event Success reveal',
+      children: [
+        EventSuccessRevealRoundRowList(
+          config: 'Pairs · 15 min rounds · 10s reveal',
+          roundCount: 3,
+          revealedThrough: 1,
+          assignments: [EventSuccessCompanionFixtures.rotationAssignment],
+          profilesByUid: {
+            for (final p in EventSuccessCompanionFixtures.peers) p.uid: p,
+          },
+        ),
+      ],
+    );

@@ -1,7 +1,7 @@
 ---
 doc_id: claude_widgetbook_inventory
-version: 0.3.2
-updated: 2026-09-14
+version: 0.3.3
+updated: 2026-09-15
 owner: product_design_parity
 status: active
 ---
@@ -705,7 +705,7 @@ they still need inventory tracking until the direct/alias mapping is settled.
 | `RosterRow` | `CatchRosterRow` | Formal `catch.roster_row` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
 | `RosterTable` | `CatchRosterTable` | Formal `catch.roster_table` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
 | `RosterTiles` | `CatchRosterTiles` | Formal `catch.roster_tiles` contract under `[Core primitives]/Host operations`; no duplicate catalog page remains. |
-| `RotationCard` | event-success live reveal widgets | Source-backed candidate in `lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart`; code comment explicitly maps the design-system `RotationCard` round list. |
+| `RotationCard` | event-success live reveal widgets | Source-backed candidate in `lib/event_success/presentation/reveal/event_success_reveal_round_row_list.dart`; code comment explicitly maps the design-system `RotationCard` round list. |
 | `ScreenBody` | `CatchScreenBody` | Formal `catch.screen_body` contract under `[Core primitives]/Sections`; no duplicate catalog page remains. |
 | `SectionStack` | `CatchSectionStack` | Formal `catch.section_stack` contract under `[Core primitives]/Sections`; no duplicate catalog page remains. |
 | `StrideCard` | `DashboardStrideSection` / `StrideCard` | Source-backed Widgetbook entry added under `[P1 product surfaces]/Dashboard primitives`; direct card-vs-section contract split remains a design decision. |

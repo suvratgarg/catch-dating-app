@@ -34,9 +34,10 @@ import 'package:catch_dating_app/event_success/presentation/event_success_compan
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_motion_contract.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -290,10 +291,6 @@ Future<String?> showEventVenueSessionScanner({
   builder: (context) => EventCheckInQrScannerSheet(eventId: eventId),
 );
 
-CatchAsyncState<T> _catchAsyncState<T>(AsyncValue<T> value) {
-  return catchAsyncStateFromAsyncValue(value);
-}
-
 class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   const EventSuccessCompanionRouteScreen({
     super.key,
@@ -324,16 +321,16 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         : ref.watch(watchEventParticipationProvider(eventId, watchedUid));
     var routeState = EventSuccessCompanionRouteState.resolveCore(
       l10n: context.l10n,
-      eventState: _catchAsyncState(eventAsync),
+      eventState: catchAsyncStateFromAsyncValue(eventAsync),
       initialEvent: initialEvent,
-      uidState: _catchAsyncState(uidAsync),
+      uidState: catchAsyncStateFromAsyncValue(uidAsync),
       profileState: profileAsync == null
           ? null
-          : _catchAsyncState(profileAsync),
+          : catchAsyncStateFromAsyncValue(profileAsync),
       participationState: participationAsync == null
           ? null
-          : _catchAsyncState(participationAsync),
-      planState: _catchAsyncState(planAsync),
+          : catchAsyncStateFromAsyncValue(participationAsync),
+      planState: catchAsyncStateFromAsyncValue(planAsync),
       referenceNow: referenceNow,
     );
 
@@ -487,7 +484,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     // Wave 2: arrival mission resolves before the attendee moment so First
     // Hello can preempt questionnaire/check-in when the module is enabled.
     routeState = routeState.withArrivalMission(
-      _catchAsyncState(arrivalMissionAsync),
+      catchAsyncStateFromAsyncValue(arrivalMissionAsync),
     );
     if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
       return _CompanionRouteGate(
@@ -512,7 +509,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
     // Wave 2: compatibility response, resolved before the attendee moment.
     routeState = routeState.withCompatibilityResponse(
-      _catchAsyncState(compatibilityAsync),
+      catchAsyncStateFromAsyncValue(compatibilityAsync),
     );
     if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
       return _CompanionRouteGate(
@@ -584,13 +581,13 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
 
     // Wave 3: moment-specific feedback, preference, wingman, and assignments.
     routeState = routeState.withMomentData(
-      feedbackState: _catchAsyncState(feedbackAsync),
-      preferenceState: _catchAsyncState(preferenceAsync),
-      wingmanCandidatesState: _catchAsyncState(candidatesAsync),
-      wingmanRequestState: _catchAsyncState(wingmanRequestAsync),
-      assignmentState: _catchAsyncState(assignmentAsync),
-      rotationState: _catchAsyncState(rotationAsync),
-      standingsState: _catchAsyncState(standingsAsync),
+      feedbackState: catchAsyncStateFromAsyncValue(feedbackAsync),
+      preferenceState: catchAsyncStateFromAsyncValue(preferenceAsync),
+      wingmanCandidatesState: catchAsyncStateFromAsyncValue(candidatesAsync),
+      wingmanRequestState: catchAsyncStateFromAsyncValue(wingmanRequestAsync),
+      assignmentState: catchAsyncStateFromAsyncValue(assignmentAsync),
+      rotationState: catchAsyncStateFromAsyncValue(rotationAsync),
+      standingsState: catchAsyncStateFromAsyncValue(standingsAsync),
     );
     if (routeState.status != EventSuccessCompanionRouteStatus.ready) {
       return _CompanionRouteGate(

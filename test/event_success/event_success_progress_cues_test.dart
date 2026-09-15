@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_live_reveal_card.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_progress_status.dart';
+import 'package:catch_dating_app/event_success/presentation/reveal/event_success_countdown_stepper.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +34,7 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: CountdownBeatRail(
+          body: EventSuccessCountdownStepper(
             items: const [
               (label: 'Hold', icon: Icons.pan_tool_alt_outlined),
               (label: 'Watch', icon: Icons.visibility_outlined),
