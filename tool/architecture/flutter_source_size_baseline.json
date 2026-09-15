@@ -26,10 +26,6 @@
       "maxLines": 902
     },
     {
-      "path": "lib/events/presentation/widgets/event_detail_design_primitives.dart",
-      "maxLines": 954
-    },
-    {
       "path": "lib/events/presentation/widgets/event_pins_map.dart",
       "maxLines": 1140
     },
