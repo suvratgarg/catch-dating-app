@@ -57,6 +57,7 @@ part 'host_customer_editor.dart';
 part 'host_customer_editor_sheets.dart';
 part 'host_customers_directory.dart';
 part 'host_saved_audience_editor.dart';
+part 'host_saved_audience_rule_draft.dart';
 part 'host_static_audience_members_editor.dart';
 part 'host_saved_audience_source_rules.dart';
 part 'host_saved_audience_overview.dart';
