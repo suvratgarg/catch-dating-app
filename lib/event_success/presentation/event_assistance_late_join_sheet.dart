@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
@@ -26,19 +27,20 @@ class EventAssistanceLateJoinSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageProvider = eventAssistanceLateJoinSettingProvider(scope);
     final page = ref.watch(pageProvider);
+    final pageState = catchAsyncStateFromAsyncValue(page);
     final owner = eventAssistanceLateJoinSettingEditorProvider(scope);
     final state = ref.watch(owner);
     final controller = ref.read(owner.notifier);
     final form = state is LateJoinSettingForm ? state : null;
     final privateReadDenied =
-        page.error is PermissionException ||
-        page.error is SignInRequiredException ||
-        page.error is AppException &&
+        pageState.error is PermissionException ||
+        pageState.error is SignInRequiredException ||
+        pageState.error is AppException &&
             {
               'permission-denied',
               'unauthenticated',
               'sign-in-required',
-            }.contains((page.error! as AppException).code);
+            }.contains((pageState.error! as AppException).code);
     void run(Future<Object?> Function() action) {
       unawaited(() async {
         try {
@@ -74,8 +76,8 @@ class EventAssistanceLateJoinSheet extends ConsumerWidget {
                 errorBuilder: (_, error, _, retry) =>
                     CatchLocalizedErrorBanner(error, onRetry: retry),
                 builder: (_, session) {
-                  final fresh = !page.isLoading && !page.hasError
-                      ? page.asData?.value
+                  final fresh = pageState.isSettledData
+                      ? pageState.value
                       : null;
                   final result = form?.result?.view;
                   final base = result ?? session.view;
@@ -121,7 +123,7 @@ class EventAssistanceLateJoinSheet extends ConsumerWidget {
                             form!.change!.preference,
                             fallbackRules: initial.rules,
                           ),
-                    error: page.error ?? form?.error,
+                    error: pageState.error ?? form?.error,
                     onSave: (draft) => run(() {
                       final review = fresh ?? session;
                       controller.open(review);

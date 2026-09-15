@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
+import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
 import 'package:catch_ui/catch_ui.dart';

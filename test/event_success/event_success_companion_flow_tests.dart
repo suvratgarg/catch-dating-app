@@ -24,7 +24,7 @@ void _registerEventSuccessCompanionFlowTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -736,7 +736,7 @@ void _registerEventSuccessCompanionFlowTests() {
 
       expect(find.byType(CatchScaffold), findsOneWidget);
       expect(find.text('Event companion'), findsOneWidget);
-      expect(find.byType(EventSuccessCompanionLoadingBody), findsOneWidget);
+      expect(find.byType(EventSuccessCompanionLoadingPageBody), findsOneWidget);
       expect(find.byType(CatchSkeleton), findsWidgets);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     },
@@ -773,7 +773,7 @@ void _registerEventSuccessCompanionFlowTests() {
     await tester.pump();
 
     expect(find.text('Event companion'), findsOneWidget);
-    expect(find.byType(EventSuccessCompanionLoadingBody), findsOneWidget);
+    expect(find.byType(EventSuccessCompanionLoadingPageBody), findsOneWidget);
     expect(find.text('Sign in required'), findsNothing);
   });
 

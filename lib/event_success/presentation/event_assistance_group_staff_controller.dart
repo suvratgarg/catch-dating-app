@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_group_staff_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_staff_change.dart';
@@ -94,6 +95,7 @@ class EventAssistanceGroupStaffController
   @override
   GroupStaffEditorState build(EventAssistanceGroupStaffTarget target) {
     final auth = ref.watch(authenticatedSessionProvider);
+    final authState = catchAsyncStateFromAsyncValue(auth);
     _epoch++;
     _account = null;
     _clearPending();
@@ -102,8 +104,8 @@ class EventAssistanceGroupStaffController
       _epoch++;
       _clearPending();
     });
-    if (auth.isLoading || auth.hasError || auth.asData == null) {
-      return GroupStaffUnavailable(auth.error ?? groupStaffSessionChanged);
+    if (!authState.isSettledData || authState.value == null) {
+      return GroupStaffUnavailable(authState.error ?? groupStaffSessionChanged);
     }
     _account = switch (auth) {
       AsyncData(:final value) => value,
@@ -118,9 +120,8 @@ class EventAssistanceGroupStaffController
       return false;
     }
     final auth = ref.read(authenticatedSessionProvider);
-    return !auth.isLoading &&
-        !auth.hasError &&
-        identical(auth.asData?.value, account);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    return authState.isSettledData && identical(authState.value, account);
   }
 
   void _requireReview(EventAssistanceGroupStaffSession review) {

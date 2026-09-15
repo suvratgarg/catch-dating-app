@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-09-04",
+  "updated": "2026-09-15",
   "id": "feature.host_event_create",
   "name": "Host Event Create",
   "owner": "hosts",
@@ -20,11 +20,15 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/hosts/host_operations_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/hosts/operations/create_event_routes.dart"
+        ],
         "actionOwners": [
           {"id": "route_screen", "language": "dart", "file": "lib/hosts/presentation/event_management/host_create_event_screen.dart", "symbol": "HostCreateEventRouteStateView"},
           {"id": "wizard_state", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_wizard_state.dart", "symbol": "CreateEventWizardState"},
           {"id": "create_screen", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart", "symbol": "CreateEventScreen"},
+          {"id": "create_actions", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_actions.dart", "symbol": "_handleCloseIntent"},
+          {"id": "draft_actions", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_draft_actions.dart", "symbol": "_restoreFromDraft"},
           {"id": "location_picker", "language": "dart", "file": "lib/events/presentation/location_picker_screen.dart", "symbol": "LocationPickerScreen"},
           {"id": "draft_picker", "language": "dart", "file": "lib/hosts/presentation/event_management/widgets/draft_picker_sheet.dart", "symbol": "DraftPickerSheet"},
           {"id": "submit_controller", "language": "dart", "file": "lib/hosts/presentation/event_management/create/create_event_controller.dart", "symbol": "CreateEventController"},
@@ -301,7 +305,7 @@
         },
         {
           "id": "restore_draft",
-          "owner": "create_screen",
+          "owner": "draft_actions",
           "codeValue": "_restoreFromDraft",
           "cardinality": "unbounded",
           "scopeKeys": ["viewerUid", "clubId", "draftId"],
@@ -346,7 +350,7 @@
         },
         {
           "id": "discard_and_exit",
-          "owner": "create_screen",
+          "owner": "create_actions",
           "codeValue": "discardAndExit",
           "cardinality": "singleton",
           "scopeKeys": ["routeInstanceId", "draftSignature"],

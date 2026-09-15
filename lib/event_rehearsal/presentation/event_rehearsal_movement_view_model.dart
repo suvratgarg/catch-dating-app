@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
@@ -23,8 +24,13 @@ class EventRehearsalMovement extends _$EventRehearsalMovement {
     RehearsalMovementSelection selection,
   ) {
     final auth = ref.watch(authenticatedSessionProvider);
-    if (auth.isLoading) return const AsyncLoading();
-    if (auth.hasError) return AsyncError(auth.error!, auth.stackTrace!);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    if ((authState.isLoading || authState.isRefreshing || authState.retrying)) {
+      return const AsyncLoading();
+    }
+    if (authState.error != null) {
+      return AsyncError(authState.error!, authState.stackTrace!);
+    }
     final page = ref.watch(
       eventRehearsalMovementForAccountProvider(
         selection,
@@ -35,14 +41,22 @@ class EventRehearsalMovement extends _$EventRehearsalMovement {
         },
       ),
     );
-    if (page.isLoading) return const AsyncLoading();
-    if (page.hasError) return AsyncError(page.error!, page.stackTrace!);
+    final pageState = catchAsyncStateFromAsyncValue(page);
+    if ((pageState.isLoading || pageState.isRefreshing || pageState.retrying)) {
+      return const AsyncLoading();
+    }
+    if (pageState.error != null) {
+      return AsyncError(pageState.error!, pageState.stackTrace!);
+    }
     return page;
   }
 
   void reload() {
     final auth = ref.read(authenticatedSessionProvider);
-    if (auth.isLoading || auth.hasError || auth.asData == null) return;
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    if (!authState.isSettledData || authState.value == null) {
+      return;
+    }
     ref.invalidate(
       eventRehearsalMovementForAccountProvider(
         selection,

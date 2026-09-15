@@ -1,7 +1,27 @@
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_campaign.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_communication_plan.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_event_roster_insights.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_manual_send_task.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'support/host_crm_response_fixtures.dart';
 
 class _TestFirebaseFunctions extends Fake implements FirebaseFunctions {
   final callables = <String, _TestHttpsCallable>{};
@@ -70,8 +90,8 @@ void main() {
       final callable =
           functions.httpsCallable('listOrganizerContacts')
               as _TestHttpsCallable;
-      callable.resultData = _emptyAudiencePageData();
-      final repository = HostCrmRepository(functions);
+      callable.resultData = crmEmptyAudiencePageData();
+      final repository = HostContactsRepository(functions);
 
       await repository.listContacts('organizer-1');
 
@@ -117,7 +137,7 @@ void main() {
           },
         ],
       };
-      final repository = HostCrmRepository(functions);
+      final repository = HostCommunicationRepository(functions);
 
       final plan = await repository.resolveIndividualCommunicationPlan(
         organizerId: 'organizer-1',
@@ -176,8 +196,8 @@ void main() {
     final callable =
         functions.httpsCallable('upsertOrganizerSavedAudience')
             as _TestHttpsCallable;
-    callable.resultData = _savedAudienceData();
-    final repository = HostCrmRepository(functions);
+    callable.resultData = crmSavedAudienceData();
+    final repository = HostSavedAudienceRepository(functions);
 
     final audience = await repository.upsertSavedAudience(
       organizerId: 'organizer-1',
@@ -210,7 +230,7 @@ void main() {
   test('saved audience preview rejects a non-exact projection', () {
     expect(
       () => HostSavedAudiencePreview.fromCallableData({
-        'audience': _savedAudienceData(),
+        'audience': crmSavedAudienceData(),
         'coverage': 'partial',
         'matchCount': 12,
         'sample': const <Object?>[],
@@ -225,8 +245,8 @@ void main() {
     final callable =
         functions.httpsCallable('prepareOrganizerManualSendTask')
             as _TestHttpsCallable;
-    callable.resultData = _manualSendTaskData();
-    final repository = HostCrmRepository(functions);
+    callable.resultData = crmManualSendTaskData();
+    final repository = HostCommunicationRepository(functions);
 
     final task = await repository.prepareManualSendTask(
       organizerId: 'organizer-1',
@@ -252,14 +272,14 @@ void main() {
     final callable =
         functions.httpsCallable('openOrganizerManualSendTask')
             as _TestHttpsCallable;
-    callable.resultData = _manualSendTaskData(
+    callable.resultData = crmManualSendTaskData(
       status: 'handoffOpened',
       revision: 2,
       openCount: 1,
       openedAtMillis: 1700000000500,
     );
-    final repository = HostCrmRepository(functions);
-    final queued = HostManualSendTask.fromCallableData(_manualSendTaskData());
+    final repository = HostCommunicationRepository(functions);
+    final queued = HostManualSendTask.fromCallableData(crmManualSendTaskData());
 
     final opened = await repository.recordManualHandoffOpened(queued);
 
@@ -280,9 +300,11 @@ void main() {
       final callable =
           functions.httpsCallable('validateOrganizerManualSendTaskLaunch')
               as _TestHttpsCallable;
-      callable.resultData = _manualSendTaskData();
-      final repository = HostCrmRepository(functions);
-      final queued = HostManualSendTask.fromCallableData(_manualSendTaskData());
+      callable.resultData = crmManualSendTaskData();
+      final repository = HostCommunicationRepository(functions);
+      final queued = HostManualSendTask.fromCallableData(
+        crmManualSendTaskData(),
+      );
 
       final validated = await repository.validateManualSendTaskLaunch(queued);
 
@@ -303,16 +325,16 @@ void main() {
       final callable =
           functions.httpsCallable('markOrganizerManualSendTask')
               as _TestHttpsCallable;
-      callable.resultData = _manualSendTaskData(
+      callable.resultData = crmManualSendTaskData(
         status: 'hostMarkedSent',
         active: false,
         revision: 3,
         openCount: 1,
         openedAtMillis: 1700000000500,
       );
-      final repository = HostCrmRepository(functions);
+      final repository = HostCommunicationRepository(functions);
       final opened = HostManualSendTask.fromCallableData(
-        _manualSendTaskData(
+        crmManualSendTaskData(
           status: 'handoffOpened',
           revision: 2,
           openCount: 1,
@@ -356,7 +378,7 @@ void main() {
           },
         ],
       };
-      final repository = HostCrmRepository(functions);
+      final repository = HostCommunicationRepository(functions);
 
       final replan = await repository.replanManualSendTasks(
         organizerId: 'organizer-1',
@@ -383,7 +405,7 @@ void main() {
     () {
       expect(
         () => HostManualSendTask.fromCallableData(
-          _manualSendTaskData(deliveryMode: 'managedDelivery'),
+          crmManualSendTaskData(deliveryMode: 'managedDelivery'),
         ),
         throwsFormatException,
       );
@@ -394,8 +416,8 @@ void main() {
     final functions = _TestFirebaseFunctions();
     final callable =
         functions.httpsCallable('listOrganizerContacts') as _TestHttpsCallable;
-    callable.resultData = _emptyAudiencePageData();
-    final repository = HostCrmRepository(functions);
+    callable.resultData = crmEmptyAudiencePageData();
+    final repository = HostContactsRepository(functions);
 
     await repository.listContacts(
       'organizer-1',
@@ -419,7 +441,7 @@ void main() {
         'displayName': 'Asha Rao',
         'revision': 1,
       };
-      final repository = HostCrmRepository(functions);
+      final repository = HostContactsRepository(functions);
 
       await repository.createContact(
         organizerId: 'organizer-1',
@@ -447,7 +469,7 @@ void main() {
           functions.httpsCallable('mutateOrganizerContact')
               as _TestHttpsCallable;
       callable.resultData = null;
-      final repository = HostCrmRepository(functions);
+      final repository = HostContactsRepository(functions);
 
       await repository.mutateContact(
         organizerId: 'organizer-1',
@@ -724,8 +746,8 @@ void main() {
       final callable =
           functions.httpsCallable('getOrganizerContactDetail')
               as _TestHttpsCallable;
-      callable.resultData = {..._contactDetailData(), 'historyLoaded': false};
-      final detail = await HostCrmRepository(
+      callable.resultData = {...crmContactDetailData(), 'historyLoaded': false};
+      final detail = await HostContactsRepository(
         functions,
       ).getContactOverview('organizer-1', 'contact-1');
       expect(detail.historyLoaded, isFalse);
@@ -744,14 +766,14 @@ void main() {
       final callable =
           functions.httpsCallable('getOrganizerContactDetail')
               as _TestHttpsCallable;
-      callable.resultData = _contactDetailData();
+      callable.resultData = crmContactDetailData();
       callable.failures.add(
         FirebaseFunctionsException(
           code: 'invalid-argument',
           message: 'includeHistory: must NOT have additional properties',
         ),
       );
-      final detail = await HostCrmRepository(
+      final detail = await HostContactsRepository(
         functions,
       ).getContactOverview('organizer-1', 'contact-1');
       expect(detail.historyLoaded, isTrue);
@@ -790,7 +812,7 @@ void main() {
                 as _TestHttpsCallable;
         callable.failures.add(error);
         await expectLater(
-          HostCrmRepository(
+          HostContactsRepository(
             functions,
           ).getContactOverview('organizer-1', 'contact-1'),
           throwsA(isA<AppException>()),
@@ -801,7 +823,7 @@ void main() {
   );
 
   test('parses contact detail without exposing private runtime answers', () {
-    final data = _contactDetailData();
+    final data = crmContactDetailData();
     final detail = HostAudienceContactDetail.fromCallableData(data);
 
     expect(detail.historyLoaded, isTrue);
@@ -1011,179 +1033,3 @@ void main() {
     expect(detail.serviceWindowOpen, isFalse);
   });
 }
-
-Map<String, Object?> _emptyAudiencePageData() => {
-  'organizerId': 'organizer-1',
-  'contacts': const <Object?>[],
-  'nextCursor': null,
-  'matchCount': 0,
-  'matchCountCoverage': 'exact',
-  'sourceCoverage': 'exact',
-  'projectionVersion': 1,
-};
-
-Map<String, Object?> _savedAudienceData() => {
-  'organizerId': 'organizer-1',
-  'audienceId': 'audience-1',
-  'scope': 'organizerCrm',
-  'name': 'Regulars',
-  'status': 'active',
-  'definition': {
-    'join': 'all',
-    'predicates': [
-      {'kind': 'computedSegment', 'segmentId': 'regular'},
-    ],
-  },
-  'definitionHash':
-      'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-  'definitionVersion': 1,
-  'revision': 1,
-  'lastPreviewMatchCount': 12,
-  'lastPreviewAtMillis': 1700000000000,
-  'createdAtMillis': 1700000000000,
-  'updatedAtMillis': 1700000000000,
-};
-
-Map<String, Object?> _manualSendTaskData({
-  String status = 'queued',
-  bool active = true,
-  int revision = 1,
-  int openCount = 0,
-  int? openedAtMillis,
-  String deliveryMode = 'byHand',
-}) => {
-  'organizerId': 'organizer-1',
-  'taskId': 'task-1',
-  'contactId': 'contact-1',
-  'displayName': 'Asha Rao',
-  'routeId': 'personalWhatsappHandoff',
-  'deliveryMode': deliveryMode,
-  'status': status,
-  'active': active,
-  'revision': revision,
-  'phoneE164': '+919876543210',
-  'prefillText': 'Would you like to join us?',
-  'openCount': openCount,
-  'createdAtMillis': 1700000000000,
-  'updatedAtMillis': 1700000000000,
-  'openedAtMillis': openedAtMillis,
-  'expiresAtMillis': 1702592000000,
-};
-
-Map<String, Object?> _contactDetailData() => <String, Object?>{
-  'organizerId': 'organizer-1',
-  'contactId': 'contact-1',
-  'displayName': 'Asha',
-  'sourceDisplayName': 'Asha Rao',
-  'displayNameOverride': 'Asha',
-  'phoneE164': '+919876543210',
-  'email': null,
-  'linkedAccount': true,
-  'identityState': 'verified',
-  'identityConfidence': 'verified',
-  'contactDetailsEditable': false,
-  'ambiguousCandidateContactIds': <String>[],
-  'whatsappAdminSuppressed': true,
-  'whatsappPermission': {
-    'status': 'optedIn',
-    'evidenceStatus': 'complete',
-    'receiptId': 'permission-1',
-    'source': 'hostFormResponse',
-    'sourceFormId': 'form-1',
-    'sourceFormTitle': 'Social run sign-up',
-    'decisionAtMillis': 1699000000000,
-    'identityStrength': 'phoneVerified',
-  },
-  'origins': [
-    {
-      'originId': 'origin-1',
-      'sourceKind': 'hostForm',
-      'sourceEntityKind': 'hostFormResponse',
-      'formId': 'form-1',
-      'formTitle': 'Social run sign-up',
-      'eventId': 'event-1',
-      'eventTitle': 'Social run',
-      'observedAtMillis': 1699000000000,
-    },
-  ],
-  'originsTruncated': false,
-  'traits': {
-    'expectedEventCount': 4,
-    'attendedEventCount': 3,
-    'cancelledEventCount': 0,
-    'noShowCount': 1,
-    'importedEventCount': 1,
-    'attendanceRate': 0.75,
-    'segmentIds': ['repeat_attendee'],
-    'whatsappStatus': 'optedIn',
-    'smsStatus': 'unknown',
-    'sourceCoverage': 'exact',
-  },
-  'revenue': {
-    'coverage': 'exact',
-    'amounts': [
-      {
-        'currency': 'INR',
-        'amountMinor': 450000,
-        'factCount': 3,
-        'sources': [
-          {'source': 'catchPayment', 'amountMinor': 450000, 'factCount': 3},
-        ],
-      },
-    ],
-  },
-  'events': [
-    {
-      'eventId': 'event-1',
-      'displayName': 'Social run',
-      'eventOriginMode': 'externalCompanion',
-      'eventProvider': 'eventbrite',
-      'source': 'hostImport',
-      'status': 'checkedIn',
-      'checkedIn': true,
-      'eventStartAtMillis': 1700000000000,
-      'revenues': [
-        {
-          'currency': 'INR',
-          'amountMinor': 150000,
-          'source': 'hostImport',
-          'factCount': 1,
-          'allocation': 'perAttendee',
-        },
-      ],
-    },
-  ],
-  'eventsTruncated': false,
-  'timeline': [
-    {
-      'kind': 'form',
-      'timelineId': 'timeline-form-1',
-      'responseId': 'response-1',
-      'formId': 'form-1',
-      'formTitle': 'Social run sign-up',
-      'action': 'submitted',
-      'answeredQuestionCount': 3,
-      'occurredAtMillis': 1699000000000,
-    },
-  ],
-  'timelineTruncated': false,
-  'timelineCoverage': {
-    'forms': 'exact',
-    'events': 'exact',
-    'sends': 'exact',
-    'replies': 'partial',
-    'replyObservation': 'catchAndManagedWhatsappOnly',
-  },
-  'activeMerges': [
-    {
-      'mergeReceiptId': 'receipt-1',
-      'sourceContactId': 'contact-2',
-      'sourceDisplayName': 'Asha R.',
-      'evidence': ['sameVerifiedPhone', 'managerConfirmed'],
-      'conflicts': <String>[],
-      'movedFactCount': 4,
-      'mergedAtMillis': 1700000001000,
-    },
-  ],
-  'revision': 7,
-};

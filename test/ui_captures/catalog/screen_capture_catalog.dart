@@ -86,6 +86,7 @@ import 'package:catch_dating_app/event_success/presentation/event_success_contro
 import 'package:catch_dating_app/event_success/presentation/event_success_defaults_panel.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/host_components/event_success_host_help_section.dart';
 import 'package:catch_dating_app/events/data/event_attendee_repository.dart';
 import 'package:catch_dating_app/events/data/event_callable_responses.dart';
 import 'package:catch_dating_app/events/data/event_draft_repository.dart';
@@ -115,6 +116,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/explore/data/explore_recommendations_repository.dart';
 import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
@@ -122,14 +124,41 @@ import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/catch_cover_story.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_analytics_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_application_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_attendance_outbox.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_profile_repository.dart';
-import 'package:catch_dating_app/hosts/domain/host_form.dart';
-import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact_detail.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_communication_plan.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_revenue.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_send.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_timeline.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_event_roster_insights.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_manual_send_task.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_analytics.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_automation.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_configuration.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_share.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/domain/host_profile.dart';
 import 'package:catch_dating_app/hosts/events/presentation/host_events_timeline_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_controller.dart';
@@ -159,6 +188,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_scre
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_share_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_templates_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
@@ -267,7 +297,6 @@ import '../../events/events_test_helpers.dart';
 import '../../test_pump_helpers.dart';
 import '../fixtures/sales_demo_synthetic_fixtures.dart';
 import '../support/capture_device.dart';
-
 part 'host_audience_capture_fixtures.dart';
 
 class ScreenCaptureEntry {
@@ -4388,7 +4417,7 @@ Future<void> _openHostManageCheckInQr(WidgetTester tester) async {
 Future<void> _verifyScheduleLockedCapture(WidgetTester tester) async {
   expect(find.text('Schedule locked'), findsOneWidget);
   expect(
-    find.byType(ReadOnlyHostedEventScheduleCard, skipOffstage: false),
+    find.byType(HostedEventScheduleSection, skipOffstage: false),
     findsOneWidget,
   );
 }
@@ -13541,7 +13570,7 @@ final screenCaptureCatalog = <ScreenCaptureEntry>[
     builder: (context) => _hostManageLiveSectionCapture(event: _hostEvent),
     drive: (tester) => _scrollHostManageLiveSectionTo(
       tester,
-      find.byType(WingmanRequestsHostCard, skipOffstage: false),
+      find.byType(EventSuccessHostHelpSection, skipOffstage: false),
     ),
   ),
   ScreenCaptureEntry(

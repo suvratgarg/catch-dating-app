@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_arrival_action.dart';
@@ -302,6 +303,10 @@ DashboardFullViewModel buildDashboardFullViewModel({
   DateTime? now,
 }) {
   final effectiveNow = now ?? DateTime.now();
+  final attendedEventsState = catchAsyncStateFromAsyncValue(
+    attendedEventsAsync,
+  );
+  final reviewsByUserState = catchAsyncStateFromAsyncValue(reviewsByUserAsync);
 
   final upcomingEvents =
       signedUpEvents
@@ -343,8 +348,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
               rankExploreEventRecommendations(
                 candidates: candidates,
                 signedUpEventIds: signedUpEventIds,
-                attendedEvents:
-                    attendedEventsAsync.asData?.value ?? const <Event>[],
+                attendedEvents: attendedEventsState.value ?? const <Event>[],
                 signedUpEvents: signedUpEvents,
                 viewer: viewer,
                 now: effectiveNow,
@@ -359,8 +363,8 @@ DashboardFullViewModel buildDashboardFullViewModel({
           now: effectiveNow,
         );
   final reviewedEventIds =
-      reviewsByUserAsync.asData?.value
-          .map((review) => review.eventId)
+      reviewsByUserState.value
+          ?.map((review) => review.eventId)
           .whereType<String>()
           .toSet() ??
       const <String>{};
@@ -397,24 +401,30 @@ DashboardSectionModel<WeeklyActivitySnapshot> _buildWeeklyActivitySection({
   required AsyncValue<WeeklyActivitySnapshot>? weeklyActivityAsync,
   required DateTime referenceDate,
 }) {
-  if (attendedEventsAsync.isLoading) {
+  final attendedEventsState = catchAsyncStateFromAsyncValue(
+    attendedEventsAsync,
+  );
+  final weeklyActivityState = weeklyActivityAsync == null
+      ? null
+      : catchAsyncStateFromAsyncValue(weeklyActivityAsync);
+  if (attendedEventsState.isLoading) {
     return const DashboardSectionModel<WeeklyActivitySnapshot>.loading(
       'Loading your recent events...',
     );
   }
-  if (weeklyActivityAsync?.isLoading ?? false) {
+  if (weeklyActivityState?.isLoading ?? false) {
     return const DashboardSectionModel<WeeklyActivitySnapshot>.loading(
       'Loading your weekly activity...',
     );
   }
 
-  final attendedEvents = attendedEventsAsync.asData?.value;
-  final platformSnapshot = weeklyActivityAsync?.asData?.value;
-  if (attendedEventsAsync.hasError &&
+  final attendedEvents = attendedEventsState.value;
+  final platformSnapshot = weeklyActivityState?.value;
+  if (attendedEventsState.hasError &&
       platformSnapshot?.hasPlatformConnection != true) {
     return DashboardSectionModel<WeeklyActivitySnapshot>.error(
       'Unable to load your recent events.',
-      error: attendedEventsAsync.error,
+      error: attendedEventsState.error,
     );
   }
 
@@ -584,8 +594,9 @@ DashboardFullViewModel dashboardFullViewModel(
   required String uid,
   required List<String> followedClubIds,
 }) {
+  final notificationsAsync = ref.watch(watchActivityNotificationsProvider(uid));
   final clubPostNotifications = clubPostNotificationsFromActivity(
-    ref.watch(watchActivityNotificationsProvider(uid)).asData?.value ??
+    catchAsyncStateFromAsyncValue(notificationsAsync).value ??
         const <ActivityNotification>[],
   );
 
@@ -629,32 +640,37 @@ DashboardHomeScreenState dashboardHomeScreenState(Ref ref) {
       final signedUpEventsAsync = ref.watch(
         watchSignedUpEventsProvider(user.uid),
       );
+      final followedClubIdsState = catchAsyncStateFromAsyncValue(
+        followedClubIdsAsync,
+      );
+      final signedUpEventsState = catchAsyncStateFromAsyncValue(
+        signedUpEventsAsync,
+      );
 
-      if (followedClubIdsAsync.isLoading || signedUpEventsAsync.isLoading) {
+      if (followedClubIdsState.isLoading || signedUpEventsState.isLoading) {
         return DashboardHomeScreenState.loading();
       }
-      if (followedClubIdsAsync.hasError) {
+      if (followedClubIdsState.hasError) {
         return DashboardHomeScreenState.error(
           DashboardHomeLoadError(
-            error: followedClubIdsAsync.error!,
+            error: followedClubIdsState.error!,
             retryTarget: DashboardHomeRetryTarget.memberships,
             uid: user.uid,
           ),
         );
       }
-      if (signedUpEventsAsync.hasError) {
+      if (signedUpEventsState.hasError) {
         return DashboardHomeScreenState.error(
           DashboardHomeLoadError(
-            error: signedUpEventsAsync.error!,
+            error: signedUpEventsState.error!,
             retryTarget: DashboardHomeRetryTarget.signedUpEvents,
             uid: user.uid,
           ),
         );
       }
 
-      final signedUpEvents =
-          signedUpEventsAsync.asData?.value ?? const <Event>[];
-      final followedClubIds = [...?followedClubIdsAsync.asData?.value]..sort();
+      final signedUpEvents = signedUpEventsState.value ?? const <Event>[];
+      final followedClubIds = [...?followedClubIdsState.value]..sort();
       final viewModel = ref.watch(
         dashboardFullViewModelProvider(
           signedUpEvents: signedUpEvents,

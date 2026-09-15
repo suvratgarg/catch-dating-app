@@ -62,6 +62,7 @@ class CatchAsyncState<T> {
   final bool retrying;
 
   bool get hasData => status == CatchAsyncStatus.data;
+  bool get isSettledData => phase == CatchAsyncPhase.data;
   bool get isLoading => status == CatchAsyncStatus.loading;
   bool get hasError => status == CatchAsyncStatus.error;
   bool get isRefreshing => phase == CatchAsyncPhase.refreshing;

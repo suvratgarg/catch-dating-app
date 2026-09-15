@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/explore.feature.json",
-  "generatedFor": "2026-08-05",
-  "sourceDigest": "sha256:b3476b11552825ae4fe0bd224a40a241d4eff4f7c92d6a37578107137af88d32",
+  "generatedFor": "2026-09-14",
+  "sourceDigest": "sha256:9486af42475eb47fdac3b04d8d3184a0fb7c5d18f54deb686130f90447573077",
   "resolvedDigest": "sha256:4278b8fa96ced65edf6568834a58bd17d93385f1d992a2c4dcde3b51ace69ff6",
   "feature": {
     "id": "feature.explore",
@@ -39,8 +39,27 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/explore/explore_use_cases.dart",
-          "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+          "widgetbook/lib/explore/catalog/activity.dart",
+          "widgetbook/lib/explore/catalog/cover.dart",
+          "widgetbook/lib/explore/catalog/cross_paths.dart",
+          "widgetbook/lib/explore/catalog/empty.dart",
+          "widgetbook/lib/explore/catalog/feed.dart",
+          "widgetbook/lib/explore/catalog/filters.dart",
+          "widgetbook/lib/explore/catalog/map.dart",
+          "widgetbook/lib/explore/catalog/screen.dart",
+          "widgetbook/lib/primitives/catalog/celebration.dart",
+          "widgetbook/lib/primitives/catalog/chrome.dart",
+          "widgetbook/lib/primitives/catalog/docks.dart",
+          "widgetbook/lib/primitives/catalog/event_hero.dart",
+          "widgetbook/lib/primitives/catalog/event_information.dart",
+          "widgetbook/lib/primitives/catalog/feedback.dart",
+          "widgetbook/lib/primitives/catalog/inputs.dart",
+          "widgetbook/lib/primitives/catalog/layout.dart",
+          "widgetbook/lib/primitives/catalog/loading.dart",
+          "widgetbook/lib/primitives/catalog/media.dart",
+          "widgetbook/lib/primitives/catalog/menus.dart",
+          "widgetbook/lib/primitives/catalog/sections.dart",
+          "widgetbook/lib/primitives/catalog/typography.dart"
         ],
         "actionOwners": [
           {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
@@ -23,19 +24,20 @@ class EventAssistanceRuntimeSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageProvider = eventAssistanceRuntimeProvider(scope);
     final page = ref.watch(pageProvider);
+    final pageState = catchAsyncStateFromAsyncValue(page);
     final owner = eventAssistanceRuntimeEditorProvider(scope);
     final state = ref.watch(owner);
     final controller = ref.read(owner.notifier);
     final form = state is AssistanceRuntimeForm ? state : null;
     final denied =
-        page.error is PermissionException ||
-        page.error is SignInRequiredException ||
-        page.error is AppException &&
+        pageState.error is PermissionException ||
+        pageState.error is SignInRequiredException ||
+        pageState.error is AppException &&
             {
               'permission-denied',
               'unauthenticated',
               'sign-in-required',
-            }.contains((page.error! as AppException).code);
+            }.contains((pageState.error! as AppException).code);
     void run(Future<Object?> Function() action) {
       unawaited(() async {
         try {
@@ -96,7 +98,8 @@ class _RuntimeReview extends ConsumerWidget {
   final VoidCallback onReload;
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final fresh = !page.isLoading && !page.hasError ? page.asData?.value : null;
+    final pageState = catchAsyncStateFromAsyncValue(page);
+    final fresh = pageState.isSettledData ? pageState.value : null;
     final review =
         form == null || form!.phase == AssistanceRuntimeEditorPhase.choosing
         ? fresh ?? session
@@ -156,7 +159,7 @@ class _RuntimeReview extends ConsumerWidget {
       submitted: form?.phase == AssistanceRuntimeEditorPhase.choosing
           ? null
           : form?.decision,
-      error: page.error ?? form?.error ?? directory.error,
+      error: pageState.error ?? form?.error ?? directory.error,
       onConfigure: (draft) => onRun(() {
         final choices = directory.requireReview(review);
         controller.open(review);

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_deliveries_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_change.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery_scope.dart';
@@ -96,6 +97,7 @@ class EventAssistanceDeliveryController
   @override
   AssistanceDeliveryEditorState build(EventAssistanceDeliveryScope scope) {
     final auth = ref.watch(authenticatedSessionProvider);
+    final authState = catchAsyncStateFromAsyncValue(auth);
     _epoch++;
     _account = null;
     _clearPending(updateIndex: false);
@@ -104,9 +106,9 @@ class EventAssistanceDeliveryController
       _epoch++;
       _clearPending(updateIndex: false);
     });
-    if (auth.isLoading || auth.hasError || auth.asData == null) {
+    if (!authState.isSettledData || authState.value == null) {
       return AssistanceDeliveryUnavailable(
-        auth.error ?? deliveryReviewSessionChanged,
+        authState.error ?? deliveryReviewSessionChanged,
       );
     }
     _account = switch (auth) {
@@ -122,9 +124,8 @@ class EventAssistanceDeliveryController
       return false;
     }
     final auth = ref.read(authenticatedSessionProvider);
-    return !auth.isLoading &&
-        !auth.hasError &&
-        identical(auth.asData?.value, account);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    return authState.isSettledData && identical(authState.value, account);
   }
 
   void _requireReview(EventAssistanceDeliveryReview review) {

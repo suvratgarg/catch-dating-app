@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_sender_preference_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_sender_preference.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -113,6 +114,7 @@ class EventSenderPreferenceController
   @override
   EventSenderPreferenceState build(EventSenderPreferenceScope scope) {
     final auth = ref.watch(authenticatedSessionProvider);
+    final authState = catchAsyncStateFromAsyncValue(auth);
     _releasePending?.call();
     _releasePending = null;
     final epoch = ++_epoch;
@@ -128,11 +130,13 @@ class EventSenderPreferenceController
       _releasePending = null;
       release?.call();
     });
-    if (auth.isLoading) return const EventSenderPreferenceLoading();
-    if (auth.hasError) {
-      return auth.error is SignInRequiredException
+    if ((authState.isLoading || authState.isRefreshing || authState.retrying)) {
+      return const EventSenderPreferenceLoading();
+    }
+    if (authState.error != null) {
+      return authState.error is SignInRequiredException
           ? const EventSenderPreferenceHidden()
-          : EventSenderPreferenceFailure(auth.error!);
+          : EventSenderPreferenceFailure(authState.error!);
     }
     final account = _account = switch (auth) {
       AsyncData(:final value) => value,
@@ -150,9 +154,8 @@ class EventSenderPreferenceController
   bool _current(AuthenticatedSession account, int epoch) {
     if (!ref.mounted || epoch != _epoch) return false;
     final auth = ref.read(authenticatedSessionProvider);
-    return !auth.isLoading &&
-        !auth.hasError &&
-        identical(auth.asData?.value, account);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    return authState.isSettledData && identical(authState.value, account);
   }
 
   Future<void> _read(

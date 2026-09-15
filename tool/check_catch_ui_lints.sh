@@ -447,6 +447,33 @@ expect_code_count \
   "catch_async_requires_state_surface" \
   1
 
+probe_path="$probe_root/lib/events/presentation/consumer_async_state_lint_probe.dart"
+stage_probe "Consumer route-edge async-state violation" <<'DART'
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final eventAsyncProvider = FutureProvider<int>((ref) async => 1);
+
+class ConsumerAsyncStateLintProbe extends ConsumerWidget {
+  const ConsumerAsyncStateLintProbe({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventAsync = ref.watch(eventAsyncProvider);
+    return Text(
+      eventAsync.hasError ? 'Unavailable' : 'Ready',
+      style: CatchTextStyles.bodyM(context),
+    );
+  }
+}
+DART
+
+expect_code_count \
+  "Consumer route-edge async-state violation" \
+  "catch_async_requires_state_surface" \
+  1
+
 probe_path="$probe_root/lib/events/presentation/generated/prefixed_constructor_probe.dart"
 stage_probe "prefixed constructor in authored generated-named directory" <<'DART'
 import 'package:flutter/material.dart' as material;

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -29,9 +30,9 @@ class ClubPostsHomeSection extends ConsumerWidget {
     final clubsAsync = ref.watch(
       watchClubsByIdsProvider(ClubsByIdQuery(clubIds)),
     );
+    final clubsState = catchAsyncStateFromAsyncValue(clubsAsync);
     final clubsById = {
-      for (final club in clubsAsync.asData?.value ?? const <Club>[])
-        club.id: club,
+      for (final club in clubsState.value ?? const <Club>[]) club.id: club,
     };
 
     return CatchSection.fieldRows(

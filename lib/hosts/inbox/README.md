@@ -50,7 +50,7 @@ Typed handoffs:
 | `ChatSearchQuery` | `lib/chats/presentation/inbox/chats_list_view_model.dart` | Feature-contract actions: search_inquiries. |
 | `HostBroadcastComposerSheet` | `lib/hosts/presentation/inbox/host_broadcast_composer_sheet.dart` | Feature-contract actions: select_broadcast_audience, select_broadcast_template. |
 | `HostInboxBroadcastController` | `lib/hosts/presentation/inbox/host_inbox_broadcast_controller.dart` | Feature-contract actions: send_broadcast. |
-| `HostSendsWorkspaceSliver` | `lib/hosts/presentation/inbox/host_sends_workspace.dart` | Feature-contract actions: open_event_announcement_composer, select_communication_intent. |
+| `HostSendsWorkspaceSliver` | `lib/hosts/presentation/inbox/host_sends_workspace.dart` | Feature-contract actions: open_event_announcement_composer. |
 | `HostManualSendQueue` | `lib/hosts/presentation/inbox/host_manual_send_queue.dart` | Feature-contract actions: open_manual_send_task, open_manual_handoff, mark_manual_send_task, replan_manual_send_tasks. |
 | `showHostFollowerUpdateComposer` | `lib/hosts/presentation/inbox/host_follower_update_composer.dart` | Feature-contract actions: send_follower_update. |
 | `HostMessagingSetupScreen` | `lib/hosts/presentation/inbox/host_messaging_setup_screen.dart` | Structural owner from feature.host_inbox. |

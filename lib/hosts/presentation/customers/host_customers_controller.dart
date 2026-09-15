@@ -1,7 +1,14 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_campaign_policy.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_contact_merge.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_customer_memory.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_customers_controller.g.dart';
@@ -14,7 +21,7 @@ class HostCustomersDirectoryController
     HostCustomersDirectoryRequest request,
   ) async {
     final page = await ref
-        .read(hostCrmRepositoryProvider)
+        .read(hostContactsRepositoryProvider)
         .listContacts(request.organizerId, query: _queryFor(request));
     return _directoryStateFromPage(page);
   }
@@ -27,7 +34,7 @@ class HostCustomersDirectoryController
     );
     try {
       final page = await ref
-          .read(hostCrmRepositoryProvider)
+          .read(hostContactsRepositoryProvider)
           .listContacts(
             request.organizerId,
             query: _queryFor(request, cursor: current.nextCursor),
@@ -70,7 +77,7 @@ Future<HostCustomerSegmentCount> hostCustomerSegmentCount(
   HostCustomerSegmentCountRequest request,
 ) async {
   final page = await ref
-      .read(hostCrmRepositoryProvider)
+      .read(hostContactsRepositoryProvider)
       .listContacts(
         request.organizerId,
         query: HostAudienceQuery(
@@ -322,12 +329,12 @@ HostCustomerDirectoryCoverage _directoryCoverage(
 
 @riverpod
 HostCustomersController hostCustomersController(Ref ref) =>
-    HostCustomersController(ref.watch(hostCrmRepositoryProvider));
+    HostCustomersController(ref.watch(hostContactsRepositoryProvider));
 
 class HostCustomersController {
   const HostCustomersController(this._repository);
 
-  final HostCrmRepository _repository;
+  final HostContactsRepository _repository;
 
   Future<HostCreatedCustomer> createCustomer({
     required String organizerId,

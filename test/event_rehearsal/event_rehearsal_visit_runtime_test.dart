@@ -114,8 +114,8 @@ void main() {
         EventRehearsalBootstrap.fromCallableData(wire),
       );
       await mount(tester, repository);
-      final panel = tester.widget<EventSuccessHostPanel>(
-        find.byType(EventSuccessHostPanel),
+      final panel = tester.widget<EventSuccessHostWorkspacePageBody>(
+        find.byType(EventSuccessHostWorkspacePageBody),
       );
       expect(panel.accountabilityMode, EventSuccessAccountability.sweep);
       expect(panel.accountabilityAttendees, hasLength(2));

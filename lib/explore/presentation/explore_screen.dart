@@ -12,21 +12,27 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_sliver_error_state.dart';
 import 'package:catch_dating_app/cross_paths/cross_paths.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/explore/presentation/explore_chrome_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_city_controller.dart';
 import 'package:catch_dating_app/explore/presentation/explore_cross_paths_provider.dart';
 import 'package:catch_dating_app/explore/presentation/explore_discovery_window_controller.dart';
+import 'package:catch_dating_app/explore/presentation/explore_feed_providers.dart';
 import 'package:catch_dating_app/explore/presentation/explore_feed_view_model.dart';
+import 'package:catch_dating_app/explore/presentation/explore_filter_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen_state.dart';
 import 'package:catch_dating_app/explore/presentation/explore_view_model.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_body.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_city_picker.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_feed_skeleton.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_filter_rail.dart';
 import 'package:catch_dating_app/explore/presentation/widgets/explore_header.dart';
+import 'package:catch_dating_app/explore/presentation/widgets/explore_screen_empty_state.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -94,38 +100,44 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
   Widget build(BuildContext context) {
     final uidAsync = ref.watch(uidProvider);
     final feedAsync = ref.watch(exploreFeedViewModelProvider);
+    final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+    final feedState = catchAsyncStateFromAsyncValue(feedAsync);
+    final crossPathsState = catchAsyncStateFromAsyncValue(
+      ref.watch(exploreCrossPathsSuggestionsProvider),
+    );
     final crossPathsSuggestions =
-        ref.watch(exploreCrossPathsSuggestionsProvider).asData?.value ??
-        const <CrossPathsSuggestion>[];
+        crossPathsState.value ?? const <CrossPathsSuggestion>[];
     final recommendationsAsync = ref.watch(exploreRecommendationsProvider);
     final viewModelAsync = ref.watch(exploreClubsViewModelProvider);
+    final viewModelState = catchAsyncStateFromAsyncValue(viewModelAsync);
     ref.watch(exploreCityControllerProvider);
     final city = ref.watch(selectedExploreCityProvider);
     final cityListAsync = ref.watch(cityListProvider);
-    final cityOptions = cityListAsync.asData?.value ?? const <CityData>[];
+    final cityListState = catchAsyncStateFromAsyncValue(cityListAsync);
+    final cityOptions = cityListState.value ?? const <CityData>[];
     final cityPickerState = ExploreCityPickerState.from(
       selectedCity: city,
       cities: cityOptions,
-      cityListLoading: cityListAsync.isLoading && cityOptions.isEmpty,
-      cityListError: cityListAsync.hasError ? cityListAsync.error : null,
+      cityListLoading: cityListState.isLoading && cityOptions.isEmpty,
+      cityListError: cityListState.hasError ? cityListState.error : null,
     );
     final query = ref.watch(exploreSearchQueryProvider).trim();
     final filters = ref.watch(exploreFiltersProvider);
-    final uidData = uidAsync.asData;
     final showAccountControls = exploreShowsAccountControls(
-      authResolved: uidData != null,
-      uid: uidData?.value,
+      authResolved: uidState.hasData,
+      uid: uidState.value,
     );
-    if (uidData?.value == null && uidData != null && filters.joinedOnly) {
+    if (uidState.value == null && uidState.hasData && filters.joinedOnly) {
       _scheduleGuestJoinedFilterReset();
     }
     final visibleFilters = showAccountControls
         ? filters
         : filters.copyWith(joinedOnly: false);
     final sourceClubsAsync = ref.watch(exploreSourceClubsProvider);
-    final sourceClubs = sourceClubsAsync.asData?.value ?? const [];
+    final sourceClubsState = catchAsyncStateFromAsyncValue(sourceClubsAsync);
+    final sourceClubs = sourceClubsState.value ?? const [];
     final hasSourceClubs = sourceClubs.isNotEmpty;
-    final featuredItem = feedAsync.asData?.value.featuredItem;
+    final featuredItem = feedState.value?.featuredItem;
     final showFeaturedCover =
         featuredItem != null && !_searchRequested && query.isEmpty;
     final filterRailState = ExploreFilterRailState.from(
@@ -133,7 +145,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       l10n: context.l10n,
     );
     final dateStripState = ExploreDateStripState.from(
-      viewModel: feedAsync.asData?.value,
+      viewModel: feedState.value,
       l10n: context.l10n,
       now: ref.watch(exploreDiscoveryReferenceNowProvider),
     );
@@ -141,8 +153,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       filters: visibleFilters,
       sourceClubs: sourceClubs,
       l10n: context.l10n,
-      viewModel: feedAsync.asData?.value,
-      feedLoading: feedAsync.isLoading,
+      viewModel: feedState.value,
+      feedLoading: feedState.isLoading,
     );
     final screenState = ExploreDiscoveryScreenState.from(
       l10n: context.l10n,
@@ -150,13 +162,13 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
       query: query,
       filters: visibleFilters,
       hasSourceClubs: hasSourceClubs,
-      mappableEventCount: feedAsync.asData?.value.mappableEventCount,
-      viewModelLoading: viewModelAsync.isLoading,
-      viewModelError: viewModelAsync.hasError ? viewModelAsync.error : null,
-      viewModel: viewModelAsync.asData?.value,
-      eventFeedLoading: feedAsync.isLoading,
-      eventFeedError: feedAsync.hasError ? feedAsync.error : null,
-      eventFeedHasContent: feedAsync.asData?.value.isEmpty == false,
+      mappableEventCount: feedState.value?.mappableEventCount,
+      viewModelLoading: viewModelState.isLoading,
+      viewModelError: viewModelState.hasError ? viewModelState.error : null,
+      viewModel: viewModelState.value,
+      eventFeedLoading: feedState.isLoading,
+      eventFeedError: feedState.hasError ? feedState.error : null,
+      eventFeedHasContent: feedState.value?.isEmpty == false,
     );
     final bodyState = screenState.bodyState;
     _syncInitialLoadDeadline(bodyState.kind == ExploreScreenBodyKind.loading);
@@ -361,8 +373,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             builder: (sheetContext, ref, _) {
               final liveFilters = ref.watch(exploreFiltersProvider);
               final liveFeed = ref.watch(exploreFeedViewModelProvider);
-              final liveUidData = ref.watch(uidProvider).asData;
-              final showJoinedOnly = liveUidData?.value != null;
+              final liveFeedState = catchAsyncStateFromAsyncValue(liveFeed);
+              final liveUidState = catchAsyncStateFromAsyncValue(
+                ref.watch(uidProvider),
+              );
+              final showJoinedOnly = liveUidState.value != null;
               final visibleLiveFilters = showJoinedOnly
                   ? liveFilters
                   : liveFilters.copyWith(joinedOnly: false);
@@ -370,8 +385,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 filters: visibleLiveFilters,
                 state: filterSheetState.withLiveResults(
                   filters: visibleLiveFilters,
-                  viewModel: liveFeed.asData?.value,
-                  feedLoading: liveFeed.isLoading,
+                  viewModel: liveFeedState.value,
+                  feedLoading: liveFeedState.isLoading,
                   l10n: sheetContext.l10n,
                 ),
                 onDistanceFilterSelected: (filter) =>
@@ -429,7 +444,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
               SliverToBoxAdapter(
                 child: Padding(
                   padding: CatchInsets.pageBody.copyWith(bottom: 0),
-                  child: const ExploreSkeletonList(),
+                  child: const ExploreFeedSkeleton(),
                 ),
               ),
             ],
@@ -457,7 +472,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                   ref.read(exploreSearchQueryProvider.notifier).clear(),
               onClearFilters: () =>
                   ref.read(exploreFiltersProvider.notifier).clear(),
-              onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
+              onLoadMore: () => unawaited(_loadMore(feedState.value)),
               onSetTimeFilter: (filter) => ref
                   .read(exploreFiltersProvider.notifier)
                   .setTimeFilter(filter),
@@ -486,7 +501,7 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                     ref.read(exploreSearchQueryProvider.notifier).clear(),
                 onClearFilters: () =>
                     ref.read(exploreFiltersProvider.notifier).clear(),
-                onLoadMore: () => unawaited(_loadMore(feedAsync.asData?.value)),
+                onLoadMore: () => unawaited(_loadMore(feedState.value)),
                 onSetTimeFilter: (filter) => ref
                     .read(exploreFiltersProvider.notifier)
                     .setTimeFilter(filter),
@@ -777,147 +792,4 @@ double _mapLauncherBottomOffset(BuildContext context) {
     context,
     minimum: CatchSpacing.s5,
   );
-}
-
-class ExploreScreenEmptyState extends StatelessWidget {
-  const ExploreScreenEmptyState({
-    super.key,
-    required this.state,
-    this.onClearSearch,
-    this.onClearFilters,
-    this.onChangeCity,
-  });
-
-  final ExploreDiscoveryEmptyState state;
-  final VoidCallback? onClearSearch;
-  final VoidCallback? onClearFilters;
-  final VoidCallback? onChangeCity;
-
-  @override
-  Widget build(BuildContext context) {
-    final action = state.action == ExploreDiscoveryEmptyAction.none
-        ? null
-        : ExploreClearAction(
-            clearSearch: state.clearSearch,
-            clearFilters: state.clearFilters,
-            onClearSearch: onClearSearch,
-            onClearFilters: onClearFilters,
-          );
-    return switch (state.kind) {
-      ExploreDiscoveryEmptyKind.noSourceClubs => Center(
-        child: Padding(
-          padding: CatchInsets.contentRelaxed,
-          child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
-            title: context.l10n.exploreExploreScreenTitleNoClubsInCitylabel(
-              cityLabel: state.cityLabel,
-            ),
-            message: context.l10n.exploreExploreScreenMessageTryAnotherCityFrom,
-            actions: [
-              CatchButton(
-                label: context.l10n.exploreExploreScreenLabelChangeCity,
-                leading: Icon(CatchIcons.locationOnOutlined),
-                onPressed: onChangeCity,
-              ),
-            ],
-          ),
-        ),
-      ),
-      ExploreDiscoveryEmptyKind.noFilteredSearchResults => Center(
-        child: Padding(
-          padding: CatchInsets.contentRelaxed,
-          child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
-            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
-            message: context.l10n.exploreExploreScreenMessageClearTheSearchOr,
-            actions: [?action],
-          ),
-        ),
-      ),
-      ExploreDiscoveryEmptyKind.noSearchResults => Center(
-        child: Padding(
-          padding: CatchInsets.contentRelaxed,
-          child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
-            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThis,
-            message: context
-                .l10n
-                .exploreExploreScreenMessageTryAnotherClubNeighborhood,
-            actions: [?action],
-          ),
-        ),
-      ),
-      ExploreDiscoveryEmptyKind.noFilterResults => Center(
-        child: Padding(
-          padding: CatchInsets.contentRelaxed,
-          child: CatchEmptyState(
-            icon: CatchIcons.groupsOutlined,
-            title: context.l10n.exploreExploreScreenTitleNoClubsMatchThese,
-            message: context.l10n.exploreExploreScreenMessageClearOneOrMore,
-            actions: [?action],
-          ),
-        ),
-      ),
-    };
-  }
-}
-
-class ExploreClearAction extends StatelessWidget {
-  const ExploreClearAction({
-    super.key,
-    required this.clearSearch,
-    required this.clearFilters,
-    this.onClearSearch,
-    this.onClearFilters,
-    this.icon,
-  });
-
-  final bool clearSearch;
-  final bool clearFilters;
-  final VoidCallback? onClearSearch;
-  final VoidCallback? onClearFilters;
-
-  /// Optional override for the action icon. Defaults to [CatchIcons.clear].
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final label = switch ((clearSearch, clearFilters)) {
-      (true, true) =>
-        context.l10n.exploreExploreScreenLabelClearSearchAndFilters,
-      (true, false) => context.l10n.exploreExploreScreenLabelClearSearch,
-      (false, true) => context.l10n.exploreExploreScreenLabelClearFilters,
-      (false, false) => context.l10n.exploreExploreScreenLabelClear,
-    };
-    return CatchButton(
-      label: label,
-      onPressed: () {
-        if (clearSearch) {
-          onClearSearch?.call();
-        }
-        if (clearFilters) {
-          onClearFilters?.call();
-        }
-      },
-      variant: CatchButtonVariant.secondary,
-      leading: Icon(icon ?? CatchIcons.clear),
-    );
-  }
-}
-
-class ExploreSkeletonList extends StatelessWidget {
-  const ExploreSkeletonList({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        CatchSkeleton.card(height: CatchLayout.exploreEventsSkeletonHeight),
-        gapH16,
-        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-        gapH12,
-        CatchSkeleton.card(height: CatchLayout.skeletonCardCompactHeight),
-      ],
-    );
-  }
 }

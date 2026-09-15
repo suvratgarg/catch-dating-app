@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure_draft.dart';
@@ -35,6 +36,7 @@ class EventAssistanceDepartureSheet extends ConsumerWidget {
     final controller = ref.read(owner.notifier);
     final form = state is EventDepartureForm ? state : null;
     final attendees = ref.watch(watchEventAttendeesProvider(scope.eventId));
+    final attendeesState = catchAsyncStateFromAsyncValue(attendees);
     void run(Future<Object?> Function() action) {
       unawaited(() async {
         try {
@@ -111,11 +113,12 @@ class EventAssistanceDepartureSheet extends ConsumerWidget {
                     view.freshness == AssistanceProgressFreshness.sourceChanged,
                 guests: [
                   for (final a
-                      in attendees.asData?.value ?? const <EventAttendee>[])
+                      in attendeesState.value ?? const <EventAttendee>[])
                     if (a.isCheckedIn) (id: a.id, name: a.displayName),
                 ],
-                rosterLoading: attendees.isLoading,
-                rosterError: attendees.error,
+                rosterLoading:
+                    (attendeesState.isLoading || attendeesState.isRefreshing || attendeesState.retrying),
+                rosterError: attendeesState.error,
                 canConfirm: review.view.canConfirm,
                 actorUid: review.account.uid,
                 serverTime: review.view.serverTime,

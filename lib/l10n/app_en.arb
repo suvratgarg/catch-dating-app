@@ -2556,63 +2556,63 @@
   },
   "exploreExploreScreenTitleNoClubsMatchThis": "No organizers match this search",
   "@exploreExploreScreenTitleNoClubsMatchThis": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenMessageClearTheSearchOr": "Clear the search or filters to bring nearby organizers back into view.",
   "@exploreExploreScreenMessageClearTheSearchOr": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenMessageTryAnotherClubNeighborhood": "Try another organizer, neighborhood, host, or tag.",
   "@exploreExploreScreenMessageTryAnotherClubNeighborhood": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenTitleNoClubsMatchThese": "No organizers match these filters",
   "@exploreExploreScreenTitleNoClubsMatchThese": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenMessageClearOneOrMore": "Clear one or more filters to bring nearby organizers back into view.",
   "@exploreExploreScreenMessageClearOneOrMore": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenLabelClearSearchAndFilters": "Clear search and filters",
   "@exploreExploreScreenLabelClearSearchAndFilters": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenLabelClearSearch": "Clear search",
   "@exploreExploreScreenLabelClearSearch": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenLabelClearFilters": "Clear filters",
   "@exploreExploreScreenLabelClearFilters": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
   },
   "exploreExploreScreenLabelClear": "Clear",
   "@exploreExploreScreenLabelClear": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_clear_button.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
@@ -7656,7 +7656,7 @@
   },
   "exploreExploreScreenTitleNoClubsInCitylabel": "No organizers in {cityLabel} yet",
   "@exploreExploreScreenTitleNoClubsInCitylabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (title).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (title).",
     "placeholders": {
       "cityLabel": {}
     },
@@ -9603,63 +9603,63 @@
   },
   "eventSuccessEventSuccessHostLiveTitleLiveModeNeedsSaved": "Live mode needs saved setup",
   "@eventSuccessEventSuccessHostLiveTitleLiveModeNeedsSaved": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveTitleLiveModeWasNot": "Live mode was not configured",
   "@eventSuccessEventSuccessHostLiveTitleLiveModeWasNot": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveBodySaveTheLiveGuide": "Save the live guide before the event to enable guided controls. Attendance and check-in stay available from this Live tab.",
   "@eventSuccessEventSuccessHostLiveBodySaveTheLiveGuide": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveBodyThisEventDidNot": "This event did not have a live guide saved before it started. Attendance and check-in remain available; guided live controls stay unavailable for this event.",
   "@eventSuccessEventSuccessHostLiveBodyThisEventDidNot": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected": "No live steps selected",
   "@eventSuccessEventSuccessHostLiveTitleNoLiveStepsSelected": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveBodyThisSavedSetupDoes": "This saved setup does not include any tools the host can use during the event.",
   "@eventSuccessEventSuccessHostLiveBodyThisSavedSetupDoes": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveTitleConversationCues": "Conversation cues",
   "@eventSuccessEventSuccessHostLiveTitleConversationCues": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveSubtitleUseOneWhenThe": "Use one when the room needs a cleaner next interaction.",
   "@eventSuccessEventSuccessHostLiveSubtitleUseOneWhenThe": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (subtitle).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested": "Close with one suggested first message after mutual matches.",
   "@eventSuccessEventSuccessHostLiveSubtitleCloseWithOneSuggested": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (subtitle).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
@@ -9709,70 +9709,70 @@
   },
   "eventSuccessEventSuccessHostLiveTitleSupportingControls": "Supporting controls",
   "@eventSuccessEventSuccessHostLiveTitleSupportingControls": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveSubtitleControlsThatStayAvailable": "Controls that stay available without competing with the current live step.",
   "@eventSuccessEventSuccessHostLiveSubtitleControlsThatStayAvailable": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (subtitle).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (subtitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete": "Mark live guide complete",
   "@eventSuccessEventSuccessHostLiveLabelMarkLiveGuideComplete": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_host_live_page_body.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveTitleControlsForThisStep": "Controls for this step",
   "@eventSuccessEventSuccessHostLiveTitleControlsForThisStep": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving": "Handle these before moving the room forward.",
   "@eventSuccessEventSuccessHostLiveSubtitleHandleTheseBeforeMoving": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (subtitle).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (subtitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton": "eventSuccessPreviousStepButton",
   "@eventSuccessEventSuccessHostLiveCatchbuttonEventsuccesspreviousstepbutton": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (CatchButton).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (CatchButton).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveLabelPrevious": "Previous",
   "@eventSuccessEventSuccessHostLiveLabelPrevious": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton": "eventSuccessNextStepButton",
   "@eventSuccessEventSuccessHostLiveCatchbuttonEventsuccessnextstepbutton": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (CatchButton).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (CatchButton).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostOverridesTextSmallStarterGroups": "Small starter groups",
   "@eventSuccessEventSuccessHostOverridesTextSmallStarterGroups": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelLengthAssigned": "{length} assigned",
   "@eventSuccessEventSuccessHostOverridesLabelLengthAssigned": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "length": {}
     },
@@ -9782,7 +9782,7 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut": "{optedOutCount} opted out",
   "@eventSuccessEventSuccessHostOverridesLabelOptedoutcountOptedOut": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "optedOutCount": {}
     },
@@ -9792,84 +9792,84 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelHostEdited": "Host edited",
   "@eventSuccessEventSuccessHostOverridesLabelHostEdited": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted": "Regenerate to remove opted-out attendee cards from the current pod set.",
   "@eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards": "Generate attendee pod cards from the roster, excluding opted-out attendees.",
   "@eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf": "Generate attendee pod cards from the current booked and checked-in roster.",
   "@eventSuccessEventSuccessHostOverridesTextGenerateAttendeePodCards4cbcdf": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton": "eventSuccessGenerateMicroPodsButton",
   "@eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneratemicropodsbutton": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (CatchButton).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods": "Generate micro-pods",
   "@eventSuccessEventSuccessHostOverridesLabelGenerateMicroPods": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelRegenerate": "Regenerate",
   "@eventSuccessEventSuccessHostOverridesLabelRegenerate": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelEditGroups": "Edit groups",
   "@eventSuccessEventSuccessHostOverridesLabelEditGroups": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleEditGroups": "Edit groups",
   "@eventSuccessEventSuccessHostOverridesTitleEditGroups": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesSubtitleHostOverride": "Host override",
   "@eventSuccessEventSuccessHostOverridesSubtitleHostOverride": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (subtitle).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart, lib/event_success/presentation/assignments/event_success_rotation_override_sheet.dart (subtitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelSaveOverrides": "Save overrides",
   "@eventSuccessEventSuccessHostOverridesLabelSaveOverrides": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelGroupValue1": "Group {value1}",
   "@eventSuccessEventSuccessHostOverridesLabelGroupValue1": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -9879,7 +9879,7 @@
   },
   "eventSuccessEventSuccessHostOverridesTextRoundValue1": "Round {value1}",
   "@eventSuccessEventSuccessHostOverridesTextRoundValue1": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "placeholders": {
       "value1": {}
     },
@@ -9889,70 +9889,70 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelAddGroup": "Add group",
   "@eventSuccessEventSuccessHostOverridesLabelAddGroup": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextNoGroupsInThis": "No groups in this round.",
   "@eventSuccessEventSuccessHostOverridesTextNoGroupsInThis": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleGroupLabel": "Group label",
   "@eventSuccessEventSuccessHostOverridesTitleGroupLabel": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTooltipRemoveGroup": "Remove group",
   "@eventSuccessEventSuccessHostOverridesTooltipRemoveGroup": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (tooltip).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (tooltip).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelAddAttendee": "Add attendee",
   "@eventSuccessEventSuccessHostOverridesLabelAddAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleGroupAttendee": "Group attendee",
   "@eventSuccessEventSuccessHostOverridesTitleGroupAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesHinttextAttendee": "Attendee",
   "@eventSuccessEventSuccessHostOverridesHinttextAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (hintText).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart, lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (hintText).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee": "Remove attendee",
   "@eventSuccessEventSuccessHostOverridesTooltipRemoveAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (tooltip).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (tooltip).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations": "Timed partner rotations",
   "@eventSuccessEventSuccessHostOverridesTextTimedPartnerRotations": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelRoundcountRounds": "{roundCount} rounds",
   "@eventSuccessEventSuccessHostOverridesLabelRoundcountRounds": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "roundCount": {}
     },
@@ -9962,21 +9962,21 @@
   },
   "eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde": "Regenerate to remove opted-out attendees from timed rotations.",
   "@eventSuccessEventSuccessHostOverridesTextRegenerateToRemoveOpted4eddde": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent": "Generate pairings from event duration, saved cadence, checked-in participants, and mutual gender interest.",
   "@eventSuccessEventSuccessHostOverridesTextGeneratePairingsFromEvent": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelEventrotationcapacityPossible": "{eventRotationCapacity} possible",
   "@eventSuccessEventSuccessHostOverridesLabelEventrotationcapacityPossible": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "eventRotationCapacity": {}
     },
@@ -9986,7 +9986,7 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks": "{sitOutRoundCount} planned breaks",
   "@eventSuccessEventSuccessHostOverridesLabelSitoutroundcountPlannedBreaks": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "sitOutRoundCount": {}
     },
@@ -9996,7 +9996,7 @@
   },
   "eventSuccessEventSuccessHostOverridesLabelRepeatpeercountRepeatedPeers": "{repeatPeerCount} repeated peers",
   "@eventSuccessEventSuccessHostOverridesLabelRepeatpeercountRepeatedPeers": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "repeatPeerCount": {}
     },
@@ -10006,77 +10006,77 @@
   },
   "eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton": "eventSuccessGenerateRotationsButton",
   "@eventSuccessEventSuccessHostOverridesCatchbuttonEventsuccessgeneraterotationsbutton": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (CatchButton).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (CatchButton).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelGenerateRotations": "Generate rotations",
   "@eventSuccessEventSuccessHostOverridesLabelGenerateRotations": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelEditRotations": "Edit rotations",
   "@eventSuccessEventSuccessHostOverridesLabelEditRotations": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleEditRotations": "Edit rotations",
   "@eventSuccessEventSuccessHostOverridesTitleEditRotations": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelAddPair": "Add pair",
   "@eventSuccessEventSuccessHostOverridesLabelAddPair": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTextNoPairsInThis": "No pairs in this round.",
   "@eventSuccessEventSuccessHostOverridesTextNoPairsInThis": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee": "First rotation attendee",
   "@eventSuccessEventSuccessHostOverridesTitleFirstRotationAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee": "Second rotation attendee",
   "@eventSuccessEventSuccessHostOverridesTitleSecondRotationAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_sheet.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesHinttextPartner": "Partner",
   "@eventSuccessEventSuccessHostOverridesHinttextPartner": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (hintText).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_rotation_override_round_section.dart, lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (hintText).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesTooltipRemovePair": "Remove pair",
   "@eventSuccessEventSuccessHostOverridesTooltipRemovePair": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (tooltip).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_group_override_round_section.dart (tooltip).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesLabelKeyValueAssigned": "{key} · {value} assigned",
   "@eventSuccessEventSuccessHostOverridesLabelKeyValueAssigned": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (label).",
     "placeholders": {
       "key": {},
       "value": {}
@@ -10087,49 +10087,49 @@
   },
   "eventSuccessEventSuccessHostOverridesTextAssignmentNotes": "Assignment notes",
   "@eventSuccessEventSuccessHostOverridesTextAssignmentNotes": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_pod_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostReportTitleNoEventReportYet": "No event report yet",
   "@eventSuccessEventSuccessHostReportTitleNoEventReportYet": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportBodyTheLiveEventGuide": "The live event guide was not saved for this event, so there is no post-event report to review. Attendance reporting remains available on this screen.",
   "@eventSuccessEventSuccessHostReportBodyTheLiveEventGuide": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTitlePostEventInsightsAre": "Post-event insights are off",
   "@eventSuccessEventSuccessHostReportTitlePostEventInsightsAre": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportBodyThisEventGuideDoes": "This event guide does not include post-event coaching for the host.",
   "@eventSuccessEventSuccessHostReportBodyThisEventGuideDoes": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback": "Waiting for attendee feedback",
   "@eventSuccessEventSuccessHostReportTitleWaitingForAttendeeFeedback": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse": "{feedbackCount} attendee feedback response{value2}",
   "@eventSuccessEventSuccessHostReportTitleFeedbackcountAttendeeFeedbackResponse": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "placeholders": {
       "feedbackCount": {},
       "value2": {}
@@ -10140,28 +10140,28 @@
   },
   "eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance": "The report combines attendance, safe aggregate feedback, assignment coverage, and explicit host-help requests. Private notes, safety concerns, and individual opener choices are not shown to hosts.",
   "@eventSuccessEventSuccessHostReportBodyTheReportCombinesAttendance": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTextHowReliableIsThis": "How reliable is this report?",
   "@eventSuccessEventSuccessHostReportTextHowReliableIsThis": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTextShowsWhetherTheReport": "Shows whether the report is based on enough live data to trust.",
   "@eventSuccessEventSuccessHostReportTextShowsWhetherTheReport": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelFeedback": "Feedback",
   "@eventSuccessEventSuccessHostReportLabelFeedback": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
@@ -10186,35 +10186,35 @@
   },
   "eventSuccessEventSuccessHostReportLabelCaughtSomeone": "Caught someone",
   "@eventSuccessEventSuccessHostReportLabelCaughtSomeone": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelPeopleIncluded": "People included",
   "@eventSuccessEventSuccessHostReportLabelPeopleIncluded": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelOptedOut": "Opted out",
   "@eventSuccessEventSuccessHostReportLabelOptedOut": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelWingmanHelp": "Wingman help",
   "@eventSuccessEventSuccessHostReportLabelWingmanHelp": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback": "{feedbackResponseCount}/{checkedInCount} feedback",
   "@eventSuccessEventSuccessHostReportLabelFeedbackresponsecountCheckedincountFeedback": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "feedbackResponseCount": {},
       "checkedInCount": {}
@@ -10225,7 +10225,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone": "{attendeesWhoCaughtSomeone} caught someone",
   "@eventSuccessEventSuccessHostReportLabelAttendeeswhocaughtsomeoneCaughtSomeone": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "attendeesWhoCaughtSomeone": {}
     },
@@ -10242,7 +10242,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned": "{assignmentParticipantCount} assigned",
   "@eventSuccessEventSuccessHostReportLabelAssignmentparticipantcountAssigned": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "assignmentParticipantCount": {}
     },
@@ -10252,7 +10252,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut": "{assignmentOptOutCount} opted out",
   "@eventSuccessEventSuccessHostReportLabelAssignmentoptoutcountOptedOut": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "assignmentOptOutCount": {}
     },
@@ -10262,7 +10262,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests": "{wingmanRequestCount} host-help requests",
   "@eventSuccessEventSuccessHostReportLabelWingmanrequestcountHostHelpRequests": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_report_quality_section.dart (label).",
     "placeholders": {
       "wingmanRequestCount": {}
     },
@@ -10272,49 +10272,49 @@
   },
   "eventSuccessEventSuccessHostReportTextEventFunnel": "Event funnel",
   "@eventSuccessEventSuccessHostReportTextEventFunnel": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelDemandToBooked": "Demand to booked",
   "@eventSuccessEventSuccessHostReportLabelDemandToBooked": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelRequestsApproved": "Requests approved",
   "@eventSuccessEventSuccessHostReportLabelRequestsApproved": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelOffersAccepted": "Offers accepted",
   "@eventSuccessEventSuccessHostReportLabelOffersAccepted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelPaymentComplete": "Payment complete",
   "@eventSuccessEventSuccessHostReportLabelPaymentComplete": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelRepeatAttendees": "Repeat attendees",
   "@eventSuccessEventSuccessHostReportLabelRepeatAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand": "{totalDemandCount} people in demand",
   "@eventSuccessEventSuccessHostReportLabelTotaldemandcountPeopleInDemand": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "placeholders": {
       "totalDemandCount": {}
     },
@@ -10324,7 +10324,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted": "{waitlistJoinCount} waitlisted",
   "@eventSuccessEventSuccessHostReportLabelWaitlistjoincountWaitlisted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "placeholders": {
       "waitlistJoinCount": {}
     },
@@ -10334,7 +10334,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid": "{paymentCompletedCount} paid",
   "@eventSuccessEventSuccessHostReportLabelPaymentcompletedcountPaid": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "placeholders": {
       "paymentCompletedCount": {}
     },
@@ -10344,7 +10344,7 @@
   },
   "eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted": "{chatStartedCount} chats started",
   "@eventSuccessEventSuccessHostReportLabelChatstartedcountChatsStarted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_funnel_section.dart (label).",
     "placeholders": {
       "chatStartedCount": {}
     },
@@ -10354,105 +10354,105 @@
   },
   "eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA": "Event started without a saved guide",
   "@eventSuccessEventSuccessHostSetupTitleEventStartedWithoutA": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo": "Live guide can no longer be saved",
   "@eventSuccessEventSuccessHostSetupTitleLiveGuideCanNo": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore": "This event began before a live guide was saved. Attendance and check-in still work, but the Live tab won''t have any guided controls for this event.",
   "@eventSuccessEventSuccessHostSetupBodyThisEventBeganBefore": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted": "Bookings have already started. Attendance and check-in still work, but the Live tab won''t have guided controls unless a guide was saved first.",
   "@eventSuccessEventSuccessHostSetupBodyBookingsHaveAlreadyStarted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet": "Setup not saved yet",
   "@eventSuccessEventSuccessHostSetupTitleSetupNotSavedYet": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs": "This default plan is visible here only. Save it so the Live tab is ready when the event starts.",
   "@eventSuccessEventSuccessHostSetupBodyThisDefaultPlanIs": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTitleSettingsAreLocked": "Settings are locked",
   "@eventSuccessEventSuccessHostSetupTitleSettingsAreLocked": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo": "Bookings have started, so the saved guide is locked in. Switch to the Live tab to drive the event in real time once it starts.",
   "@eventSuccessEventSuccessHostSetupBodyBookingsHaveStartedSo": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupBodyTheEventHasStarted": "The event has started — setup is locked. Use the Live tab to control the event right now, and the Report tab afterward.",
   "@eventSuccessEventSuccessHostSetupBodyTheEventHasStarted": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTitleYourPlan": "Your plan",
   "@eventSuccessEventSuccessHostSetupTitleYourPlan": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart, lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupLabelSaveChanges": "Save changes",
   "@eventSuccessEventSuccessHostSetupLabelSaveChanges": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupLabelSaveSetup": "Save setup",
   "@eventSuccessEventSuccessHostSetupLabelSaveSetup": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupLabelSaveLiveGuide": "Save live guide",
   "@eventSuccessEventSuccessHostSetupLabelSaveLiveGuide": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTextTargetAttendees": "Target attendees",
   "@eventSuccessEventSuccessHostSetupTextTargetAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax": "Recommended range: {recommendedMin}-{recommendedMax}",
   "@eventSuccessEventSuccessHostSetupTextRecommendedRangeRecommendedminRecommendedmax": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (Text).",
     "placeholders": {
       "recommendedMin": {},
       "recommendedMax": {}
@@ -10463,7 +10463,7 @@
   },
   "eventSuccessEventSuccessHostSetupTextAddAGoalSoTheLiveGuideKnowsWhatToAimFor": "Add a goal so the live guide knows what to aim for.",
   "@eventSuccessEventSuccessHostSetupTextAddAGoalSoTheLiveGuideKnowsWhatToAimFor": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_setup_body.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
@@ -10477,14 +10477,14 @@
   },
   "eventSuccessEventSuccessHostSetupTextUnsavedChanges": "Unsaved changes",
   "@eventSuccessEventSuccessHostSetupTextUnsavedChanges": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSharedLabelLengthTools": "{length} tools",
   "@eventSuccessEventSuccessHostSharedLabelLengthTools": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_plan_field_lanes.dart (label).",
     "placeholders": {
       "length": {}
     },
@@ -10494,14 +10494,14 @@
   },
   "eventSuccessEventSuccessHostSharedLabelNotSaved": "Not saved",
   "@eventSuccessEventSuccessHostSharedLabelNotSaved": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_plan_field_lanes.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedLabelLengthSelected": "{length} selected",
   "@eventSuccessEventSuccessHostSharedLabelLengthSelected": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_activity_field_lanes.dart (label).",
     "placeholders": {
       "length": {}
     },
@@ -10511,49 +10511,49 @@
   },
   "eventSuccessEventSuccessHostSharedTextMatchClueQuestions": "Match clue questions",
   "@eventSuccessEventSuccessHostSharedTextMatchClueQuestions": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedLabelCanGuidePairings": "Can guide pairings",
   "@eventSuccessEventSuccessHostSharedLabelCanGuidePairings": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedLabelCluesOnly": "Clues only",
   "@eventSuccessEventSuccessHostSharedLabelCluesOnly": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedTextSuggestedPairingsCanUse": "Suggested pairings can use shared answers as one light input after interest, safety, and attendee opt-out checks.",
   "@eventSuccessEventSuccessHostSharedTextSuggestedPairingsCanUse": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedTextAnswersCanStillShape": "Answers can still shape reveal clues, but suggested pairings will not use them.",
   "@eventSuccessEventSuccessHostSharedTextAnswersCanStillShape": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_compatibility_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedTextHelpMeSayHi": "\"Help me say hi\" requests",
   "@eventSuccessEventSuccessHostSharedTextHelpMeSayHi": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedLabelLengthActive": "{length} active",
   "@eventSuccessEventSuccessHostSharedLabelLengthActive": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (label).",
     "placeholders": {
       "length": {}
     },
@@ -10563,49 +10563,49 @@
   },
   "eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThe": "Attendees explicitly asked the host for help. Use rotation edits or live facilitation to pair them safely.",
   "@eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThe": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThef44110": "Attendees explicitly asked the host for help. Use this as live facilitation context.",
   "@eventSuccessEventSuccessHostSharedTextAttendeesExplicitlyAskedThef44110": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedTextNoHostHelpRequests": "No host-help requests yet.",
   "@eventSuccessEventSuccessHostSharedTextNoHostHelpRequests": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (Text).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedLabelHostVisible": "Host visible",
   "@eventSuccessEventSuccessHostSharedLabelHostVisible": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst": "Generate assignments first",
   "@eventSuccessEventSuccessLiveRevealActionsLabelGenerateAssignmentsFirst": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
   },
   "eventSuccessEventSuccessLiveRevealActionsLabelRevealNow": "Reveal now",
   "@eventSuccessEventSuccessLiveRevealActionsLabelRevealNow": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_actions"
   },
   "eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1": "Reveal round {value1}",
   "@eventSuccessEventSuccessLiveRevealActionsLabelRevealRoundValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -10615,7 +10615,7 @@
   },
   "eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown": "Drop {countdownSeconds}s countdown",
   "@eventSuccessEventSuccessLiveRevealActionsLabelDropCountdownsecondsSCountdown": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_actions.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_action_row.dart (label).",
     "placeholders": {
       "countdownSeconds": {}
     },
@@ -10625,42 +10625,42 @@
   },
   "eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking": "Unlocking",
   "@eventSuccessEventSuccessLiveRevealAttendeeLabelUnlocking": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_attendee"
   },
   "eventSuccessEventSuccessLiveRevealAttendeeLabelRevealed": "Revealed",
   "@eventSuccessEventSuccessLiveRevealAttendeeLabelRevealed": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_attendee"
   },
   "eventSuccessEventSuccessLiveRevealAttendeeLabelWaiting": "Waiting",
   "@eventSuccessEventSuccessLiveRevealAttendeeLabelWaiting": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_attendee.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_attendee"
   },
   "eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal": "Synchronized partner reveal",
   "@eventSuccessEventSuccessLiveRevealHostLabelSynchronizedPartnerReveal": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostLabelNoAssignments": "No assignments",
   "@eventSuccessEventSuccessLiveRevealHostLabelNoAssignments": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown": "{value1}/{roundCount} shown",
   "@eventSuccessEventSuccessLiveRevealHostLabelValue1RoundcountShown": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (label).",
     "placeholders": {
       "value1": {},
       "roundCount": {}
@@ -10671,35 +10671,35 @@
   },
   "eventSuccessEventSuccessLiveRevealHostCaptionSeconds": "seconds",
   "@eventSuccessEventSuccessLiveRevealHostCaptionSeconds": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (caption).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostCaptionRevealed": "revealed",
   "@eventSuccessEventSuccessLiveRevealHostCaptionRevealed": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (caption).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostCaptionNextRound": "next round",
   "@eventSuccessEventSuccessLiveRevealHostCaptionNextRound": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (caption).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (caption).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold": "Room hold",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelRoomHold": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextEveryoneGetsThisAssignmentnoun": "Everyone gets this {assignmentNoun} at the same time. No names shown yet.",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextEveryoneGetsThisAssignmentnoun": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "assignmentNoun": {}
     },
@@ -10709,7 +10709,7 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextSeconds": "{seconds}",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextSeconds": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "seconds": {}
     },
@@ -10719,63 +10719,63 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextSeconds3fb8f1": "SECONDS",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextSeconds3fb8f1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelHold": "Hold",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelHold": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelWatch": "Watch",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelWatch": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelMove": "Move",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelMove": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTitleNoNamesShownYet": "No names shown yet",
   "@eventSuccessEventSuccessLiveRevealWidgetsTitleNoNamesShownYet": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsBodyPartnerDetailsStayLocked": "Partner details stay locked until the shared release.",
   "@eventSuccessEventSuccessLiveRevealWidgetsBodyPartnerDetailsStayLocked": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTitleClueIsLive": "Clue is live",
   "@eventSuccessEventSuccessLiveRevealWidgetsTitleClueIsLive": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextTheRoomIsHolding": "The room is holding for the reveal.",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextTheRoomIsHolding": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextTheHostControlsThe": "The host controls the {assignmentNoun} unlock from live mode.",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextTheHostControlsThe": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "assignmentNoun": {}
     },
@@ -10785,14 +10785,14 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether": "Unlocked together",
   "@eventSuccessEventSuccessLiveRevealWidgetsTitleUnlockedTogether": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_notice_row_list.dart (title).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelValue1People": "{value1} people",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelValue1People": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -10802,35 +10802,35 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPodmates": "Loading podmates",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPodmates": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPartners": "Loading partners",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingPartners": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingGroupMembers": "Loading group members",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelLoadingGroupMembers": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelNamesLoading": "Names loading",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelNamesLoading": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextTimerangePeername": "{timeRange} · {peerName}",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextTimerangePeername": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "timeRange": {},
       "peerName": {}
@@ -10841,14 +10841,14 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal": "Hidden until reveal",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelHiddenUntilReveal": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelRoundValue1": "Round {value1}",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelRoundValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -10858,7 +10858,7 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsTextRValue1": "R{value1}",
   "@eventSuccessEventSuccessLiveRevealWidgetsTextRValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (Text).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (Text).",
     "placeholders": {
       "value1": {}
     },
@@ -10868,7 +10868,7 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsLabelRValue1": "R{value1}",
   "@eventSuccessEventSuccessLiveRevealWidgetsLabelRValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_countdown_surface.dart (label).",
     "placeholders": {
       "value1": {}
     },
@@ -12308,14 +12308,14 @@
   },
   "eventSuccessEventSuccessHostReportBodyThePostEventReport": "The post-event report appears once checked-in attendees share feedback. There is no signal to summarize yet.",
   "@eventSuccessEventSuccessHostReportBodyThePostEventReport": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (body).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
   },
   "eventSuccessEventSuccessHostReportTitleS": "s",
   "@eventSuccessEventSuccessHostReportTitleS": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_report.dart (title).",
+    "description": "Product copy used by lib/event_success/presentation/host_report/event_success_host_report_page_body.dart (title).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_report"
@@ -12329,7 +12329,7 @@
   },
   "exploreExploreScreenMessageTryAnotherCityFrom": "Try another city from the location control, or create the first organizer when you are ready to host.",
   "@exploreExploreScreenMessageTryAnotherCityFrom": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen.dart (message).",
+    "description": "Product copy used by lib/explore/presentation/widgets/explore_screen_empty_state.dart (message).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen"
@@ -13028,7 +13028,7 @@
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyWhenCheckInOpens": "When check-in opens, this screen turns into the live guide for {locationName}.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyWhenCheckInOpens": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "placeholders": {
       "locationName": {}
     },
@@ -13038,77 +13038,77 @@
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyOneTapTellsThe": "One tap tells the host you are in the room and ready for the live flow.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyOneTapTellsThe": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyFindOnePersonAsk": "Find one person, ask one tiny question, and let the room start with permission instead of pressure.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyFindOnePersonAsk": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyQuickAnswersHelpCatch": "Quick answers help Catch shape prompts without turning the event into a form.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyQuickAnswersHelpCatch": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing": "The host is pacing the room from live mode.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe": "Use it if the room needs an easy next line.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyTheseAreLightNudges": "These are light nudges for the current event moment.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyTheseAreLightNudges": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyUseItAsA": "Use it as a nudge into the next interaction, then let the room breathe.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyUseItAsA": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyTheHostControlsThe": "The host controls the timing so the room unlocks together instead of leaking awkwardly.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyTheHostControlsThe": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyChooseSomeoneYouWant": "Choose someone you want help meeting and the host can use that as live facilitation context.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyChooseSomeoneYouWant": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts": "Keep the useful parts of the room, send private feedback, and use event-specific openers when a match appears.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsRunning": "The host is running the room. Your next prompt or reveal appears here when it is time.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsRunning": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
@@ -13367,7 +13367,7 @@
   },
   "exploreExploreScreenStateLabelMap": "Map",
   "@exploreExploreScreenStateLabelMap": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
@@ -13386,35 +13386,35 @@
   },
   "exploreExploreScreenStateLabelAny": "Any",
   "@exploreExploreScreenStateLabelAny": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateLabel1Km": "1 km",
   "@exploreExploreScreenStateLabel1Km": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateLabel3Km": "3 km",
   "@exploreExploreScreenStateLabel3Km": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateLabel5Km": "5 km",
   "@exploreExploreScreenStateLabel5Km": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateLabel10Km": "10 km",
   "@exploreExploreScreenStateLabel10Km": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (label).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
@@ -13457,21 +13457,21 @@
   },
   "exploreExploreScreenStateActionlabelOpen": "Open",
   "@exploreExploreScreenStateActionlabelOpen": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (actionLabel).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateActionlabelNoLink": "No link",
   "@exploreExploreScreenStateActionlabelNoLink": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (actionLabel).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (actionLabel).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateCaptionClubToKnow": "Organizer to know",
   "@exploreExploreScreenStateCaptionClubToKnow": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (caption).",
+    "description": "Product copy used by lib/explore/presentation/explore_club_display_state.dart (caption).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
@@ -13599,98 +13599,98 @@
   },
   "hostsHostEventManageScreenStateDescriptionThisEventCanStay": "This event can stay listed; only people with this code or private link can book.",
   "@hostsHostEventManageScreenStateDescriptionThisEventCanStay": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (description).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (description).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateDescriptionThisEventRequiresAn": "This event requires an invite, but no host-readable access code was found.",
   "@hostsHostEventManageScreenStateDescriptionThisEventRequiresAn": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (description).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (description).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelAll": "All",
   "@hostsHostEventManageScreenStateLabelAll": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelBooked": "Booked",
   "@hostsHostEventManageScreenStateLabelBooked": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelRequests": "Requests",
   "@hostsHostEventManageScreenStateLabelRequests": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelWaitlist": "Waitlist",
   "@hostsHostEventManageScreenStateLabelWaitlist": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelSlots": "Slots",
   "@hostsHostEventManageScreenStateLabelSlots": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateEmptytitleNoMatches": "No matches",
   "@hostsHostEventManageScreenStateEmptytitleNoMatches": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (emptyTitle).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (emptyTitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateEmptytitleOpenSlotsAreNot": "Open slots are not people",
   "@hostsHostEventManageScreenStateEmptytitleOpenSlotsAreNot": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (emptyTitle).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (emptyTitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateEmptytitleNoParticipantsYet": "No participants yet",
   "@hostsHostEventManageScreenStateEmptytitleNoParticipantsYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (emptyTitle).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (emptyTitle).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelDue": "Due",
   "@hostsHostEventManageScreenStateLabelDue": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelIn": "In",
   "@hostsHostEventManageScreenStateLabelIn": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelAttended": "Attended",
   "@hostsHostEventManageScreenStateLabelAttended": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelNoShow": "No-show",
   "@hostsHostEventManageScreenStateLabelNoShow": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart, lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
@@ -13725,42 +13725,42 @@
   },
   "hostsHostEventManageScreenStateLabelOffered": "Offered",
   "@hostsHostEventManageScreenStateLabelOffered": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelAccepted": "Accepted",
   "@hostsHostEventManageScreenStateLabelAccepted": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelRequest": "Request",
   "@hostsHostEventManageScreenStateLabelRequest": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelWait": "Wait",
   "@hostsHostEventManageScreenStateLabelWait": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelExpired": "Expired",
   "@hostsHostEventManageScreenStateLabelExpired": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateLabelNew": "New",
   "@hostsHostEventManageScreenStateLabelNew": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (label).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
@@ -16050,245 +16050,245 @@
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyBeforeArrival": "Before arrival",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyBeforeArrival": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourEventGuideIs": "Your event guide is warming up.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourEventGuideIs": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyPreEventDetailsStay": "Pre-event details stay informational until the host starts the room.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyPreEventDetailsStay": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyArrivalCue": "Arrival cue",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyArrivalCue": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInWhenYou": "Check in when you reach the venue.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInWhenYou": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInOnlyUpdates": "Check-in only updates attendance and the event companion flow.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInOnlyUpdates": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyFirstHello": "First Hello",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyFirstHello": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourFirstArrivalMission": "Your first arrival mission is live.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourFirstArrivalMission": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisChecksYouIn": "This checks you in. Hosts do not see the individual answer.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisChecksYouIn": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues": "Match clues",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAddAFewClues": "Add a few clues before the room moves.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyAddAFewClues": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee": "Hosts do not see individual match clue answers.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyLiveNow": "Live now",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyLiveNow": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyFollowTheHostFor": "Follow the host for the next beat.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyFollowTheHostFor": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame": "Everyone sees the same room cue; personal details stay scoped to you.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyLivePrompt": "Live prompt",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyLivePrompt": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAFreshPromptJust": "A fresh prompt just dropped.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyAFreshPromptJust": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyPromptsAreSharedGuidance": "Prompts are shared guidance, not a public record of what you say.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyPromptsAreSharedGuidance": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCues": "Conversation cues",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCues": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyPickACueAnd": "Pick a cue and keep the room moving.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyPickACueAnd": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCuesAreSuggestions": "Conversation cues are suggestions only; nothing is sent for you.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCuesAreSuggestions": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourNextGroup": "Your next group",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourNextGroup": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAssignmentIsReady": "Your assignment is ready.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAssignmentIsReady": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyYourOwnAssignment": "Only your own assignment details appear on this screen.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyYourOwnAssignment": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopySharedReveal": "Shared reveal",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopySharedReveal": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourDetailsStayHidden": "Your details stay hidden on this screen until the shared reveal moment.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourDetailsStayHidden": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostHelp": "Host help",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostHelp": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAskForOneSpecific": "Ask for one specific intro.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyAskForOneSpecific": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyTheHostSees": "Only the host sees this request; the other attendee is not notified.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyTheHostSees": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow": "Afterglow",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady": "Your afterglow is ready.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisRecapIsPrivate": "This recap is private to you. Hosts only see safe aggregate coaching.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisRecapIsPrivate": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyWrapped": "Wrapped",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyWrapped": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyBooked": "Booked",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyBooked": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyCatchOnlyShowsThe": "Catch only shows the live details that are relevant to this event moment.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyCatchOnlyShowsThe": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
@@ -16327,7 +16327,7 @@
   },
   "eventSuccessEventSuccessHostLiveVisiblecopyAttendeesAtLocationnameSee": "Attendees at {locationName} see: {attendeeExperience}",
   "@eventSuccessEventSuccessHostLiveVisiblecopyAttendeesAtLocationnameSee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart (visibleCopy).",
     "placeholders": {
       "locationName": {},
       "attendeeExperience": {}
@@ -16338,14 +16338,14 @@
   },
   "eventSuccessEventSuccessHostLiveVisiblecopyFinalStep": "Final step",
   "@eventSuccessEventSuccessHostLiveVisiblecopyFinalStep": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_control_room_page_body.dart, lib/event_success/presentation/host_live/event_success_step_action_row.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_live"
   },
   "eventSuccessEventSuccessHostLiveVisiblecopyNextTitle": "Next: {title}",
   "@eventSuccessEventSuccessHostLiveVisiblecopyNextTitle": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_live.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_live/event_success_step_action_row.dart (visibleCopy).",
     "placeholders": {
       "title": {}
     },
@@ -16355,70 +16355,70 @@
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1": "host_override_v1",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyHostOverrideV1": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne": "Add at least one group.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyNameEveryGroup": "Name every group.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyNameEveryGroup": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne64c0b6": "Add at least one attendee to every group.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne64c0b6": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyChooseEveryAttendeeSlot": "Choose every attendee slot.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyChooseEveryAttendeeSlot": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyEachAttendeeCanAppear": "Each attendee can appear once per round.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyEachAttendeeCanAppear": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne76e783": "Add at least one pair.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyAddAtLeastOne76e783": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyChooseBothAttendeesFor": "Choose both attendees for every pair.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyChooseBothAttendeesFor": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostOverridesVisiblecopyChooseTwoDifferentAttendees": "Choose two different attendees.",
   "@eventSuccessEventSuccessHostOverridesVisiblecopyChooseTwoDifferentAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_overrides.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/assignments/event_success_host_rotation_section.dart, lib/event_success/presentation/assignments/event_success_host_pod_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_overrides"
   },
   "eventSuccessEventSuccessHostSetupVisiblecopyToint": "{toInt}",
   "@eventSuccessEventSuccessHostSetupVisiblecopyToint": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (visibleCopy).",
     "placeholders": {
       "toInt": {}
     },
@@ -16428,35 +16428,35 @@
   },
   "eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees": "Decrease target attendees",
   "@eventSuccessEventSuccessHostSetupVisiblecopyDecreaseTargetAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees": "Increase target attendees",
   "@eventSuccessEventSuccessHostSetupVisiblecopyIncreaseTargetAttendees": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_setup.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_setup/event_success_target_attendees_field.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_setup"
   },
   "eventSuccessEventSuccessHostSharedVisiblecopyThisAttendee": "this attendee",
   "@eventSuccessEventSuccessHostSharedVisiblecopyThisAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedVisiblecopyAttendee": "Attendee",
   "@eventSuccessEventSuccessHostSharedVisiblecopyAttendee": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedVisiblecopyAskedForHelpMeeting": "Asked for help meeting {targetName}",
   "@eventSuccessEventSuccessHostSharedVisiblecopyAskedForHelpMeeting": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_help_section.dart (visibleCopy).",
     "placeholders": {
       "targetName": {}
     },
@@ -16466,7 +16466,7 @@
   },
   "eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds": "{remainingSeconds}",
   "@eventSuccessEventSuccessLiveRevealHostVisiblecopyRemainingseconds": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).",
     "placeholders": {
       "remainingSeconds": {}
     },
@@ -16476,14 +16476,14 @@
   },
   "eventSuccessEventSuccessLiveRevealHostVisiblecopyOk": "OK",
   "@eventSuccessEventSuccessLiveRevealHostVisiblecopyOk": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_host"
   },
   "eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1": "{value1}",
   "@eventSuccessEventSuccessLiveRevealHostVisiblecopyValue1": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_host.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart (visibleCopy).",
     "placeholders": {
       "value1": {}
     },
@@ -16493,14 +16493,14 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyPartner": "Partner",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyPartner": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyFormatFormat2": "{format}-{format2}",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyFormatFormat2": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "placeholders": {
       "format": {},
       "format2": {}
@@ -16511,21 +16511,21 @@
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone": "Done",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyDone": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow": "Now",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyNow": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
   },
   "eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden": "Hidden",
   "@eventSuccessEventSuccessLiveRevealWidgetsVisiblecopyHidden": {
-    "description": "Product copy used by lib/event_success/presentation/live_reveal_parts/event_success_live_reveal_widgets.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_rotation_row_list.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.live_reveal_parts.event_success_live_reveal_widgets"
@@ -16796,7 +16796,7 @@
   },
   "exploreExploreScreenStateVisiblecopyChooseCityLabel": "Choose city: {label}",
   "@exploreExploreScreenStateVisiblecopyChooseCityLabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).",
     "placeholders": {
       "label": {}
     },
@@ -16806,7 +16806,7 @@
   },
   "exploreExploreScreenStateVisiblecopyExploreLabel": "EXPLORE · {label}",
   "@exploreExploreScreenStateVisiblecopyExploreLabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).",
     "placeholders": {
       "label": {}
     },
@@ -16816,28 +16816,28 @@
   },
   "exploreExploreScreenStateVisiblecopyExplore": "Explore",
   "@exploreExploreScreenStateVisiblecopyExplore": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopySearchEventsOrClubs": "Search events or organizers",
   "@exploreExploreScreenStateVisiblecopySearchEventsOrClubs": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_chrome_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyOpenExploreFilters": "Open explore filters",
   "@exploreExploreScreenStateVisiblecopyOpenExploreFilters": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyOpenExploreFiltersActivecount": "Open explore filters, {activeCount} active",
   "@exploreExploreScreenStateVisiblecopyOpenExploreFiltersActivecount": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_filter_state.dart (visibleCopy).",
     "placeholders": {
       "activeCount": {}
     },
@@ -16847,7 +16847,7 @@
   },
   "exploreExploreScreenStateVisiblecopyTimePricelabel": "{time} - {priceLabel}",
   "@exploreExploreScreenStateVisiblecopyTimePricelabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "time": {},
       "priceLabel": {}
@@ -16858,7 +16858,7 @@
   },
   "exploreExploreScreenStateVisiblecopySignedupcountGoingCoverspotslabel": "{signedUpCount} going - {coverSpotsLabel}",
   "@exploreExploreScreenStateVisiblecopySignedupcountGoingCoverspotslabel": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "signedUpCount": {},
       "coverSpotsLabel": {}
@@ -16869,7 +16869,7 @@
   },
   "exploreExploreScreenStateVisiblecopyFromTouppercase": "FROM {toUpperCase}",
   "@exploreExploreScreenStateVisiblecopyFromTouppercase": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "toUpperCase": {}
     },
@@ -16879,14 +16879,14 @@
   },
   "exploreExploreScreenStateVisiblecopyExternal": "External",
   "@exploreExploreScreenStateVisiblecopyExternal": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyTimePricelabelc30029": "{time} · {priceLabel}",
   "@exploreExploreScreenStateVisiblecopyTimePricelabelc30029": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "time": {},
       "priceLabel": {}
@@ -16897,49 +16897,49 @@
   },
   "exploreExploreScreenStateVisiblecopyOpenExternalEventSource": "Open external event source",
   "@exploreExploreScreenStateVisiblecopyOpenExternalEventSource": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyExternalEventLinkUnavailable": "External event link unavailable",
   "@exploreExploreScreenStateVisiblecopyExternalEventLinkUnavailable": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyReadOnlySupplyNo": "READ-ONLY SUPPLY · NO CATCH BOOKING",
   "@exploreExploreScreenStateVisiblecopyReadOnlySupplyNo": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyClubToKnow": "ORGANIZER TO KNOW",
   "@exploreExploreScreenStateVisiblecopyClubToKnow": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_club_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyPlan": "PLAN",
   "@exploreExploreScreenStateVisiblecopyPlan": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyPlans": "PLANS",
   "@exploreExploreScreenStateVisiblecopyPlans": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyCountNoun": "{count} {noun}",
   "@exploreExploreScreenStateVisiblecopyCountNoun": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).",
     "placeholders": {
       "count": {},
       "noun": {}
@@ -16961,7 +16961,7 @@
   },
   "exploreExploreScreenStateVisiblecopyCountNounDatespan": "{count} {noun} · {dateSpan}",
   "@exploreExploreScreenStateVisiblecopyCountNounDatespan": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_mixed_feed_state.dart (visibleCopy).",
     "placeholders": {
       "count": {},
       "noun": {},
@@ -16985,7 +16985,7 @@
   },
   "exploreExploreScreenStateVisiblecopyNextNextevent": "Next: {nextEvent}",
   "@exploreExploreScreenStateVisiblecopyNextNextevent": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_club_display_state.dart (visibleCopy).",
     "placeholders": {
       "nextEvent": {}
     },
@@ -16995,7 +16995,7 @@
   },
   "exploreExploreScreenStateVisiblecopyClubmembercountlabelArea": "{clubMemberCountLabel} - {area}",
   "@exploreExploreScreenStateVisiblecopyClubmembercountlabelArea": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_club_display_state.dart (visibleCopy).",
     "placeholders": {
       "clubMemberCountLabel": {},
       "area": {}
@@ -17006,7 +17006,7 @@
   },
   "exploreExploreScreenStateVisiblecopyCovertimescopeNameLocationname": "{coverTimeScope} - {name} - {locationName}",
   "@exploreExploreScreenStateVisiblecopyCovertimescopeNameLocationname": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "coverTimeScope": {},
       "name": {},
@@ -17018,35 +17018,35 @@
   },
   "exploreExploreScreenStateVisiblecopyTonight": "Tonight",
   "@exploreExploreScreenStateVisiblecopyTonight": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyTomorrow": "Tomorrow",
   "@exploreExploreScreenStateVisiblecopyTomorrow": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopyThisWeek": "This week",
   "@exploreExploreScreenStateVisiblecopyThisWeek": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopy1Left": "1 left",
   "@exploreExploreScreenStateVisiblecopy1Left": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "explore.presentation.explore_screen_state"
   },
   "exploreExploreScreenStateVisiblecopySpotsLeft": "{spots} left",
   "@exploreExploreScreenStateVisiblecopySpotsLeft": {
-    "description": "Product copy used by lib/explore/presentation/explore_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/explore/presentation/explore_event_display_state.dart (visibleCopy).",
     "placeholders": {
       "spots": {}
     },
@@ -17444,119 +17444,119 @@
   },
   "hostsHostEventManageScreenStateVisiblecopyNoPeopleMatchThis": "No people match this search.",
   "@hostsHostEventManageScreenStateVisiblecopyNoPeopleMatchThis": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopySlotsShowCapacityLeft": "Slots show capacity left after booked people. New people appear here once they book or request access.",
   "@hostsHostEventManageScreenStateVisiblecopySlotsShowCapacityLeft": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyBookedAndWaitlistedPeople": "Booked and waitlisted people will appear here.",
   "@hostsHostEventManageScreenStateVisiblecopyBookedAndWaitlistedPeople": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoLiveRosterRows": "No live roster rows match this search.",
   "@hostsHostEventManageScreenStateVisiblecopyNoLiveRosterRows": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoReportRowsMatch": "No report rows match this search.",
   "@hostsHostEventManageScreenStateVisiblecopyNoReportRowsMatch": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCheckedIn": "Checked in",
   "@hostsHostEventManageScreenStateVisiblecopyCheckedIn": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyUndo": "Undo",
   "@hostsHostEventManageScreenStateVisiblecopyUndo": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCheckIn": "Check in",
   "@hostsHostEventManageScreenStateVisiblecopyCheckIn": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyFree": "Free",
   "@hostsHostEventManageScreenStateVisiblecopyFree": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopySharing": "Sharing...",
   "@hostsHostEventManageScreenStateVisiblecopySharing": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyPublicEventLink": "Public event link",
   "@hostsHostEventManageScreenStateVisiblecopyPublicEventLink": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyLoadingLink": "Loading link",
   "@hostsHostEventManageScreenStateVisiblecopyLoadingLink": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyInviteSetupUnavailable": "Invite setup unavailable",
   "@hostsHostEventManageScreenStateVisiblecopyInviteSetupUnavailable": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyPrivateInviteLink": "Private invite link",
   "@hostsHostEventManageScreenStateVisiblecopyPrivateInviteLink": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyInviteLinksUnavailable": "Invite links unavailable",
   "@hostsHostEventManageScreenStateVisiblecopyInviteLinksUnavailable": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopy1InviteLink": "1 invite link",
   "@hostsHostEventManageScreenStateVisiblecopy1InviteLink": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCountInviteLinks": "{count} invite links",
   "@hostsHostEventManageScreenStateVisiblecopyCountInviteLinks": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_invite_link_state.dart (visibleCopy).",
     "placeholders": {
       "count": {}
     },
@@ -17566,182 +17566,182 @@
   },
   "hostsHostEventManageScreenStateVisiblecopyEveryoneVisibleIsChecked": "Everyone visible is checked in",
   "@hostsHostEventManageScreenStateVisiblecopyEveryoneVisibleIsChecked": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoCheckedInPeople": "No checked-in people yet",
   "@hostsHostEventManageScreenStateVisiblecopyNoCheckedInPeople": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoWaitlistedPeople": "No waitlisted people",
   "@hostsHostEventManageScreenStateVisiblecopyNoWaitlistedPeople": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyRosterIsEmpty": "Roster is empty",
   "@hostsHostEventManageScreenStateVisiblecopyRosterIsEmpty": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopySwitchToInTo": "Switch to In to review arrivals or All to see the full roster.",
   "@hostsHostEventManageScreenStateVisiblecopySwitchToInTo": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill": "Checked-in people will appear here during the event.",
   "@hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyWaitlistedPeopleWillAppear": "Waitlisted people will appear here for context.",
   "@hostsHostEventManageScreenStateVisiblecopyWaitlistedPeopleWillAppear": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopySignedUpParticipantsWill": "Signed-up participants will appear here when they book.",
   "@hostsHostEventManageScreenStateVisiblecopySignedUpParticipantsWill": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoAttendedPeopleYet": "No attended people yet",
   "@hostsHostEventManageScreenStateVisiblecopyNoAttendedPeopleYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoNoShowsYet": "No no-shows yet",
   "@hostsHostEventManageScreenStateVisiblecopyNoNoShowsYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyNoParticipantsYet": "No participants yet",
   "@hostsHostEventManageScreenStateVisiblecopyNoParticipantsYet": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill186cb6": "Checked-in people will appear here after the event.",
   "@hostsHostEventManageScreenStateVisiblecopyCheckedInPeopleWill186cb6": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyBookedPeopleWhoDid": "Booked people who did not check in will appear here.",
   "@hostsHostEventManageScreenStateVisiblecopyBookedPeopleWhoDid": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyWaitlistHistoryWillAppear": "Waitlist history will appear here when people queue for this event.",
   "@hostsHostEventManageScreenStateVisiblecopyWaitlistHistoryWillAppear": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyAttendanceAndWaitlistHistory": "Attendance and waitlist history will appear here once people sign up.",
   "@hostsHostEventManageScreenStateVisiblecopyAttendanceAndWaitlistHistory": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_display_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyOfferSent": "Offer sent",
   "@hostsHostEventManageScreenStateVisiblecopyOfferSent": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyAcceptedOffer": "Accepted offer",
   "@hostsHostEventManageScreenStateVisiblecopyAcceptedOffer": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyOfferExpired": "Offer expired",
   "@hostsHostEventManageScreenStateVisiblecopyOfferExpired": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyApproved": "Approved",
   "@hostsHostEventManageScreenStateVisiblecopyApproved": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyViewProfile": "View profile",
   "@hostsHostEventManageScreenStateVisiblecopyViewProfile": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyWaitlisted": "Waitlisted",
   "@hostsHostEventManageScreenStateVisiblecopyWaitlisted": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyProfileReady": "Profile ready",
   "@hostsHostEventManageScreenStateVisiblecopyProfileReady": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyBooked": "Booked",
   "@hostsHostEventManageScreenStateVisiblecopyBooked": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyCancelled": "Cancelled",
   "@hostsHostEventManageScreenStateVisiblecopyCancelled": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyDeleted": "Deleted",
   "@hostsHostEventManageScreenStateVisiblecopyDeleted": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
   },
   "hostsHostEventManageScreenStateVisiblecopyParticipant": "Participant",
   "@hostsHostEventManageScreenStateVisiblecopyParticipant": {
-    "description": "Product copy used by lib/hosts/presentation/host_event_manage_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/hosts/presentation/host_roster_row_state.dart (visibleCopy).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "hosts.presentation.host_event_manage_screen_state"
@@ -19027,14 +19027,14 @@
   },
   "eventSuccessEventSuccessLiveRevealCardLabelPodReveal": "Pod reveal",
   "@eventSuccessEventSuccessLiveRevealCardLabelPodReveal": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_live_reveal_card.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_live_reveal_card"
   },
   "eventSuccessEventSuccessLiveRevealCardLabelRotationReveal": "Rotation reveal",
   "@eventSuccessEventSuccessLiveRevealCardLabelRotationReveal": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_live_reveal_card.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/reveal/event_success_reveal_assignment_kind.dart (label).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_live_reveal_card"
@@ -19298,21 +19298,21 @@
   },
   "eventSuccessEventSuccessHostSharedLabelSetup": "Setup",
   "@eventSuccessEventSuccessHostSharedLabelSetup": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedLabelLive": "Live",
   "@eventSuccessEventSuccessHostSharedLabelLive": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"
   },
   "eventSuccessEventSuccessHostSharedLabelReport": "Report",
   "@eventSuccessEventSuccessHostSharedLabelReport": {
-    "description": "Product copy used by lib/event_success/presentation/host_parts/event_success_host_shared.dart (label).",
+    "description": "Product copy used by lib/event_success/presentation/host_components/event_success_host_tab_bar.dart (label).",
     "x-audience": "host",
     "x-owner": "product",
     "x-surface": "event_success.presentation.host_parts.event_success_host_shared"

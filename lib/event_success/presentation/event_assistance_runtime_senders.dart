@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_runtime_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_configuration.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_sender.dart';
@@ -48,10 +49,10 @@ class EventAssistanceRuntimeSenders extends _$EventAssistanceRuntimeSenders {
   AssistanceRuntimeSenderDirectory build(AssistanceRuntimeSession review) {
     _epoch++;
     final page = ref.watch(eventAssistanceRuntimeProvider(review.view.scope));
+    final pageState = catchAsyncStateFromAsyncValue(page);
     final current =
-        !page.isLoading &&
-        !page.hasError &&
-        identical(page.asData?.value, review) &&
+        pageState.isSettledData &&
+        identical(pageState.value, review) &&
         review.isCurrent;
     final setup = review.view.senderSetup;
     _active?._current = false;
@@ -61,7 +62,7 @@ class EventAssistanceRuntimeSenders extends _$EventAssistanceRuntimeSenders {
       cursors: current ? setup?.nextCursors ?? {} : {},
       serverTime: review.view.serverTime,
       needsRefresh: !current || setup == null,
-      error: page.error,
+      error: pageState.error,
     );
     ref.onDispose(() {
       _epoch++;

@@ -380,35 +380,35 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideSheet",
+          "name": "EventSuccessGroupOverrideSheet",
           "action": "keep"
         },
         {
-          "name": "RotationOverrideSheet",
+          "name": "EventSuccessRotationOverrideSheet",
           "action": "keep"
         },
         {
-          "name": "GroupOverrideRoundEditor",
+          "name": "EventSuccessGroupOverrideRoundSection",
           "action": "keep"
         },
         {
-          "name": "RotationOverrideRoundEditor",
+          "name": "EventSuccessRotationOverrideRoundSection",
           "action": "keep"
         },
         {
-          "name": "GroupOverrideMemberEditor",
+          "name": "EventSuccessGroupMemberField",
           "action": "keep"
         },
         {
-          "name": "RotationOverridePairEditor",
+          "name": "EventSuccessRotationPairFieldLanes",
           "action": "keep"
         },
         {
-          "name": "MicroPodsHostCard",
+          "name": "EventSuccessHostPodSection",
           "action": "keep"
         },
         {
-          "name": "RotationsHostCard",
+          "name": "EventSuccessHostRotationSection",
           "action": "keep"
         },
         {
@@ -424,15 +424,15 @@
           "action": "keep"
         },
         {
-          "name": "RevealGroupSlotRow",
+          "name": "EventSuccessGroupRotationRow",
           "action": "keep"
         },
         {
-          "name": "VisibleGroupRotationSlots",
+          "name": "EventSuccessGroupRotationRowList",
           "action": "keep"
         },
         {
-          "name": "VisibleRotationSlots",
+          "name": "EventSuccessRotationRowList",
           "action": "keep"
         }
       ],
@@ -895,11 +895,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionPrimaryActionSkeleton",
+          "name": "EventSuccessCompanionPrimaryActionSkeleton",
           "action": "keep"
         },
         {
-          "name": "CompanionStageSkeleton",
+          "name": "EventSuccessCompanionStageSkeleton",
           "action": "keep"
         },
         {
@@ -1064,11 +1064,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "MicroPodsHostCard",
+          "name": "EventSuccessHostPodSection",
           "action": "keep"
         },
         {
-          "name": "RotationsHostCard",
+          "name": "EventSuccessHostRotationSection",
           "action": "keep"
         }
       ],
@@ -1082,11 +1082,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "VisibleGroupRotationSlots",
+          "name": "EventSuccessGroupRotationRowList",
           "action": "keep"
         },
         {
-          "name": "VisibleRotationSlots",
+          "name": "EventSuccessRotationRowList",
           "action": "keep"
         }
       ],
@@ -1100,11 +1100,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideSheet",
+          "name": "EventSuccessGroupOverrideSheet",
           "action": "keep"
         },
         {
-          "name": "RotationOverrideSheet",
+          "name": "EventSuccessRotationOverrideSheet",
           "action": "keep"
         }
       ],
@@ -1118,11 +1118,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideRoundEditor",
+          "name": "EventSuccessGroupOverrideRoundSection",
           "action": "keep"
         },
         {
-          "name": "RotationOverrideRoundEditor",
+          "name": "EventSuccessRotationOverrideRoundSection",
           "action": "keep"
         }
       ],
@@ -1255,7 +1255,7 @@
           "action": "keep"
         },
         {
-          "name": "RevealGroupSlotRow",
+          "name": "EventSuccessGroupRotationRow",
           "action": "keep"
         }
       ],
@@ -1341,11 +1341,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideMemberEditor",
+          "name": "EventSuccessGroupMemberField",
           "action": "keep"
         },
         {
-          "name": "RotationOverridePairEditor",
+          "name": "EventSuccessRotationPairFieldLanes",
           "action": "keep"
         }
       ],
@@ -1485,7 +1485,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "RevealHostCopy",
+          "name": "EventSuccessRevealHeader",
           "action": "keep"
         },
         {
@@ -1507,7 +1507,7 @@
           "action": "keep"
         },
         {
-          "name": "CountdownCuePill",
+          "name": "EventSuccessCountdownNotice",
           "action": "keep"
         },
         {
@@ -1523,11 +1523,11 @@
           "action": "keep"
         },
         {
-          "name": "HostFunnelSummary",
+          "name": "EventSuccessFunnelSection",
           "action": "keep"
         },
         {
-          "name": "HostReportSignalGrid",
+          "name": "EventSuccessReportQualitySection",
           "action": "keep"
         },
         {
@@ -1539,7 +1539,7 @@
           "action": "keep"
         },
         {
-          "name": "NoticeCard",
+          "name": "EventSuccessSetupNoticeBanner",
           "action": "keep"
         },
         {
@@ -1555,7 +1555,7 @@
           "action": "keep"
         },
         {
-          "name": "WaitingRevealCue",
+          "name": "EventSuccessRevealWaitingNotice",
           "action": "keep"
         }
       ],
@@ -1811,7 +1811,7 @@
           "action": "keep"
         },
         {
-          "name": "VisiblePodAssignment",
+          "name": "EventSuccessPodAssignmentSection",
           "action": "keep"
         }
       ],
@@ -2481,7 +2481,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionStageSkeleton",
+          "name": "EventSuccessCompanionStageSkeleton",
           "action": "keep"
         },
         {
@@ -2697,7 +2697,7 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompanionPrimaryActionSkeleton",
+          "name": "EventSuccessCompanionPrimaryActionSkeleton",
           "action": "keep"
         },
         {
@@ -2877,11 +2877,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "HostActivitySummary",
+          "name": "EventSuccessActivityFieldLanes",
           "action": "keep"
         },
         {
-          "name": "HostFunnelSummary",
+          "name": "EventSuccessFunnelSection",
           "action": "keep"
         }
       ],
@@ -3043,7 +3043,7 @@
           "action": "keep"
         },
         {
-          "name": "EventSuccessCompanionLoadingBody",
+          "name": "EventSuccessCompanionLoadingPageBody",
           "action": "keep"
         }
       ],
@@ -3075,11 +3075,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "GroupOverrideMemberEditor",
+          "name": "EventSuccessGroupMemberField",
           "action": "keep"
         },
         {
-          "name": "GroupOverrideUnitEditor",
+          "name": "EventSuccessGroupOverrideFieldLanes",
           "action": "keep"
         }
       ],
@@ -3129,11 +3129,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "RevealGroupSlotRow",
+          "name": "EventSuccessGroupRotationRow",
           "action": "keep"
         },
         {
-          "name": "RevealSlotRow",
+          "name": "EventSuccessRotationRow",
           "action": "keep"
         }
       ],
@@ -3458,7 +3458,7 @@
           "action": "keep"
         },
         {
-          "name": "CountdownCuePill",
+          "name": "EventSuccessCountdownNotice",
           "action": "keep"
         }
       ],
@@ -3926,7 +3926,7 @@
           "action": "keep"
         },
         {
-          "name": "HostReportSignalGrid",
+          "name": "EventSuccessReportQualitySection",
           "action": "keep"
         }
       ],
@@ -4052,7 +4052,7 @@
           "action": "keep"
         },
         {
-          "name": "WingmanRequestHostRow",
+          "name": "EventSuccessHostHelpRow",
           "action": "keep"
         }
       ],
@@ -4340,7 +4340,7 @@
           "action": "keep"
         },
         {
-          "name": "EventSuccessHostPanel",
+          "name": "EventSuccessHostWorkspacePageBody",
           "action": "keep"
         }
       ],
@@ -4466,7 +4466,7 @@
           "action": "keep"
         },
         {
-          "name": "EventSuccessTabPicker",
+          "name": "EventSuccessHostTabBar",
           "action": "keep"
         }
       ],
@@ -4803,11 +4803,11 @@
           "action": "keep"
         },
         {
-          "name": "EventSuccessLiveRevealAttendeeCard",
+          "name": "EventSuccessAttendeeRevealSurface",
           "action": "keep"
         },
         {
-          "name": "EventSuccessLiveRevealHostCard",
+          "name": "EventSuccessHostRevealSurface",
           "action": "keep"
         }
       ],
@@ -5169,11 +5169,11 @@
       "decision": "keep-distinct",
       "members": [
         {
-          "name": "CompatibilitySignalHostCard",
+          "name": "EventSuccessCompatibilitySection",
           "action": "keep"
         },
         {
-          "name": "WingmanRequestsHostCard",
+          "name": "EventSuccessHostHelpSection",
           "action": "keep"
         }
       ],
@@ -5213,7 +5213,7 @@
           "action": "keep"
         },
         {
-          "name": "ExploreSkeletonList",
+          "name": "ExploreFeedSkeleton",
           "action": "keep"
         }
       ],
@@ -6170,12 +6170,12 @@
       "decision": "keep-distinct",
       "members": [
         {"name": "AfterglowBeatRow", "action": "keep"},
-        {"name": "CountdownCuePill", "action": "keep"},
+        {"name": "EventSuccessCountdownNotice", "action": "keep"},
         {"name": "EmptyRosterMessage", "action": "keep"},
         {"name": "PaperPrivacyCard", "action": "keep"},
         {"name": "StagePrivacyLine", "action": "keep"},
         {"name": "SwipeWindowBanner", "action": "keep"},
-        {"name": "WaitingRevealCue", "action": "keep"}
+        {"name": "EventSuccessRevealWaitingNotice", "action": "keep"}
       ],
       "rationale": "K5 reconciliation of prior reviewed c002-afterglow-beat-row and c007-attendee-prompt-preview decisions: animation, empty roster, privacy, swipe-window, and reveal-state surfaces have different typography, tokens, state, and domain invariants. Their low parameter compatibility is structural coincidence.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
@@ -6188,8 +6188,8 @@
       "members": [
         {"name": "ClubTagWrap", "action": "keep"},
         {"name": "PeopleTokenRow", "action": "keep"},
-        {"name": "PodGroupSummary", "action": "keep"},
-        {"name": "VisiblePodAssignment", "action": "keep"}
+        {"name": "EventSuccessPodSummaryRow", "action": "keep"},
+        {"name": "EventSuccessPodAssignmentSection", "action": "keep"}
       ],
       "rationale": "K2 plus K3: all members already share CatchBadge rendering, while each maps a different domain invariant—club tags, profile loading, assignment counts, or visible pod membership. The shared Wrap skeleton is not another widget concept.",
       "decidedBy": "codex-rule:K2+K3",
@@ -6263,8 +6263,8 @@
       "clusterId": "concept-discovery:host-report-metric-sections",
       "decision": "keep-distinct",
       "members": [
-        {"name": "HostFunnelSummary", "action": "keep"},
-        {"name": "HostReportSignalGrid", "action": "keep"}
+        {"name": "EventSuccessFunnelSection", "action": "keep"},
+        {"name": "EventSuccessReportQualitySection", "action": "keep"}
       ],
       "rationale": "K5 reconciliation of prior c002-afterglow-beat-row: both deliberately compose CatchSection and CatchAnalyticsMetricGrid, while one owns event-funnel metrics and the other report-reliability signals. The shared renderer is already canonical; the classes are domain data adapters, not new concepts.",
       "decidedBy": "codex-rule:K5 -> prior-reviewed-ledger",
@@ -6312,7 +6312,7 @@
       "decision": "keep-distinct",
       "members": [
         {"name": "HostTodayHeroMetric", "action": "keep"},
-        {"name": "RevealHostCopy", "action": "keep"}
+        {"name": "EventSuccessRevealHeader", "action": "keep"}
       ],
       "rationale": "K5 concept mismatch: HostTodayHeroMetric is a value plus mono metric label; RevealHostCopy is narrative headline plus supporting body. Different typography contracts and semantic content make the two-text Column a structural false positive.",
       "decidedBy": "codex-rule:K5",

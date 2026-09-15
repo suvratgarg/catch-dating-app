@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_sms_preference_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_sms_preference.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -81,6 +82,7 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
   @override
   EventSmsPreferenceState build(EventSmsPreferenceScope scope) {
     final auth = ref.watch(authenticatedSessionProvider);
+    final authState = catchAsyncStateFromAsyncValue(auth);
     final epoch = ++_epoch;
     _account = null;
     _readInFlight = null;
@@ -90,11 +92,13 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
       _epoch++;
       _clearPending();
     });
-    if (auth.isLoading) return const EventSmsPreferenceLoading();
-    if (auth.hasError) {
-      return auth.error is SignInRequiredException
+    if ((authState.isLoading || authState.isRefreshing || authState.retrying)) {
+      return const EventSmsPreferenceLoading();
+    }
+    if (authState.error != null) {
+      return authState.error is SignInRequiredException
           ? const EventSmsPreferenceHidden()
-          : EventSmsPreferenceFailure(auth.error!);
+          : EventSmsPreferenceFailure(authState.error!);
     }
     final account = _account = switch (auth) {
       AsyncData(:final value) => value,
@@ -109,9 +113,8 @@ class EventSmsPreferenceController extends _$EventSmsPreferenceController {
   bool _current(AuthenticatedSession account, int epoch) {
     if (!ref.mounted || epoch != _epoch) return false;
     final auth = ref.read(authenticatedSessionProvider);
-    return !auth.isLoading &&
-        !auth.hasError &&
-        identical(auth.asData?.value, account);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    return authState.isSettledData && identical(authState.value, account);
   }
 
   Future<void> _load(AuthenticatedSession account, int epoch) {

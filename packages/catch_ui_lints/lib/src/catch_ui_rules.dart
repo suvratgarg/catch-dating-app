@@ -86,7 +86,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
             'package:catch_dating_app/core/riverpod_ui/catch_notice_overlay.dart' &&
         !const {
           '/lib/app.dart',
-          '/widgetbook/lib/primitives/core_catalog_use_cases.dart',
+          '/widgetbook/lib/primitives/catalog/feedback.dart',
         }.any(path.endsWith)) {
       rule.reportAtNode(
         node,
@@ -111,7 +111,7 @@ class _CatchFeedbackVisitor extends SimpleAstVisitor<void> {
           '/packages/catch_ui/lib/src/patterns/catch_root_screen_scroll_view.dart',
           '/lib/core/widgets/catch_tabbed_screen.dart',
           '/packages/catch_ui/lib/src/patterns/catch_route_scaffold.dart',
-          '/widgetbook/lib/primitives/primitive_contract_use_cases.dart',
+          '/widgetbook/lib/primitives/contracts/feedback.dart',
         }.any(path.endsWith)) {
       rule.reportAtNode(
         node,
@@ -631,7 +631,7 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
 
   static const asyncRequiresStateSurface = LintCode(
     'catch_async_requires_state_surface',
-    'Route presentation AsyncValue handling through CatchAsyncBoundary or cover loading and error explicitly; do not force value/requireValue.',
+    'Convert watched AsyncValue snapshots with catchAsyncStateFromAsyncValue or render them exhaustively through CatchAsyncBoundary; do not inspect raw snapshot flags or force value/requireValue.',
     severity: DiagnosticSeverity.INFO,
   );
 
@@ -741,7 +741,6 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
       isEventDetailPath: _isEventDetailPath(path),
       isColorExemptPath: false,
       isFeaturePresentationPath: _isFeaturePresentationPath(path),
-      isHostPresentationPath: _isHostPresentationPath(path),
       isPresentationPath: _isPresentationPath(path),
       isSizingScannerPath: _isSizingScannerPath(path),
       isUiSystemScannerPath: _isUiSystemScannerPath(path),
@@ -797,10 +796,6 @@ class CatchUiLayoutRules extends MultiAnalysisRule {
     return path.contains('/lib/') && path.contains('/presentation/');
   }
 
-  bool _isHostPresentationPath(String path) {
-    return path.contains('/lib/hosts/presentation/');
-  }
-
   bool _isSizingScannerPath(String path) {
     return !path.contains('/lib/design_fixtures/');
   }
@@ -835,7 +830,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     required this.isEventDetailPath,
     required this.isColorExemptPath,
     required this.isFeaturePresentationPath,
-    required this.isHostPresentationPath,
     required this.isPresentationPath,
     required this.isSizingScannerPath,
     required this.isUiSystemScannerPath,
@@ -848,7 +842,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
   final bool isEventDetailPath;
   final bool isColorExemptPath;
   final bool isFeaturePresentationPath;
-  final bool isHostPresentationPath;
   final bool isPresentationPath;
   final bool isSizingScannerPath;
   final bool isUiSystemScannerPath;
@@ -1253,7 +1246,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   @override
   void visitPrefixedIdentifier(PrefixedIdentifier node) {
-    if (_isManualHostAsyncInspection(node.prefix, node.identifier.name)) {
+    if (_isManualAsyncInspection(node.prefix, node.identifier.name)) {
       _reportAtNode(node, CatchUiLayoutRules.asyncRequiresStateSurface);
     }
     if (node.prefix.name == 'Sizes' &&
@@ -1276,7 +1269,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
 
   @override
   void visitPropertyAccess(PropertyAccess node) {
-    if (_isManualHostAsyncInspection(node.target, node.propertyName.name)) {
+    if (_isManualAsyncInspection(node.target, node.propertyName.name)) {
       _reportAtNode(node, CatchUiLayoutRules.asyncRequiresStateSurface);
     }
     if (isFeaturePresentationPath && node.propertyName.name == 'requireValue') {
@@ -1457,8 +1450,8 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     return !names.contains('loading') || !names.contains('error');
   }
 
-  bool _isManualHostAsyncInspection(Expression? target, String member) {
-    if (!isHostPresentationPath ||
+  bool _isManualAsyncInspection(Expression? target, String member) {
+    if (!isFeaturePresentationPath ||
         !_manualAsyncSnapshotMembers.contains(member) ||
         target == null) {
       return false;

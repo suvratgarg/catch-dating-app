@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_delivery_reviews.dart';
@@ -29,13 +30,14 @@ class EventRehearsalDeliverySheet extends ConsumerWidget {
       practiceOperatorId: practiceOperatorId,
     );
     final page = ref.watch(pageProvider);
+    final pageState = catchAsyncStateFromAsyncValue(page);
     final owner = eventRehearsalDeliveryControllerProvider(scope);
     final state = ref.watch(owner);
     final controller = ref.read(owner.notifier);
     final form = state is RehearsalDeliveryForm ? state : null;
     final privateReadDenied =
-        page.error is PermissionException ||
-        page.error is SignInRequiredException;
+        pageState.error is PermissionException ||
+        pageState.error is SignInRequiredException;
     void run(Future<Object?> Function() action) {
       unawaited(() async {
         try {
@@ -74,8 +76,8 @@ class EventRehearsalDeliverySheet extends ConsumerWidget {
                   final confirmed = snapshot.deliveryReviews?.deliveries
                       .where((r) => r.scope == scope)
                       .firstOrNull;
-                  final newer = !page.isLoading && !page.hasError
-                      ? page.asData?.value.snapshot.deliveryReviews?.deliveries
+                  final newer = pageState.isSettledData
+                      ? pageState.value?.snapshot.deliveryReviews?.deliveries
                             .where((r) => r.scope == scope)
                             .firstOrNull
                       : null;

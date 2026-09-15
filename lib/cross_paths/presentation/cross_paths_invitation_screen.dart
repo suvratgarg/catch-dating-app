@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart'
     show uidProvider;
 import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/cross_paths/data/cross_paths_repository.dart';
@@ -75,7 +76,8 @@ class _InvitationDetail extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(uidProvider).asData?.value;
+    final uidAsync = ref.watch(uidProvider);
+    final uid = catchAsyncStateFromAsyncValue(uidAsync).value;
     if (uid == null || !invitation.participantIds.contains(uid)) {
       return CatchErrorState(
         title: context.l10n.crossPathsInvitationScreenUnavailableTitle,
@@ -91,16 +93,19 @@ class _InvitationDetail extends ConsumerWidget {
     final pairHoldAsync = invitation.pairHoldId == null
         ? const AsyncValue<CrossPathsPairHold?>.data(null)
         : ref.watch(watchCrossPathsPairHoldProvider(invitation.pairHoldId!));
-    if (profileAsync.isLoading ||
-        eventAsync.isLoading ||
-        pairHoldAsync.isLoading) {
+    final profileState = catchAsyncStateFromAsyncValue(profileAsync);
+    final eventState = catchAsyncStateFromAsyncValue(eventAsync);
+    final pairHoldState = catchAsyncStateFromAsyncValue(pairHoldAsync);
+    if (profileState.isLoading ||
+        eventState.isLoading ||
+        pairHoldState.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (profileAsync.hasError ||
-        eventAsync.hasError ||
-        pairHoldAsync.hasError) {
+    if (profileState.hasError ||
+        eventState.hasError ||
+        pairHoldState.hasError) {
       return CatchLocalizedErrorState(
-        profileAsync.error ?? eventAsync.error ?? pairHoldAsync.error!,
+        profileState.error ?? eventState.error ?? pairHoldState.error!,
         context: AppErrorContext.explore,
         onRetry: () {
           ref.invalidate(watchPublicProfileProvider(otherUid));
@@ -113,8 +118,8 @@ class _InvitationDetail extends ConsumerWidget {
         },
       );
     }
-    final profile = profileAsync.value;
-    final event = eventAsync.value;
+    final profile = profileState.value;
+    final event = eventState.value;
     if (profile == null || event == null) {
       return CatchErrorState(
         title: context.l10n.crossPathsInvitationScreenUnavailableTitle,
@@ -127,7 +132,7 @@ class _InvitationDetail extends ConsumerWidget {
       profile: profile,
       event: event,
       currentUid: uid,
-      pairHold: pairHoldAsync.value,
+      pairHold: pairHoldState.value,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_case_scope.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -13,7 +14,8 @@ class EventAssistancePendingCases extends _$EventAssistancePendingCases {
   @override
   Set<EventAssistanceCaseScope> build() {
     final auth = ref.watch(authenticatedSessionProvider);
-    _account = auth.isLoading || auth.hasError ? null : auth.asData?.value;
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    _account = !authState.isSettledData ? null : authState.value;
     return const {};
   }
 

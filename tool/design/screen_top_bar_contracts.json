@@ -416,7 +416,7 @@
   ],
   "manualHeaders": [
     {
-      "path": "lib/hosts/presentation/forms/host_form_builder_screen.dart",
+      "path": "lib/hosts/presentation/forms/host_form_workspace_header.dart",
       "symbol": "HostFormWorkspaceHeader",
       "role": "content",
       "owner": "CatchTextStyles.titleL",
@@ -437,18 +437,25 @@
       "reason": "Share-card identity copy is content inside a message card, not route navigation chrome."
     },
     {
-      "path": "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
-      "symbol": "PaperTicketHeader",
+      "path": "lib/event_success/presentation/companion_parts/event_success_companion_paper_section.dart",
+      "symbol": "CompanionPaperTicketHeader",
       "role": "content",
       "owner": "CatchTextStyles.titleL",
       "reason": "Paper-ticket copy is theatrical event content inside the companion route."
     },
     {
-      "path": "lib/event_success/presentation/event_success_feature_blocks.dart",
+      "path": "lib/event_success/presentation/event_success_block_header.dart",
       "symbol": "BlockHeader",
       "role": "content",
       "owner": "CatchTextStyles.titleL",
       "reason": "Event Success block headings label content modules and do not own navigation."
+    },
+    {
+      "path": "lib/event_success/presentation/reveal/event_success_reveal_header.dart",
+      "symbol": "EventSuccessRevealHeader",
+      "role": "content",
+      "owner": "CatchTextStyles.titleL",
+      "reason": "Reveal headings label theatrical Event Success content inside the companion route and do not own navigation."
     },
     {
       "path": "lib/explore/presentation/widgets/explore_header.dart",

@@ -3,7 +3,7 @@
   "version": 2,
   "generatedFrom": "design/features/member_chat.feature.json",
   "generatedFor": "2026-07-23",
-  "sourceDigest": "sha256:29134dd066b5ed235fe7aff133f5b85282a068017daa584fd195baa697922e40",
+  "sourceDigest": "sha256:d1ceb8f9ed770e130c766f08a698d78da6a7263cf711ab058abf83595240148b",
   "resolvedDigest": "sha256:c5b34bd5b63fbd47047b1533994d38521b9bba0690a3d0a579ccc562596e6ba0",
   "feature": {
     "id": "feature.member_chat",
@@ -39,7 +39,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/matches/matches_chat_use_cases.dart"
+          "widgetbook/lib/matches/catalog/consumer_thread.dart"
         ],
         "actionOwners": [
           {
@@ -1755,7 +1755,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/matches/matches_chat_use_cases.dart"
+          "widgetbook/lib/matches/catalog/host_thread.dart"
         ],
         "actionOwners": [
           {

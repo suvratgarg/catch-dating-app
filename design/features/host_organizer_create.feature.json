@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-09-05",
+  "updated": "2026-09-15",
   "id": "feature.host_organizer_create",
   "name": "Host Organizer Create",
   "owner": "hosts",
@@ -25,7 +25,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/create_club_routes.dart"
         ],
         "actionOwners": [
           {
@@ -39,6 +39,12 @@
             "language": "dart",
             "file": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
             "symbol": "HostClubCreatePrimaryIntent"
+          },
+          {
+            "id": "previous_intent",
+            "language": "dart",
+            "file": "lib/hosts/presentation/club_management/create/create_club_screen_state.dart",
+            "symbol": "HostClubCreatePreviousIntent"
           },
           {
             "id": "submit_controller",
@@ -137,7 +143,7 @@
       "actions": [
         {
           "id": "navigate_back",
-          "owner": "route_intent",
+          "owner": "previous_intent",
           "codeValue": "HostClubCreatePreviousIntent",
           "cardinality": "unbounded",
           "scopeKeys": [

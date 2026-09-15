@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_participant_context_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_participant_context.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -19,11 +20,12 @@ class EventParticipantContextReader extends _$EventParticipantContextReader {
   @override
   AsyncValue<EventParticipantContextReview> build(String eventId) {
     final auth = ref.watch(authenticatedSessionProvider);
-    if (auth.isLoading) {
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    if ((authState.isLoading || authState.isRefreshing || authState.retrying)) {
       return const AsyncLoading();
     }
-    if (auth.hasError) {
-      return AsyncError(auth.error!, auth.stackTrace!);
+    if (authState.error != null) {
+      return AsyncError(authState.error!, authState.stackTrace!);
     }
     final page = ref.watch(
       eventParticipantContextForAccountProvider(
@@ -35,18 +37,20 @@ class EventParticipantContextReader extends _$EventParticipantContextReader {
         },
       ),
     );
-    if (page.isLoading) {
+    final pageState = catchAsyncStateFromAsyncValue(page);
+    if ((pageState.isLoading || pageState.isRefreshing || pageState.retrying)) {
       return const AsyncLoading();
     }
-    if (page.hasError) {
-      return AsyncError(page.error!, page.stackTrace!);
+    if (pageState.error != null) {
+      return AsyncError(pageState.error!, pageState.stackTrace!);
     }
     return page;
   }
 
   void reload() {
     final auth = ref.read(authenticatedSessionProvider);
-    if (auth.isLoading || auth.hasError || auth.asData == null) {
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    if (!authState.isSettledData || authState.value == null) {
       return;
     }
     ref.invalidate(
@@ -89,9 +93,8 @@ void _requireAccount(Ref ref, AuthenticatedSession account) {
     throw const SignInRequiredException('review event identity');
   }
   final auth = ref.read(authenticatedSessionProvider);
-  if (auth.isLoading ||
-      auth.hasError ||
-      !identical(auth.asData?.value, account)) {
+  final authState = catchAsyncStateFromAsyncValue(auth);
+  if (!authState.isSettledData || !identical(authState.value, account)) {
     throw const SignInRequiredException('review event identity');
   }
 }

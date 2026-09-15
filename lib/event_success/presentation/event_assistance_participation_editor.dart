@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_participation_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_host_guests_provider.dart';
@@ -115,6 +116,7 @@ class EventAssistanceParticipationEditor
   @override
   EventParticipationEditorState build(EventAssistanceGuestScope scope) {
     final auth = ref.watch(authenticatedSessionProvider);
+    final authState = catchAsyncStateFromAsyncValue(auth);
     _epoch++;
     _account = null;
     _clearPending();
@@ -123,9 +125,9 @@ class EventAssistanceParticipationEditor
       _epoch++;
       _clearPending();
     });
-    if (auth.isLoading || auth.hasError || auth.asData == null) {
+    if (!authState.isSettledData || authState.value == null) {
       return EventParticipationUnavailable(
-        auth.error ?? participationSessionChanged,
+        authState.error ?? participationSessionChanged,
       );
     }
     _account = switch (auth) {
@@ -141,9 +143,8 @@ class EventAssistanceParticipationEditor
       return false;
     }
     final auth = ref.read(authenticatedSessionProvider);
-    return !auth.isLoading &&
-        !auth.hasError &&
-        identical(auth.asData?.value, account);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    return authState.isSettledData && identical(authState.value, account);
   }
 
   void _requireReview(EventParticipationSession review) {

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_deliveries_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_deliveries_page.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
@@ -68,8 +69,13 @@ class EventAssistanceDeliveries extends _$EventAssistanceDeliveries {
         final page = ref.watch(
           eventAssistanceDeliveriesForAccountProvider(query, account: account),
         );
-        if (page.isLoading) return const AsyncLoading();
-        if (page.hasError) return AsyncError(page.error!, page.stackTrace!);
+        final pageState = catchAsyncStateFromAsyncValue(page);
+        if ((pageState.isLoading || pageState.isRefreshing || pageState.retrying)) {
+          return const AsyncLoading();
+        }
+        if (pageState.error != null) {
+          return AsyncError(pageState.error!, pageState.stackTrace!);
+        }
         return page;
       },
     );

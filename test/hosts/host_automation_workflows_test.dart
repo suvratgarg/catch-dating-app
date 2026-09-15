@@ -1,9 +1,13 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
-import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_campaign.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_filter_options.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_automation.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_automations_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -230,7 +234,10 @@ Future<void> _pump(
       retry: (_, _) => null,
       overrides: [
         hostFormsRepositoryProvider.overrideWithValue(forms),
-        hostCrmRepositoryProvider.overrideWithValue(crm),
+        hostCampaignRepositoryProvider.overrideWithValue(crm),
+        hostSavedAudienceFilterOptionsProvider('org').overrideWith(
+          (ref) async => const HostSavedAudienceFilterOptions.empty(),
+        ),
       ],
       child: MaterialApp(theme: AppTheme.light, home: child),
     ),
@@ -338,13 +345,9 @@ class _Forms extends HostFormsRepository {
   }) async => last = _rule(enabled: enabled);
 }
 
-class _Crm extends HostCrmRepository {
+class _Crm extends HostCampaignRepository {
   _Crm() : super(_UnusedFunctions());
   final cursors = <String?>[];
-  @override
-  Future<HostSavedAudienceFilterOptions> savedAudienceFilterOptions(
-    String organizerId,
-  ) async => const HostSavedAudienceFilterOptions.empty();
   @override
   Future<HostSendsPage> listCampaigns(
     String organizerId, {

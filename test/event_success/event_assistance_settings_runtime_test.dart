@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_host_screen_state.dart';
+import 'package:catch_dating_app/event_success/presentation/host_setup/event_success_host_setup_page_body.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,7 +28,7 @@ void main() {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             home: Scaffold(
-              body: SetupTab(
+              body: EventSuccessHostSetupPageBody(
                 event: event,
                 plan: plan,
                 planIsPersisted: true,

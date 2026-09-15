@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_event_create.feature.json",
-  "generatedFor": "2026-09-04",
-  "sourceDigest": "sha256:bae638ec3b70fbf9e4f4fd3e6efd73945d1e2c543f65b8ab6cccf5dc6b333900",
+  "generatedFor": "2026-09-15",
+  "sourceDigest": "sha256:a28a9a8096bb7005559e2611400859ef0e9624779bfc813a587527d447eeb821",
   "resolvedDigest": "sha256:7701cfad581c34b0a8af52e226f36fb8d6530e7900bfe5ee6bca4eb4a1b0b61c",
   "feature": {
     "id": "feature.host_event_create",
@@ -40,7 +40,7 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/create_event_routes.dart"
         ],
         "actionOwners": [
           {
@@ -60,6 +60,18 @@
             "language": "dart",
             "file": "lib/hosts/presentation/event_management/create/create_event_screen.dart",
             "symbol": "CreateEventScreen"
+          },
+          {
+            "id": "create_actions",
+            "language": "dart",
+            "file": "lib/hosts/presentation/event_management/create/create_event_actions.dart",
+            "symbol": "_handleCloseIntent"
+          },
+          {
+            "id": "draft_actions",
+            "language": "dart",
+            "file": "lib/hosts/presentation/event_management/create/create_event_draft_actions.dart",
+            "symbol": "_restoreFromDraft"
           },
           {
             "id": "location_picker",
@@ -731,7 +743,7 @@
         },
         {
           "id": "restore_draft",
-          "owner": "create_screen",
+          "owner": "draft_actions",
           "codeValue": "_restoreFromDraft",
           "cardinality": "unbounded",
           "scopeKeys": [
@@ -834,7 +846,7 @@
         },
         {
           "id": "discard_and_exit",
-          "owner": "create_screen",
+          "owner": "create_actions",
           "codeValue": "discardAndExit",
           "cardinality": "singleton",
           "scopeKeys": [

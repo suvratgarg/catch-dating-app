@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_host_guests_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_host_guests.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
@@ -22,9 +23,14 @@ class EventAssistanceHostGuests extends _$EventAssistanceHostGuests {
     EventAssistanceGuestSelection selection,
   ) {
     final auth = ref.watch(uidProvider);
-    if (auth.isLoading) return const AsyncLoading();
-    if (auth.hasError) return AsyncError(auth.error!, auth.stackTrace!);
-    final accountId = auth.asData?.value;
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    if ((authState.isLoading || authState.isRefreshing || authState.retrying)) {
+      return const AsyncLoading();
+    }
+    if (authState.error != null) {
+      return AsyncError(authState.error!, authState.stackTrace!);
+    }
+    final accountId = authState.value;
     if (accountId == null || accountId.isEmpty) {
       return AsyncError(
         const SignInRequiredException('load guest assistance'),
@@ -43,11 +49,9 @@ class EventAssistanceHostGuests extends _$EventAssistanceHostGuests {
 
   void reload() {
     final auth = ref.read(uidProvider);
-    final accountId = auth.asData?.value;
-    if (auth.isLoading ||
-        auth.hasError ||
-        accountId == null ||
-        accountId.isEmpty) {
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    final accountId = authState.value;
+    if (!authState.isSettledData || accountId == null || accountId.isEmpty) {
       return;
     }
     ref.invalidate(

@@ -71,7 +71,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
     final saving = widget.actionState.completePending || _saving;
     final skipping = widget.actionState.skipPending;
     if (mission == null) {
-      return StagePanel(
+      return CompanionStageSurface(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -108,7 +108,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
               style: CatchTextStyles.supporting(context, color: t.ink2),
             ),
             gapH14,
-            StageSoftBand(
+            CompanionStageBanner(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -130,7 +130,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
               ),
             ),
             gapH14,
-            StageActionDock(
+            CompanionStageActionSection(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -171,7 +171,7 @@ class _FirstHelloCheckInCardState extends State<FirstHelloCheckInCard>
     final selectedAnswerId = _answerId;
     return Stack(
       children: [
-        StagePanel(
+        CompanionStageSurface(
           child: _FirstHelloMissionEditor(
             mission: mission,
             selectedAnswerId: selectedAnswerId,
@@ -330,7 +330,7 @@ class _FirstHelloMissionEditor extends StatelessWidget {
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         gapH14,
-        StageSoftBand(
+        CompanionStageBanner(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -355,7 +355,7 @@ class _FirstHelloMissionEditor extends StatelessWidget {
           runSpacing: CatchSpacing.s2,
           children: [
             for (final option in mission.answerOptions)
-              StageBouncyChip(
+              CompanionBouncyChip(
                 label: option.label,
                 active: selectedAnswerId == option.id,
                 onTap: saving ? null : () => onAnswerSelected(option.id),
@@ -370,7 +370,7 @@ class _FirstHelloMissionEditor extends StatelessWidget {
           style: CatchTextStyles.supporting(context, color: t.ink2),
         ),
         gapH14,
-        StageActionDock(
+        CompanionStageActionSection(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

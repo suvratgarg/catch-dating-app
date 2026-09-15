@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_accountability_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_accountability_change.dart';
@@ -97,6 +98,7 @@ class EventAssistanceAccountabilityController
   @override
   AccountabilityEditorState build(EventAssistanceGuestScope guest) {
     final auth = ref.watch(authenticatedSessionProvider);
+    final authState = catchAsyncStateFromAsyncValue(auth);
     _epoch++;
     _account = null;
     _clearPending();
@@ -105,9 +107,9 @@ class EventAssistanceAccountabilityController
       _epoch++;
       _clearPending();
     });
-    if (auth.isLoading || auth.hasError || auth.asData == null) {
+    if (!authState.isSettledData || authState.value == null) {
       return AccountabilityUnavailable(
-        auth.error ?? accountabilitySessionChanged,
+        authState.error ?? accountabilitySessionChanged,
       );
     }
     _account = switch (auth) {
@@ -123,9 +125,8 @@ class EventAssistanceAccountabilityController
       return false;
     }
     final auth = ref.read(authenticatedSessionProvider);
-    return !auth.isLoading &&
-        !auth.hasError &&
-        identical(auth.asData?.value, account);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    return authState.isSettledData && identical(authState.value, account);
   }
 
   void _requireReview(EventAssistanceAccountabilitySession review) {

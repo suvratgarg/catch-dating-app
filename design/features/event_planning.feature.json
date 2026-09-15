@@ -21,7 +21,9 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/utility/p3_utility_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/utility/calendar.dart"
+        ],
         "actionOwners": [
           {
             "id": "calendar_screen",
@@ -197,7 +199,9 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/events/event_detail_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/events/catalog/saved_events.dart"
+        ],
         "actionOwners": [
           {
             "id": "saved_events_screen",

@@ -29,7 +29,7 @@ void _hostLiveCompletionTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: _racketPlan(event),
                   planIsPersisted: true,
@@ -90,7 +90,7 @@ void _hostLiveCompletionTests() {
             theme: AppTheme.light,
             home: Scaffold(
               body: SafeArea(
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -168,7 +168,7 @@ void _hostLiveCompletionTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,

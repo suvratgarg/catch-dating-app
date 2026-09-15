@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/analytics/app_analytics.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/presentation/host_app_shell.dart';
-
 import 'package:catch_dating_app/cross_paths/presentation/cross_paths_invitation_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
@@ -24,7 +23,7 @@ import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
 import 'package:catch_dating_app/events/shared/event_detail_route_transition.dart';
 import 'package:catch_dating_app/explore/presentation/explore_map_screen.dart';
 import 'package:catch_dating_app/explore/presentation/explore_screen.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:catch_dating_app/hosts/presentation/applications/host_applications_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/club_management/host_create_club_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_route_arguments.dart';
@@ -39,6 +38,7 @@ import 'package:catch_dating_app/hosts/presentation/forms/host_form_preview_scre
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_response_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_share_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_templates_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/host_audience_view.dart';
 import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
@@ -57,6 +57,7 @@ import 'package:catch_dating_app/payments/presentation/payment_history_screen.da
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
+import 'package:catch_dating_app/routing/host_legacy_redirects.dart';
 import 'package:catch_dating_app/routing/route_contract.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
@@ -143,72 +144,6 @@ Widget hostAudienceScreenForUri(Uri uri, {String? initialContactDisplayName}) {
       initialContactDisplayName: initialContactDisplayName,
     ),
   };
-}
-
-@visibleForTesting
-String? hostOrganizerAudienceRedirect(Uri uri) {
-  if (uri.queryParameters['tab'] != 'audience') return null;
-  final clubId = uri.queryParameters['clubId']?.trim();
-  return Uri(
-    path: Routes.hostAudienceScreen.path,
-    queryParameters: {
-      if (clubId != null && clubId.isNotEmpty) 'organizerId': clubId,
-    },
-  ).toString();
-}
-
-@visibleForTesting
-String hostApplicationsLegacyRedirect(Uri uri, {String? applicationId}) {
-  final path = applicationId == null
-      ? Routes.hostApplicationsScreen.path
-      : Routes.hostApplicationDetailScreen.path.replaceFirst(
-          ':applicationId',
-          applicationId,
-        );
-  return uri.replace(path: path).toString();
-}
-
-@visibleForTesting
-String hostCustomersLegacyRedirect(Uri uri) {
-  final suffix = uri.path.substring(
-    Routes.hostCustomersLegacyScreen.path.length,
-  );
-  final path = switch (suffix) {
-    '' => Routes.hostAudienceScreen.path,
-    '/new' => Routes.hostAddCustomerScreen.path,
-    '/audiences/new' => Routes.hostCreateSavedAudienceScreen.path,
-    final value when value.startsWith('/audiences/') =>
-      '${Routes.hostAudienceScreen.path}$value',
-    final value when value.startsWith('/applications') =>
-      '${Routes.hostAudienceScreen.path}$value',
-    final value => '${Routes.hostAudienceScreen.path}/people$value',
-  };
-  return uri.replace(path: path).toString();
-}
-
-@visibleForTesting
-String hostFormsLegacyRedirect(Uri uri) {
-  final suffix = uri.path.substring(Routes.hostFormsLegacyScreen.path.length);
-  if (suffix.isEmpty) {
-    final requestedView = uri.queryParameters['view'] == 'responses'
-        ? HostAudienceView.responses
-        : HostAudienceView.forms;
-    return uri
-        .replace(
-          path: Routes.hostAudienceScreen.path,
-          queryParameters: {...uri.queryParameters, 'view': requestedView.name},
-        )
-        .toString();
-  }
-  final path = switch (suffix) {
-    '/new' => Routes.hostFormTemplatesScreen.path,
-    final value when value.startsWith('/responses/') =>
-      '${Routes.hostAudienceScreen.path}$value',
-    final value when value.startsWith('/applications') =>
-      '${Routes.hostAudienceScreen.path}$value',
-    final value => '${Routes.hostAudienceScreen.path}/forms$value',
-  };
-  return uri.replace(path: path).toString();
 }
 
 Event? _eventDetailInitialEvent(GoRouterState state) {
@@ -877,18 +812,6 @@ List<RouteBase> _hostUtilityRoutes(GlobalKey<NavigatorState> rootNavigatorKey) {
   ];
 }
 
-@visibleForTesting
-String hostHomeLegacyRedirect() => Routes.hostTodayScreen.path;
-
-@visibleForTesting
-String? hostOrganizerIndexRedirect(Uri uri) {
-  if (uri.path != Routes.hostClubsScreen.path) return null;
-  return Uri(
-    path: Routes.hostOrganizerScreen.path,
-    queryParameters: uri.queryParameters.isEmpty ? null : uri.queryParameters,
-  ).toString();
-}
-
 GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
   return GoRoute(
     path: Routes.hostAudienceScreen.path,
@@ -1019,9 +942,7 @@ GoRoute _hostAudienceRoute(_RouterNavigatorKeys keys) {
         builder: (context, state) => HostFormBuilderScreen(
           organizerId: state.uri.queryParameters['organizerId'] ?? '',
           formId: state.pathParameters['formId']!,
-          initialView: HostFormWorkspaceView.values
-              .where((view) => view.name == state.uri.queryParameters['view'])
-              .firstOrNull,
+          initialView: hostFormViewFromQuery(state.uri.queryParameters['view']),
         ),
       ),
       GoRoute(

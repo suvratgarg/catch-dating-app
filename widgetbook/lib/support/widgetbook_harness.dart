@@ -69,40 +69,65 @@ class WidgetbookViewportFrame extends StatelessWidget {
     super.key,
     required this.size,
     required this.child,
-  }) : _sheet = false;
+  }) : _sheet = false,
+       _constrainWidth = false;
+
+  /// Uses the requested width as an upper bound while retaining fixed height.
+  const WidgetbookViewportFrame.constrainedDevice({
+    super.key,
+    required this.size,
+    required this.child,
+  }) : _sheet = false,
+       _constrainWidth = true;
 
   const WidgetbookViewportFrame.sheet({
     super.key,
     required this.size,
     required this.child,
-  }) : _sheet = true;
+  }) : _sheet = true,
+       _constrainWidth = false;
+
+  /// Bottom-aligns a sheet while allowing the preview to use its natural width.
+  const WidgetbookViewportFrame.constrainedSheet({
+    super.key,
+    required this.size,
+    required this.child,
+  }) : _sheet = true,
+       _constrainWidth = true;
 
   final Size size;
   final Widget child;
   final bool _sheet;
+  final bool _constrainWidth;
 
   @override
   Widget build(BuildContext context) {
     final tokens = CatchTokens.of(context);
     final radius = BorderRadius.circular(CatchRadius.lg);
-    return Center(
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: _sheet ? tokens.bg : tokens.surface,
-          border: Border.all(color: tokens.line),
-          borderRadius: radius,
-        ),
-        child: ClipRRect(
-          borderRadius: radius,
-          child: SizedBox(
-            width: size.width,
-            height: size.height,
-            child: _sheet
-                ? Align(alignment: Alignment.bottomCenter, child: child)
-                : child,
-          ),
+    final frame = DecoratedBox(
+      decoration: BoxDecoration(
+        color: _sheet ? tokens.bg : tokens.surface,
+        border: Border.all(color: tokens.line),
+        borderRadius: radius,
+      ),
+      child: ClipRRect(
+        borderRadius: radius,
+        child: SizedBox(
+          width: _constrainWidth ? null : size.width,
+          height: size.height,
+          child: _sheet
+              ? Align(alignment: Alignment.bottomCenter, child: child)
+              : child,
         ),
       ),
+    );
+    return Center(
+      child: _constrainWidth
+          ? ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: size.width),
+              child: frame,
+            )
+          : frame,
     );
   }
 }

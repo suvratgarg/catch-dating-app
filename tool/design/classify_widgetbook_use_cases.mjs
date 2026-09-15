@@ -16,6 +16,16 @@ const sharedSource = (file) => ["lib/core/", "packages/catch_ui/lib/", "packages
 const simpleType = (value) => value?.replace(/<.*>/u, "");
 const key = (row) => [row.file, row.builder, simpleType(row.type), row.name].join(":");
 const proposalMarker = /(?:^|[\s·([])proposed(?:$|[\s)\]])/iu;
+const foundationSpecimens = new Map([
+  ["FoundationColorTokens", "colors"],
+  ["FoundationSpacingTokens", "spacing"],
+  ["FoundationShapeTokens", "shape"],
+  ["FoundationTypographyTokens", "typography"],
+  ["FoundationIconMediaTokens", "media"],
+  ["FoundationStrokeMotionTokens", "motion"],
+  ["FoundationDataPhotoTokens", "photo_data"],
+  ["FoundationBrandTokens", "brand"],
+].map(([type, file]) => [type, `widgetbook/lib/foundation/specimens/${file}.dart`]));
 
 // Classification is about what a case mounts, not its folder or display name.
 // The syntax inventory follows local helpers, State classes and fixture scopes
@@ -25,8 +35,7 @@ export function classify(row, routeTargets = new Set()) {
   if (!row.typeFile) return {classification: null, reason: "Unresolved annotated type"};
   if (row.typeFile.startsWith("widgetbook/")) {
     // These marker types name token specimens, not alternative product UI.
-    if (row.typeFile === "widgetbook/lib/foundation/foundation_token_use_cases.dart" &&
-        row.type.startsWith("Foundation") &&
+    if (foundationSpecimens.get(row.type) === row.typeFile &&
         row.productionReferences.some((ref) => ["lib/core/theme/", "packages/catch_ui/lib/src/foundations/", "packages/catch_tokens/lib/"].some((prefix) => ref.file.startsWith(prefix)))) {
       return {classification: "component-mount", reason: "Production foundation/token specimen"};
     }
@@ -222,6 +231,16 @@ function selfTest() {
     productionReferences: [{symbol: "ExampleBody", file: "lib/example/presentation/widgets/example_body.dart", base: "StatelessWidget", ui: true}]};
   const prototype = {...component, typeFile: "widgetbook/lib/example/prototype.dart", name: "Option · proposed"};
   assert.equal(classify(component).classification, "component-mount");
+  for (const [type, typeFile] of foundationSpecimens) {
+    const specimen = {...component, type, typeFile,
+      productionReferences: [{symbol: "CatchTokens", file: "packages/catch_tokens/lib/src/semantic/catch_tokens.dart"}]};
+    assert.equal(classify(specimen).classification, "component-mount");
+    assert.equal(classify({...specimen, productionReferences: []}).classification, null);
+    assert.equal(classify({...specimen, type: "FoundationUnreviewedComposition"}).classification, null);
+    assert.equal(classify({...specimen, typeFile: "widgetbook/lib/example/other.dart"}).classification, null);
+    assert.equal(classify({...specimen, typeFile: "widgetbook/lib/foundation/specimens/other.dart"}).classification, null);
+    assert.equal(classify({...specimen, productionReferences: body.productionReferences}).classification, null);
+  }
   for (const file of ["packages/catch_ui/lib/src/foundations/example.dart", "packages/catch_tokens/lib/example.dart"]) {
     const moved = {...component, typeFile: file,
       productionReferences: [{...component.productionReferences[0], file}]};

@@ -1,8 +1,11 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/hosts/domain/host_form.dart';
-import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_definition.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_editor.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_summary.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_builder_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_form_operations_controller.dart';
+import 'package:catch_dating_app/hosts/presentation/forms/host_form_workspace_state.dart';
 import 'package:catch_dating_app/hosts/presentation/forms/host_forms_controller.dart';
 import 'package:catch_dating_app/l10n/generated/app_localizations.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -470,11 +473,9 @@ Future<void> _pumpBuilder(
         builder: (context, routeState) => HostFormBuilderScreen(
           organizerId: 'org_1',
           formId: 'form_1',
-          initialView: HostFormWorkspaceView.values
-              .where(
-                (view) => view.name == routeState.uri.queryParameters['view'],
-              )
-              .firstOrNull,
+          initialView: hostFormViewFromQuery(
+            routeState.uri.queryParameters['view'],
+          ),
         ),
       ),
     ],

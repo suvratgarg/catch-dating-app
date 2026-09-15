@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_delivery.dart';
@@ -26,13 +27,14 @@ class EventAssistanceDeliverySheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final pageProvider = eventAssistanceDeliveriesProvider(query);
     final page = ref.watch(pageProvider);
+    final pageState = catchAsyncStateFromAsyncValue(page);
     final owner = eventAssistanceDeliveryControllerProvider(scope);
     final state = ref.watch(owner);
     final controller = ref.read(owner.notifier);
     final form = state is AssistanceDeliveryForm ? state : null;
     final privateReadDenied =
-        page.error is PermissionException ||
-        page.error is SignInRequiredException;
+        pageState.error is PermissionException ||
+        pageState.error is SignInRequiredException;
     void run(Future<Object?> Function() action) {
       unawaited(() async {
         try {
@@ -65,8 +67,8 @@ class EventAssistanceDeliverySheet extends ConsumerWidget {
                 errorBuilder: (_, error, _, retry) =>
                     CatchLocalizedErrorBanner(error, onRetry: retry),
                 builder: (_, session) {
-                  final newer = !page.isLoading && !page.hasError
-                      ? page.asData?.value.page.deliveries
+                  final newer = pageState.isSettledData
+                      ? pageState.value?.page.deliveries
                             .where((r) => r.scope == scope)
                             .firstOrNull
                       : null;

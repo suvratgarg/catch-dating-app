@@ -39,38 +39,40 @@ class ClubDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(clubDetailViewModelProvider(clubId));
 
-    // The uid provider is a stream from auth state — near-instant and fine to
-    // use .asData?.value for. Log errors from secondary (non-blocking) providers
-    // that are silently discarded via .asData?.value.
     final currentUidAsync = ref.watch(uidProvider);
-    final currentUid = currentUidAsync.asData?.value;
+    final currentUidState = catchAsyncStateFromAsyncValue(currentUidAsync);
+    final currentUid = currentUidState.value;
 
     final currentUserProfileAsync = ref.watch(watchUserProfileProvider);
-    final currentUserProfile = currentUserProfileAsync.asData?.value;
+    final currentUserProfileState = catchAsyncStateFromAsyncValue(
+      currentUserProfileAsync,
+    );
+    final currentUserProfile = currentUserProfileState.value;
 
     ClubMembership? currentMembership;
     if (currentUid != null) {
       final membershipAsync = ref.watch(
         watchClubMembershipProvider(clubId, currentUid),
       );
-      currentMembership = membershipAsync.asData?.value;
-      if (membershipAsync.hasError) {
+      final membershipState = catchAsyncStateFromAsyncValue(membershipAsync);
+      currentMembership = membershipState.value;
+      if (membershipState.hasError) {
         ref
             .read(errorLoggerProvider)
             .logError(
-              membershipAsync.error!,
-              membershipAsync.stackTrace,
+              membershipState.error!,
+              membershipState.stackTrace,
               reason: 'Failed to load club membership in club detail',
             );
       }
     }
 
-    if (currentUserProfileAsync.hasError) {
+    if (currentUserProfileState.hasError) {
       ref
           .read(errorLoggerProvider)
           .logError(
-            currentUserProfileAsync.error!,
-            currentUserProfileAsync.stackTrace,
+            currentUserProfileState.error!,
+            currentUserProfileState.stackTrace,
             reason: 'Failed to load user profile in club detail',
           );
     }
@@ -93,7 +95,7 @@ class ClubDetailScreen extends ConsumerWidget {
       currentUserProfile: currentUserProfile,
       currentMembership: currentMembership,
       appRole: AppConfig.appRole,
-      authResolved: currentUidAsync.hasValue || currentUidAsync.hasError,
+      authResolved: currentUidState.hasData || currentUidState.hasError,
     );
 
     if (screenState is HostClubDetailContent) {

@@ -446,7 +446,7 @@
       "priority": "P1",
       "status": "implemented",
       "targetContract": "EventSuccessProgressStatus",
-      "qualityReference": "CountdownBeatRail",
+      "qualityReference": "EventSuccessCountdownStepper",
       "decisionSource": "user-approved:2026-07-13",
       "acceptedVisualDelta": [
         "Reusable progress sequences accept ordered display items plus currentIndex while Event Success retains percentage-threshold adaptation.",
@@ -488,16 +488,16 @@
       ],
       "members": [
         {
-          "symbol": "CountdownBeatRail",
+          "symbol": "EventSuccessCountdownStepper",
           "disposition": "repair",
-          "target": "CountdownBeatRail",
+          "target": "EventSuccessCountdownStepper",
           "preview": "required",
           "rationale": "Use the complete three-item rail as the visual reference, but replace hard-coded items and implicit threshold ownership with ordered display items plus a current index."
         },
         {
           "symbol": "CountdownBeatPill",
           "disposition": "unify",
-          "target": "CountdownBeatRail",
+          "target": "EventSuccessCountdownStepper",
           "preview": "not-applicable",
           "rationale": "The item renderer belongs to the rail-owned progress contract rather than remaining an independently selectable public pill."
         },

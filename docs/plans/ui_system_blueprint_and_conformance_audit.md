@@ -1,7 +1,7 @@
 ---
 doc_id: ui_system_blueprint_conformance
-version: 1.17.0
-updated: 2026-09-14
+version: 1.19.0
+updated: 2026-09-15
 owner: app_architecture
 status: active
 ---
@@ -168,15 +168,16 @@ controller shapes; in-flight requests have explicit snapshot policies.
 **Catch today.** This pillar is *ahead* of industry norm:
 `ARCH-UI-STATE-001` provider-free presentation states,
 `catchAsyncStateFromAsyncValue` with an exhaustive phase model, the
-`catch_async_requires_state_surface` diagnostic (Host folders), the
+`catch_async_requires_state_surface` diagnostic across consumer and Host
+presentation folders, the
 action/flow/async/view-model controller taxonomy, typed mutation key grain,
 and `ARCH-PENDING-SNAPSHOT-001` snapshot-integrity policies with named
 adopters and tests.
 
-**Verdict.** CONFORMS. The only work is adoption symmetry: the async-surface
-diagnostic binds only `lib/hosts/`; consumer presentation still may branch on
-raw `AsyncValue` flags. Extend, don't redesign. Do not add new controller
-patterns in this program.
+**Verdict.** CONFORMS. Adoption symmetry is complete: consumer and Host
+presentation now share the same async-surface diagnostic and normalize watched
+Riverpod snapshots through the existing exhaustive adapter. Do not add new
+controller patterns in this program.
 
 ### P6. Catalog as executable contract — GAP
 
@@ -1211,13 +1212,35 @@ zero `widgetbook/lib/**` entries; net check
 count strictly lower than the Phase 0 snapshot (record both numbers in the
 PR); every baseline names owner + target phase.
 
+**Completion measurement (2026-09-15).** Phase 5 is implemented by this
+change and closes when its required PR checks pass. The source-size scanner
+covers 1,627 handwritten Dart files. Seven decrease-only entries remain: four
+under app `lib/**`, three under shared packages, and zero under
+`widgetbook/lib/**`. The original CRM, Event Success, form-builder, token, and
+Widgetbook monolith split plans are executed; every remaining baseline entry
+has an owner and target phase, as enforced by `meta:enforcement-integrity`.
+
+For D8's executable-estate measurement, check count means active IDs emitted
+by `node tool/run.mjs list --json`; internal validators and retained manifest
+history are not runnable gates. The exact Phase 0 merge (`fff43783f`) contains
+251 active IDs, and this change emits 250. The earlier 293 figure in the
+point-in-time audit is retained as the dated total-registration snapshot, not
+as the executable DoD comparator.
+
+The locally permitted derived gates passed, including 52 root goldens, two
+consecutive 566-test Widgetbook golden runs, 27 headless app-shell tests, and
+the five-test hosted macOS smoke. Workspace analysis, Riverpod/plugin smoke,
+Catch UI lint/drift, and resolved-analysis collectors remain required PR gates
+under the owner-approved CI-only exception for this machine.
+
 ### Phase 6 — Continuous conformance (folds into existing lanes)
 
-Not a Codex batch — assignments into existing owners: consumer-side parity
-for `catch_async_requires_state_surface`; remaining 149 private widgets, 36
-helper methods, 21 raw decorations continue through the widget-consolidation
-worklog's K/R/D lanes (that spec keeps ownership; this program does not
-duplicate it); golden waivers burn to zero.
+Not a Codex batch — assignments into existing owners. Consumer-side parity for
+`catch_async_requires_state_surface` is complete: the diagnostic now covers all
+non-core feature presentation paths, with seeded Host and consumer probes, and
+affected watched snapshots are normalized through
+`catchAsyncStateFromAsyncValue`. The widget-consolidation worklog remains the
+owner of the K/R/D lanes (this program does not duplicate it).
 
 Golden coverage now has zero waivers: the generated notice provider is exercised
 through its production controller and host, and scaled preferred-size geometry

@@ -1,4 +1,5 @@
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'host_saved_audience_members_controller.g.dart';
@@ -25,7 +26,7 @@ class HostSavedAudienceMembersController
     HostSavedAudience audience,
   ) async {
     final preview = await ref
-        .read(hostCrmRepositoryProvider)
+        .read(hostSavedAudienceRepositoryProvider)
         .previewSavedAudience(
           organizerId: audience.organizerId,
           audience: audience,
@@ -53,7 +54,7 @@ class HostSavedAudienceMembersController
     );
     try {
       final page = await ref
-          .read(hostCrmRepositoryProvider)
+          .read(hostSavedAudienceRepositoryProvider)
           .previewSavedAudience(
             organizerId: audience.organizerId,
             audience: audience,

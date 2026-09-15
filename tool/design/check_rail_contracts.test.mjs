@@ -101,7 +101,7 @@ test("scanRailContracts covers app and shared-package production sources", () =>
   );
   writeFile(
     root,
-    "widgetbook/lib/clubs/club_detail_use_cases.dart",
+    "widgetbook/lib/clubs/catalog/discovery.dart",
     `
       Widget build(context) => ClubAvatarRail(
         clubs: clubs,

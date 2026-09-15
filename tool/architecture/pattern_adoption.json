@@ -61,7 +61,7 @@
           "status": "aligned"
         },
         {
-          "path": "widgetbook/lib/events/event_detail_use_cases.dart",
+          "path": "widgetbook/lib/events/catalog/detail_screen.dart",
           "role": "route-state and body-state review coverage for the reference screen",
           "status": "aligned"
         },
@@ -87,7 +87,7 @@
           "status": "aligned"
         },
         {
-          "path": "widgetbook/lib/utility/p3_utility_use_cases.dart",
+          "path": "widgetbook/lib/utility/location_map.dart",
           "role": "Widgetbook route and body states use route provider overrides or explicit EventLocationMapState/callback fixtures",
           "status": "aligned"
         },
@@ -208,7 +208,7 @@
             "test/hosts/host_create_event_screen_test.dart",
             "test/hosts/host_event_manage_controller_test.dart",
             "test/ui_captures/catalog/screen_capture_catalog.dart",
-            "widgetbook/lib/hosts/host_operations_use_cases.dart"
+            "widgetbook/lib/hosts/operations/manage_routes.dart"
           ],
           "exitCriteria": "Promote Host Event Manage from defined variant to aligned adopter only when the loaded workspace is provider-free for selected section, roster, private access, invite links, Event Success, report, host action display data, mutation display state, retry intents, navigation, and typed callbacks while HostEventManageRouteScreen keeps canonical route aliases plus route loading, missing-resource, error, and access gates. As of 2026-07-03 HostEventManageScreenState is provider-free, but HostEventManageScreen still owns loaded-workspace provider watches and HostEventAttendancePanel still has WidgetRef-parameter debt, so the variant remains open."
         },
@@ -231,13 +231,18 @@
             "lib/event_success/presentation/event_success_companion_screen_state.dart",
             "lib/event_success/presentation/event_success_host_screen.dart",
             "lib/event_success/presentation/event_success_host_screen_state.dart",
-            "lib/event_success/presentation/event_success_live_reveal_card.dart",
+            "lib/event_success/presentation/reveal/event_success_host_reveal_surface.dart",
+            "lib/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_shared.dart",
             "lib/event_success/presentation/companion_parts/event_success_companion_live_cards.dart",
-            "lib/event_success/presentation/host_parts/event_success_host_live.dart",
-            "lib/event_success/presentation/host_parts/event_success_host_overrides.dart",
-            "lib/event_success/presentation/host_parts/event_success_host_shared.dart",
-            "test/event_success/event_success_companion_screen_state_test.dart"
+            "lib/event_success/presentation/host_live/event_success_host_live_page_body.dart",
+            "lib/event_success/presentation/assignments/event_success_host_pod_section.dart",
+            "lib/event_success/presentation/assignments/event_success_host_rotation_section.dart",
+            "lib/event_success/presentation/host_components/event_success_host_tab_page_body.dart",
+            "test/event_success/event_success_companion_screen_state_test.dart",
+            "lib/event_success/presentation/event_success_host_workspace_page_body.dart",
+            "lib/event_success/presentation/host_setup/event_success_host_setup_page_body.dart",
+            "lib/event_success/presentation/host_report/event_success_host_report_page_body.dart"
           ],
           "exitCriteria": "Promote Event Success only after companion and host route screens are thin provider edges, display-state derivation lives in registered *_screen_state.dart adapters, provider-free part widgets remain render-only, and tests cover the host and companion screen-state adapters. The companion screen-state adapter, host screen-state adapter, and live reveal action-state adapter are aligned as of 2026-07-03; route-level ref density and route splitting remain open."
         }
@@ -275,7 +280,7 @@
         "flutter test test/events/event_detail_controller_test.dart test/events/event_detail_widgets_test.dart",
         "flutter analyze --no-fatal-infos lib/events/presentation/event_detail_screen.dart lib/events/presentation/event_detail_screen_state.dart lib/events/presentation/widgets/event_detail_body.dart lib/events/presentation/event_detail_controller.dart test/events/event_detail_screen_state_test.dart test/events/event_detail_controller_test.dart test/events/events_test_helpers.dart",
         "flutter test test/events/events_widgets_test.dart",
-        "flutter analyze --no-fatal-infos lib/events/presentation/event_location_map_screen.dart lib/events/presentation/event_location_map_state.dart test/events/events_widgets_test.dart test/ui_captures/catalog/screen_capture_catalog.dart widgetbook/lib/utility/p3_utility_use_cases.dart",
+        "flutter analyze --no-fatal-infos lib/events/presentation/event_location_map_screen.dart lib/events/presentation/event_location_map_state.dart test/events/events_widgets_test.dart test/ui_captures/catalog/screen_capture_catalog.dart widgetbook/lib/utility/location_map.dart",
         "flutter test test/calendar/calendar_screen_state_test.dart test/calendar/calendar_screen_test.dart",
         "flutter analyze --no-fatal-infos lib/events/presentation/calendar/calendar_screen.dart lib/events/presentation/calendar/calendar_screen_state.dart test/calendar/calendar_screen_state_test.dart test/calendar/calendar_screen_test.dart",
         "flutter test test/events/saved_events_screen_test.dart",
@@ -298,7 +303,7 @@
         "packages/catch_ui/lib/src/components/catch_top_bar.dart",
         "packages/catch_ui/lib/src/components/catch_screen_header.dart",
         "test/core/catch_top_bar_test.dart",
-        "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+        "widgetbook/lib/primitives/catalog/chrome.dart"
       ],
       "adopters": [
         {
@@ -347,12 +352,12 @@
           "status": "aligned"
         },
         {
-          "path": "widgetbook/lib/dashboard/dashboard_use_cases.dart",
+          "path": "widgetbook/lib/dashboard/catalog/header.dart",
           "role": "Dashboard header review state now mounts CatchScreenHeader instead of a one-off DashboardHeaderContent wrapper",
           "status": "aligned"
         },
         {
-          "path": "widgetbook/lib/profiles/profile_use_cases.dart",
+          "path": "widgetbook/lib/profiles/catalog/header.dart",
           "role": "Profile header review states now mount CatchScreenHeader instead of a one-off ProfileTitle wrapper",
           "status": "aligned"
         }
@@ -376,7 +381,7 @@
         "flutter test test/chats/chat_inbox_screen_test.dart",
         "flutter test test/profile/profile_widgets_test.dart --plain-name 'Profile header'",
         "node tool/run.mjs check design:screen-top-bar-contracts",
-        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/components/catch_top_bar.dart packages/catch_ui/lib/src/components/catch_top_bar.dart packages/catch_ui/lib/src/components/catch_top_bar_search.dart lib/dashboard/presentation/dashboard_home_screen.dart lib/dashboard/presentation/activity_screen.dart lib/explore/presentation/widgets/explore_header.dart lib/chats/presentation/inbox/widgets/chats_sliver_header.dart lib/user_profile/presentation/profile_screen.dart lib/safety/presentation/settings_screen.dart test/core/catch_top_bar_test.dart test/explore/explore_widgets_test.dart test/chats/chat_inbox_screen_test.dart test/profile/profile_widgets_test.dart widgetbook/lib/dashboard/dashboard_use_cases.dart widgetbook/lib/profiles/profile_use_cases.dart",
+        "flutter analyze --no-fatal-infos packages/catch_ui/lib/src/components/catch_top_bar.dart packages/catch_ui/lib/src/components/catch_top_bar.dart packages/catch_ui/lib/src/components/catch_top_bar_search.dart lib/dashboard/presentation/dashboard_home_screen.dart lib/dashboard/presentation/activity_screen.dart lib/explore/presentation/widgets/explore_header.dart lib/chats/presentation/inbox/widgets/chats_sliver_header.dart lib/user_profile/presentation/profile_screen.dart lib/safety/presentation/settings_screen.dart test/core/catch_top_bar_test.dart test/explore/explore_widgets_test.dart test/chats/chat_inbox_screen_test.dart test/profile/profile_widgets_test.dart widgetbook/lib/dashboard/catalog/header.dart widgetbook/lib/profiles/catalog/header.dart",
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "bash tool/widget_cleanup_scan.sh"
       ],
@@ -624,7 +629,37 @@
         },
         {
           "path": "lib/explore/presentation/explore_screen_state.dart",
-          "role": "provider-free ExploreFeedSectionState, ExploreCoverStoryState, ExploreChromeState, ExploreEventRowState, ExploreExternalEventRowState, ExploreClubCardState, ExploreMapLauncherState, ExploreCityPickerState, ExploreCityTriggerState, ExploreFilterRailState, ExploreDateStripState, ExploreFilterSheetState, ExploreCollapsedMapSummaryState, ExplorePeekRailState, ExploreMapEventTicketState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState adapters for mixed-feed card planning, cover-story/search-open/event-row/external-row/club-card/map-sheet/filter/chrome display labels, date supply density, live count copy, city-picker availability, map-count label, route body branch precedence, source-club/feed empty copy, clear-action cardinality, and broaden-time-filter intent",
+          "role": "ExploreDiscoveryScreenState, ExploreScreenBodyState, ExploreDiscoveryEmptyState, and ExploreEventsEmptyState own provider-free route branch precedence, retry targets, empty recovery copy, and clear-filter intent",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_chrome_state.dart",
+          "role": "ExploreChromeState, ExploreCityPickerState, ExploreCityTriggerState, and ExploreMapLauncherState own provider-free search chrome, city availability and labels, and map-count display",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_filter_state.dart",
+          "role": "ExploreFilterRailState, ExploreDateStripState, and ExploreFilterSheetState own provider-free date-supply density, cursor-honest result counts, distance and area choices, and active-filter labels",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_event_display_state.dart",
+          "role": "ExploreCoverStoryState, ExploreEventRowState, and ExploreExternalEventRowState own provider-free event copy, viewer eligibility, prices, capacity, and external-source semantics",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_club_display_state.dart",
+          "role": "ExploreClubCardState and ExploreOrganizerMembershipActionState own provider-free organizer identity, trust copy, and membership-action visibility",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/explore_mixed_feed_state.dart",
+          "role": "ExploreFeedSectionState and the sealed ExploreMixedCard family own provider-free event-majority ordering, bounded Cross Paths insertion, organizer intermix, day grouping, weekly recommendations, and result counts",
           "providerFree": true,
           "status": "aligned"
         },
@@ -716,7 +751,7 @@
         },
         {
           "path": "lib/event_success/presentation/event_success_companion_screen_state.dart",
-          "role": "provider-free Event Success companion display-state adapter for attendee moment selection, paper-shell policy, reveal kind, wingman candidate filtering, effect keys, and moment presentation copy/icon/effect metadata",
+          "role": "provider-free Event Success companion route and display state for async branch precedence, retry intent, attendee moment selection, paper-shell policy, reveal kind, wingman candidates, and effect keys",
           "providerFree": true,
           "status": "aligned"
         },
@@ -749,7 +784,7 @@
         },
         {
           "path": "lib/hosts/presentation/host_event_manage_screen_state.dart",
-          "role": "provider-free Host Event Manage display-state adapter for section selection, destructive action policy, private-link display data, participants mutation state, report summary, invite-link rows, roster rows, capacity display, and setup/live/report row policy; route-owned URL construction keeps routing out of the adapter",
+          "role": "provider-free Host Event Manage lifecycle/section selection, event identity and capacity, destructive action policy, attendance-count fallback and report summary; roster and invitation display state have separate owners",
           "providerFree": true,
           "status": "aligned"
         },
@@ -918,6 +953,78 @@
         {
           "path": "lib/payments/presentation/payment_history_state.dart",
           "role": "provider-free Payment History adapter preserving payment rows plus event-title loading, failure, resolved title, and genuinely missing-event state",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/explore/presentation/widgets/explore_screen_empty_state.dart",
+          "role": "provider-free Explore empty-state renderer receiving the route-owned recovery state and callbacks; distinct from the provider-owned directory empty state",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/reveal/event_success_reveal_clock_mixin.dart",
+          "role": "provider-free Flutter State lifecycle mixin for the shared reveal timer; owns enable, pause, resume, and disposal while concrete reveal surfaces own rendering",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/customers/host_customer_loading_state.dart",
+          "role": "provider-free deterministic customer detail placeholder model used only while the canonical customer surface is loading",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/forms/host_form_workspace_state.dart",
+          "role": "provider-free workspace pane identity and exact query-string selection shared by the form builder and route adapter",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_moment_presentation_state.dart",
+          "role": "provider-free Event Success moment copy, icons, reveal effects, and ambient-bed projection from the generated choreography contract",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/event_success_control_room_state.dart",
+          "role": "provider-free control-room synchronization state shared by the host route, console, and sync badge",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/host_live/event_success_outcome_units_state.dart",
+          "role": "provider-free Host outcome-unit projection preserving scoring/ranking identity, labels, ordering, and deduplication",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/host_components/event_success_host_resource_error_state.dart",
+          "role": "provider-free Host resource error surface with typed retry-intent copy and explicit recovery callbacks",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/event_success/presentation/host_report/event_success_report_empty_state.dart",
+          "role": "provider-free report empty-state placement over the shared CatchEmptyState contract with explicit title, message and icon",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_invite_link_state.dart",
+          "role": "provider-free private access and invitation-link status, sharing availability, mutation mode and row statistics; URL construction stays at the route edge",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_roster_display_state.dart",
+          "role": "provider-free participant action callbacks and pending/error snapshots, profile lookup, roster filters, ordered search results, bulk-offer eligibility and empty-state copy",
+          "providerFree": true,
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/presentation/host_roster_row_state.dart",
+          "role": "provider-free setup/live/report participant row policy, waitlist offer signals, attendance affordances, payment display and localized metadata",
           "providerFree": true,
           "status": "aligned"
         }
@@ -1438,7 +1545,7 @@
         "node tool/architecture/check_app_architecture_exhibits.mjs",
         "node tool/architecture/check_adopted_architecture_boundaries.mjs"
       ],
-      "notes": "Features select semantic body roles and provide header/body/state content. The composition owners—not each screen—translate those choices into page padding, one scroll owner, responsive lanes, interaction planes, and shell-aware terminal geometry. Pushed routes remain a separate compact-title hierarchy while sharing the Archivo family through CatchTextStyles.routeTitle."
+      "notes": "Features select semantic body roles and provide header/body/state content. The composition owners\u2014not each screen\u2014translate those choices into page padding, one scroll owner, responsive lanes, interaction planes, and shell-aware terminal geometry. Pushed routes remain a separate compact-title hierarchy while sharing the Archivo family through CatchTextStyles.routeTitle."
     },
     {
       "id": "ARCH-ROOT-PRIMARY-RAIL-001",
@@ -1692,7 +1799,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/explore/presentation/explore_feed_view_model.dart",
+          "path": "lib/explore/presentation/explore_feed_providers.dart",
           "role": "consumer composition that preserves cursor exhaustiveness, load-more state, one shared date-strip query window and clock snapshot, per-date supply density, honest result count, and coordinate-complete map count",
           "status": "aligned"
         },
@@ -2038,7 +2145,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/explore/presentation/explore_cross_paths_provider.dart and lib/explore/presentation/explore_screen_state.dart",
+          "path": "lib/explore/presentation/explore_cross_paths_provider.dart and lib/explore/presentation/explore_mixed_feed_state.dart",
           "role": "server-gated optional enrichment, current-event request bounding, token expiry, and provider-free event-majority mixed-feed planning",
           "status": "aligned"
         },
@@ -2109,8 +2216,8 @@
         "lib/swipes/shared/profile_surface/catch_profile_view.dart",
         "test/clubs/club_hero_app_bar_test.dart",
         "test/swipes/profile_surface_contract_test.dart",
-        "widgetbook/lib/clubs/club_detail_use_cases.dart",
-        "widgetbook/lib/catches/catches_use_cases.dart"
+        "widgetbook/lib/clubs/catalog/poster.dart",
+        "widgetbook/lib/catches/catalog/profile_media.dart"
       ],
       "adopters": [
         {
@@ -2182,7 +2289,8 @@
         "functions/src/communications/organizerCommunicationPlan.test.ts",
         "functions/src/organizers/organizerCommunicationPlans.ts",
         "functions/src/organizers/organizerCommunicationPlans.test.ts",
-        "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/data/crm/host_communication_repository.dart",
+        "lib/hosts/domain/crm/host_communication_plan.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
         "lib/hosts/presentation/customers/host_customer_detail_cards.dart",
         "test/hosts/host_crm_repository_test.dart",
@@ -2200,7 +2308,7 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/data/host_crm_repository.dart",
+          "path": "lib/hosts/domain/crm/host_communication_plan.dart",
           "role": "typed callable parser that rejects contradictory, duplicate, incomplete, or unavailable recommended routes",
           "status": "aligned"
         },
@@ -2256,7 +2364,8 @@
         "functions/src/organizers/organizerSavedAudiences.ts",
         "functions/src/organizers/organizerSavedAudiences.test.ts",
         "functions/src/organizers/organizerCampaigns.ts",
-        "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/data/crm/host_saved_audience_repository.dart",
+        "lib/hosts/domain/crm/host_saved_audience.dart",
         "lib/hosts/presentation/customers/host_customers_screen.dart",
         "lib/hosts/presentation/customers/host_saved_audiences_workspace.dart",
         "lib/hosts/presentation/customers/host_saved_audience_editor.dart",
@@ -2422,7 +2531,8 @@
         "contracts/callables/prepare_organizer_manual_send_task_payload.schema.json",
         "functions/src/organizers/organizerManualSendTasks.ts",
         "functions/src/organizers/organizerManualSendTasks.test.ts",
-        "lib/hosts/data/host_crm_repository.dart",
+        "lib/hosts/data/crm/host_communication_repository.dart",
+        "lib/hosts/domain/crm/host_manual_send_task.dart",
         "lib/hosts/presentation/customers/host_customer_detail_screen.dart",
         "lib/hosts/presentation/inbox/host_manual_send_queue.dart",
         "test/hosts/host_crm_repository_test.dart",
@@ -2440,8 +2550,13 @@
           "status": "aligned"
         },
         {
-          "path": "lib/hosts/data/host_crm_repository.dart",
-          "role": "typed task and re-plan parser plus generated callable payload boundaries that reject a managed-delivery task representation",
+          "path": "lib/hosts/domain/crm/host_manual_send_task.dart",
+          "role": "typed task and re-plan parser that rejects a managed-delivery task representation",
+          "status": "aligned"
+        },
+        {
+          "path": "lib/hosts/data/crm/host_communication_repository.dart",
+          "role": "generated callable payload boundaries for revision-bound manual tasks and route re-planning",
           "status": "aligned"
         },
         {

@@ -319,6 +319,51 @@ topLevelInferredHelper() => topLevelObjectHelper();
   assert.equal(helpers.some(({name}) => name === "callback"), false);
 });
 
+test("distinguishes unchanged Object data from created or shadowed widgets", () => {
+  const source = `
+Object? copyJsonValue(Object? value) {
+  if (value is Map) return copyMap(value);
+  if (value is List) return value.map(copyJsonValue).toList(growable: true);
+  return value;
+}
+Object constructed(Object value) {
+  if (value == null) return const SizedBox();
+  return value;
+}
+Object reassigned(Object value) {
+  value = const SizedBox();
+  return value;
+}
+Object shadowed(Object value) {
+  { Object value = const SizedBox(); return value; }
+}
+Object patternShadowed(Object value) {
+  if (source case Widget value) return value;
+  return null;
+}
+Object typedChild(Widget value) {
+  return value;
+}
+Object castChild(Object value) {
+  return value as Widget;
+}
+Object fieldAlias() {
+  return child;
+}
+`;
+  const lineStarts = buildLineStarts(source);
+  const helpers = collectWidgetHelpers(
+    source,
+    lineStarts,
+    collectClassRanges(source, lineStarts),
+    resolveWidgetTypeNames(collectClassDeclarations(source, lineStarts)),
+  );
+  assert.deepEqual(helpers.map(({name}) => name), [
+    "constructed", "reassigned", "shadowed", "patternShadowed",
+    "typedChild", "castChild", "fieldAlias",
+  ]);
+});
+
 test("exempts only exact canonical closed descriptor renderers", () => {
   const source = `
 final class CatchRouteBody {

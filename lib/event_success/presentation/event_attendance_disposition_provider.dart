@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_attendance_disposition_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
 import 'package:catch_dating_app/event_success/domain/event_attendance_disposition.dart';
@@ -51,9 +52,12 @@ class EventAttendanceDisposition extends _$EventAttendanceDisposition {
         final result = ref.watch(
           eventAttendanceDispositionForAccountProvider(scope, account: account),
         );
-        if (result.isLoading) return const AsyncLoading();
-        if (result.hasError) {
-          return AsyncError(result.error!, result.stackTrace!);
+        final resultState = catchAsyncStateFromAsyncValue(result);
+        if ((resultState.isLoading || resultState.isRefreshing || resultState.retrying)) {
+          return const AsyncLoading();
+        }
+        if (resultState.error != null) {
+          return AsyncError(resultState.error!, resultState.stackTrace!);
         }
         return result;
       },

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_checkpoint_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_checkpoint_change.dart';
@@ -95,6 +96,7 @@ class EventAssistanceCheckpointController
   @override
   CheckpointEditorState build(EventAssistanceCheckpointScope scope) {
     final auth = ref.watch(authenticatedSessionProvider);
+    final authState = catchAsyncStateFromAsyncValue(auth);
     _epoch++;
     _account = null;
     _clearPending();
@@ -103,8 +105,8 @@ class EventAssistanceCheckpointController
       _epoch++;
       _clearPending();
     });
-    if (auth.isLoading || auth.hasError || auth.asData == null) {
-      return CheckpointUnavailable(auth.error ?? checkpointSessionChanged);
+    if (!authState.isSettledData || authState.value == null) {
+      return CheckpointUnavailable(authState.error ?? checkpointSessionChanged);
     }
     _account = switch (auth) {
       AsyncData(:final value) => value,
@@ -119,9 +121,8 @@ class EventAssistanceCheckpointController
       return false;
     }
     final auth = ref.read(authenticatedSessionProvider);
-    return !auth.isLoading &&
-        !auth.hasError &&
-        identical(auth.asData?.value, account);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    return authState.isSettledData && identical(authState.value, account);
   }
 
   void _requireReview(EventAssistanceCheckpointSession review) {

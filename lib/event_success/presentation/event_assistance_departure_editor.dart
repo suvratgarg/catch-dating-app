@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_group_progress.dart';
@@ -109,6 +110,7 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
   @override
   EventDepartureEditorState build(EventAssistanceGroupScope scope) {
     final auth = ref.watch(eventAssistanceDepartureAccountProvider);
+    final authState = catchAsyncStateFromAsyncValue(auth);
     ref.watch(eventAssistanceDepartureControllerProvider);
     _epoch++;
     _account = null;
@@ -119,9 +121,9 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
       _epoch++;
       _clearPending();
     });
-    if (auth.isLoading || auth.hasError || auth.asData == null) {
+    if (!authState.isSettledData || authState.value == null) {
       return EventDepartureFormUnavailable._(
-        auth.error ?? departureSessionChanged,
+        authState.error ?? departureSessionChanged,
       );
     }
     _account = switch (auth) {
@@ -137,9 +139,8 @@ class EventAssistanceDepartureEditor extends _$EventAssistanceDepartureEditor {
       return false;
     }
     final auth = ref.read(eventAssistanceDepartureAccountProvider);
-    return !auth.isLoading &&
-        !auth.hasError &&
-        identical(auth.asData?.value, account);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    return authState.isSettledData && identical(authState.value, account);
   }
 
   void _requireReview(EventDepartureSession session) {

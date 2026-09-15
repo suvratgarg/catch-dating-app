@@ -1,0 +1,180 @@
+import 'package:catch_dating_app/hosts/domain/crm/crm_response_fields.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_contact.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
+
+class HostCustomerTraits {
+  const HostCustomerTraits({
+    required this.expectedEventCount,
+    required this.attendedEventCount,
+    required this.cancelledEventCount,
+    required this.noShowCount,
+    required this.importedEventCount,
+    required this.attendanceRate,
+    required this.segments,
+    required this.whatsappStatus,
+    required this.sourceCoverage,
+  });
+
+  factory HostCustomerTraits.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerTraits(
+        expectedEventCount: crmRequiredInt(map, 'expectedEventCount'),
+        attendedEventCount: crmRequiredInt(map, 'attendedEventCount'),
+        cancelledEventCount: crmRequiredInt(map, 'cancelledEventCount'),
+        noShowCount: crmRequiredInt(map, 'noShowCount'),
+        importedEventCount: crmRequiredInt(map, 'importedEventCount'),
+        attendanceRate: crmNullableDouble(map['attendanceRate']),
+        segments: crmStringList(map['segmentIds'])
+            .map(HostAudienceSegment.fromWireValue)
+            .whereType<HostAudienceSegment>()
+            .toSet(),
+        whatsappStatus: crmEnumByName(
+          HostAudiencePermissionStatus.values,
+          crmRequiredString(map, 'whatsappStatus'),
+          'whatsappStatus',
+        ),
+        sourceCoverage: crmEnumByName(
+          HostAudienceSourceCoverage.values,
+          crmRequiredString(map, 'sourceCoverage'),
+          'sourceCoverage',
+        ),
+      );
+
+  final int expectedEventCount;
+  final int attendedEventCount;
+  final int cancelledEventCount;
+  final int noShowCount;
+  final int importedEventCount;
+  final double? attendanceRate;
+  final Set<HostAudienceSegment> segments;
+  final HostAudiencePermissionStatus whatsappStatus;
+  final HostAudienceSourceCoverage sourceCoverage;
+}
+
+class HostCustomerNote {
+  const HostCustomerNote({
+    required this.noteId,
+    required this.body,
+    required this.authorUid,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.revision,
+  });
+
+  factory HostCustomerNote.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerNote(
+        noteId: crmRequiredString(map, 'noteId'),
+        body: crmRequiredString(map, 'body'),
+        authorUid: crmRequiredString(map, 'authorUid'),
+        createdAt: crmRequiredDateTimeFromMillis(map, 'createdAtMillis'),
+        updatedAt: crmRequiredDateTimeFromMillis(map, 'updatedAtMillis'),
+        revision: crmRequiredInt(map, 'revision'),
+      );
+
+  factory HostCustomerNote.fromCallableData(Object? data) =>
+      HostCustomerNote.fromMap(crmRequiredMap(data, 'organizer contact note'));
+
+  final String noteId;
+  final String body;
+  final String authorUid;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int revision;
+
+  bool get wasEdited => updatedAt.isAfter(createdAt);
+}
+
+enum HostCustomerPermissionEvidenceStatus {
+  unavailable,
+  notApplicable,
+  complete,
+  incomplete,
+}
+
+class HostCustomerWhatsappPermission {
+  const HostCustomerWhatsappPermission({
+    required this.status,
+    required this.evidenceStatus,
+    required this.receiptId,
+    required this.source,
+    required this.sourceFormId,
+    required this.sourceFormTitle,
+    required this.decisionAt,
+    required this.identityStrength,
+  });
+
+  factory HostCustomerWhatsappPermission.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerWhatsappPermission(
+        status: crmEnumByName(
+          HostAudiencePermissionStatus.values,
+          crmRequiredString(map, 'status'),
+          'WhatsApp permission status',
+        ),
+        evidenceStatus: crmEnumByName(
+          HostCustomerPermissionEvidenceStatus.values,
+          crmRequiredString(map, 'evidenceStatus'),
+          'WhatsApp permission evidence status',
+        ),
+        receiptId: crmNullableString(map['receiptId']),
+        source: crmNullableString(map['source']),
+        sourceFormId: crmNullableString(map['sourceFormId']),
+        sourceFormTitle: crmNullableString(map['sourceFormTitle']),
+        decisionAt: crmDateTimeFromMillis(map['decisionAtMillis']),
+        identityStrength: crmNullableString(map['identityStrength']),
+      );
+
+  final HostAudiencePermissionStatus status;
+  final HostCustomerPermissionEvidenceStatus evidenceStatus;
+  final String? receiptId;
+  final String? source;
+  final String? sourceFormId;
+  final String? sourceFormTitle;
+  final DateTime? decisionAt;
+  final String? identityStrength;
+}
+
+enum HostCustomerOriginSourceKind {
+  catchBooking,
+  hostImport,
+  hostManual,
+  webOtp,
+  providerSync,
+  hostForm,
+}
+
+class HostCustomerOrigin {
+  const HostCustomerOrigin({
+    required this.originId,
+    required this.sourceKind,
+    required this.sourceEntityKind,
+    required this.formId,
+    required this.formTitle,
+    required this.eventId,
+    required this.eventTitle,
+    required this.observedAt,
+  });
+
+  factory HostCustomerOrigin.fromMap(Map<Object?, Object?> map) =>
+      HostCustomerOrigin(
+        originId: crmRequiredString(map, 'originId'),
+        sourceKind: crmEnumByName(
+          HostCustomerOriginSourceKind.values,
+          crmRequiredString(map, 'sourceKind'),
+          'customer origin source',
+        ),
+        sourceEntityKind: crmRequiredString(map, 'sourceEntityKind'),
+        formId: crmNullableString(map['formId']),
+        formTitle: crmNullableString(map['formTitle']),
+        eventId: crmNullableString(map['eventId']),
+        eventTitle: crmNullableString(map['eventTitle']),
+        observedAt: crmRequiredDateTimeFromMillis(map, 'observedAtMillis'),
+      );
+
+  final String originId;
+  final HostCustomerOriginSourceKind sourceKind;
+  final String sourceEntityKind;
+  final String? formId;
+  final String? formTitle;
+  final String? eventId;
+  final String? eventTitle;
+  final DateTime observedAt;
+}

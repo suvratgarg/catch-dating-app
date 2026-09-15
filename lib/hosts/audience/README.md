@@ -193,7 +193,8 @@ Typed handoffs:
 
 ## Shared dependencies
 
-- `lib/hosts/data/host_crm_repository.dart` — Current shared Host data seam for organizer contacts and saved audiences until A3 relocates it.
+- `lib/hosts/data/crm/host_contacts_repository.dart` — Owns organizer contacts, customer context, notes, and merge review.
+- `lib/hosts/data/crm/host_saved_audience_repository.dart` — Owns reusable audience definitions, filter options, membership resolution, and previews.
 - `lib/hosts/data/host_forms_repository.dart` — Current shared Host data seam for forms, responses, exports, and automations until A3 relocates it.
 - `lib/core/presentation/host_app_shell.dart` — The shell owns global destination navigation and organizer scope.
 

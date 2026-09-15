@@ -48,7 +48,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
   Widget build(BuildContext context) {
     final saving = widget.actionState.isSaving || _submitPending;
     final t = CatchTokens.of(context);
-    return StagePanel(
+    return CompanionStageSurface(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -116,7 +116,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
             ),
           ),
           gapH8,
-          StageSoftBand(
+          CompanionStageBanner(
             child: CatchFieldLanes.single(
               child: CatchField.input(
                 copy: catchFieldCopy(context.l10n),
@@ -131,7 +131,7 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
             ),
           ),
           gapH12,
-          StageActionDock(
+          CompanionStageActionSection(
             child: CatchButton(
               label: widget.existingFeedback == null
                   ? context

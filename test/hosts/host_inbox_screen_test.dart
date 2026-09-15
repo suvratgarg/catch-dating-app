@@ -9,10 +9,24 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_communication_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_contacts_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_saved_audience_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_audience_query.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_campaign.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_crm_summary.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_manual_send_task.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_messaging_setup.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_saved_audience_definition.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_campaign_composer.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_manual_send_queue.dart';
@@ -97,7 +111,7 @@ void main() {
     expect(find.text('One-to-one conversations and replies.'), findsNothing);
     expect(find.text('Inbox'), findsOneWidget);
     expect(find.text('Sends'), findsOneWidget);
-    expect(find.byType(HostInboxScopeSelector), findsOneWidget);
+    expect(find.byType(HostInboxScopeMenu), findsOneWidget);
     expect(find.text('BOOKED · 1'), findsOneWidget);
     expect(find.text('PROSPECTIVE · 1'), findsOneWidget);
     expect(
@@ -442,7 +456,7 @@ void main() {
 
     expect(find.byType(HostCampaignComposer), findsOneWidget);
     expect(find.text('MESSAGE PAST ATTENDEES'), findsOneWidget);
-    expect(find.byType(HostInboxScopeSelector), findsNothing);
+    expect(find.byType(HostInboxScopeMenu), findsNothing);
     expect(find.byType(HostInboxAudienceRail), findsNothing);
   });
 
@@ -773,7 +787,7 @@ void main() {
       );
       await pumpFeatureUi(tester);
 
-      expect(find.byType(HostInboxScopeSelector), findsNothing);
+      expect(find.byType(HostInboxScopeMenu), findsNothing);
       expect(find.text('GENERAL INQUIRIES'), findsNothing);
       expect(find.text('No general inquiries'), findsOneWidget);
 

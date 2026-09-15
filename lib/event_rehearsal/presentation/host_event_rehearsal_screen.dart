@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
@@ -28,6 +29,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+
+part 'host_event_rehearsal_coach_task.dart';
 
 class HostEventRehearsalScreen extends ConsumerStatefulWidget {
   const HostEventRehearsalScreen({
@@ -63,7 +66,8 @@ class _HostEventRehearsalScreenState
   @override
   Widget build(BuildContext context) {
     final rehearsalAsync = ref.watch(eventRehearsalProvider(widget.sessionId));
-    final staff = rehearsalAsync.asData?.value.staffReview;
+    final rehearsalState = catchAsyncStateFromAsyncValue(rehearsalAsync);
+    final staff = rehearsalState.value?.staffReview;
     final selectedRole = staff == null
         ? null
         : ref.watch(
@@ -116,7 +120,7 @@ class _HostEventRehearsalScreenState
     );
     return CatchRouteScaffold(
       statuses: [
-        if (rehearsalAsync.asData?.value case final rehearsal?)
+        if (rehearsalState.value case final rehearsal?)
           CatchBannerStatus(
             id: 'rehearsal.${rehearsal.session.id}',
             label: context.l10n.hostEventRehearsalBadge,
@@ -157,7 +161,7 @@ class _HostEventRehearsalScreenState
         contentCrossAxisAlignment: CrossAxisAlignment.start,
         eyebrow: context.l10n.hostEventRehearsalManageSubtitle,
         title:
-            rehearsalAsync.asData?.value.session.setup.title ??
+            rehearsalState.value?.session.setup.title ??
             context.l10n.hostEventRehearsalTitle,
         titleMaxLines: topBarTitleMaxLines,
         navigation: const CatchTopBarNavigation(
@@ -166,8 +170,7 @@ class _HostEventRehearsalScreenState
         leading: CatchIconAction.toolbar(
           tooltip: MaterialLocalizations.of(context).backButtonTooltip,
           icon: CatchIcons.arrowBackIosNewRounded,
-          onPressed: () =>
-              _leaveRehearsal(rehearsalAsync.asData?.value.session),
+          onPressed: () => _leaveRehearsal(rehearsalState.value?.session),
         ),
         emphasis: scrolledUnder
             ? CatchTopBarEmphasis.divided
@@ -204,7 +207,7 @@ class _HostEventRehearsalScreenState
               return Column(
                 children: [
                   Expanded(
-                    child: EventSuccessHostPanel(
+                    child: EventSuccessHostWorkspacePageBody(
                       key: ValueKey(
                         'rehearsal-runtime-${rehearsal.session.id}',
                       ),
@@ -250,7 +253,7 @@ class _HostEventRehearsalScreenState
                           : null,
                       membershipSection:
                           (rehearsal.membershipReviews?.rows.any(
-                                (r) => r.facts.groups.isNotEmpty,
+                                (row) => row.facts.groups.isNotEmpty,
                               ) ??
                               false)
                           ? EventRehearsalGroupsSection(
@@ -869,123 +872,3 @@ class _RehearsalCoachDock extends StatelessWidget {
     );
   }
 }
-
-class _RehearsalCoachTask {
-  const _RehearsalCoachTask({
-    required this.key,
-    required this.number,
-    required this.title,
-    required this.body,
-    required this.workspace,
-    this.actorId,
-  });
-
-  final String key;
-  final int number;
-  final String title;
-  final String body;
-  final EventSuccessLiveWorkspace workspace;
-  final String? actorId;
-}
-
-_RehearsalCoachTask _buildCoachTask(
-  BuildContext context,
-  EventRehearsalBootstrap rehearsal,
-) {
-  final late = rehearsal.actors
-      .where((actor) => actor.status == EventRehearsalActorStatus.late)
-      .firstOrNull;
-  if (late != null) {
-    return _RehearsalCoachTask(
-      key: 'late:${late.actorId}',
-      number: 3,
-      title: context.l10n.hostEventRehearsalCoachResolveLate(
-        name: _coachFirstName(late.displayName),
-      ),
-      body: context.l10n.hostEventRehearsalCoachSameControl,
-      workspace: EventSuccessLiveWorkspace.now,
-      actorId: late.actorId,
-    );
-  }
-  final help = rehearsal.actors
-      .where((actor) => actor.helpRequested)
-      .firstOrNull;
-  if (help != null) {
-    return _RehearsalCoachTask(
-      key: 'help:${help.actorId}',
-      number: 5,
-      title: context.l10n.hostEventRehearsalCoachResolveHelp(
-        name: _coachFirstName(help.displayName),
-      ),
-      body: context.l10n.hostEventRehearsalCoachSameControl,
-      workspace: EventSuccessLiveWorkspace.now,
-      actorId: help.actorId,
-    );
-  }
-  final placement = rehearsal.actors
-      .where(
-        (actor) =>
-            (actor.status == EventRehearsalActorStatus.present ||
-                actor.status == EventRehearsalActorStatus.returned) &&
-            actor.layoutUnitId != null &&
-            actor.confirmedLayoutUnitId != actor.layoutUnitId,
-      )
-      .firstOrNull;
-  if (placement != null) {
-    return _RehearsalCoachTask(
-      key: 'place:${placement.actorId}:${placement.layoutUnitId}',
-      number: 4,
-      title: context.l10n.hostEventRehearsalCoachPlaceGuest(
-        name: _coachFirstName(placement.displayName),
-      ),
-      body: context.l10n.hostEventRehearsalCoachPlaceGuestBody,
-      workspace: EventSuccessLiveWorkspace.room,
-      actorId: placement.actorId,
-    );
-  }
-  return switch (rehearsal.session.status) {
-    EventRehearsalStatus.draft ||
-    EventRehearsalStatus.ready => _RehearsalCoachTask(
-      key: 'start',
-      number: 1,
-      title: context.l10n.hostEventRehearsalCoachStart,
-      body: context.l10n.hostEventRehearsalCoachStartBody,
-      workspace: EventSuccessLiveWorkspace.now,
-    ),
-    EventRehearsalStatus.paused => _RehearsalCoachTask(
-      key: 'resume:${rehearsal.session.activeStepIndex}',
-      number: (rehearsal.session.activeStepIndex + 2).clamp(1, 8),
-      title: context.l10n.hostEventRehearsalCoachResume,
-      body: context.l10n.hostEventRehearsalCoachSameControl,
-      workspace: EventSuccessLiveWorkspace.now,
-    ),
-    EventRehearsalStatus.complete ||
-    EventRehearsalStatus.expired => _RehearsalCoachTask(
-      key: 'complete',
-      number: 8,
-      title: context.l10n.hostEventRehearsalCoachComplete,
-      body: context.l10n.hostEventRehearsalCoachCompleteBody,
-      workspace: EventSuccessLiveWorkspace.now,
-    ),
-    EventRehearsalStatus.running => _RehearsalCoachTask(
-      key: 'advance:${rehearsal.session.activeStepIndex}',
-      number: (rehearsal.session.activeStepIndex + 2).clamp(1, 8),
-      title: context.l10n.hostEventRehearsalCoachAdvance,
-      body: context.l10n.hostEventRehearsalCoachSameControl,
-      workspace: EventSuccessLiveWorkspace.now,
-    ),
-  };
-}
-
-String _coachFirstName(String displayName) {
-  final trimmed = displayName.trim();
-  if (trimmed.isEmpty) return displayName;
-  return trimmed.split(RegExp(r'\s+')).first;
-}
-
-EventRehearsalSpatialScope _rehearsalSpatialScope(
-  EventSuccessSpatialScope scope,
-) => switch (scope) {
-  EventSuccessSpatialScope.thisRound => EventRehearsalSpatialScope.thisRound,
-  EventSuccessSpatialScope.pinned => EventRehearsalSpatialScope.pinned,
-};

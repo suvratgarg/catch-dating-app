@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -112,19 +113,19 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
       for (final match in displayMatches)
         if (match.isClubHostInquiry && match.clubId != null) match.clubId!,
     };
+    final clubsState = hostInquiryClubIds.isEmpty
+        ? null
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(
+              watchClubsForMessagingByIdsProvider(
+                ClubsByIdQuery(hostInquiryClubIds),
+              ),
+            ),
+          );
     final clubsById = hostInquiryClubIds.isEmpty
         ? const <String, Club>{}
         : {
-            for (final club
-                in ref
-                        .watch(
-                          watchClubsForMessagingByIdsProvider(
-                            ClubsByIdQuery(hostInquiryClubIds),
-                          ),
-                        )
-                        .asData
-                        ?.value ??
-                    const <Club>[])
+            for (final club in clubsState?.value ?? const <Club>[])
               club.id: club,
           };
     final publicProfileUids = <String>{};
@@ -139,17 +140,18 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
           !match.isClubHostInquiry || (club != null && !otherParticipantIsHost);
       if (shouldReadPublicProfile) publicProfileUids.add(otherUid);
     }
+    final profilesState = publicProfileUids.isEmpty
+        ? null
+        : catchAsyncStateFromAsyncValue(
+            ref.watch(
+              publicProfilesByIdsProvider(
+                PublicProfilesQuery(publicProfileUids),
+              ),
+            ),
+          );
     final profilesByUid = publicProfileUids.isEmpty
         ? const <String, PublicProfile>{}
-        : ref
-                  .watch(
-                    publicProfilesByIdsProvider(
-                      PublicProfilesQuery(publicProfileUids),
-                    ),
-                  )
-                  .asData
-                  ?.value ??
-              const <String, PublicProfile>{};
+        : profilesState?.value ?? const <String, PublicProfile>{};
     final previews = displayMatches
         .map(
           (match) => _previewForMatch(

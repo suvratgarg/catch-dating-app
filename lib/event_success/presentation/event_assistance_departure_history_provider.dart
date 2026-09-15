@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_departure_history_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_departure_history.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_checkpoint_provider.dart';
@@ -21,8 +22,13 @@ class EventAssistanceDepartureHistory
     EventAssistanceDepartureHistoryQuery query,
   ) {
     final auth = ref.watch(authenticatedSessionProvider);
-    if (auth.isLoading) return const AsyncLoading();
-    if (auth.hasError) return AsyncError(auth.error!, auth.stackTrace!);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    if ((authState.isLoading || authState.isRefreshing || authState.retrying)) {
+      return const AsyncLoading();
+    }
+    if (authState.error != null) {
+      return AsyncError(authState.error!, authState.stackTrace!);
+    }
     final result = ref.watch(
       eventAssistanceDepartureHistoryForAccountProvider(
         query,
@@ -33,14 +39,22 @@ class EventAssistanceDepartureHistory
         },
       ),
     );
-    if (result.isLoading) return const AsyncLoading();
-    if (result.hasError) return AsyncError(result.error!, result.stackTrace!);
+    final resultState = catchAsyncStateFromAsyncValue(result);
+    if ((resultState.isLoading || resultState.isRefreshing || resultState.retrying)) {
+      return const AsyncLoading();
+    }
+    if (resultState.error != null) {
+      return AsyncError(resultState.error!, resultState.stackTrace!);
+    }
     return result;
   }
 
   void reload() {
     final auth = ref.read(authenticatedSessionProvider);
-    if (auth.isLoading || auth.hasError || auth.asData == null) return;
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    if (!authState.isSettledData || authState.value == null) {
+      return;
+    }
     ref.invalidate(
       eventAssistanceDepartureHistoryForAccountProvider(
         query,

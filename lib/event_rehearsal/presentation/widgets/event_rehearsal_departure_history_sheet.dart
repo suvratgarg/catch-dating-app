@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_movement.dart';
 import 'package:catch_dating_app/event_rehearsal/presentation/event_rehearsal_movement_view_model.dart';
@@ -29,7 +30,9 @@ class _EventRehearsalDepartureHistorySheetState
   final _cursors = <int>[];
   @override
   Widget build(BuildContext context) {
-    final account = ref.watch(authenticatedSessionProvider).asData?.value;
+    final account = catchAsyncStateFromAsyncValue(
+      ref.watch(authenticatedSessionProvider),
+    ).value;
     if (!identical(account, _account)) {
       _account = account;
       _cursors.clear();

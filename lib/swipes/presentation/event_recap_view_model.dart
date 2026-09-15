@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -33,34 +34,37 @@ AsyncValue<EventRecapViewModel?> buildEventRecapViewModel({
   required AsyncValue<String?> uidAsync,
   required AsyncValue<List<PublicProfile>> candidatesAsync,
 }) {
-  if (eventAsync.isLoading || uidAsync.isLoading || candidatesAsync.isLoading) {
+  final eventState = catchAsyncStateFromAsyncValue(eventAsync);
+  final uidState = catchAsyncStateFromAsyncValue(uidAsync);
+  final candidatesState = catchAsyncStateFromAsyncValue(candidatesAsync);
+  if (eventState.isLoading || uidState.isLoading || candidatesState.isLoading) {
     return const AsyncLoading();
   }
 
-  if (eventAsync.hasError) {
+  if (eventState.hasError) {
     return AsyncError(
-      eventAsync.error!,
-      eventAsync.stackTrace ?? StackTrace.current,
+      eventState.error!,
+      eventState.stackTrace ?? StackTrace.current,
     );
   }
-  if (uidAsync.hasError) {
+  if (uidState.hasError) {
     return AsyncError(
-      uidAsync.error!,
-      uidAsync.stackTrace ?? StackTrace.current,
+      uidState.error!,
+      uidState.stackTrace ?? StackTrace.current,
     );
   }
-  if (candidatesAsync.hasError) {
+  if (candidatesState.hasError) {
     return AsyncError(
-      candidatesAsync.error!,
-      candidatesAsync.stackTrace ?? StackTrace.current,
+      candidatesState.error!,
+      candidatesState.stackTrace ?? StackTrace.current,
     );
   }
 
-  final event = eventAsync.asData?.value;
+  final event = eventState.value;
   if (event == null) return const AsyncData(null);
 
-  final currentUid = uidAsync.asData?.value;
-  final attendeeIds = (candidatesAsync.asData?.value ?? const <PublicProfile>[])
+  final currentUid = uidState.value;
+  final attendeeIds = (candidatesState.value ?? const <PublicProfile>[])
       .map((profile) => profile.uid)
       .where((uid) => uid != currentUid)
       .toList(growable: false);

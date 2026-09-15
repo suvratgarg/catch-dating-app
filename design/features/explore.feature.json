@@ -1,7 +1,7 @@
 {
   "$schema": "./feature_contract.schema.json",
   "version": 2,
-  "updated": "2026-08-05",
+  "updated": "2026-09-14",
   "id": "feature.explore",
   "name": "Explore",
   "owner": "explore",
@@ -23,8 +23,27 @@
       },
       "bindings": {
         "previewSources": [
-          "widgetbook/lib/explore/explore_use_cases.dart",
-          "widgetbook/lib/primitives/core_catalog_use_cases.dart"
+          "widgetbook/lib/explore/catalog/activity.dart",
+          "widgetbook/lib/explore/catalog/cover.dart",
+          "widgetbook/lib/explore/catalog/cross_paths.dart",
+          "widgetbook/lib/explore/catalog/empty.dart",
+          "widgetbook/lib/explore/catalog/feed.dart",
+          "widgetbook/lib/explore/catalog/filters.dart",
+          "widgetbook/lib/explore/catalog/map.dart",
+          "widgetbook/lib/explore/catalog/screen.dart",
+          "widgetbook/lib/primitives/catalog/celebration.dart",
+          "widgetbook/lib/primitives/catalog/chrome.dart",
+          "widgetbook/lib/primitives/catalog/docks.dart",
+          "widgetbook/lib/primitives/catalog/event_hero.dart",
+          "widgetbook/lib/primitives/catalog/event_information.dart",
+          "widgetbook/lib/primitives/catalog/feedback.dart",
+          "widgetbook/lib/primitives/catalog/inputs.dart",
+          "widgetbook/lib/primitives/catalog/layout.dart",
+          "widgetbook/lib/primitives/catalog/loading.dart",
+          "widgetbook/lib/primitives/catalog/media.dart",
+          "widgetbook/lib/primitives/catalog/menus.dart",
+          "widgetbook/lib/primitives/catalog/sections.dart",
+          "widgetbook/lib/primitives/catalog/typography.dart"
         ],
         "actionOwners": [
           {

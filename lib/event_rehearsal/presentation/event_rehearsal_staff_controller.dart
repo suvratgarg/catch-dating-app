@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
+
 import 'package:catch_dating_app/auth/data/authenticated_session.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_rehearsal/data/event_rehearsal_repository.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_staff_change.dart';
@@ -98,6 +100,7 @@ class EventRehearsalStaffController extends _$EventRehearsalStaffController {
   @override
   RehearsalStaffEditorState build(String sessionId) {
     final auth = ref.watch(authenticatedSessionProvider);
+    final authState = catchAsyncStateFromAsyncValue(auth);
     _epoch++;
     _account = null;
     _clearPending();
@@ -106,9 +109,9 @@ class EventRehearsalStaffController extends _$EventRehearsalStaffController {
       _epoch++;
       _clearPending();
     });
-    if (auth.isLoading || auth.hasError || auth.asData == null) {
+    if (!authState.isSettledData || authState.value == null) {
       return RehearsalStaffUnavailable(
-        auth.error ?? rehearsalReviewSessionChanged,
+        authState.error ?? rehearsalReviewSessionChanged,
       );
     }
     _account = switch (auth) {
@@ -124,9 +127,8 @@ class EventRehearsalStaffController extends _$EventRehearsalStaffController {
       return false;
     }
     final auth = ref.read(authenticatedSessionProvider);
-    return !auth.isLoading &&
-        !auth.hasError &&
-        identical(auth.asData?.value, account);
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    return authState.isSettledData && identical(authState.value, account);
   }
 
   void _requireReview(RehearsalAssistanceReview review) {

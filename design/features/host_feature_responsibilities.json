@@ -443,8 +443,12 @@
       ],
       "sharedDependencies": [
         {
-          "path": "lib/hosts/data/host_crm_repository.dart",
-          "reason": "Current shared Host data seam for organizer contacts and saved audiences until A3 relocates it."
+          "path": "lib/hosts/data/crm/host_contacts_repository.dart",
+          "reason": "Owns organizer contacts, customer context, notes, and merge review."
+        },
+        {
+          "path": "lib/hosts/data/crm/host_saved_audience_repository.dart",
+          "reason": "Owns reusable audience definitions, filter options, membership resolution, and previews."
         },
         {
           "path": "lib/hosts/data/host_forms_repository.dart",

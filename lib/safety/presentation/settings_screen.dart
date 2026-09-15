@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart'
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -24,6 +25,8 @@ import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+part 'blocked_account_tile.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -173,12 +176,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final packageInfo = ref.watch(appPackageInfoProvider).asData?.value;
+    final packageInfoAsync = ref.watch(appPackageInfoProvider);
+    final packageInfo = catchAsyncStateFromAsyncValue(packageInfoAsync).value;
     final version = packageInfo?.version ?? '—';
     final userProfileAsync = ref.watch(watchUserProfileProvider);
-    final userProfile = userProfileAsync.asData?.value;
+    final userProfile = catchAsyncStateFromAsyncValue(userProfileAsync).value;
     final blockedUsersAsync = ref.watch(watchBlockedUsersProvider);
-    final blockedUsers = blockedUsersAsync.asData?.value;
+    final blockedUsers = catchAsyncStateFromAsyncValue(blockedUsersAsync).value;
     final blockedProfilesAsync = blockedUsers == null || blockedUsers.isEmpty
         ? const AsyncData(<String, PublicProfile>{})
         : ref.watch(
@@ -787,47 +791,6 @@ class BlockedAccountsSkeleton extends StatelessWidget {
             if (index < 2) ...[gapH12, const CatchDivider(), gapH12],
           ],
         ],
-      ),
-    );
-  }
-}
-
-class BlockedAccountTile extends StatelessWidget {
-  const BlockedAccountTile({
-    super.key,
-    required this.row,
-    required this.divider,
-    required this.unblocking,
-    this.enabled = true,
-    required this.onUnblock,
-  });
-
-  final SettingsBlockedAccountRow row;
-  final bool divider;
-  final bool unblocking;
-  final bool enabled;
-  final ValueChanged<String> onUnblock;
-
-  @override
-  Widget build(BuildContext context) {
-    return CatchPersonRow(
-      copy: catchPersonRowCopy(context.l10n),
-      data: CatchPersonRowData(
-        name: row.name,
-        imageUrl: row.imageUrl,
-        metaLine: row.metaLine,
-        seed: row.seed,
-      ),
-      divider: divider,
-      trailing: CatchButton(
-        key: SettingsKeys.unblockButton(row.uid),
-        label: context.l10n.safetySettingsScreenLabelUnblock,
-        status: (unblocking)
-            ? CatchButtonStatus.loading
-            : CatchButtonStatus.idle,
-        onPressed: !enabled || unblocking ? null : () => onUnblock(row.uid),
-        variant: CatchButtonVariant.ghost,
-        size: CatchButtonSize.sm,
       ),
     );
   }

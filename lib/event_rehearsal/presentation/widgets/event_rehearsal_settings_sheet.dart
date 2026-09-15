@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/event_rehearsal/domain/event_rehearsal_settings_change.dart';
@@ -28,19 +30,20 @@ class EventRehearsalSettingsSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final query = eventRehearsalAssistanceProvider(sessionId);
     final page = ref.watch(query);
+    final pageState = catchAsyncStateFromAsyncValue(page);
     final owner = eventRehearsalSettingsControllerProvider(sessionId);
     final state = ref.watch(owner);
     final controller = ref.read(owner.notifier);
     final form = state is RehearsalSettingsForm ? state : null;
     final target = form == null ? groupId : form.groupId;
     final denied =
-        page.error is AppException &&
+        pageState.error is AppException &&
         {
           'permission-denied',
           'unauthenticated',
           'sign-in-required',
           'session-changed',
-        }.contains((page.error! as AppException).code);
+        }.contains((pageState.error! as AppException).code);
     void run(Future<Object?> Function() action) => unawaited(() async {
       try {
         await action();
@@ -80,8 +83,8 @@ class EventRehearsalSettingsSheet extends ConsumerWidget {
                 errorBuilder: (_, error, _, retry) =>
                     CatchLocalizedErrorBanner(error, onRetry: retry),
                 builder: (_, review) {
-                  final fresh = !page.isLoading && !page.hasError
-                      ? page.asData?.value
+                  final fresh = pageState.isSettledData
+                      ? pageState.value
                       : null;
                   final base = form?.result ?? review.snapshot;
                   final snapshot =
@@ -115,7 +118,7 @@ class EventRehearsalSettingsSheet extends ConsumerWidget {
                       snapshot: snapshot,
                       phase: phase,
                       submitted: form?.change?.decision,
-                      error: page.error ?? form?.error,
+                      error: pageState.error ?? form?.error,
                       onConfigure: (value) =>
                           save(RehearsalConfigureUpdates(value)),
                       onPause: () => save(const RehearsalPauseUpdates()),
@@ -167,7 +170,7 @@ class EventRehearsalSettingsSheet extends ConsumerWidget {
                         ),
                       _ => null,
                     },
-                    error: page.error ?? form?.error,
+                    error: pageState.error ?? form?.error,
                     onSave: (draft) => run(() {
                       final current = fresh ?? review;
                       controller.open(current, groupId: target);

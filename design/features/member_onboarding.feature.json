@@ -21,7 +21,14 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/onboarding/onboarding_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/onboarding/catalog/identity.dart",
+          "widgetbook/lib/onboarding/catalog/photos.dart",
+          "widgetbook/lib/onboarding/catalog/preferences.dart",
+          "widgetbook/lib/onboarding/catalog/prompts.dart",
+          "widgetbook/lib/onboarding/catalog/screen.dart",
+          "widgetbook/lib/onboarding/catalog/welcome.dart"
+        ],
         "actionOwners": [
           {
             "id": "welcome_page",
@@ -527,7 +534,9 @@
         ]
       },
       "bindings": {
-        "previewSources": ["widgetbook/lib/onboarding/onboarding_use_cases.dart"],
+        "previewSources": [
+          "widgetbook/lib/onboarding/catalog/welcome.dart"
+        ],
         "actionOwners": [
           {
             "id": "welcome_page",

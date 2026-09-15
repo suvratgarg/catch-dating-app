@@ -49,7 +49,7 @@ void _registerEventSuccessHostLiveTests() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.byType(EventSuccessTabPicker), findsNothing);
+    expect(find.byType(EventSuccessHostTabBar), findsNothing);
     expect(find.textContaining('LIVE NOW'), findsOneWidget);
   });
 
@@ -135,7 +135,7 @@ void _registerEventSuccessHostLiveTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -206,7 +206,7 @@ void _registerEventSuccessHostLiveTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -243,7 +243,9 @@ void _registerEventSuccessHostLiveTests() {
     await pumpFeatureUi(tester);
 
     expect(plan.hasModule(EventSuccessModuleCatalog.liveReveal.id), isTrue);
-    final liveTab = tester.widget<LiveTab>(find.byType(LiveTab));
+    final liveTab = tester.widget<EventSuccessHostLivePageBody>(
+      find.byType(EventSuccessHostLivePageBody),
+    );
     expect(liveTab.accountabilityAttendees, hasLength(4));
     expect(liveTab.accountabilityAttendees.first.isCheckedIn, isTrue);
     expect(
@@ -283,7 +285,7 @@ void _registerEventSuccessHostLiveTests() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: Scaffold(
-            body: EventSuccessHostPanel(
+            body: EventSuccessHostWorkspacePageBody(
               event: event,
               plan: plan,
               planIsPersisted: true,
@@ -365,7 +367,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -449,7 +451,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -539,7 +541,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -608,7 +610,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -710,7 +712,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -780,7 +782,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -853,7 +855,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,
@@ -914,7 +916,7 @@ void _registerEventSuccessHostLiveTests() {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: EventSuccessHostPanel(
+                child: EventSuccessHostWorkspacePageBody(
                   event: event,
                   plan: plan,
                   planIsPersisted: true,

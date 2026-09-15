@@ -1,6 +1,11 @@
-import 'package:catch_dating_app/hosts/data/host_crm_repository.dart';
+import 'package:catch_dating_app/hosts/data/crm/host_campaign_repository.dart';
 import 'package:catch_dating_app/hosts/data/host_forms_repository.dart';
-import 'package:catch_dating_app/hosts/domain/host_form_operations.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_campaign.dart';
+import 'package:catch_dating_app/hosts/domain/crm/host_send_summary.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_analytics.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_automation.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_conversion.dart';
+import 'package:catch_dating_app/hosts/domain/forms/host_form_response.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -293,7 +298,7 @@ class HostFormAutomationsController extends _$HostFormAutomationsController {
   }
 
   Future<HostCampaign> inspectMessage(String campaignId) => ref
-      .read(hostCrmRepositoryProvider)
+      .read(hostCampaignRepositoryProvider)
       .getCampaignReport(organizerId, campaignId);
 
   Future<bool> createPreset({
@@ -383,7 +388,7 @@ class HostAutomationMessagesController
   @override
   Future<HostAutomationMessagesState> build(String organizerId) async {
     final page = await ref
-        .read(hostCrmRepositoryProvider)
+        .read(hostCampaignRepositoryProvider)
         .listCampaigns(organizerId);
     return HostAutomationMessagesState(
       messages: _draftMessages(page),
@@ -405,7 +410,7 @@ class HostAutomationMessagesController
     );
     try {
       final page = await ref
-          .read(hostCrmRepositoryProvider)
+          .read(hostCampaignRepositoryProvider)
           .listCampaigns(organizerId, cursor: current.nextCursor);
       state = AsyncData(
         HostAutomationMessagesState(

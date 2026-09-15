@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/event_success/data/event_attendance_report_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_runtime_scope.dart';
 import 'package:catch_dating_app/event_success/domain/event_attendance_report.dart';
@@ -31,9 +32,12 @@ class EventAttendanceReport extends _$EventAttendanceReport {
         final result = ref.watch(
           eventAttendanceReportForAccountProvider(scope, account: account),
         );
-        if (result.isLoading) return const AsyncLoading();
-        if (result.hasError) {
-          return AsyncError(result.error!, result.stackTrace!);
+        final resultState = catchAsyncStateFromAsyncValue(result);
+        if ((resultState.isLoading || resultState.isRefreshing || resultState.retrying)) {
+          return const AsyncLoading();
+        }
+        if (resultState.error != null) {
+          return AsyncError(resultState.error!, resultState.stackTrace!);
         }
         return result;
       },
@@ -42,7 +46,10 @@ class EventAttendanceReport extends _$EventAttendanceReport {
 
   void reload() {
     final auth = ref.read(eventAssistanceAccountProvider);
-    if (auth.isLoading || auth.hasError || auth.asData == null) return;
+    final authState = catchAsyncStateFromAsyncValue(auth);
+    if (!authState.isSettledData || authState.value == null) {
+      return;
+    }
     ref.invalidate(
       eventAttendanceReportForAccountProvider(
         scope,

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_boundary.dart';
+import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_scaffold.dart';
 import 'package:catch_dating_app/core/widgets/event_activity_visuals.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
@@ -80,7 +81,7 @@ class PaymentPendingCheckoutController extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final paymentAsync = ref.watch(watchPaymentProvider(data.paymentId));
-    final payment = paymentAsync.asData?.value;
+    final payment = catchAsyncStateFromAsyncValue(paymentAsync).value;
     if (payment != null &&
         payment.status == PaymentStatus.completed &&
         !payment.signUpFailed) {
@@ -440,7 +441,7 @@ class PaymentConfirmationBodyController extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final clubAsync = ref.watch(watchClubProvider(event.clubId));
-    final clubName = clubAsync.asData?.value?.name;
+    final clubName = catchAsyncStateFromAsyncValue(clubAsync).value?.name;
     final controller = ref.watch(paymentConfirmationControllerProvider);
     final share = ref.watch(externalShareControllerProvider);
 

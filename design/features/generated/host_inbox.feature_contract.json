@@ -2,8 +2,8 @@
   "notice": "GENERATED CODE - DO NOT MODIFY BY HAND.",
   "version": 2,
   "generatedFrom": "design/features/host_inbox.feature.json",
-  "generatedFor": "2026-08-31",
-  "sourceDigest": "sha256:2a99e6a3396b6fabe8d07eaa4de186588ad739735b46028ba046b176ef3f2100",
+  "generatedFor": "2026-09-15",
+  "sourceDigest": "sha256:3f2f3fe868fd740219bda294944814e9dd8d0a23956de0a92df8d1c08059c1ec",
   "resolvedDigest": "sha256:2de3857131c76c59c527d6c663e5bb8914b4493c1c68e88b82372b619c38ea72",
   "feature": {
     "id": "feature.host_inbox",
@@ -41,7 +41,7 @@
       "bindings": {
         "previewSources": [
           "widgetbook/lib/hosts/host_inbox_use_cases.dart",
-          "widgetbook/lib/hosts/host_operations_use_cases.dart"
+          "widgetbook/lib/hosts/operations/audiences.dart"
         ],
         "actionOwners": [
           {
@@ -79,6 +79,12 @@
             "language": "dart",
             "file": "lib/hosts/presentation/inbox/host_sends_workspace.dart",
             "symbol": "HostSendsWorkspaceSliver"
+          },
+          {
+            "id": "send_intent_menu",
+            "language": "dart",
+            "file": "lib/hosts/presentation/inbox/host_send_intent_menu.dart",
+            "symbol": "HostSendIntentMenu"
           },
           {
             "id": "manual_send_queue",
@@ -673,8 +679,8 @@
         },
         {
           "id": "select_communication_intent",
-          "owner": "sends_workspace",
-          "codeValue": "_HostSendsIntentPicker",
+          "owner": "send_intent_menu",
+          "codeValue": "HostSendIntentMenu",
           "cardinality": "unbounded",
           "scopeKeys": [
             "viewerUid",
