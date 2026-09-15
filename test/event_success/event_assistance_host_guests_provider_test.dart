@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/authenticated_session.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_host_guests_repository.dart';
 import 'package:catch_dating_app/event_success/data/event_assistance_participation_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_host_guests.dart';
 import 'package:catch_dating_app/event_success/domain/event_assistance_participation.dart';
 import 'package:catch_dating_app/event_success/presentation/event_assistance_host_guests_provider.dart';
-import 'package:catch_dating_app/event_success/presentation/event_assistance_participation_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_participation_editor.dart';
+import 'package:catch_dating_app/event_success/presentation/event_assistance_participation_provider.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -196,21 +198,22 @@ void main() {
     () async {
       await signIn('host-1');
       await complete(0);
-      container.listen(
-        eventAssistanceParticipationControllerProvider,
-        (_, _) {},
+      final scope = participationScope();
+      final query = eventAssistanceParticipationReviewProvider(scope);
+      container.listen(query, (_, _) {});
+      await container.read(
+        eventAssistanceParticipationForAccountProvider(
+          scope,
+          account: container.read(authenticatedSessionProvider).requireValue,
+        ).future,
       );
-      final controller = container.read(
-        eventAssistanceParticipationControllerProvider.notifier,
-      );
-      final action = controller.prepare(
-        session: EventParticipationSession(
-          accountId: 'host-1',
-          view: participationView(),
-        ),
-        participation: const EventAssistanceParticipation.departed(),
-      );
-      await controller.submit(action);
+      await container.pump();
+      final actions = eventAssistanceParticipationEditorProvider(scope);
+      container.listen(actions, (_, _) {});
+      final editor = container.read(actions.notifier)
+        ..open(container.read(query).requireValue)
+        ..select(EventParticipationChoice.departed);
+      await editor.submit();
       await repository.waitForRequests(2);
       final refreshed = hostGuestsView();
       await complete(1, refreshed);
@@ -254,11 +257,17 @@ class _Repository extends Fake implements EventAssistanceHostGuestsRepository {
 class _ParticipationRepository extends Fake
     implements EventAssistanceParticipationRepository {
   @override
+  Future<EventAssistanceParticipationView> fetch(
+    EventAssistanceGuestScope scope,
+  ) async => participationView();
+
+  @override
   Future<EventAssistanceParticipationResult> apply(
     EventAssistanceParticipationChange change,
   ) async => EventAssistanceParticipationResult.fromCallableData(
     participationResponse(
       outcome: 'applied',
+      participation: change.participation.toJson(),
       operationRevision: 3,
       revision: 3,
     ),

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.133.0
+version: 1.134.0
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -502,19 +502,25 @@ Automatic enrollment's first saved guest revision is zero. The client
 distinguishes that current (or source-changed) record from uninitialized state
 by its episode, and retains revision zero in the first reviewed host command.
 
-The account-scoped participation provider and action controller refresh reads
-after successful commands and reject pending actions after a sign-in change.
-Mutation state is keyed per account/event/attendee. They do not call attendance,
-infer presence, retry against a newer revision, or write Firestore directly.
-`EventAssistanceParticipationEditor` owns the pending form decision for one
-reviewed session. It starts without an implicit selection, offers a return
-point only for a break, and clears that point when another choice is selected.
-Submission freezes editing, reload and dismissal; duplicate triggers share one
-future. An uncertain result permits only an exact retry or explicit reload.
-Source/permission/session conflicts require fresh review. A new loaded session
-has a separate editor, so an older completion cannot overwrite its draft.
-These are controller guarantees; the live sheet must still bind its controls
-and route dismissal to the exposed state and handle the returned error.
+The participation review now uses the shared uninterrupted authentication
+session. Loading, reload, errors and account transitions remove prior data;
+obsolete or foreign reviews cannot create a command. The scope-owned
+`EventAssistanceParticipationEditor` retains one unresolved decision across page
+refresh and sheet closure. It starts with no implicit selection, offers itinerary
+return points only for a temporary break, and clears the point on another choice.
+Duplicate and reentrant triggers share one future. An uncertain result permits
+only the exact retry; it cannot reload or replace the command. Definitive
+conflicts release the pending action and require new authority. A temporary
+strong auth subscription also clears detached pending state on sign-out,
+same-UID re-entry or auth failure; late responses cannot restore it.
+
+Both the repository and action owner verify the resulting scope, receipt
+revision and, for an applied result, the requested state/return point, source
+hash and unchanged attendance fact. A replay preserves the original receipt
+revision and displays the newer authoritative view. Success refreshes the guest
+review and Host assistance projection without calling attendance or inferring
+presence. These are controller guarantees; the live sheet must bind controls,
+retry and route dismissal to this owner and handle its returned errors.
 The live roster controls, module-specific opt-outs, future allocation exclusion,
 and rehearsal adapters remain integration work. Moving-group
 membership now has its own scoped command boundary below. The new command receipts need terminal retention before activation.

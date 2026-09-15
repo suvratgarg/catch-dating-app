@@ -248,7 +248,44 @@ final class EventAssistanceParticipationResult {
   final EventParticipationOutcome outcome;
   final int? operationRevision;
   final EventAssistanceParticipationView view;
+
+  /// A successful write must confirm this decision. Replays retain the original
+  /// receipt revision while showing any later authoritative participation.
+  void requireChange(EventAssistanceParticipationChange change) {
+    final before = change.snapshot;
+    if (view.scope != before.scope ||
+        outcome == EventParticipationOutcome.read ||
+        operationRevision != before.revision + 1 ||
+        view.revision < operationRevision!) {
+      throw const FormatException('Invalid participation change receipt.');
+    }
+    if (outcome == EventParticipationOutcome.applied &&
+        (view.revision != operationRevision ||
+            view.sourceHash != before.sourceHash ||
+            view.serverTime < before.serverTime ||
+            view.freshness != EventParticipationFreshness.current ||
+            view.checkedIn != before.checkedIn ||
+            !_sameParticipation(view.participation, change.participation))) {
+      throw const FormatException(
+        'Participation result does not confirm the decision.',
+      );
+    }
+  }
 }
+
+bool _sameParticipation(
+  EventAssistanceParticipation? actual,
+  EventAssistanceParticipation expected,
+) => switch ((actual, expected)) {
+  (EventParticipationActive(), EventParticipationActive()) ||
+  (EventParticipationDeparted(), EventParticipationDeparted()) => true,
+  (
+    EventParticipationOnBreak(:final resumeAtUnit),
+    EventParticipationOnBreak(resumeAtUnit: final expectedPoint),
+  ) =>
+    resumeAtUnit == expectedPoint,
+  _ => false,
+};
 
 EventAssistanceParticipation? _participation(Object? value) {
   if (value == null) return null;

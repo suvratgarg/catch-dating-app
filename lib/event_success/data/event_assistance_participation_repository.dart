@@ -60,10 +60,7 @@ class EventAssistanceParticipationRepository {
         response.data,
         expectedScope: change.snapshot.scope,
       );
-      if (result.outcome == EventParticipationOutcome.read ||
-          result.operationRevision != change.snapshot.revision + 1) {
-        throw const FormatException('Invalid participation change outcome.');
-      }
+      result.requireChange(change);
       // A replay can return a newer current view. Keep its receipt revision
       // separate; never overwrite that view with the originally requested state.
       return result;

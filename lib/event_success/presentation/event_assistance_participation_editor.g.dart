@@ -8,20 +8,23 @@ part of 'event_assistance_participation_editor.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// One guest owns one pending participation decision across review refresh and closure.
 
 @ProviderFor(EventAssistanceParticipationEditor)
 final eventAssistanceParticipationEditorProvider =
     EventAssistanceParticipationEditorFamily._();
 
+/// One guest owns one pending participation decision across review refresh and closure.
 final class EventAssistanceParticipationEditorProvider
     extends
         $NotifierProvider<
           EventAssistanceParticipationEditor,
           EventParticipationEditorState
         > {
+  /// One guest owns one pending participation decision across review refresh and closure.
   EventAssistanceParticipationEditorProvider._({
     required EventAssistanceParticipationEditorFamily super.from,
-    required EventParticipationSession super.argument,
+    required EventAssistanceGuestScope super.argument,
   }) : super(
          retry: null,
          name: r'eventAssistanceParticipationEditorProvider',
@@ -69,7 +72,9 @@ final class EventAssistanceParticipationEditorProvider
 }
 
 String _$eventAssistanceParticipationEditorHash() =>
-    r'f52464471b2911e7450b987cf8b19a797702d2dd';
+    r'7928106507ecd945588613543aa6456952f753d3';
+
+/// One guest owns one pending participation decision across review refresh and closure.
 
 final class EventAssistanceParticipationEditorFamily extends $Family
     with
@@ -78,7 +83,7 @@ final class EventAssistanceParticipationEditorFamily extends $Family
           EventParticipationEditorState,
           EventParticipationEditorState,
           EventParticipationEditorState,
-          EventParticipationSession
+          EventAssistanceGuestScope
         > {
   EventAssistanceParticipationEditorFamily._()
     : super(
@@ -89,23 +94,25 @@ final class EventAssistanceParticipationEditorFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// One guest owns one pending participation decision across review refresh and closure.
+
   EventAssistanceParticipationEditorProvider call(
-    EventParticipationSession session,
-  ) => EventAssistanceParticipationEditorProvider._(
-    argument: session,
-    from: this,
-  );
+    EventAssistanceGuestScope scope,
+  ) =>
+      EventAssistanceParticipationEditorProvider._(argument: scope, from: this);
 
   @override
   String toString() => r'eventAssistanceParticipationEditorProvider';
 }
 
+/// One guest owns one pending participation decision across review refresh and closure.
+
 abstract class _$EventAssistanceParticipationEditor
     extends $Notifier<EventParticipationEditorState> {
-  late final _$args = ref.$arg as EventParticipationSession;
-  EventParticipationSession get session => _$args;
+  late final _$args = ref.$arg as EventAssistanceGuestScope;
+  EventAssistanceGuestScope get scope => _$args;
 
-  EventParticipationEditorState build(EventParticipationSession session);
+  EventParticipationEditorState build(EventAssistanceGuestScope scope);
   @$mustCallSuper
   @override
   WhenComplete runBuild() {

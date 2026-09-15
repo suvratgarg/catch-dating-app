@@ -7,6 +7,67 @@ import 'package:json_schema/json_schema.dart';
 import 'event_assistance_participation_fixtures.dart';
 
 void main() {
+  test(
+    'applied results confirm the reviewed decision; replays retain later state',
+    () {
+      final change = participationView().prepareChange(
+        operationId: 'confirmed-departure',
+        participation: const EventAssistanceParticipation.departed(),
+      );
+      Map<String, Object?> applied() => participationResponse(
+        outcome: 'applied',
+        operationRevision: 3,
+        revision: 3,
+        participation: const {'state': 'departed', 'resumeAtUnit': null},
+      );
+      EventAssistanceParticipationResult parse(Map<String, Object?> raw) =>
+          EventAssistanceParticipationResult.fromCallableData(
+            raw,
+            expectedScope: participationScope(),
+          );
+      expect(() => parse(applied()).requireChange(change), returnsNormally);
+      for (final field in [
+        'decision',
+        'source',
+        'clock',
+        'attendance',
+        'revision',
+        'receipt',
+      ]) {
+        final raw = applied();
+        final view = raw['view']! as Map<String, Object?>;
+        switch (field) {
+          case 'decision':
+            view['participation'] = {'state': 'active', 'resumeAtUnit': null};
+          case 'source':
+            view['sourceHash'] = 'b' * 64;
+          case 'clock':
+            view['serverTime'] = change.snapshot.serverTime - 1;
+          case 'attendance':
+            view['checkedIn'] = true;
+          case 'revision':
+            view['revision'] = 4;
+          case 'receipt':
+            raw['operationRevision'] = 2;
+        }
+        expect(
+          () => parse(raw).requireChange(change),
+          throwsFormatException,
+          reason: field,
+        );
+      }
+      final replay = parse(
+        participationResponse(
+          outcome: 'replayed',
+          operationRevision: 3,
+          revision: 5,
+        ),
+      );
+      expect(() => replay.requireChange(change), returnsNormally);
+      expect(replay.view.participation, isA<EventParticipationActive>());
+    },
+  );
+
   test('all typed participation commands match the shared wire contract', () {
     final schema = JsonSchema.create(
       schemaSetEventAssistanceParticipationCallablePayloadSchema,
