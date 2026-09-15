@@ -130,6 +130,8 @@ export {validateSubmitEventAssistanceGuestChoiceCallablePayload} from "./validat
 export {validateEventAssistanceGuestViewCallableResponse} from "./validators/eventAssistanceGuestViewOutput";
 export {validateSubmitEventAssistanceGuestChoiceCallableResponse} from "./validators/submitEventAssistanceGuestChoiceOutput";
 export {validateEventAssistanceMessageDocument} from "./validators/eventAssistanceMessageDocument";
+export {validateEventAssistanceOperationalNoticeQuotaDocument} from "./validators/eventAssistanceOperationalNoticeQuotaDocument";
+export {validateEventAssistanceOperationalNoticePublicationDocument} from "./validators/eventAssistanceOperationalNoticePublicationDocument";
 export {validateEventAssistanceMessageIntent} from "./validators/eventAssistanceMessageIntent";
 export {validateEventAssistanceDeliveryAttempt} from "./validators/eventAssistanceDeliveryAttempt";
 export {validateEventAssistanceGuestResponse} from "./validators/eventAssistanceGuestResponse";

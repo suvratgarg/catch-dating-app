@@ -128,6 +128,8 @@ import {
   eventAssistanceGuestViewCallableResponseSchema,
   submitEventAssistanceGuestChoiceCallableResponseSchema,
   eventAssistanceMessageDocumentSchema,
+  eventAssistanceOperationalNoticeQuotaDocumentSchema,
+  eventAssistanceOperationalNoticePublicationDocumentSchema,
   eventAssistanceMessageIntentSchema,
   eventAssistanceDeliveryAttemptSchema,
   eventAssistanceGuestResponseSchema,
@@ -822,6 +824,8 @@ export const validateSubmitEventAssistanceGuestChoiceCallablePayload = ajv.compi
 export const validateEventAssistanceGuestViewCallableResponse = ajv.compile(eventAssistanceGuestViewCallableResponseSchema);
 export const validateSubmitEventAssistanceGuestChoiceCallableResponse = ajv.compile(submitEventAssistanceGuestChoiceCallableResponseSchema);
 export const validateEventAssistanceMessageDocument = ajv.compile(eventAssistanceMessageDocumentSchema);
+export const validateEventAssistanceOperationalNoticeQuotaDocument = ajv.compile(eventAssistanceOperationalNoticeQuotaDocumentSchema);
+export const validateEventAssistanceOperationalNoticePublicationDocument = ajv.compile(eventAssistanceOperationalNoticePublicationDocumentSchema);
 export const validateEventAssistanceMessageIntent = ajv.compile(eventAssistanceMessageIntentSchema);
 export const validateEventAssistanceDeliveryAttempt = ajv.compile(eventAssistanceDeliveryAttemptSchema);
 export const validateEventAssistanceGuestResponse = ajv.compile(eventAssistanceGuestResponseSchema);

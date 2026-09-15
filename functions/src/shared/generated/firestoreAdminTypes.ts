@@ -3535,6 +3535,64 @@ export interface EventAssistanceMessageDocument {
   };
 }
 
+export interface EventAssistanceOperationalNoticeQuotaDocument {
+  schemaVersion: 1;
+  quotaId: string;
+  context:
+    | {
+        mode: "live";
+        eventId: string;
+        organizerId: string;
+      }
+    | {
+        mode: "rehearsal";
+        rehearsalId: string;
+        virtualEventId: string;
+        clockId: string;
+      };
+  eventId: string;
+  attendeeId: string;
+  attendeeGeneration: string;
+  sourceGeneration: string;
+  workflowKind: "planChangeCommunication" | "postEventFollowUp";
+  count: number;
+  revision: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface EventAssistanceOperationalNoticePublicationDocument {
+  schemaVersion: 1;
+  publicationId: string;
+  quotaId: string;
+  context:
+    | {
+        mode: "live";
+        eventId: string;
+        organizerId: string;
+      }
+    | {
+        mode: "rehearsal";
+        rehearsalId: string;
+        virtualEventId: string;
+        clockId: string;
+      };
+  eventId: string;
+  attendeeId: string;
+  episodeId: string;
+  sourceKind: "planChange" | "followUp";
+  workflowKind: "planChangeCommunication" | "postEventFollowUp";
+  sourceId: string;
+  sourceRevision: number;
+  messageId: string;
+  threadId: string;
+  ordinal: number;
+  contentHash: string;
+  intentHash: string;
+  sourceOccurredAt: number;
+  createdAt: number;
+}
+
 /**
  * Immutable idempotency and audit receipt for a dry-run or applied external-event publication/takedown action.
  */

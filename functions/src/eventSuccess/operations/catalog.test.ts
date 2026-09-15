@@ -97,7 +97,7 @@ test("partial command bindings account for every payload variant", () => {
   });
   assert.equal(
     partial.missingCapability,
-    "trustedOperationalNoticeSourcePublication"
+    "planChangeAndFollowUpSourceAdapters"
   );
   assert.equal(commandHasExecutor("sendOperationalMessage", "live"), true);
   assert.equal(
@@ -299,8 +299,9 @@ test("planned commands expose partial variant coverage", () => {
       actor: "automatic",
       coverage: "partial",
       bindingType: "internalCoordinator",
-      operations: ["LiveMessageDispatcher.dispatch"],
-      missingCapability: "trustedOperationalNoticeSourcePublication",
+      operations: ["prepareOperationalNoticePublication",
+        "LiveMessageDispatcher.dispatch"],
+      missingCapability: "planChangeAndFollowUpSourceAdapters",
       variantField: "intent",
       implementedVariants: ["joining"],
       missingVariants: ["planChange", "followUp"],

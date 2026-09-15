@@ -20729,6 +20729,326 @@ abstract final class CatchContractConstraints {
     pattern: '^[a-zA-Z0-9][a-zA-Z0-9._:-]*\$',
   );
 
+  static const eventAssistanceOperationalNoticePublicationDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentContentHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.contentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentEpisodeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.episodeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentIntentHash = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.intentHash',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentMessageId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.messageId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentOrdinal = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.ordinal',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 10080,
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentPublicationId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.publicationId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentQuotaId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.quotaId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentSourceId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.sourceId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentSourceKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.sourceKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['planChange', 'followUp'],
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentSourceOccurredAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.sourceOccurredAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentSourceRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.sourceRevision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 1,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentThreadId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.threadId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticePublicationDocumentWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticePublicationDocument.workflowKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['planChangeCommunication', 'postEventFollowUp'],
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentAttendeeGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.attendeeGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentAttendeeId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.attendeeId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentContextClockId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.context.clockId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentContextEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.context.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentContextMode = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.context.mode',
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentContextOrganizerId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.context.organizerId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentContextRehearsalId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.context.rehearsalId',
+    maxLength: 2000,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentContextVirtualEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.context.virtualEventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentCount = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.count',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 10080,
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentCreatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.createdAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentEventId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.eventId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentQuotaId = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.quotaId',
+    maxLength: 160,
+    minLength: 1,
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*\$',
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentRevision = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.revision',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentSchemaVersion = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.schemaVersion',
+    required: true,
+    valueTypes: <String>['integer'],
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentSourceGeneration = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.sourceGeneration',
+    required: true,
+    valueTypes: <String>['string'],
+    pattern: '^[a-f0-9]{64}\$',
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentUpdatedAt = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.updatedAt',
+    required: true,
+    valueTypes: <String>['integer'],
+    minimum: 0,
+    maximum: 9007199254740991,
+  );
+
+  static const eventAssistanceOperationalNoticeQuotaDocumentWorkflowKind = CatchContractFieldConstraints(
+    path: 'eventAssistanceOperationalNoticeQuotaDocument.workflowKind',
+    required: true,
+    valueTypes: <String>['string'],
+    enumValues: <String>['planChangeCommunication', 'postEventFollowUp'],
+  );
+
   static const eventAssistanceParticipantContextCallableResponseEventId = CatchContractFieldConstraints(
     path: 'eventAssistanceParticipantContextCallableResponse.eventId',
     maxLength: 160,
@@ -95567,6 +95887,46 @@ abstract final class CatchContractConstraints {
     'eventAssistanceMessageIntent.title': eventAssistanceMessageIntentTitle,
     'eventAssistanceMessageIntent.workflow.kind': eventAssistanceMessageIntentWorkflowKind,
     'eventAssistanceMessageIntent.workflow.occurrenceId': eventAssistanceMessageIntentWorkflowOccurrenceId,
+    'eventAssistanceOperationalNoticePublicationDocument.attendeeId': eventAssistanceOperationalNoticePublicationDocumentAttendeeId,
+    'eventAssistanceOperationalNoticePublicationDocument.contentHash': eventAssistanceOperationalNoticePublicationDocumentContentHash,
+    'eventAssistanceOperationalNoticePublicationDocument.context.clockId': eventAssistanceOperationalNoticePublicationDocumentContextClockId,
+    'eventAssistanceOperationalNoticePublicationDocument.context.eventId': eventAssistanceOperationalNoticePublicationDocumentContextEventId,
+    'eventAssistanceOperationalNoticePublicationDocument.context.mode': eventAssistanceOperationalNoticePublicationDocumentContextMode,
+    'eventAssistanceOperationalNoticePublicationDocument.context.organizerId': eventAssistanceOperationalNoticePublicationDocumentContextOrganizerId,
+    'eventAssistanceOperationalNoticePublicationDocument.context.rehearsalId': eventAssistanceOperationalNoticePublicationDocumentContextRehearsalId,
+    'eventAssistanceOperationalNoticePublicationDocument.context.virtualEventId': eventAssistanceOperationalNoticePublicationDocumentContextVirtualEventId,
+    'eventAssistanceOperationalNoticePublicationDocument.createdAt': eventAssistanceOperationalNoticePublicationDocumentCreatedAt,
+    'eventAssistanceOperationalNoticePublicationDocument.episodeId': eventAssistanceOperationalNoticePublicationDocumentEpisodeId,
+    'eventAssistanceOperationalNoticePublicationDocument.eventId': eventAssistanceOperationalNoticePublicationDocumentEventId,
+    'eventAssistanceOperationalNoticePublicationDocument.intentHash': eventAssistanceOperationalNoticePublicationDocumentIntentHash,
+    'eventAssistanceOperationalNoticePublicationDocument.messageId': eventAssistanceOperationalNoticePublicationDocumentMessageId,
+    'eventAssistanceOperationalNoticePublicationDocument.ordinal': eventAssistanceOperationalNoticePublicationDocumentOrdinal,
+    'eventAssistanceOperationalNoticePublicationDocument.publicationId': eventAssistanceOperationalNoticePublicationDocumentPublicationId,
+    'eventAssistanceOperationalNoticePublicationDocument.quotaId': eventAssistanceOperationalNoticePublicationDocumentQuotaId,
+    'eventAssistanceOperationalNoticePublicationDocument.schemaVersion': eventAssistanceOperationalNoticePublicationDocumentSchemaVersion,
+    'eventAssistanceOperationalNoticePublicationDocument.sourceId': eventAssistanceOperationalNoticePublicationDocumentSourceId,
+    'eventAssistanceOperationalNoticePublicationDocument.sourceKind': eventAssistanceOperationalNoticePublicationDocumentSourceKind,
+    'eventAssistanceOperationalNoticePublicationDocument.sourceOccurredAt': eventAssistanceOperationalNoticePublicationDocumentSourceOccurredAt,
+    'eventAssistanceOperationalNoticePublicationDocument.sourceRevision': eventAssistanceOperationalNoticePublicationDocumentSourceRevision,
+    'eventAssistanceOperationalNoticePublicationDocument.threadId': eventAssistanceOperationalNoticePublicationDocumentThreadId,
+    'eventAssistanceOperationalNoticePublicationDocument.workflowKind': eventAssistanceOperationalNoticePublicationDocumentWorkflowKind,
+    'eventAssistanceOperationalNoticeQuotaDocument.attendeeGeneration': eventAssistanceOperationalNoticeQuotaDocumentAttendeeGeneration,
+    'eventAssistanceOperationalNoticeQuotaDocument.attendeeId': eventAssistanceOperationalNoticeQuotaDocumentAttendeeId,
+    'eventAssistanceOperationalNoticeQuotaDocument.context.clockId': eventAssistanceOperationalNoticeQuotaDocumentContextClockId,
+    'eventAssistanceOperationalNoticeQuotaDocument.context.eventId': eventAssistanceOperationalNoticeQuotaDocumentContextEventId,
+    'eventAssistanceOperationalNoticeQuotaDocument.context.mode': eventAssistanceOperationalNoticeQuotaDocumentContextMode,
+    'eventAssistanceOperationalNoticeQuotaDocument.context.organizerId': eventAssistanceOperationalNoticeQuotaDocumentContextOrganizerId,
+    'eventAssistanceOperationalNoticeQuotaDocument.context.rehearsalId': eventAssistanceOperationalNoticeQuotaDocumentContextRehearsalId,
+    'eventAssistanceOperationalNoticeQuotaDocument.context.virtualEventId': eventAssistanceOperationalNoticeQuotaDocumentContextVirtualEventId,
+    'eventAssistanceOperationalNoticeQuotaDocument.count': eventAssistanceOperationalNoticeQuotaDocumentCount,
+    'eventAssistanceOperationalNoticeQuotaDocument.createdAt': eventAssistanceOperationalNoticeQuotaDocumentCreatedAt,
+    'eventAssistanceOperationalNoticeQuotaDocument.eventId': eventAssistanceOperationalNoticeQuotaDocumentEventId,
+    'eventAssistanceOperationalNoticeQuotaDocument.quotaId': eventAssistanceOperationalNoticeQuotaDocumentQuotaId,
+    'eventAssistanceOperationalNoticeQuotaDocument.revision': eventAssistanceOperationalNoticeQuotaDocumentRevision,
+    'eventAssistanceOperationalNoticeQuotaDocument.schemaVersion': eventAssistanceOperationalNoticeQuotaDocumentSchemaVersion,
+    'eventAssistanceOperationalNoticeQuotaDocument.sourceGeneration': eventAssistanceOperationalNoticeQuotaDocumentSourceGeneration,
+    'eventAssistanceOperationalNoticeQuotaDocument.updatedAt': eventAssistanceOperationalNoticeQuotaDocumentUpdatedAt,
+    'eventAssistanceOperationalNoticeQuotaDocument.workflowKind': eventAssistanceOperationalNoticeQuotaDocumentWorkflowKind,
     'eventAssistanceParticipantContextCallableResponse.eventId': eventAssistanceParticipantContextCallableResponseEventId,
     'eventAssistanceParticipantContextCallableResponse.resolution.attendeeId': eventAssistanceParticipantContextCallableResponseResolutionAttendeeId,
     'eventAssistanceParticipantContextCallableResponse.resolution.kind': eventAssistanceParticipantContextCallableResponseResolutionKind,

@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.138.0
+version: 1.139.0
 updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
@@ -1130,10 +1130,18 @@ and claim time, including its current source, execution authority, policy
 version and expiry ceiling. Pausing, replacing or narrowing the setting stops a
 queued notice before a provider call.
 
-This binding is transport and policy infrastructure. A trusted plan-change or
-follow-up source adapter still has to read the authoritative domain change,
-enforce the configured per-guest publication cap and create the notice. Until
-those adapters exist, the corresponding `sendOperationalMessage` variants stay
+`prepareOperationalNoticePublication` is the trusted publication boundary for
+these notices. It accepts message content only from a typed domain source-reader
+adapter, verifies that the source applies to the exact guest, reads the current
+saved policy, and enforces `maximumPerGuest` with a roster-generation-bound
+quota. The message, delivery work, quota and immutable source-publication
+receipt commit together. A retry of the same source revision reuses the receipt;
+a later source revision consumes the next quota slot. Re-entering an event does
+not resend the same source occurrence, while a genuinely recreated roster row
+cannot inherit the earlier row's quota.
+
+Concrete adapters for authoritative plan-change and follow-up source records do
+not exist yet. Until they do, those `sendOperationalMessage` variants stay
 partial in the command catalog. Explicit operational notices remain outside the
 automatic coordinator when the binding is absent.
 

@@ -1,7 +1,7 @@
 ---
 doc_id: data_contracts
-version: 1.118.0
-updated: 2026-09-15
+version: 1.119.0
+updated: 2026-09-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -988,6 +988,24 @@ can show a changed destination. No additional guidance collection or schema
 was introduced.
 
 ### Event Service Outbox Contract
+
+`eventAssistanceOperationalNoticeQuotas/{quotaId}` and
+`eventAssistanceOperationalNoticePublications/{publicationId}` are server-only
+records used by the typed plan-change and post-event follow-up publisher. A
+quota binds live context, attendee identity, roster generations and workflow;
+its count and revision advance together. A publication receipt binds one exact
+domain source revision to its message, thread, semantic content hash and quota
+ordinal. The receipt and quota commit atomically with the message and delivery
+work, so an interrupted publication consumes no slot and a retry cannot create
+a duplicate. A host policy edit does not reset the count. A deleted and
+recreated roster row has new generation evidence and therefore cannot inherit
+the prior row's quota or publication receipts.
+
+Both collections deny all direct client access and have no TTL. They record
+publication authority and idempotency only; they do not prove provider
+submission or delivery. Concrete source adapters remain responsible for proving
+that an authoritative plan change or follow-up record applies to the requested
+guest before the publisher may create either record.
 
 `eventAssistanceMessages/{messageId}` is server-only delivery state owned by
 trusted Event Assistance workers. Its canonical Firestore schema embeds the

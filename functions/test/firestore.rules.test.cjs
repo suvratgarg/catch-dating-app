@@ -4338,6 +4338,8 @@ describe("firestore.rules", () => {
 
     it("keeps event-service messages private to trusted workers", async () => {
       for (const collectionName of ["eventAssistanceMessages",
+        "eventAssistanceOperationalNoticeQuotas",
+        "eventAssistanceOperationalNoticePublications",
         "eventAssistanceSettings", "eventAssistanceSettingReceipts",
         "eventAssistanceRuntimeConfigs", "eventAssistanceRuntimeConfigReceipts",
         "eventAssistanceParticipationReceipts", "eventAssistanceStaffReceipts",

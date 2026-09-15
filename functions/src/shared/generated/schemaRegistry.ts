@@ -130,6 +130,8 @@ export {submitEventAssistanceGuestChoiceCallablePayloadSchema} from "./schemas/s
 export {eventAssistanceGuestViewCallableResponseSchema} from "./schemas/eventAssistanceGuestViewOutput";
 export {submitEventAssistanceGuestChoiceCallableResponseSchema} from "./schemas/submitEventAssistanceGuestChoiceOutput";
 export {eventAssistanceMessageDocumentSchema} from "./schemas/eventAssistanceMessageDocument";
+export {eventAssistanceOperationalNoticeQuotaDocumentSchema} from "./schemas/eventAssistanceOperationalNoticeQuotaDocument";
+export {eventAssistanceOperationalNoticePublicationDocumentSchema} from "./schemas/eventAssistanceOperationalNoticePublicationDocument";
 export {eventAssistanceMessageIntentSchema} from "./schemas/eventAssistanceMessageIntent";
 export {eventAssistanceDeliveryAttemptSchema} from "./schemas/eventAssistanceDeliveryAttempt";
 export {eventAssistanceGuestResponseSchema} from "./schemas/eventAssistanceGuestResponse";

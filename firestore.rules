@@ -911,6 +911,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /eventAssistanceOperationalNoticeQuotas/{quotaId} {
+      allow read, write: if false;
+    }
+
+    match /eventAssistanceOperationalNoticePublications/{publicationId} {
+      allow read, write: if false;
+    }
+
     match /operationRuns/{runId} {
       allow read, write: if false;
     }

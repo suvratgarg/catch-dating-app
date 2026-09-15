@@ -1,0 +1,87 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_assistance_operational_notice_quotas.schema.json",
+  "title": "EventAssistanceOperationalNoticeQuotaDocument",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "quotaId",
+    "context",
+    "eventId",
+    "attendeeId",
+    "attendeeGeneration",
+    "sourceGeneration",
+    "workflowKind",
+    "count",
+    "revision",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "quotaId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "context": {
+      "$ref": "../shared/event_assistance_common.schema.json#/definitions/ExecutionContext"
+    },
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "attendeeGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "sourceGeneration": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "workflowKind": {
+      "type": "string",
+      "enum": [
+        "planChangeCommunication",
+        "postEventFollowUp"
+      ]
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10080
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "createdAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "updatedAt": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    }
+  },
+  "x-firestore-collection": "eventAssistanceOperationalNoticeQuotas",
+  "x-firestore-path": "eventAssistanceOperationalNoticeQuotas/{quotaId}",
+  "x-document-id-field": "quotaId",
+  "x-owner": "trusted event-assistance operational notice publisher"
+}

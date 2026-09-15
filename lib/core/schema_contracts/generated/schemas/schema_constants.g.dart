@@ -177,6 +177,8 @@ export 'event_assistance_membership_document.g.dart';
 export 'event_assistance_membership_receipt_document.g.dart';
 export 'event_assistance_message_document.g.dart';
 export 'event_assistance_message_intent.g.dart';
+export 'event_assistance_operational_notice_publication_document.g.dart';
+export 'event_assistance_operational_notice_quota_document.g.dart';
 export 'event_assistance_participant_context_callable_response.g.dart';
 export 'event_assistance_participation_callable_response.g.dart';
 export 'event_assistance_participation_receipt_document.g.dart';

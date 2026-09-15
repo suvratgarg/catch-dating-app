@@ -614,6 +614,16 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventAssistanceMessageDocument.ts",
   },
   {
+    name: "EventAssistanceOperationalNoticeQuotaDocument",
+    source: "firestore/event_assistance_operational_notice_quotas.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceOperationalNoticeQuotaDocument.ts",
+  },
+  {
+    name: "EventAssistanceOperationalNoticePublicationDocument",
+    source: "firestore/event_assistance_operational_notice_publications.schema.json",
+    typeOutput: "functions/src/shared/generated/eventAssistanceOperationalNoticePublicationDocument.ts",
+  },
+  {
     name: "EventAssistanceMessageIntent",
     source: "operations/event_assistance_message_intent.schema.json",
     typeOutput: "functions/src/shared/generated/eventAssistanceMessageIntent.ts",
