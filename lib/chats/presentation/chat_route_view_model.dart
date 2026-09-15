@@ -8,6 +8,7 @@ import 'package:catch_dating_app/chats/presentation/chat_thread_lookup_state.dar
 import 'package:catch_dating_app/chats/presentation/host_chat_screen_state.dart';
 import 'package:catch_dating_app/chats/presentation/suvbot_controller.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
@@ -38,12 +39,10 @@ ChatRouteState chatRouteState(Ref ref, ChatRouteStateArgs args) {
     match: match,
     routeProfile: args.initialProfile,
   );
-  final hostInquiryClub = initialLookupState.hostInquiryClubId == null
-      ? null
-      : ref
-            .watch(watchClubProvider(initialLookupState.hostInquiryClubId!))
-            .asData
-            ?.value;
+  final hostInquiryClubAsync = initialLookupState.hostInquiryClubId == null
+      ? const AsyncData<Club?>(null)
+      : ref.watch(watchClubProvider(initialLookupState.hostInquiryClubId!));
+  final hostInquiryClub = _catchAsyncState(hostInquiryClubAsync).value;
   final lookupState = ChatThreadLookupState.resolve(
     matchId: args.matchId,
     uid: uid,

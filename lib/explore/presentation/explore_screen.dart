@@ -373,8 +373,11 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
             builder: (sheetContext, ref, _) {
               final liveFilters = ref.watch(exploreFiltersProvider);
               final liveFeed = ref.watch(exploreFeedViewModelProvider);
-              final liveUidData = ref.watch(uidProvider).asData;
-              final showJoinedOnly = liveUidData?.value != null;
+              final liveFeedState = catchAsyncStateFromAsyncValue(liveFeed);
+              final liveUidState = catchAsyncStateFromAsyncValue(
+                ref.watch(uidProvider),
+              );
+              final showJoinedOnly = liveUidState.value != null;
               final visibleLiveFilters = showJoinedOnly
                   ? liveFilters
                   : liveFilters.copyWith(joinedOnly: false);
@@ -382,8 +385,8 @@ class _ExploreScreenState extends ConsumerState<ExploreScreen> {
                 filters: visibleLiveFilters,
                 state: filterSheetState.withLiveResults(
                   filters: visibleLiveFilters,
-                  viewModel: liveFeed.asData?.value,
-                  feedLoading: liveFeed.isLoading,
+                  viewModel: liveFeedState.value,
+                  feedLoading: liveFeedState.isLoading,
                   l10n: sheetContext.l10n,
                 ),
                 onDistanceFilterSelected: (filter) =>

@@ -178,12 +178,15 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen>
               ),
             )
           : null;
+      final crossPathsConsentSnapshotState = crossPathsConsentAsync == null
+          ? null
+          : catchAsyncStateFromAsyncValue(crossPathsConsentAsync);
       final crossPathsConsentState = crossPathsEventConsentSectionStateFrom(
         eligibleToEnable: crossPathsEligible,
-        loaded: crossPathsConsentAsync?.hasValue == true,
-        enabled: crossPathsConsentAsync?.asData?.value?.enabled == true,
+        loaded: crossPathsConsentSnapshotState?.hasData == true,
+        enabled: crossPathsConsentSnapshotState?.value?.enabled == true,
         pending: crossPathsConsentMutation.isPending,
-        unavailable: crossPathsConsentAsync?.hasError == true,
+        unavailable: crossPathsConsentSnapshotState?.hasError == true,
       );
       final share = ref.watch(externalShareControllerProvider);
       final calendar = ref.watch(eventCalendarControllerProvider);

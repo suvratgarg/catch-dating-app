@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/core/presentation/catch_async_state.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_state.dart';
