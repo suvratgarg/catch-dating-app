@@ -59,6 +59,7 @@ class CatchFieldSurface extends StatelessWidget {
         ],
       );
     }
+    final hovered = states.contains(WidgetState.hovered);
     final active = states.contains(WidgetState.selected);
     final focused = states.contains(WidgetState.focused);
     final pressed = states.contains(WidgetState.pressed);
@@ -105,7 +106,11 @@ class CatchFieldSurface extends StatelessWidget {
           : CatchElevation.none,
     );
     final pressDecoration = BoxDecoration(
-      color: pressed ? CatchFieldTokens.pressedSurface(t) : Colors.transparent,
+      color: pressed
+          ? CatchFieldTokens.pressedSurface(t)
+          : hovered
+          ? t.ink.withValues(alpha: CatchOpacity.controlOverlayHover)
+          : Colors.transparent,
       borderRadius: interactionBorderRadius,
       // A divided or standalone row owns its complete pressed silhouette.
       // A contained row inherits the section perimeter and stays a tint-only
@@ -120,6 +125,9 @@ class CatchFieldSurface extends StatelessWidget {
     final overlayOutsets = CatchFieldGeometryScope.interactionOutsetsOf(
       context,
     );
+    final verticalOutset = CatchFieldGeometryScope.exactBoundsOf(context)
+        ? 0.0
+        : CatchStroke.hairline;
     return Stack(
       fit: StackFit.passthrough,
       clipBehavior: Clip.none,
@@ -127,8 +135,8 @@ class CatchFieldSurface extends StatelessWidget {
         Positioned(
           left: -overlayOutsets.left,
           right: -overlayOutsets.right,
-          top: -CatchStroke.hairline,
-          bottom: -CatchStroke.hairline,
+          top: -verticalOutset,
+          bottom: -verticalOutset,
           child: IgnorePointer(
             child: Stack(
               fit: StackFit.expand,

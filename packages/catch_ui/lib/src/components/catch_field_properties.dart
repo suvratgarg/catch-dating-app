@@ -26,6 +26,8 @@ mixin _CatchFieldProperties {
     _ => null,
   };
 
+  CatchFieldLayout? get _rowLayout => _rowConfig?.layout;
+
   /// End-aligned text for compact read and navigation rows.
   String? get valueText => _rowConfig?.valueText;
   int get valueMaxLines => _rowConfig?.valueMaxLines ?? 1;

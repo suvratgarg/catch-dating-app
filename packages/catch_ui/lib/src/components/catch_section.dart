@@ -1,4 +1,6 @@
 import 'package:catch_tokens/catch_tokens.dart';
+import 'package:catch_ui/src/components/catch_field.dart';
+import 'package:catch_ui/src/components/catch_section_rows.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope.dart';
 import 'package:catch_ui/src/components/catch_divided_field_interaction_scope_mode.dart';
 import 'package:catch_ui/src/components/catch_field_geometry_scope.dart';
@@ -42,7 +44,8 @@ class CatchSection extends StatelessWidget {
     bool showInternalDividers = true,
     this.children,
     this.child,
-  }) : footer = null,
+  }) : _rowSection = null,
+       footer = null,
        assert(child != null || children != null),
        assert(child == null || children == null),
        _dividedConfig = (
@@ -77,7 +80,8 @@ class CatchSection extends StatelessWidget {
     CatchDividedFieldInteractionScopeMode? interaction,
     this.children,
     this.child,
-  }) : assert(child != null || children != null),
+  }) : _rowSection = null,
+       assert(child != null || children != null),
        assert(child == null || children == null),
        _dividedConfig = null,
        _fieldRowsConfig = (
@@ -115,7 +119,8 @@ class CatchSection extends StatelessWidget {
         CatchSectionHeaderPlacement.outside,
     this.children,
     this.child,
-  }) : assert(child != null || children != null),
+  }) : _rowSection = null,
+       assert(child != null || children != null),
        assert(child == null || children == null),
        _dividedConfig = null,
        _fieldRowsConfig = null,
@@ -147,7 +152,8 @@ class CatchSection extends StatelessWidget {
     required List<CatchSectionFieldGroup> groups,
     this.footer,
     Set<WidgetState> states = const {},
-  }) : trailing = null,
+  }) : _rowSection = null,
+       trailing = null,
        children = null,
        child = null,
        _dividedConfig = null,
@@ -187,7 +193,8 @@ class CatchSection extends StatelessWidget {
     Set<WidgetState> states = const {},
     this.children,
     this.child,
-  }) : footer = null,
+  }) : _rowSection = null,
+       footer = null,
        assert(child != null || children != null),
        assert(child == null || children == null),
        _dividedConfig = null,
@@ -225,7 +232,8 @@ class CatchSection extends StatelessWidget {
     bool showInternalDividers = true,
     this.children,
     this.child,
-  }) : footer = null,
+  }) : _rowSection = null,
+       footer = null,
        assert(child != null || children != null),
        assert(child == null || children == null),
        _dividedConfig = null,
@@ -260,7 +268,8 @@ class CatchSection extends StatelessWidget {
     CatchRailItemWidth? itemWidth,
     EdgeInsets? headerPadding,
     EdgeInsetsGeometry? listPadding,
-  }) : trailing = null,
+  }) : _rowSection = null,
+       trailing = null,
        children = null,
        child = null,
        _dividedConfig = null,
@@ -289,6 +298,93 @@ class CatchSection extends StatelessWidget {
              listPadding ??
              (fullBleed ? CatchInsets.pageHorizontal : EdgeInsets.zero),
        );
+
+  /// Full-plane ordinary rows. Child layouts supply no gestures or geometry.
+  factory CatchSection.rows({
+    Key? key,
+    String? title,
+    Object? count,
+    Widget? action,
+    required List<CatchField> entries,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: CatchSectionRows(
+      title: title,
+      count: count,
+      action: action,
+      entries: entries,
+    ),
+  );
+
+  /// One rounded exterior containing full-width internal row bands.
+  factory CatchSection.containedRows({
+    Key? key,
+    String? title,
+    Object? count,
+    Widget? action,
+    required List<CatchField> entries,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: CatchSectionRows(
+      title: title,
+      count: count,
+      action: action,
+      entries: entries,
+      contained: true,
+    ),
+  );
+
+  /// A lazy ordinary-row section for a full-width page or pane viewport.
+  factory CatchSection.sliverRows({
+    Key? key,
+    String? title,
+    Object? count,
+    Widget? action,
+    required int itemCount,
+    required CatchField Function(BuildContext, int) itemBuilder,
+    int? Function(Key)? findChildIndexCallback,
+  }) => CatchSection._rows(
+    key: key,
+    title: title,
+    rowSection: CatchSectionRows.sliver(
+      title: title,
+      count: count,
+      action: action,
+      itemCount: itemCount,
+      itemBuilder: itemBuilder,
+      findChildIndexCallback: findChildIndexCallback,
+    ),
+  );
+
+  const CatchSection._rows({
+    super.key,
+    String? title,
+    required Widget rowSection,
+  }) : _rowSection = rowSection,
+       trailing = null,
+       children = null,
+       child = null,
+       footer = null,
+       _dividedConfig = null,
+       _fieldRowsConfig = null,
+       _containedFieldRowsConfig = null,
+       _containedConfig = null,
+       _horizontalConfig = null,
+       _plainConfig = (
+         common: (
+           title: title,
+           subtitle: null,
+           count: null,
+           titleColor: null,
+           bodyGap: 0,
+         ),
+         padding: null,
+         showInternalDividers: false,
+       );
+
+  final Widget? _rowSection;
 
   final _DividedSectionConfig? _dividedConfig;
   final _DividedFieldRowsSectionConfig? _fieldRowsConfig;
@@ -367,6 +463,7 @@ class CatchSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (_rowSection case final rows?) return rows;
     if (_horizontalConfig case final rail?) {
       return Column(
         mainAxisSize: MainAxisSize.min,

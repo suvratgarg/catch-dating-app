@@ -20,6 +20,7 @@ class _CatchFieldState extends State<CatchField>
   bool _focused = false;
   bool _rowFocused = false;
   bool _pressed = false;
+  bool _hovered = false;
   int? _pressedPointer;
   Offset? _pressedDownPosition;
   int? _outsidePointer;
@@ -41,18 +42,30 @@ class _CatchFieldState extends State<CatchField>
   TextEditingController get _controller =>
       widget.controller ?? _internalController;
 
-  void _update(VoidCallback callback) => setState(callback);
+  void _update(VoidCallback callback) {
+    setState(callback);
+    _notifyRowActivity();
+  }
+
+  void _notifyRowActivity() {
+    if (!mounted) return;
+    CatchFieldActivityNotification(
+      _active || _hovered || _pressed,
+    ).dispatch(context);
+  }
 
   @override
   void initState() {
     super.initState();
     _initializeField();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _notifyRowActivity());
   }
 
   @override
   void didUpdateWidget(covariant CatchField oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updateFieldConfiguration(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _notifyRowActivity());
   }
 
   @override
@@ -186,7 +199,8 @@ class _CatchFieldState extends State<CatchField>
               hasInlineMetadata ||
               (widget._contentRow &&
                   widget.emphasis == CatchFieldEmphasis.title);
-          final leadingTopPadding = centerVertically
+          final leadingTopPadding =
+              widget._rowLayout != null || centerVertically
               ? 0.0
               : widget._contentRow
               ? CatchSpacing.micro2
@@ -325,7 +339,9 @@ class _CatchFieldState extends State<CatchField>
                   ),
                 );
           final Widget? leadingSlot;
-          if (widget._hasRowLeading) {
+          if (widget._rowLayout case final layout?) {
+            leadingSlot = ExcludeSemantics(child: layout._leading(context));
+          } else if (widget._hasRowLeading) {
             final extent = widget.leadingExtent;
             leadingSlot = extent == null
                 ? widget.leading
@@ -361,7 +377,9 @@ class _CatchFieldState extends State<CatchField>
           }
           final Widget rowBody;
           final inlineMetadata = widget.inlineMetadata?.trim();
-          if (_inlineControlAddAtRest) {
+          if (widget._rowLayout case final layout?) {
+            rowBody = layout._body(context);
+          } else if (_inlineControlAddAtRest) {
             final addText = _emptyEditableValueText ?? _title ?? '';
             rowBody = Semantics(
               label: _inlineAddSemanticLabel(addText),
@@ -685,22 +703,32 @@ class _CatchFieldState extends State<CatchField>
                 if (_active) WidgetState.selected,
                 if (_rowFocused) WidgetState.focused,
                 if (_pressed) WidgetState.pressed,
+                if (_hovered) WidgetState.hovered,
               },
               child: content,
             );
             configuredRow = Semantics(
-              container: isToggle,
+              container: true,
               excludeSemantics: isToggle,
               label: isToggle ? _title : null,
               button: !isToggle && !_isEdit && canInteract,
               enabled: canInteract,
+              selected: widget.states.contains(WidgetState.selected)
+                  ? true
+                  : null,
               expanded: _hasControl ? _isOpen : null,
               toggled: isToggle ? widget.toggled : null,
               value: isToggle ? toggleStatusValue : null,
               onTap: isToggle && canInteract ? action : null,
               child: MouseRegion(
                 cursor: mouseCursor,
-                onExit: canInteract ? _handlePointerExit : null,
+                onEnter: canInteract
+                    ? (_) => _update(() => _hovered = true)
+                    : null,
+                onExit: (event) {
+                  if (_hovered) _update(() => _hovered = false);
+                  if (canInteract) _handlePointerExit(event);
+                },
                 child: stack,
               ),
             );

@@ -1,0 +1,229 @@
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_ui/catch_ui.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  Widget host(Widget child, {TextDirection direction = TextDirection.ltr}) =>
+      MaterialApp(
+        theme: AppTheme.dark,
+        home: Scaffold(
+          body: Directionality(
+            textDirection: direction,
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: SizedBox(width: 390, child: child),
+            ),
+          ),
+        ),
+      );
+
+  CatchField record(String id, VoidCallback onActivate) => CatchField.navigate(
+    key: ValueKey(id),
+    onActivate: onActivate,
+    content: CatchRecordLayout(
+      title: id,
+      icon: CatchIcons.eventOutlined,
+      facts: const ['Sunday · Saket Garden', '2 attended'],
+    ),
+  );
+
+  testWidgets('full-bleed paint, semantics and both gutters share a target', (
+    tester,
+  ) async {
+    final semantics = tester.ensureSemantics();
+    var calls = 0;
+    await tester.pumpWidget(
+      host(
+        CatchSection.rows(
+          title: 'May 2026',
+          entries: [record('one', () => calls++), record('two', () {})],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final row = find.byWidgetPredicate(
+      (widget) => widget is CatchField && widget.key == const ValueKey('one'),
+    );
+    final bounds = tester.getRect(row);
+    expect(bounds.left, 0);
+    expect(bounds.right, 390);
+    final semanticBounds = tester
+        .getSemantics(
+          find.descendant(
+            of: row,
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is Semantics && widget.properties.button == true,
+            ),
+          ),
+        )
+        .rect;
+    expect(semanticBounds.width, bounds.width);
+    expect(semanticBounds.height, bounds.height);
+    await tester.tapAt(Offset(1, bounds.center.dy));
+    await tester.pumpAndSettle();
+    await tester.tapAt(Offset(389, bounds.center.dy));
+    await tester.pumpAndSettle();
+    expect(calls, 2);
+
+    final pointer = await tester.createGesture(kind: PointerDeviceKind.mouse);
+    await pointer.addPointer(location: Offset(1, bounds.center.dy));
+    await tester.pumpAndSettle();
+    final paint = find.descendant(
+      of: row,
+      matching: find.byKey(CatchField.pressOverlayKey),
+    );
+    expect(tester.getRect(paint), bounds);
+    final decoration =
+        tester.widget<AnimatedContainer>(paint).decoration! as BoxDecoration;
+    expect(decoration.borderRadius, BorderRadius.zero);
+    expect(decoration.color!.a, greaterThan(0));
+    await pointer.removePointer();
+    semantics.dispose();
+  });
+
+  for (final direction in TextDirection.values) {
+    testWidgets('header and sibling rules use their own lanes in $direction', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        host(
+          CatchSection.rows(
+            title: 'May 2026',
+            entries: [record('one', () {}), record('two', () {})],
+          ),
+          direction: direction,
+        ),
+      );
+      await tester.pumpAndSettle();
+      final rules = find.byType(CatchDivider);
+      expect(rules, findsNWidgets(2));
+      final header = tester.getRect(rules.at(0));
+      final sibling = tester.getRect(rules.at(1));
+      final title = tester.getRect(find.text('one'));
+      expect(header.left, 20);
+      expect(header.right, 370);
+      if (direction == TextDirection.ltr) {
+        expect(sibling.left, title.left);
+        expect(sibling.right, header.right);
+      } else {
+        expect(sibling.right, title.right);
+        expect(sibling.left, header.left);
+      }
+    });
+  }
+
+  testWidgets(
+    'active neighbors suppress only the sibling rule without movement',
+    (tester) async {
+      await tester.pumpWidget(
+        host(
+          CatchSection.rows(
+            title: 'May 2026',
+            entries: [record('one', () {}), record('two', () {})],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final before = tester.getRect(find.text('two'));
+      final pointer = await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await pointer.addPointer(location: tester.getCenter(find.text('two')));
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity)).opacity,
+        0,
+      );
+      expect(find.byType(CatchDivider), findsNWidgets(2));
+      expect(tester.getRect(find.text('two')), before);
+      await pointer.removePointer();
+      await tester.pumpAndSettle();
+      expect(
+        tester.widget<AnimatedOpacity>(find.byType(AnimatedOpacity)).opacity,
+        1,
+      );
+    },
+  );
+
+  testWidgets('contained rows have one rounded exterior', (tester) async {
+    await tester.pumpWidget(
+      host(
+        CatchSection.containedRows(
+          entries: [record('one', () {}), record('two', () {})],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    final clip = find.byKey(CatchSectionSurface.rowGroupClipKey);
+    expect(clip, findsOneWidget);
+    expect(tester.getRect(clip).left, 20);
+    expect(tester.getRect(clip).right, 370);
+    expect(
+      tester.widget<ClipRRect>(clip).borderRadius,
+      isNot(BorderRadius.zero),
+    );
+  });
+
+  testWidgets('sliver rows build only the visible collection window', (
+    tester,
+  ) async {
+    final built = <int>{};
+    await tester.pumpWidget(
+      host(
+        CustomScrollView(
+          slivers: [
+            CatchSection.sliverRows(
+              title: 'May 2026',
+              itemCount: 1000,
+              itemBuilder: (context, index) {
+                built.add(index);
+                return record('event-$index', () {});
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(built.length, lessThan(30));
+    expect(built, contains(0));
+    expect(built, isNot(contains(999)));
+  });
+
+  testWidgets('record and person text stays readable at 2x', (tester) async {
+    await tester.pumpWidget(
+      host(
+        MediaQuery(
+          data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+          child: SingleChildScrollView(
+            child: CatchSection.rows(
+              entries: [
+                record(
+                  'A complete event title that wraps across several lines',
+                  () {},
+                ),
+                const CatchField.read(
+                  content: CatchPersonLayout(
+                    name: 'A person whose complete name must remain readable',
+                    supportingText:
+                        'A complete relationship summary and last seen date',
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    for (final element in find.byType(RichText).evaluate()) {
+      expect(
+        (element.renderObject! as RenderParagraph).didExceedMaxLines,
+        isFalse,
+      );
+    }
+    expect(tester.takeException(), isNull);
+  });
+}

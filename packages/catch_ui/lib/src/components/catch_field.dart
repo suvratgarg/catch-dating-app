@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
+import 'package:catch_ui/src/components/catch_field_activity_notification.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -12,6 +13,7 @@ part 'catch_field_configs.dart';
 part 'catch_field_control.dart';
 part 'catch_field_edit.dart';
 part 'catch_field_input.dart';
+part 'catch_field_layout.dart';
 part 'catch_field_properties.dart';
 part 'catch_field_row_modes.dart';
 part 'catch_field_state.dart';
@@ -23,7 +25,7 @@ part 'catch_field_state.dart';
 ///
 /// Named constructors reject unsupported mode mixtures, such as a text
 /// controller on a toggle. Sections consume its numeric divider geometry.
-class CatchField<T> extends StatefulWidget
+final class CatchField<T> extends StatefulWidget
     with _CatchFieldProperties
     implements CatchFieldDividerGeometry, CatchFieldInputConfiguration {
   /// Stable key for the contextual pressed surface used by field rows.
@@ -34,7 +36,8 @@ class CatchField<T> extends StatefulWidget
   static const pressOverlayKey = ValueKey<String>('catch-field-press-overlay');
 
   const CatchField.read({
-    required this.copy,
+    CatchFieldCopy? copy,
+    CatchFieldLayout? content,
     super.key,
     this.title,
     this.body,
@@ -52,7 +55,9 @@ class CatchField<T> extends StatefulWidget
     String? placeholder,
     bool valid = false,
     this.status = CatchFieldStatus.idle,
-  }) : assert(
+  }) : assert(copy != null || content != null),
+       _copy = copy,
+       assert(
          leading == null || icon == null,
          'Use either CatchField.leading or CatchField.icon, not both.',
        ),
@@ -78,6 +83,7 @@ class CatchField<T> extends StatefulWidget
          valueMaxLines: valueMaxLines,
          placeholder: placeholder,
          valid: valid,
+         layout: content,
          contentRow: false,
          inlineMetadata: null,
          showChevron: null,
@@ -96,7 +102,7 @@ class CatchField<T> extends StatefulWidget
   /// explicit constructor preserves those existing value rows while exposing
   /// the handoff's independent two-line title and three-line body contract.
   const CatchField.content({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     required String this.title,
     required String this.body,
@@ -116,7 +122,8 @@ class CatchField<T> extends StatefulWidget
     CatchFieldLabelTextMode labelMode = CatchFieldLabelTextMode.visible,
     bool valid = false,
     this.status = CatchFieldStatus.idle,
-  }) : assert(
+  }) : _copy = copy,
+       assert(
          labelMode == CatchFieldLabelTextMode.visible ||
              labelMode == CatchFieldLabelTextMode.optional,
          'Content rows require a visible label.',
@@ -149,6 +156,7 @@ class CatchField<T> extends StatefulWidget
          labelMode: labelMode,
          valid: valid,
          onTap: onTap,
+         layout: null,
          contentRow: true,
          inlineMetadata: null,
          placeholder: null,
@@ -158,8 +166,49 @@ class CatchField<T> extends StatefulWidget
          navigation: onTap != null,
        );
 
+  /// An ordinary destination row with a passive, typed content layout.
+  const CatchField.navigate({
+    super.key,
+    required CatchFieldLayout content,
+    required VoidCallback onActivate,
+    this.states = const {},
+  }) : _copy = null,
+       title = null,
+       body = null,
+       actions = null,
+       contract = null,
+       variant = CatchFieldVariant.row,
+       child = null,
+       meta = null,
+       trailing = null,
+       emphasis = CatchFieldEmphasis.body,
+       tone = CatchFieldTone.normal,
+       icon = null,
+       iconColor = null,
+       leading = null,
+       leadingExtent = null,
+       status = CatchFieldStatus.idle,
+       _config = (
+         layout: content,
+         titleMaxLines: 1,
+         bodyMaxLines: 2,
+         valueText: null,
+         valueMaxLines: 1,
+         showChevron: null,
+         placeholder: null,
+         error: null,
+         errorText: null,
+         valid: false,
+         onTap: onActivate,
+         contentRow: false,
+         inlineMetadata: null,
+         labelMode: CatchFieldLabelTextMode.visible,
+         add: false,
+         navigation: true,
+       );
+
   const CatchField.nav({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     this.title,
     this.body,
@@ -181,7 +230,8 @@ class CatchField<T> extends StatefulWidget
     String? errorText,
     bool valid = false,
     this.status = CatchFieldStatus.idle,
-  }) : assert(
+  }) : _copy = copy,
+       assert(
          leading == null || icon == null,
          'Use either CatchField.leading or CatchField.icon, not both.',
        ),
@@ -211,6 +261,7 @@ class CatchField<T> extends StatefulWidget
          errorText: errorText,
          valid: valid,
          onTap: onTap,
+         layout: null,
          contentRow: false,
          inlineMetadata: null,
          labelMode: CatchFieldLabelTextMode.visible,
@@ -224,14 +275,15 @@ class CatchField<T> extends StatefulWidget
   /// left-handle lane, naturally wrapping title and metadata, press semantics, and
   /// trailing disclosure affordance.
   const CatchField.sortable({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     required String this.title,
     required String metadata,
     required Widget this.leading,
     required VoidCallback? onTap,
     bool showChevron = true,
-  }) : contract = null,
+  }) : _copy = copy,
+       contract = null,
        body = null,
        actions = null,
        emphasis = CatchFieldEmphasis.title,
@@ -250,6 +302,7 @@ class CatchField<T> extends StatefulWidget
          onTap: onTap,
          titleMaxLines: 1,
          bodyMaxLines: 1,
+         layout: null,
          contentRow: false,
          inlineMetadata: metadata,
          valueText: null,
@@ -266,7 +319,7 @@ class CatchField<T> extends StatefulWidget
   /// A tappable field-shaped row whose action does not navigate or edit the
   /// value. Unlike [CatchField.nav], this constructor never renders a chevron.
   const CatchField.action({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     this.title,
     this.body,
@@ -287,7 +340,8 @@ class CatchField<T> extends StatefulWidget
     String? errorText,
     bool valid = false,
     this.status = CatchFieldStatus.idle,
-  }) : assert(
+  }) : _copy = copy,
+       assert(
          leading == null || icon == null,
          'Use either CatchField.leading or CatchField.icon, not both.',
        ),
@@ -316,6 +370,7 @@ class CatchField<T> extends StatefulWidget
          errorText: errorText,
          valid: valid,
          onTap: onTap,
+         layout: null,
          contentRow: false,
          inlineMetadata: null,
          showChevron: null,
@@ -325,7 +380,7 @@ class CatchField<T> extends StatefulWidget
        );
 
   const CatchField.toggle({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     this.title,
     this.body,
@@ -343,7 +398,8 @@ class CatchField<T> extends StatefulWidget
     String? badgeLabel,
     CatchBadgeTone? badgeTone,
     this.status = CatchFieldStatus.idle,
-  }) : actions = null,
+  }) : _copy = copy,
+       actions = null,
        variant = CatchFieldVariant.row,
        leading = null,
        leadingExtent = null,
@@ -363,7 +419,7 @@ class CatchField<T> extends StatefulWidget
        );
 
   const CatchField.input({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     required String this.title,
     this.contract,
@@ -412,7 +468,8 @@ class CatchField<T> extends StatefulWidget
     String? error,
     String? errorText,
     VoidCallback? onTap,
-  }) : assert(
+  }) : _copy = copy,
+       assert(
          inputHint == null || placeholder == null,
          'Use inputHint for editable fields; do not also pass placeholder.',
        ),
@@ -475,7 +532,7 @@ class CatchField<T> extends StatefulWidget
   /// reveals below it. [disclosureMode] selects caller-owned expansion or
   /// the initial local state. Save and error state remain caller-owned.
   const CatchField.control({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     required String this.title,
     this.body,
@@ -501,7 +558,8 @@ class CatchField<T> extends StatefulWidget
     String? emptyValueText,
     String? error,
     String? errorText,
-  }) : assert(
+  }) : _copy = copy,
+       assert(
          labelMode == CatchFieldLabelTextMode.visible ||
              labelMode == CatchFieldLabelTextMode.optional,
          'Disclosure controls require a visible label.',
@@ -780,7 +838,7 @@ class CatchField<T> extends StatefulWidget
   /// Trailing edit affordances, focus timing, typography, and content order are
   /// owned by this primitive rather than by feature call sites.
   const CatchField.inputActions({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     required String this.title,
     this.contract,
@@ -815,7 +873,8 @@ class CatchField<T> extends StatefulWidget
     ValueChanged<String>? onBlur,
     ValueChanged<bool>? onFocusChanged,
     FocusNode? focusNode,
-  }) : body = null,
+  }) : _copy = copy,
+       body = null,
        emphasis = CatchFieldEmphasis.body,
        variant = CatchFieldVariant.row,
        leading = null,
@@ -867,13 +926,14 @@ class CatchField<T> extends StatefulWidget
        );
 
   const CatchField.add({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     required String this.title,
     VoidCallback? onTap,
     this.icon,
     this.tone = CatchFieldTone.primary,
-  }) : contract = null,
+  }) : _copy = copy,
+       contract = null,
        body = null,
        actions = null,
        emphasis = CatchFieldEmphasis.body,
@@ -890,6 +950,7 @@ class CatchField<T> extends StatefulWidget
          onTap: onTap,
          titleMaxLines: 1,
          bodyMaxLines: 2,
+         layout: null,
          contentRow: false,
          inlineMetadata: null,
          valueText: null,
@@ -905,7 +966,7 @@ class CatchField<T> extends StatefulWidget
        );
 
   const CatchField._select({
-    required this.copy,
+    required CatchFieldCopy copy,
     super.key,
     required String this.title,
     this.contract,
@@ -922,7 +983,8 @@ class CatchField<T> extends StatefulWidget
     required String? helperText,
     required CatchFieldSupportRowTone helperTone,
     required this.states,
-  }) : body = null,
+  }) : _copy = copy,
+       body = null,
        actions = null,
        emphasis = CatchFieldEmphasis.body,
        tone = CatchFieldTone.normal,
@@ -1029,7 +1091,9 @@ class CatchField<T> extends StatefulWidget
 
   /// Resolved copy supplied by the caller for the current locale.
   @override
-  final CatchFieldCopy copy;
+  CatchFieldCopy get copy =>
+      _copy ?? (throw StateError('This passive field has no editing copy.'));
+  final CatchFieldCopy? _copy;
 
   /// Primary row text or input label.
   @override
@@ -1077,14 +1141,16 @@ class CatchField<T> extends StatefulWidget
   final CatchFieldStatus status;
 
   @override
-  double get fieldDividerLeadingInset => add
-      ? 0
-      : _hasRowLeading
-      ? (leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
-            CatchFieldTokens.leadingGap
-      : icon != null || _hasInputLeading
-      ? CatchFieldTokens.textLaneInset
-      : 0;
+  double get fieldDividerLeadingInset =>
+      _rowLayout?._leadingInset ??
+      (add
+          ? 0
+          : _hasRowLeading
+          ? (leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
+                CatchFieldTokens.leadingGap
+          : icon != null || _hasInputLeading
+          ? CatchFieldTokens.textLaneInset
+          : 0);
 
   final Widget? child;
   final Widget? meta;

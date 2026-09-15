@@ -1,6 +1,7 @@
 part of 'catch_field.dart';
 
 typedef _RowConfig = ({
+  CatchFieldLayout? layout,
   int titleMaxLines,
   int bodyMaxLines,
   bool contentRow,
