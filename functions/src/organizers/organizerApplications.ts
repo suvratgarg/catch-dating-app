@@ -703,7 +703,7 @@ export async function getOrganizerApplicationDetailHandler(
     reviewStatus: application.reviewStatus,
     dataAccessState: visible.accessState,
     answers: visible.answers,
-    outreach: applicationOutreach(visible.answers),
+    outreach: applicationOutreach(visible.answers, visible.identity),
     reviewNote: application.reviewNote,
     assignedReviewerUid: application.assignedReviewerUid,
     submittedAtMillis: application.submittedAt.toMillis(),
@@ -768,9 +768,7 @@ export async function reviewOrganizerApplicationHandler(
     }
     let contactId = application.contactId;
     if (data.reviewStatus === "approved") {
-      const outreach = applicationOutreach(access.answers);
-      outreach.phoneE164 ??= access.identity?.phoneE164 ?? null;
-      outreach.email ??= access.identity?.email?.toLowerCase() ?? null;
+      const outreach = applicationOutreach(access.answers, access.identity);
       contactId = await applicationAdmissionContactId({
         db, transaction: tx, applicationId: data.applicationId,
         application, access, phoneE164: outreach.phoneE164,
@@ -1182,13 +1180,17 @@ function applicationDisplayName(answers: Answer[]): string | null {
 }
 
 export function applicationOutreach(
-  answers: Answer[]
+  answers: Answer[],
+  identity?: {phoneE164: string | null; email: string | null}
 ): GetOrganizerApplicationDetailCallableResponse["outreach"] {
   const text = (field: Answer["canonicalFieldId"]): string | null =>
     answers.find((answer) => answer.canonicalFieldId === field)
       ?.value.textValue?.trim() || null;
-  const phoneE164 = normalizeE164(text("phoneNumber") ?? "");
-  const emailCandidate = text("email")?.toLowerCase() ?? null;
+  const phoneE164 = normalizeE164(text("phoneNumber") ?? "") ??
+    normalizeE164(identity?.phoneE164 ?? "");
+  const submittedEmail = text("email")?.toLowerCase() ?? null;
+  const emailCandidate = submittedEmail && isValidEmail(submittedEmail) ?
+    submittedEmail : identity?.email?.trim().toLowerCase() ?? null;
   const instagram = text("instagramHandle");
   const linkedin = text("linkedinUrl");
   return {

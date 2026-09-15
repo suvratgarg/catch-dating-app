@@ -615,10 +615,7 @@ class HostFormResponseRelatedActions extends ConsumerWidget {
             ),
           ),
       ],
-      if (submitted &&
-          !detail.response.conversionKinds.contains(
-            HostFormConversionKind.eventAttendeeProposal,
-          ))
+      if (submitted)
         CatchFieldLanes.single(
           child: CatchField.nav(
             copy: catchFieldCopy(context.l10n),

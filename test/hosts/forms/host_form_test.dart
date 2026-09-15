@@ -32,6 +32,45 @@ void main() {
       },
     );
 
+    test(
+      'person mapping survives edits and clears incompatible type changes',
+      () {
+        final question = HostFormQuestion.create(
+          questionId: 'phone',
+          kind: HostFormQuestionKind.phone,
+        ).copyWith(canonicalFieldId: 'phoneNumber');
+        expect(question.canonicalFieldId, 'phoneNumber');
+        expect(question.privacyClass, HostFormPrivacyClass.contact);
+        expect(
+          question.copyWith(label: 'WhatsApp number').canonicalFieldId,
+          'phoneNumber',
+        );
+        expect(
+          question.copyWith(kind: HostFormQuestionKind.email).canonicalFieldId,
+          isNull,
+        );
+        expect(
+          question.copyWith(clearCanonicalField: true).canonicalFieldId,
+          isNull,
+        );
+        expect(
+          () => question.copyWith(canonicalFieldId: 'displayName'),
+          throwsArgumentError,
+        );
+        final instagram = HostFormQuestion.create(
+          questionId: 'instagram',
+          kind: HostFormQuestionKind.url,
+        ).copyWith(canonicalFieldId: 'instagramHandle');
+        expect(instagram.canonicalFieldId, 'instagramHandle');
+        final age = HostFormQuestion.create(
+          questionId: 'age',
+          kind: HostFormQuestionKind.number,
+        ).copyWith(canonicalFieldId: 'age');
+        expect(age.privacyClass, HostFormPrivacyClass.sensitive);
+        expect(age.hostPresentation, HostFormPresentation.detailOnly);
+      },
+    );
+
     test('section and question mutations are ordered and non-destructive', () {
       final definition = HostFormDefinition.fromMap(_definitionMap());
       final withSection = definition.addSection(
