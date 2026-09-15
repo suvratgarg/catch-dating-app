@@ -30,10 +30,12 @@ import 'package:catch_dating_app/event_success/domain/event_success_standings.da
 import 'package:catch_dating_app/event_success/domain/event_success_structure.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_wingman_request.dart';
 import 'package:catch_dating_app/event_success/event_success_companion_clock.dart';
+import 'package:catch_dating_app/event_success/presentation/companion/event_success_companion_loading_page_body.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_conversation_cue_copy.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_live_effects_controller.dart';
+import 'package:catch_dating_app/event_success/presentation/event_success_moment_presentation_state.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_motion_contract.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_room_map.dart';
 import 'package:catch_dating_app/event_success/presentation/reveal/event_success_attendee_reveal_surface.dart';
@@ -113,108 +115,8 @@ class CompanionLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CompanionScaffold(body: EventSuccessCompanionLoadingBody());
-  }
-}
-
-class EventSuccessCompanionLoadingBody extends StatelessWidget {
-  const EventSuccessCompanionLoadingBody({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: CatchInsets.pageBodyRelaxed,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(
-            maxWidth: CatchLayout.maxContentWidth,
-          ),
-          child: const Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CompanionStageSkeleton(),
-              gapH16,
-              CompanionPrimaryActionSkeleton(),
-              gapH16,
-              CatchSkeleton.rows(
-                titleWidth: CatchLayout.skeletonTextSectionWideWidth,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class CompanionStageSkeleton extends StatelessWidget {
-  const CompanionStageSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.contentRelaxed,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.box(
-            width: CatchLayout.skeletonTextPillWidth,
-            height: CatchLayout.badgeActionHeight,
-            radius: CatchRadius.pill,
-          ),
-          gapH16,
-          CatchSkeleton.text(width: CatchLayout.skeletonTextFeatureWidth),
-          gapH10,
-          CatchSkeleton.textBlock(),
-          gapH18,
-          Row(
-            children: [
-              Expanded(
-                child: CatchSkeleton.box(
-                  height: CatchLayout.controlMdMinHeight,
-                  radius: CatchRadius.sm,
-                ),
-              ),
-              gapW10,
-              CatchSkeleton.box(
-                width: CatchLayout.controlMdMinHeight,
-                height: CatchLayout.controlMdMinHeight,
-                radius: CatchRadius.sm,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class CompanionPrimaryActionSkeleton extends StatelessWidget {
-  const CompanionPrimaryActionSkeleton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: CatchInsets.content,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CatchSkeleton.text(width: CatchLayout.skeletonTextActionLabelWidth),
-          gapH12,
-          CatchSkeleton.textBlock(lines: 2),
-          gapH16,
-          CatchSkeleton.box(
-            height: CatchLayout.controlMdMinHeight,
-            radius: CatchRadius.sm,
-          ),
-        ],
-      ),
+    return const CompanionScaffold(
+      body: EventSuccessCompanionLoadingPageBody(),
     );
   }
 }

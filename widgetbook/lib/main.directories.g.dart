@@ -6485,12 +6485,22 @@ final directories = <_widgetbook.WidgetbookNode>[
             ],
           ),
           _widgetbook.WidgetbookComponent(
-            name: 'EventSuccessCompanionLoadingBody',
+            name: 'EventSuccessCompanionLoadingPageBody',
             useCases: [
               _widgetbook.WidgetbookUseCase(
                 name: 'Loading body',
                 builder: _widgetbook_workspace_event_success_companion_loading
                     .eventSuccessCompanionLoadingBodyState,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventSuccessCompanionPrimaryActionSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Primary action loading',
+                builder: _widgetbook_workspace_event_success_companion_loading
+                    .eventSuccessCompanionPrimaryActionSkeletonState,
               ),
             ],
           ),
@@ -6511,6 +6521,16 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'Screen states',
                 builder: _widgetbook_workspace_event_success_companion_screen
                     .eventSuccessCompanionScreenStates,
+              ),
+            ],
+          ),
+          _widgetbook.WidgetbookComponent(
+            name: 'EventSuccessCompanionStageSkeleton',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'Stage loading',
+                builder: _widgetbook_workspace_event_success_companion_loading
+                    .eventSuccessCompanionStageSkeletonState,
               ),
             ],
           ),

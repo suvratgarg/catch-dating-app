@@ -13028,7 +13028,7 @@
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyWhenCheckInOpens": "When check-in opens, this screen turns into the live guide for {locationName}.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyWhenCheckInOpens": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "placeholders": {
       "locationName": {}
     },
@@ -13038,77 +13038,77 @@
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyOneTapTellsThe": "One tap tells the host you are in the room and ready for the live flow.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyOneTapTellsThe": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyFindOnePersonAsk": "Find one person, ask one tiny question, and let the room start with permission instead of pressure.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyFindOnePersonAsk": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyQuickAnswersHelpCatch": "Quick answers help Catch shape prompts without turning the event into a form.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyQuickAnswersHelpCatch": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing": "The host is pacing the room from live mode.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe": "Use it if the room needs an easy next line.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyTheseAreLightNudges": "These are light nudges for the current event moment.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyTheseAreLightNudges": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyUseItAsA": "Use it as a nudge into the next interaction, then let the room breathe.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyUseItAsA": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyTheHostControlsThe": "The host controls the timing so the room unlocks together instead of leaking awkwardly.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyTheHostControlsThe": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyChooseSomeoneYouWant": "Choose someone you want help meeting and the host can use that as live facilitation context.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyChooseSomeoneYouWant": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts": "Keep the useful parts of the room, send private feedback, and use event-specific openers when a match appears.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsRunning": "The host is running the room. Your next prompt or reveal appears here when it is time.",
   "@eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsRunning": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
@@ -16050,245 +16050,245 @@
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyBeforeArrival": "Before arrival",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyBeforeArrival": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourEventGuideIs": "Your event guide is warming up.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourEventGuideIs": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyPreEventDetailsStay": "Pre-event details stay informational until the host starts the room.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyPreEventDetailsStay": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyArrivalCue": "Arrival cue",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyArrivalCue": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInWhenYou": "Check in when you reach the venue.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInWhenYou": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInOnlyUpdates": "Check-in only updates attendance and the event companion flow.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInOnlyUpdates": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyFirstHello": "First Hello",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyFirstHello": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourFirstArrivalMission": "Your first arrival mission is live.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourFirstArrivalMission": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisChecksYouIn": "This checks you in. Hosts do not see the individual answer.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisChecksYouIn": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues": "Match clues",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAddAFewClues": "Add a few clues before the room moves.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyAddAFewClues": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee": "Hosts do not see individual match clue answers.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyLiveNow": "Live now",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyLiveNow": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyFollowTheHostFor": "Follow the host for the next beat.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyFollowTheHostFor": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame": "Everyone sees the same room cue; personal details stay scoped to you.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyLivePrompt": "Live prompt",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyLivePrompt": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAFreshPromptJust": "A fresh prompt just dropped.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyAFreshPromptJust": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyPromptsAreSharedGuidance": "Prompts are shared guidance, not a public record of what you say.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyPromptsAreSharedGuidance": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCues": "Conversation cues",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCues": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyPickACueAnd": "Pick a cue and keep the room moving.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyPickACueAnd": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCuesAreSuggestions": "Conversation cues are suggestions only; nothing is sent for you.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCuesAreSuggestions": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourNextGroup": "Your next group",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourNextGroup": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAssignmentIsReady": "Your assignment is ready.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAssignmentIsReady": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyYourOwnAssignment": "Only your own assignment details appear on this screen.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyYourOwnAssignment": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopySharedReveal": "Shared reveal",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopySharedReveal": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourDetailsStayHidden": "Your details stay hidden on this screen until the shared reveal moment.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourDetailsStayHidden": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostHelp": "Host help",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostHelp": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAskForOneSpecific": "Ask for one specific intro.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyAskForOneSpecific": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyTheHostSees": "Only the host sees this request; the other attendee is not notified.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyTheHostSees": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow": "Afterglow",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady": "Your afterglow is ready.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisRecapIsPrivate": "This recap is private to you. Hosts only see safe aggregate coaching.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisRecapIsPrivate": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyWrapped": "Wrapped",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyWrapped": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyBooked": "Booked",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyBooked": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"
   },
   "eventSuccessEventSuccessCompanionScreenStateVisiblecopyCatchOnlyShowsThe": "Catch only shows the live details that are relevant to this event moment.",
   "@eventSuccessEventSuccessCompanionScreenStateVisiblecopyCatchOnlyShowsThe": {
-    "description": "Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).",
+    "description": "Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).",
     "x-audience": "consumer",
     "x-owner": "product",
     "x-surface": "event_success.presentation.event_success_companion_screen_state"

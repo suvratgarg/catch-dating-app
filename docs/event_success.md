@@ -1,6 +1,6 @@
 ---
 doc_id: event_success
-version: 1.20.3
+version: 1.20.4
 updated: 2026-09-15
 owner: recursive_audit_loop
 status: active
@@ -311,6 +311,8 @@ rather than embedded in event-type logic.
 | Repository/providers | `lib/event_success/data/event_success_repository.dart` |
 | Host setup/live/report UI | `lib/event_success/presentation/event_success_host_screen.dart` and `host_parts/` |
 | Attendee companion UI | `lib/event_success/presentation/event_success_companion_screen.dart` and `companion_parts/` |
+| Companion loading UI | `lib/event_success/presentation/companion/event_success_companion_loading_page_body.dart` (page, stage, and primary-action skeletons) |
+| Companion moment presentation | `lib/event_success/presentation/event_success_moment_presentation_state.dart` (localized copy, icons, and choreography projection) |
 | Shared Host/attendee room map | `lib/event_success/presentation/event_success_room_map.dart` |
 | Assignment generation and overrides | `lib/event_success/presentation/assignments/` (pod/rotation sections, override sheets, typed draft models) |
 | Live reveal UI | `lib/event_success/presentation/reveal/` (host/attendee surfaces, countdown, assignments, standings, and shared clock state) |

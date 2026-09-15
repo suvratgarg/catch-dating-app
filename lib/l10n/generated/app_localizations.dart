@@ -11226,7 +11226,7 @@ abstract class AppLocalizations {
   /// **'Open format'**
   String get coreEventActivityVisualsLabelOpenFormat;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'When check-in opens, this screen turns into the live guide for {locationName}.'**
@@ -11234,70 +11234,70 @@ abstract class AppLocalizations {
     required Object locationName,
   });
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'One tap tells the host you are in the room and ready for the live flow.'**
   String get eventSuccessEventSuccessCompanionScreenStateBodyOneTapTellsThe;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Find one person, ask one tiny question, and let the room start with permission instead of pressure.'**
   String get eventSuccessEventSuccessCompanionScreenStateBodyFindOnePersonAsk;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Quick answers help Catch shape prompts without turning the event into a form.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateBodyQuickAnswersHelpCatch;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'The host is pacing the room from live mode.'**
   String get eventSuccessEventSuccessCompanionScreenStateBodyTheHostIsPacing;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Use it if the room needs an easy next line.'**
   String get eventSuccessEventSuccessCompanionScreenStateBodyUseItIfThe;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'These are light nudges for the current event moment.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateBodyTheseAreLightNudges;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Use it as a nudge into the next interaction, then let the room breathe.'**
   String get eventSuccessEventSuccessCompanionScreenStateBodyUseItAsA;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'The host controls the timing so the room unlocks together instead of leaking awkwardly.'**
   String get eventSuccessEventSuccessCompanionScreenStateBodyTheHostControlsThe;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Choose someone you want help meeting and the host can use that as live facilitation context.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateBodyChooseSomeoneYouWant;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'Keep the useful parts of the room, send private feedback, and use event-specific openers when a match appears.'**
   String get eventSuccessEventSuccessCompanionScreenStateBodyKeepTheUsefulParts;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (body).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (body).
   ///
   /// In en, this message translates to:
   /// **'The host is running the room. Your next prompt or reveal appears here when it is time.'**
@@ -13851,235 +13851,235 @@ abstract class AppLocalizations {
   /// **'no-step'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyNoStep;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Before arrival'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyBeforeArrival;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Your event guide is warming up.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourEventGuideIs;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Pre-event details stay informational until the host starts the room.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyPreEventDetailsStay;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Arrival cue'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyArrivalCue;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Check in when you reach the venue.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInWhenYou;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Check-in only updates attendance and the event companion flow.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyCheckInOnlyUpdates;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'First Hello'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyFirstHello;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Your first arrival mission is live.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourFirstArrivalMission;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'This checks you in. Hosts do not see the individual answer.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisChecksYouIn;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Match clues'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyMatchClues;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Add a few clues before the room moves.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyAddAFewClues;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Hosts do not see individual match clue answers.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostsDoNotSee;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Live now'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyLiveNow;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Follow the host for the next beat.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyFollowTheHostFor;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Everyone sees the same room cue; personal details stay scoped to you.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyEveryoneSeesTheSame;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Live prompt'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyLivePrompt;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'A fresh prompt just dropped.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyAFreshPromptJust;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Prompts are shared guidance, not a public record of what you say.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyPromptsAreSharedGuidance;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Conversation cues'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCues;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Pick a cue and keep the room moving.'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyPickACueAnd;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Conversation cues are suggestions only; nothing is sent for you.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyConversationCuesAreSuggestions;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Your next group'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourNextGroup;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Your assignment is ready.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAssignmentIsReady;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Only your own assignment details appear on this screen.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyYourOwnAssignment;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Shared reveal'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopySharedReveal;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Your details stay hidden on this screen until the shared reveal moment.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourDetailsStayHidden;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Host help'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyHostHelp;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Ask for one specific intro.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyAskForOneSpecific;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Only the host sees this request; the other attendee is not notified.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyOnlyTheHostSees;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Afterglow'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyAfterglow;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Your afterglow is ready.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyYourAfterglowIsReady;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'This recap is private to you. Hosts only see safe aggregate coaching.'**
   String
   get eventSuccessEventSuccessCompanionScreenStateVisiblecopyThisRecapIsPrivate;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Wrapped'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyWrapped;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Booked'**
   String get eventSuccessEventSuccessCompanionScreenStateVisiblecopyBooked;
 
-  /// Product copy used by lib/event_success/presentation/event_success_companion_screen_state.dart (visibleCopy).
+  /// Product copy used by lib/event_success/presentation/event_success_moment_presentation_state.dart (visibleCopy).
   ///
   /// In en, this message translates to:
   /// **'Catch only shows the live details that are relevant to this event moment.'**

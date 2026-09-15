@@ -4144,7 +4144,7 @@
           "id": "route_loading",
           "kind": "loading",
           "status": "captured",
-          "source": "EventSuccessCompanionRouteScreen renders EventSuccessCompanionLoadingBody inside stable companion chrome while event, profile, participation, plan, arrival mission, compatibility, preference, feedback, assignment, rotation, or wingman data resolves.",
+          "source": "EventSuccessCompanionRouteScreen renders EventSuccessCompanionLoadingPageBody inside stable companion chrome while event, profile, participation, plan, arrival mission, compatibility, preference, feedback, assignment, rotation, or wingman data resolves.",
           "tests": [
             "test/event_success/event_success_live_screens_test.dart"
           ],
