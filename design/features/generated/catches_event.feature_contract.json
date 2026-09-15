@@ -4,7 +4,7 @@
   "generatedFrom": "design/features/catches_event.feature.json",
   "generatedFor": "2026-07-23",
   "sourceDigest": "sha256:03da706e307beb1589e71af3d063a1b141845eb47d33ae29b70b099fa80a0ec5",
-  "resolvedDigest": "sha256:5c6b398dd8a184a3e64f82b490e326414040c6dd9991c392b63ae9b5476a5726",
+  "resolvedDigest": "sha256:b02e7b25d175874b9a7aa290df9a75c67dda0bb6d8ae5acfad7d2f91a1884f03",
   "feature": {
     "id": "feature.catches_event",
     "name": "Catches Event Deck",
@@ -1221,6 +1221,7 @@
               "file": "packages/catch_ui/lib/src/components/catch_field.dart",
               "constructors": [
                 "CatchField.read",
+                "CatchField.navigate",
                 "CatchField.content",
                 "CatchField.nav",
                 "CatchField.sortable",

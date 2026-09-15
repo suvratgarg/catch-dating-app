@@ -81,6 +81,7 @@ class _CatchFormRowListState<P> extends State<CatchFormRowList<P>> {
         final scope = _scopeFor(row);
         return row.accept<Widget>((
           read: (descriptor) => CatchField.read(
+            key: ValueKey('catch-form-read-${descriptor.id}'),
             copy: scope.fieldCopy,
             icon: descriptor.icon,
             title: descriptor.label,

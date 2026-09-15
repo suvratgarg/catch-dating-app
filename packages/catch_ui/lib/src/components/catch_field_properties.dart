@@ -1,6 +1,26 @@
 part of 'catch_field.dart';
 
-mixin _CatchFieldProperties {
+mixin _CatchFieldProperties implements CatchFieldDividerGeometry {
+  Widget? get leading;
+  Widget? get actions;
+  IconData? get icon;
+  double? get leadingExtent;
+  bool get _hasRowActions => !_explicitSaveInput && actions != null;
+  bool get _hasInputLeading =>
+      leading != null && (_editConfig != null || _selectConfig != null);
+  bool get _hasRowLeading => leading != null && !_hasInputLeading;
+  @override
+  double get fieldDividerLeadingInset =>
+      _rowLayout?._leadingInset ??
+      (add
+          ? CatchFieldRow.textLaneInset
+          : _hasRowLeading
+          ? (leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
+                CatchFieldTokens.leadingGap
+          : icon != null || _hasInputLeading
+          ? CatchFieldTokens.textLaneInset
+          : 0);
+
   Record get _config;
   Set<WidgetState> get states;
   bool get enabled => !states.contains(WidgetState.disabled);

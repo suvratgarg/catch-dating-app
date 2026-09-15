@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'host_person_conversation.dart';
+part of 'host_person_conversation_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -94,3 +94,54 @@ final class HostPersonWhatsappDetailFamily extends $Family
   @override
   String toString() => r'hostPersonWhatsappDetailProvider';
 }
+
+@ProviderFor(hostPersonConversationController)
+final hostPersonConversationControllerProvider =
+    HostPersonConversationControllerProvider._();
+
+final class HostPersonConversationControllerProvider
+    extends
+        $FunctionalProvider<
+          HostPersonConversationController,
+          HostPersonConversationController,
+          HostPersonConversationController
+        >
+    with $Provider<HostPersonConversationController> {
+  HostPersonConversationControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'hostPersonConversationControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$hostPersonConversationControllerHash();
+
+  @$internal
+  @override
+  $ProviderElement<HostPersonConversationController> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  HostPersonConversationController create(Ref ref) {
+    return hostPersonConversationController(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(HostPersonConversationController value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<HostPersonConversationController>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$hostPersonConversationControllerHash() =>
+    r'69c71c32aead454bb96be93842d65b640f47e1bd';

@@ -123,25 +123,19 @@ class _HostTodayWideLayout extends StatelessWidget {
         constraints: const BoxConstraints(
           maxWidth: CatchLayout.hostTodayWorkspaceMaxContentWidth,
         ),
-        child: Row(
+        child: CatchSectionList.panes(
           key: const ValueKey<String>('host-today-wide-layout'),
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: KeyedSubtree(
-                key: const ValueKey<String>('host-today-primary-pane'),
-                child: primary,
-              ),
-            ),
-            if (attentionVisible) ...[
-              gapW24,
-              SizedBox(
-                key: const ValueKey<String>('host-today-attention-pane'),
-                width: attentionPaneWidth,
-                child: attention,
-              ),
-            ],
-          ],
+          primary: KeyedSubtree(
+            key: const ValueKey<String>('host-today-primary-pane'),
+            child: primary,
+          ),
+          secondary: attentionVisible
+              ? KeyedSubtree(
+                  key: const ValueKey<String>('host-today-attention-pane'),
+                  child: attention,
+                )
+              : null,
+          secondaryWidth: attentionPaneWidth,
         ),
       ),
     );

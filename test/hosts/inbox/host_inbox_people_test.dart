@@ -1,4 +1,3 @@
-import 'host_inbox_test_fixtures.dart';
 import 'package:catch_dating_app/chats/presentation/inbox/chats_list_view_model.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
@@ -6,6 +5,7 @@ import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../events/events_test_helpers.dart';
+import 'host_inbox_test_fixtures.dart';
 
 void main() {
   HostInboxPeople compose({

@@ -3,7 +3,6 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_banner.dart';
 import 'package:catch_dating_app/core/schema_contracts/generated/field_constraints.g.dart';
@@ -16,6 +15,8 @@ import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+part 'event_success_attendee_spatial_row.dart';
 
 typedef EventSuccessSpatialPreview =
     Future<List<EventSuccessSpatialDestination>> Function(
@@ -432,62 +433,6 @@ class _EventSuccessPositionedMapUnit extends StatelessWidget {
       onWillAcceptWithDetails: (_) => !pending && destination?.valid == true,
       onAcceptWithDetails: (_) => unawaited(onApplyDraggedDestination(unit.id)),
       builder: (context, candidateData, rejectedData) => child,
-    );
-  }
-}
-
-class _EventSuccessAttendeeSpatialRow extends StatelessWidget {
-  const _EventSuccessAttendeeSpatialRow({
-    required this.assignment,
-    required this.profile,
-    required this.selected,
-    required this.pending,
-    required this.canDrag,
-    required this.onSelect,
-  });
-
-  final EventSuccessAssignment assignment;
-  final PublicProfile? profile;
-  final bool selected;
-  final bool pending;
-  final bool canDrag;
-  final Future<void> Function(EventSuccessAssignment assignment) onSelect;
-
-  @override
-  Widget build(BuildContext context) {
-    final row = CatchPersonRow(
-      copy: catchPersonRowCopy(context.l10n),
-      data: CatchPersonRowData(
-        name: profile?.name ?? assignment.displayTitle,
-        imageUrl: profile?.primaryPhotoThumbnailUrl,
-        seed: assignment.uid,
-        metaLine: assignment.layoutUnitId,
-        isFresh: selected,
-      ),
-      onTap: pending ? null : () => unawaited(onSelect(assignment)),
-      trailing: assignment.layoutUnitId == null
-          ? null
-          : CatchBadge(
-              label: assignment.confirmedLayoutUnitId == assignment.layoutUnitId
-                  ? context.l10n.eventSuccessRoomMapConfirmed
-                  : context.l10n.eventSuccessRoomMapAssigned,
-              tone: assignment.confirmedLayoutUnitId == assignment.layoutUnitId
-                  ? CatchBadgeTone.success
-                  : CatchBadgeTone.brand,
-            ),
-    );
-    if (!canDrag || !selected) return row;
-    return Draggable<String>(
-      data: assignment.uid,
-      feedback: Material(
-        color: Colors.transparent,
-        child: SizedBox(width: CatchLayout.maxContentWidth, child: row),
-      ),
-      childWhenDragging: Opacity(
-        opacity: CatchOpacity.disabledControl,
-        child: row,
-      ),
-      child: row,
     );
   }
 }

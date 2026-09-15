@@ -590,14 +590,18 @@ Screen composition should be predictable:
   -> feature widgets and core primitives
 ```
 
-`CatchPageBody` is the canonical page-inset owner. Its `formStep`, `screen`,
-`sliver`, and `slivers` recipes preserve their layout protocols. The screen
-recipe uses `CatchPageBodyVariant.scrolling` or `.fixed`; scrolling delegates
-to `CatchScrollView`, which fills short content to its local viewport and
-scrolls overflow. Field paint extents come from
-`CatchFieldInteractionPlaneScope.fromPadding`, preserving inherited interaction
-policy and accumulating directional insets. Features use the semantic body
-owner rather than publishing field geometry directly.
+Row pages use a full-width body or `CatchRootScreenPageScrollView.sections`.
+`CatchSection.rows` / `.sliverRows` own the content gutter and the complete
+page or pane interaction plane; `.containedRows` explicitly owns an inset
+rounded group. Section alone owns headers and between-row rules. `CatchField`
+owns interaction and takes sealed `CatchRecordLayout`, `CatchPersonLayout` or
+`CatchConversationLayout` data. These layouts cannot be arbitrary Widgets and
+cannot accept callbacks. Secondary targets belong to `CatchFieldSecondaryAction`.
+
+`CatchPageBody` remains the semantic inset owner for non-row content and legacy
+form flows. Never wrap full-width row sections with an additional horizontal
+page inset. `CatchScaffold`, `CatchMasterDetailViewport` and
+`CatchSectionList.panes` publish local viewport bounds for geometry assertions.
 `CatchScrollTerminalGap` owns terminal clearance, with `.sliver` for a sliver
 scroll owner. `CatchStateViewport` owns the visible area for empty/error
 placement, also with `.sliver`; both protocols share one obstruction policy.
@@ -905,6 +909,21 @@ preference:
 - Organizer remains the identity, team, defaults, provider, payout, and
   settings authority.
 
+Inbox groups endpoints by verified person identity within the selected organizer
+and event/general scope. Names, phone suffixes and fuzzy matching never merge
+identities. Each endpoint retains its transport id, cursor and authorization.
+The pane combines authorized history but requires an explicit reply route; no
+transport fallback or fan-out is permitted. New message chooses a person and
+then an available route. Partial source coverage is shown as partial, including
+counts; unknown booking membership never becomes a prospective classification.
+`HostInboxCatchPages`, `HostInboxWhatsappPages` and `HostConversationHistory`
+controllers own pagination and generation fences. `HostPersonConversationController`
+owns WhatsApp reply/read IO; the widget owns only presentation and ephemeral
+selection. Reply drafts are scoped by account, organizer, person, scope and
+route; retries preserve the operation id and successful sends clear only the
+unchanged draft. Authentication changes clear session drafts.
+
+
 The decision follows platform guidance that primary navigation represents a
 small number of persistent, peer top-level areas and preserves state within
 each area: [Apple tab bars](https://developer.apple.com/design/human-interface-guidelines/tab-bars)
@@ -946,7 +965,7 @@ captures. Reference images alone cannot reopen or bypass this boundary.
 **Section-page composition**
 
 `CatchSectionList` owns ordered complete sections. Its `.inset`, `.sliver`,
-`.responsive`, and `.page` recipes preserve their distinct layout protocols
+`.responsive`, `.panes`, and `.page` recipes preserve their distinct layout protocols
 through named constructors. Every constructor declares an empty-state owner
 or explicit omission; a recipe must not duplicate its parent's gutter or scroll
 owner. Section delimiters stay with `CatchSection`.

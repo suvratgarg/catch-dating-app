@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/l10n/generated/structured_domain_copy.g.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';

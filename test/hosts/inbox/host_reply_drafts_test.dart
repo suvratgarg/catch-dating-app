@@ -32,13 +32,19 @@ void main() {
         'other/person/event/catch:a',
         'org/other/event/catch:a',
       ];
-      for (final key in keys) drafts.setText(key, key);
-      for (final key in keys) expect(drafts.text(key), key);
+      for (final key in keys) {
+        drafts.setText(key, key);
+      }
+      for (final key in keys) {
+        expect(drafts.text(key), key);
+      }
       final operation = drafts.begin(keys.first, keys.first)!;
       drafts.setText(keys.first, 'New draft');
       drafts.finish(keys.first, operation, succeeded: true);
       expect(drafts.text(keys.first), 'New draft');
-      for (final key in keys.skip(1)) expect(drafts.text(key), key);
+      for (final key in keys.skip(1)) {
+        expect(drafts.text(key), key);
+      }
     },
   );
 

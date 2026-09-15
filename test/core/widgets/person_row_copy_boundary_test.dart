@@ -15,18 +15,12 @@ void main() {
         MaterialApp(
           theme: CatchTheme.light,
           home: Scaffold(
-            body: CatchPersonRow(
-              copy: CatchPersonRowCopy(
-                typingLabel: 'Écrit…',
-                newMatchLabel: 'Nouvelle rencontre',
-                unreadCountLabel: (value) =>
-                    '${catchCountLabel(value)} non lus',
-              ),
-              data: CatchPersonRowData(
+            body: CatchField.read(
+              content: CatchConversationLayout(
                 name: 'Camille',
-                lastMessage: 'Draft',
-                isTyping: true,
-                unreadCount: count,
+                preview: 'Écrit…',
+                activityLabel: catchCountLabel(count),
+                activitySemantics: '${catchCountLabel(count)} non lus',
               ),
             ),
           ),
@@ -78,21 +72,26 @@ void main() {
             body: Builder(
               builder: (context) => Column(
                 children: [
-                  CatchPersonRow(
-                    copy: catchPersonRowCopy(context.l10n),
-                    data: const CatchPersonRowData(
+                  CatchField.read(
+                    content: CatchConversationLayout(
                       name: 'Camille',
-                      lastMessage: 'Draft',
-                      isTyping: true,
-                      unreadCount: 118,
+                      preview: catchPersonRowCopy(context.l10n).typingLabel,
+                      activityLabel: catchCountLabel(118),
+                      activitySemantics: catchPersonRowCopy(
+                        context.l10n,
+                      ).unreadCountLabel(118),
                     ),
                   ),
-                  CatchPersonRow(
-                    copy: catchPersonRowCopy(context.l10n),
-                    data: const CatchPersonRowData(
+                  CatchField.read(
+                    content: CatchConversationLayout(
                       name: 'Alex',
-                      lastMessage: 'Hello',
-                      showFreshDot: true,
+                      preview: 'Hello',
+                      activityLabel: catchPersonRowCopy(
+                        context.l10n,
+                      ).newMatchLabel,
+                      activitySemantics: catchPersonRowCopy(
+                        context.l10n,
+                      ).newMatchLabel,
                     ),
                   ),
                 ],

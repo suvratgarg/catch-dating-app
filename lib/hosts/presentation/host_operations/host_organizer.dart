@@ -251,32 +251,11 @@ class HostOrganizerMetricRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final stacked =
-            constraints.maxWidth < 360 ||
-            MediaQuery.textScalerOf(context).scale(1) >= 1.6;
-        final gap = CatchSpacing.s3;
-        final width = stacked
-            ? constraints.maxWidth
-            : (constraints.maxWidth - gap) / 2;
-        return Wrap(
-          spacing: gap,
-          runSpacing: gap,
-          children: [
-            for (final item in items)
-              SizedBox(
-                width: width,
-                child: CatchSurface(
-                  borderColor: t.line,
-                  padding: CatchInsets.content,
-                  child: CatchMetricTile(value: item.value, label: item.label),
-                ),
-              ),
-          ],
-        );
-      },
+    return CatchMetricSection(
+      items: [
+        for (final item in items)
+          CatchMetricValue(value: item.value, label: item.label),
+      ],
     );
   }
 }

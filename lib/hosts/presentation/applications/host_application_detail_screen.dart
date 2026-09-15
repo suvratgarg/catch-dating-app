@@ -104,34 +104,37 @@ class _HostApplicationDetailScreenState
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CatchPersonRow.directory(
-                  data: CatchPersonRowData(
-                    name: application.applicantDisplayName,
-                    seed: application.applicationId,
-                  ),
-                  meta: Text(
-                    hostApplicationContextLabel(
-                      context,
-                      formId: application.formId,
-                      targetKind: application.targetKind,
-                      targetId: application.targetId,
-                      sources: sources.value,
+                CatchSection.containedRows(
+                  entries: [
+                    CatchField.read(
+                      content: CatchPersonLayout(
+                        name: application.applicantDisplayName,
+                        supportingText: hostApplicationContextLabel(
+                          context,
+                          formId: application.formId,
+                          targetKind: application.targetKind,
+                          targetId: application.targetId,
+                          sources: sources.value,
+                        ),
+                        context: context.l10n.hostApplicationsSubmittedOn(
+                          date: DateFormat.yMMMd().format(
+                            application.submittedAt,
+                          ),
+                        ),
+                        badges: [
+                          CatchRowBadge(
+                            label: hostApplicationStatusLabel(
+                              context,
+                              application.reviewStatus,
+                            ),
+                            tone: _applicationStatusTone(
+                              application.reviewStatus,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    style: CatchTextStyles.supporting(context),
-                  ),
-                  body: Text(
-                    context.l10n.hostApplicationsSubmittedOn(
-                      date: DateFormat.yMMMd().format(application.submittedAt),
-                    ),
-                    style: CatchTextStyles.recordContext(context),
-                  ),
-                  trailing: CatchBadge.status(
-                    label: hostApplicationStatusLabel(
-                      context,
-                      application.reviewStatus,
-                    ),
-                    tone: _applicationStatusTone(application.reviewStatus),
-                  ),
+                  ],
                 ),
                 if (sources.isTerminalError)
                   CatchButton.command(

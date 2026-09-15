@@ -20,6 +20,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_broadcast_composer_sheet.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_scope_menu.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -224,7 +225,17 @@ Widget hostInboxWorkspaceStates(BuildContext context) {
                   HostInboxWorkspaceSliver(
                     workspace: workspace,
                     now: HostInboxSurfaceFixtures.now,
-                    onThreadSelected: (_) {},
+                    onPersonSelected: (_) {},
+                    people: composeHostInboxPeople(
+                      organizerId: HostInboxSurfaceFixtures.club.id,
+                      scope: workspace.selectedScope,
+                      segment: workspace.selectedSegment,
+                      catchThreads: workspace.threads
+                          .map((row) => row.preview)
+                          .toList(),
+                      whatsappThreads: const [],
+                      participations: null,
+                    ),
                   ),
                 ],
               ),

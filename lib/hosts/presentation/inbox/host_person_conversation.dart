@@ -9,30 +9,18 @@ import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart'
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_async_value_adapter.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
-import 'package:catch_dating_app/hosts/data/crm/host_whatsapp_repository.dart';
 import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_conversation_history.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_conversation_history_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_actions.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-
-part 'host_person_conversation.g.dart';
-
-@riverpod
-Future<HostWhatsappThreadDetail> hostPersonWhatsappDetail(
-  Ref ref,
-  String organizerId,
-  String threadId,
-) => ref
-    .watch(hostWhatsappRepositoryProvider)
-    .getWhatsappThread(organizerId: organizerId, threadId: threadId);
 
 /// Embedded presentation: the route/workspace owns Scaffold and keyboard insets.
 class HostPersonConversationPane extends ConsumerStatefulWidget {
@@ -195,11 +183,14 @@ class _HostPersonConversationPaneState
           _markedLatest[source.matchId] != latest) {
         _markedLatest[source.matchId] = latest;
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
+          if (mounted &&
+              _atLatest &&
+              catchAsyncStateFromAsyncValue(ref.read(uidProvider)).value ==
+                  uid) {
             unawaited(
               ref
-                  .read(conversationRepositoryProvider)
-                  .markRead(conversationId: source.matchId, uid: uid)
+                  .read(hostPersonConversationControllerProvider)
+                  .markRead(source.matchId, uid)
                   .catchError((Object _) {
                     if (mounted) {
                       setState(() {
@@ -486,24 +477,13 @@ class _HostPersonConversationPaneState
             );
       } else if (whatsapp != null) {
         await ref
-            .read(hostWhatsappRepositoryProvider)
-            .sendWhatsappReply(
+            .read(hostPersonConversationControllerProvider)
+            .reply(
               organizerId: organizerId,
               thread: whatsapp,
               body: body,
               idempotencyKey: operation,
             );
-        if (mounted) {
-          ref.invalidate(
-            hostPersonWhatsappDetailProvider(
-              widget.person.organizerId,
-              whatsapp.threadId,
-            ),
-          );
-          ref.invalidate(
-            hostWhatsappThreadsProvider(widget.person.organizerId),
-          );
-        }
       } else {
         throw StateError('Selected route is unavailable.');
       }

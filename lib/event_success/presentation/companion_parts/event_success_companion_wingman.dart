@@ -1,9 +1,5 @@
 part of '../event_success_companion_screen.dart';
 
-const EdgeInsets _wingmanCandidateRowGap = EdgeInsets.only(
-  bottom: CatchSpacing.s2,
-);
-
 @immutable
 class WingmanRequestActionState {
   const WingmanRequestActionState({this.isSaving = false});
@@ -147,47 +143,45 @@ class _WingmanRequestSectionState extends State<WingmanRequestSection> {
               style: CatchTextStyles.supporting(context),
             )
           else
-            for (final candidate in widget.candidates)
-              Padding(
-                padding: _wingmanCandidateRowGap,
-                child: CatchPersonRow(
-                  copy: catchPersonRowCopy(context.l10n),
-                  data: CatchPersonRowData(
-                    name: candidate.name,
-                    imageUrl: candidate.primaryPhotoThumbnailUrl,
-                    seed: candidate.uid,
-                    metaLine: candidate.uid == requestedTargetUid
-                        ? context
-                              .l10n
-                              .eventSuccessEventSuccessCompanionWingmanVisiblecopyHostHelpRequestActive
-                        : context
-                              .l10n
-                              .eventSuccessEventSuccessCompanionWingmanVisiblecopyCheckedInToThis,
+            CatchSection.containedRows(
+              entries: [
+                for (final candidate in widget.candidates)
+                  CatchField.read(
+                    secondaryAction: CatchFieldSecondaryAction.button(
+                      label: candidate.uid == requestedTargetUid
+                          ? context
+                                .l10n
+                                .eventSuccessEventSuccessCompanionWingmanLabelRequested
+                          : requestedTargetUid == null
+                          ? context
+                                .l10n
+                                .eventSuccessEventSuccessCompanionWingmanLabelAskHost
+                          : context
+                                .l10n
+                                .eventSuccessEventSuccessCompanionWingmanLabelSwitch,
+                      onActivate: saving || candidate.uid == requestedTargetUid
+                          ? null
+                          : () => _saveRequest(candidate),
+                      loading:
+                          ((saving && candidate.uid != requestedTargetUid)
+                              ? CatchButtonStatus.loading
+                              : CatchButtonStatus.idle) ==
+                          CatchButtonStatus.loading,
+                    ),
+                    content: CatchPersonLayout(
+                      name: candidate.name,
+                      imageUrl: candidate.primaryPhotoThumbnailUrl,
+                      supportingText: candidate.uid == requestedTargetUid
+                          ? context
+                                .l10n
+                                .eventSuccessEventSuccessCompanionWingmanVisiblecopyHostHelpRequestActive
+                          : context
+                                .l10n
+                                .eventSuccessEventSuccessCompanionWingmanVisiblecopyCheckedInToThis,
+                    ),
                   ),
-                  avatarSize: 40,
-                  trailing: CatchButton(
-                    label: candidate.uid == requestedTargetUid
-                        ? context
-                              .l10n
-                              .eventSuccessEventSuccessCompanionWingmanLabelRequested
-                        : requestedTargetUid == null
-                        ? context
-                              .l10n
-                              .eventSuccessEventSuccessCompanionWingmanLabelAskHost
-                        : context
-                              .l10n
-                              .eventSuccessEventSuccessCompanionWingmanLabelSwitch,
-                    size: CatchButtonSize.sm,
-                    variant: CatchButtonVariant.secondary,
-                    status: (saving && candidate.uid != requestedTargetUid)
-                        ? CatchButtonStatus.loading
-                        : CatchButtonStatus.idle,
-                    onPressed: saving || candidate.uid == requestedTargetUid
-                        ? null
-                        : () => _saveRequest(candidate),
-                  ),
-                ),
-              ),
+              ],
+            ),
         ],
       ),
     );

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'host_inbox_whatsapp_pages.dart';
+part of 'host_inbox_whatsapp_pages_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator

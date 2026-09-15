@@ -1,177 +1,92 @@
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
-import 'package:catch_dating_app/l10n/generated/app_localizations_en.dart';
-import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/catch_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('renders a tappable chat preview row', (tester) async {
-    var tapped = false;
+  Widget screen(CatchField field) => MaterialApp(
+    theme: AppTheme.light,
+    home: CatchScaffold.standalone(body: CatchSection.rows(entries: [field])),
+  );
 
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: CatchPersonRow(
-            copy: catchPersonRowCopy(AppLocalizationsEn()),
-            data: const CatchPersonRowData(
+  testWidgets(
+    'conversation layout retains identity, preview, time and accessible activity',
+    (tester) async {
+      final semantics = tester.ensureSemantics();
+
+      var taps = 0;
+      await tester.pumpWidget(
+        screen(
+          CatchField.navigate(
+            onActivate: () => taps++,
+            content: const CatchConversationLayout(
               name: 'Taylor',
-              lastMessage: 'You matched!',
+              preview: 'You matched!',
               timestamp: '2m',
-              isFresh: true,
-              showFreshDot: true,
+              activityLabel: 'New match',
+              activitySemantics: 'New match',
             ),
-            showFreshBackground: false,
-            onTap: () => tapped = true,
           ),
         ),
-      ),
-    );
+      );
+      expect(find.text('Taylor'), findsOneWidget);
+      expect(find.text('You matched!'), findsOneWidget);
+      expect(find.text('2m'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('New match')), findsOneWidget);
+      await tester.tap(find.text('Taylor'));
+      expect(taps, 1);
+      semantics.dispose();
+    },
+  );
 
-    await tester.pump();
-    await tester.pump();
-
-    expect(find.text('Taylor'), findsOneWidget);
-    expect(find.text('You matched!'), findsOneWidget);
-    expect(find.byType(CatchAvatar), findsOneWidget);
-    expect(find.byType(CatchStatusIndicator), findsOneWidget);
-    expect(
-      tester.widget<CatchAvatar>(find.byType(CatchAvatar)).borderWidth,
-      CatchStroke.underline,
-    );
-
-    await tester.tap(find.byType(CatchPersonRow));
-    await tester.pump();
-
-    expect(tapped, isTrue);
-  });
-
-  testWidgets('uses row-level unread treatment instead of avatar badge', (
+  testWidgets('exact and partial unread counts are caller facts', (
     tester,
   ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: CatchPersonRow(
-            copy: catchPersonRowCopy(AppLocalizationsEn()),
-            data: const CatchPersonRowData(
+    final semantics = tester.ensureSemantics();
+
+    for (final count in ['1', '118', '2+']) {
+      await tester.pumpWidget(
+        screen(
+          CatchField.read(
+            content: CatchConversationLayout(
               name: 'Taylor',
-              lastMessage: 'See you at the event',
-              timestamp: '2m',
-              unreadCount: 1,
-              isFresh: true,
+              preview: 'See you at the event',
+              activityLabel: count,
+              activitySemantics: '$count unread messages',
             ),
-            showFreshBackground: false,
-            onTap: () {},
           ),
         ),
-      ),
-    );
-
-    await tester.pump();
-    await tester.pump();
-
-    final context = tester.element(find.byType(CatchPersonRow));
-    final tokens = CatchTokens.of(context);
-    final avatar = tester.widget<CatchAvatar>(find.byType(CatchAvatar));
-
-    expect(avatar.borderWidth, CatchStroke.underline);
-    expect(avatar.borderColor, tokens.primary);
-    expect(find.byType(CatchCountBadge), findsOneWidget);
-    expect(find.text('1'), findsOneWidget);
-    expect(
-      find.byWidgetPredicate(
-        (widget) =>
-            widget is Semantics && widget.properties.label == 'Unread chat',
-      ),
-      findsOneWidget,
-    );
+      );
+      expect(find.text(count), findsOneWidget);
+      expect(find.bySemanticsLabel('$count unread messages'), findsOneWidget);
+      expect(find.byType(CatchCountBadge), findsNothing);
+    }
+    semantics.dispose();
   });
 
-  testWidgets('chat rows use a full-width tokenized press band', (
+  testWidgets('person facts do not imply conversation anatomy or an action', (
     tester,
   ) async {
     await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: SizedBox(
-            width: 360,
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: CatchPersonRow(
-                copy: catchPersonRowCopy(AppLocalizationsEn()),
-                data: const CatchPersonRowData(
-                  name: 'Taylor',
-                  lastMessage: 'See you at the event',
-                  timestamp: '2m',
-                  unreadCount: 1,
-                ),
-                onTap: () {},
-              ),
-            ),
+      screen(
+        const CatchField.read(
+          content: CatchPersonLayout(
+            name: 'Taylor',
+            supportingText: '5:20 /km',
+            context: 'Sundowner 5K',
           ),
         ),
       ),
     );
-
-    final rowRect = tester.getRect(find.byType(CatchPersonRow));
-    final pressRect = tester.getRect(find.byType(CatchRowPressSurface));
-    expect(rowRect.width, 360);
-    expect(pressRect.left, rowRect.left);
-    expect(pressRect.right, rowRect.right);
-
-    final gesture = await tester.startGesture(
-      Offset(rowRect.left + 4, rowRect.center.dy),
-    );
-    await tester.pump();
-
-    final overlayFinder = find.byKey(CatchRowPressSurface.overlayKey);
-    final overlayRect = tester.getRect(overlayFinder);
-    final overlay = tester.widget<ColoredBox>(overlayFinder);
-    expect(overlayRect.left, rowRect.left);
-    expect(overlayRect.right, rowRect.right);
-    expect(
-      overlay.color,
-      CatchTokens.editorialLight.ink.withValues(
-        alpha: CatchOpacity.controlOverlayPressed,
-      ),
-    );
-
-    await gesture.up();
-    await tester.pump();
-
-    final releasedOverlay = tester.widget<ColoredBox>(overlayFinder);
-    expect(releasedOverlay.color, Colors.transparent);
-  });
-
-  testWidgets('renders roster layout when no chat preview is supplied', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.light,
-        home: Scaffold(
-          body: CatchPersonRow(
-            copy: catchPersonRowCopy(AppLocalizationsEn()),
-            data: const CatchPersonRowData(
-              name: 'Taylor',
-              metaLine: '5:20 /km',
-              contextLine: 'Sundowner 5K',
-            ),
-          ),
-        ),
-      ),
-    );
-
-    await tester.pump();
-    await tester.pump();
-
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('5:20 /km'), findsOneWidget);
     expect(find.text('Sundowner 5K'), findsOneWidget);
+    expect(find.byIcon(CatchIcons.chevronRightRounded), findsNothing);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Semantics && w.properties.button == true,
+      ),
+      findsNothing,
+    );
   });
 }

@@ -375,24 +375,31 @@ class EventDetailHostsSection extends StatelessWidget {
           title: context.l10n.eventsEventDetailBodyTitleHostedBy,
           dividerColor: style?.dividerColor,
           titleColor: style?.headingColor,
-          child: CatchPersonRow.contact(
-            data: CatchPersonRowData(
+          child: CatchField.navigate(
+            onActivate: () => onViewClub(clubId),
+            content: CatchPersonLayout(
               name: state.hostName!,
               imageUrl: state.photoUrl,
-              metaLine: state.meta,
+              supportingText: state.meta,
+              avatarColors: ActivityPalette.resolve(
+                context,
+                event.activityKind,
+              ).avatarColors,
+              badges: [
+                if (state.verified)
+                  CatchRowBadge(
+                    label: context.l10n.organizersAuthorityBadgeOwnerVerified,
+                    tone: CatchBadgeTone.success,
+                    icon: CatchIcons.sealCheck,
+                  ),
+              ],
             ),
-            colors: ActivityPalette.resolve(
-              context,
-              event.activityKind,
-            ).avatarColors,
-            verified: state.verified,
-            nameColor: style?.headingColor,
-            metaColor: style?.bodyColor,
-            actionColor: style?.primaryColor,
-            onTap: () => onViewClub(clubId),
-            onMessage: canMessage ? () => onMessageHost(clubId, hostUid) : null,
-            messageTooltip: canMessage
-                ? context.l10n.eventsEventDetailBodyTooltipMessageHost
+            secondaryAction: canMessage
+                ? CatchFieldSecondaryAction.command(
+                    label: context.l10n.eventsEventDetailBodyTooltipMessageHost,
+                    icon: CatchIcons.chatBubbleOutlineRounded,
+                    onActivate: () => onMessageHost(clubId, hostUid),
+                  )
                 : null,
           ),
         );

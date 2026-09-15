@@ -1,42 +1,79 @@
 part of 'settings_screen.dart';
 
-class BlockedAccountTile extends StatelessWidget {
-  const BlockedAccountTile({
+CatchPersonLayout blockedAccountLayout(
+  BuildContext context,
+  SettingsBlockedAccountRow row,
+) => CatchPersonLayout(
+  name: row.name,
+  imageUrl: row.imageUrl,
+  supportingText: row.metaLine,
+);
+
+class BlockedAccountsSection extends StatelessWidget {
+  const BlockedAccountsSection({
     super.key,
-    required this.row,
-    required this.divider,
+    required this.state,
     required this.unblocking,
     this.enabled = true,
+    required this.onRetry,
     required this.onUnblock,
   });
 
-  final SettingsBlockedAccountRow row;
-  final bool divider;
+  final SettingsBlockedAccountsState state;
   final bool unblocking;
   final bool enabled;
+  final VoidCallback? onRetry;
   final ValueChanged<String> onUnblock;
 
   @override
   Widget build(BuildContext context) {
-    return CatchPersonRow(
-      copy: catchPersonRowCopy(context.l10n),
-      data: CatchPersonRowData(
-        name: row.name,
-        imageUrl: row.imageUrl,
-        metaLine: row.metaLine,
-        seed: row.seed,
-      ),
-      divider: divider,
-      trailing: CatchButton(
-        key: SettingsKeys.unblockButton(row.uid),
-        label: context.l10n.safetySettingsScreenLabelUnblock,
-        status: (unblocking)
-            ? CatchButtonStatus.loading
-            : CatchButtonStatus.idle,
-        onPressed: !enabled || unblocking ? null : () => onUnblock(row.uid),
-        variant: CatchButtonVariant.ghost,
-        size: CatchButtonSize.sm,
-      ),
+    final t = CatchTokens.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const CatchDivider(),
+        switch (state.status) {
+          SettingsBlockedAccountsStatus.loading =>
+            const BlockedAccountsSkeleton(),
+          SettingsBlockedAccountsStatus.error => Padding(
+            padding: CatchInsets.content,
+            child: CatchLocalizedErrorState(
+              state.error!,
+              mode: CatchErrorStateMode.compact,
+              onRetry: onRetry,
+            ),
+          ),
+          SettingsBlockedAccountsStatus.empty => Padding(
+            padding: CatchInsets.content,
+            child: CatchEmptyState(
+              icon: CatchIcons.verifiedUserOutlined,
+              title: context.l10n.safetySettingsScreenTitleNoBlockedAccounts,
+              message:
+                  context.l10n.safetySettingsScreenMessagePeopleYouBlockWill,
+              iconSize: CatchIcon.tile,
+              titleStyle: CatchTextStyles.sectionTitle(context),
+              messageStyle: CatchTextStyles.supporting(context, color: t.ink2),
+            ),
+          ),
+          SettingsBlockedAccountsStatus.content => CatchSection.containedRows(
+            entries: [
+              for (var i = 0; i < state.rows.length; i++)
+                CatchField.read(
+                  content: blockedAccountLayout(context, state.rows[i]),
+                  secondaryAction: CatchFieldSecondaryAction.button(
+                    key: SettingsKeys.unblockButton(state.rows[i].uid),
+                    label: context.l10n.safetySettingsScreenLabelUnblock,
+                    loading: unblocking,
+                    onActivate: enabled && !unblocking
+                        ? () => onUnblock(state.rows[i].uid)
+                        : null,
+                  ),
+                ),
+            ],
+          ),
+        },
+      ],
     );
   }
 }

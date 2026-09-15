@@ -10,6 +10,7 @@ import 'package:catch_dating_app/hosts/domain/crm/host_whatsapp_thread.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_people.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_person_conversation_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_reply_drafts.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_ui/catch_ui.dart';
@@ -71,7 +72,7 @@ void main() {
       whatsappThreads: [wa('wa-id', 'contact', uid: 'guest')],
       participations: null,
     ).people.single;
-    return ProviderScope(
+    final container = ProviderContainer(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData('host')),
         matchStreamProvider('source-id').overrideWithValue(
@@ -117,6 +118,10 @@ void main() {
           ),
         ),
       ],
+    );
+    addTearDown(container.dispose);
+    return UncontrolledProviderScope(
+      container: container,
       child: MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(

@@ -2421,7 +2421,12 @@
           "catch_field_requires_section_context",
           "catch_field_geometry_is_section_owned",
           "catch_field_divider_is_section_owned",
-          "catch_no_tokens_prop_drilling"
+          "catch_no_tokens_prop_drilling",
+          "catch_row_geometry_is_internal",
+          "catch_section_content_is_passive",
+          "catch_row_section_fills_viewport",
+          "catch_no_positional_widget_finder",
+          "catch_field_owns_row_interaction"
         ],
         "vehicle": "plugin",
         "replaces": [
@@ -2444,7 +2449,7 @@
       "name": "CatchField",
       "status": "active",
       "kind": "composite",
-      "summary": "Unified semantic field primitive for read, navigation, toggle, input, disclosure, choice, select, stepper, and action rows. CatchField owns content, state, accessibility, and input behavior; its enclosing CatchSection or CatchFieldLanes owns sibling dividers, gutters, containment, perimeter, and responsive interaction geometry. All recipes receive localized field copy from callers through CatchFieldCopy.",
+      "summary": "Field owns activation, hover, focus, disabled state and accessibility. Ordinary records, people and conversations are sealed passive content layouts. Section owns gutters, dividers and the interaction perimeter. Form controllers own draft and persistence state.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -2586,9 +2591,9 @@
           {
             "name": "copy",
             "type": "object",
-            "required": true,
+            "required": false,
             "dartType": "CatchFieldCopy",
-            "notes": "Caller-resolved optional-label and validation copy, action labels, save announcements, empty-value and selection prompts, and clear tooltips. Required by every recipe; locale grammar stays in the app adapter."
+            "notes": "Required for localized editor and legacy value recipes. Passive typed content needs no field editing copy unless it exposes a non-idle save status."
           },
           {
             "name": "title",
@@ -2975,6 +2980,27 @@
               "inactiveWithoutSelection"
             ],
             "notes": "Native editing, focus and selection permissions for direct text inputs. Non-actionable display-only fields use inactiveWithoutSelection; date-picker triggers use readOnly with onTap. Explicit-save inputs derive native permissions from their open state."
+          },
+          {
+            "name": "content",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchFieldLayout",
+            "notes": "Required by navigate; accepted by read exclusively from legacy content slots. Sealed passive Record, Person or Conversation layout; no Widget, callback, hover, typography or geometry slot."
+          },
+          {
+            "name": "onActivate",
+            "type": "callback",
+            "required": false,
+            "dartType": "VoidCallback",
+            "notes": "Required by navigate. Field states own whether it is enabled."
+          },
+          {
+            "name": "secondaryAction",
+            "type": "object",
+            "required": false,
+            "dartType": "CatchFieldSecondaryAction",
+            "notes": "Typed independent menu, icon command, text button or action group. Field owns placement and target separation."
           }
         ],
         "states": [
@@ -3963,6 +3989,181 @@
               "qualifier": "adapter",
               "decisionRef": "pattern-family:form-field-draft-editing"
             }
+          },
+          {
+            "id": "catch.field.layout",
+            "symbol": "CatchFieldLayout",
+            "file": "packages/catch_ui/lib/src/components/catch_field_layout.dart",
+            "summary": "Sealed non-widget passive row content; implementations cannot own events, focus or perimeter geometry.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L3",
+            "roleNoun": "Layout",
+            "naming": {
+              "useCase": "Field",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Sealed non-widget passive row content; implementations cannot own events, focus or perimeter geometry."
+            }
+          },
+          {
+            "id": "catch.field.record_layout",
+            "symbol": "CatchRecordLayout",
+            "file": "packages/catch_ui/lib/src/components/catch_field_layout.dart",
+            "summary": "Record title, icon, metadata, facts and description rendered only by Field.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L3",
+            "roleNoun": "Layout",
+            "naming": {
+              "useCase": "Record",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Record title, icon, metadata, facts and description rendered only by Field."
+            }
+          },
+          {
+            "id": "catch.field.person_layout",
+            "symbol": "CatchPersonLayout",
+            "file": "packages/catch_ui/lib/src/components/catch_field_layout.dart",
+            "summary": "Person identity, avatar, supporting facts and passive status badges rendered only by Field.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L3",
+            "roleNoun": "Layout",
+            "naming": {
+              "useCase": "Person",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Person identity, avatar, supporting facts and passive status badges rendered only by Field."
+            }
+          },
+          {
+            "id": "catch.field.conversation_layout",
+            "symbol": "CatchConversationLayout",
+            "file": "packages/catch_ui/lib/src/components/catch_field_layout.dart",
+            "summary": "Explicit conversation identity, preview, timestamp and caller-resolved exact or partial activity semantics.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L3",
+            "roleNoun": "Layout",
+            "naming": {
+              "useCase": "Conversation",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Explicit conversation identity, preview, timestamp and caller-resolved exact or partial activity semantics."
+            }
+          },
+          {
+            "id": "catch.field.row_badge",
+            "symbol": "CatchRowBadge",
+            "file": "packages/catch_ui/lib/src/components/catch_field_layout.dart",
+            "summary": "Passive labelled status data; action targets belong to Field secondary actions.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L3",
+            "roleNoun": "Badge",
+            "naming": {
+              "useCase": "Row",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Passive labelled status data; action targets belong to Field secondary actions."
+            }
+          },
+          {
+            "id": "catch.field.secondary_action",
+            "symbol": "CatchFieldSecondaryAction",
+            "file": "packages/catch_ui/lib/src/components/catch_field_secondary_action.dart",
+            "summary": "Closed action descriptions rendered as independent Field-owned targets.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L3",
+            "roleNoun": "Action",
+            "naming": {
+              "useCase": "FieldSecondary",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Closed action descriptions rendered as independent Field-owned targets."
+            }
+          },
+          {
+            "id": "catch.field.rowpress",
+            "symbol": "CatchRowPressSurface",
+            "file": "packages/catch_ui/lib/src/primitives/catch_row_press_surface.dart",
+            "summary": "Internal press renderer for the exact Field, button, index and choice owners; never exported for product row composition.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.field",
+              "parentConceptId": "catch.field",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.field"
+            },
+            "level": "L2",
+            "roleNoun": "Surface",
+            "naming": {
+              "useCase": "RowPress",
+              "comparedWith": [
+                "catch.field"
+              ],
+              "reason": "Internal press renderer for the exact Field, button, index and choice owners; never exported for product row composition."
+            }
           }
         ],
         "accessibility": {
@@ -4023,6 +4224,7 @@
         "file": "packages/catch_ui/lib/src/components/catch_field.dart",
         "constructors": [
           "CatchField.read",
+          "CatchField.navigate",
           "CatchField.content",
           "CatchField.nav",
           "CatchField.sortable",
@@ -4076,7 +4278,7 @@
       "name": "CatchSection",
       "status": "active",
       "kind": "composite",
-      "summary": "Canonical information-grouping primitive for divided and outlined field groups, generic contained modules, and plain content groups. Field sections own header placement, sibling rules, clipping, perimeter, responsive interaction geometry, and section rhythm; named constructors keep those responsibilities structural instead of caller-styled. Callers resolve optional title colors; supplied titles and counts need no app catalog dependency.",
+      "summary": "Owns section headers, readable gutters, row grouping, sibling dividers and the perimeter. Ordinary rows fill the local viewport; deliberately inset groups have one rounded exterior. Content sections hold media, metrics or explanatory content.",
       "design": {
         "figma": {
           "status": "unmapped",
@@ -4428,6 +4630,27 @@
             "required": false,
             "dartType": "Set<WidgetState>",
             "notes": "Explicit focus/error states for contained recipes, passed to the one SectionSurface owner. Error wins over focus; omission preserves descendant focus tracking."
+          },
+          {
+            "name": "entries",
+            "type": "list",
+            "required": false,
+            "dartType": "List<CatchField>",
+            "notes": "Closed ordinary-row collection for rows and containedRows."
+          },
+          {
+            "name": "findChildIndexCallback",
+            "type": "callback",
+            "required": false,
+            "dartType": "int? Function(Key)",
+            "notes": "Stable identity lookup when a lazy collection changes order."
+          },
+          {
+            "name": "action",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Independent section header action for row and content recipes."
           }
         ],
         "states": [
@@ -4727,6 +4950,81 @@
             "naming": {
               "useCase": ""
             }
+          },
+          {
+            "id": "catch.section.rows",
+            "symbol": "CatchSectionRows",
+            "file": "packages/catch_ui/lib/src/components/catch_section_rows.dart",
+            "summary": "Internal eager/lazy Field collection renderer. Resolves numeric leading lanes, suppresses active adjacent dividers and enforces page or pane width.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "RowList",
+            "naming": {
+              "useCase": "Section",
+              "comparedWith": [
+                "catch.section"
+              ],
+              "reason": "Internal eager/lazy Field collection renderer. Resolves numeric leading lanes, suppresses active adjacent dividers and enforces page or pane width."
+            }
+          },
+          {
+            "id": "catch.section.content",
+            "symbol": "CatchSectionContent",
+            "file": "packages/catch_ui/lib/src/components/catch_section_content.dart",
+            "summary": "Internal non-row content inset and section header renderer.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "Section",
+            "naming": {
+              "useCase": "Section",
+              "comparedWith": [
+                "catch.section"
+              ],
+              "reason": "Internal non-row content inset and section header renderer."
+            }
+          },
+          {
+            "id": "catch.section.heading",
+            "symbol": "CatchSectionHeading",
+            "file": "packages/catch_ui/lib/src/components/catch_section_content.dart",
+            "summary": "Shared section title and content-width rule for both row and non-row recipes.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.section",
+              "parentConceptId": "catch.section",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.section"
+            },
+            "level": "L3",
+            "roleNoun": "Header",
+            "naming": {
+              "useCase": "Section",
+              "comparedWith": [
+                "catch.section"
+              ],
+              "reason": "Shared section title and content-width rule for both row and non-row recipes."
+            }
           }
         ],
         "accessibility": {
@@ -4783,7 +5081,12 @@
           "CatchSection.containedFieldGroups",
           "CatchSection.contained",
           "CatchSection.plain",
-          "CatchSection.horizontal"
+          "CatchSection.horizontal",
+          "CatchSection.rows",
+          "CatchSection.containedRows",
+          "CatchSection.sliverRows",
+          "CatchSection.content",
+          "CatchSection.formRows"
         ]
       },
       "surfaces": {
@@ -7434,7 +7737,7 @@
         "useCase": "Control",
         "comparedWith": [
           "catch.surface",
-          "catch.row_press_surface"
+          "catch.field"
         ],
         "reason": "Owns minimum interactive extents, stable focus/error borders, a disabled fill and optional button semantics. General surfaces own unconstrained containment; row press surfaces own hover, keyboard and press interaction."
       }
@@ -9298,7 +9601,7 @@
           {
             "id": "catch.screen_body.root_screen_page_scroll_view",
             "symbol": "CatchRootScreenPageScrollView",
-            "summary": "Typed inner root-page scroll owner whose closed standard, fullBleed, and embeddedViewport constructors jointly select geometry, responsive width, and terminal-clearance policy. It also owns overlap injection, focus isolation, stable PageStorage restoration, and refresh; CatchRootScreenPageSpec selects only the surrounding page adapter.",
+            "summary": "Inner page scroll owner. sections gives full-width row sections their content gutters and top rhythm; standard supports legacy padded content; fullBleed supports custom surfaces; embeddedViewport delegates viewport scrolling.",
             "states": [
               "top",
               "scrolled",
@@ -9741,6 +10044,31 @@
               "qualifier": "adapter",
               "decisionRef": "contract-family:catch.screen_body"
             }
+          },
+          {
+            "id": "catch.screen_body.row",
+            "symbol": "CatchRowViewport",
+            "file": "packages/catch_ui/lib/src/patterns/catch_row_viewport.dart",
+            "summary": "Internal width boundary published only by scaffold and pane owners; row sections verify their interaction extent against it.",
+            "states": [
+              "default"
+            ],
+            "governance": {
+              "conceptRole": "member",
+              "conceptId": "catch.screen_body",
+              "parentConceptId": "catch.screen_body",
+              "qualifier": "layout",
+              "decisionRef": "contract-family:catch.screen_body"
+            },
+            "level": "L4",
+            "roleNoun": "Viewport",
+            "naming": {
+              "useCase": "Row",
+              "comparedWith": [
+                "catch.screen_body"
+              ],
+              "reason": "Internal width boundary published only by scaffold and pane owners; row sections verify their interaction extent against it."
+            }
           }
         ],
         "accessibility": {
@@ -9818,7 +10146,8 @@
           "CatchSectionList.inset",
           "CatchSectionList.sliver",
           "CatchSectionList.responsive",
-          "CatchSectionList.page"
+          "CatchSectionList.page",
+          "CatchSectionList.panes"
         ]
       },
       "design": {
@@ -9924,6 +10253,27 @@
             "dartType": "double",
             "default": "CatchSpacing.screenPb",
             "notes": "Page only; the shared terminal-padding owner adds shell clearance."
+          },
+          {
+            "name": "primary",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget",
+            "notes": "Primary co-scrolling pane for panes."
+          },
+          {
+            "name": "secondary",
+            "type": "widget",
+            "required": false,
+            "dartType": "Widget?",
+            "notes": "Optional companion pane for panes."
+          },
+          {
+            "name": "secondaryWidth",
+            "type": "number",
+            "required": false,
+            "dartType": "double",
+            "notes": "Local secondary pane extent; only the pane owner publishes row geometry."
           }
         ],
         "states": [
@@ -13356,518 +13706,6 @@
       }
     },
     {
-      "id": "catch.record_row",
-      "name": "CatchRecordRow",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Natural-height read-only record with heading, important facts, evidence metadata, prose, semantic marker and optional navigation.",
-      "dart": {
-        "symbol": "CatchRecordRow",
-        "file": "packages/catch_ui/lib/src/components/catch_record_row.dart",
-        "constructors": [
-          "CatchRecordRow"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/RecordRow",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "RecordRow",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "title",
-            "type": "string",
-            "required": true,
-            "dartType": "String"
-          },
-          {
-            "name": "icon",
-            "type": "object",
-            "required": true,
-            "dartType": "IconData"
-          },
-          {
-            "name": "color",
-            "type": "color",
-            "required": false,
-            "dartType": "Color"
-          },
-          {
-            "name": "metadata",
-            "type": "string",
-            "required": false,
-            "dartType": "String"
-          },
-          {
-            "name": "facts",
-            "type": "list",
-            "required": false,
-            "dartType": "List<String>"
-          },
-          {
-            "name": "description",
-            "type": "string",
-            "required": false,
-            "dartType": "String"
-          },
-          {
-            "name": "onTap",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback"
-          }
-        ],
-        "states": [
-          "read-only",
-          "navigable",
-          "multiline",
-          "facts"
-        ],
-        "slots": [
-          "title",
-          "metadata",
-          "facts",
-          "description"
-        ],
-        "tokens": [],
-        "dartRoles": [
-          "CatchTextStyles.recordTitle",
-          "CatchTextStyles.recordContext",
-          "CatchTextStyles.supporting",
-          "CatchTextStyles.recordBody"
-        ],
-        "goldens": [],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [],
-        "notes": [
-          "Use for records, source receipts and activity summaries. Do not use to edit fields or place independent controls in a tappable row.",
-          "The parent owns chronology, group labels and dividers; only a supplied destination enables navigation."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.record_row",
-        "publicApi": true,
-        "stateOwnership": "none",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.record_row"
-      },
-      "surfaces": {
-        "flutter": "CatchRecordRow"
-      },
-      "waiver": {
-        "reason": "A read-only record composition has no distinct raw widget equivalent to ban. Contract and behavior tests own its reading and navigation semantics.",
-        "owner": "design_system",
-        "expires": "2026-10-04"
-      },
-      "level": "L3",
-      "roleNoun": "Row",
-      "naming": {
-        "useCase": "Record",
-        "comparedWith": [
-          "catch.meta_row"
-        ],
-        "reason": "A readable record owns a heading, contextual metadata, a list of facts and optional prose. A destination adds full-row press semantics and disclosure. MetaRow presents compact passive facts without those narrative or navigation lanes."
-      }
-    },
-    {
-      "id": "catch.row_press_surface",
-      "enforcement": {
-        "code": "catch_no_positional_widget_finder",
-        "vehicle": "plugin",
-        "probeSeed": "find.text('x').first"
-      },
-      "name": "CatchRowPressSurface",
-      "status": "active",
-      "kind": "primitive",
-      "summary": "Full-width hover, focus, pressed, tap, and semantic interaction layer for list and field rows.",
-      "dart": {
-        "symbol": "CatchRowPressSurface",
-        "file": "packages/catch_ui/lib/src/primitives/catch_row_press_surface.dart",
-        "constructors": [
-          "CatchRowPressSurface"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/RowPressSurface",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "RowPressSurface",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "child",
-            "type": "widget",
-            "required": true,
-            "dartType": "Widget"
-          },
-          {
-            "name": "onTap",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback"
-          },
-          {
-            "name": "semanticButton",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool"
-          },
-          {
-            "name": "expandToMaxWidth",
-            "type": "bool",
-            "required": false,
-            "default": true,
-            "dartType": "bool"
-          }
-        ],
-        "states": [
-          "field-row",
-          "chat-row"
-        ],
-        "slots": [
-          "child"
-        ],
-        "tokens": [],
-        "dartRoles": [],
-        "goldens": [],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [],
-        "notes": [
-          "The child owns content layout and padding; this primitive owns only the full-row interaction layer."
-        ]
-      },
-      "governance": {
-        "role": "atom",
-        "canonicalFamily": "catch.row_press_surface",
-        "publicApi": true,
-        "stateOwnership": "local-ui-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "tokens-and-primitives",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.row_press_surface"
-      },
-      "surfaces": {
-        "flutter": "CatchRowPressSurface"
-      },
-      "level": "L2",
-      "roleNoun": "Surface",
-      "naming": {
-        "useCase": "RowPress",
-        "comparedWith": [
-          "catch.control_shell",
-          "catch.surface"
-        ],
-        "reason": "Owns row hover/press/focus state and keyboard activation while inheriting row geometry; control surfaces own sized input containment and externally supplied validation state."
-      }
-    },
-    {
-      "id": "catch.person_row",
-      "verification": {
-        "vehicle": "widgetbook-contract",
-        "reason": "Canonical states are exercised through the generated Widgetbook contract."
-      },
-      "name": "CatchPersonRow",
-      "status": "active",
-      "kind": "composite",
-      "summary": "Canonical identity row with chat, roster, directory and contact recipes, caller-owned copy and independently actionable contact controls.",
-      "dart": {
-        "symbol": "CatchPersonRow",
-        "file": "packages/catch_ui/lib/src/components/catch_person_row.dart",
-        "constructors": [
-          "CatchPersonRow",
-          "CatchPersonRow.directory",
-          "CatchPersonRow.contact"
-        ]
-      },
-      "design": {
-        "figma": {
-          "status": "unmapped",
-          "componentName": "Catch/PersonRow",
-          "componentUrl": null
-        },
-        "codeConnect": {
-          "status": "planned",
-          "snippetLanguage": "dart",
-          "template": null
-        },
-        "claude": {
-          "handoffName": "PersonRow",
-          "allowed": true
-        }
-      },
-      "contract": {
-        "props": [
-          {
-            "name": "copy",
-            "type": "object",
-            "required": false,
-            "dartType": "CatchPersonRowCopy"
-          },
-          {
-            "name": "data",
-            "type": "object",
-            "required": true,
-            "dartType": "CatchPersonRowData"
-          },
-          {
-            "name": "trailing",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget"
-          },
-          {
-            "name": "onTap",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback"
-          },
-          {
-            "name": "meta",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
-          },
-          {
-            "name": "body",
-            "type": "widget",
-            "required": false,
-            "dartType": "Widget?"
-          },
-          {
-            "name": "colors",
-            "type": "object",
-            "required": false,
-            "dartType": "CatchAvatarColors",
-            "notes": "Contact recipe only."
-          },
-          {
-            "name": "verified",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool",
-            "notes": "Contact recipe only."
-          },
-          {
-            "name": "divider",
-            "type": "bool",
-            "required": false,
-            "default": false,
-            "dartType": "bool",
-            "notes": "Contact recipe only."
-          },
-          {
-            "name": "onMessage",
-            "type": "callback",
-            "required": false,
-            "dartType": "VoidCallback?",
-            "notes": "Contact recipe only."
-          },
-          {
-            "name": "messageTooltip",
-            "type": "string",
-            "required": false,
-            "dartType": "String?",
-            "notes": "Contact recipe only."
-          },
-          {
-            "name": "nameColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?",
-            "notes": "Contact recipe only."
-          },
-          {
-            "name": "metaColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?",
-            "notes": "Contact recipe only."
-          },
-          {
-            "name": "actionColor",
-            "type": "color",
-            "required": false,
-            "dartType": "Color?",
-            "notes": "Contact recipe only."
-          }
-        ],
-        "states": [
-          "roster",
-          "roster-trailing",
-          "chat-preview",
-          "chat-preview-new",
-          "chat-preview-unread",
-          "chat-preview-square-avatar",
-          "divider",
-          "long-copy",
-          "directory",
-          "directory-large-text",
-          "chat-context",
-          "chat-typing",
-          "roster-long-copy",
-          "contact-identity-only",
-          "contact-navigable",
-          "contact-message-enabled",
-          "contact-verified",
-          "contact-divider",
-          "contact-long-copy"
-        ],
-        "slots": [],
-        "tokens": [
-          "space.s1",
-          "space.s2",
-          "space.s3",
-          "space.s4",
-          "radius.md",
-          "theme.light.color.ink",
-          "theme.light.color.ink2",
-          "theme.light.color.ink3",
-          "theme.light.color.line",
-          "theme.light.color.surface",
-          "layout.recordAvatarExtent",
-          "layout.recordLeadingGap",
-          "layout.recordVerticalPadding",
-          "layout.recordTitleGap",
-          "space.s10",
-          "theme.light.color.primary"
-        ],
-        "dartRoles": [
-          "CatchPersonRowData",
-          "CatchPersonRowCopy",
-          "CatchAvatar",
-          "CatchBadge",
-          "CatchAvatarVariant",
-          "CatchTextStyles.name",
-          "CatchTextStyles.supporting",
-          "CatchTextStyles.recordContext",
-          "CatchRecordTokens",
-          "CatchRowPressSurface",
-          "CatchIconAction",
-          "CatchAvatarColors",
-          "CatchCountBadge",
-          "CatchStatusIndicator"
-        ],
-        "goldens": [],
-        "members": [],
-        "accessibility": {
-          "largeText": {
-            "minimumScale": 2,
-            "policy": "Reflow before truncation and preserve primary meaning and actions at supported viewports."
-          },
-          "reducedMotion": {
-            "policy": "Render the same stable resting state without requiring animation to understand or complete the interaction."
-          },
-          "themes": [
-            "light",
-            "dark"
-          ]
-        }
-      },
-      "handoff": {
-        "allowedChildren": [
-          "catch.person_avatar",
-          "catch.badge",
-          "catch.icon_button",
-          "catch.row_press_surface"
-        ],
-        "notes": [
-          "The default row requires caller-resolved chat and accessibility copy. Directory and contact recipes have no fixed copy; contact messaging requires a localized messageTooltip. Chat/roster text, context, timestamp and count/dot content render inside the same parent.",
-          "Global product composition for people rows. Feature view models should map into CatchPersonRowData at the screen/list boundary rather than introducing row adapters.",
-          "Supplying onTap automatically renders the navigation chevron; omitting onTap makes navigation chrome impossible.",
-          "Supplying onMessage automatically renders the message action and requires messageTooltip, so affordance and capability cannot drift.",
-          "Directory slots are meta, body and trailing. At large text, trailing status moves below supporting content. Contact colors apply to the avatar and verification mark together."
-        ]
-      },
-      "governance": {
-        "role": "composition",
-        "canonicalFamily": "catch.person_row",
-        "publicApi": true,
-        "stateOwnership": "slot-state-only",
-        "asyncOwnership": "none",
-        "layoutOwnership": "slot-layout",
-        "actionOwnership": "callbacks-only",
-        "allowedDependencyLevel": "primitives-and-slots",
-        "reviewPolicy": "contract-page-canonical",
-        "conceptRole": "concept",
-        "conceptId": "catch.person_row"
-      },
-      "surfaces": {
-        "flutter": "CatchPersonRow"
-      },
-      "level": "L3",
-      "roleNoun": "Row",
-      "naming": {
-        "useCase": "Person",
-        "comparedWith": [
-          "catch.record_row",
-          "catch.index_row"
-        ],
-        "reason": "Presents identity through an avatar, name and contextual content. Chat, roster, directory and compact contact actions are recipes of that identity; IndexRow selects a directory category and RecordRow presents narrative facts without person identity."
-      }
-    },
-    {
       "id": "catch.event_card",
       "verification": {
         "vehicle": "widgetbook-contract",
@@ -16014,7 +15852,7 @@
       "naming": {
         "useCase": "Meta",
         "comparedWith": [
-          "catch.record_row"
+          "catch.field"
         ],
         "reason": "Compact passive facts use a single icon/label, compact entry, dot-separated flow or strong trailing value. RecordRow owns a heading, readable context and prose, with navigation and disclosure when a destination exists; those are a different row responsibility."
       }
@@ -16165,8 +16003,7 @@
       "naming": {
         "useCase": "Index",
         "comparedWith": [
-          "catch.person_row",
-          "catch.record_row"
+          "catch.field"
         ],
         "reason": "A compact directory/category entry owns one selectable command, optional passive adornments and a hairline separator. PersonRow owns identity and contact/message states; RecordRow presents descriptive facts and prose."
       }
@@ -17288,7 +17125,8 @@
           "CatchViewport.atWidth",
           "CatchViewport.sliver",
           "CatchViewport.scene",
-          "CatchViewport.sliverLane"
+          "CatchViewport.sliverLane",
+          "CatchViewport.box"
         ]
       },
       "design": {

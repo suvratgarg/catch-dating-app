@@ -86,7 +86,11 @@ HostInboxPeople composeHostInboxPeople({
   final catches = <String, Map<String, ChatThreadPreview>>{};
   final whatsapp = <String, Map<String, HostWhatsappThreadSummary>>{};
   for (final thread in catchThreads) {
-    if (thread.match.clubId != organizerId || !eligible(thread.eventIds)) {
+    if (thread.match.clubId != organizerId ||
+        !thread.match.isClubHostInquiry ||
+        thread.match.isBlocked ||
+        thread.match.isClosed ||
+        !eligible(thread.eventIds)) {
       continue;
     }
     (catches['uid:${thread.otherUid}'] ??= {})[thread.matchId] = thread;

@@ -89,36 +89,26 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
                       message: context.l10n.hostsEventStaffEmptyMessage,
                     );
                   }
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
+                  return CatchSection.containedRows(
+                    entries: [
                       for (final indexed in list.members.indexed)
-                        CatchPersonRow(
-                          copy: catchPersonRowCopy(context.l10n),
+                        CatchField.read(
                           key: ValueKey(indexed.$2.uid),
-                          divider: indexed.$1 > 0,
-                          data: CatchPersonRowData(
+                          content: CatchPersonLayout(
                             name: indexed.$2.displayName,
-                            seed: indexed.$2.uid,
-                            metaLine: context.l10n.hostsEventStaffPhoneEnding(
-                              digits: indexed.$2.phoneLastFour,
-                            ),
-                            contextLine: context.l10n.hostsEventStaffExpires(
+                            supportingText: context.l10n
+                                .hostsEventStaffPhoneEnding(
+                                  digits: indexed.$2.phoneLastFour,
+                                ),
+                            context: context.l10n.hostsEventStaffExpires(
                               date: AppTimeFormatters.dateTime(
                                 indexed.$2.expiresAt,
                               ),
                             ),
-                          ),
-                          trailing:
-                              indexed.$2.status == HostEventStaffStatus.active
-                              ? CatchButton(
-                                  label: context.l10n.hostsEventStaffRevoke,
-                                  variant: CatchButtonVariant.ghost,
-                                  onPressed: _mutationPending
-                                      ? null
-                                      : () => unawaited(_revoke(indexed.$2)),
-                                )
-                              : CatchBadge.functional(
+                            badges: [
+                              if (indexed.$2.status !=
+                                  HostEventStaffStatus.active)
+                                CatchRowBadge(
                                   label: _statusLabel(
                                     context,
                                     indexed.$2.status,
@@ -129,6 +119,17 @@ class _HostEventStaffSectionState extends ConsumerState<HostEventStaffSection> {
                                       ? CatchBadgeTone.warning
                                       : CatchBadgeTone.neutral,
                                 ),
+                            ],
+                          ),
+                          secondaryAction:
+                              indexed.$2.status == HostEventStaffStatus.active
+                              ? CatchFieldSecondaryAction.button(
+                                  label: context.l10n.hostsEventStaffRevoke,
+                                  onActivate: _mutationPending
+                                      ? null
+                                      : () => unawaited(_revoke(indexed.$2)),
+                                )
+                              : null,
                         ),
                     ],
                   );

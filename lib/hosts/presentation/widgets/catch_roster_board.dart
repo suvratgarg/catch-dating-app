@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/responsive/component_breakpoints.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_tokens/catch_tokens.dart';
@@ -432,37 +431,38 @@ class CatchRosterTable extends StatelessWidget {
             padding: CatchInsets.content,
           );
         }
-        return CatchSection.contained(
-          padding: EdgeInsets.zero,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final indexedRow in rows.indexed)
-                CatchPersonRow(
-                  copy: catchPersonRowCopy(context.l10n),
-                  data: CatchPersonRowData(
-                    name: indexedRow.$2.person,
-                    imageUrl: indexedRow.$2.imageUrl,
-                    metaLine: indexedRow.$2.meta,
-                  ),
-                  trailing: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      if (indexedRow.$2.signal case final signal?
-                          when signal.isNotEmpty)
-                        CatchBadge(label: signal, tone: indexedRow.$2.tone),
-                      if (indexedRow.$2.action != null) ...[
-                        if (indexedRow.$2.signal != null)
-                          const SizedBox(height: CatchSpacing.s1),
-                        CatchRosterActionCell(action: indexedRow.$2.action),
-                      ],
-                    ],
-                  ),
-                  divider: indexedRow.$1 > 0,
+        return CatchSection.containedRows(
+          entries: [
+            for (final indexedRow in rows.indexed)
+              CatchField.read(
+                content: CatchPersonLayout(
+                  name: indexedRow.$2.person,
+                  imageUrl: indexedRow.$2.imageUrl,
+                  supportingText: indexedRow.$2.meta,
+                  context: switch (indexedRow.$2.action) {
+                    CatchRosterTextAction(:final value) => value,
+                    _ => null,
+                  },
+                  badges: [
+                    if (indexedRow.$2.signal case final signal?
+                        when signal.isNotEmpty)
+                      CatchRowBadge(label: signal, tone: indexedRow.$2.tone),
+                    if (indexedRow.$2.action case CatchRosterBadgeAction(
+                      :final label,
+                      :final tone,
+                    ))
+                      CatchRowBadge(
+                        label: label,
+                        tone: tone ?? CatchBadgeTone.neutral,
+                      ),
+                  ],
                 ),
-            ],
-          ),
+                secondaryAction: rosterFieldActions(
+                  context,
+                  indexedRow.$2.action,
+                ),
+              ),
+          ],
         );
       },
       expandedBuilder: (context) => CatchSurface(
@@ -558,3 +558,41 @@ class CatchRosterTable extends StatelessWidget {
     );
   }
 }
+
+CatchFieldSecondaryAction? rosterFieldActions(
+  BuildContext context,
+  CatchRosterAction? action,
+) => switch (action) {
+  CatchRosterButtonAction(
+    :final label,
+    :final buttonKey,
+    :final disabled,
+    :final onPressed,
+  ) =>
+    CatchFieldSecondaryAction.button(
+      key: buttonKey,
+      label: label,
+      onActivate: disabled ? null : onPressed,
+    ),
+  CatchRosterDecideAction(
+    :final onApprove,
+    :final onDecline,
+    :final onProfile,
+  ) =>
+    CatchFieldSecondaryAction.group([
+      if (onProfile != null)
+        CatchFieldSecondaryAction.button(
+          label: context.l10n.hostsCatchRosterBoardLabelOpenProfile,
+          onActivate: onProfile,
+        ),
+      CatchFieldSecondaryAction.button(
+        label: context.l10n.hostsCatchRosterBoardLabelApproveRequest,
+        onActivate: onApprove,
+      ),
+      CatchFieldSecondaryAction.button(
+        label: context.l10n.hostsCatchRosterBoardLabelDeclineRequest,
+        onActivate: onDecline,
+      ),
+    ]),
+  _ => null,
+};

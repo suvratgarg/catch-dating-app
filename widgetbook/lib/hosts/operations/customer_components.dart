@@ -1,3 +1,4 @@
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_applications_panel.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_screen.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customer_detail_tabs.dart';
@@ -116,16 +117,17 @@ Widget hostCustomerHistoryFiltersComponentStates(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Populated component',
-  type: HostCustomerTimelineRecord,
+  type: CatchField,
   path: '[P1 product surfaces]/Host operations/Customers',
 )
 Widget hostCustomerTimelineRecordComponentStates(BuildContext context) =>
     hostCustomersStates(
       context,
-      detailBuilder: (customer) => Column(
-        children: [
+      detailBuilder: (customer) => CatchSection.containedRows(
+        entries: [
           for (final entry in customer.timeline)
-            HostCustomerTimelineRecord(
+            hostCustomerTimelineField(
+              context,
               entry: entry,
               onOpenFormResponse: (_) {},
               onOpenEvent: (_) {},

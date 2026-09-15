@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/clubs/data/club_posts_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/catch_ui_copy.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_error_snack_bar.dart';
 import 'package:catch_dating_app/core/riverpod_ui/catch_localized_error_state.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -56,11 +55,9 @@ class HostSendsWorkspaceSliver extends ConsumerStatefulWidget {
 
 class _HostSendsWorkspaceSliverState
     extends ConsumerState<HostSendsWorkspaceSliver> {
-  late bool _composing;
-  bool _choosingIntent = false;
-  HostCampaign? _campaignReport;
-  HostAnnouncementSendSummary? _announcementReport;
-  HostFollowerUpdateSendSummary? _followerUpdateReport;
+  late _HostSendFlow _flow;
+  int _generation = 0;
+  bool _sameScope(int generation) => mounted && generation == _generation;
   String? _paginationBaseKey;
   List<HostSendSummary> _additionalSends = const [];
   String? _nextCursor;
@@ -70,18 +67,17 @@ class _HostSendsWorkspaceSliverState
   @override
   void initState() {
     super.initState();
-    _composing = widget.initialSavedAudienceId != null;
+    _flow = widget.initialSavedAudienceId == null
+        ? const _SendHistory()
+        : const _SendCompose();
   }
 
   @override
   void didUpdateWidget(covariant HostSendsWorkspaceSliver oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.club.id != widget.club.id) {
-      _composing = false;
-      _choosingIntent = false;
-      _campaignReport = null;
-      _announcementReport = null;
-      _followerUpdateReport = null;
+      _generation++;
+      _flow = const _SendHistory();
       _paginationBaseKey = null;
       _additionalSends = const [];
       _nextCursor = null;
@@ -92,91 +88,84 @@ class _HostSendsWorkspaceSliverState
 
   @override
   Widget build(BuildContext context) {
-    final content = _choosingIntent
-        ? HostSendIntentMenu(
-            club: widget.club,
-            onBack: _showHistory,
-            onOpenInbox: widget.onOpenInbox,
-            onStartCampaign: () => setState(() {
-              _choosingIntent = false;
-              _composing = true;
-            }),
-            onStartEventAnnouncement: _composeEventAnnouncement,
-            onStartFollowerUpdate: _composeFollowerUpdate,
-            preferredEventId: widget.preferredEventId,
-            initialSegment: widget.initialSegment,
-            broadcastEnabled: widget.broadcastEnabled,
-            now: widget.now ?? DateTime.now(),
-          )
-        : _composing
-        ? _HostSendsComposer(
-            club: widget.club,
-            initialSavedAudienceId: widget.initialSavedAudienceId,
-            onBusyChanged: _setBusy,
-            onBack: _showHistory,
-          )
-        : _campaignReport != null
-        ? _HostSendsCampaignReport(
-            campaign: _campaignReport!,
-            busy: _busy,
-            onBack: _showHistory,
-            onApprove: _campaignReport!.canApprove
-                ? () => _runCampaignAction(
-                    (controller) => controller.approveCampaign(
-                      organizerId: widget.club.id,
-                      campaign: _campaignReport!,
-                    ),
-                  )
-                : null,
-            onSend: _campaignReport!.canDispatch
-                ? () => _runCampaignAction(
-                    (controller) => controller.dispatchCampaign(
-                      organizerId: widget.club.id,
-                      campaign: _campaignReport!,
-                    ),
-                  )
-                : null,
-            onRefresh: () => _openCampaign(_campaignReport!.campaignId),
-            onNew: () => setState(() {
-              _campaignReport = null;
-              _choosingIntent = true;
-            }),
-          )
-        : _announcementReport != null
-        ? _HostSendsAnnouncementReport(
-            announcement: _announcementReport!,
-            onBack: _showHistory,
-          )
-        : _followerUpdateReport != null
-        ? _HostSendsFollowerUpdateReport(
-            update: _followerUpdateReport!,
-            onBack: _showHistory,
-          )
-        : _HostSendsHistory(
-            organizerId: widget.club.id,
-            busy: _busy,
-            loadingMore: _loadingMore,
-            paginationBaseKey: _paginationBaseKey,
-            additionalSends: _additionalSends,
-            nextCursor: _nextCursor,
-            onNew: () => setState(() => _choosingIntent = true),
-            onOpen: _open,
-            onLoadMore: _loadMore,
-          );
+    final content = switch (_flow) {
+      _SendIntent() => HostSendIntentMenu(
+        club: widget.club,
+        onBack: _showHistory,
+        onOpenInbox: widget.onOpenInbox,
+        onStartCampaign: () => setState(() => _flow = const _SendCompose()),
+        onStartEventAnnouncement: _composeEventAnnouncement,
+        onStartFollowerUpdate: _composeFollowerUpdate,
+        preferredEventId: widget.preferredEventId,
+        initialSegment: widget.initialSegment,
+        broadcastEnabled: widget.broadcastEnabled,
+        now: widget.now ?? DateTime.now(),
+      ),
+      _SendCompose() => _HostSendsComposer(
+        club: widget.club,
+        initialSavedAudienceId: widget.initialSavedAudienceId,
+        onBusyChanged: _setBusy,
+        onBack: _showHistory,
+      ),
+      _SendCampaign(:final campaign) => _HostSendsCampaignReport(
+        campaign: campaign,
+        busy: _busy,
+        onBack: _showHistory,
+        onApprove: campaign.canApprove
+            ? () => _runCampaignAction(
+                (controller) => controller.approveCampaign(
+                  organizerId: widget.club.id,
+                  campaign: campaign,
+                ),
+              )
+            : null,
+        onSend: campaign.canDispatch
+            ? () => _runCampaignAction(
+                (controller) => controller.dispatchCampaign(
+                  organizerId: widget.club.id,
+                  campaign: campaign,
+                ),
+              )
+            : null,
+        onRefresh: () => _openCampaign(campaign.campaignId),
+        onNew: () => setState(() => _flow = const _SendIntent()),
+      ),
+      _SendAnnouncement(:final announcement) => _HostSendsAnnouncementReport(
+        announcement: announcement,
+        onBack: _showHistory,
+      ),
+      _SendFollowerUpdate(:final update) => _HostSendsFollowerUpdateReport(
+        update: update,
+        onBack: _showHistory,
+      ),
+      _SendHistory() => _HostSendsHistory(
+        organizerId: widget.club.id,
+        busy: _busy,
+        loadingMore: _loadingMore,
+        paginationBaseKey: _paginationBaseKey,
+        additionalSends: _additionalSends,
+        nextCursor: _nextCursor,
+        onNew: () => setState(() => _flow = const _SendIntent()),
+        onOpen: _open,
+        onLoadMore: _loadMore,
+      ),
+    };
     return SliverPadding(
-      padding: CatchInsets.pageBody.copyWith(top: CatchSpacing.s3),
-      sliver: SliverList.list(children: [content]),
+      padding: CatchInsets.fieldSectionChildTop,
+      sliver: SliverList.list(
+        children: [
+          content is _HostSendsHistory
+              ? content
+              : CatchSection.content(child: content),
+        ],
+      ),
     );
   }
 
   void _showHistory() {
     if (_busy) return;
     setState(() {
-      _composing = false;
-      _choosingIntent = false;
-      _campaignReport = null;
-      _announcementReport = null;
-      _followerUpdateReport = null;
+      _flow = const _SendHistory();
       ref.invalidate(hostSendsProvider(widget.club.id));
     });
   }
@@ -186,43 +175,43 @@ class _HostSendsWorkspaceSliverState
       case HostCampaignSendSummary():
         await _openCampaign(send.campaignId);
       case HostAnnouncementSendSummary():
-        setState(() => _announcementReport = send);
+        setState(() => _flow = _SendAnnouncement(send));
       case HostFollowerUpdateSendSummary():
-        setState(() => _followerUpdateReport = send);
+        setState(() => _flow = _SendFollowerUpdate(send));
     }
   }
 
   Future<void> _composeFollowerUpdate(int remainingQuota) async {
+    final generation = _generation;
     if (_busy) return;
+    final club = widget.club;
     final sent = await showHostFollowerUpdateComposer(
       context: context,
-      club: widget.club,
+      club: club,
       remainingQuota: remainingQuota,
       requestIdFactory: HostClubPostController.generateRequestId,
       onSubmitPost: ({required requestId, required text}) async {
+        if (!_sameScope(generation)) throw StateError('Organizer changed.');
         _setBusy(true);
         try {
           await ref
               .read(hostClubPostControllerProvider)
-              .createPost(
-                clubId: widget.club.id,
-                requestId: requestId,
-                text: text,
-              );
+              .createPost(clubId: club.id, requestId: requestId, text: text);
         } finally {
-          _setBusy(false);
+          if (_sameScope(generation)) _setBusy(false);
         }
       },
     );
-    if (!mounted || !sent) return;
+    if (!_sameScope(generation) || !sent) return;
     ref.invalidate(watchClubPostRemainingWeeklyQuotaProvider(widget.club.id));
     ref.invalidate(hostSendsProvider(widget.club.id));
-    setState(() => _choosingIntent = false);
+    setState(() => _flow = const _SendHistory());
   }
 
   Future<void> _composeEventAnnouncement(
     HostEventAnnouncementTarget target,
   ) async {
+    final generation = _generation;
     if (_busy) return;
     HostInboxBroadcastController.reset(ref);
     final initialSegment =
@@ -242,9 +231,9 @@ class _HostSendsWorkspaceSliverState
             sendingEnabled: widget.broadcastEnabled,
           ),
         );
-    if (!mounted || result == null) return;
+    if (!_sameScope(generation) || result == null) return;
     ref.invalidate(hostSendsProvider(widget.club.id));
-    setState(() => _choosingIntent = false);
+    setState(() => _flow = const _SendHistory());
     final suffix = result.isPartial
         ? context.l10n.hostsHostInboxScreenVisiblecopySomePushAttemptsFailed
         : '';
@@ -258,6 +247,7 @@ class _HostSendsWorkspaceSliverState
   }
 
   Future<void> _openCampaign(String campaignId) async {
+    final generation = _generation;
     if (_busy) return;
     _setBusy(true);
     try {
@@ -267,9 +257,10 @@ class _HostSendsWorkspaceSliverState
             organizerId: widget.club.id,
             campaignId: campaignId,
           );
-      if (mounted) setState(() => _campaignReport = campaign);
+      if (_sameScope(generation))
+        setState(() => _flow = _SendCampaign(campaign));
     } on Object catch (error) {
-      if (mounted) {
+      if (_sameScope(generation)) {
         showCatchErrorSnackBar(
           context,
           error,
@@ -277,7 +268,7 @@ class _HostSendsWorkspaceSliverState
         );
       }
     } finally {
-      _setBusy(false);
+      if (_sameScope(generation)) _setBusy(false);
     }
   }
 
@@ -286,13 +277,14 @@ class _HostSendsWorkspaceSliverState
     String baseKey,
     String cursor,
   ) async {
+    final generation = _generation;
     if (_loadingMore) return;
     setState(() => _loadingMore = true);
     try {
       final nextPage = await ref
           .read(hostAudienceControllerProvider)
           .listSends(organizerId: widget.club.id, cursor: cursor);
-      if (!mounted) return;
+      if (!_sameScope(generation)) return;
       final existingKeys = <String>{
         for (final send in firstPage.sends) '${send.runtimeType}:${send.id}',
         if (_paginationBaseKey == baseKey)
@@ -312,7 +304,7 @@ class _HostSendsWorkspaceSliverState
         _nextCursor = nextPage.nextCursor;
       });
     } on Object catch (error) {
-      if (mounted) {
+      if (_sameScope(generation)) {
         showCatchErrorSnackBar(
           context,
           error,
@@ -320,21 +312,24 @@ class _HostSendsWorkspaceSliverState
         );
       }
     } finally {
-      if (mounted) setState(() => _loadingMore = false);
+      if (_sameScope(generation)) setState(() => _loadingMore = false);
     }
   }
 
   Future<void> _runCampaignAction(
     Future<HostCampaign> Function(HostAudienceController) action,
   ) async {
+    final generation = _generation;
     if (_busy) return;
     _setBusy(true);
     try {
       final campaign = await action(ref.read(hostAudienceControllerProvider));
-      if (mounted) setState(() => _campaignReport = campaign);
-      ref.invalidate(hostSendsProvider(widget.club.id));
+      if (_sameScope(generation))
+        setState(() => _flow = _SendCampaign(campaign));
+      if (_sameScope(generation))
+        ref.invalidate(hostSendsProvider(widget.club.id));
     } on Object catch (error) {
-      if (mounted) {
+      if (_sameScope(generation)) {
         showCatchErrorSnackBar(
           context,
           error,
@@ -342,7 +337,7 @@ class _HostSendsWorkspaceSliverState
         );
       }
     } finally {
-      _setBusy(false);
+      if (_sameScope(generation)) _setBusy(false);
     }
   }
 
@@ -382,29 +377,33 @@ class _HostSendsHistory extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Wrap(
-          spacing: CatchSpacing.s2,
-          runSpacing: CatchSpacing.s2,
-          children: [
-            CatchButton(
-              key: const ValueKey('host-sends-new-message'),
-              label: context.l10n.hostSendsChooseIntent,
-              onPressed: busy ? null : onNew,
-            ),
-            CatchButton(
-              label: context.l10n.hostSendsSettings,
-              variant: CatchButtonVariant.secondary,
-              onPressed: busy
-                  ? null
-                  : () => context.pushNamed(
-                      Routes.hostOrganizerMessagingScreen.name,
-                      pathParameters: {'clubId': organizerId},
-                    ),
-            ),
-          ],
+        CatchSection.content(
+          child: Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              CatchButton(
+                key: const ValueKey('host-sends-new-message'),
+                label: context.l10n.hostSendsChooseIntent,
+                onPressed: busy ? null : onNew,
+              ),
+              CatchButton(
+                label: context.l10n.hostSendsSettings,
+                variant: CatchButtonVariant.secondary,
+                onPressed: busy
+                    ? null
+                    : () => context.pushNamed(
+                        Routes.hostOrganizerMessagingScreen.name,
+                        pathParameters: {'clubId': organizerId},
+                      ),
+              ),
+            ],
+          ),
         ),
         gapH16,
-        HostManualSendQueue(organizerId: organizerId),
+        CatchSection.content(
+          child: HostManualSendQueue(organizerId: organizerId),
+        ),
         gapH16,
         sends.when(
           loading: () =>
@@ -466,76 +465,74 @@ class _HostSendsHistoryPage extends StatelessWidget {
         message: context.l10n.hostSendsEmptyHelp,
       );
     }
-    return CatchSection.divided(
-      title: context.l10n.hostMessagingWorkspaceSends,
-      child: Column(
-        children: [
-          CatchFieldLanes.divided(
-            children: [
-              for (final send in sends)
-                CatchRowPressSurface(
-                  onTap: busy ? null : () => onOpen(send),
-                  child: _HostSendRow(send: send),
-                ),
-            ],
-          ),
-          if (nextCursor != null)
-            Padding(
-              padding: CatchInsets.fieldSectionChildTop,
-              child: CatchButton(
-                label: context.l10n.hostSendsLoadMore,
-                variant: CatchButtonVariant.secondary,
-                status: (loadingMore)
-                    ? CatchButtonStatus.loading
-                    : CatchButtonStatus.idle,
-                onPressed: loadingMore
-                    ? null
-                    : () => onLoadMore(page, baseKey, nextCursor),
+    return CatchSectionList(
+      emptyStateOmitted: true,
+      children: [
+        CatchSection.rows(
+          title: context.l10n.hostMessagingWorkspaceSends,
+          entries: [
+            for (final send in sends)
+              CatchField.navigate(
+                key: ValueKey(switch (send) {
+                  HostCampaignSendSummary(:final campaignId) =>
+                    'campaign-$campaignId',
+                  HostAnnouncementSendSummary(:final broadcastId) =>
+                    'announcement-$broadcastId',
+                  HostFollowerUpdateSendSummary(:final postId) =>
+                    'update-$postId',
+                }),
+                onActivate: () => onOpen(send),
+                states: {if (busy) WidgetState.disabled},
+                content: _hostSendLayout(context, send),
               ),
+          ],
+        ),
+        if (nextCursor != null)
+          CatchSection.content(
+            child: CatchButton(
+              label: context.l10n.hostSendsLoadMore,
+              variant: CatchButtonVariant.secondary,
+              status: (loadingMore)
+                  ? CatchButtonStatus.loading
+                  : CatchButtonStatus.idle,
+              onPressed: loadingMore
+                  ? null
+                  : () => onLoadMore(page, baseKey, nextCursor),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 }
 
-class _HostSendRow extends StatelessWidget {
-  const _HostSendRow({required this.send});
-
-  final HostSendSummary send;
-
-  @override
-  Widget build(BuildContext context) => CatchFieldLanes.single(
-    child: switch (send) {
-      HostCampaignSendSummary campaign => CatchField.read(
-        copy: catchFieldCopy(context.l10n),
-        key: ValueKey('host-send-campaign-${campaign.campaignId}'),
+CatchRecordLayout _hostSendLayout(BuildContext context, HostSendSummary send) =>
+    switch (send) {
+      HostCampaignSendSummary campaign => CatchRecordLayout(
+        icon: CatchIcons.tabChats,
         title: campaign.name,
-        body: [
+        metadata: [
           context.l10n.hostSendsWhatsappBusinessChannel,
           campaign.templateName ?? campaign.templateId,
           AppTimeFormatters.shortDate(campaign.activityAt),
         ].join(' · '),
-        valueText: campaign.status,
+        description: campaign.status,
       ),
-      HostAnnouncementSendSummary announcement => CatchField.read(
-        copy: catchFieldCopy(context.l10n),
-        key: ValueKey('host-send-announcement-${announcement.broadcastId}'),
+      HostAnnouncementSendSummary announcement => CatchRecordLayout(
+        icon: CatchIcons.tabChats,
         title: announcement.eventName,
-        body: [
+        metadata: [
           context.l10n.hostSendsCatchAnnouncementChannel,
           context.l10n.hostSendsRecipients(count: announcement.recipientCount),
           AppTimeFormatters.shortDate(announcement.sentAt),
         ].join(' · '),
-        valueText: announcement.partialFailure
+        description: announcement.partialFailure
             ? context.l10n.hostSendsPartial
             : announcement.audience,
       ),
-      HostFollowerUpdateSendSummary update => CatchField.read(
-        copy: catchFieldCopy(context.l10n),
-        key: ValueKey('host-send-follower-update-${update.postId}'),
+      HostFollowerUpdateSendSummary update => CatchRecordLayout(
+        icon: CatchIcons.tabChats,
         title: context.l10n.hostSendsFollowerUpdateChannel,
-        body: [
+        metadata: [
           context.l10n.hostSendsFollowersAudience,
           if (update.hasTrackedDelivery)
             context.l10n.hostSendsRecipients(
@@ -543,13 +540,11 @@ class _HostSendRow extends StatelessWidget {
             ),
           AppTimeFormatters.shortDate(update.createdAt),
         ].join(' · '),
-        valueText: context.l10n.hostSendsFollowerDeliveryStatus(
+        description: context.l10n.hostSendsFollowerDeliveryStatus(
           status: update.deliveryStatus,
         ),
       ),
-    },
-  );
-}
+    };
 
 class _HostSendsComposer extends StatelessWidget {
   const _HostSendsComposer({
@@ -707,3 +702,34 @@ String _hostSendsBaseKey(HostSendsPage page) => [
   page.nextCursor ?? '',
   for (final send in page.sends) '${send.runtimeType}:${send.id}',
 ].join('|');
+
+sealed class _HostSendFlow {
+  const _HostSendFlow();
+}
+
+final class _SendHistory extends _HostSendFlow {
+  const _SendHistory();
+}
+
+final class _SendIntent extends _HostSendFlow {
+  const _SendIntent();
+}
+
+final class _SendCompose extends _HostSendFlow {
+  const _SendCompose();
+}
+
+final class _SendCampaign extends _HostSendFlow {
+  const _SendCampaign(this.campaign);
+  final HostCampaign campaign;
+}
+
+final class _SendAnnouncement extends _HostSendFlow {
+  const _SendAnnouncement(this.announcement);
+  final HostAnnouncementSendSummary announcement;
+}
+
+final class _SendFollowerUpdate extends _HostSendFlow {
+  const _SendFollowerUpdate(this.update);
+  final HostFollowerUpdateSendSummary update;
+}

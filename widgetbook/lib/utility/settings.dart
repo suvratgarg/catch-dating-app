@@ -102,21 +102,23 @@ Widget settingsScreenStates(BuildContext context) {
 
 @widgetbook.UseCase(
   name: 'Blocked account row',
-  type: BlockedAccountTile,
+  type: CatchPersonLayout,
   path: '[P3 utility surfaces]/Settings',
 )
 Widget blockedAccountTileState(BuildContext context) => WidgetbookContentFrame(
-  child: BlockedAccountTile(
-    row: const SettingsBlockedAccountRow(
-      uid: 'blocked-preview',
-      name: 'Maya Shah',
-      imageUrl: null,
-      metaLine: 'Blocked from event chat',
-      seed: 'blocked-preview',
-    ),
-    divider: false,
-    unblocking: false,
-    onUnblock: (_) {},
+  child: CatchSection.containedRows(
+    entries: [
+      CatchField.read(
+        content: const CatchPersonLayout(
+          name: 'Maya Shah',
+          supportingText: 'Blocked from event chat',
+        ),
+        secondaryAction: CatchFieldSecondaryAction.button(
+          label: 'Unblock',
+          onActivate: () {},
+        ),
+      ),
+    ],
   ),
 );
 

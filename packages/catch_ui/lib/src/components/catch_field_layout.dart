@@ -75,9 +75,10 @@ final class CatchRecordLayout extends CatchFieldLayout {
 /// A passive business-status annotation, separate from a Field action.
 @immutable
 final class CatchRowBadge {
-  const CatchRowBadge({required this.label, required this.tone});
+  const CatchRowBadge({required this.label, required this.tone, this.icon});
   final String label;
   final CatchBadgeTone tone;
+  final IconData? icon;
 }
 
 /// Person identity and relationship facts, with natural-height text.
@@ -85,17 +86,21 @@ final class CatchPersonLayout extends CatchFieldLayout {
   const CatchPersonLayout({
     required this.name,
     this.imageUrl,
+    this.avatarColors,
     this.avatarShape = CatchAvatarVariant.circle,
     this.supportingText,
     this.context,
+    this.facts = const [],
     this.badges = const [],
   });
 
   final String name;
   final String? imageUrl;
+  final CatchAvatarColors? avatarColors;
   final CatchAvatarVariant avatarShape;
   final String? supportingText;
   final String? context;
+  final List<String> facts;
   final List<CatchRowBadge> badges;
 
   @override
@@ -109,6 +114,7 @@ final class CatchPersonLayout extends CatchFieldLayout {
     size: CatchRecordTokens.avatarExtent,
     name: name,
     imageUrl: imageUrl,
+    colors: avatarColors,
     variant: avatarShape,
   );
 
@@ -122,7 +128,11 @@ final class CatchPersonLayout extends CatchFieldLayout {
       runSpacing: CatchSpacing.s2,
       children: [
         for (final badge in badges)
-          CatchBadge.status(label: badge.label, tone: badge.tone),
+          CatchBadge.status(
+            label: badge.label,
+            tone: badge.tone,
+            icon: badge.icon,
+          ),
       ],
     );
     return Column(
@@ -156,6 +166,10 @@ final class CatchPersonLayout extends CatchFieldLayout {
           const SizedBox(height: CatchRecordTokens.titleGap),
           Text(text, style: CatchTextStyles.recordContext(context)),
         ],
+        for (final fact in facts) ...[
+          const SizedBox(height: CatchRecordTokens.titleGap),
+          Text(fact, style: CatchTextStyles.recordContext(context)),
+        ],
         if (badges.isNotEmpty && stacked) ...[
           const SizedBox(height: CatchRecordTokens.bodyGap),
           status(),
@@ -171,6 +185,7 @@ final class CatchConversationLayout extends CatchFieldLayout {
     required this.name,
     required this.preview,
     this.imageUrl,
+    this.avatarShape = CatchAvatarVariant.circle,
     this.timestamp,
     this.context,
     this.activityLabel,
@@ -180,6 +195,7 @@ final class CatchConversationLayout extends CatchFieldLayout {
   final String name;
   final String preview;
   final String? imageUrl;
+  final CatchAvatarVariant avatarShape;
   final String? timestamp;
   final String? context;
 
@@ -198,6 +214,7 @@ final class CatchConversationLayout extends CatchFieldLayout {
     size: CatchRecordTokens.avatarExtent,
     name: name,
     imageUrl: imageUrl,
+    variant: avatarShape,
   );
 
   @override
@@ -224,10 +241,7 @@ final class CatchConversationLayout extends CatchFieldLayout {
               Semantics(
                 label: activitySemantics,
                 excludeSemantics: true,
-                child: Text(
-                  text,
-                  style: CatchTextStyles.supportingStrong(context),
-                ),
+                child: CatchBadge(label: text),
               ),
           ],
         ),

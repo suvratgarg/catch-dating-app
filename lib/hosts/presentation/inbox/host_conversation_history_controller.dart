@@ -4,7 +4,7 @@ import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/core/data/read_limit_policy.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'host_conversation_history.g.dart';
+part 'host_conversation_history_controller.g.dart';
 
 class HostConversationHistoryState {
   const HostConversationHistoryState({

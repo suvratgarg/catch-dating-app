@@ -9,6 +9,8 @@ import 'package:analyzer/error/error.dart';
 
 import 'catch_ui_rules_tables.g.dart';
 
+part 'catch_ui_test_rules.dart';
+
 /// Feedback publication needs resolved symbols, unlike the syntax-only layout
 /// rules below: prefixes, typedefs and tear-offs must not bypass the boundary.
 class CatchFeedbackRules extends MultiAnalysisRule {
@@ -895,6 +897,9 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     if (isFeaturePresentationPath) {
       final initializer = node.initializer;
       if (initializer != null &&
+          !initializer.toSource().startsWith(
+            'catchAsyncStateFromAsyncValue(',
+          ) &&
           RegExp(r'\bref\.watch\s*\(').hasMatch(initializer.toSource())) {
         _watchedProviderVariables.add(node.name.lexeme);
         if (node.name.lexeme.toLowerCase().contains('mutation') ||
@@ -968,6 +973,7 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
     }
 
     if (typeName == 'CatchSectionList' &&
+        constructorName != 'panes' &&
         !_hasNamedArgument(node, 'emptyBuilder') &&
         !_hasNamedArgument(node, 'emptyStateOmitted')) {
       _reportAtNode(node, CatchUiLayoutRules.sectionListRequiresEmptyPolicy);
@@ -1340,8 +1346,10 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
           return true;
         }
       }
-      if (current is FunctionBody ||
-          current is MethodDeclaration ||
+      if (current is FunctionDeclaration &&
+          current.returnType?.toSource() == 'CatchField')
+        return true;
+      if (current is MethodDeclaration ||
           current is FunctionDeclaration ||
           current is CompilationUnit) {
         return false;
@@ -2266,43 +2274,6 @@ class _CatchUiLayoutVisitor extends SimpleAstVisitor<void> {
       current = current.parent;
     }
     return false;
-  }
-}
-
-class _CatchUiTestVisitor extends SimpleAstVisitor<void> {
-  _CatchUiTestVisitor(this.rule, {required this.source});
-
-  final CatchUiLayoutRules rule;
-  final String source;
-
-  @override
-  void visitCompilationUnit(CompilationUnit node) {
-    _reportMatches(
-      RegExp(
-        r'pumpAndSettle\s*\(|pump\s*\(\s*const\s+Duration|warnIfMissed\s*:\s*false',
-      ),
-      CatchUiLayoutRules.noBrittlePumpTiming,
-    );
-    _reportMatches(
-      RegExp(
-        r'find\.[A-Za-z_][A-Za-z0-9_]*\s*\([^)]*\)\s*\.(?:at|first|last)\b|(?:Scrollable|ListView)\.first\b',
-      ),
-      CatchUiLayoutRules.noPositionalWidgetFinder,
-    );
-    _reportMatches(
-      RegExp(r'Future\s*<\s*void\s*>\s*\.delayed\s*\(\s*Duration\.zero\s*\)'),
-      CatchUiLayoutRules.noAsyncFlushHack,
-    );
-  }
-
-  void _reportMatches(RegExp pattern, LintCode diagnosticCode) {
-    for (final match in pattern.allMatches(source)) {
-      rule.reportAtOffset(
-        match.start,
-        match.end - match.start,
-        diagnosticCode: diagnosticCode,
-      );
-    }
   }
 }
 

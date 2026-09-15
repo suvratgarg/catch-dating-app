@@ -132,7 +132,7 @@ void _registerHostOperationsCustomersTests() {
       findsOne,
     );
     expect(find.descendant(of: row, matching: find.text('Regular')), findsOne);
-    expect(find.byType(CatchRowPressSurface), findsNothing);
+    expect(find.byKey(const ValueKey<String>('catch-row-press-overlay')), findsNothing);
     expect(
       find.descendant(
         of: row,
@@ -328,7 +328,7 @@ void _registerHostOperationsCustomersTests() {
       findsNWidgets(2),
     );
     expect(
-      find.descendant(of: frame, matching: find.byType(CatchRowPressSurface)),
+      find.descendant(of: frame, matching: find.byKey(const ValueKey<String>('catch-row-press-overlay'))),
       findsNothing,
     );
     expect(

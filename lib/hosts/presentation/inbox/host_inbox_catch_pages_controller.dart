@@ -6,7 +6,7 @@ import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profiles_lookup.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'host_inbox_catch_pages.g.dart';
+part 'host_inbox_catch_pages_controller.g.dart';
 
 class HostInboxCatchPageState {
   const HostInboxCatchPageState({
@@ -125,7 +125,9 @@ AsyncValue<ChatsListViewModel> hostInboxCatchViewModel(Ref ref) {
   }
   final previews = byId.values.toList()
     ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
-  if (previews.isEmpty && live.hasError) return live;
+  if (previews.isEmpty && catchAsyncStateFromAsyncValue(live).hasError) {
+    return live;
+  }
   return AsyncData(
     ChatsListViewModel(
       newMatches: previews.where((p) => !p.hasConversation).toList(),

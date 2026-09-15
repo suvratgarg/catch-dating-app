@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'host_inbox_catch_pages.dart';
+part of 'host_inbox_catch_pages_controller.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -174,4 +174,4 @@ final class HostInboxCatchViewModelProvider
 }
 
 String _$hostInboxCatchViewModelHash() =>
-    r'fa5322794d1d1746792f4917bab268b24353b878';
+    r'd9193e5fb494dc657e05c70c236661999dbee244';

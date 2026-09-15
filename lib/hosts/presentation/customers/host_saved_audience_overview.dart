@@ -158,21 +158,18 @@ class HostSavedAudienceOverview extends ConsumerWidget {
                           style: CatchTextStyles.supporting(context),
                         ),
                       for (final member in state.members)
-                        CatchPersonRow.directory(
+                        CatchField.navigate(
                           key: ValueKey(
                             'host-saved-audience-member-${member.contactId}',
                           ),
-                          data: CatchPersonRowData(
-                            name: member.displayName,
-                            seed: member.contactId,
-                          ),
-                          onTap: () => context.pushNamed(
+                          onActivate: () => context.pushNamed(
                             Routes.hostCustomerDetailScreen.name,
                             pathParameters: {'contactId': member.contactId},
                             queryParameters: {
                               'organizerId': audience.organizerId,
                             },
                           ),
+                          content: CatchPersonLayout(name: member.displayName),
                         ),
                     ],
                   ),

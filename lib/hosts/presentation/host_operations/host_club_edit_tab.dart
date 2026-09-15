@@ -485,9 +485,11 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
       emptyStateOmitted: true,
       children: [
         if (updateClubMutation.hasError) ...[
-          CatchLocalizedErrorBanner.mutation(
-            mutation: updateClubMutation,
-            context: AppErrorContext.club,
+          CatchSection.content(
+            child: CatchLocalizedErrorBanner.mutation(
+              mutation: updateClubMutation,
+              context: AppErrorContext.club,
+            ),
           ),
           gapH12,
         ],
@@ -573,25 +575,22 @@ class _HostClubEditTabState extends ConsumerState<HostClubEditTab> {
                 : () => unawaited(_openMediaManager()),
             padding: EdgeInsets.zero,
           ),
-          child: Padding(
-            padding: CatchInsets.fieldSectionChildTop,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                HostClubMediaSummary(
-                  logoImageBytes: _pickedLogo?.bytes,
-                  logoImageUrl: _removeLogoOnSave ? null : club.profileImageUrl,
-                  photos: visibleMediaPreviews,
-                  logoBadgeLabel: context.l10n.hostsHostClubEditTabBadgeLogo,
-                  addPhotosLabel: context
-                      .l10n
-                      .hostsCreateClubPhotosPickerVisiblecopyAddPhotos,
-                  onManageMedia: mediaPending
-                      ? null
-                      : () => unawaited(_openMediaManager()),
-                ),
-              ],
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              HostClubMediaSummary(
+                logoImageBytes: _pickedLogo?.bytes,
+                logoImageUrl: _removeLogoOnSave ? null : club.profileImageUrl,
+                photos: visibleMediaPreviews,
+                logoBadgeLabel: context.l10n.hostsHostClubEditTabBadgeLogo,
+                addPhotosLabel: context
+                    .l10n
+                    .hostsCreateClubPhotosPickerVisiblecopyAddPhotos,
+                onManageMedia: mediaPending
+                    ? null
+                    : () => unawaited(_openMediaManager()),
+              ),
+            ],
           ),
         ),
         CatchFormRowList<UpdateClubPatch>(

@@ -114,29 +114,25 @@ class HostFormOverviewSectionList extends ConsumerWidget {
                     style: CatchTextStyles.supporting(context),
                   );
                 }
-                return CatchPersonRow.directory(
+                return CatchField.navigate(
                   key: const ValueKey(
                     'host-form-command-center-recent-response',
                   ),
-                  data: CatchPersonRowData(
-                    name:
-                        response.identity.primaryLabel ??
-                        context.l10n.hostFormResponsesAnonymous,
-                    seed: response.responseId,
-                  ),
-                  meta: Text(
-                    response.sourceLabel ??
-                        context.l10n.hostFormResponseDirectSource,
-                    style: CatchTextStyles.supporting(context),
-                  ),
-                  body: Text(
-                    AppTimeFormatters.compactRelativeTime(response.submittedAt),
-                    style: CatchTextStyles.recordContext(context),
-                  ),
-                  onTap: () => context.pushNamed(
+                  onActivate: () => context.pushNamed(
                     Routes.hostFormResponseDetailScreen.name,
                     pathParameters: {'responseId': response.responseId},
                     queryParameters: {'organizerId': organizerId},
+                  ),
+                  content: CatchPersonLayout(
+                    name:
+                        response.identity.primaryLabel ??
+                        context.l10n.hostFormResponsesAnonymous,
+                    supportingText:
+                        response.sourceLabel ??
+                        context.l10n.hostFormResponseDirectSource,
+                    context: AppTimeFormatters.compactRelativeTime(
+                      response.submittedAt,
+                    ),
                   ),
                 );
               },

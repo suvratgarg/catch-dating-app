@@ -12,132 +12,62 @@ import '../section_layout_use_cases.dart' show WidgetbookScrolledSectionPage;
 
 @widgetbook.UseCase(
   name: 'Contract states',
-  type: CatchRecordRow,
+  type: CatchRecordLayout,
   path: '[Core primitives]/Content',
 )
 Widget catchRecordRowContractStates(
   BuildContext context,
 ) => WidgetbookContractFrame(
-  title: 'CatchRecordRow',
-  contractId: 'catch.record_row',
+  title: 'CatchRecordLayout in Field',
+  contractId: 'catch.field',
   states: const ['read-only', 'navigable', 'multiline', 'facts'],
   children: [
     WidgetbookContractStateCard(
       label: 'facts',
-      child: CatchRecordRow(
-        title: 'Friday Evening Trivia Night at The Daily Bar',
-        icon: CatchIcons.eventAvailable,
-        facts: const ['8:00 PM · The Daily Bar', '24 of 30 registered'],
-        onTap: widgetbookNoop,
+      child: CatchField.navigate(
+        onActivate: widgetbookNoop,
+        content: CatchRecordLayout(
+          title: 'Friday Evening Trivia Night at The Daily Bar',
+          icon: CatchIcons.eventAvailable,
+          facts: const ['8:00 PM · The Daily Bar', '24 of 30 registered'],
+        ),
       ),
     ),
     WidgetbookContractStateCard(
       label: 'read-only',
-      child: CatchRecordRow(
-        title: 'WhatsApp permission',
-        description: 'No participant permission is recorded.',
-        icon: CatchIcons.verifiedUserOutlined,
+      child: CatchField.read(
+        content: CatchRecordLayout(
+          title: 'WhatsApp permission',
+          description: 'No participant permission is recorded.',
+          icon: CatchIcons.verifiedUserOutlined,
+        ),
       ),
     ),
     WidgetbookContractStateCard(
       label: 'navigable',
-      child: CatchRecordRow(
-        title: 'Sunday Run sign-up',
-        metadata: 'Form response · 20 May 2026',
-        icon: CatchIcons.descriptionOutlined,
-        onTap: widgetbookNoop,
+      child: CatchField.navigate(
+        onActivate: widgetbookNoop,
+        content: CatchRecordLayout(
+          title: 'Sunday Run sign-up',
+          metadata: 'Form response · 20 May 2026',
+          icon: CatchIcons.descriptionOutlined,
+        ),
       ),
     ),
     WidgetbookContractStateCard(
       label: 'multiline',
-      child: CatchRecordRow(
-        title: 'Message received',
-        metadata: 'Catch · 18 June 2026',
-        description:
-            'I’ll bring two friends next week. We would prefer the smaller weekend event, if there is space.',
-        icon: CatchIcons.tabChats,
+      child: CatchField.read(
+        content: CatchRecordLayout(
+          title: 'Message received',
+          metadata: 'Catch · 18 June 2026',
+          description:
+              'I’ll bring two friends next week. We would prefer the smaller weekend event, if there is space.',
+          icon: CatchIcons.tabChats,
+        ),
       ),
     ),
   ],
 );
-
-@widgetbook.UseCase(
-  name: 'Contract states',
-  type: CatchRowPressSurface,
-  path: '[Core primitives]/Inputs',
-)
-Widget catchRowPressSurfaceContractStates(BuildContext context) {
-  final t = CatchTokens.of(context);
-  Widget previewRow({
-    required Widget leading,
-    required String title,
-    required String body,
-    String? trailing,
-  }) {
-    return SizedBox(
-      width: WidgetbookPreviewLayout.standardContractWidth,
-      child: CatchRowPressSurface(
-        onTap: widgetbookNoop,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: CatchSpacing.micro14),
-          child: Row(
-            children: [
-              leading,
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(title, style: CatchTextStyles.fieldRowTitle(context)),
-                    gapH4,
-                    Text(
-                      body,
-                      style: CatchTextStyles.supporting(context, color: t.ink2),
-                    ),
-                  ],
-                ),
-              ),
-              if (trailing != null) ...[
-                gapW10,
-                Text(
-                  trailing,
-                  style: CatchTextStyles.monoLabelS(context, color: t.ink3),
-                ),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  return WidgetbookContractFrame(
-    title: 'CatchRowPressSurface',
-    contractId: 'catch.row_press_surface',
-    states: const ['field-row', 'chat-row'],
-    children: [
-      WidgetbookContractStateCard(
-        label: 'field-row',
-        child: previewRow(
-          leading: Icon(CatchIcons.notificationsNoneRounded, color: t.ink2),
-          title: 'Event starts soon',
-          body: 'Your 5 km event starts in about 15 minutes.',
-          trailing: '26D',
-        ),
-      ),
-      WidgetbookContractStateCard(
-        label: 'chat-row',
-        child: previewRow(
-          leading: const CatchAvatar(name: 'Taylor Kim', size: 48),
-          title: 'Taylor Kim',
-          body: 'See you at the event',
-          trailing: '2M',
-        ),
-      ),
-    ],
-  );
-}
 
 @widgetbook.UseCase(
   name: 'Inset sections',

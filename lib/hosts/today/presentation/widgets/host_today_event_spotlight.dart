@@ -36,7 +36,7 @@ class HostTodayEventSpotlight extends StatelessWidget {
         CatchBadge.functional(
           label: _eventStartLeadLabel(context, event, now),
           backgroundColor: activity.soft,
-          foregroundColor: activity.deep,
+          foregroundColor: t.ink,
           borderColor: Colors.transparent,
         ),
         gapH16,
@@ -49,51 +49,37 @@ class HostTodayEventSpotlight extends StatelessWidget {
         gapH20,
         const CatchDivider.section(),
         gapH20,
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final stacked =
-                constraints.maxWidth < 360 ||
-                MediaQuery.textScalerOf(context).scale(1) >= 1.6;
-            final metrics = <Widget>[
-              SizedBox(
-                width: stacked
-                    ? constraints.maxWidth
-                    : (constraints.maxWidth - 20) / 2,
-                child: HostTodayEventMetric(
-                  value: taskCountIsComplete
-                      ? context.l10n.hostsHostTodayVisiblecopyTaskcount(
-                          taskCount: taskCount,
-                        )
-                      : taskCount > 0
-                      ? context.l10n.hostTodayTaskCountPartial(count: taskCount)
-                      : '—',
-                  label: context.l10n.hostsHostTodayLabelNeedsYou,
-                  supporting: taskCountIsComplete
-                      ? context.l10n.hostTodayTaskSummary
-                      : context.l10n.hostTodayTaskCoverageIncomplete,
-                  icon: CatchIcons.factCheckOutlined,
-                  accent: activity,
-                ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            HostTodayEventMetric(
+              value: taskCountIsComplete
+                  ? context.l10n.hostsHostTodayVisiblecopyTaskcount(
+                      taskCount: taskCount,
+                    )
+                  : taskCount > 0
+                  ? context.l10n.hostTodayTaskCountPartial(count: taskCount)
+                  : '—',
+              label: context.l10n.hostsHostTodayLabelNeedsYou,
+              supporting: taskCountIsComplete
+                  ? context.l10n.hostTodayTaskSummary
+                  : context.l10n.hostTodayTaskCoverageIncomplete,
+              icon: CatchIcons.factCheckOutlined,
+              accent: activity,
+            ),
+            gapH20,
+            HostTodayEventMetric(
+              value: context.l10n.hostsHostTodayVisiblecopySignedupcount(
+                signedUpCount: event.signedUpCount,
               ),
-              SizedBox(
-                width: stacked
-                    ? constraints.maxWidth
-                    : (constraints.maxWidth - 20) / 2,
-                child: HostTodayEventMetric(
-                  value: context.l10n.hostsHostTodayVisiblecopySignedupcount(
-                    signedUpCount: event.signedUpCount,
-                  ),
-                  label: context.l10n.hostsHostTodayLabelGoing,
-                  supporting: context.l10n.hostTodayCheckedIn(
-                    count: event.attendedCount,
-                  ),
-                  icon: CatchIcons.groupsOutlined,
-                  accent: activity,
-                ),
+              label: context.l10n.hostsHostTodayLabelGoing,
+              supporting: context.l10n.hostTodayCheckedIn(
+                count: event.attendedCount,
               ),
-            ];
-            return Wrap(spacing: 20, runSpacing: 20, children: metrics);
-          },
+              icon: CatchIcons.groupsOutlined,
+              accent: activity,
+            ),
+          ],
         ),
         gapH20,
         const CatchDivider.section(),
@@ -196,10 +182,7 @@ class HostTodayEventMetric extends StatelessWidget {
       children: [
         Text(
           value,
-          style: CatchTextStyles.titleL(
-            context,
-            color: valueColor ?? accent?.deep ?? t.ink,
-          ),
+          style: CatchTextStyles.titleL(context, color: valueColor ?? t.ink),
         ),
         gapH2,
         Text(label, style: CatchTextStyles.name(context, color: t.ink)),
@@ -218,7 +201,7 @@ class HostTodayEventMetric extends StatelessWidget {
       children: [
         CatchIconTile(
           icon: icon!,
-          iconColor: accent!.deep,
+          iconColor: t.ink,
           backgroundColor: accent!.soft,
           borderColor: Colors.transparent,
           size: CatchSpacing.s12,

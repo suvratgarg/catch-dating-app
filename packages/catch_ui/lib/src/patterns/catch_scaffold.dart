@@ -1,6 +1,7 @@
 import 'package:catch_tokens/catch_tokens.dart';
 import 'package:catch_ui/src/components/catch_banner.dart';
 import 'package:catch_ui/src/components/catch_banner_status_scope.dart';
+import 'package:catch_ui/src/patterns/catch_row_viewport.dart';
 import 'package:catch_ui/src/primitives/catch_scaled_preferred_size.dart';
 import 'package:flutter/material.dart';
 
@@ -61,14 +62,15 @@ class CatchScaffold extends StatelessWidget {
     final statuses = CatchBannerStatusScope.of(context);
     // Keep this ancestry stable when connectivity changes: inserting a new
     // wrapper only while offline would recreate focused editors and state.
+    final viewportBody = CatchRowViewport(child: body);
     final content = safeArea == CatchScaffoldPlacement.none
-        ? body
+        ? viewportBody
         : CatchBannerStatusScope(
             statuses: const [],
             child: Column(
               children: [
                 CatchBanner.statuses(statuses: statuses),
-                Expanded(child: body),
+                Expanded(child: viewportBody),
               ],
             ),
           );

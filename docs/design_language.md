@@ -217,9 +217,12 @@ gutter/divider ownership, and the shell retains floating-navigation obstruction.
 Field caption and value extents derive from typography, so a scale change also
 updates disclosure and save-status alignment.
 
-Use `CatchPersonRow.directory` for identity plus rich metadata/context/status;
-`CatchRecordRow` for activity/event inventory, historical evidence or provenance; and `CatchField` for an
-editable value or setting. Record text has natural height. Status moves below
+Ordinary rows use `CatchSection.rows` (or `.sliverRows` for a growing list)
+and `CatchField.read` / `.navigate`. Supply `CatchPersonLayout` for people,
+`CatchRecordLayout` for events and records, or `CatchConversationLayout` for
+conversation summaries. These are sealed passive values, not Widgets: they
+cannot own callbacks, gestures, padding, radii, or dividers. Record text has
+natural height. Status moves below
 content at enlarged text sizes. `CatchBadge.status` is a passive rounded rectangle
 with readable categorical tones. `CatchChoiceInput.segmentedVariant.summary` is a tappable
 rounded rectangle with selected semantics; `CatchButton.command` owns the paired
@@ -274,7 +277,7 @@ large-text reflow, reduced motion and pinned rail ancestors in both apps'
 shared component system.
 
 Events is the activity-led inventory adopter: Upcoming groups by day; Past groups
-by month/year. Both use `CatchRecordRow` facts and whole-row navigation. The
+by month/year. Both use `CatchRecordLayout` facts inside `CatchField.navigate` and whole-row navigation. The
 canonical root owns its pinned rail, body gutters and navigation obstruction;
 the feature supplies grouping and meaningful copy, not another geometry recipe.
 
@@ -522,20 +525,27 @@ not rebuild the family as local `Row`, `Stack`, padding, or divider recipes.
   inset boundaries, sibling dividers, clip, and rectangular active bands. Do
   not represent those groups as separate outlined sections or rebuild their
   headers and rules in feature or Widgetbook code.
-- `CatchSection.fieldRows` owns one interaction policy for all of its fields.
-  Compact single-column pages default to a rectangular full-bleed tint that
-  reaches the page interaction plane; split panes default to an inset rounded
-  perimeter. A complete section may choose the other semantic policy, but an
-  individual field cannot select radii, gutter, bleed, dividers, or perimeter.
-  `CatchSection.containedFieldRows` keeps rectangular active bands inside one
-  section-owned clip, with their vertical edges aligned to the single outline.
-  Pointer-down, open, active, and keyboard-focus states use the same selected
-  policy, and their transition replaces adjacent divider visibility instead of
-  painting a second line across it.
-- `CatchFieldLanes.divided` is the headerless sibling-row owner. It supplies the
-  canonical gutter, derived separators, and inherited interaction policy. Use
-  `.single` only for one ungrouped field and `.custom` for content that is not a
-  field list; feature code does not configure lane gutters or field dividers.
+- `CatchSection.rows` and `.sliverRows` own full page/pane interaction bounds.
+  This default is identical on phone and in a split pane. Content has a semantic
+  gutter and centered maximum reading width, while hover, press, selected, focus
+  and hit testing reach both pane edges. Do not place an outer horizontal inset
+  around these sections. Scaffold and pane owners publish the viewport; debug
+  assertions catch a narrowed row section, and release rendering falls back to
+  rounded containment if that boundary is violated.
+- `CatchSection.containedRows` is the explicit inset exception: one rounded
+  perimeter, rectangular internal bands clipped by that perimeter. There is no
+  public choice for an inset square highlight. Its header rule spans the whole
+  content width. Mid-section rules begin under the row's text lane, after
+  its leading icon/avatar; the last row has no trailing rule. Active adjacent
+  rows suppress the shared rule, never the header rule.
+- `CatchField` owns row interaction, states, navigation disclosure and semantics.
+  `CatchFieldSecondaryAction` provides independent labelled commands, buttons,
+  selections and menus. Layout content cannot create another recognizer. Legacy
+  `CatchFieldLanes` and `.fieldRows` remain adapters for existing editors and
+  spatial interaction; new ordinary lists use the typed collection recipes.
+  A native text/choice control, message bubble, map canvas, media, chart or
+  global navigation rail is not an ordinary row. Those keep their own semantic
+  primitive, with non-row section content supplied through `.content`.
 - A typed form section owns one text-commit model for all of its sibling rows.
   Explicit confirmation with Cancel and Done is the default for new
   `CatchFormRowList` sections. An existing surface may opt the complete section
@@ -586,13 +596,12 @@ matrix or create a second geometry registry.
 
 ### 7.3 CatchField doctrine
 
-`CatchField`/`CatchSection` are the canonical surface for *entering and
-managing data*: edit tabs, settings, configuration, onboarding forms, and
-admin-ish host tooling. They are forbidden as storytelling surfaces — browse,
-discovery, celebration, and insight/scorecard moments compose expressive
-components (polaroid, ticket, hero, stat/chart kit) instead. If a screen is
-something a user *reads for meaning* rather than *operates*, it should not be
-built from field rows.
+`CatchField`/`CatchSection` own ordinary list rows as well as editable values:
+people, event inventory, records, conversation summaries, settings and forms.
+Their passive content layouts carry values; sections carry grouping and geometry.
+Expressive media, celebration, hero, charts and message bubbles retain their
+specialized primitives. Use `CatchSection.content` for those non-row regions.
+A screen can combine both families without making content widgets own row state.
 
 New `CatchField` modes or slots require a `docs/widget_catalog.md` entry, a
 Widgetbook contract story, and a behavior-contract test under

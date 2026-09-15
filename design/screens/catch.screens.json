@@ -9506,7 +9506,7 @@
             "currentOwner": "HostEventLifecycleRow",
             "targetOwner": "Host lifecycle semantic adapter over canonical CatchRecordRow",
             "dependencies": [
-              "catch.record_row"
+              "catch.field"
             ],
             "states": [
               "upcoming",
@@ -15629,7 +15629,7 @@
             "flutter": {"file": "lib/hosts/presentation/customers/host_customers_screen.dart", "symbol": "HostCustomersDirectory"},
             "currentOwner": "hosts.presentation.customers",
             "targetOwner": "hosts.presentation.customers",
-            "dependencies": ["catch.empty_state", "catch.error_state", "catch.person_row", "catch.skeleton"],
+            "dependencies": ["catch.empty_state", "catch.error_state", "catch.field", "catch.skeleton"],
             "states": ["customers_loading", "customers_error", "customers_empty", "customers_populated", "customers_paginating"],
             "migration": "Consumes only render-ready controller state and delegates cursor de-duplication to HostCustomersDirectoryController."
           },

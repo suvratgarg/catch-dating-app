@@ -11,8 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
 
+part 'catch_field_render.dart';
 part 'catch_field_behavior.dart';
 part 'catch_field_configs.dart';
+part 'catch_field_adapters.dart';
 part 'catch_field_control.dart';
 part 'catch_field_edit.dart';
 part 'catch_field_input.dart';
@@ -43,6 +45,8 @@ final class CatchField<T> extends StatefulWidget
     CatchFieldCopy? copy,
     CatchFieldLayout? content,
     super.key,
+    CatchFieldSecondaryAction? secondaryAction,
+    this.states = const <WidgetState>{},
     this.title,
     this.body,
     this.actions,
@@ -60,6 +64,20 @@ final class CatchField<T> extends StatefulWidget
     bool valid = false,
     this.status = CatchFieldStatus.idle,
   }) : assert(copy != null || content != null),
+       assert(status == CatchFieldStatus.idle || copy != null),
+       assert(
+         content == null ||
+             (title == null &&
+                 body == null &&
+                 actions == null &&
+                 icon == null &&
+                 iconColor == null &&
+                 leading == null &&
+                 leadingExtent == null &&
+                 valueText == null &&
+                 placeholder == null),
+         'Typed Field content owns all passive slots; do not mix legacy slots.',
+       ),
        _copy = copy,
        assert(
          leading == null || icon == null,
@@ -76,7 +94,6 @@ final class CatchField<T> extends StatefulWidget
        leading = leading,
        contract = null,
        variant = CatchFieldVariant.row,
-       states = const <WidgetState>{},
        child = null,
        meta = null,
        trailing = null,
@@ -88,7 +105,7 @@ final class CatchField<T> extends StatefulWidget
          placeholder: placeholder,
          valid: valid,
          layout: content,
-         secondaryAction: null,
+         secondaryAction: secondaryAction,
          contentRow: false,
          inlineMetadata: null,
          showChevron: null,
@@ -630,56 +647,36 @@ final class CatchField<T> extends StatefulWidget
     String? emptyValueText,
     String? error,
     String? errorText,
-  }) {
-    final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
-      contract,
-      values,
-      contractValueBuilder,
-      multi: mode == CatchChipMode.multiple,
-    );
-    final supportedSelection = selected.intersection(supportedValues.toSet());
-    final selectedSummary = supportedValues
-        .where(supportedSelection.contains)
-        .map(itemLabelBuilder)
-        .join(' · ');
-    return CatchField<T>.control(
-      copy: copy,
-      key: key,
-      title: title,
-      contract: contract,
-      body: body ?? (selectedSummary.isEmpty ? null : selectedSummary),
-
-      disclosureMode: disclosureMode,
-      onOpenChanged: onOpenChanged,
-      onCancel: onCancel,
-      onSubmit: onSubmit,
-      status: status,
-      states: states,
-      addable: addable,
-      labelMode: labelMode,
-      helperText: helperText,
-      icon: icon,
-      iconColor: iconColor,
-      tone: tone,
-      emptyValueText: emptyValueText,
-      error: error,
-      errorText: errorText,
-      child: CatchChoiceInput<T>(
-        values: supportedValues,
-        selected: supportedSelection,
-        allowEmptySelection: allowEmptySelection,
-        autoClose: mode == CatchChipMode.single && onSubmit == null,
-        mode: mode,
-        itemLabelBuilder: itemLabelBuilder,
-        itemAccentBuilder: itemAccentBuilder,
-        onChanged:
-            !states.contains(WidgetState.disabled) &&
-                status != CatchFieldStatus.saving
-            ? onSelectionChanged
-            : null,
-      ),
-    );
-  }
+  }) => _catchFieldChoices<T>(
+    copy: copy,
+    key: key,
+    title: title,
+    body: body,
+    contract: contract,
+    contractValueBuilder: contractValueBuilder,
+    values: values,
+    itemLabelBuilder: itemLabelBuilder,
+    selected: selected,
+    onSelectionChanged: onSelectionChanged,
+    mode: mode,
+    allowEmptySelection: allowEmptySelection,
+    disclosureMode: disclosureMode,
+    onOpenChanged: onOpenChanged,
+    onCancel: onCancel,
+    onSubmit: onSubmit,
+    status: status,
+    states: states,
+    addable: addable,
+    labelMode: labelMode,
+    helperText: helperText,
+    itemAccentBuilder: itemAccentBuilder,
+    icon: icon,
+    iconColor: iconColor,
+    tone: tone,
+    emptyValueText: emptyValueText,
+    error: error,
+    errorText: errorText,
+  );
 
   /// Canonical single-select disclosure for choices that need both a title
   /// and explanatory copy. Terse labels stay in [choices]; policy, admission,
@@ -709,56 +706,31 @@ final class CatchField<T> extends StatefulWidget
     CatchFieldTone tone = CatchFieldTone.normal,
     String? error,
     String? errorText,
-  }) {
-    final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
-      contract,
-      values,
-      contractValueBuilder,
-      multi: false,
-    );
-    assert(
-      supportedValues.isNotEmpty,
-      'CatchField.optionCards needs at least one value.',
-    );
-    assert(
-      supportedValues.contains(selected),
-      'CatchField.optionCards selected must be allowed by the schema '
-      'contract.',
-    );
-    return CatchField<T>.control(
-      copy: copy,
-      key: key,
-      title: title,
-      contract: contract,
-      body: body ?? itemTitleBuilder(selected),
-
-      disclosureMode: disclosureMode,
-      onOpenChanged: onOpenChanged,
-      onCancel: onCancel,
-      onSubmit: onSubmit,
-      status: status,
-      states: states,
-      helperText: helperText,
-      icon: icon,
-      iconColor: iconColor,
-      tone: tone,
-      error: error,
-      errorText: errorText,
-      child: CatchChoiceInput<T>.described(
-        values: supportedValues,
-        selected: {selected},
-        autoClose: onSubmit == null,
-        onChanged:
-            !states.contains(WidgetState.disabled) &&
-                status != CatchFieldStatus.saving &&
-                onChanged != null
-            ? (selection) => onChanged(selection.single)
-            : null,
-        itemLabelBuilder: itemTitleBuilder,
-        itemSubtitleBuilder: itemDescriptionBuilder,
-      ),
-    );
-  }
+  }) => _catchFieldOptionCards<T>(
+    copy: copy,
+    key: key,
+    title: title,
+    body: body,
+    contract: contract,
+    contractValueBuilder: contractValueBuilder,
+    values: values,
+    itemTitleBuilder: itemTitleBuilder,
+    itemDescriptionBuilder: itemDescriptionBuilder,
+    selected: selected,
+    onChanged: onChanged,
+    disclosureMode: disclosureMode,
+    onOpenChanged: onOpenChanged,
+    onCancel: onCancel,
+    onSubmit: onSubmit,
+    status: status,
+    states: states,
+    helperText: helperText,
+    icon: icon,
+    iconColor: iconColor,
+    tone: tone,
+    error: error,
+    errorText: errorText,
+  );
 
   /// Canonical numeric disclosure field. The revealed control includes a
   /// centered value and accelerated hold-to-repeat on both 44px targets.
@@ -791,58 +763,36 @@ final class CatchField<T> extends StatefulWidget
     String? emptyValueText,
     String? error,
     String? errorText,
-  }) {
-    assert(
-      step == null || step > 0,
-      'CatchField.stepper requires a positive step.',
-    );
-    final effectiveMin = CatchContractFieldPolicy.effectiveMinimum(
-      contract,
-      min,
-    );
-    final effectiveMax = CatchContractFieldPolicy.effectiveMaximum(
-      contract,
-      max,
-    );
-    final effectiveStep = CatchContractFieldPolicy.effectiveStep(
-      contract,
-      step,
-    );
-    return CatchField<T>.control(
-      copy: copy,
-      key: key,
-      title: title,
-      contract: contract,
-      body: body,
-
-      disclosureMode: disclosureMode,
-      onOpenChanged: onOpenChanged,
-      onCancel: onCancel,
-      onSubmit: onSubmit,
-      status: status,
-      states: states,
-      addable: addable,
-      labelMode: labelMode,
-      icon: icon,
-      iconColor: iconColor,
-      tone: tone,
-      emptyValueText: emptyValueText,
-      error: error,
-      errorText: errorText,
-      child: CatchStepper(
-        value: value,
-        min: effectiveMin,
-        max: effectiveMax,
-        step: effectiveStep,
-        unit: unit,
-        valueLabelBuilder: valueLabelBuilder,
-        decreaseSemanticLabel: decreaseSemanticLabel,
-        increaseSemanticLabel: increaseSemanticLabel,
-        enabled: status != CatchFieldStatus.saving,
-        onChanged: onChanged,
-      ),
-    );
-  }
+  }) => _catchFieldStepper<T>(
+    copy: copy,
+    key: key,
+    title: title,
+    body: body,
+    contract: contract,
+    value: value,
+    onChanged: onChanged,
+    min: min,
+    max: max,
+    step: step,
+    unit: unit,
+    valueLabelBuilder: valueLabelBuilder,
+    decreaseSemanticLabel: decreaseSemanticLabel,
+    increaseSemanticLabel: increaseSemanticLabel,
+    disclosureMode: disclosureMode,
+    onOpenChanged: onOpenChanged,
+    onCancel: onCancel,
+    onSubmit: onSubmit,
+    status: status,
+    states: states,
+    addable: addable,
+    labelMode: labelMode,
+    icon: icon,
+    iconColor: iconColor,
+    tone: tone,
+    emptyValueText: emptyValueText,
+    error: error,
+    errorText: errorText,
+  );
 
   /// A controlled, explicit-save row editor. The label and value lane stay in
   /// place while supporting content and commit actions animate below them.
@@ -1041,41 +991,26 @@ final class CatchField<T> extends StatefulWidget
     CatchFieldSize size = CatchFieldSize.md,
     String? helperText,
     CatchFieldSupportRowTone helperTone = CatchFieldSupportRowTone.neutral,
-  }) {
-    final supportedValues = CatchContractFieldPolicy.supportedChoiceValues(
-      contract,
-      values,
-      contractValueBuilder,
-      multi: false,
-    );
-    assert(
-      supportedValues.toSet().length == supportedValues.length,
-      'CatchField.select values must be unique.',
-    );
-    return CatchField<T>._select(
-      copy: copy,
-      key: key,
-      title: title,
-      contract: contract,
-      contractExemption: contractExemption,
-      values: List<Object?>.unmodifiable(supportedValues),
-      itemLabelBuilder: (item) => itemLabelBuilder(item as T),
-      value: value,
-      onSelectChanged: onChanged == null
-          ? null
-          : (item) => onChanged(item as T?),
-      selectValidator: onValidate == null
-          ? null
-          : (item) => onValidate(item as T?),
-      placeholder: hintText,
-      leading: leading,
-      showLabel: showLabel,
-      size: size,
-      helperText: helperText,
-      helperTone: helperTone,
-      states: states,
-    );
-  }
+  }) => _catchFieldSelect<T>(
+    copy: copy,
+    key: key,
+    title: title,
+    contract: contract,
+    contractExemption: contractExemption,
+    contractValueBuilder: contractValueBuilder,
+    values: values,
+    itemLabelBuilder: itemLabelBuilder,
+    value: value,
+    hintText: hintText,
+    leading: leading,
+    onChanged: onChanged,
+    onValidate: onValidate,
+    states: states,
+    showLabel: showLabel,
+    size: size,
+    helperText: helperText,
+    helperTone: helperTone,
+  );
 
   static const double compactControlHeight =
       CatchControlMetrics.compactMinHeight;
@@ -1090,16 +1025,11 @@ final class CatchField<T> extends StatefulWidget
     CatchFieldCopy copy, {
     required String title,
     String? emptyValueText,
-  }) {
-    final label = title.trim();
-    final explicit = emptyValueText?.trim();
-    if (explicit != null &&
-        explicit.isNotEmpty &&
-        explicit.toLowerCase() != label.toLowerCase()) {
-      return explicit;
-    }
-    return defaultEmptyValueText(copy, label);
-  }
+  }) => _resolveFieldEmptyValueText(
+    copy,
+    title: title,
+    emptyValueText: emptyValueText,
+  );
 
   /// Resolved copy supplied by the caller for the current locale.
   @override
@@ -1123,7 +1053,6 @@ final class CatchField<T> extends StatefulWidget
   final Widget? actions;
 
   // Explicit-save actions belong to the revealed area, never the native suffix.
-  bool get _hasRowActions => !_explicitSaveInput && actions != null;
 
   @override
   final Record _config;
@@ -1139,10 +1068,6 @@ final class CatchField<T> extends StatefulWidget
   @override
   final Widget? leading;
 
-  bool get _hasInputLeading =>
-      leading != null && (_editConfig != null || _selectConfig != null);
-  bool get _hasRowLeading => leading != null && !_hasInputLeading;
-
   /// Horizontal extent of caller-owned [leading] content. Sections use this
   /// to align dividers to the actual text lane instead of assuming icon size.
   final double? leadingExtent;
@@ -1151,18 +1076,6 @@ final class CatchField<T> extends StatefulWidget
   @override
   final Set<WidgetState> states;
   final CatchFieldStatus status;
-
-  @override
-  double get fieldDividerLeadingInset =>
-      _rowLayout?._leadingInset ??
-      (add
-          ? CatchFieldRow.textLaneInset
-          : _hasRowLeading
-          ? (leadingExtent ?? CatchFieldTokens.leadingIconExtent) +
-                CatchFieldTokens.leadingGap
-          : icon != null || _hasInputLeading
-          ? CatchFieldTokens.textLaneInset
-          : 0);
 
   final Widget? child;
   final Widget? meta;

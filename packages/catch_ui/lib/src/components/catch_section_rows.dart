@@ -7,6 +7,7 @@ import 'package:catch_ui/src/components/catch_field_geometry_scope_variant.dart'
 import 'package:catch_ui/src/components/catch_field_motion.dart';
 import 'package:catch_ui/src/components/catch_section_content.dart';
 import 'package:catch_ui/src/components/catch_section_surface.dart';
+import 'package:catch_ui/src/patterns/catch_row_viewport.dart';
 import 'package:catch_ui/src/primitives/catch_divider.dart';
 import 'package:flutter/material.dart';
 
@@ -22,27 +23,25 @@ final class _CatchSectionRowKey extends ValueKey<Object> {
 class CatchSectionRows extends StatefulWidget {
   const CatchSectionRows({
     super.key,
-    required List<CatchField> entries,
+    required List<CatchField> this.entries,
     this.title,
     this.count,
     this.action,
     this.contained = false,
-  }) : entries = entries,
-       _itemCount = null,
+  }) : _itemCount = null,
        formLeadingInset = null,
        itemBuilder = null,
        findChildIndexCallback = null;
 
   const CatchSectionRows.sliver({
     super.key,
-    required int itemCount,
+    required int this._itemCount,
     required this.itemBuilder,
     this.findChildIndexCallback,
     this.title,
     this.count,
     this.action,
-  }) : _itemCount = itemCount,
-       entries = null,
+  }) : entries = null,
        formLeadingInset = null,
        contained = false;
 
@@ -51,13 +50,12 @@ class CatchSectionRows extends StatefulWidget {
   /// supply a widget builder to the public row-section recipes.
   const CatchSectionRows.form({
     super.key,
-    required List<Widget> entries,
+    required List<Widget> this.entries,
     required double leadingInset,
     this.title,
     this.count,
     this.action,
-  }) : entries = entries,
-       formLeadingInset = leadingInset,
+  }) : formLeadingInset = leadingInset,
        _itemCount = null,
        itemBuilder = null,
        findChildIndexCallback = null,
@@ -96,8 +94,9 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
   }
 
   Widget? _header(double gutter) {
-    if (widget.title == null && widget.count == null && widget.action == null)
+    if (widget.title == null && widget.count == null && widget.action == null) {
       return null;
+    }
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: gutter),
       child: CatchSectionHeading(
@@ -122,7 +121,12 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
     return identity != null && _active.contains(identity);
   }
 
-  Widget _row(BuildContext context, int index, double gutter) {
+  Widget _row(
+    BuildContext context,
+    int index,
+    double gutter, {
+    bool fullPlane = true,
+  }) {
     final entry = widget.entries?[index] ?? widget.itemBuilder!(context, index);
     final identity = entry.key ?? index;
     _identities[index] = identity;
@@ -149,7 +153,9 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
               exactBounds: true,
               interactionShape: widget.contained
                   ? CatchFieldGeometryScopeVariant.sectionClipped
-                  : CatchFieldGeometryScopeVariant.fullBleedBand,
+                  : fullPlane
+                  ? CatchFieldGeometryScopeVariant.fullBleedBand
+                  : CatchFieldGeometryScopeVariant.roundedTile,
               child: entry,
             ),
             if (index < widget.itemCount - 1)
@@ -182,6 +188,10 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
     if (widget.entries == null) {
       return SliverLayoutBuilder(
         builder: (context, constraints) {
+          assert(
+            CatchRowViewport.matches(context, constraints.crossAxisExtent),
+            'A row section must fill its page or pane. Remove outer padding; use containedRows for an inset surface.',
+          );
           final gutter = catchSectionContentGutter(constraints.crossAxisExtent);
           final header = _header(gutter);
           return SliverMainAxisGroup(
@@ -194,7 +204,15 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
                     : (key) => key is _CatchSectionRowKey && key.value is Key
                           ? widget.findChildIndexCallback!(key.value as Key)
                           : null,
-                itemBuilder: (context, index) => _row(context, index, gutter),
+                itemBuilder: (context, index) => _row(
+                  context,
+                  index,
+                  gutter,
+                  fullPlane: CatchRowViewport.matches(
+                    context,
+                    constraints.crossAxisExtent,
+                  ),
+                ),
               ),
             ],
           );
@@ -206,6 +224,11 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
         assert(
           constraints.hasBoundedWidth,
           'Row sections need a page or pane.',
+        );
+        assert(
+          widget.contained ||
+              CatchRowViewport.matches(context, constraints.maxWidth),
+          'A row section must fill its page or pane. Remove outer padding; use containedRows for an inset surface.',
         );
         final gutter = catchSectionContentGutter(constraints.maxWidth);
         final header = _header(gutter);
@@ -220,6 +243,10 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
                 widget.contained
                     ? CatchFieldTokens.rowHorizontalPadding
                     : gutter,
+                fullPlane: CatchRowViewport.matches(
+                  context,
+                  constraints.maxWidth,
+                ),
               ),
           ],
         );
@@ -227,7 +254,7 @@ class _CatchSectionRowsState extends State<CatchSectionRows> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (header != null) header,
+            ?header,
             if (widget.contained)
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: gutter),

@@ -12,7 +12,7 @@ import 'package:catch_dating_app/hosts/presentation/customers/host_customer_row.
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_controller.dart';
 import 'package:catch_dating_app/hosts/presentation/customers/host_customers_screen_state.dart';
 import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_view_model.dart';
-import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages.dart';
+import 'package:catch_dating_app/hosts/presentation/inbox/host_inbox_whatsapp_pages_controller.dart';
 import 'package:catch_dating_app/l10n/l10n.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -164,7 +164,15 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
                   ),
               ],
             ] else
-              SliverToBoxAdapter(child: _routes(context)),
+              SliverToBoxAdapter(
+                child: _HostNewMessageRoutes(
+                  organizerId: widget.organizerId,
+                  contactId: _contactId!,
+                  name: _name,
+                  opening: _opening,
+                  onStartCatch: () => _startCatch(_contactId!),
+                ),
+              ),
             const CatchScrollTerminalGap.sliver(),
           ],
         ),
@@ -172,149 +180,12 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
     );
   }
 
-  Widget _routes(BuildContext context) {
-    final id = _contactId!;
-    final provider = hostCommunicationPlanProvider(widget.organizerId, id);
-    final result = catchAsyncStateFromAsyncValue(ref.watch(provider));
-    final plan = result.value;
-    final valid =
-        plan != null &&
-        plan.organizerId == widget.organizerId &&
-        plan.singleRecipient.contactId == id;
-    final catchAvailable =
-        valid &&
-        plan.singleRecipient
-            .route(HostCommunicationRouteId.catchChat)
-            .isAvailable;
-    final whatsappState = catchAsyncStateFromAsyncValue(
-      ref.watch(hostInboxWhatsappPagesProvider(widget.organizerId)),
-    );
-    final whatsappPage = whatsappState.value;
-    final whatsapp = whatsappPage?.threads
-        .where((t) => t.contactId == id)
-        .firstOrNull;
-    final whatsappComplete =
-        whatsappPage != null &&
-        whatsappPage.nextCursor == null &&
-        whatsappPage.error == null;
-    return CatchSectionList(
-      emptyStateOmitted: true,
-      children: [
-        CatchSection.rows(
-          entries: [
-            CatchField.read(
-              content: CatchPersonLayout(
-                name:
-                    _name ??
-                    plan?.singleRecipient.displayName ??
-                    context.l10n.hostInboxNewMessage,
-              ),
-            ),
-          ],
-        ),
-        if (result.isLoading)
-          CatchSection.content(child: const CatchSkeleton.rows(count: 2)),
-        if (result.hasError)
-          CatchSection.content(
-            child: CatchLocalizedErrorState(
-              result.error!,
-              context: AppErrorContext.chat,
-              onRetry: () => ref.invalidate(provider),
-            ),
-          ),
-        if (valid)
-          CatchSection.rows(
-            title: context.l10n.hostInboxAvailableRoutes,
-            entries: [
-              if (catchAvailable)
-                CatchField.navigate(
-                  content: CatchRecordLayout(
-                    title: context.l10n.hostInboxMessageVia(
-                      channel: context.l10n.hostInboxCatchChannel,
-                    ),
-                    icon: CatchIcons.chatBubbleOutlineRounded,
-                  ),
-                  states: {if (_opening) WidgetState.disabled},
-                  onActivate: () => _startCatch(id),
-                ),
-              if (whatsapp != null)
-                CatchField.navigate(
-                  content: CatchRecordLayout(
-                    title: context.l10n.hostInboxMessageVia(
-                      channel: context.l10n.hostInboxWhatsappReplyChannel,
-                    ),
-                    icon: CatchIcons.chatBubbleOutlineRounded,
-                    description: whatsapp.serviceWindowOpen
-                        ? null
-                        : context.l10n.hostInboxWhatsappWindowClosed,
-                  ),
-                  onActivate: () => Navigator.of(context).pop(
-                    HostNewMessageSelection(
-                      endpointId: whatsapp.threadId,
-                      scope: whatsapp.eventIds.isEmpty
-                          ? const HostInboxScope.general()
-                          : HostInboxScope.event(whatsapp.eventIds.last),
-                    ),
-                  ),
-                ),
-              CatchField.navigate(
-                content: CatchRecordLayout(
-                  title: context.l10n.hostInboxOpenPerson,
-                  icon: CatchIcons.personOutlineRounded,
-                ),
-                onActivate: () => context.pushNamed(
-                  Routes.hostCustomerDetailScreen.name,
-                  pathParameters: {'contactId': id},
-                  queryParameters: {'organizerId': widget.organizerId},
-                ),
-              ),
-            ],
-          ),
-        if (!whatsappComplete && whatsapp == null)
-          CatchSection.content(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  context.l10n.hostInboxPartialSources,
-                  style: CatchTextStyles.supporting(context),
-                ),
-                if (whatsappPage?.nextCursor != null)
-                  CatchButton(
-                    label: context.l10n.hostInboxMoreConversations,
-                    onPressed: whatsappPage!.loadingMore
-                        ? null
-                        : () => ref
-                              .read(
-                                hostInboxWhatsappPagesProvider(
-                                  widget.organizerId,
-                                ).notifier,
-                              )
-                              .loadMore(),
-                  ),
-                if (whatsappState.hasError)
-                  CatchButton(
-                    label: context.l10n.sharedActionTryAgain,
-                    onPressed: () => ref.invalidate(
-                      hostInboxWhatsappPagesProvider(widget.organizerId),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        if (valid && !catchAvailable && whatsapp == null && whatsappComplete)
-          CatchSection.content(
-            child: Text(
-              context.l10n.hostInboxNewMessageUnavailable,
-              style: CatchTextStyles.supporting(context),
-            ),
-          ),
-      ],
-    );
-  }
-
   Future<void> _startCatch(String id) async {
     if (_opening) return;
+    final accountId = catchAsyncStateFromAsyncValue(
+      ref.read(uidProvider),
+    ).value;
+    if (accountId == null) return;
     setState(() => _opening = true);
     try {
       final matchId = await ref
@@ -326,6 +197,7 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
       final uid = catchAsyncStateFromAsyncValue(ref.read(uidProvider)).value;
       if (match == null ||
           uid == null ||
+          uid != accountId ||
           !match.isClubHostInquiry ||
           match.clubId != widget.organizerId ||
           (match.user1Id != uid && match.user2Id != uid)) {
@@ -365,5 +237,161 @@ class _HostNewMessageScreenState extends ConsumerState<HostNewMessageScreen> {
         _name = created.displayName;
       });
     }
+  }
+}
+
+class _HostNewMessageRoutes extends ConsumerWidget {
+  const _HostNewMessageRoutes({
+    required this.organizerId,
+    required this.contactId,
+    required this.name,
+    required this.opening,
+    required this.onStartCatch,
+  });
+  final String organizerId;
+  final String contactId;
+  final String? name;
+  final bool opening;
+  final VoidCallback onStartCatch;
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final id = contactId;
+    final provider = hostCommunicationPlanProvider(organizerId, id);
+    final result = catchAsyncStateFromAsyncValue(ref.watch(provider));
+    final plan = result.value;
+    final valid =
+        plan != null &&
+        plan.organizerId == organizerId &&
+        plan.singleRecipient.contactId == id;
+    final catchAvailable =
+        valid &&
+        plan.singleRecipient
+            .route(HostCommunicationRouteId.catchChat)
+            .isAvailable;
+    final whatsappState = catchAsyncStateFromAsyncValue(
+      ref.watch(hostInboxWhatsappPagesProvider(organizerId)),
+    );
+    final whatsappPage = whatsappState.value;
+    final whatsapp = whatsappPage?.threads
+        .where((t) => t.contactId == id)
+        .firstOrNull;
+    final whatsappComplete =
+        whatsappPage != null &&
+        whatsappPage.nextCursor == null &&
+        whatsappPage.error == null;
+    return CatchSectionList(
+      emptyStateOmitted: true,
+      children: [
+        CatchSection.rows(
+          entries: [
+            CatchField.read(
+              content: CatchPersonLayout(
+                name:
+                    name ??
+                    plan?.singleRecipient.displayName ??
+                    context.l10n.hostInboxNewMessage,
+              ),
+            ),
+          ],
+        ),
+        if (result.isLoading)
+          CatchSection.content(child: const CatchSkeleton.rows(count: 2)),
+        if (result.hasError)
+          CatchSection.content(
+            child: CatchLocalizedErrorState(
+              result.error!,
+              context: AppErrorContext.chat,
+              onRetry: () => ref.invalidate(provider),
+            ),
+          ),
+        if (valid)
+          CatchSection.rows(
+            title: context.l10n.hostInboxAvailableRoutes,
+            entries: [
+              if (catchAvailable)
+                CatchField.navigate(
+                  content: CatchRecordLayout(
+                    title: context.l10n.hostInboxMessageVia(
+                      channel: context.l10n.hostInboxCatchChannel,
+                    ),
+                    icon: CatchIcons.chatBubbleOutlineRounded,
+                  ),
+                  states: {if (opening) WidgetState.disabled},
+                  onActivate: onStartCatch,
+                ),
+              if (whatsapp != null)
+                CatchField.navigate(
+                  content: CatchRecordLayout(
+                    title: context.l10n.hostInboxMessageVia(
+                      channel: context.l10n.hostInboxWhatsappReplyChannel,
+                    ),
+                    icon: CatchIcons.chatBubbleOutlineRounded,
+                    description: whatsapp.serviceWindowOpen
+                        ? null
+                        : context.l10n.hostInboxWhatsappWindowClosed,
+                  ),
+                  onActivate: () => Navigator.of(context).pop(
+                    HostNewMessageSelection(
+                      endpointId: whatsapp.threadId,
+                      scope: whatsapp.eventIds.isEmpty
+                          ? const HostInboxScope.general()
+                          : HostInboxScope.event(whatsapp.eventIds.last),
+                    ),
+                  ),
+                ),
+              CatchField.navigate(
+                content: CatchRecordLayout(
+                  title: context.l10n.hostInboxOpenPerson,
+                  icon: CatchIcons.personOutlineRounded,
+                ),
+                onActivate: () => context.pushNamed(
+                  Routes.hostCustomerDetailScreen.name,
+                  pathParameters: {'contactId': id},
+                  queryParameters: {'organizerId': organizerId},
+                ),
+              ),
+            ],
+          ),
+        if (!whatsappComplete && whatsapp == null)
+          CatchSection.content(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  context.l10n.hostInboxPartialSources,
+                  style: CatchTextStyles.supporting(context),
+                ),
+                if (whatsappPage?.nextCursor != null)
+                  CatchButton(
+                    label: context.l10n.hostInboxMoreConversations,
+                    onPressed: whatsappPage!.loadingMore
+                        ? null
+                        : () => ref
+                              .read(
+                                hostInboxWhatsappPagesProvider(
+                                  organizerId,
+                                ).notifier,
+                              )
+                              .loadMore(),
+                  ),
+                if (whatsappState.hasError)
+                  CatchButton(
+                    label: context.l10n.sharedActionTryAgain,
+                    onPressed: () => ref.invalidate(
+                      hostInboxWhatsappPagesProvider(organizerId),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        if (valid && !catchAvailable && whatsapp == null && whatsappComplete)
+          CatchSection.content(
+            child: Text(
+              context.l10n.hostInboxNewMessageUnavailable,
+              style: CatchTextStyles.supporting(context),
+            ),
+          ),
+      ],
+    );
   }
 }

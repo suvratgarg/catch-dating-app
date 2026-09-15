@@ -279,9 +279,9 @@ class _HostCustomersScreenState extends ConsumerState<HostCustomersScreen>
         HostCampaignBlockers.senderInactive,
       _ => null,
     };
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final screenSize = CatchWindowSize.fromWidth(constraints.maxWidth);
+    return CatchViewport.box(
+      builder: (context, viewport) {
+        final screenSize = viewport.sizeClass;
         final activeQuery = peopleView ? _search : _audienceSearch;
         final directoryControls = HostCustomerDirectoryControls(
           sort: _sort,

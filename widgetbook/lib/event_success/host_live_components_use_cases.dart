@@ -1,3 +1,4 @@
+import 'package:catch_ui/catch_ui.dart';
 import 'package:catch_dating_app/design_fixtures/event_success_companion_fixtures.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_activity_profile.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
@@ -439,18 +440,25 @@ Widget eventSuccessStrictWingmanRequestsHostCard(BuildContext context) =>
 
 @widgetbook.UseCase(
   name: 'Ready',
-  type: EventSuccessHostHelpRow,
+  type: CatchPersonLayout,
   path: '[P1 product surfaces]/Event Success/Host live components',
 )
 Widget eventSuccessStrictWingmanRequestHostRow(BuildContext context) =>
     WidgetbookCatalogFrame(
-      title: 'EventSuccessHostHelpRow',
+      title: 'Host help request',
       catalogId: 'Event Success Host live',
       children: [
-        EventSuccessHostHelpRow(
-          request: EventSuccessCompanionFixtures.wingmanRequest,
-          requester: null,
-          target: EventSuccessCompanionFixtures.peer,
+        CatchSection.containedRows(
+          entries: [
+            CatchField.read(
+              content: eventSuccessHostHelpLayout(
+                context,
+                request: EventSuccessCompanionFixtures.wingmanRequest,
+                requester: null,
+                target: EventSuccessCompanionFixtures.peer,
+              ),
+            ),
+          ],
         ),
       ],
     );
